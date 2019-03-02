@@ -56,6 +56,28 @@ class Database {
 
     return table;
   }
+
+  Future<Null> update(TableRow row) async {
+    Map data = row.serialize()['data'];
+
+    int id = data['id'];
+
+    var updatesList = <String>[];
+
+    for(String column in data.keys) {
+      if (column == 'id')
+        continue;
+
+      updatesList.add('$column = \'${data[column]}\'');
+    }
+    String updates = updatesList.join(', ');
+
+    var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
+    print('$query');
+
+    int affectedRows = await connection.execute(query);
+    print('updated $affectedRows rows');
+  }
 }
 
 class Expression {

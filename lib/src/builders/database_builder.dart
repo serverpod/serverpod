@@ -38,8 +38,9 @@ class DatabaseBuilder implements Builder {
 
       // Row class definition
       out += 'class $className extends TableRow {\n';
-      out += '  static const String tableName = \'$tableName\';\n';
+      out += '  static const String db = \'$tableName\';\n';
       out += '  String get className => \'$className\';\n';
+      out += '  String get tableName => \'$tableName\';\n';
       out += '\n';
 
       // Fields

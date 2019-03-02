@@ -6,6 +6,7 @@ class Table {
 }
 
 abstract class TableRow extends SerializableEntity {
+  String get tableName;
 
   setColumn(String columnName, dynamic value) {
     var instance = reflect(this);
