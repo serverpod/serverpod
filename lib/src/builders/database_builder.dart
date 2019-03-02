@@ -16,11 +16,11 @@ class DatabaseBuilder implements Builder {
     String yamlStr = await buildStep.readAsString(buildStep.inputId);
     var doc = loadYaml(yamlStr);
 
-    String output = '';
+    String out = '';
 
     try {
-      String name = _expectString(doc, 'tableName');
-      String cls = _expectString(doc, 'class');
+      String tableName = _expectString(doc, 'tableName');
+      String className = _expectString(doc, 'class');
       Map docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
 
@@ -29,47 +29,78 @@ class DatabaseBuilder implements Builder {
       }
 
       // Header
-      output += '/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/\n';
-      output += '/* To generate run: "pub run build_runner build"  */\n';
-      output += '\n';
+      out += '/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/\n';
+      out += '/* To generate run: "pub run build_runner build"  */\n';
+      out += '\n';
 
-      output += 'import \'package:serverpod/database.dart\';\n';
-      output += '\n';
+      out += 'import \'package:serverpod/database.dart\';\n';
+      out += '\n';
 
       // Row class definition
-      output += 'class $cls extends TableRow {\n';
-      output += '  static const String tableName = \'$name\';\n';
-      output += '\n';
+      out += 'class $className extends TableRow {\n';
+      out += '  static const String tableName = \'$tableName\';\n';
+      out += '  String get className => \'$className\';\n';
+      out += '\n';
 
       // Fields
       for (var field in fields) {
-        output += '  ${field.type} ${field.name};\n';
+        out += '  ${field.type} ${field.name};\n';
+      }
+      out += '\n';
+
+      // Default constructor
+      out += '  $className({';
+      for (var field in fields) {
+        out += 'this.${field.name},';
+      }
+      out += '});\n';
+      out += '\n';
+
+      // Deserialization
+      out += '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
+      out += '    var data = unwrapSerializationData(serialization);\n';
+      for (var field in fields) {
+        out += '    ${field.name} = data[\'${field.name}\'];\n';
+      }
+      out += '  }\n';
+      out += '\n';
+
+
+      // Serialization
+      out += '  Map<String, dynamic> serialize() {\n';
+      out += '    return wrapSerializationData({\n';
+
+      for (var field in fields) {
+        out += '      \'${field.name}\': ${field.name},\n';
       }
 
+      out += '    });\n';
+      out += '  }\n';
+
       // End class
-      output += '}\n';
-      output += '\n';
+      out += '}\n';
+      out += '\n';
 
       // Table class definition
-      output += 'class ${cls}Table extends Table {\n';
-      output += '\n';
+      out += 'class ${className}Table extends Table {\n';
+      out += '\n';
 
-      output += '  static const String tableName = \'$name\';\n';
+      out += '  static const String tableName = \'$tableName\';\n';
 
       // Column descriptions
       for (var column in fields) {
-        output += '  static const ${column.name} = Column(\'${column.name}\', ${column.type});\n';
+        out += '  static const ${column.name} = Column(\'${column.name}\', ${column.type});\n';
       }
 
 
       // End class
-      output += '}\n';
+      out += '}\n';
     }
     catch (_) {
       return;
     }
     
-    buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'), output);
+    buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'), out);
 
   }
 

@@ -1,13 +1,14 @@
 import 'dart:mirrors';
 
+import '../server/protocol.dart';
+
 class Table {
 }
 
-class TableRow {
+abstract class TableRow extends SerializableEntity {
+
   setColumn(String columnName, dynamic value) {
     var instance = reflect(this);
-//    var field = instance.getField(Symbol(columnName));
-
     instance.setField(Symbol(columnName), value);
   }
 }
