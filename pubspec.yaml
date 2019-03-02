@@ -1,0 +1,12 @@
+name: serverpod
+version: 0.0.1
+description: The easiest server api you've ever used
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
+  build:
+  args: ^1.5.1
+  postgres: ^1.0.2
+
+dev_dependencies:
+#  unittest: any
