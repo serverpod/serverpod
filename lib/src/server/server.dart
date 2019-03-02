@@ -4,13 +4,17 @@ import 'package:args/args.dart';
 
 import 'config.dart';
 import 'endpoint.dart';
+import 'protocol.dart';
 import '../database/database.dart';
+
 
 class Server {
   final _endpoints = <String,Endpoint>{};
   String _runningMode;
+
   ServerConfig config;
   Database database;
+  final SerializationManager serializationManager = SerializationManager();
 
   Server(List<String> args) {
     // Read command line arguments
@@ -34,7 +38,7 @@ class Server {
 
     // Setup database
     if (config.dbConfigured) {
-      database = Database(config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
+      database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
     }
   }
 
@@ -63,16 +67,16 @@ class Server {
       }
     }
 
-    if (database != null) {
-      bool success = await database.loadDefinitions();
-      if (success) {
-        print('Loaded database definitions');
-      }
-      else {
-        print('Failed load database definitions');
-        database = null;
-      }
+    // Load serializable class definitions
+    bool success = await serializationManager.loadSerializableClassDefinitions();
+    if (success) {
+      print('Loaded serializable class definitions');
     }
+    else {
+      print('Failed load serializable class definitions');
+      database = null;
+    }
+
 
     HttpServer.bind(InternetAddress.anyIPv6, config.port).then((HttpServer server) {
       server.listen((HttpRequest request) {

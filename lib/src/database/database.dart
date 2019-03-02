@@ -4,56 +4,16 @@ import 'dart:mirrors';
 import 'package:postgres/postgres.dart';
 import 'package:yaml/yaml.dart';
 
-import '../database/table.dart';
+import 'table.dart';
+import '../server/protocol.dart';
 
 class Database {
   PostgreSQLConnection connection;
+  SerializationManager _serializationManager;
 
-  final _tableNames = <String, String>{};
-  final _tableClassMirrors = <String, ClassMirror>{};
-
-  Database(String host, int port, String name, String user, String pass) {
+  Database(SerializationManager serializationManager, String host, int port, String name, String user, String pass) {
+    _serializationManager = serializationManager;
     connection = PostgreSQLConnection(host, port, name, username: user, password: pass);
-
-  }
-
-  Future<bool> loadDefinitions() async {
-    // Parse yaml files for data
-    var dir = Directory('bin/database');
-    var list = dir.listSync();
-    for (var entity in list) {
-      if (entity is File && entity.path.endsWith('.yaml')) {
-        _addDefinition(entity);
-      }
-    }
-
-    // Find mirrors for generated table classes
-    for (var libName in currentMirrorSystem().libraries.keys) {
-      if (libName.toString().contains('bin/database/')) {
-        // Look for table classes in each matching library
-        for (String tableName in _tableNames.keys) {
-          String className = _tableNames[tableName];
-
-          LibraryMirror libraryMirror = currentMirrorSystem().libraries[libName];
-          ClassMirror classMirror = libraryMirror.declarations[Symbol(className)];
-
-          if (classMirror != null)
-            _tableClassMirrors[tableName] = classMirror;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  void _addDefinition(File file) {
-    String yamlStr = file.readAsStringSync();
-    var doc = loadYaml(yamlStr);
-
-    String name = doc['tableName'];
-    String className = doc['class'];
-
-    _tableNames[name] = className;
   }
 
   Future<bool> connect() async {
@@ -84,7 +44,8 @@ class Database {
   }
 
   TableRow _formatTableRow(String tableName, Map<String, dynamic> rawRow) {
-    ClassMirror classMirror = _tableClassMirrors[tableName];
+    String className = _serializationManager.tableClassMapping[tableName];
+    ClassMirror classMirror = _serializationManager.serializableClassMirrors[className];
     if (classMirror == null)
       return null;
 
