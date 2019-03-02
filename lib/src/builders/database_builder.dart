@@ -24,6 +24,7 @@ class DatabaseBuilder implements Builder {
       Map docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
 
+      fields.add(_FieldDefinition('id', 'int'));
       for (var docFieldName in docFields.keys) {
         fields.add(_FieldDefinition(docFieldName, docFields[docFieldName]));
       }
