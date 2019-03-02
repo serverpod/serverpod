@@ -19,7 +19,7 @@ abstract class SerializableEntity {
   Map<String, dynamic> unwrapSerializationData(Map<String, dynamic> serialization) {
     if (serialization['class'] != className)
       throw FormatException();
-    if (serialization['data'] != null)
+    if (serialization['data'] == null)
       throw FormatException();
 
     return serialization['data'];
@@ -39,7 +39,7 @@ class SerializationManager {
   Map<String, ClassMirror> get serializableClassMirrors => _serializableClassMirrors;
 
 
-  Future<bool> loadSerializableClassDefinitions() async {
+  bool loadSerializableClassDefinitions() {
     // Parse yaml files for data
     var dir = Directory('bin/database');
     var list = dir.listSync();

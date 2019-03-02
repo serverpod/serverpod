@@ -40,6 +40,16 @@ class Server {
     if (config.dbConfigured) {
       database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
     }
+
+    // Load serializable class definitions
+    bool success = serializationManager.loadSerializableClassDefinitions();
+    if (success) {
+      print('Loaded serializable class definitions');
+    }
+    else {
+      print('Failed load serializable class definitions');
+      database = null;
+    }
   }
 
   void addEndpoint(Endpoint endpoint) {
@@ -48,10 +58,6 @@ class Server {
     }
 
     _endpoints[endpoint.name] = endpoint;
-  }
-
-  void logWarning(String warning) {
-    print('WARNING: $warning');
   }
 
   void start() async {
@@ -66,17 +72,6 @@ class Server {
         database = null;
       }
     }
-
-    // Load serializable class definitions
-    bool success = await serializationManager.loadSerializableClassDefinitions();
-    if (success) {
-      print('Loaded serializable class definitions');
-    }
-    else {
-      print('Failed load serializable class definitions');
-      database = null;
-    }
-
 
     HttpServer.bind(InternetAddress.anyIPv6, config.port).then((HttpServer server) {
       server.listen((HttpRequest request) {
@@ -94,6 +89,7 @@ class Server {
     Result result = await _handleUriCall(uri);
 
     if (result is ResultInvalidParams) {
+      print('Invalid params: $result');
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
@@ -112,8 +108,12 @@ class Server {
     Endpoint endpoint = _endpoints[endpointName];
 
     if (endpoint == null)
-      return ResultInvalidParams();
+      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
 
     return endpoint.handleUriCall(uri);
+  }
+
+  void logWarning(String warning) {
+    print('WARNING: $warning');
   }
 }

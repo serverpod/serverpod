@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:mirrors';
 
+import 'protocol.dart';
 import 'server.dart';
 import '../database/database.dart';
 
@@ -33,9 +35,9 @@ abstract class Endpoint {
 
     for (ParameterMirror parameter in parameters) {
       if (parameter.isOptional)
-        _paramsOptional.add(_Parameter(parameter));
+        _paramsOptional.add(_Parameter(parameter, _server.serializationManager));
       else
-        _paramsRequired.add(_Parameter(parameter));
+        _paramsRequired.add(_Parameter(parameter, _server.serializationManager));
     }
   }
 
@@ -45,32 +47,32 @@ abstract class Endpoint {
     var inputs = uri.queryParameters;
 
     // Check required parameters
-    for (final rParam in _paramsRequired) {
+    for (final requiredParam in _paramsRequired) {
       // Check that it exists
-      String input = inputs[rParam.name];
+      String input = inputs[requiredParam.name];
       if (input == null)
-        return ResultInvalidParams();
+        return ResultInvalidParams('Parameter ${requiredParam.name} is missing in call: $uri');
 
       // Validate argument
-      Object arg = _formatArg(input, rParam);
+      Object arg = _formatArg(input, requiredParam, server.serializationManager);
       if (arg == null)
-        return ResultInvalidParams();
+        return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri');
 
       // Add to call list
       callArgs.add(arg);
     }
 
     // Check optional parameters
-    for (final oParam in _paramsOptional) {
+    for (final optionalParam in _paramsOptional) {
       // Check if it exists
-      String input = inputs[oParam.name];
+      String input = inputs[optionalParam.name];
       if (input == null)
         continue;
 
       // Validate argument
-      Object arg = _formatArg(input, oParam);
+      Object arg = _formatArg(input, optionalParam, server.serializationManager);
       if (arg == null)
-        return ResultInvalidParams();
+        return ResultInvalidParams('Parameter ${optionalParam.name} has invalid type: $uri');
 
       // Add to call list
       callArgs.add(arg);
@@ -80,11 +82,29 @@ abstract class Endpoint {
     return _handleCallMirror.apply(callArgs).reflectee;
   }
 
-  Object _formatArg(String input, _Parameter paramDef) {
+  Object _formatArg(String input, _Parameter paramDef, SerializationManager serializationManager) {
+    // Check for basic types
     if (paramDef.type == String)
       return input;
     if (paramDef.type == int)
       return int.tryParse(input);
+
+    // Check for generated classes
+    ClassMirror classMirror = serializationManager.serializableClassMirrors[paramDef.type.toString()];
+    if (classMirror != null) {
+      SerializableEntity entity;
+
+      try {
+        var data = jsonDecode(input);
+        entity = classMirror.newInstance(Symbol('fromSerialization'), [data]).reflectee;
+      }
+      catch (_) {
+        return null;
+      }
+
+      return entity;
+    }
+    return null;
   }
 }
 
@@ -92,6 +112,12 @@ abstract class Result {
 }
 
 class ResultInvalidParams extends Result {
+  final String errorDescription;
+  ResultInvalidParams(this.errorDescription);
+  @override
+  String toString() {
+    return errorDescription;
+  }
 }
 
 class ResultSuccess extends Result {
@@ -103,10 +129,11 @@ class ResultSuccess extends Result {
 }
 
 class _Parameter {
-  _Parameter(ParameterMirror parameterMirror) {
+  _Parameter(ParameterMirror parameterMirror, SerializationManager serializationManager) {
     type = parameterMirror.type.reflectedType;
     name = MirrorSystem.getName(parameterMirror.simpleName);
-    assert(type == int || type == String);
+
+    assert(type == int || type == String || serializationManager.serializableClassMirrors[type.toString()] != null);
   }
 
   String name;
