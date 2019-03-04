@@ -9,6 +9,11 @@ pubspec.lock
 # If you don't generate documentation locally you can remove this line.
 doc/api/
 
+*.iml
+*.ipr
+*.iws
+
+
 .DS_Store
 .atom/
 .idea
