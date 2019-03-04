@@ -1,0 +1,11 @@
+name: serverpod_client
+version: 0.0.1
+description: A sample command-line application
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
+  serverpod_serialization:
+    path: ../serverpod_serialization
+
+dev_dependencies:
+#  unittest: any

@@ -1,7 +1,6 @@
 import 'package:args/args.dart';
-import 'dart:io';
 
-import 'generator/dart_generator.dart';
+import 'generator/generator.dart';
 
 final cmdGenerate = 'generate';
 
@@ -17,7 +16,7 @@ void main(List<String> args) {
 
   if (results.command != null) {
     if (results.command.name == cmdGenerate) {
-      _performGenerate(results.command['verbose']);
+      performGenerate(results.command['verbose']);
       return;
     }
   }
@@ -32,12 +31,4 @@ void _printUsage(ArgParser parser) {
 
   print('$cmdGenerate: Generate code from yaml files for server and clients');
   print(parser.commands[cmdGenerate].usage);
-}
-
-void _performGenerate(bool verbose) {
-  // Generate server side code
-  print('Generating server side code.');
-  var generator = DartGenerator('bin/protocol/', 'bin/protocol/', verbose, true);
-  generator.generate();
-  print('Done.');
 }

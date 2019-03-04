@@ -39,11 +39,18 @@ class DartGenerator extends Generator{
       out += '/* To generate run: "serverpod generate"  */\n';
       out += '\n';
 
-      out += 'import \'package:serverpod/database.dart\';\n';
+      if (serverCode)
+        out += 'import \'package:serverpod/database.dart\';\n';
+      else
+        out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
       out += '\n';
 
       // Row class definition
-      out += 'class $className extends TableRow {\n';
+      if (serverCode)
+        out += 'class $className extends TableRow {\n';
+      else
+        out += 'class $className extends SerializableEntity {\n';
+
       out += '  static const String db = \'$tableName\';\n';
       out += '  String get className => \'$className\';\n';
       out += '  String get tableName => \'$tableName\';\n';
@@ -88,20 +95,24 @@ class DartGenerator extends Generator{
       out += '}\n';
       out += '\n';
 
-      // Table class definition
-      out += 'class ${className}Table extends Table {\n';
-      out += '\n';
+      if (serverCode) {
+        // Table class definition
+        out += 'class ${className}Table extends Table {\n';
+        out += '\n';
 
-      out += '  static const String tableName = \'$tableName\';\n';
+        out += '  static const String tableName = \'$tableName\';\n';
 
-      // Column descriptions
-      for (var column in fields) {
-        out += '  static const ${column.name} = Column(\'${column.name}\', ${column.type});\n';
+        // Column descriptions
+        for (var column in fields) {
+          out +=
+          '  static const ${column.name} = Column(\'${column.name}\', ${column
+              .type});\n';
+        }
+
+
+        // End class
+        out += '}\n';
       }
-
-
-      // End class
-      out += '}\n';
     }
     catch (_) {
       return null;
@@ -143,7 +154,11 @@ class DartGenerator extends Generator{
     out+= 'library protocol;\n';
     out += '\n';
 
-    out += 'import \'package:serverpod/serverpod.dart\';\n';
+    if (serverCode)
+      out += 'import \'package:serverpod/serverpod.dart\';\n';
+    else
+      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+
     out += '\n';
     
     // Import generated files

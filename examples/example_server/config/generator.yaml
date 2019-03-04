@@ -1,2 +1,2 @@
 server: bin/protocol/
-client-dart: ../example_client/lib/generated/
+client-dart: ../example_client/lib/protocol/
