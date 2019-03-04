@@ -89,20 +89,12 @@ abstract class Endpoint {
     if (paramDef.type == int)
       return int.tryParse(input);
 
-    // Check for generated classes
-    ClassMirror classMirror = serializationManager.serializableClassMirrors[paramDef.type.toString()];
-    if (classMirror != null) {
-      SerializableEntity entity;
-
-      try {
-        var data = jsonDecode(input);
-        entity = classMirror.newInstance(Symbol('fromSerialization'), [data]).reflectee;
-      }
-      catch (_) {
-        return null;
-      }
-
-      return entity;
+    try {
+      var data = jsonDecode(input);
+      serializationManager.createEntityFromSerialization(data);
+    }
+    catch (_) {
+      return null;
     }
     return null;
   }
@@ -133,7 +125,7 @@ class _Parameter {
     type = parameterMirror.type.reflectedType;
     name = MirrorSystem.getName(parameterMirror.simpleName);
 
-    assert(type == int || type == String || serializationManager.serializableClassMirrors[type.toString()] != null);
+    assert(type == int || type == String || serializationManager.constructors[type.toString()] != null);
   }
 
   String name;

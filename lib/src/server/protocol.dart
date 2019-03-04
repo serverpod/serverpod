@@ -4,6 +4,8 @@ import 'dart:mirrors';
 
 import 'package:yaml/yaml.dart';
 
+typedef SerializableEntity constructor(Map<String, dynamic> serialization);
+
 abstract class SerializableEntity {
   String get className;
 
@@ -31,40 +33,25 @@ abstract class SerializableEntity {
   }
 }
 
-class SerializationManager {
+abstract class SerializationManager {
+  Map<String, constructor> get constructors;
   final _tableClassMapping = <String, String>{};
   Map<String, String> get tableClassMapping => _tableClassMapping;
 
-  final _serializableClassMirrors = <String, ClassMirror>{};
-  Map<String, ClassMirror> get serializableClassMirrors => _serializableClassMirrors;
+  SerializationManager() {
+    _loadSerializableClassDefinitions();
+    print('tableClassMapping: $tableClassMapping');
+  }
 
-
-  bool loadSerializableClassDefinitions() {
+  bool _loadSerializableClassDefinitions() {
     // Parse yaml files for data
-    var dir = Directory('bin/database');
+    var dir = Directory('bin/protocol');
     var list = dir.listSync();
     for (var entity in list) {
       if (entity is File && entity.path.endsWith('.yaml')) {
         _addDefinition(entity);
       }
     }
-
-    // Find mirrors for generated table classes
-    for (var libName in currentMirrorSystem().libraries.keys) {
-      if (libName.toString().contains('bin/database/')) {
-        // Look for table classes in each matching library
-        for (String tableName in _tableClassMapping.keys) {
-          String className = _tableClassMapping[tableName];
-
-          LibraryMirror libraryMirror = currentMirrorSystem().libraries[libName];
-          ClassMirror classMirror = libraryMirror.declarations[Symbol(className)];
-
-          if (classMirror != null)
-            _serializableClassMirrors[className] = classMirror;
-        }
-      }
-    }
-
     return true;
   }
 
@@ -76,5 +63,14 @@ class SerializationManager {
     String className = doc['class'];
 
     _tableClassMapping[name] = className;
+  }
+
+  SerializableEntity createEntityFromSerialization(Map<String, dynamic> serialization) {
+    String className = serialization['class'];
+    if (className == null)
+      return null;
+    if (constructors[className] != null)
+      return constructors[className](serialization);
+    return null;
   }
 }

@@ -43,18 +43,19 @@ class Database {
 
   TableRow _formatTableRow(String tableName, Map<String, dynamic> rawRow) {
     String className = _serializationManager.tableClassMapping[tableName];
-    ClassMirror classMirror = _serializationManager.serializableClassMirrors[className];
-    if (classMirror == null)
+    if (className == null)
       return null;
 
-    TableRow table = classMirror.newInstance(Symbol(''), []).reflectee;
+    var data = <String, dynamic>{};
 
     for (var columnName in rawRow.keys) {
       var value = rawRow[columnName];
-      table.setColumn(columnName, value);
+      data[columnName] = value;
     }
 
-    return table;
+    var serialization = <String, dynamic> {'data': data, 'class': className};
+
+    return _serializationManager.createEntityFromSerialization(serialization);
   }
 
   Future<Null> update(TableRow row) async {

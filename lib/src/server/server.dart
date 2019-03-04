@@ -14,9 +14,9 @@ class Server {
 
   ServerConfig config;
   Database database;
-  final SerializationManager serializationManager = SerializationManager();
+  final SerializationManager serializationManager;
 
-  Server(List<String> args) {
+  Server(List<String> args, this.serializationManager) {
     // Read command line arguments
     try {
       final argParser = ArgParser()
@@ -39,16 +39,6 @@ class Server {
     // Setup database
     if (config.dbConfigured) {
       database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
-    }
-
-    // Load serializable class definitions
-    bool success = serializationManager.loadSerializableClassDefinitions();
-    if (success) {
-      print('Loaded serializable class definitions');
-    }
-    else {
-      print('Failed load serializable class definitions');
-      database = null;
     }
   }
 
