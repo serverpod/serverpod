@@ -1,0 +1,13 @@
+name: serverpod_cli
+version: 0.0.1
+description: A sample command-line application
+dependencies:
+  args:
+  serverpod:
+    path: ../serverpod
+
+dev_dependencies:
+#  unittest: any
+
+executables:
+  serverpod: serverpod_cli
