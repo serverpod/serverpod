@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:postgres/postgres.dart';
+import 'package:yaml/yaml.dart';
 
 import 'table.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -7,9 +10,34 @@ class Database {
   PostgreSQLConnection connection;
   SerializationManager _serializationManager;
 
+  final _tableClassMapping = <String, String>{};
+
   Database(SerializationManager serializationManager, String host, int port, String name, String user, String pass) {
     _serializationManager = serializationManager;
     connection = PostgreSQLConnection(host, port, name, username: user, password: pass);
+    _loadTableClassMappings();
+  }
+
+  bool _loadTableClassMappings() {
+    // Parse yaml files for data
+    var dir = Directory('bin/protocol');
+    var list = dir.listSync();
+    for (var entity in list) {
+      if (entity is File && entity.path.endsWith('.yaml')) {
+        _addDefinition(entity);
+      }
+    }
+    return true;
+  }
+
+  void _addDefinition(File file) {
+    String yamlStr = file.readAsStringSync();
+    var doc = loadYaml(yamlStr);
+
+    String name = doc['tableName'];
+    String className = doc['class'];
+
+    _tableClassMapping[name] = className;
   }
 
   Future<bool> connect() async {
@@ -40,7 +68,7 @@ class Database {
   }
 
   TableRow _formatTableRow(String tableName, Map<String, dynamic> rawRow) {
-    String className = _serializationManager.tableClassMapping[tableName];
+    String className = _tableClassMapping[tableName];
     if (className == null)
       return null;
 
