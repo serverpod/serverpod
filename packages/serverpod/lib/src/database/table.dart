@@ -1,6 +1,6 @@
 import 'dart:mirrors';
 
-import '../server/protocol.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 class Table {
 }

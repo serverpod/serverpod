@@ -1,9 +1,7 @@
-import 'dart:mirrors';
-
 import 'package:postgres/postgres.dart';
 
 import 'table.dart';
-import '../server/protocol.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 class Database {
   PostgreSQLConnection connection;

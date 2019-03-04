@@ -7,6 +7,8 @@ dependencies:
   args: ^1.5.1
   postgres: ^1.0.2
   yaml: ^2.1.15
+  serverpod_serialization:
+    path: ../serverpod_serialization
 
 dev_dependencies:
 #  unittest: any

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:mirrors';
 
-import 'protocol.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 import 'server.dart';
 import '../database/database.dart';
 

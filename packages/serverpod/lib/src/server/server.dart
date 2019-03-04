@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'config.dart';
 import 'endpoint.dart';
-import 'protocol.dart';
 import '../database/database.dart';
 
 
