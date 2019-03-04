@@ -21,7 +21,6 @@ doc/api/
 .pub/
 build/
 ios/.generated/
-packages
 pubspec.lock
 .flutter-plugins
 .dart_tool
