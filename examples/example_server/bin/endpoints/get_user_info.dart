@@ -7,10 +7,11 @@ class GetUserInfo extends Endpoint {
 
   String get name => 'getUserInfo';
 
-  Future<Result> handleCall(int id) async {
+  Future<UserInfo> handleCall(int id) async {
     print('handleCall: $name $id');
 
     UserInfo userInfo = await database.findById(UserInfo.db, id);
-    return ResultSuccess(Uri.encodeQueryComponent('$userInfo'));
+    
+    return userInfo;
   }
 }

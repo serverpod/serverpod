@@ -40,4 +40,10 @@ abstract class SerializationManager {
       return constructors[className](serialization);
     return null;
   }
+
+  String serializeEntity(dynamic entity) {
+    if (entity is int || entity is String || entity is SerializableEntity)
+      return '$entity';
+    else throw FormatException();
+  }
 }

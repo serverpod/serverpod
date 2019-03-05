@@ -7,11 +7,11 @@ class SetUserInfo extends Endpoint {
 
   String get name => 'setUserInfo';
 
-  Future<Result> handleCall(UserInfo userInfo, String firstName, [String lastName, int number]) async {
+  Future<String> handleCall(UserInfo userInfo, String firstName, [String lastName, int number]) async {
     print('userInfo: $userInfo');
 
     await database.update(userInfo);
 
-    return ResultSuccess('ok');
+    return 'ok';
   }
 }

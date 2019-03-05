@@ -91,7 +91,7 @@ class Server {
     final uri = request.requestedUri;
     print('request: $uri');
 
-    Result result = await _handleUriCall(uri);
+    var result = await _handleUriCall(uri);
 
     if (result is ResultInvalidParams) {
       print('Invalid params: $result');
@@ -99,16 +99,17 @@ class Server {
       request.response.close();
       return;
     }
-    else if (result is ResultSuccess) {
-      request.response.write(result.formatData());
+    else {
+      String serializedEntity = serializationManager.serializeEntity(result);
+      request.response.write(serializedEntity);
       request.response.close();
       return;
     }
 
-    request.response.close();
+    // request.response.close();
   }
 
-  Future<Result> _handleUriCall(Uri uri) async {
+  Future _handleUriCall(Uri uri) async {
     String endpointName = uri.path.substring(1);
     Endpoint endpoint = _endpoints[endpointName];
 

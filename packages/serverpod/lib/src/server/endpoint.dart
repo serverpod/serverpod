@@ -12,6 +12,7 @@ abstract class Endpoint {
 
   final _paramsRequired = <_Parameter>[];
   final _paramsOptional = <_Parameter>[];
+  Type _returnType;
 
   Server _server;
   Server get server => _server;
@@ -41,9 +42,11 @@ abstract class Endpoint {
       else
         _paramsRequired.add(_Parameter(parameter, _server.serializationManager));
     }
+
+    _returnType = _handleCallMirror.function.returnType.reflectedType;
   }
 
-  Future<Result> handleUriCall(Uri uri) async {
+  Future handleUriCall(Uri uri) async {
     List callArgs = [];
 
     var inputs = uri.queryParameters;
@@ -111,6 +114,7 @@ abstract class Endpoint {
     for (var param in _paramsOptional) {
       stdout.writeln('    - ${param.name}: ${param.type}');
     }
+    stdout.writeln('  returnType: $_returnType');
   }
 }
 
@@ -124,14 +128,6 @@ class ResultInvalidParams extends Result {
   String toString() {
     return errorDescription;
   }
-}
-
-class ResultSuccess extends Result {
-  final Object data;
-
-  ResultSuccess([this.data]);
-
-  String formatData() => data.toString();
 }
 
 class _Parameter {

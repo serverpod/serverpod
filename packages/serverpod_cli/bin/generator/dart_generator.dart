@@ -211,6 +211,7 @@ class DartGenerator extends Generator{
       Map endpointDef = doc[endpointName];
       List requiredParams = endpointDef['requiredParameters'];
       List optionalParams = endpointDef['optionalParameters'];
+      String returnType = endpointDef['returnType'];
 
       print('endpointName: $endpointName');
       print('endpointDef: $endpointDef');
@@ -218,7 +219,7 @@ class DartGenerator extends Generator{
       print('optionalParams: $optionalParams');
 
       // Function definition
-      out += 'Future<Null> $endpointName(';
+      out += '$returnType $endpointName(';
 
       if (requiredParams != null) {
         for (Map paramInfo in requiredParams) {
