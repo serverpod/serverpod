@@ -7,11 +7,10 @@ class DartGenerator extends Generator{
 
   String get outputExtension => '.dart';
 
-  DartGenerator(String inputPath, String outputPath, bool verbose, this.serverCode) : super(inputPath, outputPath, verbose);
+  DartGenerator(String inputPath, String outputPath, String binaryPath, bool verbose, this.serverCode) : super(inputPath, outputPath, binaryPath, verbose);
 
   String generateFile(String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
     var doc = loadYaml(yamlStr);
-
     String out = '';
 
     try {
@@ -63,9 +62,9 @@ class DartGenerator extends Generator{
       out += '\n';
 
       // Default constructor
-      out += '  $className({';
+      out += '  $className({\n';
       for (var field in fields) {
-        out += 'this.${field.name},';
+        out += '    this.${field.name},\n';
       }
       out += '});\n';
       out += '\n';
@@ -171,6 +170,8 @@ class DartGenerator extends Generator{
     for (ClassInfo classInfo in classInfos) {
       out += 'export \'${classInfo.fileName}\';\n';
     }
+    if (!serverCode)
+      out += 'export \'endpoints.dart\';\n';
     out += '\n';
 
     // Fields
@@ -187,6 +188,81 @@ class DartGenerator extends Generator{
     out += '  }\n';
 
     out += '}\n';
+
+    return out;
+  }
+
+  String generateEndpoints(String yamlStr) {
+    Map doc = loadYaml(yamlStr);
+    print('doc: $doc');
+
+    String out = '';
+
+    // Header
+    out += '/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/\n';
+    out += '/* To generate run: "serverpod generate"  */\n';
+    out += '\n';
+
+    out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+    out += 'import \'protocol.dart\';\n';
+    out += '\n';
+
+    for (String endpointName in doc.keys) {
+      Map endpointDef = doc[endpointName];
+      List requiredParams = endpointDef['requiredParameters'];
+      List optionalParams = endpointDef['optionalParameters'];
+
+      print('endpointName: $endpointName');
+      print('endpointDef: $endpointDef');
+      print('requiredParams: $requiredParams');
+      print('optionalParams: $optionalParams');
+
+      // Function definition
+      out += 'Future<Null> $endpointName(';
+
+      if (requiredParams != null) {
+        for (Map paramInfo in requiredParams) {
+          String paramName = paramInfo.keys.first;
+          String paramType = paramInfo.values.first;
+          out += '$paramType $paramName,';
+        }
+      }
+
+      if (optionalParams != null) {
+        out += '[';
+
+        for (Map paramInfo in optionalParams) {
+          String paramName = paramInfo.keys.first;
+          String paramType = paramInfo.values.first;
+          out += '$paramType $paramName,';
+        }
+
+        out += ']';
+      }
+
+      out += ') async {\n';
+
+      // Call to server endpoint
+      out += '  return await callServerEndpoint(\'$endpointName\',[';
+
+      if (requiredParams != null) {
+        for (Map paramInfo in requiredParams) {
+          String paramName = paramInfo.keys.first;
+          out += '$paramName,';
+        }
+      }
+
+      if (optionalParams != null) {
+        for (Map paramInfo in optionalParams) {
+          String paramName = paramInfo.keys.first;
+          out += '$paramName,';
+        }
+      }
+
+      out += ']);\n';
+      out += '}\n';
+      out += '\n';
+    }
 
     return out;
   }

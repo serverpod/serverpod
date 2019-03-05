@@ -7,6 +7,11 @@ import 'config.dart';
 import 'endpoint.dart';
 import '../database/database.dart';
 
+class ServerRunMode {
+  static final development = 'development';
+  static final production = 'production';
+  static final generate = 'generate';
+}
 
 class Server {
   final _endpoints = <String,Endpoint>{};
@@ -21,24 +26,27 @@ class Server {
     try {
       final argParser = ArgParser()
         ..addOption('mode', abbr: 'm',
-            allowed: ['development', 'production'],
-            defaultsTo: 'development');
+            allowed: [ServerRunMode.development, ServerRunMode.production, ServerRunMode.generate],
+            defaultsTo: ServerRunMode.development);
       ArgResults results = argParser.parse(args);
       _runningMode = results['mode'];
     }
     catch(e) {
       logWarning('Unknown run mode, defaulting to development');
-      _runningMode = 'development';
+      _runningMode = ServerRunMode.development;
     }
-    print('Mode: $_runningMode');
 
     // Load config file
-    config = ServerConfig('config/$_runningMode.yaml');
-    print(config);
+    if (_runningMode != ServerRunMode.generate) {
+      print('Mode: $_runningMode');
 
-    // Setup database
-    if (config.dbConfigured) {
-      database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
+      config = ServerConfig('config/$_runningMode.yaml');
+      print(config);
+
+      // Setup database
+      if (config.dbConfigured) {
+        database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
+      }
     }
   }
 
@@ -51,6 +59,13 @@ class Server {
   }
 
   void start() async {
+    if (_runningMode == ServerRunMode.generate) {
+      for (Endpoint endpoint in _endpoints.values) {
+        endpoint.printDefinition();
+      }
+      return;
+    }
+
     // Connect to database
     if (database != null) {
       bool success = await database.connect();

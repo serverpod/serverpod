@@ -3,3 +3,4 @@ tableName: user_info
 fields:
   name: String
   password: String
+

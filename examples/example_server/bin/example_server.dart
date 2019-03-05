@@ -15,12 +15,4 @@ void main(List<String> args) async {
 
   // Start server
   await server.start();
-
-  UserInfo user = await server.database.findById(UserInfo.db, 1);
-  print('table.name: ${user.name} table.id: ${user.id}');
-
-  var objs = await server.database.find(UserInfo.db, UserInfoTable.name.equals(Constant('Anna')));
-  for (UserInfo obj in objs) {
-    print('table.name: ${obj.name} table.id: ${obj.id}');
-  }
 }

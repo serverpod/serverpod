@@ -6,33 +6,43 @@ import 'dart_generator.dart';
 
 void performGenerate(bool verbose) {
   // Load config file for generation
-  Map generatorPaths;
+  Map generatorConfig;
   try {
-    var file = File('config/generator.yaml');
+    var file = File('config/generate.yaml');
     var yamlStr = file.readAsStringSync();
-    generatorPaths = loadYaml(yamlStr);
+    generatorConfig = loadYaml(yamlStr);
   }
   catch(_) {
     print('Failed to load config/generator.yaml. Are you running serverpod from your projects root directory?');
     return;
   }
 
-  String pathServer = generatorPaths['server'];
-  if (generatorPaths['server'] == null) {
-    print('Target "server" is required in config/generator.yaml');
+  String pathServer = generatorConfig['server'];
+  if (pathServer == null) {
+    print('Option "server" is required in config/generator.yaml');
     return;
+  }
+
+  String pathBinary = generatorConfig['binary'];
+  if (pathBinary == null) {
+    print('Option "binary" is required in config/generator.yaml');
+  }
+
+  String pathSource = generatorConfig['source'];
+  if (pathSource == null) {
+    print('Option "source" is required in config/generator.yaml');
   }
 
   // Generate server side code
   print('Generating server side code.');
-  var generator = DartGenerator(pathServer, pathServer, verbose, true);
+  var generator = DartGenerator(pathSource, pathServer, null, verbose, true);
   generator.generate();
 
   // Generate client side code
-  String pathClientDart = generatorPaths['client-dart'];
+  String pathClientDart = generatorConfig['client-dart'];
   if (pathClientDart != null) {
     print('Generating Dart client side code.');
-    var clientGenerator = DartGenerator(pathServer, pathClientDart, verbose, false);
+    var clientGenerator = DartGenerator(pathSource, pathClientDart, pathBinary, verbose, false);
     clientGenerator.generate();
   }
 
@@ -42,9 +52,10 @@ void performGenerate(bool verbose) {
 abstract class Generator {
   final String outputPath;
   final String inputPath;
+  final String binaryPath;
   final bool verbose;
 
-  Generator(this.inputPath, this.outputPath, this.verbose);
+  Generator(this.inputPath, this.outputPath, this.binaryPath, this.verbose);
 
   String get outputExtension;
 
@@ -79,11 +90,32 @@ abstract class Generator {
     var out = generateFactory(classInfos);
     outFile.createSync();
     outFile.writeAsStringSync(out);
+
+    if (binaryPath != null) {
+      // Generate protocol
+      print('Generating protocol: ${[binaryPath, '-m', 'generate']}');
+
+      var result = Process.runSync('dart', [binaryPath, '-m', 'generate']);
+      String yamlStr = result.stdout;
+
+      if (verbose)
+        print(yamlStr);
+      if (result.exitCode != 0)
+        print(result.stderr);
+
+      var out = generateEndpoints(yamlStr);
+
+      File outFile = File(outputPath + 'endpoints.dart');
+      outFile.createSync();
+      outFile.writeAsStringSync(out);
+    }
   }
 
   String generateFile(String input, String outputFileName, Set<ClassInfo> classNames);
 
   String generateFactory(Set<ClassInfo> classNames);
+
+  String generateEndpoints(String input);
 
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split('/');

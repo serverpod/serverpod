@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -98,6 +99,18 @@ abstract class Endpoint {
       return null;
     }
     return null;
+  }
+
+  void printDefinition() {
+    stdout.writeln('$name:');
+    stdout.writeln('  requiredParameters:');
+    for (var param in _paramsRequired) {
+      stdout.writeln('    - ${param.name}: ${param.type}');
+    }
+    stdout.writeln('  optionalParameters:');
+    for (var param in _paramsOptional) {
+      stdout.writeln('    - ${param.name}: ${param.type}');
+    }
   }
 }
 

@@ -12,7 +12,11 @@ class UserInfo extends SerializableEntity {
   String password;
   String name;
 
-  UserInfo({this.id,this.password,this.name,});
+  UserInfo({
+    this.id,
+    this.password,
+    this.name,
+});
 
   UserInfo.fromSerialization(Map<String, dynamic> serialization) {
     var data = unwrapSerializationData(serialization);

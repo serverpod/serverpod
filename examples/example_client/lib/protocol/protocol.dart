@@ -8,6 +8,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'user_info.dart';
 
 export 'user_info.dart';
+export 'endpoints.dart';
 
 class Protocol extends SerializationManager {
   Map<String, constructor> _constructors = <String, constructor>{};

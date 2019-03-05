@@ -5,7 +5,7 @@ import '../protocol/protocol.dart';
 class GetUserInfo extends Endpoint {
   GetUserInfo(Server server) : super(server);
 
-  String get name => 'get_user_info';
+  String get name => 'getUserInfo';
 
   Future<Result> handleCall(int id) async {
     print('handleCall: $name $id');

@@ -1,2 +1,4 @@
+binary: bin/example_server.dart
+source: bin/protocol/
 server: bin/protocol/
 client-dart: ../example_client/lib/protocol/
