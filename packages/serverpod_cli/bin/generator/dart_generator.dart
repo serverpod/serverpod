@@ -34,8 +34,8 @@ class DartGenerator extends Generator{
       );
 
       // Header
-      out += '/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/\n';
-      out += '/* To generate run: "serverpod generate"  */\n';
+      out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+      out += '/*   To generate run: "serverpod generate"    */\n';
       out += '\n';
 
       if (serverCode)
@@ -146,8 +146,8 @@ class DartGenerator extends Generator{
     String out = '';
 
     // Header
-    out += '/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/\n';
-    out += '/* To generate run: "serverpod generate"  */\n';
+    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+    out += '/*   To generate run: "serverpod generate"    */\n';
     out += '\n';
     
     out+= 'library protocol;\n';
@@ -171,13 +171,17 @@ class DartGenerator extends Generator{
       out += 'export \'${classInfo.fileName}\';\n';
     }
     if (!serverCode)
-      out += 'export \'endpoints.dart\';\n';
+      out += 'export \'client.dart\';\n';
     out += '\n';
 
     // Fields
     out += 'class Protocol extends SerializationManager {\n';
+    out += '  static final Protocol instance = Protocol();\n';
+    out += '\n';
+
     out += '  Map<String, constructor> _constructors = <String, constructor>{};\n';
     out += '  Map<String, constructor> get constructors => _constructors;\n';
+    out += '\n';
 
     // Constructor
     out += '  Protocol() {\n';
@@ -199,19 +203,28 @@ class DartGenerator extends Generator{
     String out = '';
 
     // Header
-    out += '/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/\n';
-    out += '/* To generate run: "serverpod generate"  */\n';
+    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+    out += '/*   To generate run: "serverpod generate"    */\n';
     out += '\n';
 
+    out += 'import \'dart:io\';\n';
     out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
     out += 'import \'protocol.dart\';\n';
     out += '\n';
 
+    // Class definition
+    out += 'class Client extends ServerpodClient {\n';
+    out += '  Client(host, {SecurityContext context}) : super(host, Protocol.instance, context: context);\n';
+
+    // Endpoints
     for (String endpointName in doc.keys) {
       Map endpointDef = doc[endpointName];
       List requiredParams = endpointDef['requiredParameters'];
       List optionalParams = endpointDef['optionalParameters'];
       String returnType = endpointDef['returnType'];
+      assert(returnType.startsWith('Future<'));
+      assert(returnType.endsWith('>'));
+      String returnTypeNoFuture = returnType.substring(7, returnType.length -1);
 
       print('endpointName: $endpointName');
       print('endpointDef: $endpointDef');
@@ -219,7 +232,8 @@ class DartGenerator extends Generator{
       print('optionalParams: $optionalParams');
 
       // Function definition
-      out += '$returnType $endpointName(';
+      out += '\n';
+      out += '  $returnType $endpointName(';
 
       if (requiredParams != null) {
         for (Map paramInfo in requiredParams) {
@@ -244,26 +258,27 @@ class DartGenerator extends Generator{
       out += ') async {\n';
 
       // Call to server endpoint
-      out += '  return await callServerEndpoint(\'$endpointName\',[';
+      out += '    return await callServerEndpoint(\'$endpointName\', \'$returnTypeNoFuture\', {\n';
 
       if (requiredParams != null) {
         for (Map paramInfo in requiredParams) {
           String paramName = paramInfo.keys.first;
-          out += '$paramName,';
+          out += '      \'$paramName\':$paramName,\n';
         }
       }
 
       if (optionalParams != null) {
         for (Map paramInfo in optionalParams) {
           String paramName = paramInfo.keys.first;
-          out += '$paramName,';
+          out += '      \'$paramName\': $paramName,\n';
         }
       }
 
-      out += ']);\n';
-      out += '}\n';
-      out += '\n';
+      out += '    });\n';
+      out += '  }\n';
     }
+
+    out += '}';
 
     return out;
   }

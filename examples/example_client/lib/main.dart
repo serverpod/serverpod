@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'protocol/protocol.dart';
 
+Client client = Client('http://localhost:8080/');
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -49,6 +51,17 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
+    client.getUserInfo(2).then((UserInfo userInfo) {
+      print('Got userInfo: $userInfo');
+
+      userInfo.name = 'New Name';
+      client.setUserInfo(userInfo, 'First Name').then((String result) {
+        print('result: $result');
+      });
+    }).catchError((error) {
+      print('Something went wrong: $error');
+    });
+    
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below

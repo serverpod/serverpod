@@ -96,12 +96,11 @@ abstract class Endpoint {
 
     try {
       var data = jsonDecode(input);
-      serializationManager.createEntityFromSerialization(data);
+      return serializationManager.createEntityFromSerialization(data);
     }
-    catch (_) {
+    catch (error) {
       return null;
     }
-    return null;
   }
 
   void printDefinition() {

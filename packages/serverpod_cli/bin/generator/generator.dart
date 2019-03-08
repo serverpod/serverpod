@@ -86,7 +86,7 @@ abstract class Generator {
     }
 
     // Generate factory class
-    var outFile = File(outputPath + 'protocol.dart');
+    var outFile = File(outputPath + 'protocol$outputExtension');
     var out = generateFactory(classInfos);
     outFile.createSync();
     outFile.writeAsStringSync(out);
@@ -105,7 +105,7 @@ abstract class Generator {
 
       var out = generateEndpoints(yamlStr);
 
-      File outFile = File(outputPath + 'endpoints.dart');
+      File outFile = File(outputPath + 'client$outputExtension');
       outFile.createSync();
       outFile.writeAsStringSync(out);
     }

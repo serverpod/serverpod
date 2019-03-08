@@ -1,5 +1,5 @@
-/*** AUTOMATICALLY GENERATED CODE DO NOT MODIFY ***/
-/* To generate run: "serverpod generate"  */
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
 
 import 'package:serverpod_client/serverpod_client.dart';
 
