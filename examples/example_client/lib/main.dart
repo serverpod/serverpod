@@ -55,12 +55,14 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Got userInfo: $companyInfo');
 
       companyInfo.name = 'New Name';
-      client.setUserInfo(companyInfo.employee, 'New name').then((String result) {
+      client.setUserInfo(companyInfo.employee[0], 'New name').then((
+          String result) {
         print('result: $result');
       });
-    }).catchError((error) {
-      print('Something went wrong: $error');
     });
+//    }).catchError((error) {
+//      print('Something went wrong: $error');
+//    });
     
     setState(() {
       // This call to setState tells the Flutter framework that something has

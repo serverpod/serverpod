@@ -14,7 +14,7 @@ class DartGenerator extends Generator{
     String out = '';
 
     try {
-      String tableName = _expectString(doc, 'tableName');
+      String tableName = doc['tableName'];
       String className = _expectString(doc, 'class');
       Map docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
@@ -38,23 +38,31 @@ class DartGenerator extends Generator{
       out += '/*   To generate run: "serverpod generate"    */\n';
       out += '\n';
 
-      if (serverCode)
-        out += 'import \'package:serverpod/database.dart\';\n';
-      else
+      if (serverCode) {
+        if (tableName != null)
+          out += 'import \'package:serverpod/database.dart\';\n';
+        else
+          out += 'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
+      }
+      else {
         out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+      }
 
       out += 'import \'protocol.dart\';\n';
       out += '\n';
 
       // Row class definition
-      if (serverCode)
+      if (serverCode && tableName != null) {
         out += 'class $className extends TableRow {\n';
-      else
+        out += '  String get className => \'$className\';\n';
+        out += '  static const String db = \'$tableName\';\n';
+        out += '  String get tableName => \'$tableName\';\n';
+      }
+      else {
         out += 'class $className extends SerializableEntity {\n';
+        out += '  String get className => \'$className\';\n';
+      }
 
-      out += '  static const String db = \'$tableName\';\n';
-      out += '  String get className => \'$className\';\n';
-      out += '  String get tableName => \'$tableName\';\n';
       out += '\n';
 
       // Fields
@@ -96,7 +104,7 @@ class DartGenerator extends Generator{
       out += '}\n';
       out += '\n';
 
-      if (serverCode) {
+      if (serverCode && tableName != null) {
         // Table class definition
         out += 'class ${className}Table extends Table {\n';
         out += '\n';
@@ -290,12 +298,28 @@ class _FieldDefinition {
   String name;
   String type;
 
+  bool isTypedList;
+  String listType;
+
   _FieldDefinition(String name, String description) {
     this.name = name;
     type = description;
+
+    isTypedList = type.startsWith('List<') && type.endsWith('>');
+    if (isTypedList)
+      listType = type.substring(5, type.length - 1);
   }
 
   String get serialization {
+    if (isTypedList) {
+      if (listType == 'String' || listType == 'int') {
+        return name;
+      }
+      else {
+        return '$name.map(($listType a) => a.serialize()).toList()';
+      }
+    }
+
     if (type == 'String' || type == 'int') {
       return name;
     }
@@ -305,6 +329,15 @@ class _FieldDefinition {
   }
 
   String get deserialization {
+    if (isTypedList) {
+      if (listType == 'String' || listType == 'int') {
+        return 'data[\'$name\']';
+      }
+      else {
+        return 'data[\'$name\'].map<$listType>((a) => $listType.fromSerialization(a)).toList()';
+      }
+    }
+
     if (type == 'String' || type == 'int') {
       return 'data[\'$name\']';
     }

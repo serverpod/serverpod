@@ -1,7 +1,6 @@
 class: CompanyInfo
-tableName: company_info
 fields:
   name: String
   numEmployees: int
   address: String
-  employee: UserInfo
+  employee: List<UserInfo>

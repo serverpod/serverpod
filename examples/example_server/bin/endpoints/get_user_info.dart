@@ -13,7 +13,7 @@ class GetUserInfo extends Endpoint {
     UserInfo userInfo = await database.findById(UserInfo.db, id);
     
     return CompanyInfo(
-      employee: userInfo,
+      employee: [userInfo, UserInfo(id: null, name: 'Fake')],
       numEmployees: 1,
       address: 'Norrsken house',
       name: 'Newsvoice',

@@ -5,13 +5,11 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class CompanyInfo extends SerializableEntity {
-  static const String db = 'company_info';
   String get className => 'CompanyInfo';
-  String get tableName => 'company_info';
 
   int id;
   int numEmployees;
-  UserInfo employee;
+  List<UserInfo> employee;
   String name;
   String address;
 
@@ -27,7 +25,7 @@ class CompanyInfo extends SerializableEntity {
     var data = unwrapSerializationData(serialization);
     id = data['id'];
     numEmployees = data['numEmployees'];
-    employee = UserInfo.fromSerialization(data['employee']);
+    employee = data['employee'].map<UserInfo>((a) => UserInfo.fromSerialization(a)).toList();
     name = data['name'];
     address = data['address'];
   }
@@ -36,7 +34,7 @@ class CompanyInfo extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'numEmployees': numEmployees,
-      'employee': employee.serialize(),
+      'employee': employee.map((UserInfo a) => a.serialize()).toList(),
       'name': name,
       'address': address,
     });
