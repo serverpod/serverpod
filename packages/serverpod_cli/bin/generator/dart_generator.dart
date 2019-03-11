@@ -42,6 +42,8 @@ class DartGenerator extends Generator{
         out += 'import \'package:serverpod/database.dart\';\n';
       else
         out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+
+      out += 'import \'protocol.dart\';\n';
       out += '\n';
 
       // Row class definition
@@ -73,7 +75,7 @@ class DartGenerator extends Generator{
       out += '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
       out += '    var data = unwrapSerializationData(serialization);\n';
       for (var field in fields) {
-        out += '    ${field.name} = data[\'${field.name}\'];\n';
+        out += '    ${field.name} = ${field.deserialization};\n';
       }
       out += '  }\n';
       out += '\n';
@@ -84,7 +86,7 @@ class DartGenerator extends Generator{
       out += '    return wrapSerializationData({\n';
 
       for (var field in fields) {
-        out += '      \'${field.name}\': ${field.name},\n';
+        out += '      \'${field.name}\': ${field.serialization},\n';
       }
 
       out += '    });\n';
@@ -291,5 +293,23 @@ class _FieldDefinition {
   _FieldDefinition(String name, String description) {
     this.name = name;
     type = description;
+  }
+
+  String get serialization {
+    if (type == 'String' || type == 'int') {
+      return name;
+    }
+    else {
+      return '$name.serialize()';
+    }
+  }
+
+  String get deserialization {
+    if (type == 'String' || type == 'int') {
+      return 'data[\'$name\']';
+    }
+    else {
+      return '$type.fromSerialization(data[\'$name\'])';
+    }
   }
 }

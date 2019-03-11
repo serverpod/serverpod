@@ -51,11 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    client.getUserInfo(2).then((UserInfo userInfo) {
-      print('Got userInfo: $userInfo');
+    client.getUserInfo(2, 'Viktor').then((CompanyInfo companyInfo) {
+      print('Got userInfo: $companyInfo');
 
-      userInfo.name = 'New Name';
-      client.setUserInfo(userInfo, 'First Name').then((String result) {
+      companyInfo.name = 'New Name';
+      client.setUserInfo(companyInfo.employee, 'New name').then((String result) {
         print('result: $result');
       });
     }).catchError((error) {

@@ -17,9 +17,10 @@ class Client extends ServerpodClient {
     });
   }
 
-  Future<UserInfo> getUserInfo(int id,) async {
-    return await callServerEndpoint('getUserInfo', 'UserInfo', {
+  Future<CompanyInfo> getUserInfo(int id,String name,) async {
+    return await callServerEndpoint('getUserInfo', 'CompanyInfo', {
       'id':id,
+      'name':name,
     });
   }
 }

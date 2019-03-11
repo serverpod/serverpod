@@ -1,6 +1,6 @@
 import 'package:serverpod/server.dart';
 
-import '../protocol/protocol.dart';
+import '../generated/protocol.dart';
 
 class SetUserInfo extends Endpoint {
   SetUserInfo(Server server) : super(server);

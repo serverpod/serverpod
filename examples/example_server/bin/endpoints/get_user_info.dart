@@ -1,17 +1,22 @@
 import 'package:serverpod/server.dart';
 
-import '../protocol/protocol.dart';
+import '../generated/protocol.dart';
 
 class GetUserInfo extends Endpoint {
   GetUserInfo(Server server) : super(server);
 
   String get name => 'getUserInfo';
 
-  Future<UserInfo> handleCall(int id) async {
+  Future<CompanyInfo> handleCall(int id, String name) async {
     print('handleCall: $name $id');
 
     UserInfo userInfo = await database.findById(UserInfo.db, id);
     
-    return userInfo;
+    return CompanyInfo(
+      employee: userInfo,
+      numEmployees: 1,
+      address: 'Norrsken house',
+      name: 'Newsvoice',
+    );
   }
 }

@@ -2,6 +2,7 @@
 /*   To generate run: "serverpod generate"    */
 
 import 'package:serverpod/database.dart';
+import 'protocol.dart';
 
 class UserInfo extends TableRow {
   static const String db = 'user_info';
