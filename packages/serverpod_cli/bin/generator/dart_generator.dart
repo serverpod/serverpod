@@ -312,7 +312,7 @@ class _FieldDefinition {
 
   String get serialization {
     if (isTypedList) {
-      if (listType == 'String' || listType == 'int') {
+      if (listType == 'String' || listType == 'int' || listType == 'double' || listType ==  'bool') {
         return name;
       }
       else {
@@ -320,17 +320,20 @@ class _FieldDefinition {
       }
     }
 
-    if (type == 'String' || type == 'int') {
+    if (type == 'String' || type == 'int' || type == 'double' || type == 'bool') {
       return name;
     }
+    else if (type == 'DateTime') {
+      return '$name?.toUtc()?.toIso8601String()';
+    }
     else {
-      return '$name.serialize()';
+      return '$name?.serialize()';
     }
   }
 
   String get deserialization {
     if (isTypedList) {
-      if (listType == 'String' || listType == 'int') {
+      if (listType == 'String' || listType == 'int' || listType == 'double' || listType == 'bool') {
         return 'data[\'$name\']';
       }
       else {
@@ -338,11 +341,14 @@ class _FieldDefinition {
       }
     }
 
-    if (type == 'String' || type == 'int') {
+    if (type == 'String' || type == 'int' || type == 'double' || type == 'bool') {
       return 'data[\'$name\']';
     }
+    else if (type == 'DateTime') {
+      return 'data[\'$name\'] != null ? DateTime.tryParse(data[\'$name\']) : null';
+    }
     else {
-      return '$type.fromSerialization(data[\'$name\'])';
+      return 'data[\'$name\'] != null ? $type.fromSerialization(data[\'$name\']) : null';
     }
   }
 }

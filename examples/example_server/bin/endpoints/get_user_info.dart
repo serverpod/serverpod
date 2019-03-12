@@ -15,8 +15,11 @@ class GetUserInfo extends Endpoint {
     return CompanyInfo(
       employee: [userInfo, UserInfo(id: null, name: 'Fake')],
       numEmployees: 1,
-      address: 'Norrsken house',
-      name: 'Newsvoice',
+//      address: 'Norrsken house',
+//      name: 'Newsvoice',
+//      createdTime: DateTime.now(),
+//      hasOffice: true,
+//      value: 10.9,
     );
   }
 }

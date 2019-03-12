@@ -9,15 +9,21 @@ class CompanyInfo extends SerializableEntity {
 
   int id;
   int numEmployees;
-  List<UserInfo> employee;
+  double value;
   String name;
+  DateTime createdTime;
+  List<UserInfo> employee;
+  bool hasOffice;
   String address;
 
   CompanyInfo({
     this.id,
     this.numEmployees,
-    this.employee,
+    this.value,
     this.name,
+    this.createdTime,
+    this.employee,
+    this.hasOffice,
     this.address,
 });
 
@@ -25,8 +31,11 @@ class CompanyInfo extends SerializableEntity {
     var data = unwrapSerializationData(serialization);
     id = data['id'];
     numEmployees = data['numEmployees'];
-    employee = data['employee'].map<UserInfo>((a) => UserInfo.fromSerialization(a)).toList();
+    value = data['value'];
     name = data['name'];
+    createdTime = data['createdTime'] != null ? DateTime.tryParse(data['createdTime']) : null;
+    employee = data['employee'].map<UserInfo>((a) => UserInfo.fromSerialization(a)).toList();
+    hasOffice = data['hasOffice'];
     address = data['address'];
   }
 
@@ -34,8 +43,11 @@ class CompanyInfo extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'numEmployees': numEmployees,
-      'employee': employee.map((UserInfo a) => a.serialize()).toList(),
+      'value': value,
       'name': name,
+      'createdTime': createdTime?.toUtc()?.toIso8601String(),
+      'employee': employee.map((UserInfo a) => a.serialize()).toList(),
+      'hasOffice': hasOffice,
       'address': address,
     });
   }
