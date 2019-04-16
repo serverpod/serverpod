@@ -3,6 +3,7 @@ version: 0.0.1
 description: A sample command-line application
 dependencies:
   args:
+  recase: ^2.0.1
   serverpod:
     path: ../serverpod
 

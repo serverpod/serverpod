@@ -67,14 +67,16 @@ class DartGenerator extends Generator{
 
       // Fields
       for (var field in fields) {
-        out += '  ${field.type} ${field.name};\n';
+        if (field.shouldIncludeField(serverCode))
+          out += '  ${field.type} ${field.name};\n';
       }
       out += '\n';
 
       // Default constructor
       out += '  $className({\n';
       for (var field in fields) {
-        out += '    this.${field.name},\n';
+        if (field.shouldIncludeField(serverCode))
+          out += '    this.${field.name},\n';
       }
       out += '});\n';
       out += '\n';
@@ -83,7 +85,8 @@ class DartGenerator extends Generator{
       out += '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
       out += '    var data = unwrapSerializationData(serialization);\n';
       for (var field in fields) {
-        out += '    ${field.name} = ${field.deserialization};\n';
+        if (field.shouldIncludeField(serverCode))
+          out += '    ${field.name} = ${field.deserialization};\n';
       }
       out += '  }\n';
       out += '\n';
@@ -94,11 +97,26 @@ class DartGenerator extends Generator{
       out += '    return wrapSerializationData({\n';
 
       for (var field in fields) {
-        out += '      \'${field.name}\': ${field.serialization},\n';
+        if (field.shouldSerializeField(serverCode))
+          out += '      \'${field.name}\': ${field.serialization},\n';
       }
 
       out += '    });\n';
       out += '  }\n';
+
+      // Serialization for database
+      if (serverCode) {
+        out += '  Map<String, dynamic> serializeForDatabase() {\n';
+        out += '    return wrapSerializationData({\n';
+
+        for (var field in fields) {
+          if (field.shouldSerializeFieldForDatabase(serverCode))
+            out += '      \'${field.name}\': ${field.serialization},\n';
+        }
+
+        out += '    });\n';
+        out += '  }\n';
+      }
 
       // End class
       out += '}\n';
@@ -294,16 +312,33 @@ class DartGenerator extends Generator{
   }
 }
 
+enum _FieldScope {
+  database,
+  protocol,
+  all,
+}
+
 class _FieldDefinition {
   String name;
   String type;
+  _FieldScope scope = _FieldScope.all;
 
   bool isTypedList;
   String listType;
 
   _FieldDefinition(String name, String description) {
     this.name = name;
-    type = description;
+
+    var components = description.split(',').map((String s) { return s.trim(); }).toList();
+    type = components[0];
+
+    if (components.length == 2) {
+      var scopeStr = components[1];
+      if (scopeStr == 'database')
+        scope = _FieldScope.database;
+      else if (scopeStr == 'protocol')
+        scope = _FieldScope.protocol;
+    }
 
     isTypedList = type.startsWith('List<') && type.endsWith('>');
     if (isTypedList)
@@ -316,7 +351,7 @@ class _FieldDefinition {
         return name;
       }
       else {
-        return '$name.map(($listType a) => a.serialize()).toList()';
+        return '$name?.map(($listType a) => a.serialize())?.toList()';
       }
     }
 
@@ -350,5 +385,26 @@ class _FieldDefinition {
     else {
       return 'data[\'$name\'] != null ? $type.fromSerialization(data[\'$name\']) : null';
     }
+  }
+
+  bool shouldIncludeField(bool serverCode) {
+    if (serverCode)
+      return true;
+    if (scope == _FieldScope.all || scope == _FieldScope.protocol)
+      return true;
+    return false;
+  }
+
+  bool shouldSerializeField(bool serverCode) {
+    if (scope == _FieldScope.all || scope == _FieldScope.protocol)
+      return true;
+    return false;
+  }
+
+  bool shouldSerializeFieldForDatabase(bool serverCode) {
+    assert(serverCode);
+    if (scope == _FieldScope.all || scope == _FieldScope.database)
+      return true;
+    return false;
   }
 }

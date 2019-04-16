@@ -42,8 +42,15 @@ abstract class SerializationManager {
   }
 
   String serializeEntity(dynamic entity) {
-    if (entity is int || entity is String || entity is SerializableEntity)
+    if (entity == null)
+      return null;
+    else if (entity is DateTime)
+      return entity.toIso8601String();
+    else if (entity is int || entity is bool || entity is double || entity is String || entity is SerializableEntity)
       return '$entity';
-    else throw FormatException();
+    else {
+      print('Unknown entity type ${entity.runtimeType}');
+      throw FormatException();
+    }
   }
 }
