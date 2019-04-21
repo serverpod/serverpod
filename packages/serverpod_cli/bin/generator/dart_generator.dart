@@ -1,3 +1,4 @@
+import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
 import 'generator.dart';
@@ -241,75 +242,103 @@ class DartGenerator extends Generator{
     out += 'import \'protocol.dart\';\n';
     out += '\n';
 
-    // Class definition
-    out += 'class Client extends ServerpodClient {\n';
-    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler);\n';
-
     // Endpoints
     for (String endpointName in doc.keys) {
       Map endpointDef = doc[endpointName];
-      List requiredParams = endpointDef['requiredParameters'];
-      List optionalParams = endpointDef['optionalParameters'];
-      String returnType = endpointDef['returnType'];
-      assert(returnType.startsWith('Future<'));
-      assert(returnType.endsWith('>'));
-      String returnTypeNoFuture = returnType.substring(7, returnType.length -1);
 
-      print('endpointName: $endpointName');
-      print('endpointDef: $endpointDef');
-      print('requiredParams: $requiredParams');
-      print('optionalParams: $optionalParams');
+      String endpointClassName = _endpointClassName(endpointName);
 
-      // Function definition
+      out += 'class $endpointClassName {\n';
+      out += '  Client client;\n';
+
+      out += '  $endpointClassName(this.client);\n';
+
+      // Add methods
+      for (String methodName in endpointDef.keys) {
+        Map methodDef = endpointDef[methodName];
+
+        List requiredParams = methodDef['requiredParameters'];
+        List optionalParams = methodDef['optionalParameters'];
+        String returnType = methodDef['returnType'];
+        assert(returnType.startsWith('Future<'));
+        assert(returnType.endsWith('>'));
+        String returnTypeNoFuture = returnType.substring(7, returnType.length -1);
+
+        // Method definition
+        out += '\n';
+        out += '  $returnType $methodName(';
+
+        if (requiredParams != null) {
+          for (Map paramInfo in requiredParams) {
+            String paramName = paramInfo.keys.first;
+            String paramType = paramInfo.values.first;
+            out += '$paramType $paramName,';
+          }
+        }
+
+        if (optionalParams != null) {
+          out += '[';
+
+          for (Map paramInfo in optionalParams) {
+            String paramName = paramInfo.keys.first;
+            String paramType = paramInfo.values.first;
+            out += '$paramType $paramName,';
+          }
+
+          out += ']';
+        }
+
+        out += ') async {\n';
+
+        // Call to server endpoint
+        out += '    return await client.callServerEndpoint(\'$endpointName\', \'$methodName\', \'$returnTypeNoFuture\', {\n';
+
+        if (requiredParams != null) {
+          for (Map paramInfo in requiredParams) {
+            String paramName = paramInfo.keys.first;
+            out += '      \'$paramName\':$paramName,\n';
+          }
+        }
+
+        if (optionalParams != null) {
+          for (Map paramInfo in optionalParams) {
+            String paramName = paramInfo.keys.first;
+            out += '      \'$paramName\': $paramName,\n';
+          }
+        }
+
+        out += '    });\n';
+        out += '  }\n';
+      }
+
+      out += '}\n';
       out += '\n';
-      out += '  $returnType $endpointName(';
-
-      if (requiredParams != null) {
-        for (Map paramInfo in requiredParams) {
-          String paramName = paramInfo.keys.first;
-          String paramType = paramInfo.values.first;
-          out += '$paramType $paramName,';
-        }
-      }
-
-      if (optionalParams != null) {
-        out += '[';
-
-        for (Map paramInfo in optionalParams) {
-          String paramName = paramInfo.keys.first;
-          String paramType = paramInfo.values.first;
-          out += '$paramType $paramName,';
-        }
-
-        out += ']';
-      }
-
-      out += ') async {\n';
-
-      // Call to server endpoint
-      out += '    return await callServerEndpoint(\'$endpointName\', \'$returnTypeNoFuture\', {\n';
-
-      if (requiredParams != null) {
-        for (Map paramInfo in requiredParams) {
-          String paramName = paramInfo.keys.first;
-          out += '      \'$paramName\':$paramName,\n';
-        }
-      }
-
-      if (optionalParams != null) {
-        for (Map paramInfo in optionalParams) {
-          String paramName = paramInfo.keys.first;
-          out += '      \'$paramName\': $paramName,\n';
-        }
-      }
-
-      out += '    });\n';
-      out += '  }\n';
     }
 
-    out += '}';
+    // Class definition
+    out += 'class Client extends ServerpodClient {\n';
+
+    for (String endpointName in doc.keys) {
+      out += '  ${_endpointClassName(endpointName)} $endpointName;\n';
+    }
+
+    out += '\n';
+    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler) {\n';
+    for (String endpointName in doc.keys) {
+      out += '    $endpointName = ${_endpointClassName(endpointName)}(this);\n';
+    }
+    out += '  }\n';
+    out += '\n';
+
+
+    out += '}\n';
+
 
     return out;
+  }
+
+  String _endpointClassName(String endpointName) {
+    return '_Endpoint${ReCase(endpointName).pascalCase}';
   }
 }
 

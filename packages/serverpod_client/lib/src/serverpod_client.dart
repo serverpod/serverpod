@@ -30,7 +30,7 @@ class ServerpodClient {
     _initialized = true;
   }
 
-  Future<dynamic> callServerEndpoint(String endpoint, String returnTypeName, Map<String, dynamic> args) async {
+  Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) async {
     if (!_initialized)
       await _initialize();
 
@@ -42,8 +42,8 @@ class ServerpodClient {
           formattedArgs.add('$argName=${Uri.encodeQueryComponent('$value')}');
       }
       if (_authorizationKey != null)
-        formattedArgs.add(
-            'auth=${Uri.encodeQueryComponent(_authorizationKey)}');
+        formattedArgs.add('auth=${Uri.encodeQueryComponent(_authorizationKey)}');
+      formattedArgs.add('method=${Uri.encodeQueryComponent(method)}');
 
       var queryStr = formattedArgs.join('&');
       if (formattedArgs.length > 0)

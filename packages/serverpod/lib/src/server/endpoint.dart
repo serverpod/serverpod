@@ -12,16 +12,12 @@ import '../database/database.dart';
 abstract class Endpoint {
   String get name;
 
-  final _paramsRequired = <_Parameter>[];
-  final _paramsOptional = <_Parameter>[];
-  Type _returnType;
+  final _methods = <String, _Method>{};
 
   Server _server;
   Server get server => _server;
 
   Database get database => _server.database;
-
-  ClosureMirror _handleCallMirror;
 
   List<Scope> get allowedScopes => [scopeAny];
 
@@ -29,27 +25,23 @@ abstract class Endpoint {
     _server = server;
     _server.addEndpoint(this);
 
-    // Find parameters for handleCall function
+    // Find remotely callable methods, first argument should be a Session object
     final mirror = reflect(this);
+    ClassMirror classMirror = reflectClass(this.runtimeType);
 
-    try {
-      _handleCallMirror = mirror.getField(Symbol('handleCall'));
+    for (Symbol methodSymbol in classMirror.instanceMembers.keys) {
+      MethodMirror methodMirror = classMirror.instanceMembers[methodSymbol];
+
+      if (methodMirror.parameters.length >= 1 &&
+          !methodMirror.parameters[0].isOptional &&
+          !methodMirror.parameters[0].isNamed &&
+          methodMirror.parameters[0].type.reflectedType == Session) {
+
+        ClosureMirror closureMirror = mirror.getField(methodSymbol);
+        var method = _Method(methodSymbol, closureMirror, server);
+        _methods[method.name] = method;
+      }
     }
-    catch(_) {};
-    assert(_handleCallMirror != null, 'Missing handeCall method in Endpoint $name');
-
-    final parameters = _handleCallMirror.function.parameters;
-
-    for (ParameterMirror parameter in parameters) {
-      if (parameter.isOptional)
-        _paramsOptional.add(_Parameter(parameter, _server.serializationManager));
-      else
-        _paramsRequired.add(_Parameter(parameter, _server.serializationManager));
-    }
-
-    assert(_paramsRequired.length >= 1 && _paramsRequired[0].type == Session, 'First parameter in handleCall method in Endpoint $name must be a Session object');
-
-    _returnType = _handleCallMirror.function.returnType.reflectedType;
   }
 
   Future handleUriCall(Uri uri) async {
@@ -58,6 +50,14 @@ abstract class Endpoint {
     var inputs = uri.queryParameters;
 
     String auth = inputs['auth'];
+    String methodName = inputs['method'];
+
+    if (methodName == null)
+      return ResultInvalidParams('method missing in call: $uri');
+
+    var method = _methods[methodName];
+    if (method == null)
+      return ResultInvalidParams('Method $methodName not found in call: $uri');
 
     // Always add the session as the first argument
     callArgs.add(
@@ -68,7 +68,7 @@ abstract class Endpoint {
     );
 
     // Check required parameters
-    for (final requiredParam in _paramsRequired) {
+    for (final requiredParam in method.paramsRequired) {
       if (requiredParam.type == Session)
         continue;
 
@@ -87,7 +87,7 @@ abstract class Endpoint {
     }
 
     // Check optional parameters
-    for (final optionalParam in _paramsOptional) {
+    for (final optionalParam in method.paramsOptional) {
       // Check if it exists
       String input = inputs[optionalParam.name];
       if (input == null)
@@ -103,7 +103,7 @@ abstract class Endpoint {
     }
 
     // Call handleCall method
-    return _handleCallMirror.apply(callArgs).reflectee;
+    return method.callMirror.apply(callArgs).reflectee;
   }
 
   Object _formatArg(String input, _Parameter paramDef, SerializationManager serializationManager) {
@@ -124,17 +124,27 @@ abstract class Endpoint {
 
   void printDefinition() {
     stdout.writeln('$name:');
-    stdout.writeln('  requiredParameters:');
-    for (var param in _paramsRequired) {
-      if (param.type == Session)
-        continue;
-      stdout.writeln('    - ${param.name}: ${param.type}');
+
+    for (var methodName in _methods.keys) {
+      var method = _methods[methodName];
+
+      stdout.writeln('  ${methodName}:');
+      stdout.writeln('    requiredParameters:');
+      for (var param in method.paramsRequired) {
+        if (param.type == Session)
+          continue;
+        stdout.writeln('      - ${param.name}: ${param.type}');
+      }
+      stdout.writeln('    optionalParameters:');
+      for (var param in method.paramsOptional) {
+        stdout.writeln('      - ${param.name}: ${param.type}');
+      }
+      stdout.writeln('    namedParameters:');
+      for (var param in method.paramsNamed) {
+        stdout.writeln('      - ${param.name}: ${param.type}');
+      }
+      stdout.writeln('    returnType: ${method.returnType}');
     }
-    stdout.writeln('  optionalParameters:');
-    for (var param in _paramsOptional) {
-      stdout.writeln('    - ${param.name}: ${param.type}');
-    }
-    stdout.writeln('  returnType: $_returnType');
   }
 }
 
@@ -147,6 +157,35 @@ class ResultInvalidParams extends Result {
   @override
   String toString() {
     return errorDescription;
+  }
+}
+
+class _Method {
+  String name;
+  Type returnType;
+  final paramsRequired = <_Parameter>[];
+  final paramsOptional = <_Parameter>[];
+  final paramsNamed = <_Parameter>[];
+  ClosureMirror callMirror;
+
+  _Method(Symbol symbol, ClosureMirror closureMirror, Server server) {
+    final parameters = closureMirror.function.parameters;
+
+    for (ParameterMirror parameter in parameters) {
+      if (parameter.isOptional)
+        paramsOptional.add(_Parameter(parameter, server.serializationManager));
+      else if (parameter.isNamed)
+        paramsNamed.add(_Parameter(parameter, server.serializationManager));
+      else
+        paramsRequired.add(_Parameter(parameter, server.serializationManager));
+    }
+
+    assert(paramsRequired.length >= 1 && paramsRequired[0].type == Session, 'First parameter in handleCall method in Endpoint $name must be a Session object');
+
+    returnType = closureMirror.function.returnType.reflectedType;
+
+    name = MirrorSystem.getName(symbol);
+    callMirror = closureMirror;
   }
 }
 
