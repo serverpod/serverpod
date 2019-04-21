@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:postgres/postgres.dart';
+import 'package:postgres/src/text_codec.dart';
 import 'package:yaml/yaml.dart';
 
 import 'table.dart';
@@ -10,6 +11,7 @@ class Database {
   PostgreSQLConnection connection;
   SerializationManager _serializationManager;
 
+  final PostgresTextEncoder _encoder = PostgresTextEncoder(true);
   final _tableClassMapping = <String, String>{};
 
   Database(SerializationManager serializationManager, String host, int port, String name, String user, String pass) {
@@ -167,7 +169,7 @@ class Database {
   }
 
   Future<Null> update(TableRow row) async {
-    Map data = row.serialize()['data'];
+    Map data = row.serializeForDatabase()['data'];
 
     int id = data['id'];
 
@@ -176,8 +178,9 @@ class Database {
     for(String column in data.keys) {
       if (column == 'id')
         continue;
+      String value = _encoder.convert(data[column]);
 
-      updatesList.add('$column = \'${data[column]}\'');
+      updatesList.add('$column = $value');
     }
     String updates = updatesList.join(', ');
 
@@ -186,6 +189,41 @@ class Database {
 
     int affectedRows = await connection.execute(query);
     print('updated $affectedRows rows');
+  }
+
+  Future<bool> insert(TableRow row) async {
+    Map data = row.serializeForDatabase()['data'];
+
+    var columnsList = <String>[];
+    var valueList = <String>[];
+
+    for(String column in data.keys) {
+      if (column == 'id')
+        continue;
+
+      String value = _encoder.convert(data[column]);
+      if (value == null)
+        continue;
+
+      columnsList.add(column);
+      valueList.add(value);
+    }
+    String columns = columnsList.join(', ');
+    String values = valueList.join(', ');
+
+    var query = 'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
+    print('$query');
+
+    var result = await connection.query(query);
+    if (result.length != 1)
+      return false;
+
+    List returnedRow = result[0];
+    if (returnedRow.length != 1)
+      return false;
+
+    row.setColumn('id', returnedRow[0]);
+    return true;
   }
 }
 
