@@ -4,7 +4,9 @@ import 'dart:mirrors';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import 'package:serverpod/src/authentication/scope.dart';
 import 'server.dart';
+import 'session.dart';
 import '../database/database.dart';
 
 abstract class Endpoint {
@@ -20,6 +22,8 @@ abstract class Endpoint {
   Database get database => _server.database;
 
   ClosureMirror _handleCallMirror;
+
+  List<Scope> get allowedScopes => [scopeAny];
 
   Endpoint(Server server) {
     _server = server;
@@ -43,6 +47,8 @@ abstract class Endpoint {
         _paramsRequired.add(_Parameter(parameter, _server.serializationManager));
     }
 
+    assert(_paramsRequired.length >= 1 && _paramsRequired[0].type == Session, 'First parameter in handleCall method in Endpoint $name must be a Session object');
+
     _returnType = _handleCallMirror.function.returnType.reflectedType;
   }
 
@@ -51,8 +57,21 @@ abstract class Endpoint {
 
     var inputs = uri.queryParameters;
 
+    String auth = inputs['auth'];
+
+    // Always add the session as the first argument
+    callArgs.add(
+      Session(
+        server: server,
+        authenticationKey: auth,
+      ),
+    );
+
     // Check required parameters
     for (final requiredParam in _paramsRequired) {
+      if (requiredParam.type == Session)
+        continue;
+
       // Check that it exists
       String input = inputs[requiredParam.name];
       if (input == null)
@@ -107,6 +126,8 @@ abstract class Endpoint {
     stdout.writeln('$name:');
     stdout.writeln('  requiredParameters:');
     for (var param in _paramsRequired) {
+      if (param.type == Session)
+        continue;
       stdout.writeln('    - ${param.name}: ${param.type}');
     }
     stdout.writeln('  optionalParameters:');
@@ -134,7 +155,7 @@ class _Parameter {
     type = parameterMirror.type.reflectedType;
     name = MirrorSystem.getName(parameterMirror.simpleName);
 
-    assert(type == int || type == String || serializationManager.constructors[type.toString()] != null);
+    assert(type == Session || type == int || type == String || serializationManager.constructors[type.toString()] != null);
   }
 
   String name;

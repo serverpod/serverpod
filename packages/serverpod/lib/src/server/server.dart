@@ -5,6 +5,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'config.dart';
 import 'endpoint.dart';
+import '../authentication/authentication_info.dart';
 import '../database/database.dart';
 
 class ServerRunMode {
@@ -21,7 +22,9 @@ class Server {
   Database database;
   final SerializationManager serializationManager;
 
-  Server(List<String> args, this.serializationManager) {
+  final AuthenticationHandler authenticationHandler;
+
+  Server(List<String> args, this.serializationManager, {this.authenticationHandler}) {
     // Read command line arguments
     try {
       final argParser = ArgParser()

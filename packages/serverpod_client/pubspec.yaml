@@ -2,10 +2,13 @@ name: serverpod_client
 version: 0.0.1
 description: A sample command-line application
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.1.0 <3.0.0'
 dependencies:
+  flutter:
+    sdk: flutter
   serverpod_serialization:
     path: ../serverpod_serialization
+  shared_preferences: ^0.5.2
 
 dev_dependencies:
 #  unittest: any

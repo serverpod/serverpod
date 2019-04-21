@@ -48,6 +48,7 @@ class DartGenerator extends Generator{
         out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
       }
 
+      out += '// ignore: unused_import\n';
       out += 'import \'protocol.dart\';\n';
       out += '\n';
 
@@ -242,7 +243,7 @@ class DartGenerator extends Generator{
 
     // Class definition
     out += 'class Client extends ServerpodClient {\n';
-    out += '  Client(host, {SecurityContext context}) : super(host, Protocol.instance, context: context);\n';
+    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler);\n';
 
     // Endpoints
     for (String endpointName in doc.keys) {
