@@ -14,6 +14,96 @@ class DartGenerator extends Generator{
     var doc = loadYaml(yamlStr);
     String out = '';
 
+    // Handle enums
+    try {
+      if (doc['enum'] != null) {
+        String enumName = doc['enum'];
+
+        // Add enum info to set
+        classInfos.add(
+            ClassInfo(
+              className: enumName,
+              fileName: outFileName,
+            )
+        );
+
+        // Header
+        out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+        out += '/*   To generate run: "serverpod generate"    */\n';
+        out += '\n';
+
+        if (serverCode)
+          out += 'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
+        else
+          out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+
+        out += 'class $enumName extends SerializableEntity {\n';
+        out += '  String get className => \'$enumName\';\n';
+        out += '\n';
+        out += '  int _index;\n';
+        out += '  int get index => _index;\n';
+        out += '\n';
+
+        // Internal constructor
+        out += '  $enumName._internal(this._index); \n';
+        out += '\n';
+
+        // Serialization
+        out += '  $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
+        out += '    var data = unwrapSerializationData(serialization);\n';
+        out += '    _index = data[\'index\'];\n';
+        out += '  }\n';
+        out += '\n';
+
+        out += '  Map<String, dynamic> serialize() {\n';
+        out += '    return wrapSerializationData({\n';
+        out += '      \'index\': _index,\n';
+        out += '    });\n';
+        out += '  }\n';
+
+        // Values
+        int i = 0;
+        for (String value in doc['values']) {
+          out += '  static final $value = $enumName._internal($i);\n';
+          i += 1;
+        }
+
+        out += '\n';
+
+        out += '  int get hashCode => _index.hashCode;\n';
+        out += '  bool operator == (other) => other._index == _index;\n';
+
+        out += '\n';
+
+        out += '  static final values = <$enumName>[\n';
+        for (String value in doc['values']) {
+          out += '    $value,\n';
+        }
+        out += '  ];\n';
+
+        out += '\n';
+
+        out += '  String get name {\n';
+        for (String value in doc['values']) {
+          out += '    if (this == $value) return \'$value\';\n';
+        }
+        out += '    return null;\n';
+        out += '  }\n';
+
+        out += '\n';
+
+        out += '  String toString() => \'$enumName.\$name\';\n';
+
+        out += '}\n';
+        return out;
+      }
+    }
+    catch(e) {
+      print('Failed to parse $inputPath: $e');
+      return null;
+    }
+
+    // Handle ordinary classes
     try {
       String tableName = doc['tableName'];
       String className = _expectString(doc, 'class');
@@ -143,7 +233,8 @@ class DartGenerator extends Generator{
         out += '}\n';
       }
     }
-    catch (_) {
+    catch (e) {
+      print('Failed to parse $inputPath: $e');
       return null;
     }
 
@@ -196,7 +287,7 @@ class DartGenerator extends Generator{
     }
     out += '\n';
 
-    // Import generated files
+    // Export generated files
     for (ClassInfo classInfo in classInfos) {
       out += 'export \'${classInfo.fileName}\';\n';
     }
