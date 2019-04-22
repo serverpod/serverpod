@@ -117,15 +117,15 @@ class Database {
   Future<TableRow> findById(String tableName, int id) async {
     var result = await find(
       tableName,
-      expression: Expression('id = $id'),
+      where: Expression('id = $id'),
     );
     if (result.length == 0)
       return null;
     return result[0];
   }
   
-  Future<List<TableRow>> find(String tableName, {Expression expression, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
-    var query = 'SELECT * FROM $tableName WHERE $expression';
+  Future<List<TableRow>> find(String tableName, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+    var query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
       query += ' ORDER BY $orderBy';
       if (orderDescending)
@@ -229,6 +229,7 @@ class Database {
 
 class Expression {
   final String expression;
+  static PostgresTextEncoder _encoder = const PostgresTextEncoder(true);
 
   const Expression(this.expression);
 
@@ -256,6 +257,8 @@ class Expression {
   Expression equals(Expression other) {
     return Expression('($this = $other)');
   }
+
+  Expression.notEquals(Column col, dynamic value) : expression = '(${col.columnName} != ${_encoder.convert(value)})';
 
   Expression operator & (dynamic other) {
     assert(other is Expression);
