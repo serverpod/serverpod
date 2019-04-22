@@ -222,10 +222,9 @@ class DartGenerator extends Generator{
         out += '  static const String tableName = \'$tableName\';\n';
 
         // Column descriptions
-        for (var column in fields) {
-          out +=
-          '  static const ${column.name} = Column(\'${column.name}\', ${column
-              .type});\n';
+        for (var field in fields) {
+          if (field.shouldSerializeFieldForDatabase(serverCode))
+            out += '  static const ${field.name} = Column(\'${field.name}\', ${field.type});\n';
         }
 
 
