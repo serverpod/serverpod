@@ -7,11 +7,12 @@ import 'package:yaml/yaml.dart';
 import 'table.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+final PostgresTextEncoder _encoder = const PostgresTextEncoder(true);
+
 class Database {
   PostgreSQLConnection connection;
   SerializationManager _serializationManager;
 
-  final PostgresTextEncoder _encoder = PostgresTextEncoder(true);
   final _tableClassMapping = <String, String>{};
 
   Database(SerializationManager serializationManager, String host, int port, String name, String user, String pass) {
@@ -67,7 +68,7 @@ class Database {
     return tableNames;
   }
 
-  Future<TableDescription> getTableDescription(String tableName) async {
+  Future<Table> getTableDescription(String tableName) async {
     var query = 'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
     var result = await connection.mappedResultsQuery(query);
     var columns = <Column>[];
@@ -94,7 +95,7 @@ class Database {
       return null;
     }
 
-    return TableDescription(
+    return Table(
       tableName: tableName,
       columns: columns,
     );
@@ -114,9 +115,9 @@ class Database {
     return null;
   }
 
-  Future<TableRow> findById(String tableName, int id) async {
+  Future<TableRow> findById(Table table, int id) async {
     var result = await find(
-      tableName,
+      table,
       where: Expression('id = $id'),
     );
     if (result.length == 0)
@@ -124,7 +125,8 @@ class Database {
     return result[0];
   }
   
-  Future<List<TableRow>> find(String tableName, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+    String tableName = table.tableName;
     var query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
       query += ' ORDER BY $orderBy';
@@ -148,6 +150,14 @@ class Database {
     return list;
   }
 
+  Future<TableRow> findSingleRow(Table table, {Expression where, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+    var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset);
+    if (result.length == 0)
+      return null;
+    else
+      return result[0];
+  }
+
   TableRow _formatTableRow(String tableName, Map<String, dynamic> rawRow) {
     String className = _tableClassMapping[tableName];
     if (className == null)
@@ -166,6 +176,24 @@ class Database {
     var serialization = <String, dynamic> {'data': data, 'class': className};
 
     return _serializationManager.createEntityFromSerialization(serialization);
+  }
+
+  Future<int> count(Table table, {Expression where, int limit, bool useCache=true}) async {
+    String tableName = table.tableName;
+    var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
+    if (limit != null)
+      query += ' LIMIT $limit';
+    print('$query');
+
+    var result = await connection.query(query);
+    if (result.length != 1)
+      return 0;
+
+    List returnedRow = result[0];
+    if (returnedRow.length != 1)
+      return 0;
+
+    return returnedRow[0];
   }
 
   Future<Null> update(TableRow row) async {
@@ -229,36 +257,21 @@ class Database {
 
 class Expression {
   final String expression;
-  static PostgresTextEncoder _encoder = const PostgresTextEncoder(true);
 
   const Expression(this.expression);
-
-  Expression.equalsInt(Column col, int value) : expression = '${col.columnName} = $value' {
-    assert(col.type == int);
-  }
-
-  Expression.equalsDouble(Column col, double value) : expression = '${col.columnName} = $value' {
-    assert(col.type == double);
-  }
-
-  Expression.equalsBool(Column col, bool value) : expression = '${col.columnName} = $value' {
-    assert(col.type == bool);
-  }
-
-  Expression.equalsString(Column col, String value) : expression = '${col.columnName} = \'$value\'' {
-    assert(col.type == String);
-  }
 
   @override
   String toString() {
     return expression;
   }
 
-  Expression equals(Expression other) {
-    return Expression('($this = $other)');
+  Expression equals(Expression value) {
+    return Expression('($this = ${_encoder.convert(value)})');
   }
 
-  Expression.notEquals(Column col, dynamic value) : expression = '(${col.columnName} != ${_encoder.convert(value)})';
+  Expression notEquals(dynamic value) {
+    return Expression('(${this} != ${_encoder.convert(value)})');
+  }
 
   Expression operator & (dynamic other) {
     assert(other is Expression);
@@ -295,6 +308,7 @@ class Expression {
   }
 }
 
+// TODO: Typed Column subclasses for better type checking in equals method
 class Column extends Expression {
   final Type type;
   final int varcharLength;
@@ -302,17 +316,40 @@ class Column extends Expression {
   const Column(String name, this.type, {this.varcharLength}) : super(name);
 
   String get columnName => expression;
+
+  Expression equalsInt(int value) {
+    assert(this.type == int);
+    return Expression('${this.columnName} = $value');
+  }
+
+  Expression equalsDouble(double value) {
+    assert(this.type == double);
+    return Expression('${this.columnName} = $value');
+  }
+
+  Expression equalsBool(bool value) {
+    assert(this.type == bool);
+    return Expression('${this.columnName} = $value');
+  }
+
+  Expression equalsString(String value) {
+    assert(this.type == String);
+    return Expression('${this.columnName} = ${_encoder.convert(value)}');
+  }
 }
 
 class Constant extends Expression {
   const Constant(String value) : super('\'$value\'');
 }
 
-class TableDescription {
+class Table {
   final String tableName;
-  final List<Column> columns;
+  List<Column> _columns;
+  List<Column> get columns => _columns;
 
-  TableDescription({this.tableName, this.columns});
+  Table({this.tableName, List<Column> columns}) {
+    _columns = columns;
+  }
 
   @override
   String toString() {

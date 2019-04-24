@@ -44,7 +44,7 @@ class BuildSchema {
     }
   }
 
-  Future<Null> generateYaml(String file, TableDescription descr) async {
+  Future<Null> generateYaml(String file, Table descr) async {
     var className = ReCase(descr.tableName).pascalCase;
 
     String yaml = 'class: $className\n';

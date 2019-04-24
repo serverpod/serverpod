@@ -53,11 +53,12 @@ class Server {
     }
   }
 
-  void addEndpoint(Endpoint endpoint) {
+  void addEndpoint(Endpoint endpoint, String name) {
     if (_endpoints.containsKey(endpoint.name)) {
       logWarning('Added endpoint with duplicate name (${endpoint.name})');
     }
 
+    endpoint.initialize(this, name);
     _endpoints[endpoint.name] = endpoint;
   }
 

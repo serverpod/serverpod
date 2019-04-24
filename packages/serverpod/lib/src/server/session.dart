@@ -32,4 +32,8 @@ class Session {
       await _initialize();
     return _scopes;
   }
+
+  Future<bool> get isUserSignedIn async {
+    return (await authenticatedUser) != null;
+  }
 }

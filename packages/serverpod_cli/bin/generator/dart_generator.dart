@@ -90,9 +90,9 @@ class DartGenerator extends Generator{
         out += '    return null;\n';
         out += '  }\n';
 
-        out += '\n';
-
-        out += '  String toString() => \'$enumName.\$name\';\n';
+//        out += '\n';
+//
+//        out += '  String toString() => \'$enumName.\$name\';\n';
 
         out += '}\n';
         return out;
@@ -147,7 +147,6 @@ class DartGenerator extends Generator{
       if (serverCode && tableName != null) {
         out += 'class $className extends TableRow {\n';
         out += '  String get className => \'$className\';\n';
-        out += '  static const String db = \'$tableName\';\n';
         out += '  String get tableName => \'$tableName\';\n';
       }
       else {
@@ -217,19 +216,36 @@ class DartGenerator extends Generator{
       if (serverCode && tableName != null) {
         // Table class definition
         out += 'class ${className}Table extends Table {\n';
+
+        // Constructor
+        out += '  ${className}Table() : super(tableName: \'$tableName\');\n';
         out += '\n';
 
-        out += '  static const String tableName = \'$tableName\';\n';
+        out += '  String tableName = \'$tableName\';\n';
 
         // Column descriptions
         for (var field in fields) {
           if (field.shouldSerializeFieldForDatabase(serverCode))
-            out += '  static const ${field.name} = Column(\'${field.name}\', ${field.type});\n';
+            out += '  final ${field.name} = Column(\'${field.name}\', ${field.type});\n';
         }
+        out += '\n';
+
+        // List of column values
+        out += '  List<Column> get columns => [\n';
+        for (var field in fields) {
+          if (field.shouldSerializeFieldForDatabase(serverCode))
+            out += '    ${field.name},\n';
+        }
+        out += '  ];\n';
 
 
         // End class
         out += '}\n';
+
+        out += '\n';
+
+        // Create instance of table
+        out += '${className}Table t${className} = ${className}Table();\n';
       }
     }
     catch (e) {
@@ -318,7 +334,6 @@ class DartGenerator extends Generator{
 
   String generateEndpoints(String yamlStr) {
     Map doc = loadYaml(yamlStr);
-    print('doc: $doc');
 
     String out = '';
 
@@ -492,7 +507,7 @@ class _FieldDefinition {
         return 'data[\'$name\']';
       }
       else {
-        return 'data[\'$name\'].map<$listType>((a) => $listType.fromSerialization(a)).toList()';
+        return 'data[\'$name\']?.map<$listType>((a) => $listType.fromSerialization(a))?.toList()';
       }
     }
 

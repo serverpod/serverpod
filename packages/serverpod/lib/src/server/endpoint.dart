@@ -10,7 +10,8 @@ import 'session.dart';
 import '../database/database.dart';
 
 abstract class Endpoint {
-  String get name;
+  String _name;
+  String get name => _name;
 
   final _methods = <String, _Method>{};
 
@@ -21,9 +22,9 @@ abstract class Endpoint {
 
   List<Scope> get allowedScopes => [scopeAny];
 
-  Endpoint(Server server) {
+  void initialize(Server server, String name) {
     _server = server;
-    _server.addEndpoint(this);
+    _name = name;
 
     // Find remotely callable methods, first argument should be a Session object
     final mirror = reflect(this);
@@ -74,13 +75,14 @@ abstract class Endpoint {
 
       // Check that it exists
       String input = inputs[requiredParam.name];
-      if (input == null)
-        return ResultInvalidParams('Parameter ${requiredParam.name} is missing in call: $uri');
+      Object arg;
 
       // Validate argument
-      Object arg = _formatArg(input, requiredParam, server.serializationManager);
-      if (arg == null)
-        return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri');
+      if (input != null) {
+        arg = _formatArg(input, requiredParam, server.serializationManager);
+        if (arg == null)
+          return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri');
+      }
 
       // Add to call list
       callArgs.add(arg);

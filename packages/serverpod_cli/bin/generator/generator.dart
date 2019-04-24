@@ -93,7 +93,7 @@ abstract class Generator {
 
     if (binaryPath != null) {
       // Generate protocol
-      print('Generating protocol: ${[binaryPath, '-m', 'generate']}');
+      print('Generating protocol.');
 
       var result = Process.runSync('dart', [binaryPath, '-m', 'generate']);
       String yamlStr = result.stdout;
