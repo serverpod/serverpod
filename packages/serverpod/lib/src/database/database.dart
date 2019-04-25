@@ -272,14 +272,6 @@ class Expression {
     return expression;
   }
 
-//  Expression equals(Expression value) {
-//    return Expression('($this = ${_encoder.convert(value)})');
-//  }
-//
-//  Expression notEquals(dynamic value) {
-//    return Expression('(${this} != ${_encoder.convert(value)})');
-//  }
-
   Expression operator & (dynamic other) {
     assert(other is Expression);
     return Expression('($this AND $other)');
@@ -315,7 +307,6 @@ class Expression {
   }
 }
 
-// TODO: Typed Column subclasses for better type checking in equals method
 abstract class Column extends Expression {
   final Type type;
   final int varcharLength;
@@ -323,33 +314,16 @@ abstract class Column extends Expression {
   const Column(String name, this.type, {this.varcharLength}) : super(name);
 
   String get columnName => expression;
-
-//  Expression equalsInt(int value) {
-//    assert(this.type == int);
-//    return Expression('${this.columnName} = $value');
-//  }
-//
-//  Expression equalsDouble(double value) {
-//    assert(this.type == double);
-//    return Expression('${this.columnName} = $value');
-//  }
-//
-//  Expression equalsBool(bool value) {
-//    assert(this.type == bool);
-//    return Expression('${this.columnName} = $value');
-//  }
-//
-//  Expression equalsString(String value) {
-//    assert(this.type == String);
-//    return Expression('${this.columnName} = ${_encoder.convert(value)}');
-//  }
 }
 
 class ColumnInt extends Column {
   const ColumnInt(String name) : super (name, int);
 
   Expression equals(int value) {
-    return Expression('${this.columnName} = $value');
+    if (value == null)
+      return Expression('${this.columnName} IS NULL');
+    else
+      return Expression('${this.columnName} = $value');
   }
 
   Expression notEquals(int value) {
@@ -361,11 +335,17 @@ class ColumnDouble extends Column {
   const ColumnDouble(String name) : super (name, double);
 
   Expression equals(double value) {
-    return Expression('${this.columnName} = $value');
+    if (value == null)
+      return Expression('${this.columnName} IS NULL');
+    else
+      return Expression('${this.columnName} = $value');
   }
 
   Expression notEquals(double value) {
-    return Expression('${this.columnName} != $value');
+    if (value == null)
+      return Expression('${this.columnName} IS NOT NULL');
+    else
+      return Expression('${this.columnName} != $value');
   }
 }
 
@@ -373,11 +353,17 @@ class ColumnString extends Column {
   const ColumnString(String name, {int varcharLength}) : super (name, String, varcharLength: varcharLength);
 
   Expression equals(String value) {
-    return Expression('${this.columnName} = ${_encoder.convert(value)}');
+    if (value == null)
+      return Expression('${this.columnName} IS NULL');
+    else
+      return Expression('${this.columnName} = ${_encoder.convert(value)}');
   }
 
   Expression notEquals(String value) {
-    return Expression('${this.columnName} != ${_encoder.convert(value)}');
+    if (value == null)
+      return Expression('${this.columnName} IS NOT NULL');
+    else
+      return Expression('${this.columnName} != ${_encoder.convert(value)}');
   }
 }
 
@@ -385,11 +371,17 @@ class ColumnBool extends Column {
   const ColumnBool(String name) : super (name, bool);
 
   Expression equals(bool value) {
-    return Expression('${this.columnName} = $value');
+    if (value == null)
+      return Expression('${this.columnName} IS NULL');
+    else
+      return Expression('${this.columnName} = $value');
   }
 
   Expression notEquals(bool value) {
-    return Expression('${this.columnName} != $value');
+    if (value == null)
+      return Expression('${this.columnName} IS NOT NULL');
+    else
+      return Expression('${this.columnName} != $value');
   }
 }
 
@@ -397,11 +389,17 @@ class ColumnDateTime extends Column {
   const ColumnDateTime(String name) : super (name, DateTime);
 
   Expression equals(bool value) {
-    return Expression('${this.columnName} = ${_encoder.convert(value)}');
+    if (value == null)
+      return Expression('${this.columnName} IS NULL');
+    else
+      return Expression('${this.columnName} = ${_encoder.convert(value)}');
   }
 
   Expression notEquals(bool value) {
-    return Expression('${this.columnName} != ${_encoder.convert(value)}');
+    if (value == null)
+      return Expression('${this.columnName} IS NOT NULL');
+    else
+      return Expression('${this.columnName} != ${_encoder.convert(value)}');
   }
 }
 
