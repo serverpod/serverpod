@@ -22,6 +22,8 @@ abstract class Endpoint {
 
   List<Scope> get allowedScopes => [scopeAny];
 
+  bool get requireLogin => false;
+
   void initialize(Server server, String name) {
     _server = server;
     _name = name;
@@ -56,17 +58,24 @@ abstract class Endpoint {
     if (methodName == null)
       return ResultInvalidParams('method missing in call: $uri');
 
+    Session session = Session(
+      server: server,
+      authenticationKey: auth,
+    );
+
+    if (requireLogin) {
+      if (auth == null)
+        return ResultAuthenticationFailed('No authentication provided');
+      if (!await session.isUserSignedIn)
+        return ResultAuthenticationFailed('Authentication failed');
+    }
+
     var method = _methods[methodName];
     if (method == null)
       return ResultInvalidParams('Method $methodName not found in call: $uri');
 
     // Always add the session as the first argument
-    callArgs.add(
-      Session(
-        server: server,
-        authenticationKey: auth,
-      ),
-    );
+    callArgs.add(session);
 
     // Check required parameters
     for (final requiredParam in method.paramsRequired) {
@@ -150,12 +159,20 @@ abstract class Endpoint {
   }
 }
 
-abstract class Result {
-}
+abstract class Result {}
 
 class ResultInvalidParams extends Result {
   final String errorDescription;
   ResultInvalidParams(this.errorDescription);
+  @override
+  String toString() {
+    return errorDescription;
+  }
+}
+
+class ResultAuthenticationFailed extends Result {
+  final String errorDescription;
+  ResultAuthenticationFailed(this.errorDescription);
   @override
   String toString() {
     return errorDescription;
