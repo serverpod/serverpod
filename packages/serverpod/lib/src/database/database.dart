@@ -88,7 +88,14 @@ class Database {
         return null;
       }
 
-      columns.add(Column(columnName, type, varcharLength: varcharLength));
+      if (type == String)
+        columns.add(ColumnString(columnName, varcharLength: varcharLength));
+      else if (type == int)
+        columns.add(ColumnInt(columnName));
+      else if (type == double)
+        columns.add(ColumnDouble(columnName));
+      else if (type == DateTime)
+        columns.add(ColumnDateTime(columnName));
     }
 
     if (!hasID) {
@@ -265,13 +272,13 @@ class Expression {
     return expression;
   }
 
-  Expression equals(Expression value) {
-    return Expression('($this = ${_encoder.convert(value)})');
-  }
-
-  Expression notEquals(dynamic value) {
-    return Expression('(${this} != ${_encoder.convert(value)})');
-  }
+//  Expression equals(Expression value) {
+//    return Expression('($this = ${_encoder.convert(value)})');
+//  }
+//
+//  Expression notEquals(dynamic value) {
+//    return Expression('(${this} != ${_encoder.convert(value)})');
+//  }
 
   Expression operator & (dynamic other) {
     assert(other is Expression);
@@ -309,7 +316,7 @@ class Expression {
 }
 
 // TODO: Typed Column subclasses for better type checking in equals method
-class Column extends Expression {
+abstract class Column extends Expression {
   final Type type;
   final int varcharLength;
 
@@ -317,24 +324,84 @@ class Column extends Expression {
 
   String get columnName => expression;
 
-  Expression equalsInt(int value) {
-    assert(this.type == int);
+//  Expression equalsInt(int value) {
+//    assert(this.type == int);
+//    return Expression('${this.columnName} = $value');
+//  }
+//
+//  Expression equalsDouble(double value) {
+//    assert(this.type == double);
+//    return Expression('${this.columnName} = $value');
+//  }
+//
+//  Expression equalsBool(bool value) {
+//    assert(this.type == bool);
+//    return Expression('${this.columnName} = $value');
+//  }
+//
+//  Expression equalsString(String value) {
+//    assert(this.type == String);
+//    return Expression('${this.columnName} = ${_encoder.convert(value)}');
+//  }
+}
+
+class ColumnInt extends Column {
+  const ColumnInt(String name) : super (name, int);
+
+  Expression equals(int value) {
     return Expression('${this.columnName} = $value');
   }
 
-  Expression equalsDouble(double value) {
-    assert(this.type == double);
+  Expression notEquals(int value) {
+    return Expression('${this.columnName} != $value');
+  }
+}
+
+class ColumnDouble extends Column {
+  const ColumnDouble(String name) : super (name, double);
+
+  Expression equals(double value) {
     return Expression('${this.columnName} = $value');
   }
 
-  Expression equalsBool(bool value) {
-    assert(this.type == bool);
-    return Expression('${this.columnName} = $value');
+  Expression notEquals(double value) {
+    return Expression('${this.columnName} != $value');
   }
+}
 
-  Expression equalsString(String value) {
-    assert(this.type == String);
+class ColumnString extends Column {
+  const ColumnString(String name, {int varcharLength}) : super (name, String, varcharLength: varcharLength);
+
+  Expression equals(String value) {
     return Expression('${this.columnName} = ${_encoder.convert(value)}');
+  }
+
+  Expression notEquals(String value) {
+    return Expression('${this.columnName} != ${_encoder.convert(value)}');
+  }
+}
+
+class ColumnBool extends Column {
+  const ColumnBool(String name) : super (name, bool);
+
+  Expression equals(bool value) {
+    return Expression('${this.columnName} = $value');
+  }
+
+  Expression notEquals(bool value) {
+    return Expression('${this.columnName} != $value');
+  }
+}
+
+class ColumnDateTime extends Column {
+  const ColumnDateTime(String name) : super (name, DateTime);
+
+  Expression equals(bool value) {
+    return Expression('${this.columnName} = ${_encoder.convert(value)}');
+  }
+
+  Expression notEquals(bool value) {
+    return Expression('${this.columnName} != ${_encoder.convert(value)}');
   }
 }
 

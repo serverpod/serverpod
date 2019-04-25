@@ -226,7 +226,7 @@ class DartGenerator extends Generator{
         // Column descriptions
         for (var field in fields) {
           if (field.shouldSerializeFieldForDatabase(serverCode))
-            out += '  final ${field.name} = Column(\'${field.name}\', ${field.type});\n';
+            out += '  final ${field.name} = ${field.columnType}(\'${field.name}\');\n';
         }
         out += '\n';
 
@@ -456,6 +456,21 @@ enum _FieldScope {
 class _FieldDefinition {
   String name;
   String type;
+
+  String get columnType {
+    if (type == 'int')
+      return 'ColumnInt';
+    if (type == 'double')
+      return 'ColumnDouble';
+    if (type == 'bool')
+      return 'ColumnBool';
+    if (type == 'String')
+      return 'ColumnString';
+    if (type == 'DateTime')
+      return 'ColumnDateTime';
+    return null;
+  }
+
   _FieldScope scope = _FieldScope.all;
 
   bool isTypedList;
