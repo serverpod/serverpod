@@ -33,6 +33,9 @@ abstract class SerializationManager {
   Map<String, constructor> get constructors;
 
   SerializableEntity createEntityFromSerialization(Map<String, dynamic> serialization) {
+    if (serialization == null)
+      return null;
+
     String className = serialization['class'];
     if (className == null)
       return null;
