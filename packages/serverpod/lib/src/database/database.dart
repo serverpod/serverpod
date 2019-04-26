@@ -249,9 +249,15 @@ class Database {
     var query = 'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
     print('$query');
 
-    var result = await connection.query(query);
-    if (result.length != 1)
+    List<List<dynamic>> result;
+    try {
+      result = await connection.query(query);
+      if (result.length != 1)
+        return false;
+    }
+    catch (e) {
       return false;
+    }
 
     List returnedRow = result[0];
     if (returnedRow.length != 1)
@@ -259,6 +265,19 @@ class Database {
 
     row.setColumn('id', returnedRow[0]);
     return true;
+  }
+
+  Future<int> delete(Table table, {Expression where}) async {
+    assert(where != null, 'Missing where parameter');
+
+    String tableName = table.tableName;
+
+    var query = 'DELETE FROM $tableName WHERE $where';
+
+    print('$query');
+    int affectedRows = await connection.execute(query);
+
+    return affectedRows;
   }
 }
 
