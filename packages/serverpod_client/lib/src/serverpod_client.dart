@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-typedef void ServerpodClientErrorCallback(Exception e);
+typedef void ServerpodClientErrorCallback(Error e);
 
 class ServerpodClient {
   final String _authorizationKeyEntry = 'serverpod_authorizationKey';
