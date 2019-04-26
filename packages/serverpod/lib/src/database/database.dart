@@ -203,7 +203,7 @@ class Database {
     return returnedRow[0];
   }
 
-  Future<Null> update(TableRow row) async {
+  Future<Null> update(TableRow row, {Transaction transaction}) async {
     Map data = row.serializeForDatabase()['data'];
 
     int id = data['id'];
@@ -220,13 +220,20 @@ class Database {
     String updates = updatesList.join(', ');
 
     var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
+
+    if (transaction != null) {
+      transaction._queries.add(query);
+      transaction._database = this;
+      return null;
+    }
+
     print('$query');
 
     int affectedRows = await connection.execute(query);
     print('updated $affectedRows rows');
   }
 
-  Future<bool> insert(TableRow row) async {
+  Future<bool> insert(TableRow row, {Transaction transaction}) async {
     Map data = row.serializeForDatabase()['data'];
 
     var columnsList = <String>[];
@@ -247,6 +254,12 @@ class Database {
     String values = valueList.join(', ');
 
     var query = 'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
+
+    if (transaction != null) {
+      transaction._queries.add(query);
+      transaction._database = this;
+      return null;
+    }
     print('$query');
 
     List<List<dynamic>> result;
@@ -267,17 +280,61 @@ class Database {
     return true;
   }
 
-  Future<int> delete(Table table, {Expression where}) async {
+  Future<int> delete(Table table, {Expression where, Transaction transaction}) async {
     assert(where != null, 'Missing where parameter');
 
     String tableName = table.tableName;
 
     var query = 'DELETE FROM $tableName WHERE $where';
 
+    if (transaction != null) {
+      transaction._queries.add(query);
+      transaction._database = this;
+      return null;
+    }
+
     print('$query');
     int affectedRows = await connection.execute(query);
 
     return affectedRows;
+  }
+
+  Future<bool> deleteRow(TableRow row, {Transaction transaction}) async {
+    var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
+
+    if (transaction != null) {
+      transaction._queries.add(query);
+      transaction._database = this;
+      return null;
+    }
+
+    print('$query');
+    int affectedRows = await connection.execute(query);
+
+    return affectedRows == 1;
+  }
+}
+
+class Transaction {
+  List<String> _queries = [];
+  Database _database;
+
+  Future<bool> execute() async {
+    assert(_queries.length > 0, 'No queries added to transaction');
+    assert(_database != null, 'Database cannot be null');
+
+    try {
+      await _database.connection.transaction((
+          PostgreSQLExecutionContext ctx) async {
+        for (var query in _queries) {
+          await ctx.query(query);
+        }
+      });
+    }
+    catch (e) {
+      return false;
+    }
+    return true;
   }
 }
 
