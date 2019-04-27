@@ -203,7 +203,7 @@ class Database {
     return returnedRow[0];
   }
 
-  Future<Null> update(TableRow row, {Transaction transaction}) async {
+  Future<bool> update(TableRow row, {Transaction transaction}) async {
     Map data = row.serializeForDatabase()['data'];
 
     int id = data['id'];
@@ -230,7 +230,7 @@ class Database {
     print('$query');
 
     int affectedRows = await connection.execute(query);
-    print('updated $affectedRows rows');
+    return affectedRows == 1;
   }
 
   Future<bool> insert(TableRow row, {Transaction transaction}) async {
