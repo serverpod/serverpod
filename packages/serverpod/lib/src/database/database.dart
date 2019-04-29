@@ -215,7 +215,7 @@ class Database {
         continue;
       String value = _encoder.convert(data[column]);
 
-      updatesList.add('$column = $value');
+      updatesList.add('"$column" = $value');
     }
     String updates = updatesList.join(', ');
 
@@ -247,7 +247,7 @@ class Database {
       if (value == null)
         continue;
 
-      columnsList.add(column);
+      columnsList.add('"$column"');
       valueList.add(value);
     }
     String columns = columnsList.join(', ');
@@ -386,8 +386,9 @@ class Expression {
 abstract class Column extends Expression {
   final Type type;
   final int varcharLength;
+  final String _columnName;
 
-  const Column(String name, this.type, {this.varcharLength}) : super(name);
+  const Column(String this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
 
   String get columnName => expression;
 }
