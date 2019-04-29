@@ -390,7 +390,7 @@ abstract class Column extends Expression {
 
   const Column(String this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
 
-  String get columnName => expression;
+  String get columnName => _columnName;
 }
 
 class ColumnInt extends Column {
