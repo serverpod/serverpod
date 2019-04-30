@@ -335,6 +335,8 @@ class DartGenerator extends Generator{
   String generateEndpoints(String yamlStr) {
     Map doc = loadYaml(yamlStr);
 
+    print('doc: $doc');
+
     String out = '';
 
     // Header
@@ -519,7 +521,7 @@ class _FieldDefinition {
   String get deserialization {
     if (isTypedList) {
       if (listType == 'String' || listType == 'int' || listType == 'double' || listType == 'bool') {
-        return 'data[\'$name\']';
+        return 'data[\'$name\'].cast<$listType>()';
       }
       else {
         return 'data[\'$name\']?.map<$listType>((a) => $listType.fromSerialization(a))?.toList()';
