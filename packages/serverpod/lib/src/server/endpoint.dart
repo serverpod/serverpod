@@ -133,7 +133,6 @@ abstract class Endpoint {
       return null;
     }
 
-
     try {
       var data = jsonDecode(input);
       return serializationManager.createEntityFromSerialization(data);
