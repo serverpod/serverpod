@@ -90,7 +90,7 @@ abstract class Endpoint {
       if (input != null) {
         arg = _formatArg(input, requiredParam, server.serializationManager);
         if (arg == null)
-          return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri');
+          return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri value: $input');
       }
 
       // Add to call list
@@ -107,7 +107,7 @@ abstract class Endpoint {
       // Validate argument
       Object arg = _formatArg(input, optionalParam, server.serializationManager);
       if (arg == null)
-        return ResultInvalidParams('Parameter ${optionalParam.name} has invalid type: $uri');
+        return ResultInvalidParams('Optional parameter ${optionalParam.name} has invalid type: $uri');
 
       // Add to call list
       callArgs.add(arg);
@@ -123,6 +123,16 @@ abstract class Endpoint {
       return input;
     if (paramDef.type == int)
       return int.tryParse(input);
+    if (paramDef.type == double)
+      return double.tryParse(input);
+    if (paramDef.type == bool) {
+      if (input == 'true')
+        return true;
+      else if (input == 'false')
+        return false;
+      return null;
+    }
+
 
     try {
       var data = jsonDecode(input);
@@ -213,7 +223,7 @@ class _Parameter {
     type = parameterMirror.type.reflectedType;
     name = MirrorSystem.getName(parameterMirror.simpleName);
 
-    assert(type == Session || type == int || type == String || serializationManager.constructors[type.toString()] != null);
+    assert(type == Session || type == int || type == double || type == bool || type == String || serializationManager.constructors[type.toString()] != null);
   }
 
   String name;

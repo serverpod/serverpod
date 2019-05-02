@@ -56,15 +56,18 @@ class ServerpodClient {
           .close(); // done instead of close() ?
       String data = await _readResponse(response);
 
+      // TODO: Support more types!
       if (returnTypeName == 'int')
-        return int.parse(data);
+        return int.tryParse(data);
       else if (returnTypeName == 'String')
         return data;
 
       return serializationManager.createEntityFromSerialization(
           jsonDecode(data));
     }
-    catch(e) {
+    catch(e, stack) {
+      print('Exception: $e');
+      print('$stack');
       if (errorHandler != null)
         errorHandler(e);
       else
