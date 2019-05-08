@@ -222,7 +222,7 @@ class _Parameter {
     type = parameterMirror.type.reflectedType;
     name = MirrorSystem.getName(parameterMirror.simpleName);
 
-    assert(type == Session || type == int || type == double || type == bool || type == String || serializationManager.constructors[type.toString()] != null);
+    assert(type == Session || type == int || type == double || type == bool || type == String || serializationManager.constructors[type.toString()] != null, 'Unserializable type $type');
   }
 
   String name;
