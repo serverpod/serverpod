@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:yaml/yaml.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'config.dart';
@@ -21,6 +22,7 @@ class Server {
   ServerConfig config;
   Database database;
   final SerializationManager serializationManager;
+  Map<String, String> _passwords;
 
   final AuthenticationHandler authenticationHandler;
 
@@ -46,11 +48,25 @@ class Server {
       config = ServerConfig('config/$_runningMode.yaml');
       print(config);
 
+      // Load passwords
+      try {
+        String passwordYaml = File('config/passwords.yaml').readAsStringSync();
+        Map passwords = loadYaml(passwordYaml);
+        _passwords = passwords.cast<String, String>();
+      }
+      catch(_) {
+        _passwords = <String, String>{};
+      }
+
       // Setup database
       if (config.dbConfigured) {
         database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
       }
     }
+  }
+
+  String getPassword(String key) {
+    return _passwords[key];
   }
 
   void addEndpoint(Endpoint endpoint, String name) {
