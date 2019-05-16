@@ -13,7 +13,7 @@ class Session {
   bool _initialized = false;
 
   Future<Null> _initialize() async {
-    if (server.authenticationHandler != null) {
+    if (server.authenticationHandler != null  && authenticationKey != null) {
       var authenticationInfo = await server.authenticationHandler(server, authenticationKey);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUser;
