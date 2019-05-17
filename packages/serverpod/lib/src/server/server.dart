@@ -6,8 +6,11 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'config.dart';
 import 'endpoint.dart';
+import 'future_call.dart';
+import 'future_call_manager.dart';
 import '../authentication/authentication_info.dart';
 import '../database/database.dart';
+import '../generated/protocol.dart' as private;
 
 class ServerRunMode {
   static final development = 'development';
@@ -16,17 +19,24 @@ class ServerRunMode {
 }
 
 class Server {
-  final _endpoints = <String,Endpoint>{};
+  final _endpoints = <String, Endpoint>{};
   String _runningMode;
+  bool _running = false;
+  bool get running => _running;
 
   ServerConfig config;
   Database database;
   final SerializationManager serializationManager;
-  Map<String, String> _passwords;
+  SerializationManager _privateSerializationManager;
+  FutureCallManager _futureCallManager;
+  Map<String, String> _passwords = <String, String>{};
 
   final AuthenticationHandler authenticationHandler;
 
   Server(List<String> args, this.serializationManager, {this.authenticationHandler}) {
+    _privateSerializationManager = private.Protocol();
+    serializationManager.appendConstructors(_privateSerializationManager.constructors);
+
     // Read command line arguments
     try {
       final argParser = ArgParser()
@@ -62,20 +72,34 @@ class Server {
       if (config.dbConfigured) {
         database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
       }
+
+      // Setup future calls
+      _futureCallManager = FutureCallManager(this, serializationManager);
     }
   }
+
+  int get serverId => 0;
 
   String getPassword(String key) {
     return _passwords[key];
   }
 
   void addEndpoint(Endpoint endpoint, String name) {
-    if (_endpoints.containsKey(endpoint.name)) {
-      logWarning('Added endpoint with duplicate name (${endpoint.name})');
-    }
+    if (_endpoints.containsKey(name))
+      logWarning('Added endpoint with duplicate name ($name)');
 
     endpoint.initialize(this, name);
-    _endpoints[endpoint.name] = endpoint;
+    _endpoints[name] = endpoint;
+  }
+
+  void addFutureCall(FutureCall call, String name) {
+    if (_futureCallManager != null)
+      _futureCallManager.addFutureCall(call, name);
+  }
+
+  void callWithDelay(String callName, SerializableEntity object, Duration delay) {
+    assert(_running, 'Server is not running, call start() before using future calls');
+    _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
   }
 
   void start() async {
@@ -104,6 +128,10 @@ class Server {
       });
     });
 
+    // Start future calls
+    _futureCallManager?.start();
+
+    _running = true;
     print('\nServerpod listening on port ${config.port}');
   }
 

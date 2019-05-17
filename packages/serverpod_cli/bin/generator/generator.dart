@@ -24,9 +24,6 @@ void performGenerate(bool verbose) {
   }
 
   String pathBinary = generatorConfig['binary'];
-  if (pathBinary == null) {
-    print('Option "binary" is required in config/generator.yaml');
-  }
 
   String pathSource = generatorConfig['source'];
   if (pathSource == null) {

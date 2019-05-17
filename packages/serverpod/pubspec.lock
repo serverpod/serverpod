@@ -53,10 +53,17 @@ packages:
   postgres:
     dependency: "direct main"
     description:
-      name: postgres
+      path: "../../../postgresql-dart"
+      relative: true
+    source: path
+    version: "1.0.2"
+  resource:
+    dependency: "direct main"
+    description:
+      name: resource
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "2.1.5"
   serverpod_serialization:
     dependency: "direct main"
     description:

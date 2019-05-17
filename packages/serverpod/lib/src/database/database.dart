@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:postgres/postgres.dart';
 import 'package:postgres/src/text_codec.dart';
+import 'package:resource/src/resolve.dart';
 import 'package:yaml/yaml.dart';
 
 import 'table.dart';
@@ -18,13 +19,16 @@ class Database {
   Database(SerializationManager serializationManager, String host, int port, String name, String user, String pass) {
     _serializationManager = serializationManager;
     connection = PostgreSQLConnection(host, port, name, username: user, password: pass);
-    if (_serializationManager != null)
-      _loadTableClassMappings();
   }
 
-  bool _loadTableClassMappings() {
+  Future<bool> _loadTableClassMappings(String directory) async {
+    if (directory.startsWith('package:')) {
+      var uri = await resolveUri(Uri.parse(directory));
+      directory = uri.path;
+    }
+
     // Parse yaml files for data
-    var dir = Directory('bin/protocol');
+    var dir = Directory(directory);
     var list = dir.listSync();
     for (var entity in list) {
       if (entity is File && entity.path.endsWith('.yaml')) {
@@ -45,6 +49,11 @@ class Database {
   }
 
   Future<bool> connect() async {
+    if (_serializationManager != null) {
+      await _loadTableClassMappings('bin/protocol');
+      await _loadTableClassMappings('package:serverpod/src/protocol');
+    }
+
     await connection.open();
     return !connection.isClosed;
   }
@@ -269,6 +278,7 @@ class Database {
         return false;
     }
     catch (e) {
+      print('exception: $e');
       return false;
     }
 
@@ -359,18 +369,26 @@ class Expression {
   }
 
   Expression operator > (dynamic other) {
+    if (!(other is Expression))
+      other = _encoder.convert(other);
     return Expression('($this > $other)');
   }
 
   Expression operator >= (dynamic other) {
+    if (!(other is Expression))
+      other = _encoder.convert(other);
     return Expression('($this >= $other)');
   }
 
   Expression operator < (dynamic other) {
+    if (!(other is Expression))
+      other = _encoder.convert(other);
     return Expression('($this < $other)');
   }
 
   Expression operator <= (dynamic other) {
+    if (!(other is Expression))
+      other = _encoder.convert(other);
     return Expression('($this <= $other)');
   }
 

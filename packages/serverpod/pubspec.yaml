@@ -5,10 +5,12 @@ environment:
   sdk: '>=2.1.0 <3.0.0'
 dependencies:
   args: ^1.5.1
-  postgres: ^1.0.2
+  postgres:
+    path: ../../../postgresql-dart
   yaml: ^2.1.15
   serverpod_serialization:
     path: ../serverpod_serialization
+  resource: ^2.1.5
 
 dev_dependencies:
 #  unittest: any

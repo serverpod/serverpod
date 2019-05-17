@@ -90,10 +90,6 @@ class DartGenerator extends Generator{
         out += '    return null;\n';
         out += '  }\n';
 
-//        out += '\n';
-//
-//        out += '  String toString() => \'$enumName.\$name\';\n';
-
         out += '}\n';
         return out;
       }
@@ -195,7 +191,7 @@ class DartGenerator extends Generator{
       out += '    });\n';
       out += '  }\n';
 
-      // Serialization for database
+      // Serialization for database and everything
       if (serverCode) {
         out += '  Map<String, dynamic> serializeForDatabase() {\n';
         out += '    return wrapSerializationData({\n';
@@ -203,6 +199,18 @@ class DartGenerator extends Generator{
         for (var field in fields) {
           if (field.shouldSerializeFieldForDatabase(serverCode))
             out += '      \'${field.name}\': ${field.serialization},\n';
+        }
+
+        out += '    });\n';
+        out += '  }\n';
+
+        out += '\n';
+
+        out += '  Map<String, dynamic> serializeAll() {\n';
+        out += '    return wrapSerializationData({\n';
+
+        for (var field in fields) {
+          out += '      \'${field.name}\': ${field.serialization},\n';
         }
 
         out += '    });\n';

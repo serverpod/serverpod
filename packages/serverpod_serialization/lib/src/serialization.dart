@@ -7,6 +7,8 @@ abstract class SerializableEntity {
 
   Map<String, dynamic> serialize();
 
+  Map<String, dynamic> serializeAll() => serialize();
+
   Map<String, dynamic> wrapSerializationData(Map<String, dynamic> data) {
     return {
       'class': className,
@@ -54,6 +56,12 @@ abstract class SerializationManager {
     else {
       print('Unknown entity type ${entity.runtimeType}');
       throw FormatException();
+    }
+  }
+
+  void appendConstructors(Map<String, constructor> map) {
+    for (String className in map.keys) {
+      constructors[className] = map[className];
     }
   }
 }
