@@ -5,6 +5,7 @@ environment:
   sdk: '>=2.1.0 <3.0.0'
 dependencies:
   args: ^1.5.1
+  collection: ^1.14.11
   postgres:
     path: ../../../postgresql-dart
   yaml: ^2.1.15
