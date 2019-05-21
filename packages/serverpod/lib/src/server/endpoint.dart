@@ -50,18 +50,18 @@ abstract class Endpoint {
   Future handleUriCall(Uri uri) async {
     List callArgs = [];
 
-    var inputs = uri.queryParameters;
+    Session session = Session(
+      server: server,
+      uri: uri,
+      endpointName: name,
+    );
 
-    String auth = inputs['auth'];
-    String methodName = inputs['method'];
+    var methodName = session.methodName;
+    var auth = session.authenticationKey;
+    var inputParams = session.queryParameters;
 
     if (methodName == null)
       return ResultInvalidParams('method missing in call: $uri');
-
-    Session session = Session(
-      server: server,
-      authenticationKey: auth,
-    );
 
     if (requireLogin) {
       if (auth == null)
@@ -83,7 +83,7 @@ abstract class Endpoint {
         continue;
 
       // Check that it exists
-      String input = inputs[requiredParam.name];
+      String input = inputParams[requiredParam.name];
       Object arg;
 
       // Validate argument
@@ -100,7 +100,7 @@ abstract class Endpoint {
     // Check optional parameters
     for (final optionalParam in method.paramsOptional) {
       // Check if it exists
-      String input = inputs[optionalParam.name];
+      String input = inputParams[optionalParam.name];
       if (input == null)
         continue;
 
@@ -114,7 +114,12 @@ abstract class Endpoint {
     }
 
     // Call handleCall method
-    return method.callMirror.apply(callArgs).reflectee;
+    var result = await method.callMirror.apply(callArgs).reflectee;
+
+    // Print session info
+    print('CALL: ${session.endpointName}.${session.methodName} time: ${session.runningTime.inMilliseconds}ms numQueries: ${session.queries.length}');
+
+    return result;
   }
 
   Object _formatArg(String input, _Parameter paramDef, SerializationManager serializationManager) {

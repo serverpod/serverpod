@@ -5,6 +5,7 @@ import 'package:postgres/src/text_codec.dart';
 import 'package:resource/src/resolve.dart';
 import 'package:yaml/yaml.dart';
 
+import '../server/session.dart';
 import 'table.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -131,17 +132,20 @@ class Database {
     return null;
   }
 
-  Future<TableRow> findById(Table table, int id) async {
+  Future<TableRow> findById(Table table, int id, {Session session}) async {
     var result = await find(
       table,
       where: Expression('id = $id'),
+      session: session,
     );
     if (result.length == 0)
       return null;
     return result[0];
   }
   
-  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true, Session session}) async {
+    var startTime = DateTime.now();
+
     String tableName = table.tableName;
     var query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
@@ -154,20 +158,24 @@ class Database {
     if (offset != null)
       query += ' OFFSET $offset';
 
-    print('query: $query');
-
     var list = <TableRow>[];
-    var result = await connection.mappedResultsQuery(query);
-
-    for (var rawRow in result) {
-      list.add(_formatTableRow(tableName, rawRow[tableName]));
+    try {
+      var result = await connection.mappedResultsQuery(query);
+      for (var rawRow in result) {
+        list.add(_formatTableRow(tableName, rawRow[tableName]));
+      }
+    }
+    catch(e, trace) {
+      _logQuery(session, query, startTime, exception: e, trace: trace);
+      rethrow;
     }
 
+    _logQuery(session, query, startTime, numRowsAffected: list.length);
     return list;
   }
 
-  Future<TableRow> findSingleRow(Table table, {Expression where, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
-    var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset);
+  Future<TableRow> findSingleRow(Table table, {Expression where, int offset, Column orderBy, bool orderDescending=false, bool useCache=true, Session session}) async {
+    var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
     if (result.length == 0)
       return null;
     else
@@ -194,25 +202,36 @@ class Database {
     return _serializationManager.createEntityFromSerialization(serialization);
   }
 
-  Future<int> count(Table table, {Expression where, int limit, bool useCache=true}) async {
+  Future<int> count(Table table, {Expression where, int limit, bool useCache=true, Session session}) async {
+    var startTime = DateTime.now();
+
     String tableName = table.tableName;
     var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
     if (limit != null)
       query += ' LIMIT $limit';
-    print('$query');
 
-    var result = await connection.query(query);
-    if (result.length != 1)
-      return 0;
+    try {
+      var result = await connection.query(query);
 
-    List returnedRow = result[0];
-    if (returnedRow.length != 1)
-      return 0;
+      if (result.length != 1)
+        return 0;
 
-    return returnedRow[0];
+      List returnedRow = result[0];
+      if (returnedRow.length != 1)
+        return 0;
+
+      _logQuery(session, query, startTime, numRowsAffected: 1);
+      return returnedRow[0];
+    }
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
   }
 
-  Future<bool> update(TableRow row, {Transaction transaction}) async {
+  Future<bool> update(TableRow row, {Transaction transaction, Session session}) async {
+    DateTime startTime = DateTime.now();
+
     Map data = row.serializeForDatabase()['data'];
 
     int id = data['id'];
@@ -236,13 +255,19 @@ class Database {
       return null;
     }
 
-    print('$query');
-
-    int affectedRows = await connection.execute(query);
-    return affectedRows == 1;
+    try {
+      int affectedRows = await connection.execute(query);
+      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
+      return affectedRows == 1;
+    } catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
   }
 
-  Future<bool> insert(TableRow row, {Transaction transaction}) async {
+  Future<bool> insert(TableRow row, {Transaction transaction, Session session}) async {
+    DateTime startTime = DateTime.now();
+
     Map data = row.serializeForDatabase()['data'];
 
     var columnsList = <String>[];
@@ -269,7 +294,6 @@ class Database {
       transaction._database = this;
       return null;
     }
-    print('$query');
 
     List<List<dynamic>> result;
     try {
@@ -277,12 +301,15 @@ class Database {
       if (result.length != 1)
         return false;
     }
-    catch (e) {
-      print('exception: $e');
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
       return false;
     }
 
     List returnedRow = result[0];
+
+    _logQuery(session, query, startTime, numRowsAffected: returnedRow.length);
+
     if (returnedRow.length != 1)
       return false;
 
@@ -290,7 +317,9 @@ class Database {
     return true;
   }
 
-  Future<int> delete(Table table, {Expression where, Transaction transaction}) async {
+  Future<int> delete(Table table, {Expression where, Transaction transaction, Session session}) async {
+    DateTime startTime = DateTime.now();
+
     assert(where != null, 'Missing where parameter');
 
     String tableName = table.tableName;
@@ -303,13 +332,20 @@ class Database {
       return null;
     }
 
-    print('$query');
-    int affectedRows = await connection.execute(query);
-
-    return affectedRows;
+    try {
+      int affectedRows = await connection.execute(query);
+      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
+      return affectedRows;
+    }
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
   }
 
-  Future<bool> deleteRow(TableRow row, {Transaction transaction}) async {
+  Future<bool> deleteRow(TableRow row, {Transaction transaction, Session session}) async {
+    DateTime startTime = DateTime.now();
+
     var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
 
     if (transaction != null) {
@@ -318,10 +354,30 @@ class Database {
       return null;
     }
 
-    print('$query');
-    int affectedRows = await connection.execute(query);
+    try {
+      int affectedRows = await connection.execute(query);
+      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
+      return affectedRows == 1;
+    }
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
 
-    return affectedRows == 1;
+  void _logQuery(Session session, String query, DateTime startTime, {int numRowsAffected, Exception exception, StackTrace trace}) {
+    if (session == null)
+      return;
+
+    session.queries.add(
+      QueryInfo(
+        query: query,
+        time: DateTime.now().difference(startTime),
+        numRows: numRowsAffected,
+        exception: exception,
+        stackTrace: trace,
+      ),
+    );
   }
 }
 
@@ -416,13 +472,13 @@ class ColumnInt extends Column {
 
   Expression equals(int value) {
     if (value == null)
-      return Expression('${this.columnName} IS NULL');
+      return Expression('"${this.columnName}" IS NULL');
     else
-      return Expression('${this.columnName} = $value');
+      return Expression('"${this.columnName}" = $value');
   }
 
   Expression notEquals(int value) {
-    return Expression('${this.columnName} != $value');
+    return Expression('"${this.columnName}" != $value');
   }
 }
 
@@ -431,16 +487,16 @@ class ColumnDouble extends Column {
 
   Expression equals(double value) {
     if (value == null)
-      return Expression('${this.columnName} IS NULL');
+      return Expression('"${this.columnName}" IS NULL');
     else
-      return Expression('${this.columnName} = $value');
+      return Expression('"${this.columnName}" = $value');
   }
 
   Expression notEquals(double value) {
     if (value == null)
-      return Expression('${this.columnName} IS NOT NULL');
+      return Expression('"${this.columnName}" IS NOT NULL');
     else
-      return Expression('${this.columnName} != $value');
+      return Expression('"${this.columnName}" != $value');
   }
 }
 
@@ -449,16 +505,16 @@ class ColumnString extends Column {
 
   Expression equals(String value) {
     if (value == null)
-      return Expression('${this.columnName} IS NULL');
+      return Expression('"${this.columnName}" IS NULL');
     else
-      return Expression('${this.columnName} = ${_encoder.convert(value)}');
+      return Expression('"${this.columnName}" = ${_encoder.convert(value)}');
   }
 
   Expression notEquals(String value) {
     if (value == null)
-      return Expression('${this.columnName} IS NOT NULL');
+      return Expression('"${this.columnName}" IS NOT NULL');
     else
-      return Expression('${this.columnName} != ${_encoder.convert(value)}');
+      return Expression('"${this.columnName}" != ${_encoder.convert(value)}');
   }
 }
 
@@ -467,16 +523,16 @@ class ColumnBool extends Column {
 
   Expression equals(bool value) {
     if (value == null)
-      return Expression('${this.columnName} IS NULL');
+      return Expression('"${this.columnName}" IS NULL');
     else
-      return Expression('${this.columnName} = $value');
+      return Expression('"${this.columnName}" = $value');
   }
 
   Expression notEquals(bool value) {
     if (value == null)
-      return Expression('${this.columnName} IS NOT NULL');
+      return Expression('"${this.columnName}" IS NOT NULL');
     else
-      return Expression('${this.columnName} != $value');
+      return Expression('"${this.columnName}" != $value');
   }
 }
 
@@ -485,16 +541,16 @@ class ColumnDateTime extends Column {
 
   Expression equals(bool value) {
     if (value == null)
-      return Expression('${this.columnName} IS NULL');
+      return Expression('"${this.columnName}" IS NULL');
     else
-      return Expression('${this.columnName} = ${_encoder.convert(value)}');
+      return Expression('"${this.columnName}" = ${_encoder.convert(value)}');
   }
 
   Expression notEquals(bool value) {
     if (value == null)
-      return Expression('${this.columnName} IS NOT NULL');
+      return Expression('"${this.columnName}" IS NOT NULL');
     else
-      return Expression('${this.columnName} != ${_encoder.convert(value)}');
+      return Expression('"${this.columnName}" != ${_encoder.convert(value)}');
   }
 }
 

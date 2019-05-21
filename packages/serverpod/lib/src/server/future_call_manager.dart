@@ -10,7 +10,6 @@ class FutureCallManager {
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer _timer;
-  bool _lock = false;
 
   FutureCallManager(this._server, this._serializationManager);
 
@@ -46,20 +45,17 @@ class FutureCallManager {
   }
 
   void _run() async {
-    _timer = Timer.periodic(Duration(seconds: 5), (_) async {
-      await _checkQueue();
-    });
+    _checkQueue();
   }
 
   Future<Null> _checkQueue() async {
-    if (_lock)
-      return;
-
-    _lock = true;
-
+    // Get calls
     DateTime now = DateTime.now();
 
-    var rows = await _server.database.find(tFutureCallEntry, where: (tFutureCallEntry.time <= now));
+    var rows = await _server.database.find(
+      tFutureCallEntry,
+      where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId.equals(_server.serverId),
+    );
 
     for(FutureCallEntry entry in rows) {
       FutureCall call = _futureCalls[entry.name];
@@ -74,9 +70,16 @@ class FutureCallManager {
       call.invoke(object);
     }
 
-    if (rows.length > 0)
-      await _server.database.delete(tFutureCallEntry, where: (tFutureCallEntry.time <= now));
+    // Remove the invoked calls
+    if (rows.length > 0) {
+      await _server.database.delete(
+        tFutureCallEntry,
+        where: tFutureCallEntry.serverId.equals(
+            _server.serverId) & (tFutureCallEntry.time <= now),
+      );
+    }
 
-    _lock = false;
+    // Check the queue again in 5 seconds
+    _timer = Timer(Duration(seconds: 5), _checkQueue);
   }
 }

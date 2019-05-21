@@ -137,7 +137,6 @@ class Server {
 
   Future<Null> _handleRequest(HttpRequest request) async {
     final uri = request.requestedUri;
-    print('request: $uri');
 
     var result = await _handleUriCall(uri);
 
