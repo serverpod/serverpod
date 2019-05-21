@@ -35,10 +35,13 @@ abstract class Endpoint {
     for (Symbol methodSymbol in classMirror.instanceMembers.keys) {
       MethodMirror methodMirror = classMirror.instanceMembers[methodSymbol];
 
+      var methodName = MirrorSystem.getName(methodSymbol);
+
       if (methodMirror.parameters.length >= 1 &&
           !methodMirror.parameters[0].isOptional &&
           !methodMirror.parameters[0].isNamed &&
-          methodMirror.parameters[0].type.reflectedType == Session) {
+          methodMirror.parameters[0].type.reflectedType == Session &&
+          !methodName.startsWith('_')) {
 
         ClosureMirror closureMirror = mirror.getField(methodSymbol);
         var method = _Method(methodSymbol, closureMirror, server);
