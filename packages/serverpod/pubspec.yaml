@@ -14,4 +14,4 @@ dependencies:
   resource: ^2.1.5
 
 dev_dependencies:
-#  unittest: any
+  test: ^1.6.3
