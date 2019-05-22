@@ -9,6 +9,7 @@ import 'endpoint.dart';
 import 'future_call.dart';
 import 'future_call_manager.dart';
 import '../authentication/authentication_info.dart';
+import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart' as private;
 
@@ -33,7 +34,10 @@ class Server {
 
   final AuthenticationHandler authenticationHandler;
 
-  Server(List<String> args, this.serializationManager, {this.authenticationHandler}) {
+  Caches _caches;
+  Caches get caches => _caches;
+
+  Server(List<String> args, this.serializationManager, {this.authenticationHandler, Caches caches}) {
     _privateSerializationManager = private.Protocol();
     serializationManager.appendConstructors(_privateSerializationManager.constructors);
 
@@ -75,6 +79,9 @@ class Server {
 
       // Setup future calls
       _futureCallManager = FutureCallManager(this, serializationManager);
+
+      // Setup caches
+      _caches = caches ?? Caches(serializationManager);
     }
   }
 
