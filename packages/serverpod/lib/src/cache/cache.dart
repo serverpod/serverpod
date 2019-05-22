@@ -11,7 +11,7 @@ class Cache {
 
   Cache(this.maxEntries, this._serializationManager);
 
-  void put(String key, SerializableEntity object, {Duration lifetime, String group}) {
+  Future<Null> put(String key, SerializableEntity object, {Duration lifetime, String group}) async {
     if (_keyList.length >= maxEntries) {
       _removeOldestEntry();
     }
@@ -25,8 +25,8 @@ class Cache {
     );
 
     // Remove old entry
-    if (get(key) != null)
-      invalidateKey(key);
+    if (await get(key) != null)
+      await invalidateKey(key);
 
     // Insert
     _keyList.insert(0, _KeyListKey(key, entry.creationTime));
@@ -41,13 +41,15 @@ class Cache {
         groupKeys.add(key);
       }
     }
+
+    assert(_entries.length == _keyList.length, 'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
   }
 
   void _removeOldestEntry() {
     // Remove oldest key
     var oldKey = _keyList.removeLast();
-    var entry = _entries.remove(oldKey);
-    assert (entry != null);
+    var entry = _entries.remove(oldKey.key);
+    assert (entry != null, 'Failed to find oldKey: $oldKey');
 
     // Remove from group
     if (entry.group != null)
@@ -63,20 +65,21 @@ class Cache {
     }
   }
 
-  SerializableEntity get(String key) {
+  Future<SerializableEntity> get(String key) async {
     var entry = _entries[key];
     if (entry == null)
       return null;
 
-    if (entry.expirationTime.compareTo(DateTime.now()) > 0) {
-      invalidateKey(key);
+    if (entry.expirationTime != null && entry.expirationTime.compareTo(DateTime.now()) < 0) {
+      await invalidateKey(key);
       return null;
     }
 
     return _serializationManager.createEntityFromSerialization(entry.serializedObject);
   }
 
-  void invalidateKey(String key) {
+  Future<Null> invalidateKey(String key) async {
+    print('invalidateKey');
     // Remove from entries
     var entry = _entries.remove(key);
     if (entry == null)
@@ -91,14 +94,27 @@ class Cache {
   }
 
   void _removeKeyFromKeyList(String key, DateTime time) {
+    print('removeKeyFromList $key / $time');
     int idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time), compare: (_KeyListKey a, _KeyListKey b) {
-      return a.creationTime.compareTo(b.creationTime);
+      return b.creationTime.compareTo(a.creationTime);
     });
-    if (idx != -1)
-      _keyList.removeAt(idx);
+
+    assert(idx != -1);
+
+    // Step backwards in case entries have the exact same time
+    while(idx > 0 && _keyList[idx - 1].creationTime == time)
+      idx --;
+
+    while(idx < _keyList.length && _keyList[idx].creationTime == time) {
+      if (_keyList[idx].key == key) {
+        break;
+      }
+    }
+
+    _keyList.removeAt(idx);
   }
 
-  void invalidateGroup(String group) {
+  Future< Null> invalidateGroup(String group) async {
     if (group == null)
       return;
 
@@ -109,7 +125,7 @@ class Cache {
     // Make a copy of the set before starting to delete keys
     var keyList = keys.toList();
     for (var key in keyList) {
-      invalidateKey(key);
+      await invalidateKey(key);
     }
   }
 
@@ -117,6 +133,11 @@ class Cache {
     _keyList.clear();
     _groups.clear();
     _entries.clear();
+  }
+
+  int get size  {
+    assert(_entries.length == _keyList.length, 'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
+    return _entries.length;
   }
 }
 
@@ -126,7 +147,7 @@ class _CacheEntry {
   final Map<String, dynamic> serializedObject;
   final DateTime creationTime;
   final Duration lifetime;
-  DateTime get expirationTime => creationTime.add(lifetime);
+  DateTime get expirationTime => lifetime == null ? null : creationTime.add(lifetime);
 
   _CacheEntry({this.key, this.group, this.serializedObject, this.lifetime,})
       : creationTime = DateTime.now();
@@ -137,4 +158,6 @@ class _KeyListKey {
   final DateTime creationTime;
 
   _KeyListKey(this.key, this.creationTime);
+
+  String toString() => 'KeyListKey($key, $creationTime)';
 }
