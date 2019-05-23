@@ -225,6 +225,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+  serverpod_client:
+    dependency: transitive
+    description:
+      path: "../serverpod_client"
+      relative: true
+    source: path
+    version: "0.0.1"
   serverpod_serialization:
     dependency: "direct main"
     description:
@@ -232,6 +239,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  serverpod_service_client:
+    dependency: "direct main"
+    description:
+      path: "../serverpod_service_client"
+      relative: true
+    source: path
+    version: "0.0.0"
   shelf:
     dependency: transitive
     description:

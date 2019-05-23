@@ -1,0 +1,17 @@
+name: serverpod_service_client
+description: A starting point for Dart libraries or applications.
+# version: 1.0.0
+# homepage: https://www.example.com
+# author: viktor <viktorlidholt@gmail.com>
+
+environment:
+  sdk: '>=2.2.0 <3.0.0'
+
+dependencies:
+  serverpod_client:
+    path: ../serverpod_client
+#  path: ^1.4.1
+
+dev_dependencies:
+  pedantic: ^1.0.0
+  test: ^1.0.0

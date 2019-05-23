@@ -2,13 +2,15 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import 'auth_key_manager.dart';
 
 typedef void ServerpodClientErrorCallback(Error e);
 
 class ServerpodClient {
-  final String _authorizationKeyEntry = 'serverpod_authorizationKey';
+//  final String _authorizationKeyEntry = 'serverpod_authorizationKey';
+  final AuthorizationKeyManager authorizationKeyManager;
 
   final String host;
   final SerializationManager serializationManager;
@@ -17,15 +19,17 @@ class ServerpodClient {
   bool _initialized = false;
   ServerpodClientErrorCallback errorHandler;
 
-  ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler}) {
+  ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authorizationKeyManager}) {
     _httpClient = HttpClient(context: context);
     assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
   }
 
   Future<Null> _initialize() async {
-    var prefs = await SharedPreferences.getInstance();
-    _authorizationKey = prefs.get(_authorizationKeyEntry);
+    print('initialize()');
+    if (authorizationKeyManager != null)
+      _authorizationKey = await authorizationKeyManager.get();
+    print('got key: $_authorizationKey');
 
     _initialized = true;
   }
@@ -86,7 +90,8 @@ class ServerpodClient {
 
   Future<Null> setAuthorizationKey(String authorizationKey) async {
     _authorizationKey = authorizationKey;
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_authorizationKeyEntry, authorizationKey);
+
+    if (authorizationKeyManager != null)
+      await authorizationKeyManager.put(authorizationKey);
   }
 }
