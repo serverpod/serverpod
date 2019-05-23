@@ -84,6 +84,25 @@ class Serverpod {
   }
 
   void start() async {
+    if (_runMode == ServerpodRunMode.generate) {
+      for (Endpoint endpoint in server.endpoints.values) {
+        endpoint.printDefinition();
+      }
+      return;
+    }
+
+    // Connect to database
+    if (database != null) {
+      bool success = await database.connect();
+      if (success) {
+        print('Connected to database');
+      }
+      else {
+        print('Failed to connect to database');
+        database = null;
+      }
+    }
+
     await server.start();
   }
 

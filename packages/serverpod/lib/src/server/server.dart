@@ -13,7 +13,7 @@ import '../cache/caches.dart';
 import '../database/database.dart';
 
 class Server {
-  final _endpoints = <String, Endpoint>{};
+  final endpoints = <String, Endpoint>{};
 
   final Serverpod serverpod;
   final int serverId;
@@ -49,11 +49,11 @@ class Server {
   }
 
   void addEndpoint(Endpoint endpoint, String name) {
-    if (_endpoints.containsKey(name))
+    if (endpoints.containsKey(name))
       logWarning('Added endpoint with duplicate name ($name)');
 
     endpoint.initialize(this, name);
-    _endpoints[name] = endpoint;
+    endpoints[name] = endpoint;
   }
 
   void addFutureCall(FutureCall call, String name) {
@@ -67,25 +67,6 @@ class Server {
   }
 
   void start() async {
-    if (runMode == ServerpodRunMode.generate) {
-      for (Endpoint endpoint in _endpoints.values) {
-        endpoint.printDefinition();
-      }
-      return;
-    }
-
-    // Connect to database
-    if (database != null) {
-      bool success = await database.connect();
-      if (success) {
-        print('Connected to database');
-      }
-      else {
-        print('Failed to connect to database');
-        database = null;
-      }
-    }
-
     HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer server) {
       server.listen((HttpRequest request) {
         _handleRequest(request);
@@ -120,7 +101,7 @@ class Server {
 
   Future _handleUriCall(Uri uri) async {
     String endpointName = uri.path.substring(1);
-    Endpoint endpoint = _endpoints[endpointName];
+    Endpoint endpoint = endpoints[endpointName];
 
     if (endpoint == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');

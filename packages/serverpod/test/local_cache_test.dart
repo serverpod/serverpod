@@ -1,16 +1,16 @@
 import 'package:test/test.dart';
 import 'package:serverpod/src/generated/protocol.dart';
-import 'package:serverpod/src/cache/cache.dart';
+import 'package:serverpod/src/cache/local_cache.dart';
 
 const cacheMaxSize = 10;
 
 void main() {
   Protocol serializationManager;
-  Cache cache;
+  LocalCache cache;
 
   setUp(() {
     serializationManager = Protocol();
-    cache = Cache(cacheMaxSize, serializationManager);
+    cache = LocalCache(cacheMaxSize, serializationManager);
   });
 
   test('Put and get object', () async {
