@@ -79,7 +79,6 @@ class Cache {
   }
 
   Future<Null> invalidateKey(String key) async {
-    print('invalidateKey');
     // Remove from entries
     var entry = _entries.remove(key);
     if (entry == null)
@@ -94,7 +93,6 @@ class Cache {
   }
 
   void _removeKeyFromKeyList(String key, DateTime time) {
-    print('removeKeyFromList $key / $time');
     int idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time), compare: (_KeyListKey a, _KeyListKey b) {
       return b.creationTime.compareTo(a.creationTime);
     });
