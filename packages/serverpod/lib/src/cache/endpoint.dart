@@ -4,6 +4,8 @@ import '../../server.dart';
 import '../generated/protocol.dart';
 import 'local_cache.dart';
 
+const endpointNameCache = 'cache';
+
 class CacheEndpoint extends Endpoint {
   LocalCache _cache;
 

@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:yaml/yaml.dart';
 
 import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
+import '../cache/endpoint.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart' as internal;
 import 'config.dart';
@@ -28,6 +28,7 @@ class Serverpod {
   Database database;
 
   Server server;
+  Server _serviceServer;
   
   Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler, Caches caches}) {
     _internalSerializationManager = internal.Protocol();
@@ -103,7 +104,28 @@ class Serverpod {
       }
     }
 
+    print('');
+
+    await _startServiceServer();
+
     await server.start();
+  }
+
+  Future<Null> _startServiceServer() async {
+    _serviceServer = Server(
+      serverpod: this,
+      serverId: 0,
+      port: 8081,
+      serializationManager: _internalSerializationManager,
+      database: database,
+      passwords: _passwords,
+      runMode: _runMode,
+      name: 'Insights',
+    );
+    
+    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager), endpointNameCache);
+    
+    await _serviceServer.start();
   }
 
   void addEndpoint(Endpoint endpoint, String name) {

@@ -23,6 +23,7 @@ class Server {
   final SerializationManager serializationManager;
   final AuthenticationHandler authenticationHandler;
   final Caches caches;
+  final String name;
 
   bool _running = false;
   bool get running => _running;
@@ -39,8 +40,10 @@ class Server {
     @required this.runMode,
     Caches caches,
     this.authenticationHandler,
+    String name,
   }) :
-    this.caches = caches ?? Caches(serializationManager)
+    this.caches = caches ?? Caches(serializationManager),
+    this.name = name ?? 'Server id $serverId'
   {
     if (runMode != ServerpodRunMode.generate) {
       // Setup future calls
@@ -77,7 +80,7 @@ class Server {
     _futureCallManager?.start();
 
     _running = true;
-    print('\nServerpod listening on port ${port}');
+    print('$name listening on port ${port}');
   }
 
   Future<Null> _handleRequest(HttpRequest request) async {
