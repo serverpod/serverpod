@@ -1,94 +1,51 @@
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:yaml/yaml.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'config.dart';
 import 'endpoint.dart';
 import 'future_call.dart';
 import 'future_call_manager.dart';
+import 'runmode.dart';
+import 'serverpod.dart';
 import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
-import '../generated/protocol.dart' as private;
-
-class ServerRunMode {
-  static final development = 'development';
-  static final production = 'production';
-  static final generate = 'generate';
-}
 
 class Server {
   final _endpoints = <String, Endpoint>{};
-  String _runningMode;
+
+  final Serverpod serverpod;
+  final int serverId;
+  final int port;
+  final String runMode;
+  Database database;
+  final SerializationManager serializationManager;
+  final AuthenticationHandler authenticationHandler;
+  final Caches caches;
+
   bool _running = false;
   bool get running => _running;
 
-  ServerConfig config;
-  Database database;
-  final SerializationManager serializationManager;
-  SerializationManager _privateSerializationManager;
   FutureCallManager _futureCallManager;
-  Map<String, String> _passwords = <String, String>{};
 
-  final AuthenticationHandler authenticationHandler;
-
-  Caches _caches;
-  Caches get caches => _caches;
-
-  Server(List<String> args, this.serializationManager, {this.authenticationHandler, Caches caches}) {
-    _privateSerializationManager = private.Protocol();
-    serializationManager.appendConstructors(_privateSerializationManager.constructors);
-
-    // Read command line arguments
-    try {
-      final argParser = ArgParser()
-        ..addOption('mode', abbr: 'm',
-            allowed: [ServerRunMode.development, ServerRunMode.production, ServerRunMode.generate],
-            defaultsTo: ServerRunMode.development);
-      ArgResults results = argParser.parse(args);
-      _runningMode = results['mode'];
-    }
-    catch(e) {
-      logWarning('Unknown run mode, defaulting to development');
-      _runningMode = ServerRunMode.development;
-    }
-
-    // Load config file
-    if (_runningMode != ServerRunMode.generate) {
-      print('Mode: $_runningMode');
-
-      config = ServerConfig('config/$_runningMode.yaml');
-      print(config);
-
-      // Load passwords
-      try {
-        String passwordYaml = File('config/passwords.yaml').readAsStringSync();
-        Map passwords = loadYaml(passwordYaml);
-        _passwords = passwords.cast<String, String>();
-      }
-      catch(_) {
-        _passwords = <String, String>{};
-      }
-
-      // Setup database
-      if (config.dbConfigured) {
-        database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
-      }
-
+  Server({
+    this.serverpod,
+    @required this.serverId,
+    @required this.port,
+    @required this.serializationManager,
+    this.database,
+    Map<String, String> passwords,
+    @required this.runMode,
+    Caches caches,
+    this.authenticationHandler,
+  }) :
+    this.caches = caches ?? Caches(serializationManager)
+  {
+    if (runMode != ServerpodRunMode.generate) {
       // Setup future calls
       _futureCallManager = FutureCallManager(this, serializationManager);
-
-      // Setup caches
-      _caches = caches ?? Caches(serializationManager);
     }
-  }
-
-  int get serverId => 0;
-
-  String getPassword(String key) {
-    return _passwords[key];
   }
 
   void addEndpoint(Endpoint endpoint, String name) {
@@ -110,7 +67,7 @@ class Server {
   }
 
   void start() async {
-    if (_runningMode == ServerRunMode.generate) {
+    if (runMode == ServerpodRunMode.generate) {
       for (Endpoint endpoint in _endpoints.values) {
         endpoint.printDefinition();
       }
@@ -129,7 +86,7 @@ class Server {
       }
     }
 
-    HttpServer.bind(InternetAddress.anyIPv6, config.port).then((HttpServer server) {
+    HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer server) {
       server.listen((HttpRequest request) {
         _handleRequest(request);
       });
@@ -139,7 +96,7 @@ class Server {
     _futureCallManager?.start();
 
     _running = true;
-    print('\nServerpod listening on port ${config.port}');
+    print('\nServerpod listening on port ${port}');
   }
 
   Future<Null> _handleRequest(HttpRequest request) async {
@@ -159,8 +116,6 @@ class Server {
       request.response.close();
       return;
     }
-
-    // request.response.close();
   }
 
   Future _handleUriCall(Uri uri) async {
@@ -174,6 +129,9 @@ class Server {
   }
 
   void logWarning(String warning) {
-    print('WARNING: $warning');
+    if (serverpod != null)
+      serverpod.logWarning(warning);
+    else
+      print('WARNING: $warning');
   }
 }
