@@ -137,6 +137,7 @@ class Cache {
 
   int get size  {
     assert(_entries.length == _keyList.length, 'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
+    assert(_groups.length <= _entries.length);
     return _entries.length;
   }
 }

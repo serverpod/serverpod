@@ -92,6 +92,58 @@ void main() {
   });
 
   test('Invalidate group', () async {
-    
+    for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
+      var entry = FutureCallEntry(serverId: i);
+      await cache.put('entry:$i', entry, group: 'group:0');
+    }
+    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+      var entry = FutureCallEntry(serverId: i);
+      await cache.put('entry:$i', entry, group: 'group:1');
+    }
+
+    expect(cache.size, equals(cacheMaxSize));
+
+    await cache.invalidateGroup('group:0');
+    expect(cache.size, equals(cacheMaxSize ~/ 2));
+
+    FutureCallEntry retrieved = await cache.get('entry:0');
+    expect(retrieved, isNull);
+
+    retrieved = await cache.get('entry:${cacheMaxSize - 1}');
+    expect(retrieved.serverId, equals(cacheMaxSize - 1));
+
+    await cache.invalidateGroup('group:1');
+    expect(cache.size, equals(0));
+
+    await cache.invalidateGroup('group:1');
+    expect(cache.size, equals(0));
+  });
+
+  test('Invalidate key then group', () async {
+    for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
+      var entry = FutureCallEntry(serverId: i);
+      await cache.put('entry:$i', entry, group: 'group:0');
+    }
+    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+      var entry = FutureCallEntry(serverId: i);
+      await cache.put('entry:$i', entry, group: 'group:1');
+    }
+
+    await cache.invalidateKey('entry:0');
+    FutureCallEntry retrieved = await cache.get('entry:0');
+    expect(retrieved, isNull);
+
+    retrieved = await cache.get('entry:1');
+    expect(retrieved.serverId, equals(1));
+
+    await cache.invalidateGroup('group:0');
+
+    expect(cache.size, equals(cacheMaxSize ~/ 2));
+
+    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+      await cache.invalidateKey('entry:$i');
+    }
+
+    expect(cache.size, equals(0));
   });
 }
