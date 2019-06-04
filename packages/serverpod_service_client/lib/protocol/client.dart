@@ -5,6 +5,17 @@ import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
+class _EndpointInsights {
+  Client client;
+  _EndpointInsights(this.client);
+
+  Future<int> getLog(int numEntries,) async {
+    return await client.callServerEndpoint('insights', 'getLog', 'int', {
+      'numEntries':numEntries,
+    });
+  }
+}
+
 class _EndpointCache {
   Client client;
   _EndpointCache(this.client);
@@ -26,7 +37,7 @@ class _EndpointCache {
     });
   }
 
-  Future<Null> put(String key,String data,String group,DateTime expiration,) async {
+  Future<Null> put(String key,String data,String group,String expiration,) async {
     return await client.callServerEndpoint('cache', 'put', 'Null', {
       'key':key,
       'data':data,
@@ -43,9 +54,11 @@ class _EndpointCache {
 }
 
 class Client extends ServerpodClient {
+  _EndpointInsights insights;
   _EndpointCache cache;
 
   Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthorizationKeyManager authorizationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authorizationKeyManager: authorizationKeyManager) {
+    insights = _EndpointInsights(this);
     cache = _EndpointCache(this);
   }
 
