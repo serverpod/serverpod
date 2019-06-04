@@ -17,7 +17,7 @@ class BuildSchema {
   Database database;
 
   Future<Null> setup() async {
-    config = ServerConfig('config/development.yaml');
+    config = ServerConfig('config/development.yaml', 0);
     print(config);
 
     // Setup database

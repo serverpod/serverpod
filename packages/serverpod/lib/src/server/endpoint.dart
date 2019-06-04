@@ -120,7 +120,7 @@ abstract class Endpoint {
     var result = await method.callMirror.apply(callArgs).reflectee;
 
     // Print session info
-    print('CALL: ${session.endpointName}.${session.methodName} time: ${session.runningTime.inMilliseconds}ms numQueries: ${session.queries.length}');
+    server.logDebug('CALL: ${session.endpointName}.${session.methodName} time: ${session.runningTime.inMilliseconds}ms numQueries: ${session.queries.length}');
 
     return result;
   }
@@ -140,6 +140,8 @@ abstract class Endpoint {
         return false;
       return null;
     }
+    if (paramDef.type == DateTime)
+      return DateTime.tryParse(input);
 
     try {
       var data = jsonDecode(input);

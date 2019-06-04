@@ -1,0 +1,8 @@
+class: LogEntry
+tableName: serverpod_log
+fields:
+  serverId: int
+  time: DateTime
+  logLevel: int
+  message: String
+  stackTrace: String

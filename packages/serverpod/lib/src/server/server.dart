@@ -11,6 +11,7 @@ import 'serverpod.dart';
 import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
+import '../generated/protocol.dart';
 
 class Server {
   final endpoints = <String, Endpoint>{};
@@ -66,7 +67,7 @@ class Server {
 
   void callWithDelay(String callName, SerializableEntity object, Duration delay) {
     assert(_running, 'Server is not running, call start() before using future calls');
-    _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
+    _futureCallManager?.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
   }
 
   void start() async {
@@ -80,7 +81,7 @@ class Server {
     _futureCallManager?.start();
 
     _running = true;
-    print('$name listening on port ${port}');
+    logInfo('$name listening on port ${port}');
   }
 
   Future<Null> _handleRequest(HttpRequest request) async {
@@ -89,7 +90,7 @@ class Server {
     var result = await _handleUriCall(uri);
 
     if (result is ResultInvalidParams) {
-      print('Invalid params: $result');
+      logDebug('Invalid params: $result');
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
@@ -112,10 +113,23 @@ class Server {
     return endpoint.handleUriCall(uri);
   }
 
-  void logWarning(String warning) {
-    if (serverpod != null)
-      serverpod.logWarning(warning);
-    else
-      print('WARNING: $warning');
+  void logDebug(String message) {
+    serverpod.log(LogLevel.debug, message);
+  }
+
+  void logInfo(String message) {
+    serverpod.log(LogLevel.info, message);
+  }
+
+  void logWarning(String warning, {StackTrace stackTrace}) {
+    serverpod.log(LogLevel.warning, warning, stackTrace: stackTrace);
+  }
+
+  void logError(String error, {StackTrace stackTrace}) {
+    serverpod.log(LogLevel.error, error, stackTrace: stackTrace);
+  }
+
+  void logFatal(String error, {StackTrace stackTrace}) {
+    serverpod.log(LogLevel.fatal, error, stackTrace: stackTrace);
   }
 }

@@ -27,6 +27,7 @@ class Serverpod {
 
   Database database;
 
+  int serverId = 0;
   Server server;
   Server _serviceServer;
   
@@ -39,21 +40,23 @@ class Serverpod {
       final argParser = ArgParser()
         ..addOption('mode', abbr: 'm',
             allowed: [ServerpodRunMode.development, ServerpodRunMode.production, ServerpodRunMode.generate],
-            defaultsTo: ServerpodRunMode.development);
+            defaultsTo: ServerpodRunMode.development)
+        ..addOption('server-id', abbr: 'i', defaultsTo: '0');
       ArgResults results = argParser.parse(args);
       _runMode = results['mode'];
+      serverId = int.tryParse(results['server-id']) ?? 0;
     }
     catch(e) {
-      logWarning('Unknown run mode, defaulting to development');
+      log(internal.LogLevel.warning, 'Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
     }
 
     // Load config file
     if (_runMode != ServerpodRunMode.generate) {
-      print('Mode: $_runMode');
+      log(internal.LogLevel.info, 'Mode: $_runMode');
 
-      config = ServerConfig('config/$_runMode.yaml');
-      print(config);
+      config = ServerConfig('config/$_runMode.yaml', serverId);
+      log(internal.LogLevel.info, config.toString());
 
       // Load passwords
       try {
@@ -74,7 +77,7 @@ class Serverpod {
     server = Server(
       serverpod: this,
       serverId: 0,
-      port: config.port,
+      port: config?.port ?? 8080,
       serializationManager: serializationManager,
       database: database,
       passwords: _passwords,
@@ -96,15 +99,13 @@ class Serverpod {
     if (database != null) {
       bool success = await database.connect();
       if (success) {
-        print('Connected to database');
+        log(internal.LogLevel.info, 'Connected to database');
       }
       else {
-        print('Failed to connect to database');
+        log(internal.LogLevel.error, 'Failed to connect to database');
         database = null;
       }
     }
-
-    print('');
 
     await _startServiceServer();
 
@@ -114,8 +115,8 @@ class Serverpod {
   Future<Null> _startServiceServer() async {
     _serviceServer = Server(
       serverpod: this,
-      serverId: 0,
-      port: 8081,
+      serverId: serverId,
+      port: config?.servicePort ?? 8081,
       serializationManager: _internalSerializationManager,
       database: database,
       passwords: _passwords,
@@ -140,7 +141,21 @@ class Serverpod {
     return _passwords[key];
   }
 
-  void logWarning(String warning) {
-    print('WARNING: $warning');
+  void log(internal.LogLevel level, String message, {StackTrace stackTrace}) {
+    if (database != null) {
+      var entry = internal.LogEntry(
+        serverId: serverId,
+        time: DateTime.now(),
+        logLevel: level.index,
+        message: message,
+        stackTrace: stackTrace.toString(),
+      );
+
+      database.insert(entry);
+    }
+
+    print('${level.name.toUpperCase()}: $message');
+    if (stackTrace != null)
+      print(stackTrace.toString());
   }
 }

@@ -1,0 +1,7 @@
+enum: LogLevel
+values:
+  - debug
+  - info
+  - warning
+  - error
+  - fatal
