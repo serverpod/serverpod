@@ -1,14 +1,16 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'local_cache.dart';
+import 'distributed_cache.dart';
+import '../server/config.dart';
 
 class Caches {
   final SerializationManager _serializationManager;
 
-  Caches(this._serializationManager) {
+  Caches(this._serializationManager, ServerConfig config, int serverId) {
     _local = LocalCache(100, _serializationManager);
     _localPrio = LocalCache(100, _serializationManager);
-    _distributed = LocalCache(100, _serializationManager);
-    _distributedPrio = LocalCache(100, _serializationManager);
+    _distributed = DistributedCache(100, _serializationManager, config, serverId);
+    _distributedPrio = DistributedCache(100, _serializationManager, config, serverId);
     _query = LocalCache(100, _serializationManager);
   }
 
@@ -18,11 +20,11 @@ class Caches {
   LocalCache _localPrio;
   LocalCache get localPrio => _localPrio;
 
-  LocalCache _distributed;
-  LocalCache get distributed => _distributed;
+  DistributedCache _distributed;
+  DistributedCache get distributed => _distributed;
 
-  LocalCache _distributedPrio;
-  LocalCache get distributedPrio => _distributedPrio;
+  DistributedCache _distributedPrio;
+  DistributedCache get distributedPrio => _distributedPrio;
 
   LocalCache _query;
   LocalCache get query => _query;

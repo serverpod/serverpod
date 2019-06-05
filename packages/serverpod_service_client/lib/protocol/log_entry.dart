@@ -25,13 +25,13 @@ class LogEntry extends SerializableEntity {
 });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
-    id = data['id'];
-    serverId = data['serverId'];
-    logLevel = data['logLevel'];
-    time = data['time'] != null ? DateTime.tryParse(data['time']) : null;
-    stackTrace = data['stackTrace'];
-    message = data['message'];
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    serverId = _data['serverId'];
+    logLevel = _data['logLevel'];
+    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    stackTrace = _data['stackTrace'];
+    message = _data['message'];
   }
 
   Map<String, dynamic> serialize() {

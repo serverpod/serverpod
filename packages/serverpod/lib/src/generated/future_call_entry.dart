@@ -24,12 +24,12 @@ class FutureCallEntry extends TableRow {
 });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
-    id = data['id'];
-    serverId = data['serverId'];
-    time = data['time'] != null ? DateTime.tryParse(data['time']) : null;
-    serializedObject = data['serializedObject'];
-    name = data['name'];
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    serverId = _data['serverId'];
+    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    serializedObject = _data['serializedObject'];
+    name = _data['name'];
   }
 
   Map<String, dynamic> serialize() {

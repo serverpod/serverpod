@@ -43,7 +43,7 @@ class Server {
     this.authenticationHandler,
     String name,
   }) :
-    this.caches = caches ?? Caches(serializationManager),
+    this.caches = runMode == ServerpodRunMode.generate ? null : (caches ?? Caches(serializationManager, serverpod.config, serverId)),
     this.name = name ?? 'Server id $serverId'
   {
     if (runMode != ServerpodRunMode.generate) {

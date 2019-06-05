@@ -17,9 +17,9 @@ class DistributedCacheEntry extends SerializableEntity {
 });
 
   DistributedCacheEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
-    id = data['id'];
-    data = data['data'];
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    data = _data['data'];
   }
 
   Map<String, dynamic> serialize() {

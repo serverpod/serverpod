@@ -170,7 +170,7 @@ class DartGenerator extends Generator{
 
       // Deserialization
       out += '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
-      out += '    var data = unwrapSerializationData(serialization);\n';
+      out += '    var _data = unwrapSerializationData(serialization);\n';
       for (var field in fields) {
         if (field.shouldIncludeField(serverCode))
           out += '    ${field.name} = ${field.deserialization};\n';
@@ -529,21 +529,21 @@ class _FieldDefinition {
   String get deserialization {
     if (isTypedList) {
       if (listType == 'String' || listType == 'int' || listType == 'double' || listType == 'bool') {
-        return 'data[\'$name\'].cast<$listType>()';
+        return '_data[\'$name\'].cast<$listType>()';
       }
       else {
-        return 'data[\'$name\']?.map<$listType>((a) => $listType.fromSerialization(a))?.toList()';
+        return '_data[\'$name\']?.map<$listType>((a) => $listType.fromSerialization(a))?.toList()';
       }
     }
 
     if (type == 'String' || type == 'int' || type == 'double' || type == 'bool') {
-      return 'data[\'$name\']';
+      return '_data[\'$name\']';
     }
     else if (type == 'DateTime') {
-      return 'data[\'$name\'] != null ? DateTime.tryParse(data[\'$name\']) : null';
+      return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
     }
     else {
-      return 'data[\'$name\'] != null ? $type.fromSerialization(data[\'$name\']) : null';
+      return '_data[\'$name\'] != null ? $type.fromSerialization(_data[\'$name\']) : null';
     }
   }
 
