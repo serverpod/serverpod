@@ -26,10 +26,8 @@ class ServerpodClient {
   }
 
   Future<Null> _initialize() async {
-    print('initialize()');
     if (authorizationKeyManager != null)
       _authorizationKey = await authorizationKeyManager.get();
-    print('got key: $_authorizationKey');
 
     _initialized = true;
   }
