@@ -37,7 +37,7 @@ class _EndpointCache {
     });
   }
 
-  Future<Null> put(String key,String data,String group,String expiration,) async {
+  Future<Null> put(String key,String data,String group,DateTime expiration,) async {
     return await client.callServerEndpoint('cache', 'put', 'Null', {
       'key':key,
       'data':data,
