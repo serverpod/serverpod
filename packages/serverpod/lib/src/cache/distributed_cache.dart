@@ -45,34 +45,42 @@ class DistributedCache extends Cache {
     if (lifetime != null)
       expiration = DateTime.now().add(lifetime);
 
-    if (client == null)
+    if (client == null) {
       await _localCache.put(key, object);
-    else
-      await client.cache.put(key, jsonEncode(object.serializeAll()), group, expiration);
+    }
+    else {
+      try {
+        await client.cache.put(
+            key, jsonEncode(object.serializeAll()), group, expiration);
+      }
+      catch (e) {}
+    }
   }
 
   Future<SerializableEntity> get(String key) async {
     assert(key != null, 'Cannot use a null key');
     var client = _clientFromKey(key);
 
-    try {
-      if (client == null) {
-        return await _localCache.get(key);
-      }
-      else {
-        String value = await client.cache.get(key);
-        if (value == null || value == 'null')
-          return null;
-
-        Map<String, dynamic> serialization = jsonDecode(value).cast<
-            String,
-            dynamic>();
-        return serializationManager.createEntityFromSerialization(
-            serialization);
-      }
+    if (client == null) {
+      return await _localCache.get(key);
     }
-    catch(e) {
-      return null;
+    else {
+      String value;
+      try {
+        value = await client.cache.get(key);
+      }
+      catch(e) {
+        print('caught exception $e');
+        return null;
+      }
+      if (value == null || value == 'null')
+        return null;
+
+      Map<String, dynamic> serialization = jsonDecode(value).cast<
+          String,
+          dynamic>();
+      return serializationManager.createEntityFromSerialization(
+          serialization);
     }
   }
 
@@ -80,27 +88,48 @@ class DistributedCache extends Cache {
     assert(key != null, 'Cannot use a null key');
     var client = _clientFromKey(key);
 
-    if (client == null)
+    if (client == null) {
       await _localCache.invalidateKey(key);
-    else
-      await client.cache.invalidateKey(key);
+    }
+    else {
+      try {
+        await client.cache.invalidateKey(key);
+      }
+      catch (e) {
+        return;
+      }
+    }
   }
 
   Future< Null> invalidateGroup(String group) async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
-      if (_cluster[serverNum].serverId == _serverId)
+      if (_cluster[serverNum].serverId == _serverId) {
         await _localCache.invalidateGroup(group);
-      else
-        await _clients[serverNum].cache.invalidateGroup(group);
+      }
+      else {
+        try {
+          await _clients[serverNum].cache.invalidateGroup(group);
+        }
+        catch (e) {
+          continue;
+        }
+      }
     }
   }
 
   Future<Null> clear() async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
-      if (_cluster[serverNum].serverId == _serverId)
+      if (_cluster[serverNum].serverId == _serverId) {
         await _localCache.clear();
-      else
-        await _clients[serverNum].cache.clear();
+      }
+      else {
+        try {
+          await _clients[serverNum].cache.clear();
+        }
+        catch (e) {
+          continue;
+        }
+      }
     }
   }
 
