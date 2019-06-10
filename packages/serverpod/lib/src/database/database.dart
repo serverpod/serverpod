@@ -145,6 +145,8 @@ class Database {
   
   Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true, Session session}) async {
     var startTime = DateTime.now();
+    if (where == null)
+      where = Expression('TRUE');
 
     String tableName = table.tableName;
     var query = 'SELECT * FROM $tableName WHERE $where';
