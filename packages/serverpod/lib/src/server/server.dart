@@ -28,6 +28,8 @@ class Server {
 
   bool _running = false;
   bool get running => _running;
+  
+  HttpServer _httpServer;
 
   FutureCallManager _futureCallManager;
 
@@ -71,9 +73,12 @@ class Server {
   }
 
   void start() async {
-    HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer server) {
-      server.listen((HttpRequest request) {
+    HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
+      _httpServer = httpServer;
+      httpServer.listen((HttpRequest request) {
         _handleRequest(request);
+      }).onDone(() {
+        logInfo('$name stopped');
       });
     });
 
@@ -131,5 +136,11 @@ class Server {
 
   void logFatal(String error, {StackTrace stackTrace}) {
     serverpod.log(LogLevel.fatal, error, stackTrace: stackTrace);
+  }
+
+  void shutdown() {
+    _httpServer.close();
+    _futureCallManager?.stop();
+    _running = false;
   }
 }

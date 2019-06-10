@@ -2,10 +2,14 @@ name: serverpod_cli
 version: 0.0.1
 description: A sample command-line application
 dependencies:
-  args:
+  args: ^1.5.2
+  colorize: ^2.0.0
+  intl: ^0.15.8
   recase: ^2.0.1
   serverpod:
     path: ../serverpod
+  serverpod_service_client:
+    path: ../serverpod_service_client
 
 dev_dependencies:
 #  unittest: any

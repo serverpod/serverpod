@@ -9,9 +9,14 @@ class _EndpointInsights {
   Client client;
   _EndpointInsights(this.client);
 
-  Future<int> getLog(int numEntries,) async {
-    return await client.callServerEndpoint('insights', 'getLog', 'int', {
+  Future<LogResult> getLog(int numEntries,) async {
+    return await client.callServerEndpoint('insights', 'getLog', 'LogResult', {
       'numEntries':numEntries,
+    });
+  }
+
+  Future<Null> shutdown() async {
+    return await client.callServerEndpoint('insights', 'shutdown', 'Null', {
     });
   }
 }

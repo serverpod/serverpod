@@ -67,9 +67,7 @@ class ServerpodClient {
       return serializationManager.createEntityFromSerialization(
           jsonDecode(data));
     }
-    catch(e, stack) {
-      print('Exception: $e');
-      print('$stack');
+    catch(e) {
       if (errorHandler != null)
         errorHandler(e);
       else
@@ -91,5 +89,9 @@ class ServerpodClient {
 
     if (authorizationKeyManager != null)
       await authorizationKeyManager.put(authorizationKey);
+  }
+
+  void close() {
+    _httpClient.close();
   }
 }

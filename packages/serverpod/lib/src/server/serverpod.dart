@@ -9,6 +9,7 @@ import '../cache/caches.dart';
 import '../cache/endpoint.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart' as internal;
+import '../insights/endpoint.dart';
 import 'config.dart';
 import 'endpoint.dart';
 import 'future_call.dart';
@@ -125,6 +126,7 @@ class Serverpod {
     );
     
     _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager), endpointNameCache);
+    _serviceServer.addEndpoint(InsightsEndpoint(this), endpointNameInsights);
     
     await _serviceServer.start();
   }
@@ -157,5 +159,11 @@ class Serverpod {
     print('${level.name.toUpperCase()}: $message');
     if (stackTrace != null)
       print(stackTrace.toString());
+  }
+
+  void shutdown() {
+    server?.shutdown();
+    _serviceServer?.shutdown();
+    database?.disconnect();
   }
 }
