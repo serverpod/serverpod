@@ -66,7 +66,7 @@ void main(List<String> args) async {
     }
     if (results.command.name == cmdCacheInfo) {
       var insights = Insights(results.command['config']);
-      await insights.printCachesInfo(results.command['fetch-keys'] != null);
+      await insights.printCachesInfo(results.command['fetch-keys']);
       insights.close();
       return;
     }
