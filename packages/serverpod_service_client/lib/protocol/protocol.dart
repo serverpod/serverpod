@@ -5,12 +5,16 @@ library protocol;
 
 import 'package:serverpod_client/serverpod_client.dart';
 
+import 'cache_info.dart';
+import 'caches_info.dart';
 import 'future_call_entry.dart';
 import 'log_result.dart';
 import 'distributed_cache_entry.dart';
 import 'log_entry.dart';
 import 'log_level.dart';
 
+export 'cache_info.dart';
+export 'caches_info.dart';
 export 'future_call_entry.dart';
 export 'log_result.dart';
 export 'distributed_cache_entry.dart';
@@ -25,6 +29,8 @@ class Protocol extends SerializationManager {
   Map<String, constructor> get constructors => _constructors;
 
   Protocol() {
+    constructors['CacheInfo'] = (Map<String, dynamic> serialization) => CacheInfo.fromSerialization(serialization);
+    constructors['CachesInfo'] = (Map<String, dynamic> serialization) => CachesInfo.fromSerialization(serialization);
     constructors['FutureCallEntry'] = (Map<String, dynamic> serialization) => FutureCallEntry.fromSerialization(serialization);
     constructors['LogResult'] = (Map<String, dynamic> serialization) => LogResult.fromSerialization(serialization);
     constructors['DistributedCacheEntry'] = (Map<String, dynamic> serialization) => DistributedCacheEntry.fromSerialization(serialization);

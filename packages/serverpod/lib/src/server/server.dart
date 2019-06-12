@@ -41,11 +41,10 @@ class Server {
     this.database,
     Map<String, String> passwords,
     @required this.runMode,
-    Caches caches,
     this.authenticationHandler,
     String name,
+    this.caches,
   }) :
-    this.caches = runMode == ServerpodRunMode.generate ? null : (caches ?? Caches(serializationManager, serverpod.config, serverId)),
     this.name = name ?? 'Server id $serverId'
   {
     if (runMode != ServerpodRunMode.generate) {

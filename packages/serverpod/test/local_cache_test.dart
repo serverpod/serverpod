@@ -26,7 +26,7 @@ void main() {
     retrieved = await cache.get('entry');
     expect(retrieved.serverId, equals(0));
 
-    expect(cache.size, equals(1));
+    expect(cache.localSize, equals(1));
   });
 
   test('Put and get object with lifetime', () async {
@@ -40,7 +40,7 @@ void main() {
     retrieved = await cache.get('entry');
     expect(retrieved, isNull);
 
-    expect(cache.size, equals(0));
+    expect(cache.localSize, equals(0));
   });
 
   test('Put multiple with same key', () async {
@@ -53,7 +53,7 @@ void main() {
     FutureCallEntry retrieved = await cache.get('entry');
     expect(retrieved.serverId, equals(1));
 
-    expect(cache.size, equals(1));
+    expect(cache.localSize, equals(1));
   });
 
   test('Cache overflow', () async {
@@ -64,7 +64,7 @@ void main() {
       await cache.put('entry:$i', entry);
     }
 
-    expect(cache.size, equals(cacheMaxSize));
+    expect(cache.localSize, equals(cacheMaxSize));
 
     FutureCallEntry first = await cache.get('entry:0');
     expect(first, isNull);
@@ -88,7 +88,7 @@ void main() {
     retrieved = await cache.get('entry:$middleId');
     expect(retrieved, isNull);
 
-    expect(cache.size, equals(cacheMaxSize - 1));
+    expect(cache.localSize, equals(cacheMaxSize - 1));
   });
 
   test('Invalidate group', () async {
@@ -101,10 +101,10 @@ void main() {
       await cache.put('entry:$i', entry, group: 'group:1');
     }
 
-    expect(cache.size, equals(cacheMaxSize));
+    expect(cache.localSize, equals(cacheMaxSize));
 
     await cache.invalidateGroup('group:0');
-    expect(cache.size, equals(cacheMaxSize ~/ 2));
+    expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
     FutureCallEntry retrieved = await cache.get('entry:0');
     expect(retrieved, isNull);
@@ -113,10 +113,10 @@ void main() {
     expect(retrieved.serverId, equals(cacheMaxSize - 1));
 
     await cache.invalidateGroup('group:1');
-    expect(cache.size, equals(0));
+    expect(cache.localSize, equals(0));
 
     await cache.invalidateGroup('group:1');
-    expect(cache.size, equals(0));
+    expect(cache.localSize, equals(0));
   });
 
   test('Invalidate key then group', () async {
@@ -138,12 +138,12 @@ void main() {
 
     await cache.invalidateGroup('group:0');
 
-    expect(cache.size, equals(cacheMaxSize ~/ 2));
+    expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
     for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
       await cache.invalidateKey('entry:$i');
     }
 
-    expect(cache.size, equals(0));
+    expect(cache.localSize, equals(0));
   });
 }

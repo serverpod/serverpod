@@ -9,6 +9,7 @@ final cmdGenerate = 'generate';
 final cmdBuildSchema = 'buildschema';
 final cmdShutdown = 'shutdown';
 final cmdLogs = 'logs';
+final cmdCacheInfo = 'cacheinfo';
 
 void main(List<String> args) async {
   ArgParser parser = ArgParser();
@@ -34,6 +35,12 @@ void main(List<String> args) async {
   logsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdLogs, logsParser);
 
+  // "cacheinfo" command
+  ArgParser cacheinfoParser = ArgParser();
+  cacheinfoParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  cacheinfoParser.addFlag('fetch-keys', abbr: 'k', help: 'Fetch all keys stored in the caches of the specificed server');
+  parser.addCommand(cmdCacheInfo, cacheinfoParser);
+
   var results = parser.parse(args);
 
   if (results.command != null) {
@@ -57,6 +64,12 @@ void main(List<String> args) async {
       insights.close();
       return;
     }
+    if (results.command.name == cmdCacheInfo) {
+      var insights = Insights(results.command['config']);
+      await insights.printCachesInfo(results.command['fetch-keys'] != null);
+      insights.close();
+      return;
+    }
   }
 
   _printUsage(parser);
@@ -73,6 +86,7 @@ void _printUsage(ArgParser parser) {
 
   _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]);
   _printCommandUsage(cmdLogs, 'Print logs from a serverpod or a serverpod cluster', parser.commands[cmdLogs]);
+  _printCommandUsage(cmdCacheInfo, 'Print info about what is stored in a server\'s caches', parser.commands[cmdCacheInfo], true);
   _printCommandUsage(cmdShutdown, 'Shutdown a server cluster', parser.commands[cmdGenerate], true);
 }
 

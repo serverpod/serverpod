@@ -3,14 +3,16 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import '../../server.dart';
 import '../generated/protocol.dart';
 import 'local_cache.dart';
+import 'distributed_cache.dart';
 
 const endpointNameCache = 'cache';
+const endpointNameCachePrio = 'cachePrio';
 
 class CacheEndpoint extends Endpoint {
   LocalCache _cache;
 
-  CacheEndpoint(int maxEntries, SerializationManager serializationManager) {
-    _cache = LocalCache(maxEntries, serializationManager);
+  CacheEndpoint(int maxEntries, SerializationManager serializationManager, DistributedCache distributedCache) {
+    _cache = distributedCache?.localCache;
   }
 
   Future<Null> put(Session session, String key, String data, String group, DateTime expiration) async {

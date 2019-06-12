@@ -13,8 +13,9 @@ class DistributedCache extends Cache {
   List<RemoteServerConfig> _cluster = <RemoteServerConfig>[];
   List<Client> _clients = <Client>[];
   int _serverId;
+  bool _isPrio;
   
-  DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId) : super(maxEntries, serializationManager) {
+  DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio) : super(maxEntries, serializationManager) {
     _localCache = LocalCache(maxEntries, serializationManager);
     _serverId = serverId;
     
@@ -50,8 +51,10 @@ class DistributedCache extends Cache {
     }
     else {
       try {
-        await client.cache.put(
-            key, jsonEncode(object.serializeAll()), group, expiration);
+        if (_isPrio)
+          await client.cachePrio.put(key, jsonEncode(object.serializeAll()), group, expiration);
+        else
+          await client.cache.put(key, jsonEncode(object.serializeAll()), group, expiration);
       }
       catch (e) {}
     }
@@ -67,7 +70,10 @@ class DistributedCache extends Cache {
     else {
       String value;
       try {
-        value = await client.cache.get(key);
+        if (_isPrio)
+          value = await client.cachePrio.get(key);
+        else
+          value = await client.cache.get(key);
       }
       catch(e) {
         print('caught exception $e');
@@ -93,7 +99,10 @@ class DistributedCache extends Cache {
     }
     else {
       try {
-        await client.cache.invalidateKey(key);
+        if (_isPrio)
+          await client.cachePrio.invalidateKey(key);
+        else
+          await client.cache.invalidateKey(key);
       }
       catch (e) {
         return;
@@ -108,7 +117,10 @@ class DistributedCache extends Cache {
       }
       else {
         try {
-          await _clients[serverNum].cache.invalidateGroup(group);
+          if (_isPrio)
+            await _clients[serverNum].cachePrio.invalidateGroup(group);
+          else
+            await _clients[serverNum].cache.invalidateGroup(group);
         }
         catch (e) {
           continue;
@@ -124,7 +136,10 @@ class DistributedCache extends Cache {
       }
       else {
         try {
-          await _clients[serverNum].cache.clear();
+          if (_isPrio)
+            await _clients[serverNum].cachePrio.clear();
+          else
+            await _clients[serverNum].cache.clear();
         }
         catch (e) {
           continue;
@@ -133,5 +148,9 @@ class DistributedCache extends Cache {
     }
   }
 
-  int get size => _localCache.size;
+  LocalCache get localCache => _localCache;
+
+  int get localSize => _localCache.localSize;
+
+  List<String> get localKeys => _localCache.localKeys;
 }

@@ -9,8 +9,8 @@ class Caches {
   Caches(this._serializationManager, ServerConfig config, int serverId) {
     _local = LocalCache(100, _serializationManager);
     _localPrio = LocalCache(100, _serializationManager);
-    _distributed = DistributedCache(100, _serializationManager, config, serverId);
-    _distributedPrio = DistributedCache(100, _serializationManager, config, serverId);
+    _distributed = DistributedCache(100, _serializationManager, config, serverId, false);
+    _distributedPrio = DistributedCache(100, _serializationManager, config, serverId, true);
     _query = LocalCache(100, _serializationManager);
   }
 

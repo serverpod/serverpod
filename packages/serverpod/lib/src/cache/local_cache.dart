@@ -12,7 +12,7 @@ class LocalCache extends Cache {
   LocalCache(int maxEntries, SerializationManager serializationManager) : super(maxEntries, serializationManager);
 
   Future<Null> put(String key, SerializableEntity object, {Duration lifetime, String group}) async {
-    if (_keyList.length >= maxEntries) {
+    if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
     }
 
@@ -133,11 +133,13 @@ class LocalCache extends Cache {
     _entries.clear();
   }
 
-  int get size  {
+  int get localSize  {
     assert(_entries.length == _keyList.length, 'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
     assert(_groups.length <= _entries.length);
     return _entries.length;
   }
+
+  List<String> get localKeys => _entries.keys.toList();
 }
 
 class _CacheEntry {

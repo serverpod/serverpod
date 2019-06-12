@@ -2,7 +2,7 @@ import 'package:colorize/colorize.dart';
 import 'package:intl/intl.dart';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_service_client/protocol/protocol.dart';
 
 class Insights {
   Map<int, Client> _clients = <int, Client>{};
@@ -52,6 +52,34 @@ class Insights {
     }
     catch(e) {
       print('Failed to get logs from server at ${client.host}');
+    }
+  }
+
+  Future<Null> printCachesInfo(bool printKeys) async {
+
+    for (int serverId in _clients.keys) {
+      var client = _clients[serverId];
+
+      try {
+        var cachesInfo = await client.insights.getCachesInfo(printKeys);
+
+        _printCacheInfo(cachesInfo.local, 'local', serverId);
+        _printCacheInfo(cachesInfo.localPrio, 'localPrio', serverId);
+        _printCacheInfo(cachesInfo.distributed, 'distributed', serverId);
+        _printCacheInfo(cachesInfo.distributedPrio, 'distributedPrio', serverId);
+      }
+      catch (e, t) {
+        print('Failed to get caches info from server $e $t');
+      }
+    }
+  }
+
+  void _printCacheInfo(CacheInfo info, String name, int serverId) {
+    print('Server: $serverId Cache: $name size: ${info.numEntries} / ${info.maxEntries}');
+    if (info.keys != null) {
+      for (var key in info.keys)
+        print('  $key');
+      print('');
     }
   }
 

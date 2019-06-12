@@ -1,10 +1,10 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Cache {
-  final int maxEntries;
+  final int maxLocalEntries;
   SerializationManager serializationManager;
 
-  Cache(this.maxEntries, this.serializationManager);
+  Cache(this.maxLocalEntries, this.serializationManager);
 
   Future<Null> put(String key, SerializableEntity object, {Duration lifetime, String group});
 
@@ -16,5 +16,7 @@ abstract class Cache {
 
   Future<Null> clear();
 
-  int get size;
+  int get localSize;
+
+  List<String> get localKeys;
 }

@@ -1,0 +1,5 @@
+class: CacheInfo
+fields:
+  numEntries: int
+  maxEntries: int
+  keys: List<String>

@@ -27,12 +27,14 @@ class Serverpod {
   SerializationManager _internalSerializationManager;
 
   Database database;
+  Caches _caches;
+  Caches get caches => _caches;
 
   int serverId = 0;
   Server server;
   Server _serviceServer;
   
-  Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler, Caches caches}) {
+  Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.appendConstructors(_internalSerializationManager.constructors);
 
@@ -73,6 +75,8 @@ class Serverpod {
       if (config.dbConfigured) {
         database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
       }
+
+      _caches = Caches(serializationManager, config, serverId);
     }
 
     server = Server(
@@ -123,9 +127,11 @@ class Serverpod {
       passwords: _passwords,
       runMode: _runMode,
       name: 'Insights',
+      caches: caches,
     );
     
-    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager), endpointNameCache);
+    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributed), endpointNameCache);
+    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributedPrio), endpointNameCachePrio);
     _serviceServer.addEndpoint(InsightsEndpoint(this), endpointNameInsights);
     
     await _serviceServer.start();
