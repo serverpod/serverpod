@@ -529,7 +529,7 @@ class _FieldDefinition {
   String get deserialization {
     if (isTypedList) {
       if (listType == 'String' || listType == 'int' || listType == 'double' || listType == 'bool') {
-        return '_data[\'$name\'].cast<$listType>()';
+        return '_data[\'$name\']?.cast<$listType>()';
       }
       else {
         return '_data[\'$name\']?.map<$listType>((a) => $listType.fromSerialization(a))?.toList()';

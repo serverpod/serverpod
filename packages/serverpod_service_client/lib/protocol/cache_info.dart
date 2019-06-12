@@ -23,7 +23,7 @@ class CacheInfo extends SerializableEntity {
   CacheInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    keys = _data['keys'].cast<String>();
+    keys = _data['keys']?.cast<String>();
     maxEntries = _data['maxEntries'];
     numEntries = _data['numEntries'];
   }
