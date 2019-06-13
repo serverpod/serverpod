@@ -63,66 +63,73 @@ abstract class Endpoint {
     var auth = session.authenticationKey;
     var inputParams = session.queryParameters;
 
-    if (methodName == null)
-      return ResultInvalidParams('method missing in call: $uri');
+    try {
+      if (methodName == null)
+        return ResultInvalidParams('method missing in call: $uri');
 
-    if (requireLogin) {
-      if (auth == null)
-        return ResultAuthenticationFailed('No authentication provided');
-      if (!await session.isUserSignedIn)
-        return ResultAuthenticationFailed('Authentication failed');
-    }
-
-    var method = _methods[methodName];
-    if (method == null)
-      return ResultInvalidParams('Method $methodName not found in call: $uri');
-
-    // Always add the session as the first argument
-    callArgs.add(session);
-
-    // Check required parameters
-    for (final requiredParam in method.paramsRequired) {
-      if (requiredParam.type == Session)
-        continue;
-
-      // Check that it exists
-      String input = inputParams[requiredParam.name];
-      Object arg;
-
-      // Validate argument
-      if (input != null) {
-        arg = _formatArg(input, requiredParam, server.serializationManager);
-        if (arg == null)
-          return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri value: $input');
+      if (requireLogin) {
+        if (auth == null)
+          return ResultAuthenticationFailed('No authentication provided');
+        if (!await session.isUserSignedIn)
+          return ResultAuthenticationFailed('Authentication failed');
       }
 
-      // Add to call list
-      callArgs.add(arg);
+      var method = _methods[methodName];
+      if (method == null)
+        return ResultInvalidParams('Method $methodName not found in call: $uri');
+
+      // Always add the session as the first argument
+      callArgs.add(session);
+
+      // Check required parameters
+      for (final requiredParam in method.paramsRequired) {
+        if (requiredParam.type == Session)
+          continue;
+
+        // Check that it exists
+        String input = inputParams[requiredParam.name];
+        Object arg;
+
+        // Validate argument
+        if (input != null) {
+          arg = _formatArg(input, requiredParam, server.serializationManager);
+          if (arg == null)
+            return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri value: $input');
+        }
+
+        // Add to call list
+        callArgs.add(arg);
+      }
+
+      // Check optional parameters
+      for (final optionalParam in method.paramsOptional) {
+        // Check if it exists
+        String input = inputParams[optionalParam.name];
+        if (input == null)
+          continue;
+
+        // Validate argument
+        Object arg = _formatArg(input, optionalParam, server.serializationManager);
+        if (arg == null)
+          return ResultInvalidParams('Optional parameter ${optionalParam.name} has invalid type: $uri');
+
+        // Add to call list
+        callArgs.add(arg);
+      }
+
+      // Call handleCall method
+      var result = await method.callMirror.apply(callArgs).reflectee;
+
+      // Print session info
+      server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, null, null);
+
+      return result;
     }
-
-    // Check optional parameters
-    for (final optionalParam in method.paramsOptional) {
-      // Check if it exists
-      String input = inputParams[optionalParam.name];
-      if (input == null)
-        continue;
-
-      // Validate argument
-      Object arg = _formatArg(input, optionalParam, server.serializationManager);
-      if (arg == null)
-        return ResultInvalidParams('Optional parameter ${optionalParam.name} has invalid type: $uri');
-
-      // Add to call list
-      callArgs.add(arg);
+    catch (exception, stackTrace) {
+      // Something did not work out
+      var callLogId = await server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, exception.toString(), stackTrace);
+      return ResultInternalServerError(exception.toString(), stackTrace, callLogId);
     }
-
-    // Call handleCall method
-    var result = await method.callMirror.apply(callArgs).reflectee;
-
-    // Print session info
-    server.logDebug('CALL: ${session.endpointName}.${session.methodName} time: ${session.runningTime.inMilliseconds}ms numQueries: ${session.queries.length}');
-
-    return result;
   }
 
   Object _formatArg(String input, _Parameter paramDef, SerializationManager serializationManager) {
@@ -195,6 +202,17 @@ class ResultAuthenticationFailed extends Result {
   @override
   String toString() {
     return errorDescription;
+  }
+}
+
+class ResultInternalServerError extends Result {
+  final String exception;
+  final StackTrace stackTrace;
+  final int callLogId;
+  ResultInternalServerError(this.exception, this.stackTrace, this.callLogId);
+  @override
+  String toString() {
+    return '$exception\n$stackTrace';
   }
 }
 

@@ -94,8 +94,20 @@ class Server {
     var result = await _handleUriCall(uri);
 
     if (result is ResultInvalidParams) {
-      logDebug('Invalid params: $result');
+      if (serverpod.runtimeSettings.logMalformedCalls)
+        logDebug('Malformed call: $result');
       request.response.statusCode = HttpStatus.badRequest;
+      request.response.close();
+      return;
+    }
+    else if (result is ResultAuthenticationFailed) {
+      request.response.statusCode = HttpStatus.forbidden;
+      request.response.close();
+      return;
+    }
+    else if (result is ResultInternalServerError) {
+      request.response.statusCode = HttpStatus.internalServerError;
+      request.response.writeln('Internal server error. Call log id: ${result.callLogId}');
       request.response.close();
       return;
     }

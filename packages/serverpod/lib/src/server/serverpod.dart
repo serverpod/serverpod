@@ -15,6 +15,7 @@ import 'endpoint.dart';
 import 'future_call.dart';
 import 'runmode.dart';
 import 'server.dart';
+import 'session.dart';
 
 class Serverpod {
   String _runMode;
@@ -188,6 +189,57 @@ class Serverpod {
     print('${level.name.toUpperCase()}: $message');
     if (stackTrace != null)
       print(stackTrace.toString());
+  }
+
+  Future<int> logCall(String endpoint, String method, Duration duration, List<QueryInfo> queries, String exception, StackTrace stackTrace) async {
+    if (_runMode == ServerpodRunMode.development) {
+      print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length}');
+      if (exception != null) {
+        print('$exception');
+        print('$stackTrace');
+      }
+    }
+
+    var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration * 1000000.0).toInt());
+
+    if (_runtimeSettings.logAllQueries ||
+        _runtimeSettings.logSlowQueries && isSlow ||
+        _runtimeSettings.logFailedCalls && exception != null
+    ) {
+      var callLogEntry = internal.CallLogEntry(
+        serverId: serverId,
+        time: DateTime.now(),
+        endpoint: endpoint,
+        method: method,
+        duration: duration.inMicroseconds / 1000000.0,
+        numQueries: queries.length,
+        slow: isSlow,
+        error: exception,
+        stackTrace: stackTrace?.toString(),
+      );
+      await database.insert(callLogEntry);
+
+      int callLogId = callLogEntry.id;
+
+      for (var queryInfo in queries) {
+        if (_runtimeSettings.logAllQueries ||
+            _runtimeSettings.logSlowQueries && queryInfo.time > Duration(microseconds: (runtimeSettings.slowQueryDuration * 1000000.0).toInt())
+        ) {
+          // Log query
+          var queryEntry = internal.QueryLogEntry(
+            callLogId: callLogId,
+            query: queryInfo.query,
+            duration: queryInfo.time.inMicroseconds / 1000000.0,
+            numRows: queryInfo.numRows,
+          );
+          await database.insert(queryEntry);
+        }
+      }
+
+      return callLogId;
+    }
+
+    return null;
   }
 
   void shutdown() {
