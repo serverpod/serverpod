@@ -33,6 +33,9 @@ class Serverpod {
   int serverId = 0;
   Server server;
   Server _serviceServer;
+
+  internal.RuntimeSettings _runtimeSettings;
+  internal.RuntimeSettings get runtimeSettings => _runtimeSettings;
   
   Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler}) {
     _internalSerializationManager = internal.Protocol();
@@ -109,6 +112,26 @@ class Serverpod {
       else {
         log(internal.LogLevel.error, 'Failed to connect to database');
         database = null;
+      }
+    }
+
+    // Runtime settings
+    if (database != null) {
+      _runtimeSettings = await database.findSingleRow(internal.tRuntimeSettings);
+      if (_runtimeSettings == null) {
+        // Store default settings
+        _runtimeSettings = internal.RuntimeSettings(
+          logAllCalls: false,
+          logAllQueries: false,
+          logSlowCalls: true,
+          logSlowQueries: true,
+          logFailedCalls: true,
+          logMalformedCalls: false,
+          logLevel: internal.LogLevel.warning.index,
+          slowCallDuration: 1.0,
+          slowQueryDuration: 1.0,
+        );
+        await database.insert(_runtimeSettings);
       }
     }
 

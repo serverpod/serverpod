@@ -1,0 +1,7 @@
+class: QueryLogEntry
+tableName: serverpod_query_log
+fields:
+  callLogId: int
+  query: String
+  duration: double
+  numRows: int

@@ -1,0 +1,12 @@
+class: CallLogEntry
+tableName: serverpod_call_log
+fields:
+  serverId: int
+  time: DateTime
+  endpoint: String
+  method: String
+  duration: double
+  numQueries: int
+  slow: bool
+  error: String
+  stackTrace: String
