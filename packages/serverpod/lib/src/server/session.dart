@@ -1,5 +1,6 @@
 import 'server.dart';
 import 'package:serverpod/src/authentication/scope.dart';
+import '../generated/protocol.dart';
 
 class Session {
   final Uri uri;
@@ -7,6 +8,7 @@ class Session {
   
   DateTime _timeCreated;
   final List<QueryInfo> queries = <QueryInfo>[];
+  final List<LogInfo> log = <LogInfo>[];
 
   String _authenticatedUser;
   List<Scope> _scopes;
@@ -59,6 +61,26 @@ class Session {
   }
   
   Duration get runningTime => DateTime.now().difference(_timeCreated);
+
+  logDebug(String message) {
+    log.add(LogInfo(LogLevel.debug, message));
+  }
+
+  logInfo(String message) {
+    log.add(LogInfo(LogLevel.info, message));
+  }
+
+  logWarning(String message, {StackTrace stackTrace}) {
+    log.add(LogInfo(LogLevel.warning, message, stackTrace: stackTrace));
+  }
+
+  logError(String message, {StackTrace stackTrace}) {
+    log.add(LogInfo(LogLevel.error, message, stackTrace: stackTrace));
+  }
+
+  logFatal(String message, {StackTrace stackTrace}) {
+    log.add(LogInfo(LogLevel.fatal, message, stackTrace: stackTrace));
+  }
 }
 
 class QueryInfo {
@@ -69,4 +91,12 @@ class QueryInfo {
   final StackTrace stackTrace;
 
   QueryInfo({this.query, this.time, this.numRows, this.exception, this.stackTrace});
+}
+
+class LogInfo {
+  final LogLevel level;
+  final String message;
+  final StackTrace stackTrace;
+
+  LogInfo(this.level, this.message, {this.stackTrace});
 }

@@ -14,6 +14,7 @@ class LogEntry extends TableRow {
   int logLevel;
   DateTime time;
   String stackTrace;
+  int callLogId;
   String message;
 
   LogEntry({
@@ -22,6 +23,7 @@ class LogEntry extends TableRow {
     this.logLevel,
     this.time,
     this.stackTrace,
+    this.callLogId,
     this.message,
 });
 
@@ -32,6 +34,7 @@ class LogEntry extends TableRow {
     logLevel = _data['logLevel'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
     stackTrace = _data['stackTrace'];
+    callLogId = _data['callLogId'];
     message = _data['message'];
   }
 
@@ -42,6 +45,7 @@ class LogEntry extends TableRow {
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
       'stackTrace': stackTrace,
+      'callLogId': callLogId,
       'message': message,
     });
   }
@@ -52,6 +56,7 @@ class LogEntry extends TableRow {
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
       'stackTrace': stackTrace,
+      'callLogId': callLogId,
       'message': message,
     });
   }
@@ -63,6 +68,7 @@ class LogEntry extends TableRow {
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
       'stackTrace': stackTrace,
+      'callLogId': callLogId,
       'message': message,
     });
   }
@@ -77,6 +83,7 @@ class LogEntryTable extends Table {
   final logLevel = ColumnInt('logLevel');
   final time = ColumnDateTime('time');
   final stackTrace = ColumnString('stackTrace');
+  final callLogId = ColumnInt('callLogId');
   final message = ColumnString('message');
 
   List<Column> get columns => [
@@ -85,6 +92,7 @@ class LogEntryTable extends Table {
     logLevel,
     time,
     stackTrace,
+    callLogId,
     message,
   ];
 }

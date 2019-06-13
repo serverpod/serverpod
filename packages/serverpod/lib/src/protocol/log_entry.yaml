@@ -6,3 +6,4 @@ fields:
   logLevel: int
   message: String
   stackTrace: String
+  callLogId: int

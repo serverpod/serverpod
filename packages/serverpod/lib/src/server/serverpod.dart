@@ -173,25 +173,28 @@ class Serverpod {
     return _passwords[key];
   }
 
-  void log(internal.LogLevel level, String message, {StackTrace stackTrace}) {
-    if (database != null) {
+  void log(internal.LogLevel level, String message, {StackTrace stackTrace, int callLogId}) {
+    if (database != null && level.index >= (_runtimeSettings?.logLevel ?? 0)) {
       var entry = internal.LogEntry(
         serverId: serverId,
         time: DateTime.now(),
         logLevel: level.index,
         message: message,
         stackTrace: stackTrace.toString(),
+        callLogId: callLogId,
       );
 
       database.insert(entry);
     }
 
-    print('${level.name.toUpperCase()}: $message');
-    if (stackTrace != null)
-      print(stackTrace.toString());
+    if (_runMode == ServerpodRunMode.development) {
+      print('${level.name.toUpperCase()}: $message');
+      if (stackTrace != null)
+        print(stackTrace.toString());
+    }
   }
 
-  Future<int> logCall(String endpoint, String method, Duration duration, List<QueryInfo> queries, String exception, StackTrace stackTrace) async {
+  Future<int> logCall(String endpoint, String method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String exception, StackTrace stackTrace) async {
     if (_runMode == ServerpodRunMode.development) {
       print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length}');
       if (exception != null) {
@@ -220,6 +223,12 @@ class Serverpod {
       await database.insert(callLogEntry);
 
       int callLogId = callLogEntry.id;
+
+      for (var logInfo in sessionLog) {
+        if (logInfo.level.index >= _runtimeSettings.logLevel) {
+          log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace, callLogId: callLogId);
+        }
+      }
 
       for (var queryInfo in queries) {
         if (_runtimeSettings.logAllQueries ||
