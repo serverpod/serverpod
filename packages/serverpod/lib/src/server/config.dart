@@ -14,6 +14,8 @@ class ServerConfig {
   String dbPass;
   String dbName;
 
+  String serviceSecret;
+
   Map<int, RemoteServerConfig> cluster = <int, RemoteServerConfig>{};
 
   ServerConfig(this.file, this.serverId) {
@@ -29,6 +31,7 @@ class ServerConfig {
 
     port = cluster[serverId].port;
     servicePort = cluster[serverId].servicePort;
+    serviceSecret = doc['serviceSecret'] ?? '';
 
     // Get database setup
     if (doc['database'] != null) {

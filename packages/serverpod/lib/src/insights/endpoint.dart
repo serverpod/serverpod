@@ -8,9 +8,9 @@ class InsightsEndpoint extends Endpoint {
   final Serverpod pod;
   InsightsEndpoint(this.pod);
 
-  Future<LogResult> getLog(Session session, int numEntries) async {
-    print('getLog $numEntries');
+  bool get requireLogin => true;
 
+  Future<LogResult> getLog(Session session, int numEntries) async {
     var rows = await server.database.find(
       tLogEntry,
       limit: numEntries,
@@ -20,6 +20,42 @@ class InsightsEndpoint extends Endpoint {
     return LogResult(
       entries: rows.cast<LogEntry>(),
     );
+  }
+
+  Future<SessionLogResult> getSessionLog(Session session, int numEntries) async {
+    var rows = await server.database.find(
+      tCallLogEntry,
+      limit: numEntries,
+      orderBy: tCallLogEntry.id,
+      orderDescending: true,
+    );
+
+    var sessionLogInfo = <SessionLogInfo>[];
+    for (CallLogEntry logEntry in rows) {
+      var messageLogRows = await server.database.find(
+        tLogEntry,
+        where: tLogEntry.callLogId.equals(logEntry.id),
+        orderBy: tLogEntry.id,
+        orderDescending: true,
+      );
+
+      var queryLogRows = await server.database.find(
+        tQueryLogEntry,
+        where: tQueryLogEntry.callLogId.equals(logEntry.id),
+        orderBy: tQueryLogEntry.id,
+        orderDescending: true,
+      );
+
+      sessionLogInfo.add(
+        SessionLogInfo(
+          callLogEntry: logEntry,
+          messageLog: messageLogRows.cast<LogEntry>(),
+          queries: queryLogRows.cast<QueryLogEntry>(),
+        ),
+      );
+    }
+
+    return SessionLogResult(sessionLog: sessionLogInfo);
   }
 
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {

@@ -10,7 +10,7 @@ typedef void ServerpodClientErrorCallback(Error e);
 
 class ServerpodClient {
 //  final String _authorizationKeyEntry = 'serverpod_authorizationKey';
-  final AuthorizationKeyManager authorizationKeyManager;
+  final AuthenticationKeyManager authorizationKeyManager;
 
   final String host;
   final SerializationManager serializationManager;

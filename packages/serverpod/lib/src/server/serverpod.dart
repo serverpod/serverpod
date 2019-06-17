@@ -5,6 +5,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:yaml/yaml.dart';
 
 import '../authentication/authentication_info.dart';
+import '../authentication/serviceAuthentication.dart';
 import '../cache/caches.dart';
 import '../cache/endpoint.dart';
 import '../database/database.dart';
@@ -152,6 +153,7 @@ class Serverpod {
       runMode: _runMode,
       name: 'Insights',
       caches: caches,
+      authenticationHandler: serviceAuthenticationHandler,
     );
     
     _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributed), endpointNameCache);

@@ -62,6 +62,12 @@ class _EndpointInsights {
     return await client.callServerEndpoint('insights', 'shutdown', 'Null', {
     });
   }
+
+  Future<SessionLogResult> getSessionLog(int numEntries,) async {
+    return await client.callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
+      'numEntries':numEntries,
+    });
+  }
 }
 
 class _EndpointCache {
@@ -106,7 +112,7 @@ class Client extends ServerpodClient {
   _EndpointInsights insights;
   _EndpointCache cache;
 
-  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthorizationKeyManager authorizationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authorizationKeyManager: authorizationKeyManager) {
+  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authorizationKeyManager: authenticationKeyManager) {
     cachePrio = _EndpointCachePrio(this);
     insights = _EndpointInsights(this);
     cache = _EndpointCache(this);
