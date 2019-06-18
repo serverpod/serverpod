@@ -3,6 +3,7 @@ import 'package:yaml/yaml.dart';
 
 class ServerConfig {
   final String file;
+  final String runMode;
   final int serverId;
 
   int port;
@@ -18,7 +19,7 @@ class ServerConfig {
 
   Map<int, RemoteServerConfig> cluster = <int, RemoteServerConfig>{};
 
-  ServerConfig(this.file, this.serverId) {
+  ServerConfig(this.runMode, this.serverId) : file = 'config/$runMode.yaml' {
     String data = File(file).readAsStringSync();
     var doc = loadYaml(data);
 

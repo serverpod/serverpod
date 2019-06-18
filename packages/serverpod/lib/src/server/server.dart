@@ -25,6 +25,7 @@ class Server {
   final AuthenticationHandler authenticationHandler;
   final Caches caches;
   final String name;
+  final SecurityContext securityContext;
 
   bool _running = false;
   bool get running => _running;
@@ -44,6 +45,7 @@ class Server {
     this.authenticationHandler,
     String name,
     this.caches,
+    this.securityContext,
   }) :
     this.name = name ?? 'Server id $serverId'
   {
@@ -72,14 +74,26 @@ class Server {
   }
 
   void start() async {
-    HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
-      _httpServer = httpServer;
-      httpServer.listen((HttpRequest request) {
-        _handleRequest(request);
-      }).onDone(() {
-        logInfo('$name stopped');
+    if (securityContext != null) {
+      HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext).then((HttpServer httpServer) {
+        _httpServer = httpServer;
+        httpServer.listen((HttpRequest request) {
+          _handleRequest(request);
+        }).onDone(() {
+          logInfo('$name stopped');
+        });
       });
-    });
+    }
+    else {
+      HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
+        _httpServer = httpServer;
+        httpServer.listen((HttpRequest request) {
+          _handleRequest(request);
+        }).onDone(() {
+          logInfo('$name stopped');
+        });
+      });
+    }
 
     // Start future calls
     _futureCallManager?.start();

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:colorize/colorize.dart';
 import 'package:intl/intl.dart';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/authentication/certificates.dart';
 import 'package:serverpod/src/authentication/serviceAuthentication.dart';
 import 'package:serverpod_service_client/protocol/protocol.dart';
 
@@ -12,11 +15,13 @@ class Insights {
   ServiceKeyManager _keyManager;
 
   Insights(String configFile, {int serverId=0}) {
-    var config = ServerConfig('config/$configFile.yaml', serverId);
+    var config = ServerConfig(configFile, serverId);
     _keyManager = ServiceKeyManager('Console', config);
 
     for (int k in config.cluster.keys) {
-      _clients[k] = Client('http://${config.cluster[k].address}:${config.cluster[k].servicePort}/', authenticationKeyManager: _keyManager);
+      var context = SecurityContext();
+      context.setTrustedCertificates(sslCertificatePath(configFile, k));
+      _clients[k] = Client('https://${config.cluster[k].address}:${config.cluster[k].servicePort}/', authenticationKeyManager: _keyManager, context: context);
     }
   }
 
@@ -94,8 +99,10 @@ class Insights {
         print('');
       }
     }
-    catch(e) {
+    catch(e, t) {
       print('Failed to get session logs from server at ${client.host}');
+      print(e);
+      print(t);
     }
   }
 

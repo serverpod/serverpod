@@ -5,6 +5,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:yaml/yaml.dart';
 
 import '../authentication/authentication_info.dart';
+import '../authentication/certificates.dart';
 import '../authentication/serviceAuthentication.dart';
 import '../cache/caches.dart';
 import '../cache/endpoint.dart';
@@ -63,7 +64,7 @@ class Serverpod {
     if (_runMode != ServerpodRunMode.generate) {
       log(internal.LogLevel.info, 'Mode: $_runMode');
 
-      config = ServerConfig('config/$_runMode.yaml', serverId);
+      config = ServerConfig(_runMode, serverId);
       log(internal.LogLevel.info, config.toString());
 
       // Load passwords
@@ -143,6 +144,11 @@ class Serverpod {
   }
 
   Future<Null> _startServiceServer() async {
+
+    var context = SecurityContext();
+    context.useCertificateChain(sslCertificatePath(_runMode, serverId));
+    context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
+
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
@@ -154,6 +160,7 @@ class Serverpod {
       name: 'Insights',
       caches: caches,
       authenticationHandler: serviceAuthenticationHandler,
+      securityContext: context,
     );
     
     _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributed), endpointNameCache);

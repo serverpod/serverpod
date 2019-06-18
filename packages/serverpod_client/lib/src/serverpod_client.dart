@@ -21,6 +21,17 @@ class ServerpodClient {
 
   ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authorizationKeyManager}) {
     _httpClient = HttpClient(context: context);
+    _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
+      print('Bad certificate');
+      print('pem: ${cert.pem}');
+      print('subject: ${cert.subject}');
+      print('issuer: ${cert.issuer}');
+      print('valid from: ${cert.startValidity}');
+      print('valid to: ${cert.endValidity}');
+      print('host: $host');
+      print('port: $port');
+      return false;
+    });
     assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
   }

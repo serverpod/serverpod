@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+import '../authentication/certificates.dart';
 import '../server/config.dart';
 
 import 'cache.dart';
@@ -24,7 +26,10 @@ class DistributedCache extends Cache {
     
     for (int key in serverKeys) {
       _cluster.add(config.cluster[key]);
-      _clients.add(Client('http://${config.cluster[key].address}:${config.cluster[key].servicePort}/'));
+
+      var context = SecurityContext();
+      context.setTrustedCertificates(sslCertificatePath(config.runMode, key));
+      _clients.add(Client('https://${config.cluster[key].address}:${config.cluster[key].servicePort}/', context: context));
     }
   }
   

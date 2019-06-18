@@ -2,10 +2,12 @@ import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
 import 'database_util/build_schema.dart';
+import 'certificates/generator.dart';
 import 'generator/generator.dart';
 import 'insights/insights.dart';
 
 final cmdGenerate = 'generate';
+final cmdGenerateCertificates = 'generatecerts';
 final cmdBuildSchema = 'buildschema';
 final cmdShutdown = 'shutdown';
 final cmdLogs = 'logs';
@@ -19,6 +21,12 @@ void main(List<String> args) async {
   ArgParser generateParser = ArgParser();
   generateParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerate, generateParser);
+
+  // "generatecerts" command
+  ArgParser generateCerts = ArgParser();
+  generateCerts.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  generateCerts.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  parser.addCommand(cmdGenerateCertificates, generateCerts);
 
   // "buildschema" command
   ArgParser buildschemaParser = ArgParser();
@@ -53,6 +61,10 @@ void main(List<String> args) async {
   if (results.command != null) {
     if (results.command.name == cmdGenerate) {
       performGenerate(results.command['verbose']);
+      return;
+    }
+    if (results.command.name == cmdGenerateCertificates) {
+      await performGenerateCerts(results.command['config'], results.command['verbose']);
       return;
     }
     if (results.command.name == cmdBuildSchema) {
@@ -98,6 +110,7 @@ void _printUsage(ArgParser parser) {
   print('');
 
   _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]);
+  _printCommandUsage(cmdGenerateCertificates, 'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory', parser.commands[cmdGenerateCertificates]);
   _printCommandUsage(cmdLogs, 'Print logs from a serverpod or a serverpod cluster', parser.commands[cmdLogs]);
   _printCommandUsage(cmdSessionLogs, 'Print logs from a serverpod or a serverpod cluster listed by session', parser.commands[cmdSessionLogs]);
   _printCommandUsage(cmdCacheInfo, 'Print info about what is stored in a server\'s caches', parser.commands[cmdCacheInfo], true);
