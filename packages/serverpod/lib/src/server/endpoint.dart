@@ -50,12 +50,13 @@ abstract class Endpoint {
     }
   }
 
-  Future handleUriCall(Uri uri) async {
+  Future handleUriCall(Uri uri, String body) async {
     List callArgs = [];
 
     Session session = Session(
       server: server,
       uri: uri,
+      body: body,
       endpointName: name,
     );
 

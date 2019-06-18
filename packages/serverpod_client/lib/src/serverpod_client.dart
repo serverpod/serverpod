@@ -9,7 +9,6 @@ import 'auth_key_manager.dart';
 typedef void ServerpodClientErrorCallback(Error e);
 
 class ServerpodClient {
-//  final String _authorizationKeyEntry = 'serverpod_authorizationKey';
   final AuthenticationKeyManager authorizationKeyManager;
 
   final String host;
@@ -22,7 +21,7 @@ class ServerpodClient {
   ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authorizationKeyManager}) {
     _httpClient = HttpClient(context: context);
     _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
-      print('Bad certificate');
+      print('Failed to verify server certificate');
       print('pem: ${cert.pem}');
       print('subject: ${cert.subject}');
       print('issuer: ${cert.issuer}');
@@ -48,25 +47,31 @@ class ServerpodClient {
       await _initialize();
 
     try {
-      var formattedArgs = <String>[];
+      var formattedArgs = <String, String>{};
+
       for (var argName in args.keys) {
         var value = args[argName];
-        if (value != null)
-          formattedArgs.add('$argName=${Uri.encodeQueryComponent('$value')}');
+        if (value != null) {
+          formattedArgs[argName] = value.toString();
+        }
       }
+
       if (_authorizationKey != null)
-        formattedArgs.add('auth=${Uri.encodeQueryComponent(_authorizationKey)}');
-      formattedArgs.add('method=${Uri.encodeQueryComponent(method)}');
+        formattedArgs['auth'] = _authorizationKey;
 
-      var queryStr = formattedArgs.join('&');
-      if (formattedArgs.length > 0)
-        queryStr = '?$queryStr';
+      formattedArgs['method'] = method;
 
-      Uri url = Uri.parse('$host$endpoint$queryStr');
+      String body = jsonEncode(formattedArgs);
 
-      HttpClientRequest request = await _httpClient.getUrl(url);
-      HttpClientResponse response = await request
-          .close(); // done instead of close() ?
+      Uri url = Uri.parse('$host$endpoint');
+
+      HttpClientRequest request = await _httpClient.postUrl(url);
+      request.contentLength = utf8.encode(body).length;
+      request.write(body);
+
+      await request.flush();
+
+      HttpClientResponse response = await request.close(); // done instead of close() ?
       String data = await _readResponse(response);
 
       // TODO: Support more types!

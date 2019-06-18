@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -105,7 +106,18 @@ class Server {
   Future<Null> _handleRequest(HttpRequest request) async {
     final uri = request.requestedUri;
 
-    var result = await _handleUriCall(uri);
+    // Check size of the request
+    int contentLength = request.contentLength;
+    if (contentLength == -1 || contentLength > serverpod.config.maxRequestSize) {
+      if (serverpod.runtimeSettings.logMalformedCalls)
+        logDebug('Malformed call, invalid content length ($contentLength): $uri');
+      request.response.statusCode = HttpStatus.badRequest;
+      request.response.close();
+    }
+
+    String body = await request.transform(Utf8Decoder()).join();
+
+    var result = await _handleUriCall(uri, body);
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls)
@@ -133,14 +145,14 @@ class Server {
     }
   }
 
-  Future _handleUriCall(Uri uri) async {
+  Future _handleUriCall(Uri uri, String body) async {
     String endpointName = uri.path.substring(1);
     Endpoint endpoint = endpoints[endpointName];
 
     if (endpoint == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
 
-    return endpoint.handleUriCall(uri);
+    return endpoint.handleUriCall(uri, body);
   }
 
   void logDebug(String message) {

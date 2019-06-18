@@ -8,6 +8,7 @@ class ServerConfig {
 
   int port;
   int servicePort;
+  int maxRequestSize;
 
   String dbHost;
   int dbPort;
@@ -23,8 +24,10 @@ class ServerConfig {
     String data = File(file).readAsStringSync();
     var doc = loadYaml(data);
 
-    // Get port
-    port = doc['port'] ?? 1234;
+    // Get max request size (default to 100kb)
+    maxRequestSize = doc['maxRequestSize'] ?? 102400;
+
+    // Get Cluster
     Map clusterData = doc['cluster'];
     for (int id in clusterData.keys) {
       cluster[id] = RemoteServerConfig(id, clusterData[id]);

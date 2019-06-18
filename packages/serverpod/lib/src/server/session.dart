@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'server.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import '../generated/protocol.dart';
 
 class Session {
   final Uri uri;
+  final String body;
   final Server server;
   
   DateTime _timeCreated;
@@ -24,10 +27,15 @@ class Session {
 
   final String endpointName;
 
-  Session({this.server, this.uri, this.endpointName}) {
+  Session({this.server, this.uri, this.body, this.endpointName}) {
     _timeCreated = DateTime.now();
 
-    _queryParameters = uri.queryParameters;
+    if (body == null || body == '' || body == 'null') {
+      _queryParameters = <String, String>{};
+    }
+    else {
+      _queryParameters = jsonDecode(body).cast<String, String>();
+    }
 
     _authenticationKey = _queryParameters['auth'];
     _methodName = _queryParameters['method'];
