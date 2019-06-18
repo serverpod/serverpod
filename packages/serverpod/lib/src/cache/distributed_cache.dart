@@ -81,7 +81,7 @@ class DistributedCache extends Cache {
           value = await client.cache.get(key);
       }
       catch(e) {
-        print('caught exception $e');
+        // Failed to contact cache server
         return null;
       }
       if (value == null || value == 'null')
