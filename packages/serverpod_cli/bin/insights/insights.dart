@@ -73,7 +73,7 @@ class Insights {
 
     try {
       var sessionLog = await client.insights.getSessionLog(n);
-      for (var entry in sessionLog.sessionLog) {
+      for (var entry in sessionLog.sessionLog.reversed) {
         String methodName = '${Colorize('${entry.callLogEntry.endpoint}.${entry.callLogEntry.method}')..bold()}';
         String message = '[${entry.callLogEntry.serverId} ${_dateFormat.format(entry.callLogEntry.time)}] ' + methodName + ' time: ${entry.callLogEntry.duration.toStringAsFixed(3)}s';
         if (entry.callLogEntry.error != null) {
