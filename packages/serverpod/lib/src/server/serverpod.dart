@@ -203,9 +203,9 @@ class Serverpod {
     }
   }
 
-  Future<int> logCall(String endpoint, String method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String exception, StackTrace stackTrace) async {
+  Future<int> logCall(String endpoint, String method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String authenticatedUser, String exception, StackTrace stackTrace) async {
     if (_runMode == ServerpodRunMode.development) {
-      print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length}');
+      print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
       if (exception != null) {
         print('$exception');
         print('$stackTrace');
@@ -228,6 +228,7 @@ class Serverpod {
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
+        authenticatedUser: authenticatedUser,
       );
       await database.insert(callLogEntry);
 

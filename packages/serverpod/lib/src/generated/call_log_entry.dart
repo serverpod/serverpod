@@ -12,6 +12,7 @@ class CallLogEntry extends TableRow {
   int id;
   int numQueries;
   DateTime time;
+  String authenticatedUser;
   double duration;
   int serverId;
   String error;
@@ -24,6 +25,7 @@ class CallLogEntry extends TableRow {
     this.id,
     this.numQueries,
     this.time,
+    this.authenticatedUser,
     this.duration,
     this.serverId,
     this.error,
@@ -38,6 +40,7 @@ class CallLogEntry extends TableRow {
     id = _data['id'];
     numQueries = _data['numQueries'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    authenticatedUser = _data['authenticatedUser'];
     duration = _data['duration'];
     serverId = _data['serverId'];
     error = _data['error'];
@@ -52,6 +55,7 @@ class CallLogEntry extends TableRow {
       'id': id,
       'numQueries': numQueries,
       'time': time?.toUtc()?.toIso8601String(),
+      'authenticatedUser': authenticatedUser,
       'duration': duration,
       'serverId': serverId,
       'error': error,
@@ -66,6 +70,7 @@ class CallLogEntry extends TableRow {
       'id': id,
       'numQueries': numQueries,
       'time': time?.toUtc()?.toIso8601String(),
+      'authenticatedUser': authenticatedUser,
       'duration': duration,
       'serverId': serverId,
       'error': error,
@@ -81,6 +86,7 @@ class CallLogEntry extends TableRow {
       'id': id,
       'numQueries': numQueries,
       'time': time?.toUtc()?.toIso8601String(),
+      'authenticatedUser': authenticatedUser,
       'duration': duration,
       'serverId': serverId,
       'error': error,
@@ -99,6 +105,7 @@ class CallLogEntryTable extends Table {
   final id = ColumnInt('id');
   final numQueries = ColumnInt('numQueries');
   final time = ColumnDateTime('time');
+  final authenticatedUser = ColumnString('authenticatedUser');
   final duration = ColumnDouble('duration');
   final serverId = ColumnInt('serverId');
   final error = ColumnString('error');
@@ -111,6 +118,7 @@ class CallLogEntryTable extends Table {
     id,
     numQueries,
     time,
+    authenticatedUser,
     duration,
     serverId,
     error,

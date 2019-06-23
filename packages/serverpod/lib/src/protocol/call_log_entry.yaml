@@ -10,3 +10,4 @@ fields:
   slow: bool
   error: String
   stackTrace: String
+  authenticatedUser: String

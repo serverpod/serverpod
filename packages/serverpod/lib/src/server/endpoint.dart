@@ -135,13 +135,14 @@ abstract class Endpoint {
       var result = await method.callMirror.apply(callArgs).reflectee;
 
       // Print session info
-      server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, null);
+      String authenticatedUser = requireLogin ? await session.authenticatedUser : null;
+      server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
       return result;
     }
     catch (exception, stackTrace) {
       // Something did not work out
-      var callLogId = await server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, exception.toString(), stackTrace);
+      var callLogId = await server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
       return ResultInternalServerError(exception.toString(), stackTrace, callLogId);
     }
   }

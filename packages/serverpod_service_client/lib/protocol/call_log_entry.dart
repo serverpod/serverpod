@@ -11,6 +11,7 @@ class CallLogEntry extends SerializableEntity {
   int id;
   int numQueries;
   DateTime time;
+  String authenticatedUser;
   double duration;
   int serverId;
   String error;
@@ -23,6 +24,7 @@ class CallLogEntry extends SerializableEntity {
     this.id,
     this.numQueries,
     this.time,
+    this.authenticatedUser,
     this.duration,
     this.serverId,
     this.error,
@@ -37,6 +39,7 @@ class CallLogEntry extends SerializableEntity {
     id = _data['id'];
     numQueries = _data['numQueries'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    authenticatedUser = _data['authenticatedUser'];
     duration = _data['duration'];
     serverId = _data['serverId'];
     error = _data['error'];
@@ -51,6 +54,7 @@ class CallLogEntry extends SerializableEntity {
       'id': id,
       'numQueries': numQueries,
       'time': time?.toUtc()?.toIso8601String(),
+      'authenticatedUser': authenticatedUser,
       'duration': duration,
       'serverId': serverId,
       'error': error,
