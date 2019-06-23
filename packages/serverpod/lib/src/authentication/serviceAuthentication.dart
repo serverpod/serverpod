@@ -1,17 +1,17 @@
 import 'authentication_info.dart';
 import 'scope.dart';
 import '../server/config.dart';
-import '../server/server.dart';
+import '../server/session.dart';
 import 'package:serverpod_client/src/auth_key_manager.dart';
 
-Future<AuthenticationInfo> serviceAuthenticationHandler(Server server, String key) async {
+Future<AuthenticationInfo> serviceAuthenticationHandler(Session session, String key) async {
   try {
     var parts = key.split(':');
     var name = parts[0];
     var secret = parts[1];
 
-    if (secret == server.serverpod.config.serviceSecret) {
-      return AuthenticationInfo(name, <Scope>[scopeAny]);
+    if (secret == session.server.serverpod.config.serviceSecret) {
+      return AuthenticationInfo(name, <Scope>{scopeNone});
     }
   }
   catch(e) {}

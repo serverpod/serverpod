@@ -438,7 +438,7 @@ class DartGenerator extends Generator{
     }
 
     out += '\n';
-    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthorizationKeyManager authorizationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authorizationKeyManager: authorizationKeyManager) {\n';
+    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {\n';
     for (String endpointName in doc.keys) {
       out += '    $endpointName = ${_endpointClassName(endpointName)}(this);\n';
     }

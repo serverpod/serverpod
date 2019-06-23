@@ -1,11 +1,11 @@
 import 'scope.dart';
-import '../server/server.dart';
+import '../server/session.dart';
 
-typedef Future<AuthenticationInfo> AuthenticationHandler(Server server, String key);
+typedef Future<AuthenticationInfo> AuthenticationHandler(Session session, String key);
 
 class AuthenticationInfo {
   final String authenticatedUser;
-  final List<Scope> scopes;
+  final Set<Scope> scopes;
 
   AuthenticationInfo(this.authenticatedUser, this.scopes);
 }

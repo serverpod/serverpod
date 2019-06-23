@@ -20,7 +20,7 @@ abstract class Endpoint {
 
   Database get database => _server.database;
 
-  List<Scope> get allowedScopes => [scopeAny];
+  List<Scope> get requiredScopes => [];
 
   bool get requireLogin => false;
 
@@ -73,6 +73,19 @@ abstract class Endpoint {
           return ResultAuthenticationFailed('No authentication provided');
         if (!await session.isUserSignedIn)
           return ResultAuthenticationFailed('Authentication failed');
+      }
+
+      if (requiredScopes.length > 0) {
+
+        if (!await session.isUserSignedIn) {
+          return ResultAuthenticationFailed('Sign in required to access this endpoint');
+        }
+
+        for (var requiredScope in requiredScopes) {
+          if (!(await session.scopes).contains(requiredScope)) {
+            return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
+          }
+        }
       }
 
       var method = _methods[methodName];

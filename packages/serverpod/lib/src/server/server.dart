@@ -127,6 +127,8 @@ class Server {
       return;
     }
     else if (result is ResultAuthenticationFailed) {
+      if (serverpod.runtimeSettings.logMalformedCalls)
+        logDebug('Access denied: $result');
       request.response.statusCode = HttpStatus.forbidden;
       request.response.close();
       return;

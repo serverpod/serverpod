@@ -9,7 +9,7 @@ import 'auth_key_manager.dart';
 typedef void ServerpodClientErrorCallback(Error e);
 
 class ServerpodClient {
-  final AuthenticationKeyManager authorizationKeyManager;
+  final AuthenticationKeyManager authenticationKeyManager;
 
   final String host;
   final SerializationManager serializationManager;
@@ -18,7 +18,7 @@ class ServerpodClient {
   bool _initialized = false;
   ServerpodClientErrorCallback errorHandler;
 
-  ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authorizationKeyManager}) {
+  ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authenticationKeyManager}) {
     _httpClient = HttpClient(context: context);
     _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
       print('Failed to verify server certificate');
@@ -36,8 +36,8 @@ class ServerpodClient {
   }
 
   Future<Null> _initialize() async {
-    if (authorizationKeyManager != null)
-      _authorizationKey = await authorizationKeyManager.get();
+    if (authenticationKeyManager != null)
+      _authorizationKey = await authenticationKeyManager.get();
 
     _initialized = true;
   }
@@ -103,8 +103,8 @@ class ServerpodClient {
   Future<Null> setAuthorizationKey(String authorizationKey) async {
     _authorizationKey = authorizationKey;
 
-    if (authorizationKeyManager != null)
-      await authorizationKeyManager.put(authorizationKey);
+    if (authenticationKeyManager != null)
+      await authenticationKeyManager.put(authorizationKey);
   }
 
   void close() {

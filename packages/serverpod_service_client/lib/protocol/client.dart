@@ -112,7 +112,7 @@ class Client extends ServerpodClient {
   _EndpointInsights insights;
   _EndpointCache cache;
 
-  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authorizationKeyManager: authenticationKeyManager) {
+  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     cachePrio = _EndpointCachePrio(this);
     insights = _EndpointInsights(this);
     cache = _EndpointCache(this);

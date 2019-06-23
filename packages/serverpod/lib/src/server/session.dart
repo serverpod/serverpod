@@ -14,7 +14,7 @@ class Session {
   final List<LogInfo> log = <LogInfo>[];
 
   String _authenticatedUser;
-  List<Scope> _scopes;
+  Set<Scope> _scopes;
 
   String _authenticationKey;
   String get authenticationKey => _authenticationKey;
@@ -45,7 +45,7 @@ class Session {
 
   Future<Null> _initialize() async {
     if (server.authenticationHandler != null  && authenticationKey != null) {
-      var authenticationInfo = await server.authenticationHandler(server, authenticationKey);
+      var authenticationInfo = await server.authenticationHandler(this, authenticationKey);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUser;
     }
@@ -58,7 +58,7 @@ class Session {
     return _authenticatedUser;
   }
 
-  Future<List<Scope>> get scopes async {
+  Future<Set<Scope>> get scopes async {
     if (!_initialized)
       await _initialize();
     return _scopes;
