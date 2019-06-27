@@ -3,6 +3,7 @@ import 'package:colorize/colorize.dart';
 
 import 'database_util/build_schema.dart';
 import 'certificates/generator.dart';
+import 'config_info/config_info.dart';
 import 'generator/generator.dart';
 import 'insights/insights.dart';
 
@@ -13,6 +14,7 @@ final cmdShutdown = 'shutdown';
 final cmdLogs = 'logs';
 final cmdSessionLogs = 'sessionlog';
 final cmdCacheInfo = 'cacheinfo';
+final cmdServerAddress = 'serveraddress';
 
 void main(List<String> args) async {
   ArgParser parser = ArgParser();
@@ -56,6 +58,12 @@ void main(List<String> args) async {
   cacheinfoParser.addFlag('fetch-keys', abbr: 'k', help: 'Fetch all keys stored in the caches of the specificed server');
   parser.addCommand(cmdCacheInfo, cacheinfoParser);
 
+  // "serveraddress" command
+  ArgParser serverAddressParser = ArgParser();
+  serverAddressParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  serverAddressParser.addOption('id', abbr: 'i', defaultsTo: 'foo', help: 'The id of the server to print the address of');
+  parser.addCommand(cmdServerAddress, serverAddressParser);
+
   var results = parser.parse(args);
 
   if (results.command != null) {
@@ -93,6 +101,11 @@ void main(List<String> args) async {
       var insights = Insights(results.command['config']);
       await insights.printCachesInfo(results.command['fetch-keys']);
       insights.close();
+      return;
+    }
+    if (results.command.name == cmdServerAddress) {
+      var configInfo = ConfigInfo(results.command['config'], int.tryParse(results.command['id']));
+      configInfo.printAddress();
       return;
     }
   }
