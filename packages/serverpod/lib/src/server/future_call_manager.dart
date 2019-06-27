@@ -49,34 +49,45 @@ class FutureCallManager {
   }
 
   Future<Null> _checkQueue() async {
-    // Get calls
-    DateTime now = DateTime.now();
+    try {
+      // Get calls
+      DateTime now = DateTime.now();
 
-    var rows = await _server.database.find(
-      tFutureCallEntry,
-      where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId.equals(_server.serverId),
-    );
-
-    for(FutureCallEntry entry in rows) {
-      FutureCall call = _futureCalls[entry.name];
-      if (call == null)
-        continue;
-
-      SerializableEntity object;
-      if (entry.serializedObject != null) {
-        Map data = jsonDecode(entry.serializedObject);
-        object = _serializationManager.createEntityFromSerialization(data);
-      }
-      call.invoke(object);
-    }
-
-    // Remove the invoked calls
-    if (rows.length > 0) {
-      await _server.database.delete(
+      var rows = await _server.database.find(
         tFutureCallEntry,
-        where: tFutureCallEntry.serverId.equals(
-            _server.serverId) & (tFutureCallEntry.time <= now),
+        where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId
+            .equals(_server.serverId),
       );
+
+      for (FutureCallEntry entry in rows) {
+        FutureCall call = _futureCalls[entry.name];
+        if (call == null)
+          continue;
+
+        SerializableEntity object;
+        if (entry.serializedObject != null) {
+          Map data = jsonDecode(entry.serializedObject);
+          object = _serializationManager.createEntityFromSerialization(data);
+        }
+        try {
+          call.invoke(object);
+        }
+        catch(e, t) {
+          // TODO: Log errors
+        }
+      }
+
+      // Remove the invoked calls
+      if (rows.length > 0) {
+        await _server.database.delete(
+          tFutureCallEntry,
+          where: tFutureCallEntry.serverId.equals(
+              _server.serverId) & (tFutureCallEntry.time <= now),
+        );
+      }
+    }
+    catch(e, t) {
+      // Most likely we lost connection to the database
     }
 
     // Check the queue again in 5 seconds
