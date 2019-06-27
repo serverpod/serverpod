@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:postgres/postgres.dart';
@@ -13,13 +14,19 @@ final PostgresTextEncoder _encoder = const PostgresTextEncoder(true);
 
 class Database {
   PostgreSQLConnection connection;
+  final String host;
+  final int port;
+  final String databaseName;
+  final String userName;
+  final String password;
   SerializationManager _serializationManager;
 
+  Timer _timer;
   final _tableClassMapping = <String, String>{};
 
-  Database(SerializationManager serializationManager, String host, int port, String name, String user, String pass) {
+  Database(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password) {
     _serializationManager = serializationManager;
-    connection = PostgreSQLConnection(host, port, name, username: user, password: pass);
+    connection = PostgreSQLConnection(host, port, databaseName, username: userName, password: password);
   }
 
   Future<bool> _loadTableClassMappings(String directory) async {
@@ -56,10 +63,36 @@ class Database {
     }
 
     await connection.open();
+
+    if (!connection.isClosed)
+      _checkConnection();
+
     return !connection.isClosed;
   }
 
+  Future<Null> _checkConnection() async {
+    if (connection.isClosed) {
+      print('Attempting to reconnect to database');
+      try {
+        connection = PostgreSQLConnection(
+            host, port, databaseName, username: userName, password: password);
+        await connection.open();
+      }
+      catch (e) {}
+
+      if (connection.isClosed)
+        print('Failed to reconnect to database');
+      else
+        print('Successfully reconnected with database');
+    }
+
+    _timer = Timer(Duration(seconds: 5), _checkConnection);
+  }
+
   Future<Null> disconnect() async {
+    _timer?.cancel();
+    _timer = null;
+
     await connection.close();
   }
 
