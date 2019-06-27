@@ -182,18 +182,20 @@ class Serverpod {
     return _passwords[key];
   }
 
-  void log(internal.LogLevel level, String message, {StackTrace stackTrace, int callLogId}) {
+  void log(internal.LogLevel level, String message, {StackTrace stackTrace, int callLogId}) async {
     if (database != null && level.index >= (_runtimeSettings?.logLevel ?? 0)) {
       var entry = internal.LogEntry(
         serverId: serverId,
         time: DateTime.now(),
         logLevel: level.index,
         message: message,
-        stackTrace: stackTrace.toString(),
+        stackTrace: stackTrace?.toString(),
         callLogId: callLogId,
       );
 
-      database.insert(entry);
+      bool success = await database.insert(entry);
+      if (!success)
+        print('FAILED DB LOG ${level.name.toLowerCase()}: $message');
     }
 
     if (_runMode == ServerpodRunMode.development) {
