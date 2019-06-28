@@ -7,7 +7,7 @@ class ConfigInfo {
     config = ServerConfig(configFile, serverId ?? 0);
   }
 
-  printAddress() {
+  void printAddress() {
     if (serverId != null) {
       print(config.cluster[serverId].address);
     }
@@ -15,5 +15,10 @@ class ConfigInfo {
       for (var id in config.cluster.keys)
         print(config.cluster[id].address);
     }
+  }
+
+  void printIds() {
+    for (var id in config.cluster.keys)
+      print('$id');
   }
 }

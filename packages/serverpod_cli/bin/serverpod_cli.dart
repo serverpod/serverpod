@@ -15,6 +15,7 @@ final cmdLogs = 'logs';
 final cmdSessionLogs = 'sessionlog';
 final cmdCacheInfo = 'cacheinfo';
 final cmdServerAddress = 'serveraddress';
+final cmdServerIds = 'serverids';
 
 void main(List<String> args) async {
   ArgParser parser = ArgParser();
@@ -64,6 +65,11 @@ void main(List<String> args) async {
   serverAddressParser.addOption('id', abbr: 'i', defaultsTo: 'foo', help: 'The id of the server to print the address of');
   parser.addCommand(cmdServerAddress, serverAddressParser);
 
+  // "serverids" command
+  ArgParser serverIdsParser = ArgParser();
+  serverIdsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  parser.addCommand(cmdServerIds, serverIdsParser);
+
   var results = parser.parse(args);
 
   if (results.command != null) {
@@ -106,6 +112,11 @@ void main(List<String> args) async {
     if (results.command.name == cmdServerAddress) {
       var configInfo = ConfigInfo(results.command['config'], int.tryParse(results.command['id']));
       configInfo.printAddress();
+      return;
+    }
+    if (results.command.name ==cmdServerIds) {
+      var configInfo = ConfigInfo(results.command['config'], 0);
+      configInfo.printIds();
       return;
     }
   }
