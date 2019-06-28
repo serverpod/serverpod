@@ -79,7 +79,13 @@ class Server {
       HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext).then((HttpServer httpServer) {
         _httpServer = httpServer;
         httpServer.listen((HttpRequest request) {
-          _handleRequest(request);
+          try {
+            _handleRequest(request);
+          }
+          catch(e, t) {
+            print(e);
+            print(t);
+          }
         }).onDone(() {
           logInfo('$name stopped');
         });
@@ -89,7 +95,13 @@ class Server {
       HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
         _httpServer = httpServer;
         httpServer.listen((HttpRequest request) {
-          _handleRequest(request);
+          try {
+            _handleRequest(request);
+          }
+          catch(e, t) {
+            print(e);
+            print(t);
+          }
         }).onDone(() {
           logInfo('$name stopped');
         });
@@ -104,7 +116,19 @@ class Server {
   }
 
   Future<Null> _handleRequest(HttpRequest request) async {
-    final uri = request.requestedUri;
+    Uri uri;
+
+    try {
+      uri = request.requestedUri;
+    }
+    catch(e) {
+      if (serverpod.runtimeSettings.logMalformedCalls)
+        logDebug('Malformed call, invalid uri from ${request.connectionInfo.remoteAddress.address}');
+
+      request.response.statusCode = HttpStatus.badRequest;
+      request.response.close();
+      return;
+    }
 
     // Check size of the request
     int contentLength = request.contentLength;
@@ -113,6 +137,7 @@ class Server {
         logDebug('Malformed call, invalid content length ($contentLength): $uri');
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
+      return;
     }
 
     String body = await request.transform(Utf8Decoder()).join();
