@@ -78,15 +78,20 @@ class Server {
     if (securityContext != null) {
       HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext).then((HttpServer httpServer) {
         _httpServer = httpServer;
-        httpServer.listen((HttpRequest request) {
-          try {
-            _handleRequest(request);
-          }
-          catch(e, t) {
-            print(e);
-            print(t);
-          }
-        }).onDone(() {
+        httpServer.listen(
+          (HttpRequest request) {
+            try {
+              _handleRequest(request);
+            }
+            catch(e, t) {
+              print(e);
+              print(t);
+            }
+          },
+          onError: (e, StackTrace stackTrace) {
+            logError(e.toString(), stackTrace: stackTrace);
+          },
+        ).onDone(() {
           logInfo('$name stopped');
         });
       });
@@ -94,15 +99,20 @@ class Server {
     else {
       HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
         _httpServer = httpServer;
-        httpServer.listen((HttpRequest request) {
-          try {
-            _handleRequest(request);
-          }
-          catch(e, t) {
-            print(e);
-            print(t);
-          }
-        }).onDone(() {
+        httpServer.listen(
+          (HttpRequest request) {
+            try {
+              _handleRequest(request);
+            }
+            catch(e, t) {
+              print(e);
+              print(t);
+            }
+          },
+          onError: (e, StackTrace stackTrace) {
+            logError(e.toString(), stackTrace: stackTrace);
+          },
+        ).onDone(() {
           logInfo('$name stopped');
         });
       });
