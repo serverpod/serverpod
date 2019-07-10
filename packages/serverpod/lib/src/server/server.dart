@@ -143,7 +143,7 @@ class Server {
     }
 
     if (uri.path == '/') {
-      request.response.writeln('OK');
+      request.response.writeln('OK ${DateTime.now().toUtc()}');
       request.response.close();
       return;
     }
