@@ -140,6 +140,12 @@ class Server {
       return;
     }
 
+    if (uri.path == '/') {
+      request.response.writeln('OK');
+      request.response.close();
+      return;
+    }
+
     // Check size of the request
     int contentLength = request.contentLength;
     if (contentLength == -1 || contentLength > serverpod.config.maxRequestSize) {
