@@ -78,6 +78,7 @@ class Server {
     if (securityContext != null) {
       HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext).then((HttpServer httpServer) {
         _httpServer = httpServer;
+        httpServer.autoCompress = true;
         httpServer.listen(
           (HttpRequest request) {
             try {
@@ -99,6 +100,7 @@ class Server {
     else {
       HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
         _httpServer = httpServer;
+        httpServer.autoCompress = true;
         httpServer.listen(
           (HttpRequest request) {
             try {
