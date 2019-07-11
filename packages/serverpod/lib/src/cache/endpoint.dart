@@ -1,7 +1,7 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import '../../server.dart';
-import '../generated/protocol.dart';
 import 'local_cache.dart';
 import 'distributed_cache.dart';
 

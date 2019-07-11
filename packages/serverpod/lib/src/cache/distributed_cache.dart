@@ -18,7 +18,7 @@ class DistributedCache extends Cache {
   bool _isPrio;
   
   DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio) : super(maxEntries, serializationManager) {
-    _localCache = LocalCache(maxEntries, serializationManager);
+    _localCache = LocalCache(maxEntries, Protocol());
     _serverId = serverId;
     
     var serverKeys = config.cluster.keys.toList();
@@ -51,15 +51,17 @@ class DistributedCache extends Cache {
     if (lifetime != null)
       expiration = DateTime.now().add(lifetime);
 
+    String data = jsonEncode(object.serializeAll());
+
     if (client == null) {
-      await _localCache.put(key, object);
+      await _localCache.put(key, DistributedCacheEntry(data: data));
     }
     else {
       try {
         if (_isPrio)
-          await client.cachePrio.put(key, jsonEncode(object.serializeAll()), group, expiration);
+          await client.cachePrio.put(key, data, group, expiration);
         else
-          await client.cache.put(key, jsonEncode(object.serializeAll()), group, expiration);
+          await client.cache.put(key, data, group, expiration);
       }
       catch (e) {}
     }
@@ -70,7 +72,12 @@ class DistributedCache extends Cache {
     var client = _clientFromKey(key);
 
     if (client == null) {
-      return await _localCache.get(key);
+      DistributedCacheEntry entry = await _localCache.get(key);
+      if (entry == null)
+        return null;
+
+      Map<String, dynamic> serialization = jsonDecode(entry.data).cast<String, dynamic>();
+      return serializationManager.createEntityFromSerialization(serialization);
     }
     else {
       String value;
@@ -87,11 +94,8 @@ class DistributedCache extends Cache {
       if (value == null || value == 'null')
         return null;
 
-      Map<String, dynamic> serialization = jsonDecode(value).cast<
-          String,
-          dynamic>();
-      return serializationManager.createEntityFromSerialization(
-          serialization);
+      Map<String, dynamic> serialization = jsonDecode(value).cast<String, dynamic>();
+      return serializationManager.createEntityFromSerialization(serialization);
     }
   }
 
