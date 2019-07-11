@@ -87,7 +87,7 @@ class Serverpod {
 
     server = Server(
       serverpod: this,
-      serverId: 0,
+      serverId: serverId,
       port: config?.port ?? 8080,
       serializationManager: serializationManager,
       database: database,
