@@ -183,7 +183,9 @@ class Serverpod {
   }
 
   void log(internal.LogLevel level, String message, {StackTrace stackTrace, int callLogId}) async {
-    if (database != null && level.index >= (_runtimeSettings?.logLevel ?? 0)) {
+    int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
+
+    if (database != null && level.index >= serverLogLevel) {
       var entry = internal.LogEntry(
         serverId: serverId,
         time: DateTime.now(),
@@ -216,8 +218,8 @@ class Serverpod {
 
     var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration * 1000000.0).toInt());
 
-    if (_runtimeSettings.logAllQueries ||
-        _runtimeSettings.logSlowQueries && isSlow ||
+    if (_runtimeSettings.logAllCalls ||
+        _runtimeSettings.logSlowCalls && isSlow ||
         _runtimeSettings.logFailedCalls && exception != null
     ) {
       var callLogEntry = internal.CallLogEntry(
