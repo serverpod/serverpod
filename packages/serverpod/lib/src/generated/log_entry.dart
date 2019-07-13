@@ -13,8 +13,8 @@ class LogEntry extends TableRow {
   int serverId;
   int logLevel;
   DateTime time;
+  int sessionLogId;
   String stackTrace;
-  int callLogId;
   String message;
 
   LogEntry({
@@ -22,8 +22,8 @@ class LogEntry extends TableRow {
     this.serverId,
     this.logLevel,
     this.time,
+    this.sessionLogId,
     this.stackTrace,
-    this.callLogId,
     this.message,
 });
 
@@ -33,8 +33,8 @@ class LogEntry extends TableRow {
     serverId = _data['serverId'];
     logLevel = _data['logLevel'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    sessionLogId = _data['sessionLogId'];
     stackTrace = _data['stackTrace'];
-    callLogId = _data['callLogId'];
     message = _data['message'];
   }
 
@@ -44,8 +44,8 @@ class LogEntry extends TableRow {
       'serverId': serverId,
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
+      'sessionLogId': sessionLogId,
       'stackTrace': stackTrace,
-      'callLogId': callLogId,
       'message': message,
     });
   }
@@ -55,8 +55,8 @@ class LogEntry extends TableRow {
       'serverId': serverId,
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
+      'sessionLogId': sessionLogId,
       'stackTrace': stackTrace,
-      'callLogId': callLogId,
       'message': message,
     });
   }
@@ -67,8 +67,8 @@ class LogEntry extends TableRow {
       'serverId': serverId,
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
+      'sessionLogId': sessionLogId,
       'stackTrace': stackTrace,
-      'callLogId': callLogId,
       'message': message,
     });
   }
@@ -82,8 +82,8 @@ class LogEntryTable extends Table {
   final serverId = ColumnInt('serverId');
   final logLevel = ColumnInt('logLevel');
   final time = ColumnDateTime('time');
+  final sessionLogId = ColumnInt('sessionLogId');
   final stackTrace = ColumnString('stackTrace');
-  final callLogId = ColumnInt('callLogId');
   final message = ColumnString('message');
 
   List<Column> get columns => [
@@ -91,8 +91,8 @@ class LogEntryTable extends Table {
     serverId,
     logLevel,
     time,
+    sessionLogId,
     stackTrace,
-    callLogId,
     message,
   ];
 }

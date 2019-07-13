@@ -9,13 +9,13 @@ class SessionLogInfo extends SerializableEntity {
   String get className => 'SessionLogInfo';
 
   int id;
-  CallLogEntry callLogEntry;
+  SessionLogEntry sessionLogEntry;
   List<QueryLogEntry> queries;
   List<LogEntry> messageLog;
 
   SessionLogInfo({
     this.id,
-    this.callLogEntry,
+    this.sessionLogEntry,
     this.queries,
     this.messageLog,
 });
@@ -23,7 +23,7 @@ class SessionLogInfo extends SerializableEntity {
   SessionLogInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    callLogEntry = _data['callLogEntry'] != null ? CallLogEntry.fromSerialization(_data['callLogEntry']) : null;
+    sessionLogEntry = _data['sessionLogEntry'] != null ? SessionLogEntry.fromSerialization(_data['sessionLogEntry']) : null;
     queries = _data['queries']?.map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))?.toList();
     messageLog = _data['messageLog']?.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
   }
@@ -31,7 +31,7 @@ class SessionLogInfo extends SerializableEntity {
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'callLogEntry': callLogEntry?.serialize(),
+      'sessionLogEntry': sessionLogEntry?.serialize(),
       'queries': queries?.map((QueryLogEntry a) => a.serialize())?.toList(),
       'messageLog': messageLog?.map((LogEntry a) => a.serialize())?.toList(),
     });
@@ -39,7 +39,7 @@ class SessionLogInfo extends SerializableEntity {
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'callLogEntry': callLogEntry?.serialize(),
+      'sessionLogEntry': sessionLogEntry?.serialize(),
       'queries': queries?.map((QueryLogEntry a) => a.serialize())?.toList(),
       'messageLog': messageLog?.map((LogEntry a) => a.serialize())?.toList(),
     });
@@ -48,7 +48,7 @@ class SessionLogInfo extends SerializableEntity {
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'callLogEntry': callLogEntry?.serialize(),
+      'sessionLogEntry': sessionLogEntry?.serialize(),
       'queries': queries?.map((QueryLogEntry a) => a.serialize())?.toList(),
       'messageLog': messageLog?.map((LogEntry a) => a.serialize())?.toList(),
     });

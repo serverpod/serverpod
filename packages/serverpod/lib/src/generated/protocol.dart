@@ -13,9 +13,9 @@ import 'future_call_entry.dart';
 import 'query_log_entry.dart';
 import 'log_result.dart';
 import 'distributed_cache_entry.dart';
-import 'call_log_entry.dart';
 import 'log_entry.dart';
 import 'log_level.dart';
+import 'session_log_entry.dart';
 import 'session_log_result.dart';
 
 export 'cache_info.dart';
@@ -26,9 +26,9 @@ export 'future_call_entry.dart';
 export 'query_log_entry.dart';
 export 'log_result.dart';
 export 'distributed_cache_entry.dart';
-export 'call_log_entry.dart';
 export 'log_entry.dart';
 export 'log_level.dart';
+export 'session_log_entry.dart';
 export 'session_log_result.dart';
 
 class Protocol extends SerializationManager {
@@ -46,9 +46,9 @@ class Protocol extends SerializationManager {
     constructors['QueryLogEntry'] = (Map<String, dynamic> serialization) => QueryLogEntry.fromSerialization(serialization);
     constructors['LogResult'] = (Map<String, dynamic> serialization) => LogResult.fromSerialization(serialization);
     constructors['DistributedCacheEntry'] = (Map<String, dynamic> serialization) => DistributedCacheEntry.fromSerialization(serialization);
-    constructors['CallLogEntry'] = (Map<String, dynamic> serialization) => CallLogEntry.fromSerialization(serialization);
     constructors['LogEntry'] = (Map<String, dynamic> serialization) => LogEntry.fromSerialization(serialization);
     constructors['LogLevel'] = (Map<String, dynamic> serialization) => LogLevel.fromSerialization(serialization);
+    constructors['SessionLogEntry'] = (Map<String, dynamic> serialization) => SessionLogEntry.fromSerialization(serialization);
     constructors['SessionLogResult'] = (Map<String, dynamic> serialization) => SessionLogResult.fromSerialization(serialization);
   }
 }

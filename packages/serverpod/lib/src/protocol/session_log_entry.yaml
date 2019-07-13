@@ -1,5 +1,5 @@
-class: CallLogEntry
-tableName: serverpod_call_log
+class: SessionLogEntry
+tableName: serverpod_session_log
 fields:
   serverId: int
   time: DateTime

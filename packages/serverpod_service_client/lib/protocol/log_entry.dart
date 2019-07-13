@@ -12,8 +12,8 @@ class LogEntry extends SerializableEntity {
   int serverId;
   int logLevel;
   DateTime time;
+  int sessionLogId;
   String stackTrace;
-  int callLogId;
   String message;
 
   LogEntry({
@@ -21,8 +21,8 @@ class LogEntry extends SerializableEntity {
     this.serverId,
     this.logLevel,
     this.time,
+    this.sessionLogId,
     this.stackTrace,
-    this.callLogId,
     this.message,
 });
 
@@ -32,8 +32,8 @@ class LogEntry extends SerializableEntity {
     serverId = _data['serverId'];
     logLevel = _data['logLevel'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    sessionLogId = _data['sessionLogId'];
     stackTrace = _data['stackTrace'];
-    callLogId = _data['callLogId'];
     message = _data['message'];
   }
 
@@ -43,8 +43,8 @@ class LogEntry extends SerializableEntity {
       'serverId': serverId,
       'logLevel': logLevel,
       'time': time?.toUtc()?.toIso8601String(),
+      'sessionLogId': sessionLogId,
       'stackTrace': stackTrace,
-      'callLogId': callLogId,
       'message': message,
     });
   }

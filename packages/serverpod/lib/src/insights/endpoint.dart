@@ -24,17 +24,17 @@ class InsightsEndpoint extends Endpoint {
 
   Future<SessionLogResult> getSessionLog(Session session, int numEntries) async {
     var rows = await server.database.find(
-      tCallLogEntry,
+      tSessionLogEntry,
       limit: numEntries,
-      orderBy: tCallLogEntry.id,
+      orderBy: tSessionLogEntry.id,
       orderDescending: true,
     );
 
     var sessionLogInfo = <SessionLogInfo>[];
-    for (CallLogEntry logEntry in rows) {
+    for (SessionLogEntry logEntry in rows) {
       var messageLogRows = await server.database.find(
         tLogEntry,
-        where: tLogEntry.callLogId.equals(logEntry.id),
+        where: tLogEntry.sessionLogId.equals(logEntry.id),
         orderBy: tLogEntry.id,
         orderDescending: true,
       );
@@ -48,7 +48,7 @@ class InsightsEndpoint extends Endpoint {
 
       sessionLogInfo.add(
         SessionLogInfo(
-          callLogEntry: logEntry,
+          sessionLogEntry: logEntry,
           messageLog: messageLogRows.cast<LogEntry>(),
           queries: queryLogRows.cast<QueryLogEntry>(),
         ),

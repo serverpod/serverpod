@@ -5,8 +5,8 @@ import 'package:serverpod_client/serverpod_client.dart';
 // ignore: unused_import
 import 'protocol.dart';
 
-class CallLogEntry extends SerializableEntity {
-  String get className => 'CallLogEntry';
+class SessionLogEntry extends SerializableEntity {
+  String get className => 'SessionLogEntry';
 
   int id;
   int numQueries;
@@ -20,7 +20,7 @@ class CallLogEntry extends SerializableEntity {
   String endpoint;
   bool slow;
 
-  CallLogEntry({
+  SessionLogEntry({
     this.id,
     this.numQueries,
     this.time,
@@ -34,7 +34,7 @@ class CallLogEntry extends SerializableEntity {
     this.slow,
 });
 
-  CallLogEntry.fromSerialization(Map<String, dynamic> serialization) {
+  SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     numQueries = _data['numQueries'];

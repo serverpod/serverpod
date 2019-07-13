@@ -74,14 +74,14 @@ class Insights {
     try {
       var sessionLog = await client.insights.getSessionLog(n);
       for (var entry in sessionLog.sessionLog.reversed) {
-        String methodName = '${Colorize('${entry.callLogEntry.endpoint}.${entry.callLogEntry.method}')..bold()}';
-        String message = '[${entry.callLogEntry.serverId} ${_dateFormat.format(entry.callLogEntry.time)}] ' + methodName + ' time: ${entry.callLogEntry.duration.toStringAsFixed(3)}s';
-        if (entry.callLogEntry.error != null) {
+        String methodName = '${Colorize('${entry.sessionLogEntry.endpoint}.${entry.sessionLogEntry.method}')..bold()}';
+        String message = '[${entry.sessionLogEntry.serverId} ${_dateFormat.format(entry.sessionLogEntry.time)}] ' + methodName + ' time: ${entry.sessionLogEntry.duration.toStringAsFixed(3)}s';
+        if (entry.sessionLogEntry.error != null) {
           print(Colorize(message)..red());
-          print(Colorize(entry.callLogEntry.error)..red());
-          print(entry.callLogEntry.stackTrace);
+          print(Colorize(entry.sessionLogEntry.error)..red());
+          print(entry.sessionLogEntry.stackTrace);
         }
-        else if (entry.callLogEntry.slow) {
+        else if (entry.sessionLogEntry.slow) {
           print(Colorize(message)..yellow());
         }
         else {

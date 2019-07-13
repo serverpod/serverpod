@@ -1,5 +1,5 @@
 class: SessionLogInfo
 fields:
-  callLogEntry: CallLogEntry
+  sessionLogEntry: SessionLogEntry
   queries: List<QueryLogEntry>
   messageLog: List<LogEntry>

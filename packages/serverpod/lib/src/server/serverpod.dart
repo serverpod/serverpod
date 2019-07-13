@@ -192,7 +192,7 @@ class Serverpod {
         logLevel: level.index,
         message: message,
         stackTrace: stackTrace?.toString(),
-        callLogId: callLogId,
+        sessionLogId: callLogId,
       );
 
       bool success = await database.insert(entry);
@@ -222,7 +222,7 @@ class Serverpod {
         _runtimeSettings.logSlowCalls && isSlow ||
         _runtimeSettings.logFailedCalls && exception != null
     ) {
-      var callLogEntry = internal.CallLogEntry(
+      var callLogEntry = internal.SessionLogEntry(
         serverId: serverId,
         time: DateTime.now(),
         endpoint: endpoint,
