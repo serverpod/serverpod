@@ -250,7 +250,7 @@ class Serverpod {
         ) {
           // Log query
           var queryEntry = internal.QueryLogEntry(
-            callLogId: sessionLogId,
+            sessionLogId: sessionLogId,
             query: queryInfo.query,
             duration: queryInfo.time.inMicroseconds / 1000000.0,
             numRows: queryInfo.numRows,

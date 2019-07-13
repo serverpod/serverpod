@@ -41,7 +41,7 @@ class InsightsEndpoint extends Endpoint {
 
       var queryLogRows = await server.database.find(
         tQueryLogEntry,
-        where: tQueryLogEntry.callLogId.equals(logEntry.id),
+        where: tQueryLogEntry.sessionLogId.equals(logEntry.id),
         orderBy: tQueryLogEntry.id,
         orderDescending: true,
       );

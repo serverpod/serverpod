@@ -12,14 +12,14 @@ class QueryLogEntry extends SerializableEntity {
   int numRows;
   String query;
   double duration;
-  int callLogId;
+  int sessionLogId;
 
   QueryLogEntry({
     this.id,
     this.numRows,
     this.query,
     this.duration,
-    this.callLogId,
+    this.sessionLogId,
 });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -28,7 +28,7 @@ class QueryLogEntry extends SerializableEntity {
     numRows = _data['numRows'];
     query = _data['query'];
     duration = _data['duration'];
-    callLogId = _data['callLogId'];
+    sessionLogId = _data['sessionLogId'];
   }
 
   Map<String, dynamic> serialize() {
@@ -37,7 +37,7 @@ class QueryLogEntry extends SerializableEntity {
       'numRows': numRows,
       'query': query,
       'duration': duration,
-      'callLogId': callLogId,
+      'sessionLogId': sessionLogId,
     });
   }
 }

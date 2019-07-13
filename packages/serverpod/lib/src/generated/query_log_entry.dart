@@ -13,14 +13,14 @@ class QueryLogEntry extends TableRow {
   int numRows;
   String query;
   double duration;
-  int callLogId;
+  int sessionLogId;
 
   QueryLogEntry({
     this.id,
     this.numRows,
     this.query,
     this.duration,
-    this.callLogId,
+    this.sessionLogId,
 });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -29,7 +29,7 @@ class QueryLogEntry extends TableRow {
     numRows = _data['numRows'];
     query = _data['query'];
     duration = _data['duration'];
-    callLogId = _data['callLogId'];
+    sessionLogId = _data['sessionLogId'];
   }
 
   Map<String, dynamic> serialize() {
@@ -38,7 +38,7 @@ class QueryLogEntry extends TableRow {
       'numRows': numRows,
       'query': query,
       'duration': duration,
-      'callLogId': callLogId,
+      'sessionLogId': sessionLogId,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
@@ -47,7 +47,7 @@ class QueryLogEntry extends TableRow {
       'numRows': numRows,
       'query': query,
       'duration': duration,
-      'callLogId': callLogId,
+      'sessionLogId': sessionLogId,
     });
   }
 
@@ -57,7 +57,7 @@ class QueryLogEntry extends TableRow {
       'numRows': numRows,
       'query': query,
       'duration': duration,
-      'callLogId': callLogId,
+      'sessionLogId': sessionLogId,
     });
   }
 }
@@ -70,14 +70,14 @@ class QueryLogEntryTable extends Table {
   final numRows = ColumnInt('numRows');
   final query = ColumnString('query');
   final duration = ColumnDouble('duration');
-  final callLogId = ColumnInt('callLogId');
+  final sessionLogId = ColumnInt('sessionLogId');
 
   List<Column> get columns => [
     id,
     numRows,
     query,
     duration,
-    callLogId,
+    sessionLogId,
   ];
 }
 
