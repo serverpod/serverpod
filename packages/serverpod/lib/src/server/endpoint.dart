@@ -136,14 +136,14 @@ abstract class Endpoint {
 
       // Print session info
       String authenticatedUser = requireLogin ? await session.authenticatedUser : null;
-      server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
+      server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
       return result;
     }
     catch (exception, stackTrace) {
       // Something did not work out
-      var callLogId = await server.serverpod.logCall(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
-      return ResultInternalServerError(exception.toString(), stackTrace, callLogId);
+      var sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
+      return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);
     }
   }
 
@@ -223,8 +223,8 @@ class ResultAuthenticationFailed extends Result {
 class ResultInternalServerError extends Result {
   final String exception;
   final StackTrace stackTrace;
-  final int callLogId;
-  ResultInternalServerError(this.exception, this.stackTrace, this.callLogId);
+  final int sessionLogId;
+  ResultInternalServerError(this.exception, this.stackTrace, this.sessionLogId);
   @override
   String toString() {
     return '$exception\n$stackTrace';

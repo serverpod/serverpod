@@ -182,7 +182,7 @@ class Serverpod {
     return _passwords[key];
   }
 
-  void log(internal.LogLevel level, String message, {StackTrace stackTrace, int callLogId}) async {
+  void log(internal.LogLevel level, String message, {StackTrace stackTrace, int sessionLogId}) async {
     int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
 
     if (database != null && level.index >= serverLogLevel) {
@@ -192,7 +192,7 @@ class Serverpod {
         logLevel: level.index,
         message: message,
         stackTrace: stackTrace?.toString(),
-        sessionLogId: callLogId,
+        sessionLogId: sessionLogId,
       );
 
       bool success = await database.insert(entry);
@@ -207,7 +207,7 @@ class Serverpod {
     }
   }
 
-  Future<int> logCall(String endpoint, String method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String authenticatedUser, String exception, StackTrace stackTrace) async {
+  Future<int> logSession(String endpoint, String method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String authenticatedUser, String exception, StackTrace stackTrace) async {
     if (_runMode == ServerpodRunMode.development) {
       print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
       if (exception != null) {
@@ -222,7 +222,7 @@ class Serverpod {
         _runtimeSettings.logSlowCalls && isSlow ||
         _runtimeSettings.logFailedCalls && exception != null
     ) {
-      var callLogEntry = internal.SessionLogEntry(
+      var sessionLogEntry = internal.SessionLogEntry(
         serverId: serverId,
         time: DateTime.now(),
         endpoint: endpoint,
@@ -234,13 +234,13 @@ class Serverpod {
         stackTrace: stackTrace?.toString(),
         authenticatedUser: authenticatedUser,
       );
-      await database.insert(callLogEntry);
+      await database.insert(sessionLogEntry);
 
-      int callLogId = callLogEntry.id;
+      int sessionLogId = sessionLogEntry.id;
 
       for (var logInfo in sessionLog) {
         if (logInfo.level.index >= _runtimeSettings.logLevel) {
-          log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace, callLogId: callLogId);
+          log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace, sessionLogId: sessionLogId);
         }
       }
 
@@ -250,7 +250,7 @@ class Serverpod {
         ) {
           // Log query
           var queryEntry = internal.QueryLogEntry(
-            callLogId: callLogId,
+            callLogId: sessionLogId,
             query: queryInfo.query,
             duration: queryInfo.time.inMicroseconds / 1000000.0,
             numRows: queryInfo.numRows,
@@ -259,7 +259,7 @@ class Serverpod {
         }
       }
 
-      return callLogId;
+      return sessionLogId;
     }
 
     return null;

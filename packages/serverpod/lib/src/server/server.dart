@@ -178,7 +178,7 @@ class Server {
     }
     else if (result is ResultInternalServerError) {
       request.response.statusCode = HttpStatus.internalServerError;
-      request.response.writeln('Internal server error. Call log id: ${result.callLogId}');
+      request.response.writeln('Internal server error. Call log id: ${result.sessionLogId}');
       request.response.close();
       return;
     }
