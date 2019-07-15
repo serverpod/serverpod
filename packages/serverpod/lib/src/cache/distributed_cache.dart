@@ -54,7 +54,7 @@ class DistributedCache extends Cache {
     String data = jsonEncode(object.serializeAll());
 
     if (client == null) {
-      await _localCache.put(key, DistributedCacheEntry(data: data));
+      await _localCache.put(key, DistributedCacheEntry(data: data), lifetime: lifetime, group: group);
     }
     else {
       try {
