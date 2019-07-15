@@ -66,6 +66,7 @@ class ServerpodClient {
       Uri url = Uri.parse('$host$endpoint');
 
       HttpClientRequest request = await _httpClient.postUrl(url);
+      request.headers.contentType = new ContentType("application", "json", charset: "utf-8");
       request.contentLength = utf8.encode(body).length;
       request.write(body);
 
