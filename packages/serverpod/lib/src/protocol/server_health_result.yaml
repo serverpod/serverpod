@@ -1,0 +1,4 @@
+class: ServerHealthResult
+fields:
+  metrics: List<ServerHealthMetric>
+  serverName: String

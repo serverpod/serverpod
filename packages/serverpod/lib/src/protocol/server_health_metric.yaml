@@ -1,0 +1,5 @@
+class: ServerHealthMetric
+fields:
+  name: String
+  isHealthy: bool
+  value: double

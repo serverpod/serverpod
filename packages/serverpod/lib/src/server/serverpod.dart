@@ -19,12 +19,15 @@ import 'runmode.dart';
 import 'server.dart';
 import 'session.dart';
 
+typedef Future<List<internal.ServerHealthMetric>> HealthCheckHandler(Serverpod pod);
+
 class Serverpod {
   String _runMode;
   ServerConfig config;
   Map<String, String> _passwords = <String, String>{};
 
   final AuthenticationHandler authenticationHandler;
+  final HealthCheckHandler healthCheckHandler;
   
   final SerializationManager serializationManager;
   SerializationManager _internalSerializationManager;
@@ -40,7 +43,7 @@ class Serverpod {
   internal.RuntimeSettings _runtimeSettings;
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings;
   
-  Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler}) {
+  Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.appendConstructors(_internalSerializationManager.constructors);
 

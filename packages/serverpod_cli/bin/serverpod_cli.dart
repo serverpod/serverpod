@@ -16,6 +16,7 @@ final cmdSessionLogs = 'sessionlog';
 final cmdCacheInfo = 'cacheinfo';
 final cmdServerAddress = 'serveraddress';
 final cmdServerIds = 'serverids';
+final cmdHealthCheck = 'healthcheck';
 
 void main(List<String> args) async {
   ArgParser parser = ArgParser();
@@ -70,6 +71,11 @@ void main(List<String> args) async {
   serverIdsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdServerIds, serverIdsParser);
 
+  // "healthcheck" command
+  ArgParser healthCheckParser = ArgParser();
+  healthCheckParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  parser.addCommand(cmdHealthCheck, healthCheckParser);
+
   var results = parser.parse(args);
 
   if (results.command != null) {
@@ -88,6 +94,12 @@ void main(List<String> args) async {
     if (results.command.name == cmdShutdown) {
       var insights = Insights(results.command['config']);
       await insights.shutdown();
+      insights.close();
+      return;
+    }
+    if (results.command.name == cmdHealthCheck) {
+      var insights = Insights(results.command['config']);
+      await insights.healthCheck();
       insights.close();
       return;
     }

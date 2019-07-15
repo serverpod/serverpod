@@ -36,6 +36,34 @@ class Insights {
     }
   }
 
+  Future<Null> healthCheck() async {
+    for (var serverId in _clients.keys) {
+      var client = _clients[serverId];
+      print(Colorize('Server id $serverId')..bold());
+      print('host: ${client.host}');
+
+      try {
+        var result = await client.insights.checkHealth();
+        print('name: ${result.serverName}');
+
+        for (var metric in result.metrics) {
+          String metricStr = '${metric.name}: ${metric.isHealthy ? 'Healthy' : 'Broken'}${metric.value != null ? ' : ${metric.value}': ''}';
+          if (metric.isHealthy)
+            metricStr = '${Colorize(metricStr)..green()}';
+          else
+            metricStr = '${Colorize(metricStr)..red()}';
+
+          print(metricStr);
+        }
+      }
+      catch(e) {
+        print(Colorize('Failed to health check server at ${client.host}')..red());
+      }
+
+      print('');
+    }
+  }
+
   Future<Null> printLogs(int n) async {
     var client = _clients[0] ?? _clients.values.first;
 

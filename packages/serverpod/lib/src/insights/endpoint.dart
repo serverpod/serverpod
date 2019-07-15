@@ -2,6 +2,8 @@ import '../../server.dart';
 import '../generated/protocol.dart';
 import '../cache/cache.dart';
 
+import 'health_check.dart';
+
 const endpointNameInsights = 'insights';
 
 class InsightsEndpoint extends Endpoint {
@@ -78,5 +80,19 @@ class InsightsEndpoint extends Endpoint {
 
   Future<Null> shutdown(Session session) async {
     server.serverpod.shutdown();
+  }
+
+  Future<ServerHealthResult> checkHealth(Session session) async {
+    var metrics = <ServerHealthMetric>[];
+    if (pod.healthCheckHandler != null) {
+      metrics.addAll(await pod.healthCheckHandler(pod));
+    }
+
+    metrics.addAll(await healthCheck(pod));
+
+    return ServerHealthResult(
+      serverName: pod.server.name,
+      metrics: metrics,
+    );
   }
 }

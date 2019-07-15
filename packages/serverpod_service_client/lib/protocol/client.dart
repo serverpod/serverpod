@@ -46,6 +46,11 @@ class _EndpointInsights {
   Client client;
   _EndpointInsights(this.client);
 
+  Future<ServerHealthResult> checkHealth() async {
+    return await client.callServerEndpoint('insights', 'checkHealth', 'ServerHealthResult', {
+    });
+  }
+
   Future<LogResult> getLog(int numEntries,) async {
     return await client.callServerEndpoint('insights', 'getLog', 'LogResult', {
       'numEntries':numEntries,
