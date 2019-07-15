@@ -6,7 +6,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'auth_key_manager.dart';
 
-typedef void ServerpodClientErrorCallback(Error e);
+typedef void ServerpodClientErrorCallback(var e, StackTrace stackTrace);
 
 class ServerpodClient {
   final AuthenticationKeyManager authenticationKeyManager;
@@ -83,9 +83,9 @@ class ServerpodClient {
       return serializationManager.createEntityFromSerialization(
           jsonDecode(data));
     }
-    catch(e) {
+    catch(e, stackTrace) {
       if (errorHandler != null)
-        errorHandler(e);
+        errorHandler(e, stackTrace);
       else
         rethrow;
     }
