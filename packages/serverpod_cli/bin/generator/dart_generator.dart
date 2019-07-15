@@ -125,6 +125,10 @@ class DartGenerator extends Generator{
       out += '/*   To generate run: "serverpod generate"    */\n';
       out += '\n';
 
+      // Ignore camel case warnings
+      out += '// ignore_for_file: non_constant_identifier_names\n';
+      out += '\n';
+
       if (serverCode) {
         if (tableName != null)
           out += 'import \'package:serverpod/database.dart\';\n';

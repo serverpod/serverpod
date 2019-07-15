@@ -1,6 +1,8 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:serverpod/database.dart';
 // ignore: unused_import
 import 'protocol.dart';
