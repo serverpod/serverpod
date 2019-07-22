@@ -17,8 +17,24 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod) async {
     for (var psStr in psStrs) {
       psUsage += double.tryParse(psStr) ?? 0.0;
     }
-    print('Usage: $psUsage');
     psUsageHealthy = true;
+  }
+  catch(e) {
+  }
+
+  double memUsage = 0.0;
+  bool memUsageHealthy = false;
+
+  try {
+    // ps -A -o %cpu | awk '{s+=$1} END {print s}'
+    var memResult = await Process.run('ps', ['-A', '-o', '%mem']);
+    List<String> memStrs = memResult.stdout.toString().split('\n');
+    memStrs.removeAt(0);
+
+    for (var memStr in memStrs) {
+      memUsage += double.tryParse(memStr) ?? 0.0;
+    }
+    memUsageHealthy = true;
   }
   catch(e) {
   }
@@ -28,6 +44,11 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod) async {
       name: 'serverpod_cpu',
       value: psUsage,
       isHealthy: psUsageHealthy,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_mem',
+      value: memUsage,
+      isHealthy: memUsageHealthy,
     ),
   ];
 }
