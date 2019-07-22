@@ -72,7 +72,7 @@ class FutureCallManager {
         try {
           call.invoke(object);
         }
-        catch(e, t) {
+        catch(e) {
           // TODO: Log errors
         }
       }
@@ -86,7 +86,7 @@ class FutureCallManager {
         );
       }
     }
-    catch(e, t) {
+    catch(e) {
       // Most likely we lost connection to the database
     }
 
