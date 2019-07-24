@@ -16,7 +16,11 @@ class CacheEndpoint extends Endpoint {
   }
 
   Future<Null> put(Session session, String key, String data, String group, DateTime expiration) async {
-    await _cache.put(key, DistributedCacheEntry(data: data));
+    Duration lifetime;
+    if (expiration != null)
+      lifetime = expiration.difference(DateTime.now());
+
+    await _cache.put(key, DistributedCacheEntry(data: data), group: group, lifetime: lifetime);
   }
 
   Future<String> get(Session session, String key) async {
