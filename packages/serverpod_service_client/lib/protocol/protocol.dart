@@ -19,6 +19,7 @@ import 'log_level.dart';
 import 'session_log_entry.dart';
 import 'server_health_result.dart';
 import 'session_log_result.dart';
+import 'readwrite_test.dart';
 
 export 'cache_info.dart';
 export 'runtime_settings.dart';
@@ -34,6 +35,7 @@ export 'log_level.dart';
 export 'session_log_entry.dart';
 export 'server_health_result.dart';
 export 'session_log_result.dart';
+export 'readwrite_test.dart';
 export 'client.dart';
 
 class Protocol extends SerializationManager {
@@ -57,5 +59,6 @@ class Protocol extends SerializationManager {
     constructors['SessionLogEntry'] = (Map<String, dynamic> serialization) => SessionLogEntry.fromSerialization(serialization);
     constructors['ServerHealthResult'] = (Map<String, dynamic> serialization) => ServerHealthResult.fromSerialization(serialization);
     constructors['SessionLogResult'] = (Map<String, dynamic> serialization) => SessionLogResult.fromSerialization(serialization);
+    constructors['ReadWriteTestEntry'] = (Map<String, dynamic> serialization) => ReadWriteTestEntry.fromSerialization(serialization);
   }
 }

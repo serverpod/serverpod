@@ -1,0 +1,4 @@
+class: ReadWriteTestEntry
+tableName: serverpod_readwrite_test
+fields:
+  number: int

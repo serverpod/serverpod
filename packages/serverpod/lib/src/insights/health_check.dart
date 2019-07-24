@@ -1,9 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 
 import '../generated/protocol.dart';
 import '../../serverpod.dart';
 
-Future<List<ServerHealthMetric>> healthCheck(Serverpod pod) async {
+Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, Session session) async {
   // Check cpu
   double psUsage = 0.0;
   bool psUsageHealthy = false;
@@ -22,6 +23,7 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod) async {
   catch(e) {
   }
 
+  // Check memory usage
   double memUsage = 0.0;
   bool memUsageHealthy = false;
 
@@ -39,6 +41,35 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod) async {
   catch(e) {
   }
 
+  // Check database response time
+  double dbResponseTime = 0.0;
+  bool dbHealthy = false;
+
+  try {
+    var startTime = DateTime.now();
+
+    Database db = session.server.database;
+    int rnd = Random().nextInt(1000000);
+
+    // Write entry
+    ReadWriteTestEntry entry = ReadWriteTestEntry(
+      number: rnd,
+    );
+
+    await db.insert(entry);
+
+    // Read entry
+    entry = await db.findById(tReadWriteTestEntry, entry.id);
+
+    // Verify random number
+    dbHealthy = entry.number == rnd;
+
+    dbResponseTime = DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+  }
+  catch(e) {
+  }
+
+
   return <ServerHealthMetric>[
     ServerHealthMetric(
       name: 'serverpod_cpu',
@@ -46,9 +77,14 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod) async {
       isHealthy: psUsageHealthy,
     ),
     ServerHealthMetric(
-      name: 'serverpod_mem',
+      name: 'serverpod_memory',
       value: memUsage,
       isHealthy: memUsageHealthy,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_database',
+      value: dbResponseTime,
+      isHealthy: dbHealthy,
     ),
   ];
 }
