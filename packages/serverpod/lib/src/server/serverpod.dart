@@ -148,9 +148,10 @@ class Serverpod {
 
         await server.start();
       },
-      onError: (e) {
+      onError: (e, stackTrace) {
         // Last resort error handling
-        print('Caught zoned error: $e');
+        print('Serverpod zoned error: $e');
+        print('$stackTrace');
       }
     );
   }
