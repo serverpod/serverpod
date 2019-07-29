@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -102,48 +103,56 @@ class Serverpod {
   }
 
   void start() async {
-    if (_runMode == ServerpodRunMode.generate) {
-      for (Endpoint endpoint in server.endpoints.values) {
-        endpoint.printDefinition();
-      }
-      return;
-    }
+    runZoned(
+      () async{
+        if (_runMode == ServerpodRunMode.generate) {
+          for (Endpoint endpoint in server.endpoints.values) {
+            endpoint.printDefinition();
+          }
+          return;
+        }
 
-    // Connect to database
-    if (database != null) {
-      bool success = await database.connect();
-      if (success) {
-        log(internal.LogLevel.info, 'Connected to database');
-      }
-      else {
-        log(internal.LogLevel.error, 'Failed to connect to database');
-        database = null;
-      }
-    }
+        // Connect to database
+        if (database != null) {
+          bool success = await database.connect();
+          if (success) {
+            log(internal.LogLevel.info, 'Connected to database');
+          }
+          else {
+            log(internal.LogLevel.error, 'Failed to connect to database');
+            database = null;
+          }
+        }
 
-    // Runtime settings
-    if (database != null) {
-      _runtimeSettings = await database.findSingleRow(internal.tRuntimeSettings);
-      if (_runtimeSettings == null) {
-        // Store default settings
-        _runtimeSettings = internal.RuntimeSettings(
-          logAllCalls: false,
-          logAllQueries: false,
-          logSlowCalls: true,
-          logSlowQueries: true,
-          logFailedCalls: true,
-          logMalformedCalls: false,
-          logLevel: internal.LogLevel.warning.index,
-          slowCallDuration: 1.0,
-          slowQueryDuration: 1.0,
-        );
-        await database.insert(_runtimeSettings);
+        // Runtime settings
+        if (database != null) {
+          _runtimeSettings = await database.findSingleRow(internal.tRuntimeSettings);
+          if (_runtimeSettings == null) {
+            // Store default settings
+            _runtimeSettings = internal.RuntimeSettings(
+              logAllCalls: false,
+              logAllQueries: false,
+              logSlowCalls: true,
+              logSlowQueries: true,
+              logFailedCalls: true,
+              logMalformedCalls: false,
+              logLevel: internal.LogLevel.warning.index,
+              slowCallDuration: 1.0,
+              slowQueryDuration: 1.0,
+            );
+            await database.insert(_runtimeSettings);
+          }
+        }
+
+        await _startServiceServer();
+
+        await server.start();
+      },
+      onError: (e) {
+        // Last resort error handling
+        print('Caught zoned error: $e');
       }
-    }
-
-    await _startServiceServer();
-
-    await server.start();
+    );
   }
 
   Future<Null> _startServiceServer() async {

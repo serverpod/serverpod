@@ -95,6 +95,9 @@ class Server {
         ).onDone(() {
           logInfo('$name stopped');
         });
+      },
+      onError: (e, StackTrace stackTrace) {
+        logError(e.toString(), stackTrace: stackTrace);
       });
     }
     else {
@@ -117,6 +120,9 @@ class Server {
         ).onDone(() {
           logInfo('$name stopped');
         });
+      },
+      onError: (e, StackTrace stackTrace) {
+        logError(e.toString(), stackTrace: stackTrace);
       });
     }
 
@@ -158,7 +164,16 @@ class Server {
       return;
     }
 
-    String body = await request.transform(Utf8Decoder()).join();
+    String body;
+    try {
+      body = await request.transform(Utf8Decoder()).join();
+    }
+    catch (e, stackTrace) {
+      logError(e, stackTrace: stackTrace);
+      request.response.statusCode = HttpStatus.badRequest;
+      request.response.close();
+      return;
+    }
 
     var result = await _handleUriCall(uri, body);
 

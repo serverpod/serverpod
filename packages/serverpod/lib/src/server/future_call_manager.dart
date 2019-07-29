@@ -72,8 +72,9 @@ class FutureCallManager {
         try {
           call.invoke(object);
         }
-        catch(e) {
+        catch(e, stackTrace) {
           // TODO: Log errors
+          _server.logError(e, stackTrace: stackTrace);
         }
       }
 
