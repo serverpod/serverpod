@@ -35,6 +35,8 @@ class Server {
 
   FutureCallManager _futureCallManager;
 
+  List<String> whitelistedExternalCalls;
+
   Server({
     this.serverpod,
     @required this.serverId,
@@ -47,6 +49,7 @@ class Server {
     String name,
     this.caches,
     this.securityContext,
+    this.whitelistedExternalCalls,
   }) :
     this.name = name ?? 'Server id $serverId'
   {
@@ -154,14 +157,22 @@ class Server {
       return;
     }
 
-    // Check size of the request
-    int contentLength = request.contentLength;
-    if (contentLength == -1 || contentLength > serverpod.config.maxRequestSize) {
-      if (serverpod.runtimeSettings.logMalformedCalls)
-        logDebug('Malformed call, invalid content length ($contentLength): $uri');
-      request.response.statusCode = HttpStatus.badRequest;
-      request.response.close();
-      return;
+    // TODO: Limit check external calls
+    bool checkLength = true;
+    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
+      checkLength = false;
+
+    if (checkLength) {
+      // Check size of the request
+      int contentLength = request.contentLength;
+      if (contentLength == -1 ||
+          contentLength > serverpod.config.maxRequestSize) {
+        if (serverpod.runtimeSettings.logMalformedCalls)
+          logDebug('Malformed call, invalid content length ($contentLength): $uri');
+        request.response.statusCode = HttpStatus.badRequest;
+        request.response.close();
+        return;
+      }
     }
 
     String body;
@@ -175,7 +186,7 @@ class Server {
       return;
     }
 
-    var result = await _handleUriCall(uri, body);
+    var result = await _handleUriCall(uri, body, request);
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls)
@@ -197,6 +208,11 @@ class Server {
       request.response.close();
       return;
     }
+    else if (result is ResultStatusCode) {
+      request.response.statusCode = result.statusCode;
+      request.response.close();
+      return;
+    }
     else {
       String serializedEntity = serializationManager.serializeEntity(result);
       request.response.write(serializedEntity);
@@ -205,14 +221,14 @@ class Server {
     }
   }
 
-  Future _handleUriCall(Uri uri, String body) async {
+  Future _handleUriCall(Uri uri, String body, HttpRequest request) async {
     String endpointName = uri.path.substring(1);
     Endpoint endpoint = endpoints[endpointName];
 
     if (endpoint == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
 
-    return endpoint.handleUriCall(uri, body);
+    return endpoint.handleUriCall(uri, body, request);
   }
 
   void logDebug(String message) {

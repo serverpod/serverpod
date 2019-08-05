@@ -50,7 +50,7 @@ abstract class Endpoint {
     }
   }
 
-  Future handleUriCall(Uri uri, String body) async {
+  Future handleUriCall(Uri uri, String body, HttpRequest request) async {
     List callArgs = [];
 
     Session session = Session(
@@ -228,6 +228,15 @@ class ResultInternalServerError extends Result {
   @override
   String toString() {
     return '$exception\n$stackTrace';
+  }
+}
+
+class ResultStatusCode extends Result {
+  final int statusCode;
+  ResultStatusCode(this.statusCode);
+  @override
+  String toString() {
+    return 'Status Code: $statusCode';
   }
 }
 

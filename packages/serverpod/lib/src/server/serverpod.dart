@@ -43,6 +43,8 @@ class Serverpod {
 
   internal.RuntimeSettings _runtimeSettings;
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings;
+
+  List<String> whitelistedExternalCalls;
   
   Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
@@ -99,6 +101,7 @@ class Serverpod {
       runMode: _runMode,
       caches: caches,
       authenticationHandler: authenticationHandler,
+      whitelistedExternalCalls: whitelistedExternalCalls,
     );
   }
 
