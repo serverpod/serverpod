@@ -65,32 +65,42 @@ abstract class Endpoint {
     var inputParams = session.queryParameters;
 
     try {
-      if (methodName == null)
+      if (methodName == null) {
+        await session.close();
         return ResultInvalidParams('method missing in call: $uri');
+      }
 
       if (requireLogin) {
-        if (auth == null)
+        if (auth == null) {
+          await session.close();
           return ResultAuthenticationFailed('No authentication provided');
-        if (!await session.isUserSignedIn)
+        }
+        if (!await session.isUserSignedIn) {
+          await session.close();
           return ResultAuthenticationFailed('Authentication failed');
+        }
       }
 
       if (requiredScopes.length > 0) {
 
         if (!await session.isUserSignedIn) {
+          await session.close();
           return ResultAuthenticationFailed('Sign in required to access this endpoint');
         }
 
         for (var requiredScope in requiredScopes) {
           if (!(await session.scopes).contains(requiredScope)) {
+            await session.close();
             return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
           }
         }
       }
 
       var method = _methods[methodName];
-      if (method == null)
+      if (method == null) {
+        await session.close();
         return ResultInvalidParams('Method $methodName not found in call: $uri');
+      }
 
       // Always add the session as the first argument
       callArgs.add(session);
@@ -107,8 +117,10 @@ abstract class Endpoint {
         // Validate argument
         if (input != null) {
           arg = _formatArg(input, requiredParam, server.serializationManager);
-          if (arg == null)
+          if (arg == null) {
+            await session.close();
             return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri value: $input');
+          }
         }
 
         // Add to call list
@@ -124,8 +136,10 @@ abstract class Endpoint {
 
         // Validate argument
         Object arg = _formatArg(input, optionalParam, server.serializationManager);
-        if (arg == null)
+        if (arg == null) {
+          await session.close();
           return ResultInvalidParams('Optional parameter ${optionalParam.name} has invalid type: $uri');
+        }
 
         // Add to call list
         callArgs.add(arg);
@@ -138,11 +152,14 @@ abstract class Endpoint {
       String authenticatedUser = requireLogin ? await session.authenticatedUser : null;
       server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
+      await session.close();
       return result;
     }
     catch (exception, stackTrace) {
       // Something did not work out
       var sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
+
+      await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);
     }
   }

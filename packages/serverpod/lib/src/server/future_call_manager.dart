@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'future_call.dart';
 import 'server.dart';
+import '../database/database_connection.dart';
 import '../generated/protocol.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -24,7 +25,11 @@ class FutureCallManager {
       time: time,
       serverId: serverId,
     );
-    await _server.database.insert(entry);
+
+    DatabaseConnection dbConn = DatabaseConnection(_server.database);
+    await dbConn.connect();
+    await dbConn.insert(entry);
+    await dbConn.disconnect();
   }
 
   void addFutureCall(FutureCall call, String name) {
@@ -49,11 +54,14 @@ class FutureCallManager {
   }
 
   Future<Null> _checkQueue() async {
+    DatabaseConnection dbConn = DatabaseConnection(_server.database);
+
     try {
       // Get calls
       DateTime now = DateTime.now();
+      await dbConn.connect();
 
-      var rows = await _server.database.find(
+      var rows = await dbConn.find(
         tFutureCallEntry,
         where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId
             .equals(_server.serverId),
@@ -80,15 +88,18 @@ class FutureCallManager {
 
       // Remove the invoked calls
       if (rows.length > 0) {
-        await _server.database.delete(
+        await dbConn.delete(
           tFutureCallEntry,
           where: tFutureCallEntry.serverId.equals(
               _server.serverId) & (tFutureCallEntry.time <= now),
         );
       }
+
+      dbConn.disconnect();
     }
     catch(e) {
       // Most likely we lost connection to the database
+      dbConn.disconnect();
     }
 
     // Check the queue again in 5 seconds

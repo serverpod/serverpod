@@ -11,6 +11,7 @@ import '../authentication/serviceAuthentication.dart';
 import '../cache/caches.dart';
 import '../cache/endpoint.dart';
 import '../database/database.dart';
+import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
 import '../insights/endpoint.dart';
 import 'config.dart';
@@ -115,21 +116,25 @@ class Serverpod {
           return;
         }
 
-        // Connect to database
-        if (database != null) {
-          bool success = await database.connect();
-          if (success) {
-            log(internal.LogLevel.info, 'Connected to database');
-          }
-          else {
-            log(internal.LogLevel.error, 'Failed to connect to database');
-            database = null;
-          }
-        }
+//        // Connect to database
+//        if (database != null) {
+//          bool success = await database.connect();
+//          if (success) {
+//            log(internal.LogLevel.info, 'Connected to database');
+//          }
+//          else {
+//            log(internal.LogLevel.error, 'Failed to connect to database');
+//            database = null;
+//          }
+//        }
+
 
         // Runtime settings
         if (database != null) {
-          _runtimeSettings = await database.findSingleRow(internal.tRuntimeSettings);
+          DatabaseConnection dbConn = DatabaseConnection(database);
+          await dbConn.connect();
+
+          _runtimeSettings = await dbConn.findSingleRow(internal.tRuntimeSettings);
           if (_runtimeSettings == null) {
             // Store default settings
             _runtimeSettings = internal.RuntimeSettings(
@@ -143,8 +148,10 @@ class Serverpod {
               slowCallDuration: 1.0,
               slowQueryDuration: 1.0,
             );
-            await database.insert(_runtimeSettings);
+            await dbConn.insert(_runtimeSettings);
           }
+
+          await dbConn.disconnect();
         }
 
         await _startServiceServer();
@@ -211,7 +218,10 @@ class Serverpod {
         sessionLogId: sessionLogId,
       );
 
-      bool success = await database.insert(entry);
+      DatabaseConnection dbConn = DatabaseConnection(database);
+      await dbConn.connect();
+      bool success = await dbConn.insert(entry);
+      await dbConn.disconnect();
       if (!success)
         print('FAILED DB LOG ${level.name.toLowerCase()}: $message');
     }
@@ -250,7 +260,10 @@ class Serverpod {
         stackTrace: stackTrace?.toString(),
         authenticatedUser: authenticatedUser,
       );
-      await database.insert(sessionLogEntry);
+
+      DatabaseConnection dbConn = DatabaseConnection(database);
+      await dbConn.connect();
+      await dbConn.insert(sessionLogEntry);
 
       int sessionLogId = sessionLogEntry.id;
 
@@ -271,9 +284,11 @@ class Serverpod {
             duration: queryInfo.time.inMicroseconds / 1000000.0,
             numRows: queryInfo.numRows,
           );
-          await database.insert(queryEntry);
+          await dbConn.insert(queryEntry);
         }
       }
+
+      dbConn.disconnect();
 
       return sessionLogId;
     }
@@ -284,6 +299,5 @@ class Serverpod {
   void shutdown() {
     server?.shutdown();
     _serviceServer?.shutdown();
-    database?.disconnect();
   }
 }

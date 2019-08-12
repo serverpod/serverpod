@@ -47,8 +47,6 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, Session session) asy
 
   try {
     var startTime = DateTime.now();
-
-    Database db = session.server.database;
     int rnd = Random().nextInt(1000000);
 
     // Write entry
@@ -56,10 +54,10 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, Session session) asy
       number: rnd,
     );
 
-    await db.insert(entry);
+    await session.insert(entry);
 
     // Read entry
-    entry = await db.findById(tReadWriteTestEntry, entry.id);
+    entry = await session.findById(tReadWriteTestEntry, entry.id);
 
     // Verify random number
     dbHealthy = entry.number == rnd;
