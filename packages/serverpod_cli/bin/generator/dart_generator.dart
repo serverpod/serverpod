@@ -364,6 +364,8 @@ class DartGenerator extends Generator{
     // Endpoints
     for (String endpointName in doc.keys) {
       Map endpointDef = doc[endpointName];
+      if (endpointDef == null)
+        continue;
 
       String endpointClassName = _endpointClassName(endpointName);
 
@@ -438,17 +440,24 @@ class DartGenerator extends Generator{
     out += 'class Client extends ServerpodClient {\n';
 
     for (String endpointName in doc.keys) {
+      Map endpointDef = doc[endpointName];
+      if (endpointDef == null)
+        continue;
+
+
       out += '  ${_endpointClassName(endpointName)} $endpointName;\n';
     }
 
     out += '\n';
     out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {\n';
     for (String endpointName in doc.keys) {
+      Map endpointDef = doc[endpointName];
+      if (endpointDef == null)
+        continue;
+
       out += '    $endpointName = ${_endpointClassName(endpointName)}(this);\n';
     }
     out += '  }\n';
-    out += '\n';
-
 
     out += '}\n';
 
