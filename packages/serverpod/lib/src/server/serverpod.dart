@@ -116,21 +116,9 @@ class Serverpod {
           return;
         }
 
-//        // Connect to database
-//        if (database != null) {
-//          bool success = await database.connect();
-//          if (success) {
-//            log(internal.LogLevel.info, 'Connected to database');
-//          }
-//          else {
-//            log(internal.LogLevel.error, 'Failed to connect to database');
-//            database = null;
-//          }
-//        }
-
-
         // Runtime settings
         if (database != null) {
+          await database.initialize();
           DatabaseConnection dbConn = DatabaseConnection(database);
           await dbConn.connect();
 

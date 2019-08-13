@@ -87,9 +87,9 @@ class Session {
   
   Duration get runningTime => DateTime.now().difference(_timeCreated);
 
-  Future<Null> close() {
+  Future<Null> close() async {
     if (_databaseConnection != null) {
-      _databaseConnection.disconnect();
+      await _databaseConnection.disconnect();
     }
   }
 
@@ -213,6 +213,17 @@ class Session {
     return await conn.deleteRow(
       row,
       transaction: transaction,
+      session: this,
+    );
+  }
+
+  Future<List<List<dynamic>>> query(String query) async {
+    var conn = await databaseConnection;
+    if (conn == null)
+      return null;
+
+    return conn.query(
+      query,
       session: this,
     );
   }

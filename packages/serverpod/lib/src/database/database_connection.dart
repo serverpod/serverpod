@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'database.dart';
 import 'table.dart';
 import 'package:postgres/postgres.dart';
@@ -5,10 +6,12 @@ import '../server/session.dart';
 
 class DatabaseConnection {
   final Database database;
+  final Duration maxLifeTime;
+  Timer _timer;
 
   PostgreSQLConnection postgresConnection;
 
-  DatabaseConnection(this.database) {
+  DatabaseConnection(this.database, {this.maxLifeTime = const Duration(minutes: 2)}) {
     postgresConnection = PostgreSQLConnection(
         database.host,
         database.port,
@@ -20,12 +23,24 @@ class DatabaseConnection {
 
   Future<bool> connect() async {
     await postgresConnection.open();
+
+    if (!postgresConnection.isClosed && maxLifeTime != null) {
+      _timer = Timer(maxLifeTime, () {
+        _timer = null;
+        disconnect();
+      });
+    }
+
     return !postgresConnection.isClosed;
   }
 
   Future<Null> disconnect() async {
+    if (_timer != null)
+      _timer.cancel();
     await postgresConnection.close();
   }
+
+  bool get isConnected => !postgresConnection.isClosed;
 
   Future<List<String>> getTableNames() async {
     var tableNames = <String>[];
@@ -324,6 +339,20 @@ class DatabaseConnection {
       int affectedRows = await postgresConnection.execute(query);
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
+    }
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
+
+  Future<List<List<dynamic>>> query(String query, {Session session}) async {
+    DateTime startTime = DateTime.now();
+
+    try {
+      var result = await postgresConnection.query(query);
+      _logQuery(session, query, startTime);
+      return result;
     }
     catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);

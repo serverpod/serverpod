@@ -7,6 +7,8 @@ import 'package:yaml/yaml.dart';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import 'database_connection.dart';
+
 class Database {
   final String host;
   final int port;
@@ -22,6 +24,8 @@ class Database {
   Database(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password) {
     _serializationManager = serializationManager;
   }
+
+  DatabaseConnection createConnection() => DatabaseConnection(this);
 
   Future<Null> initialize() async {
     if (_serializationManager != null) {
