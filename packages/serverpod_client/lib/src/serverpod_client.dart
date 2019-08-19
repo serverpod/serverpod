@@ -20,6 +20,7 @@ class ServerpodClient {
 
   ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authenticationKeyManager}) {
     _httpClient = HttpClient(context: context);
+    _httpClient.connectionTimeout = Duration(seconds: 20);
     _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
       print('Failed to verify server certificate');
       print('pem: ${cert.pem}');
