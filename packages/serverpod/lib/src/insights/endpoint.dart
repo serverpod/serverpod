@@ -88,7 +88,7 @@ class InsightsEndpoint extends Endpoint {
       metrics.addAll(await pod.healthCheckHandler(pod));
     }
 
-    metrics.addAll(await healthCheck(pod, session));
+    metrics.addAll(await healthCheck(pod, await session.databaseConnection));
 
     return ServerHealthResult(
       serverName: pod.server.name,

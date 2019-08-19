@@ -4,7 +4,7 @@ import 'dart:math';
 import '../generated/protocol.dart';
 import '../../serverpod.dart';
 
-Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, Session session) async {
+Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, DatabaseConnection databaseConnection) async {
   // Check cpu
   double psUsage = 0.0;
   bool psUsageHealthy = false;
@@ -54,10 +54,10 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, Session session) asy
       number: rnd,
     );
 
-    await session.insert(entry);
+    await databaseConnection.insert(entry);
 
     // Read entry
-    entry = await session.findById(tReadWriteTestEntry, entry.id);
+    entry = await databaseConnection.findById(tReadWriteTestEntry, entry.id);
 
     // Verify random number
     dbHealthy = entry.number == rnd;

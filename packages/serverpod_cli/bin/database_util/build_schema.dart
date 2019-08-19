@@ -15,6 +15,7 @@ Future<Null> performBuildSchema(bool verbose) async {
 class BuildSchema {
   ServerConfig config;
   Database database;
+  DatabaseConnection databaseConnection;
 
   Future<Null> setup() async {
     config = ServerConfig('config/development.yaml', 0);
@@ -23,17 +24,18 @@ class BuildSchema {
     // Setup database
     if (config.dbConfigured) {
       database = await Database(null, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
-      if (!await database.connect())
+      databaseConnection = database.createConnection();
+      if (!await databaseConnection.connect())
         print('Failed to connect to database');
     }
   }
 
   Future<Null> build() async {
-    var names = await database.getTableNames();
+    var names = await databaseConnection.getTableNames();
     print('database names: $names');
 
     for (var name in names) {
-      var descr = await database.getTableDescription(name);
+      var descr = await databaseConnection.getTableDescription(name);
 
       if (descr == null) {
         print('WARNING: Skipping table $name');
@@ -61,6 +63,6 @@ class BuildSchema {
   }
 
   Future<Null> finish() async {
-    await database.disconnect();
+    await databaseConnection.disconnect();
   }
 }
