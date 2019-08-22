@@ -117,29 +117,38 @@ class Serverpod {
         }
 
         // Runtime settings
-        if (database != null) {
-          await database.initialize();
-          DatabaseConnection dbConn = DatabaseConnection(database);
-          await dbConn.connect();
+        try {
+          if (database != null) {
+            await database.initialize();
+            DatabaseConnection dbConn = DatabaseConnection(database);
+            print('connecting');
+            await dbConn.connect();
+            print('connected');
 
-          _runtimeSettings = await dbConn.findSingleRow(internal.tRuntimeSettings);
-          if (_runtimeSettings == null) {
-            // Store default settings
-            _runtimeSettings = internal.RuntimeSettings(
-              logAllCalls: false,
-              logAllQueries: false,
-              logSlowCalls: true,
-              logSlowQueries: true,
-              logFailedCalls: true,
-              logMalformedCalls: false,
-              logLevel: internal.LogLevel.warning.index,
-              slowCallDuration: 1.0,
-              slowQueryDuration: 1.0,
-            );
-            await dbConn.insert(_runtimeSettings);
+            _runtimeSettings =
+            await dbConn.findSingleRow(internal.tRuntimeSettings);
+            if (_runtimeSettings == null) {
+              // Store default settings
+              _runtimeSettings = internal.RuntimeSettings(
+                logAllCalls: false,
+                logAllQueries: false,
+                logSlowCalls: true,
+                logSlowQueries: true,
+                logFailedCalls: true,
+                logMalformedCalls: false,
+                logLevel: internal.LogLevel.warning.index,
+                slowCallDuration: 1.0,
+                slowQueryDuration: 1.0,
+              );
+              await dbConn.insert(_runtimeSettings);
+            }
+
+            await dbConn.disconnect();
           }
-
-          await dbConn.disconnect();
+        }
+        catch(e, stackTrace) {
+          print('${DateTime.now()} Failed to connect to database: $e');
+          print('$stackTrace');
         }
 
         await _startServiceServer();
@@ -206,10 +215,17 @@ class Serverpod {
         sessionLogId: sessionLogId,
       );
 
-      DatabaseConnection dbConn = DatabaseConnection(database);
-      await dbConn.connect();
-      bool success = await dbConn.insert(entry);
-      await dbConn.disconnect();
+      bool success;
+
+      try {
+        DatabaseConnection dbConn = DatabaseConnection(database);
+        await dbConn.connect();
+        success = await dbConn.insert(entry);
+        await dbConn.disconnect();
+      }
+      catch(e, stackTrace) {
+        success = false;
+      }
       if (!success)
         print('FAILED DB LOG ${level.name.toLowerCase()}: $message');
     }
@@ -249,36 +265,45 @@ class Serverpod {
         authenticatedUser: authenticatedUser,
       );
 
-      DatabaseConnection dbConn = DatabaseConnection(database);
-      await dbConn.connect();
-      await dbConn.insert(sessionLogEntry);
+      try {
+        DatabaseConnection dbConn = DatabaseConnection(database);
+        await dbConn.connect();
+        await dbConn.insert(sessionLogEntry);
 
-      int sessionLogId = sessionLogEntry.id;
+        int sessionLogId = sessionLogEntry.id;
 
-      for (var logInfo in sessionLog) {
-        if (logInfo.level.index >= _runtimeSettings.logLevel) {
-          log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace, sessionLogId: sessionLogId);
+        for (var logInfo in sessionLog) {
+          if (logInfo.level.index >= _runtimeSettings.logLevel) {
+            log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
+                sessionLogId: sessionLogId);
+          }
         }
-      }
 
-      for (var queryInfo in queries) {
-        if (_runtimeSettings.logAllQueries ||
-            _runtimeSettings.logSlowQueries && queryInfo.time > Duration(microseconds: (runtimeSettings.slowQueryDuration * 1000000.0).toInt())
-        ) {
-          // Log query
-          var queryEntry = internal.QueryLogEntry(
-            sessionLogId: sessionLogId,
-            query: queryInfo.query,
-            duration: queryInfo.time.inMicroseconds / 1000000.0,
-            numRows: queryInfo.numRows,
-          );
-          await dbConn.insert(queryEntry);
+        for (var queryInfo in queries) {
+          if (_runtimeSettings.logAllQueries ||
+              _runtimeSettings.logSlowQueries && queryInfo.time > Duration(
+                  microseconds: (runtimeSettings.slowQueryDuration * 1000000.0)
+                      .toInt())
+          ) {
+            // Log query
+            var queryEntry = internal.QueryLogEntry(
+              sessionLogId: sessionLogId,
+              query: queryInfo.query,
+              duration: queryInfo.time.inMicroseconds / 1000000.0,
+              numRows: queryInfo.numRows,
+            );
+            await dbConn.insert(queryEntry);
+          }
         }
+
+        dbConn.disconnect();
+
+        return sessionLogId;
       }
-
-      dbConn.disconnect();
-
-      return sessionLogId;
+      catch(e, stackTrace) {
+        print('${DateTime.now()} Failed to log session: $e');
+        print('$stackTrace');
+      }
     }
 
     return null;

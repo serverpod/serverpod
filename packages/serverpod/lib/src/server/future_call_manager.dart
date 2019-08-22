@@ -95,11 +95,13 @@ class FutureCallManager {
         );
       }
 
-      dbConn.disconnect();
+      await dbConn.disconnect();
     }
-    catch(e) {
+    catch(e, stackTrace) {
       // Most likely we lost connection to the database
-      dbConn.disconnect();
+      print('${DateTime.now()} Failed to connect to database in future call manager $e');
+      print('$stackTrace');
+      await dbConn.disconnect();
     }
 
     // Check the queue again in 5 seconds
