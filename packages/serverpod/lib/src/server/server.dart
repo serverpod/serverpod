@@ -180,7 +180,7 @@ class Server {
       body = await request.transform(Utf8Decoder()).join();
     }
     catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      logError('$e', stackTrace: stackTrace);
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
