@@ -83,16 +83,6 @@ class InsightsEndpoint extends Endpoint {
   }
 
   Future<ServerHealthResult> checkHealth(Session session) async {
-    var metrics = <ServerHealthMetric>[];
-    if (pod.healthCheckHandler != null) {
-      metrics.addAll(await pod.healthCheckHandler(pod));
-    }
-
-    metrics.addAll(await healthCheck(pod, await session.databaseConnection));
-
-    return ServerHealthResult(
-      serverName: pod.server.name,
-      metrics: metrics,
-    );
+    return await performHealthChecks(pod);
   }
 }

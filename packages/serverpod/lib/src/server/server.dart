@@ -13,6 +13,7 @@ import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
+import '../insights/health_check.dart';
 
 class Server {
   final endpoints = <String, Endpoint>{};
@@ -152,7 +153,24 @@ class Server {
     }
 
     if (uri.path == '/') {
-      request.response.writeln('OK ${DateTime.now().toUtc()}');
+      // Perform health checks
+      var checks = await performHealthChecks(this.serverpod);
+      var issues = <String>[];
+      var allOk = true;
+      for (var metric in checks.metrics) {
+        if (!metric.isHealthy) {
+          allOk = false;
+          issues.add('${metric.name}: ${metric.value}');
+        }
+      }
+
+      if (allOk)
+        request.response.writeln('OK ${DateTime.now().toUtc()}');
+      else
+        request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
+      for (var issue in issues)
+        request.response.writeln(issue);
+
       request.response.close();
       return;
     }

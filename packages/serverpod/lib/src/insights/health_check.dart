@@ -4,7 +4,21 @@ import 'dart:math';
 import '../generated/protocol.dart';
 import '../../serverpod.dart';
 
-Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, DatabaseConnection databaseConnection) async {
+Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
+  var metrics = <ServerHealthMetric>[];
+  if (pod.healthCheckHandler != null) {
+    metrics.addAll(await pod.healthCheckHandler(pod));
+  }
+
+  metrics.addAll(await defaultHealthCheckMetrics(pod));
+
+  return ServerHealthResult(
+    serverName: pod.server.name,
+    metrics: metrics,
+  );
+}
+
+Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async {
   // Check cpu
   double psUsage = 0.0;
   bool psUsageHealthy = false;
@@ -49,6 +63,9 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, DatabaseConnection d
     var startTime = DateTime.now();
     int rnd = Random().nextInt(1000000);
 
+    DatabaseConnection databaseConnection = pod.database.createConnection();
+    await databaseConnection.connect();
+
     // Write entry
     ReadWriteTestEntry entry = ReadWriteTestEntry(
       number: rnd,
@@ -63,6 +80,8 @@ Future<List<ServerHealthMetric>> healthCheck(Serverpod pod, DatabaseConnection d
     dbHealthy = entry.number == rnd;
 
     dbResponseTime = DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+
+    await databaseConnection.disconnect();
   }
   catch(e) {
   }
