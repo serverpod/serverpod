@@ -121,9 +121,7 @@ class Serverpod {
           if (database != null) {
             await database.initialize();
             DatabaseConnection dbConn = DatabaseConnection(database);
-            print('connecting');
             await dbConn.connect();
-            print('connected');
 
             _runtimeSettings =
             await dbConn.findSingleRow(internal.tRuntimeSettings);
@@ -227,7 +225,7 @@ class Serverpod {
         success = false;
       }
       if (!success)
-        print('FAILED DB LOG ${level.name.toLowerCase()}: $message');
+        print('${DateTime.now()} FAILED DB LOG ${level.name.toLowerCase()}: $message');
     }
 
     if (_runMode == ServerpodRunMode.development) {
