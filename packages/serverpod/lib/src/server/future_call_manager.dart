@@ -101,6 +101,8 @@ class FutureCallManager {
       // Most likely we lost connection to the database
       print('${DateTime.now()} Failed to connect to database in future call manager $e');
       print('$stackTrace');
+      print('Local stacktrace:');
+      print('${StackTrace.current}');
       await dbConn.disconnect();
     }
 

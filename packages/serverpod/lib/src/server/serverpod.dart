@@ -298,9 +298,19 @@ class Serverpod {
 
         return sessionLogId;
       }
-      catch(e, stackTrace) {
-        print('${DateTime.now()} Failed to log session: $e');
-        print('$stackTrace');
+      catch(e, logStackTrace) {
+        print('${DateTime.now()} FAILED TO LOG SESSION');
+        print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
+        print('CALL error: $exception');
+        if (logStackTrace != null)
+          print('$logStackTrace');
+
+        print('LOG ERRORS');
+        print('$e');
+        print('$logStackTrace');
+        print('Current stacktrace:');
+        print('${StackTrace.current}');
+
       }
     }
 
