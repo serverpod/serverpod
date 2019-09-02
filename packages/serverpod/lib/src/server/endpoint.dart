@@ -24,6 +24,8 @@ abstract class Endpoint {
 
   bool get requireLogin => false;
 
+  bool get logSessions => true;
+
   void initialize(Server server, String name) {
     _server = server;
     _name = name;
@@ -150,14 +152,17 @@ abstract class Endpoint {
 
       // Print session info
       String authenticatedUser = requireLogin ? await session.authenticatedUser : null;
-      server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
+      if (logSessions)
+        server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
       await session.close();
       return result;
     }
     catch (exception, stackTrace) {
       // Something did not work out
-      var sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
+      int sessionLogId = 0;
+      if (logSessions)
+        sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
 
       await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);

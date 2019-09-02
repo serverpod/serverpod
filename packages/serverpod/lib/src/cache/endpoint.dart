@@ -9,6 +9,8 @@ const endpointNameCache = 'cache';
 const endpointNameCachePrio = 'cachePrio';
 
 class CacheEndpoint extends Endpoint {
+  bool get logSessions => false;
+
   LocalCache _cache;
 
   CacheEndpoint(int maxEntries, SerializationManager serializationManager, DistributedCache distributedCache) {
