@@ -47,6 +47,7 @@ class ServerpodClient {
     if (!_initialized)
       await _initialize();
 
+    String data;
     try {
       var formattedArgs = <String, String>{};
 
@@ -74,7 +75,7 @@ class ServerpodClient {
       await request.flush();
 
       HttpClientResponse response = await request.close(); // done instead of close() ?
-      String data = await _readResponse(response);
+      data = await _readResponse(response);
 
       // TODO: Support more types!
       if (returnTypeName == 'int')
@@ -86,6 +87,9 @@ class ServerpodClient {
           jsonDecode(data));
     }
     catch(e, stackTrace) {
+      print('Failed call: $endpoint.$method');
+      print('data: $data');
+
       if (errorHandler != null)
         errorHandler(e, stackTrace);
       else
