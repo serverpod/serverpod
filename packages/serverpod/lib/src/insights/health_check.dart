@@ -19,13 +19,15 @@ Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
 }
 
 Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async {
+  /*
   // Check cpu
   double psUsage = 0.0;
   bool psUsageHealthy = false;
 
+  ProcessResult psResult;
   try {
     // ps -A -o %cpu | awk '{s+=$1} END {print s}'
-    var psResult = await Process.run('ps', ['-A', '-o', '%cpu']);
+    psResult = await Process.run('ps', ['-A', '-o', '%cpu']);
     List<String> psStrs = psResult.stdout.toString().split('\n');
     psStrs.removeAt(0);
 
@@ -34,16 +36,24 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
     }
     psUsageHealthy = true;
   }
-  catch(e) {
+  catch(e, stackTrace) {
+    print('CPU Health check failed: $e');
+    print('memResult: $psResult');
+    print('stdout: ${psResult?.stdout}');
+    print('stderr: ${psResult?.stderr}');
+    print('$stackTrace');
+    print('Local stack trace');
+    print('${StackTrace.current}');
   }
 
   // Check memory usage
   double memUsage = 0.0;
   bool memUsageHealthy = false;
 
+  ProcessResult memResult;
   try {
     // ps -A -o %cpu | awk '{s+=$1} END {print s}'
-    var memResult = await Process.run('ps', ['-A', '-o', '%mem']);
+    memResult = await Process.run('ps', ['-A', '-o', '%mem']);
     List<String> memStrs = memResult.stdout.toString().split('\n');
     memStrs.removeAt(0);
 
@@ -52,8 +62,16 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
     }
     memUsageHealthy = true;
   }
-  catch(e) {
+  catch(e, stackTrace) {
+    print('CPU Health check failed: $e');
+    print('memResult: $memResult');
+    print('stdout: ${memResult?.stdout}');
+    print('stderr: ${memResult?.stderr}');
+    print('$stackTrace');
+    print('Local stack trace');
+    print('${StackTrace.current}');
   }
+  */
 
   // Check database response time
   double dbResponseTime = 0.0;
@@ -86,22 +104,65 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
   catch(e) {
   }
 
+  var connectionsInfo = pod.server.httpServer.connectionsInfo();
+  var connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
+
 
   return <ServerHealthMetric>[
-    ServerHealthMetric(
-      name: 'serverpod_cpu',
-      value: psUsage,
-      isHealthy: psUsageHealthy,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_memory',
-      value: memUsage,
-      isHealthy: memUsageHealthy,
-    ),
+//    ServerHealthMetric(
+//      name: 'serverpod_cpu',
+//      value: psUsage,
+//      isHealthy: psUsageHealthy,
+//    ),
+//    ServerHealthMetric(
+//      name: 'serverpod_memory',
+//      value: memUsage,
+//      isHealthy: memUsageHealthy,
+//    ),
     ServerHealthMetric(
       name: 'serverpod_database',
       value: dbResponseTime,
       isHealthy: dbHealthy,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_connections_active',
+      value: connectionsInfo.active.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_connections_closing',
+      value: connectionsInfo.closing.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_connections_idle',
+      value: connectionsInfo.idle.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_connections_total',
+      value: connectionsInfo.total.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_service_connections_active',
+      value: connectionsInfoService.active.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_service_connections_closing',
+      value: connectionsInfoService.closing.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_service_connections_idle',
+      value: connectionsInfoService.idle.toDouble(),
+      isHealthy: true,
+    ),
+    ServerHealthMetric(
+      name: 'serverpod_service_connections_total',
+      value: connectionsInfoService.total.toDouble(),
+      isHealthy: true,
     ),
   ];
 }

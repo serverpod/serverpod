@@ -33,6 +33,7 @@ class Server {
   bool get running => _running;
   
   HttpServer _httpServer;
+  HttpServer get httpServer => _httpServer;
 
   FutureCallManager _futureCallManager;
 

@@ -41,6 +41,7 @@ class Serverpod {
   int serverId = 0;
   Server server;
   Server _serviceServer;
+  Server get serviceServer => _serviceServer;
 
   internal.RuntimeSettings _runtimeSettings;
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings;
