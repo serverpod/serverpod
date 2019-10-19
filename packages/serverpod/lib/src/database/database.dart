@@ -29,7 +29,7 @@ class Database {
 
   Future<Null> initialize() async {
     if (_serializationManager != null) {
-      await _loadTableClassMappings('bin/protocol');
+      await _loadTableClassMappings('lib/protocol');
       await _loadTableClassMappings('package:serverpod/src/protocol');
     }
   }
