@@ -2,6 +2,7 @@ library server;
 
 export 'src/server/endpoint.dart';
 export 'src/server/future_call.dart';
+export 'src/server/runmode.dart';
 export 'src/server/server.dart';
 export 'src/server/serverpod.dart';
 export 'src/server/session.dart';

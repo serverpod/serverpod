@@ -25,6 +25,8 @@ typedef Future<List<internal.ServerHealthMetric>> HealthCheckHandler(Serverpod p
 
 class Serverpod {
   String _runMode;
+  String get runMode => _runMode;
+
   ServerConfig config;
   Map<String, String> _passwords = <String, String>{};
 
