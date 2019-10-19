@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -196,7 +197,7 @@ class Server {
 
     String body;
     try {
-      body = await request.transform(Utf8Decoder()).join();
+      body = await _readBody(request); // request.transform(Utf8Decoder()).join();
     }
     catch (e, stackTrace) {
       logError('$e', stackTrace: stackTrace);
@@ -238,6 +239,19 @@ class Server {
       request.response.close();
       return;
     }
+  }
+
+  Future<String> _readBody(HttpRequest request) async {
+    // TODO: Find more efficient solution?
+    int len = 0;
+    List<int> data = [];
+    await for (var segment in request) {
+      len += segment.length;
+      if (len > serverpod.config.maxRequestSize)
+        return null;
+      data += segment;
+    }
+    return Utf8Decoder().convert(data);
   }
 
   Future _handleUriCall(Uri uri, String body, HttpRequest request) async {
