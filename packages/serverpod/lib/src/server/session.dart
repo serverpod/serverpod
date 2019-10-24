@@ -44,7 +44,7 @@ class Session {
 
   final String endpointName;
 
-  Session({this.server, this.uri, this.body, this.endpointName}) {
+  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey}) {
     _timeCreated = DateTime.now();
 
     if (body == null || body == '' || body == 'null') {
@@ -54,7 +54,11 @@ class Session {
       _queryParameters = jsonDecode(body).cast<String, String>();
     }
 
-    _authenticationKey = _queryParameters['auth'];
+    if (authenticationKey != null)
+      _authenticationKey = authenticationKey;
+    else
+      _authenticationKey = _queryParameters['auth'];
+
     _methodName = _queryParameters['method'];
   }
 
