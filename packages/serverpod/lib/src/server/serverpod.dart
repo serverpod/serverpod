@@ -111,7 +111,7 @@ class Serverpod {
 
   void start() async {
     runZoned(
-      () async{
+      () async {
         if (_runMode == ServerpodRunMode.generate) {
           for (Endpoint endpoint in server.endpoints.values) {
             endpoint.printDefinition();
