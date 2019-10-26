@@ -6,6 +6,7 @@ environment:
 dependencies:
   serverpod_serialization:
     path: ../serverpod_serialization
+  http: ^0.12.0+2
 
 dev_dependencies:
 #  unittest: any

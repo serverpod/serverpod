@@ -178,22 +178,22 @@ class Server {
     }
 
     // TODO: Limit check external calls
-    bool checkLength = true;
-    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
-      checkLength = false;
-
-    if (checkLength) {
-      // Check size of the request
-      int contentLength = request.contentLength;
-      if (contentLength == -1 ||
-          contentLength > serverpod.config.maxRequestSize) {
-        if (serverpod.runtimeSettings.logMalformedCalls)
-          logDebug('Malformed call, invalid content length ($contentLength): $uri');
-        request.response.statusCode = HttpStatus.badRequest;
-        request.response.close();
-        return;
-      }
-    }
+//    bool checkLength = true;
+//    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
+//      checkLength = false;
+//
+//    if (checkLength) {
+//      // Check size of the request
+//      int contentLength = request.contentLength;
+//      if (contentLength == -1 ||
+//          contentLength > serverpod.config.maxRequestSize) {
+//        if (serverpod.runtimeSettings.logMalformedCalls)
+//          logDebug('Malformed call, invalid content length ($contentLength): $uri');
+//        request.response.statusCode = HttpStatus.badRequest;
+//        request.response.close();
+//        return;
+//      }
+//    }
 
     String body;
     try {
@@ -235,6 +235,9 @@ class Server {
     }
     else {
       String serializedEntity = serializationManager.serializeEntity(result);
+      print('Writing response: $serializedEntity');
+      request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
+      request.response.headers.add('Access-Control-Allow-Origin', '*');
       request.response.write(serializedEntity);
       request.response.close();
       return;

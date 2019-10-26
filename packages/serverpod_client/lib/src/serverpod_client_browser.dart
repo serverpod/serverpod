@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
@@ -13,25 +13,13 @@ class ServerpodClient {
 
   final String host;
   final SerializationManager serializationManager;
-  HttpClient _httpClient;
+  http.Client _httpClient;
   String _authorizationKey;
   bool _initialized = false;
   ServerpodClientErrorCallback errorHandler;
 
-  ServerpodClient(this.host, this.serializationManager, {SecurityContext context, this.errorHandler, this.authenticationKeyManager}) {
-    _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = Duration(seconds: 20);
-    _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
-      print('Failed to verify server certificate');
-      print('pem: ${cert.pem}');
-      print('subject: ${cert.subject}');
-      print('issuer: ${cert.issuer}');
-      print('valid from: ${cert.startValidity}');
-      print('valid to: ${cert.endValidity}');
-      print('host: $host');
-      print('port: $port');
-      return false;
-    });
+  ServerpodClient(this.host, this.serializationManager, {this.errorHandler, this.authenticationKeyManager, dynamic context}) {
+    _httpClient = http.Client();
     assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
   }
@@ -67,15 +55,19 @@ class ServerpodClient {
 
       Uri url = Uri.parse('$host$endpoint');
 
-      HttpClientRequest request = await _httpClient.postUrl(url);
-      request.headers.contentType = new ContentType("application", "json", charset: "utf-8");
-      request.contentLength = utf8.encode(body).length;
-      request.write(body);
+      print('POST');
+      print('url: $url');
+      print('body: $body');
 
-      await request.flush();
+      http.Response response = await _httpClient.post(
+        url,
+        body: body,
+      );
 
-      HttpClientResponse response = await request.close(); // done instead of close() ?
-      data = await _readResponse(response);
+      print('response status: ${response.statusCode}');
+      print('response body: ${response.body}');
+
+      String data = response.body;
 
       // TODO: Support more types!
       if (returnTypeName == 'int')
@@ -95,15 +87,6 @@ class ServerpodClient {
       else
         rethrow;
     }
-  }
-
-  Future<dynamic> _readResponse(HttpClientResponse response) {
-    var completer = new Completer();
-    var contents = new StringBuffer();
-    response.transform(Utf8Decoder()).listen((String data) {
-      contents.write(data);
-    }, onDone: () => completer.complete(contents.toString()));
-    return completer.future;
   }
 
   Future<Null> setAuthorizationKey(String authorizationKey) async {
