@@ -262,7 +262,7 @@ class Server {
     Endpoint endpoint = endpoints[endpointName];
 
     if (endpoint == null)
-      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
+      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri from ${request.connectionInfo.remoteAddress.address}');
 
     return endpoint.handleUriCall(uri, body, request);
   }
