@@ -11,6 +11,7 @@ class Session {
   final Uri uri;
   final String body;
   final Server server;
+  final Duration maxLifeTime;
   
   DateTime _timeCreated;
   final List<QueryInfo> queries = <QueryInfo>[];
@@ -30,7 +31,7 @@ class Session {
     if (_databaseConnection != null)
       return _databaseConnection;
 
-    _databaseConnection = DatabaseConnection(server.database);
+    _databaseConnection = DatabaseConnection(server.database, maxLifeTime: maxLifeTime);
     bool success = await _databaseConnection.connect();
 
     if (success)
@@ -44,7 +45,7 @@ class Session {
 
   final String endpointName;
 
-  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey}) {
+  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey, this.maxLifeTime=const Duration(minutes: 2)}) {
     _timeCreated = DateTime.now();
 
     if (body == null || body == '' || body == 'null') {
@@ -237,7 +238,7 @@ class QueryInfo {
   final String query;
   final Duration time;
   final int numRows;
-  final Exception exception;
+  final dynamic exception;
   final StackTrace stackTrace;
 
   QueryInfo({this.query, this.time, this.numRows, this.exception, this.stackTrace});
