@@ -157,6 +157,7 @@ class DatabaseConnection {
 
   Future<TableRow> findSingleRow(Table table, {Expression where, int offset, Column orderBy, bool orderDescending=false, bool useCache=true, Session session}) async {
     var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
+
     if (result.length == 0)
       return null;
     else
@@ -360,7 +361,7 @@ class DatabaseConnection {
     }
   }
 
-  void _logQuery(Session session, String query, DateTime startTime, {int numRowsAffected, Exception exception, StackTrace trace}) {
+  void _logQuery(Session session, String query, DateTime startTime, {int numRowsAffected, exception, StackTrace trace}) {
     if (session == null)
       return;
 
