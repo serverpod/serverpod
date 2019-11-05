@@ -235,7 +235,6 @@ class Server {
     }
     else {
       String serializedEntity = serializationManager.serializeEntity(result);
-      print('Writing response: $serializedEntity');
       request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
       request.response.headers.add('Access-Control-Allow-Origin', '*');
       request.response.write(serializedEntity);
