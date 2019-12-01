@@ -174,6 +174,14 @@ class ColumnString extends Column {
     else
       return Expression('"${this.columnName}" != ${Database.encoder.convert(value)}');
   }
+
+  Expression like(String value) {
+    return Expression('"${this.columnName}" LIKE ${Database.encoder.convert(value)}');
+  }
+
+  Expression ilike(String value) {
+    return Expression('"${this.columnName}" ILIKE ${Database.encoder.convert(value)}');
+  }
 }
 
 class ColumnBool extends Column {
