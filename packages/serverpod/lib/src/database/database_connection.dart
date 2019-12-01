@@ -46,7 +46,7 @@ class DatabaseConnection {
     var tableNames = <String>[];
 
     var query = 'SELECT * FROM pg_catalog.pg_tables';
-    var result = await postgresConnection.mappedResultsQuery(query);
+    var result = await postgresConnection.mappedResultsQuery(query, allowReuse: false);
 
     for (Map row in result) {
       row = row.values.first;
@@ -59,7 +59,7 @@ class DatabaseConnection {
 
   Future<Table> getTableDescription(String tableName) async {
     var query = 'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
-    var result = await postgresConnection.mappedResultsQuery(query);
+    var result = await postgresConnection.mappedResultsQuery(query, allowReuse: false);
     var columns = <Column>[];
 
     bool hasID = false;
@@ -141,7 +141,7 @@ class DatabaseConnection {
 
     var list = <TableRow>[];
     try {
-      var result = await postgresConnection.mappedResultsQuery(query);
+      var result = await postgresConnection.mappedResultsQuery(query, allowReuse: false);
       for (var rawRow in result) {
         list.add(_formatTableRow(tableName, rawRow[tableName]));
       }
@@ -193,7 +193,7 @@ class DatabaseConnection {
       query += ' LIMIT $limit';
 
     try {
-      var result = await postgresConnection.query(query);
+      var result = await postgresConnection.query(query, allowReuse: false);
 
       if (result.length != 1)
         return 0;
@@ -279,7 +279,7 @@ class DatabaseConnection {
 
     List<List<dynamic>> result;
     try {
-      result = await postgresConnection.query(query);
+      result = await postgresConnection.query(query, allowReuse: false);
       if (result.length != 1)
         return false;
     }
@@ -351,7 +351,7 @@ class DatabaseConnection {
     DateTime startTime = DateTime.now();
 
     try {
-      var result = await postgresConnection.query(query);
+      var result = await postgresConnection.query(query, allowReuse: false);
       _logQuery(session, query, startTime);
       return result;
     }
