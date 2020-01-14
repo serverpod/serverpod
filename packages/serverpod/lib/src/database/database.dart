@@ -200,6 +200,10 @@ class ColumnBool extends Column {
     else
       return Expression('"${this.columnName}" != $value');
   }
+
+  Expression isDistinctFrom(bool value) {
+    return Expression('"${this.columnName}" IS DISTINCT FROM $value');
+  }
 }
 
 class ColumnDateTime extends Column {
