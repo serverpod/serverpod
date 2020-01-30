@@ -158,8 +158,8 @@ class Serverpod {
       },
       onError: (e, stackTrace) {
         // Last resort error handling
-        print('${DateTime.now()} Serverpod zoned error: $e');
-        print('$stackTrace');
+        stderr.writeln('${DateTime.now()} Serverpod zoned error: $e');
+        stderr.writeln('$stackTrace');
       }
     );
   }
