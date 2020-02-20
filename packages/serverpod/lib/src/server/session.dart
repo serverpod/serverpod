@@ -126,7 +126,7 @@ class Session {
     return await conn.findById(table, id, session: this);
   }
 
-  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, List<Order> orderByList, bool orderDescending=false, bool useCache=true}) async {
     var conn = await databaseConnection;
     if (conn == null)
       return null;
@@ -137,6 +137,7 @@ class Session {
       limit: limit,
       offset: offset,
       orderBy: orderBy,
+      orderByList: orderByList,
       orderDescending: orderDescending,
       useCache: useCache,
       session: this,

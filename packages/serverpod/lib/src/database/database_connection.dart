@@ -122,7 +122,9 @@ class DatabaseConnection {
     return result[0];
   }
 
-  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, bool orderDescending=false, bool useCache=true, Session session}) async {
+  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, List<Order> orderByList, bool orderDescending=false, bool useCache=true, Session session}) async {
+    assert(orderByList == null || orderBy == null);
+
     var startTime = DateTime.now();
     if (where == null)
       where = Expression('TRUE');
@@ -133,6 +135,15 @@ class DatabaseConnection {
       query += ' ORDER BY $orderBy';
       if (orderDescending)
         query += ' DESC';
+    }
+    else if (orderByList != null) {
+      assert(orderByList.length > 0);
+
+      var strList = <String>[];
+      for (var order in orderByList)
+        strList.add(order.toString());
+
+      query += ' ORDER BY ${strList.join(',')}';
     }
     if (limit != null)
       query += ' LIMIT $limit';
@@ -374,6 +385,21 @@ class DatabaseConnection {
         stackTrace: trace,
       ),
     );
+  }
+}
+
+class Order {
+  final Column column;
+  final bool orderDescending;
+
+  Order({this.column, this.orderDescending=false});
+
+  @override
+  String toString() {
+    var str = '$column';
+    if (orderDescending)
+      str += ' DESC';
+    return str;
   }
 }
 
