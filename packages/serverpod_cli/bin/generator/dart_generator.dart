@@ -345,9 +345,14 @@ class DartGenerator extends Generator{
   }
 
   String generateEndpoints(String yamlStr) {
-    Map doc = loadYaml(yamlStr);
-
-    print('doc: $doc');
+    Map doc;
+    try {
+      doc = loadYaml(yamlStr);
+    }
+    catch(e, stackTrace) {
+      print('Failed to generate endpoints: $e');
+      print('yamlStr: $yamlStr');
+    }
 
     String out = '';
 
