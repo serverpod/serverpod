@@ -136,7 +136,10 @@ class ColumnInt extends Column {
   }
 
   Expression notEquals(int value) {
-    return Expression('"${this.columnName}" != $value');
+    if (value == null)
+      return Expression('"${this.columnName}" IS NOT NULL');
+    else
+      return Expression('"${this.columnName}" != $value');
   }
 }
 
