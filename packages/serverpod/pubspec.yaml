@@ -8,6 +8,8 @@ dependencies:
   collection: ^1.14.11
   postgres:
     path: ../../../postgresql-dart
+  postgres_pool:
+    path: ../../../postgres_pool
   yaml: ^2.1.15
   serverpod_serialization:
     path: ../serverpod_serialization

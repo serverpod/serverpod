@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  buffer:
+    dependency: transitive
+    description:
+      name: buffer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   charcode:
     dependency: transitive
     description:
@@ -64,6 +71,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.0"
+  executor:
+    dependency: transitive
+    description:
+      name: executor
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
   front_end:
     dependency: transitive
     description:
@@ -210,7 +224,14 @@ packages:
       path: "../../../postgresql-dart"
       relative: true
     source: path
-    version: "1.0.2"
+    version: "2.1.1"
+  postgres_pool:
+    dependency: "direct main"
+    description:
+      path: "../../../postgres_pool"
+      relative: true
+    source: path
+    version: "2.0.1"
   pub_semver:
     dependency: transitive
     description:
@@ -225,6 +246,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+  retry:
+    dependency: transitive
+    description:
+      name: retry
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0+1"
   serverpod_client:
     dependency: transitive
     description:
@@ -380,4 +408,4 @@ packages:
     source: hosted
     version: "2.1.15"
 sdks:
-  dart: ">=2.2.0 <3.0.0"
+  dart: ">=2.7.0 <3.0.0"

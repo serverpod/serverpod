@@ -31,13 +31,7 @@ class Session {
     if (_databaseConnection != null)
       return _databaseConnection;
 
-    _databaseConnection = DatabaseConnection(server.database, maxLifeTime: maxLifeTime);
-    bool success = await _databaseConnection.connect();
-
-    if (success)
-      return _databaseConnection;
-    else
-      return null;
+    return DatabaseConnection(server.database);
   }
 
   Map<String, String> _queryParameters;
@@ -93,9 +87,6 @@ class Session {
   Duration get runningTime => DateTime.now().difference(_timeCreated);
 
   Future<Null> close() async {
-    if (_databaseConnection != null) {
-      await _databaseConnection.disconnect();
-    }
   }
 
   logDebug(String message) {

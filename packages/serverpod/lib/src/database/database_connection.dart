@@ -2,45 +2,18 @@ import 'dart:async';
 import 'database.dart';
 import 'table.dart';
 import 'package:postgres/postgres.dart';
+import 'package:postgres_pool/postgres_pool.dart';
 import '../server/session.dart';
 
 class DatabaseConnection {
   final Database database;
-  final Duration maxLifeTime;
-  Timer _timer;
+  PgPool postgresConnection;
 
-  PostgreSQLConnection postgresConnection;
+//  PostgreSQLConnection postgresConnection;
 
-  DatabaseConnection(this.database, {this.maxLifeTime = const Duration(minutes: 2)}) {
-    postgresConnection = PostgreSQLConnection(
-        database.host,
-        database.port,
-        database.databaseName,
-        username: database.userName,
-        password: database.password
-    );
+  DatabaseConnection(this.database) {
+    postgresConnection = database.pool;
   }
-
-  Future<bool> connect() async {
-    await postgresConnection.open();
-
-    if (!postgresConnection.isClosed && maxLifeTime != null) {
-      _timer = Timer(maxLifeTime, () {
-        _timer = null;
-        disconnect();
-      });
-    }
-
-    return !postgresConnection.isClosed;
-  }
-
-  Future<Null> disconnect() async {
-    if (_timer != null)
-      _timer.cancel();
-    await postgresConnection.close();
-  }
-
-  bool get isConnected => !postgresConnection.isClosed;
 
   Future<List<String>> getTableNames() async {
     var tableNames = <String>[];
@@ -403,6 +376,8 @@ class Order {
   }
 }
 
+// TODO: Transactions
+
 class Transaction {
   List<String> _queries = [];
   DatabaseConnection connection;
@@ -412,12 +387,13 @@ class Transaction {
     assert(connection != null, 'Database cannot be null');
 
     try {
-      await connection.postgresConnection.transaction((
-          PostgreSQLExecutionContext ctx) async {
-        for (var query in _queries) {
-          await ctx.query(query);
-        }
-      });
+      // TODO: Comply with new format
+//      await connection.postgresConnection.transaction((
+//          PostgreSQLExecutionContext ctx) async {
+//        for (var query in _queries) {
+//          await ctx.query(query);
+//        }
+//      });
     }
     catch (e) {
       return false;

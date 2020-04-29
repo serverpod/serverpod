@@ -27,9 +27,7 @@ class FutureCallManager {
     );
 
     DatabaseConnection dbConn = DatabaseConnection(_server.database);
-    await dbConn.connect();
     await dbConn.insert(entry);
-    await dbConn.disconnect();
   }
 
   void addFutureCall(FutureCall call, String name) {
@@ -59,7 +57,6 @@ class FutureCallManager {
     try {
       // Get calls
       DateTime now = DateTime.now();
-      await dbConn.connect();
 
       var rows = await dbConn.find(
         tFutureCallEntry,
@@ -94,8 +91,6 @@ class FutureCallManager {
               _server.serverId) & (tFutureCallEntry.time <= now),
         );
       }
-
-      await dbConn.disconnect();
     }
     catch(e, stackTrace) {
       // Most likely we lost connection to the database
@@ -103,7 +98,6 @@ class FutureCallManager {
       print('$stackTrace');
       print('Local stacktrace:');
       print('${StackTrace.current}');
-      await dbConn.disconnect();
     }
 
     // Check the queue again in 5 seconds

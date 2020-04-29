@@ -124,7 +124,6 @@ class Serverpod {
           if (database != null) {
             await database.initialize();
             DatabaseConnection dbConn = DatabaseConnection(database);
-            await dbConn.connect();
 
             _runtimeSettings =
             await dbConn.findSingleRow(internal.tRuntimeSettings);
@@ -143,8 +142,6 @@ class Serverpod {
               );
               await dbConn.insert(_runtimeSettings);
             }
-
-            await dbConn.disconnect();
           }
         }
         catch(e, stackTrace) {
@@ -220,9 +217,7 @@ class Serverpod {
 
       try {
         DatabaseConnection dbConn = DatabaseConnection(database);
-        await dbConn.connect();
         success = await dbConn.insert(entry);
-        await dbConn.disconnect();
       }
       catch(e, stackTrace) {
         success = false;
@@ -268,7 +263,6 @@ class Serverpod {
 
       try {
         DatabaseConnection dbConn = DatabaseConnection(database);
-        await dbConn.connect();
         await dbConn.insert(sessionLogEntry);
 
         int sessionLogId = sessionLogEntry.id;
@@ -296,8 +290,6 @@ class Serverpod {
             await dbConn.insert(queryEntry);
           }
         }
-
-        dbConn.disconnect();
 
         return sessionLogId;
       }

@@ -25,8 +25,6 @@ class BuildSchema {
     if (config.dbConfigured) {
       database = await Database(null, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
       databaseConnection = database.createConnection();
-      if (!await databaseConnection.connect())
-        print('Failed to connect to database');
     }
   }
 
@@ -63,6 +61,5 @@ class BuildSchema {
   }
 
   Future<Null> finish() async {
-    await databaseConnection.disconnect();
   }
 }

@@ -82,7 +82,6 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
     int rnd = Random().nextInt(1000000);
 
     DatabaseConnection databaseConnection = pod.database.createConnection();
-    await databaseConnection.connect();
 
     // Write entry
     ReadWriteTestEntry entry = ReadWriteTestEntry(
@@ -98,8 +97,6 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
     dbHealthy = entry.number == rnd;
 
     dbResponseTime = DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-
-    await databaseConnection.disconnect();
   }
   catch(e) {
   }
