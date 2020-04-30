@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'server.dart';
 import 'package:serverpod/src/authentication/scope.dart';
@@ -12,6 +13,8 @@ class Session {
   final String body;
   final Server server;
   final Duration maxLifeTime;
+
+  final HttpConnectionInfo connectionInfo;
   
   DateTime _timeCreated;
   final List<QueryInfo> queries = <QueryInfo>[];
@@ -39,7 +42,7 @@ class Session {
 
   final String endpointName;
 
-  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey, this.maxLifeTime=const Duration(minutes: 2)}) {
+  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.connectionInfo}) {
     _timeCreated = DateTime.now();
 
     if (body == null || body == '' || body == 'null') {

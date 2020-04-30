@@ -60,6 +60,7 @@ abstract class Endpoint {
       uri: uri,
       body: body,
       endpointName: name,
+      connectionInfo: request.connectionInfo,
     );
 
     var methodName = session.methodName;
