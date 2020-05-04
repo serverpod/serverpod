@@ -14,7 +14,7 @@ class Session {
   final Server server;
   final Duration maxLifeTime;
 
-  final HttpConnectionInfo connectionInfo;
+  final HttpRequest httpRequest;
   
   DateTime _timeCreated;
   final List<QueryInfo> queries = <QueryInfo>[];
@@ -42,7 +42,7 @@ class Session {
 
   final String endpointName;
 
-  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.connectionInfo}) {
+  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.httpRequest}) {
     _timeCreated = DateTime.now();
 
     if (body == null || body == '' || body == 'null') {
