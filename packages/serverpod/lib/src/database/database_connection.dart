@@ -171,6 +171,9 @@ class DatabaseConnection {
   Future<int> count(Table table, {Expression where, int limit, bool useCache=true, Session session}) async {
     var startTime = DateTime.now();
 
+    if (where == null)
+      where = Expression('TRUE');
+
     String tableName = table.tableName;
     var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
     if (limit != null)
