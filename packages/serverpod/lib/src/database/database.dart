@@ -231,14 +231,14 @@ class ColumnBool extends Column {
 class ColumnDateTime extends Column {
   const ColumnDateTime(String name) : super (name, DateTime);
 
-  Expression equals(bool value) {
+  Expression equals(DateTime value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NULL');
     else
       return Expression('"${this.columnName}" = ${Database.encoder.convert(value)}');
   }
 
-  Expression notEquals(bool value) {
+  Expression notEquals(DateTime value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NOT NULL');
     else
