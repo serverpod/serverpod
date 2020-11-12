@@ -217,7 +217,7 @@ class Session {
     );
   }
 
-  Future<List<List<dynamic>>> query(String query) async {
+  Future<List<List<dynamic>>> query(String query, {int timeoutInSeconds}) async {
     var conn = await databaseConnection;
     if (conn == null)
       return null;
@@ -225,6 +225,7 @@ class Session {
     return conn.query(
       query,
       session: this,
+      timeoutInSeconds: timeoutInSeconds,
     );
   }
 }

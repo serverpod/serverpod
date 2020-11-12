@@ -334,11 +334,11 @@ class DatabaseConnection {
     }
   }
 
-  Future<List<List<dynamic>>> query(String query, {Session session}) async {
+  Future<List<List<dynamic>>> query(String query, {Session session, int timeoutInSeconds}) async {
     DateTime startTime = DateTime.now();
 
     try {
-      var result = await postgresConnection.query(query, allowReuse: false);
+      var result = await postgresConnection.query(query, allowReuse: false, timeoutInSeconds: timeoutInSeconds);
       _logQuery(session, query, startTime);
       return result;
     }
