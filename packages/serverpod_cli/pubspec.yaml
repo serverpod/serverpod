@@ -1,6 +1,8 @@
 name: serverpod_cli
 version: 0.0.1
 description: A sample command-line application
+environment:
+  sdk: '>=2.3.0 <3.0.0'
 dependencies:
   args: ^1.5.2
   colorize: ^2.0.0
