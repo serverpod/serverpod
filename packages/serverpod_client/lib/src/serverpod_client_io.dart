@@ -23,15 +23,17 @@ class ServerpodClient {
     _httpClient = HttpClient(context: context);
     _httpClient.connectionTimeout = Duration(seconds: 20);
     _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
-      print('Failed to verify server certificate');
-      print('pem: ${cert.pem}');
-      print('subject: ${cert.subject}');
-      print('issuer: ${cert.issuer}');
-      print('valid from: ${cert.startValidity}');
-      print('valid to: ${cert.endValidity}');
-      print('host: $host');
-      print('port: $port');
-      return false;
+//      print('Failed to verify server certificate');
+//      print('pem: ${cert.pem}');
+//      print('subject: ${cert.subject}');
+//      print('issuer: ${cert.issuer}');
+//      print('valid from: ${cert.startValidity}');
+//      print('valid to: ${cert.endValidity}');
+//      print('host: $host');
+//      print('port: $port');
+//      return false;
+      // FIXME:
+      return true;
     });
     assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');

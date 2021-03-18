@@ -8,7 +8,7 @@ class DartGenerator extends Generator{
 
   String get outputExtension => '.dart';
 
-  DartGenerator(String inputPath, String outputPath, String binaryPath, bool verbose, this.serverCode) : super(inputPath, outputPath, binaryPath, verbose);
+  DartGenerator(String inputPath, String outputPath, String binaryPath, String protocolInfoPath, bool verbose, this.serverCode) : super(inputPath, outputPath, binaryPath, protocolInfoPath, verbose);
 
   String generateFile(String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
     var doc = loadYaml(yamlStr);

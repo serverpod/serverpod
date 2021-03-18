@@ -32,14 +32,14 @@ void performGenerate(bool verbose) {
 
   // Generate server side code
   print('Generating server side code.');
-  var generator = DartGenerator(pathSource, pathServer, null, verbose, true);
+  var generator = DartGenerator(pathSource, pathServer, null, null, verbose, true);
   generator.generate();
 
   // Generate client side code
   String pathClientDart = generatorConfig['client-dart'];
   if (pathClientDart != null) {
     print('Generating Dart client side code.');
-    var clientGenerator = DartGenerator(pathSource, pathClientDart, pathBinary, verbose, false);
+    var clientGenerator = DartGenerator(pathSource, pathClientDart, pathBinary, 'generated/protocol_info.yaml', verbose, false);
     clientGenerator.generate();
   }
 
@@ -50,9 +50,10 @@ abstract class Generator {
   final String outputPath;
   final String inputPath;
   final String binaryPath;
+  final String protocolInfoPath;
   final bool verbose;
 
-  Generator(this.inputPath, this.outputPath, this.binaryPath, this.verbose);
+  Generator(this.inputPath, this.outputPath, this.binaryPath, this.protocolInfoPath, this.verbose,);
 
   String get outputExtension;
 
@@ -105,6 +106,18 @@ abstract class Generator {
       File outFile = File(outputPath + 'client$outputExtension');
       outFile.createSync();
       outFile.writeAsStringSync(out);
+
+      if (protocolInfoPath != null) {
+        try {
+          var protocolInfoFile = File(protocolInfoPath);
+          protocolInfoFile.createSync();
+          protocolInfoFile.writeAsStringSync(yamlStr);
+        }
+        catch(e) {
+          print('Failed to write protocol info');
+        }
+
+      }
     }
   }
 
