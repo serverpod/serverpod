@@ -22,7 +22,7 @@ class Database {
   PgPool get pool => _pgPool;
 
   final tableClassMapping = <String, String>{};
-  static final PostgresTextEncoder encoder = const PostgresTextEncoder(true);
+  static final PostgresTextEncoder encoder = PostgresTextEncoder();
 
   Database(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password) {
     _serializationManager = serializationManager;
@@ -48,7 +48,12 @@ class Database {
 
   Future<Null> initialize() async {
     if (_serializationManager != null) {
-      await _loadTableClassMappings('lib/protocol');
+      try {
+        await _loadTableClassMappings('lib/protocol');
+      }
+      catch(e) {
+        await _loadTableClassMappings('lib/src/protocol');
+      }
       await _loadTableClassMappings('package:serverpod/src/protocol');
     }
   }

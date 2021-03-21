@@ -4,13 +4,11 @@ description: The easiest server api you've ever used
 environment:
   sdk: '>=2.7.0 <3.0.0'
 dependencies:
-  args: ^1.5.1
+  args: ^2.0.0
   collection: ^1.14.11
-  postgres:
-    path: ../../../postgresql-dart
-  postgres_pool:
-    path: ../../../postgres_pool
-  yaml: ^2.1.15
+  postgres: ^2.3.0
+  postgres_pool: ^2.0.1
+  yaml: ^3.1.0
   serverpod_serialization:
     path: ../serverpod_serialization
   serverpod_service_client:
@@ -18,4 +16,6 @@ dependencies:
   resource: ^2.1.5
 
 dev_dependencies:
-  test: ^1.6.3
+  test: ^1.16.8
+  serverpod_test_client:
+    path: ../serverpod_test_client
