@@ -4,7 +4,7 @@ import 'package:yaml/yaml.dart';
 
 import 'dart_generator.dart';
 
-void performGenerate(bool verbose) {
+void performGenerate(bool verbose, [bool generateProtocol=true]) {
   // Load config file for generation
   Map generatorConfig;
   try {
@@ -32,14 +32,14 @@ void performGenerate(bool verbose) {
 
   // Generate server side code
   print('Generating server side code.');
-  var generator = DartGenerator(pathSource, pathServer, null, null, verbose, true);
+  var generator = DartGenerator(pathSource, pathServer, null, null, false, verbose, true);
   generator.generate();
 
   // Generate client side code
   String pathClientDart = generatorConfig['client-dart'];
   if (pathClientDart != null) {
     print('Generating Dart client side code.');
-    var clientGenerator = DartGenerator(pathSource, pathClientDart, pathBinary, 'generated/protocol_info.yaml', verbose, false);
+    var clientGenerator = DartGenerator(pathSource, pathClientDart, pathBinary, 'generated/protocol_info.yaml', generateProtocol, verbose, false);
     clientGenerator.generate();
   }
 
@@ -51,9 +51,10 @@ abstract class Generator {
   final String inputPath;
   final String binaryPath;
   final String protocolInfoPath;
+  final bool generateProtocol;
   final bool verbose;
 
-  Generator(this.inputPath, this.outputPath, this.binaryPath, this.protocolInfoPath, this.verbose,);
+  Generator(this.inputPath, this.outputPath, this.binaryPath, this.protocolInfoPath, this.generateProtocol, this.verbose,);
 
   String get outputExtension;
 
@@ -68,18 +69,26 @@ abstract class Generator {
         if (verbose)
           print('  - processing file: ${inputPath}');
 
-        var outFileName = _transformFileNameWithoutPath(entity.path);
-        var outFile = File('$outputPath$outFileName');
+        try {
+          var outFileName = _transformFileNameWithoutPath(entity.path);
+          var outFile = File('$outputPath$outFileName');
 
-        // Read file
-        String yamlStr = entity.readAsStringSync();
+          // Read file
+          String yamlStr = entity.readAsStringSync();
 
-        // Generate the code
-        var out = generateFile(yamlStr, outFileName, classInfos);
+          // Generate the code
+          var out = generateFile(yamlStr, outFileName, classInfos);
 
-        // Save generated file
-        outFile.createSync();
-        outFile.writeAsStringSync(out);
+          // Save generated file
+          outFile.createSync();
+          outFile.writeAsStringSync(out);
+        }
+        catch(e, stackTrace) {
+          print('Failed to generate ${entity.path}');
+          print('$e');
+          if (verbose)
+            print('$stackTrace');
+        }
       }
     }
 
@@ -89,7 +98,7 @@ abstract class Generator {
     outFile.createSync();
     outFile.writeAsStringSync(out);
 
-    if (binaryPath != null) {
+    if (generateProtocol && binaryPath != null) {
       // Generate protocol
       print('Generating protocol.');
 

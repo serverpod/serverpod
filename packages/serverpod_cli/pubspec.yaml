@@ -4,10 +4,12 @@ description: A sample command-line application
 environment:
   sdk: '>=2.3.0 <3.0.0'
 dependencies:
-  args: ^1.5.2
+  args: ^2.0.0
   colorize: ^2.0.0
   intl: ^0.15.8
   recase: ^2.0.1
+  watcher: ^1.0.0
+  analyzer: ^1.2.0
   serverpod:
     path: ../serverpod
   serverpod_service_client:

@@ -5,10 +5,12 @@ import 'database_util/build_schema.dart';
 import 'certificates/generator.dart';
 import 'config_info/config_info.dart';
 import 'generator/generator.dart';
+import 'generator/generator_continuous.dart';
 import 'insights/insights.dart';
 
 final cmdGenerate = 'generate';
-final cmdGenerateCertificates = 'generatecerts';
+final cmdGenerateContinuously = 'generate-continuously';
+final cmdGenerateCertificates = 'generate-certs';
 final cmdBuildSchema = 'buildschema';
 final cmdShutdown = 'shutdown';
 final cmdLogs = 'logs';
@@ -25,6 +27,11 @@ void main(List<String> args) async {
   ArgParser generateParser = ArgParser();
   generateParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerate, generateParser);
+
+  // "generate-continuously" command
+  ArgParser generateContinuouslyParser = ArgParser();
+  generateContinuouslyParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  parser.addCommand(cmdGenerateContinuously, generateContinuouslyParser);
 
   // "generatecerts" command
   ArgParser generateCerts = ArgParser();
@@ -81,6 +88,10 @@ void main(List<String> args) async {
   if (results.command != null) {
     if (results.command.name == cmdGenerate) {
       performGenerate(results.command['verbose']);
+      return;
+    }
+    if (results.command.name == cmdGenerateContinuously) {
+      performGenerateContinuously(results.command['verbose']);
       return;
     }
     if (results.command.name == cmdGenerateCertificates) {
@@ -146,6 +157,7 @@ void _printUsage(ArgParser parser) {
   print('');
 
   _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]);
+  _printCommandUsage(cmdGenerateContinuously, 'Continuously generate code from yaml files for server and clients', parser.commands[cmdGenerate]);
   _printCommandUsage(cmdGenerateCertificates, 'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory', parser.commands[cmdGenerateCertificates]);
   _printCommandUsage(cmdLogs, 'Print logs from a serverpod or a serverpod cluster', parser.commands[cmdLogs]);
   _printCommandUsage(cmdSessionLogs, 'Print logs from a serverpod or a serverpod cluster listed by session', parser.commands[cmdSessionLogs]);
