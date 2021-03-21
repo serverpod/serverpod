@@ -1,0 +1,42 @@
+simple:
+  setGlobalInt:
+    requiredParameters:
+      - value: int
+    optionalParameters:
+    namedParameters:
+    returnType: Future<void>
+  addToGlobalInt:
+    requiredParameters:
+    optionalParameters:
+    namedParameters:
+    returnType: Future<void>
+  getGlobalInt:
+    requiredParameters:
+    optionalParameters:
+    namedParameters:
+    returnType: Future<int>
+basicTypes:
+  testInt:
+    requiredParameters:
+      - value: int
+    optionalParameters:
+    namedParameters:
+    returnType: Future<int>
+  testDouble:
+    requiredParameters:
+      - value: double
+    optionalParameters:
+    namedParameters:
+    returnType: Future<double>
+  testString:
+    requiredParameters:
+      - value: String
+    optionalParameters:
+    namedParameters:
+    returnType: Future<String>
+  testIntList:
+    requiredParameters:
+      - value: List<int>
+    optionalParameters:
+    namedParameters:
+    returnType: Future<List<int>>
