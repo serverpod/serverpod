@@ -1,76 +1,109 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/error/error.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/visitor.dart';
+
+import 'protocol_definition.dart';
 
 ProtocolAnalyzer _analyzer;
 
-Future<void> performAnalysis(String path) async {
-//  var analyzer = _analyzer ?? ProtocolAnalyzer('lib/src/endpoints/');
-  var analyzer = ProtocolAnalyzer(path);
-  await analyzer.analyze();
+Future<ProtocolDefinition> performAnalysis(bool verbose) async {
+  var analyzer = _analyzer ?? ProtocolAnalyzer('lib/src/endpoints');
+  return await analyzer.analyze(verbose);
 }
 
 class ProtocolAnalyzer {
-  final File file;
+  final Directory endpointDirectory;
   AnalysisContextCollection collection;
 
-  ProtocolAnalyzer(String filePath) : file = File(filePath) {
+  ProtocolAnalyzer(String filePath) : endpointDirectory = Directory(filePath) {
     collection = AnalysisContextCollection(
-      includedPaths: [file.absolute.path],
+      includedPaths: [endpointDirectory.absolute.path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
   }
 
-  Future<Map<String, dynamic>> analyze() async {
-    for (final context in collection.contexts) {
-      print('Analyzing ${context.contextRoot.root.path} ...');
+  Future<ProtocolDefinition> analyze(bool verbose) async {
+    List<EndpointDefinition> endpointDefs = [];
 
+    for (final context in collection.contexts) {
       for (final filePath in context.contextRoot.analyzedFiles()) {
         if (!filePath.endsWith('.dart')) {
           continue;
         }
 
-        print('Checking variables');
-        var variables = await context.currentSession.declaredVariables;
-        for (var variable in variables.variableNames) {
-          print('Variable: $variable');
-        }
-
         var library = await context.currentSession.getResolvedLibrary(filePath);
         var element = library.element;
         var topElements = element.topLevelElements;
+
         for (var element in topElements) {
           if (element is ClassElement) {
             String className = element.name;
             String superclassName = element.supertype.element.name;
-
-            print('Class: $className');
-            print('Supertype: $superclassName');
+            String endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
-              print('Found Endpoint');
 
+              List<MethodDefinition> methodDefs = [];
               var methods = element.methods;
               for (var method in methods) {
-                String methodName = method.name;
-                if (methodName.startsWith('_'))
+                // Skip private methods
+                if (method.isPrivate)
                   continue;
-
-                print(' - ${method.name}');
-
+                
+                List<ParameterDefinition> paramDefs = [];
+                List<ParameterDefinition> paramPositionalDefs = [];
+                List<ParameterDefinition> paramNamedDefs = [];
                 var parameters = method.parameters;
                 for (var param in parameters) {
-                  print('   - ${param.name} type: ${param.type.element.name} optional: ${param.isOptionalPositional}');
+                  var paramDef = ParameterDefinition(
+                    name: param.name,
+                    type: param.type.getDisplayString(withNullability: false),
+                  );
+                  
+                  if (param.isRequiredPositional)
+                    paramDefs.add(paramDef);
+                  else if (param.isOptionalPositional)
+                    paramPositionalDefs.add(paramDef);
+                  else if (param.isNamed)
+                    paramNamedDefs.add(paramDef);
+                }
+
+                if (paramDefs.length >= 1 && paramDefs[0].type == 'Session') {
+                  var methodDef = MethodDefinition(
+                    name: method.name,
+                    parameters: paramDefs.sublist(1), // Skip session parameter
+                    parametersNamed: paramNamedDefs,
+                    parametersPositional: paramPositionalDefs,
+                    returnType: method.returnType.getDisplayString(withNullability: false),
+                  );
+                  methodDefs.add(methodDef);
                 }
               }
+
+              var endpointDef = EndpointDefinition(
+                  name: endpointName,
+                  methods: methodDefs,
+              );
+              endpointDefs.add(endpointDef);
             }
           }
         }
       }
     }
+    return ProtocolDefinition(
+      endpoints: endpointDefs,
+    );
+  }
+
+  String _formatEndpointName(String className) {
+    const removeEnding = 'Endpoint';
+
+    var endpointName = '${className[0].toLowerCase()}${className.substring(1)}';
+    if (endpointName.endsWith(removeEnding))
+      endpointName = endpointName.substring(0, endpointName.length - removeEnding.length);
+
+    return endpointName;
   }
 }

@@ -19,4 +19,8 @@ class SimpleEndpoint extends Endpoint {
   Future<int> _getGlobalInt(Session session) async {
 
   }
+
+  Future<int> getGlobalInt2(Session session) async {
+
+  } 
 }
