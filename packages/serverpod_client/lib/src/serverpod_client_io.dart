@@ -83,6 +83,8 @@ class ServerpodClient {
       // TODO: Support more types!
       if (returnTypeName == 'int')
         return int.tryParse(data);
+      else if (returnTypeName == 'double')
+        return double.tryParse(data);
       else if (returnTypeName == 'String')
         return data;
 

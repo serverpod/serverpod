@@ -49,8 +49,8 @@ void main() {
     expect(result, isNull);
   });
 
-  test('Type List<int>', () async {
-    List<int> result = await client.basicTypes.testIntList([1, 2, 3]);
-    expect(result, equals([1, 2, 3]));
-  });
+//  test('Type List<int>', () async {
+//    List<int> result = await client.basicTypes.testIntList([1, 2, 3]);
+//    expect(result, equals([1, 2, 3]));
+//  });
 }

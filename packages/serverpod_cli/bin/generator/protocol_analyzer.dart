@@ -4,12 +4,13 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/dart/element/element.dart';
 
+import 'config.dart';
 import 'protocol_definition.dart';
 
 ProtocolAnalyzer _analyzer;
 
 Future<ProtocolDefinition> performAnalysis(bool verbose) async {
-  var analyzer = _analyzer ?? ProtocolAnalyzer('lib/src/endpoints');
+  var analyzer = _analyzer ?? ProtocolAnalyzer(config.sourceEndpoints);
   return await analyzer.analyze(verbose);
 }
 
@@ -26,12 +27,14 @@ class ProtocolAnalyzer {
 
   Future<ProtocolDefinition> analyze(bool verbose) async {
     List<EndpointDefinition> endpointDefs = [];
+    List<String> filePaths = [];
 
     for (final context in collection.contexts) {
       for (final filePath in context.contextRoot.analyzedFiles()) {
         if (!filePath.endsWith('.dart')) {
           continue;
         }
+        filePaths.add(filePath);
 
         var library = await context.currentSession.getResolvedLibrary(filePath);
         var element = library.element;
@@ -84,6 +87,7 @@ class ProtocolAnalyzer {
 
               var endpointDef = EndpointDefinition(
                   name: endpointName,
+                  className: className,
                   methods: methodDefs,
               );
               endpointDefs.add(endpointDef);
@@ -94,6 +98,7 @@ class ProtocolAnalyzer {
     }
     return ProtocolDefinition(
       endpoints: endpointDefs,
+      filePaths: filePaths,
     );
   }
 

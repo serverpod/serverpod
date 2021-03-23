@@ -1,6 +1,7 @@
 library server;
 
 export 'src/server/endpoint.dart';
+export 'src/server/endpoint_dispatch.dart';
 export 'src/server/future_call.dart';
 export 'src/server/runmode.dart';
 export 'src/server/server.dart';

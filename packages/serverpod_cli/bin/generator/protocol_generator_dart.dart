@@ -6,7 +6,7 @@ import 'protocol_generator.dart';
 class ProtocolGeneratorDart extends ProtocolGenerator {
   ProtocolGeneratorDart({ProtocolDefinition protocolDefinition}) : super(protocolDefinition: protocolDefinition);
 
-  String generateClientEndpoints() {
+  String generateClientEndpointCalls() {
     String out = '';
 
     // Header
@@ -21,7 +21,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
     // Endpoints
     for (EndpointDefinition endpointDef in protocolDefinition.endpoints) {
-      
       String endpointClassName = _endpointClassName(endpointDef.name);
 
       out += 'class $endpointClassName {\n';
@@ -36,7 +35,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         String returnType = methodDef.returnType;
         assert(returnType.startsWith('Future<'));
         assert(returnType.endsWith('>'));
-        print('return type: $returnType');
         String returnTypeNoFuture = returnType.substring(7, returnType.length -1);
 
         // Method definition

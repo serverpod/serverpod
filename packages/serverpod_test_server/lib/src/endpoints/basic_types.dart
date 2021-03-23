@@ -5,6 +5,7 @@ int globalInt = 0;
 class BasicTypesEndpoint extends Endpoint {
 
   Future<int> testInt(Session session, int value) async {
+    print('testInt value: $value');
     return value;
   }
 
@@ -13,10 +14,6 @@ class BasicTypesEndpoint extends Endpoint {
   }
 
   Future<String> testString(Session session, String value) async {
-    return value;
-  }
-
-  Future<List<int>> testIntList(Session session, List<int> value) async {
     return value;
   }
 }

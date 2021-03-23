@@ -1,10 +1,13 @@
 import 'package:watcher/watcher.dart';
 
+import 'config.dart';
 import 'generator.dart';
 import 'protocol_generator.dart';
-//import 'protocol_analyzer.dart';
 
 void performGenerateContinuously(bool verbose) {
+  if (!config.load())
+    return;
+
   if (verbose)
     print('Starting up continuous generator');
 
@@ -13,7 +16,7 @@ void performGenerateContinuously(bool verbose) {
 }
 
 Future<void> _performGenerateClassesContinuously(bool verbose) async {
-  var watcherClasses = DirectoryWatcher('lib/src/protocol');
+  var watcherClasses = DirectoryWatcher(config.sourceProtocol);
   await for (WatchEvent event in watcherClasses.events) {
     print('File changed: $event');
     switch(event.type) {
@@ -29,7 +32,7 @@ Future<void> _performGenerateClassesContinuously(bool verbose) async {
 }
 
 Future<void> _performGenereateProtocolContinuously(bool verbose) async {
-  var watcherEndpoints = DirectoryWatcher('lib/src/endpoints');
+  var watcherEndpoints = DirectoryWatcher(config.sourceEndpoints);
   await for(WatchEvent event in watcherEndpoints.events) {
     print('File changed: $event');
     switch(event.type) {

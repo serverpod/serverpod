@@ -10,6 +10,7 @@ dependencies:
   recase: ^2.0.1
   watcher: ^1.0.0
   analyzer: ^1.2.0
+  path: ^1.8.0
   serverpod:
     path: ../serverpod
   serverpod_service_client:

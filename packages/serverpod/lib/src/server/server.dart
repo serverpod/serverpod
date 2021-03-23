@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
+import 'endpoint_dispatch.dart';
 import 'future_call.dart';
 import 'future_call_manager.dart';
 import 'runmode.dart';
@@ -17,8 +18,6 @@ import '../generated/protocol.dart';
 import '../insights/health_check.dart';
 
 class Server {
-  final endpoints = <String, Endpoint>{};
-
   final Serverpod serverpod;
   final int serverId;
   final int port;
@@ -29,6 +28,7 @@ class Server {
   final Caches caches;
   final String name;
   final SecurityContext securityContext;
+  final EndpointDispatch endpoints;
 
   bool _running = false;
   bool get running => _running;
@@ -53,22 +53,21 @@ class Server {
     this.caches,
     this.securityContext,
     this.whitelistedExternalCalls,
+    @required this.endpoints,
   }) :
     this.name = name ?? 'Server id $serverId'
   {
-    if (runMode != ServerpodRunMode.generate) {
-      // Setup future calls
-      _futureCallManager = FutureCallManager(this, serializationManager);
-    }
+    // Setup future calls
+    _futureCallManager = FutureCallManager(this, serializationManager);
   }
 
-  void addEndpoint(Endpoint endpoint, String name) {
-    if (endpoints.containsKey(name))
-      logWarning('Added endpoint with duplicate name ($name)');
-
-    endpoint.initialize(this, name);
-    endpoints[name] = endpoint;
-  }
+//  void addEndpoint(Endpoint endpoint, String name) {
+//    if (endpoints.containsKey(name))
+//      logWarning('Added endpoint with duplicate name ($name)');
+//
+//    endpoint.initialize(this, name);
+//    endpoints[name] = endpoint;
+//  }
 
   void addFutureCall(FutureCall call, String name) {
     if (_futureCallManager != null)
@@ -258,12 +257,14 @@ class Server {
 
   Future _handleUriCall(Uri uri, String body, HttpRequest request) async {
     String endpointName = uri.path.substring(1);
-    Endpoint endpoint = endpoints[endpointName];
+    return endpoints.handleUriCall(this, endpointName, uri, body, request);
 
-    if (endpoint == null)
-      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri from ${request.connectionInfo.remoteAddress.address}');
-
-    return endpoint.handleUriCall(uri, body, request);
+//    Endpoint endpoint = endpoints[endpointName];
+//
+//    if (endpoints.connectors[endpointName] == null)
+//      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri from ${request.connectionInfo.remoteAddress.address}');
+//
+//    return endpoint.handleUriCall(uri, body, request);
   }
 
   void logDebug(String message) {

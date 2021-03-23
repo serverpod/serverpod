@@ -5,27 +5,6 @@ import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
-class _EndpointSimple {
-  Client client;
-  _EndpointSimple(this.client);
-
-  Future<void> setGlobalInt(int value,) async {
-    return await client.callServerEndpoint('simple', 'setGlobalInt', 'void', {
-      'value':value,
-    });
-  }
-
-  Future<void> addToGlobalInt() async {
-    return await client.callServerEndpoint('simple', 'addToGlobalInt', 'void', {
-    });
-  }
-
-  Future<int> getGlobalInt() async {
-    return await client.callServerEndpoint('simple', 'getGlobalInt', 'int', {
-    });
-  }
-}
-
 class _EndpointBasicTypes {
   Client client;
   _EndpointBasicTypes(this.client);
@@ -47,20 +26,36 @@ class _EndpointBasicTypes {
       'value':value,
     });
   }
+}
 
-  Future<List<int>> testIntList(List<int> value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testIntList', 'List<int>', {
+class _EndpointSimple {
+  Client client;
+  _EndpointSimple(this.client);
+
+  Future<void> setGlobalInt(int value,[int secondValue,]) async {
+    return await client.callServerEndpoint('simple', 'setGlobalInt', 'void', {
       'value':value,
+      'secondValue': secondValue,
+    });
+  }
+
+  Future<void> addToGlobalInt() async {
+    return await client.callServerEndpoint('simple', 'addToGlobalInt', 'void', {
+    });
+  }
+
+  Future<int> getGlobalInt() async {
+    return await client.callServerEndpoint('simple', 'getGlobalInt', 'int', {
     });
   }
 }
 
 class Client extends ServerpodClient {
-  _EndpointSimple simple;
   _EndpointBasicTypes basicTypes;
+  _EndpointSimple simple;
 
   Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
-    simple = _EndpointSimple(this);
     basicTypes = _EndpointBasicTypes(this);
+    simple = _EndpointSimple(this);
   }
 }

@@ -16,6 +16,7 @@ import '../generated/protocol.dart' as internal;
 import '../insights/endpoint.dart';
 import 'config.dart';
 import 'endpoint.dart';
+import 'endpoint_dispatch.dart';
 import 'future_call.dart';
 import 'runmode.dart';
 import 'server.dart';
@@ -36,6 +37,8 @@ class Serverpod {
   final SerializationManager serializationManager;
   SerializationManager _internalSerializationManager;
 
+  final EndpointDispatch endpoints;
+
   Database database;
   Caches _caches;
   Caches get caches => _caches;
@@ -50,7 +53,7 @@ class Serverpod {
 
   List<String> whitelistedExternalCalls;
   
-  Serverpod(List<String> args, this.serializationManager, {this.authenticationHandler, this.healthCheckHandler}) {
+  Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.appendConstructors(_internalSerializationManager.constructors);
 
@@ -58,7 +61,7 @@ class Serverpod {
     try {
       final argParser = ArgParser()
         ..addOption('mode', abbr: 'm',
-            allowed: [ServerpodRunMode.development, ServerpodRunMode.production, ServerpodRunMode.generate],
+            allowed: [ServerpodRunMode.development, ServerpodRunMode.production,],
             defaultsTo: ServerpodRunMode.development)
         ..addOption('server-id', abbr: 'i', defaultsTo: '0');
       ArgResults results = argParser.parse(args);
@@ -71,29 +74,27 @@ class Serverpod {
     }
 
     // Load config file
-    if (_runMode != ServerpodRunMode.generate) {
-      log(internal.LogLevel.info, 'Mode: $_runMode');
+    log(internal.LogLevel.info, 'Mode: $_runMode');
 
-      config = ServerConfig(_runMode, serverId);
-      log(internal.LogLevel.info, config.toString());
+    config = ServerConfig(_runMode, serverId);
+    log(internal.LogLevel.info, config.toString());
 
-      // Load passwords
-      try {
-        String passwordYaml = File('config/passwords.yaml').readAsStringSync();
-        Map passwords = loadYaml(passwordYaml);
-        _passwords = passwords.cast<String, String>();
-      }
-      catch(_) {
-        _passwords = <String, String>{};
-      }
-
-      // Setup database
-      if (config.dbConfigured) {
-        database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
-      }
-
-      _caches = Caches(serializationManager, config, serverId);
+    // Load passwords
+    try {
+      String passwordYaml = File('config/passwords.yaml').readAsStringSync();
+      Map passwords = loadYaml(passwordYaml);
+      _passwords = passwords.cast<String, String>();
     }
+    catch(_) {
+      _passwords = <String, String>{};
+    }
+
+    // Setup database
+    if (config.dbConfigured) {
+      database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
+    }
+
+    _caches = Caches(serializationManager, config, serverId);
 
     server = Server(
       serverpod: this,
@@ -106,19 +107,14 @@ class Serverpod {
       caches: caches,
       authenticationHandler: authenticationHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
+      endpoints: endpoints,
     );
+    endpoints.initializeEndpoints(server);
   }
 
   void start() async {
     runZoned(
       () async {
-        if (_runMode == ServerpodRunMode.generate) {
-          for (Endpoint endpoint in server.endpoints.values) {
-            endpoint.printDefinition();
-          }
-          return;
-        }
-
         // Runtime settings
         try {
           if (database != null) {
@@ -179,18 +175,19 @@ class Serverpod {
       caches: caches,
       authenticationHandler: serviceAuthenticationHandler,
       securityContext: context,
+      endpoints: null,
     );
     
-    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributed), endpointNameCache);
-    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributedPrio), endpointNameCachePrio);
-    _serviceServer.addEndpoint(InsightsEndpoint(this), endpointNameInsights);
+//    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributed), endpointNameCache);
+//    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributedPrio), endpointNameCachePrio);
+//    _serviceServer.addEndpoint(InsightsEndpoint(this), endpointNameInsights);
     
     await _serviceServer.start();
   }
 
-  void addEndpoint(Endpoint endpoint, String name) {
-    server.addEndpoint(endpoint, name);
-  }
+//  void addEndpoint(Endpoint endpoint, String name) {
+//    server.addEndpoint(endpoint, name);
+//  }
 
   void addFutureCall(FutureCall call, String name) {
     server.addFutureCall(call, name);
