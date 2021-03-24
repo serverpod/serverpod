@@ -1,7 +1,7 @@
 //import 'package:serverpod/serverpod.dart';
 //import '../generated/protocol.dart';
-//import '../cache/endpoint.dart';
-//import '../insights/endpoint.dart';
+//import '../cache/insights.dart';
+//import '../insights/insights.dart';
 //import 'runmode.dart';
 //
 //void main(List<String> args) async {

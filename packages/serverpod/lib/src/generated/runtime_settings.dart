@@ -12,84 +12,84 @@ class RuntimeSettings extends TableRow {
   String get tableName => 'serverpod_runtime_settings';
 
   int id;
-  bool logFailedCalls;
-  bool logSlowQueries;
-  bool logSlowCalls;
-  double slowQueryDuration;
-  bool logAllQueries;
-  double slowCallDuration;
   bool logAllCalls;
-  int logLevel;
+  bool logAllQueries;
+  bool logSlowCalls;
+  bool logSlowQueries;
+  bool logFailedCalls;
   bool logMalformedCalls;
+  int logLevel;
+  double slowQueryDuration;
+  double slowCallDuration;
 
   RuntimeSettings({
     this.id,
-    this.logFailedCalls,
-    this.logSlowQueries,
-    this.logSlowCalls,
-    this.slowQueryDuration,
-    this.logAllQueries,
-    this.slowCallDuration,
     this.logAllCalls,
-    this.logLevel,
+    this.logAllQueries,
+    this.logSlowCalls,
+    this.logSlowQueries,
+    this.logFailedCalls,
     this.logMalformedCalls,
+    this.logLevel,
+    this.slowQueryDuration,
+    this.slowCallDuration,
 });
 
   RuntimeSettings.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    logFailedCalls = _data['logFailedCalls'];
-    logSlowQueries = _data['logSlowQueries'];
-    logSlowCalls = _data['logSlowCalls'];
-    slowQueryDuration = _data['slowQueryDuration'];
-    logAllQueries = _data['logAllQueries'];
-    slowCallDuration = _data['slowCallDuration'];
     logAllCalls = _data['logAllCalls'];
-    logLevel = _data['logLevel'];
+    logAllQueries = _data['logAllQueries'];
+    logSlowCalls = _data['logSlowCalls'];
+    logSlowQueries = _data['logSlowQueries'];
+    logFailedCalls = _data['logFailedCalls'];
     logMalformedCalls = _data['logMalformedCalls'];
+    logLevel = _data['logLevel'];
+    slowQueryDuration = _data['slowQueryDuration'];
+    slowCallDuration = _data['slowCallDuration'];
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'logFailedCalls': logFailedCalls,
-      'logSlowQueries': logSlowQueries,
-      'logSlowCalls': logSlowCalls,
-      'slowQueryDuration': slowQueryDuration,
-      'logAllQueries': logAllQueries,
-      'slowCallDuration': slowCallDuration,
       'logAllCalls': logAllCalls,
-      'logLevel': logLevel,
+      'logAllQueries': logAllQueries,
+      'logSlowCalls': logSlowCalls,
+      'logSlowQueries': logSlowQueries,
+      'logFailedCalls': logFailedCalls,
       'logMalformedCalls': logMalformedCalls,
+      'logLevel': logLevel,
+      'slowQueryDuration': slowQueryDuration,
+      'slowCallDuration': slowCallDuration,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'logFailedCalls': logFailedCalls,
-      'logSlowQueries': logSlowQueries,
-      'logSlowCalls': logSlowCalls,
-      'slowQueryDuration': slowQueryDuration,
-      'logAllQueries': logAllQueries,
-      'slowCallDuration': slowCallDuration,
       'logAllCalls': logAllCalls,
-      'logLevel': logLevel,
+      'logAllQueries': logAllQueries,
+      'logSlowCalls': logSlowCalls,
+      'logSlowQueries': logSlowQueries,
+      'logFailedCalls': logFailedCalls,
       'logMalformedCalls': logMalformedCalls,
+      'logLevel': logLevel,
+      'slowQueryDuration': slowQueryDuration,
+      'slowCallDuration': slowCallDuration,
     });
   }
 
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'logFailedCalls': logFailedCalls,
-      'logSlowQueries': logSlowQueries,
-      'logSlowCalls': logSlowCalls,
-      'slowQueryDuration': slowQueryDuration,
-      'logAllQueries': logAllQueries,
-      'slowCallDuration': slowCallDuration,
       'logAllCalls': logAllCalls,
-      'logLevel': logLevel,
+      'logAllQueries': logAllQueries,
+      'logSlowCalls': logSlowCalls,
+      'logSlowQueries': logSlowQueries,
+      'logFailedCalls': logFailedCalls,
       'logMalformedCalls': logMalformedCalls,
+      'logLevel': logLevel,
+      'slowQueryDuration': slowQueryDuration,
+      'slowCallDuration': slowCallDuration,
     });
   }
 }
@@ -99,27 +99,27 @@ class RuntimeSettingsTable extends Table {
 
   String tableName = 'serverpod_runtime_settings';
   final id = ColumnInt('id');
-  final logFailedCalls = ColumnBool('logFailedCalls');
-  final logSlowQueries = ColumnBool('logSlowQueries');
-  final logSlowCalls = ColumnBool('logSlowCalls');
-  final slowQueryDuration = ColumnDouble('slowQueryDuration');
-  final logAllQueries = ColumnBool('logAllQueries');
-  final slowCallDuration = ColumnDouble('slowCallDuration');
   final logAllCalls = ColumnBool('logAllCalls');
-  final logLevel = ColumnInt('logLevel');
+  final logAllQueries = ColumnBool('logAllQueries');
+  final logSlowCalls = ColumnBool('logSlowCalls');
+  final logSlowQueries = ColumnBool('logSlowQueries');
+  final logFailedCalls = ColumnBool('logFailedCalls');
   final logMalformedCalls = ColumnBool('logMalformedCalls');
+  final logLevel = ColumnInt('logLevel');
+  final slowQueryDuration = ColumnDouble('slowQueryDuration');
+  final slowCallDuration = ColumnDouble('slowCallDuration');
 
   List<Column> get columns => [
     id,
-    logFailedCalls,
-    logSlowQueries,
-    logSlowCalls,
-    slowQueryDuration,
-    logAllQueries,
-    slowCallDuration,
     logAllCalls,
-    logLevel,
+    logAllQueries,
+    logSlowCalls,
+    logSlowQueries,
+    logFailedCalls,
     logMalformedCalls,
+    logLevel,
+    slowQueryDuration,
+    slowCallDuration,
   ];
 }
 

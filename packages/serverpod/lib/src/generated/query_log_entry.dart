@@ -12,54 +12,54 @@ class QueryLogEntry extends TableRow {
   String get tableName => 'serverpod_query_log';
 
   int id;
-  int numRows;
+  int sessionLogId;
   String query;
   double duration;
-  int sessionLogId;
+  int numRows;
 
   QueryLogEntry({
     this.id,
-    this.numRows,
+    this.sessionLogId,
     this.query,
     this.duration,
-    this.sessionLogId,
+    this.numRows,
 });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    numRows = _data['numRows'];
+    sessionLogId = _data['sessionLogId'];
     query = _data['query'];
     duration = _data['duration'];
-    sessionLogId = _data['sessionLogId'];
+    numRows = _data['numRows'];
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'numRows': numRows,
+      'sessionLogId': sessionLogId,
       'query': query,
       'duration': duration,
-      'sessionLogId': sessionLogId,
+      'numRows': numRows,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'numRows': numRows,
+      'sessionLogId': sessionLogId,
       'query': query,
       'duration': duration,
-      'sessionLogId': sessionLogId,
+      'numRows': numRows,
     });
   }
 
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'numRows': numRows,
+      'sessionLogId': sessionLogId,
       'query': query,
       'duration': duration,
-      'sessionLogId': sessionLogId,
+      'numRows': numRows,
     });
   }
 }
@@ -69,17 +69,17 @@ class QueryLogEntryTable extends Table {
 
   String tableName = 'serverpod_query_log';
   final id = ColumnInt('id');
-  final numRows = ColumnInt('numRows');
+  final sessionLogId = ColumnInt('sessionLogId');
   final query = ColumnString('query');
   final duration = ColumnDouble('duration');
-  final sessionLogId = ColumnInt('sessionLogId');
+  final numRows = ColumnInt('numRows');
 
   List<Column> get columns => [
     id,
-    numRows,
+    sessionLogId,
     query,
     duration,
-    sessionLogId,
+    numRows,
   ];
 }
 

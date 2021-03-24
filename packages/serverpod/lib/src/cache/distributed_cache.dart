@@ -58,10 +58,7 @@ class DistributedCache extends Cache {
     }
     else {
       try {
-        if (_isPrio)
-          await client.cachePrio.put(key, data, group, expiration);
-        else
-          await client.cache.put(key, data, group, expiration);
+        await client.cache.put(_isPrio, key, data, group, expiration);
       }
       catch (e) {}
     }
@@ -82,10 +79,7 @@ class DistributedCache extends Cache {
     else {
       String value;
       try {
-        if (_isPrio)
-          value = await client.cachePrio.get(key);
-        else
-          value = await client.cache.get(key);
+        value = await client.cache.get(_isPrio, key);
       }
       catch(e) {
         // Failed to contact cache server
@@ -108,10 +102,7 @@ class DistributedCache extends Cache {
     }
     else {
       try {
-        if (_isPrio)
-          await client.cachePrio.invalidateKey(key);
-        else
-          await client.cache.invalidateKey(key);
+        await client.cache.invalidateKey(_isPrio, key);
       }
       catch (e) {
         return;
@@ -126,10 +117,7 @@ class DistributedCache extends Cache {
       }
       else {
         try {
-          if (_isPrio)
-            await _clients[serverNum].cachePrio.invalidateGroup(group);
-          else
-            await _clients[serverNum].cache.invalidateGroup(group);
+          await _clients[serverNum].cache.invalidateGroup(_isPrio, group);
         }
         catch (e) {
           continue;
@@ -145,10 +133,7 @@ class DistributedCache extends Cache {
       }
       else {
         try {
-          if (_isPrio)
-            await _clients[serverNum].cachePrio.clear();
-          else
-            await _clients[serverNum].cache.clear();
+          await _clients[serverNum].cache.clear(_isPrio);
         }
         catch (e) {
           continue;

@@ -11,35 +11,35 @@ class FutureCallEntry extends SerializableEntity {
   String get className => 'FutureCallEntry';
 
   int id;
-  int serverId;
+  String name;
   DateTime time;
   String serializedObject;
-  String name;
+  int serverId;
 
   FutureCallEntry({
     this.id,
-    this.serverId,
+    this.name,
     this.time,
     this.serializedObject,
-    this.name,
+    this.serverId,
 });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    serverId = _data['serverId'];
+    name = _data['name'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
     serializedObject = _data['serializedObject'];
-    name = _data['name'];
+    serverId = _data['serverId'];
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'serverId': serverId,
+      'name': name,
       'time': time?.toUtc()?.toIso8601String(),
       'serializedObject': serializedObject,
-      'name': name,
+      'serverId': serverId,
     });
   }
 }

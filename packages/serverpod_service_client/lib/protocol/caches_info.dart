@@ -11,35 +11,35 @@ class CachesInfo extends SerializableEntity {
   String get className => 'CachesInfo';
 
   int id;
-  CacheInfo localPrio;
-  CacheInfo distributedPrio;
-  CacheInfo distributed;
   CacheInfo local;
+  CacheInfo localPrio;
+  CacheInfo distributed;
+  CacheInfo distributedPrio;
 
   CachesInfo({
     this.id,
-    this.localPrio,
-    this.distributedPrio,
-    this.distributed,
     this.local,
+    this.localPrio,
+    this.distributed,
+    this.distributedPrio,
 });
 
   CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    localPrio = _data['localPrio'] != null ? CacheInfo.fromSerialization(_data['localPrio']) : null;
-    distributedPrio = _data['distributedPrio'] != null ? CacheInfo.fromSerialization(_data['distributedPrio']) : null;
-    distributed = _data['distributed'] != null ? CacheInfo.fromSerialization(_data['distributed']) : null;
     local = _data['local'] != null ? CacheInfo.fromSerialization(_data['local']) : null;
+    localPrio = _data['localPrio'] != null ? CacheInfo.fromSerialization(_data['localPrio']) : null;
+    distributed = _data['distributed'] != null ? CacheInfo.fromSerialization(_data['distributed']) : null;
+    distributedPrio = _data['distributedPrio'] != null ? CacheInfo.fromSerialization(_data['distributedPrio']) : null;
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'localPrio': localPrio?.serialize(),
-      'distributedPrio': distributedPrio?.serialize(),
-      'distributed': distributed?.serialize(),
       'local': local?.serialize(),
+      'localPrio': localPrio?.serialize(),
+      'distributed': distributed?.serialize(),
+      'distributedPrio': distributedPrio?.serialize(),
     });
   }
 }

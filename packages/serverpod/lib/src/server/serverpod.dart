@@ -9,13 +9,11 @@ import '../authentication/authentication_info.dart';
 import '../authentication/certificates.dart';
 import '../authentication/serviceAuthentication.dart';
 import '../cache/caches.dart';
-import '../cache/endpoint.dart';
 import '../database/database.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
-import '../insights/endpoint.dart';
+import '../generated/endpoints.dart' as internal;
 import 'config.dart';
-import 'endpoint.dart';
 import 'endpoint_dispatch.dart';
 import 'future_call.dart';
 import 'runmode.dart';
@@ -163,6 +161,8 @@ class Serverpod {
     context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
 
+    var endpoints = internal.Endpoints();
+
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
@@ -175,19 +175,11 @@ class Serverpod {
       caches: caches,
       authenticationHandler: serviceAuthenticationHandler,
       securityContext: context,
-      endpoints: null,
+      endpoints: endpoints,
     );
-    
-//    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributed), endpointNameCache);
-//    _serviceServer.addEndpoint(CacheEndpoint(100, _internalSerializationManager, caches.distributedPrio), endpointNameCachePrio);
-//    _serviceServer.addEndpoint(InsightsEndpoint(this), endpointNameInsights);
-    
+
     await _serviceServer.start();
   }
-
-//  void addEndpoint(Endpoint endpoint, String name) {
-//    server.addEndpoint(endpoint, name);
-//  }
 
   void addFutureCall(FutureCall call, String name) {
     server.addFutureCall(call, name);

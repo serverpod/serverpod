@@ -1,4 +1,5 @@
 import 'server.dart';
+import 'serverpod.dart';
 import '../authentication/scope.dart';
 
 class Endpoint {
@@ -7,6 +8,8 @@ class Endpoint {
 
   Server _server;
   Server get server => _server;
+
+  Serverpod get pod => server.serverpod;
 
   List<Scope> get requiredScopes => [];
 

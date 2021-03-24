@@ -15,7 +15,7 @@ import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
-import '../insights/health_check.dart';
+import 'package:serverpod/src/server/health_check.dart';
 
 class Server {
   final Serverpod serverpod;

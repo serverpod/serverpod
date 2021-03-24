@@ -11,59 +11,59 @@ class SessionLogEntry extends SerializableEntity {
   String get className => 'SessionLogEntry';
 
   int id;
-  int numQueries;
-  DateTime time;
-  String authenticatedUser;
-  double duration;
   int serverId;
+  DateTime time;
+  String endpoint;
+  String method;
+  double duration;
+  int numQueries;
+  bool slow;
   String error;
   String stackTrace;
-  String method;
-  String endpoint;
-  bool slow;
+  String authenticatedUser;
 
   SessionLogEntry({
     this.id,
-    this.numQueries,
-    this.time,
-    this.authenticatedUser,
-    this.duration,
     this.serverId,
+    this.time,
+    this.endpoint,
+    this.method,
+    this.duration,
+    this.numQueries,
+    this.slow,
     this.error,
     this.stackTrace,
-    this.method,
-    this.endpoint,
-    this.slow,
+    this.authenticatedUser,
 });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    numQueries = _data['numQueries'];
-    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
-    authenticatedUser = _data['authenticatedUser'];
-    duration = _data['duration'];
     serverId = _data['serverId'];
+    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    endpoint = _data['endpoint'];
+    method = _data['method'];
+    duration = _data['duration'];
+    numQueries = _data['numQueries'];
+    slow = _data['slow'];
     error = _data['error'];
     stackTrace = _data['stackTrace'];
-    method = _data['method'];
-    endpoint = _data['endpoint'];
-    slow = _data['slow'];
+    authenticatedUser = _data['authenticatedUser'];
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'numQueries': numQueries,
-      'time': time?.toUtc()?.toIso8601String(),
-      'authenticatedUser': authenticatedUser,
-      'duration': duration,
       'serverId': serverId,
+      'time': time?.toUtc()?.toIso8601String(),
+      'endpoint': endpoint,
+      'method': method,
+      'duration': duration,
+      'numQueries': numQueries,
+      'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'method': method,
-      'endpoint': endpoint,
-      'slow': slow,
+      'authenticatedUser': authenticatedUser,
     });
   }
 }

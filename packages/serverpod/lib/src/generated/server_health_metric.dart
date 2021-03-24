@@ -11,48 +11,48 @@ class ServerHealthMetric extends SerializableEntity {
   String get className => 'ServerHealthMetric';
 
   int id;
-  double value;
   String name;
   bool isHealthy;
+  double value;
 
   ServerHealthMetric({
     this.id,
-    this.value,
     this.name,
     this.isHealthy,
+    this.value,
 });
 
   ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    value = _data['value'];
     name = _data['name'];
     isHealthy = _data['isHealthy'];
+    value = _data['value'];
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'value': value,
       'name': name,
       'isHealthy': isHealthy,
+      'value': value,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'value': value,
       'name': name,
       'isHealthy': isHealthy,
+      'value': value,
     });
   }
 
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'value': value,
       'name': name,
       'isHealthy': isHealthy,
+      'value': value,
     });
   }
 }

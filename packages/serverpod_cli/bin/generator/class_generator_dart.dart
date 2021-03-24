@@ -1,14 +1,14 @@
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
-import 'generator.dart';
+import 'class_generator.dart';
 
-class DartGenerator extends Generator{
+class ClassGeneratorDart extends ClassGenerator{
   final bool serverCode;
 
   String get outputExtension => '.dart';
 
-  DartGenerator(String inputPath, String outputPath, String binaryPath, String protocolInfoPath, bool verbose, bool generateProtocol, this.serverCode) : super(inputPath, outputPath, binaryPath, protocolInfoPath, generateProtocol, verbose);
+  ClassGeneratorDart(String inputPath, String outputPath, bool verbose, this.serverCode) : super(inputPath, outputPath, verbose);
 
   String generateFile(String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
     var doc = loadYaml(yamlStr);
@@ -351,6 +351,8 @@ class DartGenerator extends Generator{
     }
     catch(e, stackTrace) {
       print('Failed to generate endpoints: $e');
+      if (verbose)
+        print('$stackTrace');
       print('yamlStr: $yamlStr');
     }
 

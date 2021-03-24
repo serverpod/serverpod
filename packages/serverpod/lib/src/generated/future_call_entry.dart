@@ -12,54 +12,54 @@ class FutureCallEntry extends TableRow {
   String get tableName => 'serverpod_future_call';
 
   int id;
-  int serverId;
+  String name;
   DateTime time;
   String serializedObject;
-  String name;
+  int serverId;
 
   FutureCallEntry({
     this.id,
-    this.serverId,
+    this.name,
     this.time,
     this.serializedObject,
-    this.name,
+    this.serverId,
 });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    serverId = _data['serverId'];
+    name = _data['name'];
     time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
     serializedObject = _data['serializedObject'];
-    name = _data['name'];
+    serverId = _data['serverId'];
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'serverId': serverId,
+      'name': name,
       'time': time?.toUtc()?.toIso8601String(),
       'serializedObject': serializedObject,
-      'name': name,
+      'serverId': serverId,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'serverId': serverId,
+      'name': name,
       'time': time?.toUtc()?.toIso8601String(),
       'serializedObject': serializedObject,
-      'name': name,
+      'serverId': serverId,
     });
   }
 
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'serverId': serverId,
+      'name': name,
       'time': time?.toUtc()?.toIso8601String(),
       'serializedObject': serializedObject,
-      'name': name,
+      'serverId': serverId,
     });
   }
 }
@@ -69,17 +69,17 @@ class FutureCallEntryTable extends Table {
 
   String tableName = 'serverpod_future_call';
   final id = ColumnInt('id');
-  final serverId = ColumnInt('serverId');
+  final name = ColumnString('name');
   final time = ColumnDateTime('time');
   final serializedObject = ColumnString('serializedObject');
-  final name = ColumnString('name');
+  final serverId = ColumnInt('serverId');
 
   List<Column> get columns => [
     id,
-    serverId,
+    name,
     time,
     serializedObject,
-    name,
+    serverId,
   ];
 }
 

@@ -7,9 +7,6 @@ import 'package:serverpod/src/server/health_check.dart';
 const endpointNameInsights = 'insights';
 
 class InsightsEndpoint extends Endpoint {
-  final Serverpod pod;
-  InsightsEndpoint(this.pod);
-
   bool get requireLogin => true;
 
   Future<LogResult> getLog(Session session, int numEntries) async {
