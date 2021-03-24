@@ -71,8 +71,6 @@ abstract class ClassGenerator {
 
   String generateFactory(Set<ClassInfo> classNames);
 
-  String generateEndpoints(String input);
-
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split('/');
     String fileName = pathComponents[pathComponents.length-1];

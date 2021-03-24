@@ -1,7 +1,3 @@
-binary: bin/main.dart
-source: lib/src/protocol/
-server: lib/src/generated/
-
 generated-client-dart: ../serverpod_test_client/lib/src/protocol
 generated-server-protocol: lib/src/generated
 source-protocol: lib/src/protocol

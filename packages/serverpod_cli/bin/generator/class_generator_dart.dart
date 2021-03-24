@@ -327,8 +327,10 @@ class ClassGeneratorDart extends ClassGenerator{
     out += '  static final Protocol instance = Protocol();\n';
     out += '\n';
 
-    out += '  Map<String, constructor> _constructors = <String, constructor>{};\n';
+    out += '  Map<String, constructor> _constructors = {};\n';
     out += '  Map<String, constructor> get constructors => _constructors;\n';
+    out += '  Map<String,String> _tableClassMapping = {};\n';
+    out += '  Map<String,String> get tableClassMapping => _tableClassMapping;\n';
     out += '\n';
 
     // Constructor
@@ -337,137 +339,18 @@ class ClassGeneratorDart extends ClassGenerator{
     for (ClassInfo classInfo in classInfos) {
       out += '    constructors[\'${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
     }
-    out += '  }\n';
 
-    out += '}\n';
-
-    return out;
-  }
-
-  String generateEndpoints(String yamlStr) {
-    Map doc;
-    try {
-      doc = loadYaml(yamlStr);
-    }
-    catch(e, stackTrace) {
-      print('Failed to generate endpoints: $e');
-      if (verbose)
-        print('$stackTrace');
-      print('yamlStr: $yamlStr');
-    }
-
-    String out = '';
-
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-
-    out += 'import \'dart:io\';\n';
-    out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-    out += 'import \'protocol.dart\';\n';
-    out += '\n';
-
-    // Endpoints
-    for (String endpointName in doc.keys) {
-      Map endpointDef = doc[endpointName];
-      if (endpointDef == null)
-        continue;
-
-      String endpointClassName = _endpointClassName(endpointName);
-
-      out += 'class $endpointClassName {\n';
-      out += '  Client client;\n';
-
-      out += '  $endpointClassName(this.client);\n';
-
-      // Add methods
-      for (String methodName in endpointDef.keys) {
-        Map methodDef = endpointDef[methodName];
-
-        List requiredParams = methodDef['requiredParameters'];
-        List optionalParams = methodDef['optionalParameters'];
-        String returnType = methodDef['returnType'];
-        assert(returnType.startsWith('Future<'));
-        assert(returnType.endsWith('>'));
-        String returnTypeNoFuture = returnType.substring(7, returnType.length -1);
-
-        // Method definition
-        out += '\n';
-        out += '  $returnType $methodName(';
-
-        if (requiredParams != null) {
-          for (Map paramInfo in requiredParams) {
-            String paramName = paramInfo.keys.first;
-            String paramType = paramInfo.values.first;
-            out += '$paramType $paramName,';
-          }
-        }
-
-        if (optionalParams != null) {
-          out += '[';
-
-          for (Map paramInfo in optionalParams) {
-            String paramName = paramInfo.keys.first;
-            String paramType = paramInfo.values.first;
-            out += '$paramType $paramName,';
-          }
-
-          out += ']';
-        }
-
-        out += ') async {\n';
-
-        // Call to server endpoint
-        out += '    return await client.callServerEndpoint(\'$endpointName\', \'$methodName\', \'$returnTypeNoFuture\', {\n';
-
-        if (requiredParams != null) {
-          for (Map paramInfo in requiredParams) {
-            String paramName = paramInfo.keys.first;
-            out += '      \'$paramName\':$paramName,\n';
-          }
-        }
-
-        if (optionalParams != null) {
-          for (Map paramInfo in optionalParams) {
-            String paramName = paramInfo.keys.first;
-            out += '      \'$paramName\': $paramName,\n';
-          }
-        }
-
-        out += '    });\n';
-        out += '  }\n';
-      }
-
-      out += '}\n';
+    if (serverCode) {
       out += '\n';
+      for (ClassInfo classInfo in classInfos) {
+        if (classInfo.tableName == null)
+          continue;
+        out += '    tableClassMapping[\'${classInfo.tableName}\'] = \'${classInfo.className}\';\n';
+      }
     }
 
-    // Class definition
-    out += 'class Client extends ServerpodClient {\n';
-
-    for (String endpointName in doc.keys) {
-      Map endpointDef = doc[endpointName];
-      if (endpointDef == null)
-        continue;
-
-
-      out += '  ${_endpointClassName(endpointName)} $endpointName;\n';
-    }
-
-    out += '\n';
-    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {\n';
-    for (String endpointName in doc.keys) {
-      Map endpointDef = doc[endpointName];
-      if (endpointDef == null)
-        continue;
-
-      out += '    $endpointName = ${_endpointClassName(endpointName)}(this);\n';
-    }
     out += '  }\n';
-
     out += '}\n';
-
 
     return out;
   }

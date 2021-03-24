@@ -53,7 +53,7 @@ class Serverpod {
   
   Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
-    serializationManager.appendConstructors(_internalSerializationManager.constructors);
+    serializationManager.merge(_internalSerializationManager);
 
     // Read command line arguments
     try {
@@ -116,7 +116,6 @@ class Serverpod {
         // Runtime settings
         try {
           if (database != null) {
-            await database.initialize();
             DatabaseConnection dbConn = DatabaseConnection(database);
 
             _runtimeSettings =

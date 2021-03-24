@@ -40,8 +40,10 @@ export 'readwrite_test.dart';
 class Protocol extends SerializationManager {
   static final Protocol instance = Protocol();
 
-  Map<String, constructor> _constructors = <String, constructor>{};
+  Map<String, constructor> _constructors = {};
   Map<String, constructor> get constructors => _constructors;
+  Map<String,String> _tableClassMapping = {};
+  Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
     constructors['CacheInfo'] = (Map<String, dynamic> serialization) => CacheInfo.fromSerialization(serialization);
@@ -59,5 +61,12 @@ class Protocol extends SerializationManager {
     constructors['ServerHealthResult'] = (Map<String, dynamic> serialization) => ServerHealthResult.fromSerialization(serialization);
     constructors['SessionLogResult'] = (Map<String, dynamic> serialization) => SessionLogResult.fromSerialization(serialization);
     constructors['ReadWriteTestEntry'] = (Map<String, dynamic> serialization) => ReadWriteTestEntry.fromSerialization(serialization);
+
+    tableClassMapping['serverpod_runtime_settings'] = 'RuntimeSettings';
+    tableClassMapping['serverpod_future_call'] = 'FutureCallEntry';
+    tableClassMapping['serverpod_query_log'] = 'QueryLogEntry';
+    tableClassMapping['serverpod_log'] = 'LogEntry';
+    tableClassMapping['serverpod_session_log'] = 'SessionLogEntry';
+    tableClassMapping['serverpod_readwrite_test'] = 'ReadWriteTestEntry';
   }
 }

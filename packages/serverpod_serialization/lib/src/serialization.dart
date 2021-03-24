@@ -33,6 +33,7 @@ abstract class SerializableEntity {
 
 abstract class SerializationManager {
   Map<String, constructor> get constructors;
+  Map<String,String> get tableClassMapping;
 
   SerializableEntity createEntityFromSerialization(Map<String, dynamic> serialization) {
     if (serialization == null)
@@ -59,9 +60,20 @@ abstract class SerializationManager {
     }
   }
 
-  void appendConstructors(Map<String, constructor> map) {
+  void merge(SerializationManager other) {
+    _appendConstructors(other.constructors);
+    _appendTableClassMapping(other.tableClassMapping);
+  }
+
+  void _appendConstructors(Map<String, constructor> map) {
     for (String className in map.keys) {
       constructors[className] = map[className];
+    }
+  }
+
+  void _appendTableClassMapping(Map<String, String> map) {
+    for (String tableName in map.keys) {
+      tableClassMapping[tableName] = map[tableName];
     }
   }
 }

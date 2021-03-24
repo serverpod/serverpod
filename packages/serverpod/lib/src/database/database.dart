@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:postgres/src/text_codec.dart';
-import 'package:resource/src/resolve.dart';
 import 'package:yaml/yaml.dart';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -21,10 +20,11 @@ class Database {
   PgPool _pgPool;
   PgPool get pool => _pgPool;
 
-  final tableClassMapping = <String, String>{};
+  final tableClassMapping; // = <String, String>{};
   static final PostgresTextEncoder encoder = PostgresTextEncoder();
 
-  Database(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password) {
+  Database(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password)
+      : tableClassMapping = serializationManager.tableClassMapping {
     _serializationManager = serializationManager;
 
     var poolSettings = PgPoolSettings();
@@ -45,45 +45,6 @@ class Database {
   }
 
   DatabaseConnection createConnection() => DatabaseConnection(this);
-
-  Future<Null> initialize() async {
-    if (_serializationManager != null) {
-      try {
-        await _loadTableClassMappings('lib/protocol');
-      }
-      catch(e) {
-        await _loadTableClassMappings('lib/src/protocol');
-      }
-      await _loadTableClassMappings('package:serverpod/src/protocol');
-    }
-  }
-
-  Future<bool> _loadTableClassMappings(String directory) async {
-    if (directory.startsWith('package:')) {
-      var uri = await resolveUri(Uri.parse(directory));
-      directory = uri.path;
-    }
-
-    // Parse yaml files for data
-    var dir = Directory(directory);
-    var list = dir.listSync();
-    for (var entity in list) {
-      if (entity is File && entity.path.endsWith('.yaml')) {
-        _addDefinition(entity);
-      }
-    }
-    return true;
-  }
-
-  void _addDefinition(File file) {
-    String yamlStr = file.readAsStringSync();
-    var doc = loadYaml(yamlStr);
-
-    String name = doc['tableName'];
-    String className = doc['class'];
-
-    tableClassMapping[name] = className;
-  }
 }
 
 class Expression {

@@ -14,11 +14,15 @@ export 'company_info.dart';
 class Protocol extends SerializationManager {
   static final Protocol instance = Protocol();
 
-  Map<String, constructor> _constructors = <String, constructor>{};
+  Map<String, constructor> _constructors = {};
   Map<String, constructor> get constructors => _constructors;
+  Map<String,String> _tableClassMapping = {};
+  Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
     constructors['UserInfo'] = (Map<String, dynamic> serialization) => UserInfo.fromSerialization(serialization);
     constructors['CompanyInfo'] = (Map<String, dynamic> serialization) => CompanyInfo.fromSerialization(serialization);
+
+    tableClassMapping['user_info'] = 'UserInfo';
   }
 }
