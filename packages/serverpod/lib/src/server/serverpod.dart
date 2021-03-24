@@ -208,7 +208,7 @@ class Serverpod {
         DatabaseConnection dbConn = DatabaseConnection(database);
         success = await dbConn.insert(entry);
       }
-      catch(e, stackTrace) {
+      catch(e) {
         success = false;
       }
       if (!success)

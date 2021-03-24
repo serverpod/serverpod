@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'database.dart';
 import 'table.dart';
-import 'package:postgres/postgres.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import '../server/session.dart';
 
