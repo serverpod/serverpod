@@ -4,7 +4,7 @@ import 'package:colorize/colorize.dart';
 import 'database_util/build_schema.dart';
 import 'certificates/generator.dart';
 import 'config_info/config_info.dart';
-import 'generator/class_generator.dart';
+import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 import 'insights/insights.dart';
 
@@ -87,7 +87,7 @@ void main(List<String> args) async {
 
   if (results.command != null) {
     if (results.command.name == cmdGenerate) {
-      performGenerateClasses(results.command['verbose']);
+      performGenerate(results.command['verbose']);
       return;
     }
     if (results.command.name == cmdGenerateContinuously) {

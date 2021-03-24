@@ -1,45 +1,18 @@
 import 'dart:io';
 
-import 'package:yaml/yaml.dart';
-
 import 'class_generator_dart.dart';
+import 'config.dart';
 
-void performGenerateClasses(bool verbose,) {
-  // Load config file for generation
-  Map generatorConfig;
-  try {
-    var file = File('config/generate.yaml');
-    var yamlStr = file.readAsStringSync();
-    generatorConfig = loadYaml(yamlStr);
-  }
-  catch(_) {
-    print('Failed to load config/generator.yaml. Are you running serverpod from your projects root directory?');
-    return;
-  }
-
-  String pathServer = generatorConfig['server'];
-  if (pathServer == null) {
-    print('Option "server" is required in config/generator.yaml');
-    return;
-  }
-
-  String pathSource = generatorConfig['source'];
-  if (pathSource == null) {
-    print('Option "source" is required in config/generator.yaml');
-  }
-
+void performGenerateClasses(bool verbose) {
   // Generate server side code
   print('Generating server side code.');
-  var generator = ClassGeneratorDart(pathSource, pathServer, verbose, true);
-  generator.generate();
+  var serverGenerator = ClassGeneratorDart(config.sourceProtocol, config.generatedServerProtocol, verbose, true);
+  serverGenerator.generate();
 
   // Generate client side code
-  String pathClientDart = generatorConfig['client-dart'];
-  if (pathClientDart != null) {
-    print('Generating Dart client side code.');
-    var clientGenerator = ClassGeneratorDart(pathSource, pathClientDart, verbose, false);
-    clientGenerator.generate();
-  }
+  print('Generating Dart client side code.');
+  var clientGenerator = ClassGeneratorDart(config.sourceProtocol, config.generatedClientDart, verbose, false);
+  clientGenerator.generate();
 
   print('Done.');
 }
@@ -62,11 +35,11 @@ abstract class ClassGenerator {
     for (var entity in list) {
       if (entity is File && entity.path.endsWith('.yaml')) {
         if (verbose)
-          print('  - processing file: ${inputPath}');
+          print('  - processing file: ${entity.path}');
 
         try {
           var outFileName = _transformFileNameWithoutPath(entity.path);
-          var outFile = File('$outputPath$outFileName');
+          var outFile = File('$outputPath/$outFileName');
 
           // Read file
           String yamlStr = entity.readAsStringSync();
@@ -88,7 +61,7 @@ abstract class ClassGenerator {
     }
 
     // Generate factory class
-    var outFile = File(outputPath + 'protocol$outputExtension');
+    var outFile = File(outputPath + '/protocol$outputExtension');
     var out = generateFactory(classInfos);
     outFile.createSync();
     outFile.writeAsStringSync(out);
