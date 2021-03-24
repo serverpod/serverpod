@@ -2,7 +2,7 @@ import '../../server.dart';
 import '../generated/protocol.dart';
 import '../cache/cache.dart';
 
-import 'health_check.dart';
+import 'package:serverpod/src/server/health_check.dart';
 
 const endpointNameInsights = 'insights';
 

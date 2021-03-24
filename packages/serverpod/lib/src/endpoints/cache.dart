@@ -2,8 +2,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import '../../server.dart';
-import 'local_cache.dart';
-import 'distributed_cache.dart';
+import '../cache/local_cache.dart';
+import '../cache/distributed_cache.dart';
 
 const endpointNameCache = 'cache';
 const endpointNameCachePrio = 'cachePrio';

@@ -2,3 +2,8 @@ binary: lib/src/server/endpoint_generator.dart
 source: lib/src/protocol/
 server: lib/src/generated/
 client-dart: ../serverpod_service_client/lib/protocol/
+
+generated-client-dart: ../serverpod_service_client/lib/protocol
+generated-server-protocol: lib/src/generated
+source-protocol: lib/src/protocol
+source-enpoints: lib/src/endpoints
