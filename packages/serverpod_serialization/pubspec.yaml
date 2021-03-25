@@ -4,7 +4,7 @@ description: Serialization package for Serverpod
 environment:
   sdk: '>=2.7.0 <3.0.0'
 dependencies:
-  yaml:
+  yaml: ^3.1.0
 
 dev_dependencies:
 #  unittest: any

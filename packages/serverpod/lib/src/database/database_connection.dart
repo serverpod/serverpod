@@ -18,7 +18,12 @@ class DatabaseConnection {
     var tableNames = <String>[];
 
     var query = 'SELECT * FROM pg_catalog.pg_tables';
-    var result = await postgresConnection.mappedResultsQuery(query, allowReuse: false);
+    var result = await postgresConnection.mappedResultsQuery(
+      query,
+      allowReuse: false,
+      timeoutInSeconds: 60,
+      substitutionValues: {},
+    );
 
     for (Map row in result) {
       row = row.values.first;
@@ -31,7 +36,12 @@ class DatabaseConnection {
 
   Future<Table> getTableDescription(String tableName) async {
     var query = 'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
-    var result = await postgresConnection.mappedResultsQuery(query, allowReuse: false);
+    var result = await postgresConnection.mappedResultsQuery(
+      query,
+      allowReuse: false,
+      timeoutInSeconds: 60,
+      substitutionValues: {},
+    );
     var columns = <Column>[];
 
     bool hasID = false;
@@ -124,7 +134,12 @@ class DatabaseConnection {
 
     var list = <TableRow>[];
     try {
-      var result = await postgresConnection.mappedResultsQuery(query, allowReuse: false);
+      var result = await postgresConnection.mappedResultsQuery(
+        query,
+        allowReuse: false,
+        timeoutInSeconds: 60,
+        substitutionValues: {},
+      );
       for (var rawRow in result) {
         list.add(_formatTableRow(tableName, rawRow[tableName]));
       }

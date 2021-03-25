@@ -91,7 +91,7 @@ packages:
       name: executor
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.2"
   file:
     dependency: transitive
     description:
@@ -214,10 +214,10 @@ packages:
   postgres_pool:
     dependency: "direct main"
     description:
-      name: postgres_pool
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
+      path: "../../../postgres_pool"
+      relative: true
+    source: path
+    version: "2.1.0"
   pub_semver:
     dependency: transitive
     description:
@@ -231,7 +231,7 @@ packages:
       name: retry
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0+1"
+    version: "3.1.0"
   serverpod_client:
     dependency: transitive
     description:

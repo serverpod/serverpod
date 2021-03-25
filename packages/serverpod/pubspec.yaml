@@ -7,7 +7,9 @@ dependencies:
   args: ^2.0.0
   collection: ^1.15.0
   postgres: ^2.3.0
-  postgres_pool: ^2.0.1
+#  postgres_pool: ^2.1.0
+  postgres_pool:
+    path: ../../../postgres_pool
   yaml: ^3.1.0
   serverpod_serialization:
     path: ../serverpod_serialization
