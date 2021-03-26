@@ -35,19 +35,18 @@ abstract class SerializationManager {
   Map<String, constructor> get constructors;
   Map<String,String> get tableClassMapping;
 
-  SerializableEntity createEntityFromSerialization(Map<String, dynamic> serialization) {
+  SerializableEntity? createEntityFromSerialization(Map<String, dynamic>? serialization) {
     if (serialization == null)
       return null;
-
-    String className = serialization['class'];
+    String? className = serialization['class'];
     if (className == null)
       return null;
     if (constructors[className] != null)
-      return constructors[className](serialization);
+      return constructors[className]!(serialization);
     return null;
   }
 
-  String serializeEntity(dynamic entity) {
+  String? serializeEntity(dynamic? entity) {
     if (entity == null)
       return null;
     else if (entity is DateTime)
@@ -67,13 +66,13 @@ abstract class SerializationManager {
 
   void _appendConstructors(Map<String, constructor> map) {
     for (String className in map.keys) {
-      constructors[className] = map[className];
+      constructors[className] = map[className]!;
     }
   }
 
   void _appendTableClassMapping(Map<String, String> map) {
     for (String tableName in map.keys) {
-      tableClassMapping[tableName] = map[tableName];
+      tableClassMapping[tableName] = map[tableName]!;
     }
   }
 }
