@@ -11,11 +11,11 @@ class FutureCallEntry extends TableRow {
   String get className => 'FutureCallEntry';
   String get tableName => 'serverpod_future_call';
 
-  int id;
-  String name;
-  DateTime time;
-  String serializedObject;
-  int serverId;
+  int? id;
+  String? name;
+  DateTime? time;
+  String? serializedObject;
+  int? serverId;
 
   FutureCallEntry({
     this.id,

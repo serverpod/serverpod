@@ -7,28 +7,28 @@ import '../cache/distributed_cache.dart';
 class CacheEndpoint extends Endpoint {
   bool get logSessions => false;
 
-  LocalCache _cache;
-  LocalCache _cachePrio;
+  late LocalCache _cache;
+  late LocalCache _cachePrio;
 
   @override
   void initialize(Server server, String name) {
     super.initialize(server, name);
     DistributedCache distributedCache = pod.caches.distributed;
     DistributedCache distributedCachePrio = pod.caches.distributedPrio;
-    _cache = distributedCache?.localCache;
-    _cachePrio = distributedCachePrio?.localCache;
+    _cache = distributedCache.localCache;
+    _cachePrio = distributedCachePrio.localCache;
   }
 
-  Future<Null> put(Session session, bool priority, String key, String data, String group, DateTime expiration) async {
-    Duration lifetime;
+  Future<Null> put(Session session, bool priority, String key, String? data, String group, DateTime? expiration) async {
+    Duration? lifetime;
     if (expiration != null)
       lifetime = expiration.difference(DateTime.now());
 
     await (priority ? _cachePrio : _cache).put(key, DistributedCacheEntry(data: data), group: group, lifetime: lifetime);
   }
 
-  Future<String> get(Session session, bool priority, String key) async {
-    DistributedCacheEntry entry = await (priority ? _cachePrio : _cache).get(key);
+  Future<String?> get(Session session, bool priority, String key) async {
+    DistributedCacheEntry? entry = await ((priority ? _cachePrio : _cache).get(key)) as DistributedCacheEntry?;
     if (entry == null)
       return null;
     return entry.data;

@@ -15,7 +15,7 @@ abstract class EndpointDispatch {
   Future handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
     print('handleUriCall server: $server endpoint: $endpointName uri: $uri');
 
-    EndpointConnector connector = connectors[endpointName];
+    EndpointConnector? connector = connectors[endpointName];
     if (connector == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
 
@@ -56,7 +56,7 @@ abstract class EndpointDispatch {
         }
 
         for (var requiredScope in connector.endpoint.requiredScopes) {
-          if (!(await session.scopes).contains(requiredScope)) {
+          if (!(await session.scopes)!.contains(requiredScope)) {
             await session.close();
             return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
           }
@@ -72,8 +72,8 @@ abstract class EndpointDispatch {
       // TODO: Check paramters
 
       Map<String, dynamic> paramMap = {};
-      for (var paramName in inputParams.keys) {
-        Type type = method.params[paramName]?.type;
+      for (var paramName in inputParams!.keys) {
+        Type? type = method.params[paramName]?.type;
         if (type == null)
           continue;
         var formatted = _formatArg(inputParams[paramName], type, server.serializationManager);
@@ -83,7 +83,7 @@ abstract class EndpointDispatch {
       var result = await method.call(session, paramMap);
 
       // Print session info
-      String authenticatedUser = connector.endpoint.requireLogin ? await session.authenticatedUser : null;
+      String? authenticatedUser = connector.endpoint.requireLogin ? await session.authenticatedUser : null;
       if (connector.endpoint.logSessions)
         server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
@@ -93,7 +93,7 @@ abstract class EndpointDispatch {
     }
     catch (exception, stackTrace) {
       // Something did not work out
-      int sessionLogId = 0;
+      int? sessionLogId = 0;
       if (connector.endpoint.logSessions)
         sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
 
@@ -102,14 +102,14 @@ abstract class EndpointDispatch {
     }
   }
 
-  Object _formatArg(String input, Type type, SerializationManager serializationManager) {
+  Object? _formatArg(String? input, Type type, SerializationManager serializationManager) {
     // Check for basic types
     if (type == String)
       return input;
     if (type == int)
-      return int.tryParse(input);
+      return int.tryParse(input!);
     if (type == double)
-      return double.tryParse(input);
+      return double.tryParse(input!);
     if (type == bool) {
       if (input == 'true')
         return true;
@@ -118,10 +118,10 @@ abstract class EndpointDispatch {
       return null;
     }
     if (type == DateTime)
-      return DateTime.tryParse(input);
+      return DateTime.tryParse(input!);
 
     try {
-      var data = jsonDecode(input);
+      var data = jsonDecode(input!);
       return serializationManager.createEntityFromSerialization(data);
     }
     catch (error) {
@@ -135,7 +135,7 @@ class EndpointConnector {
   final Endpoint endpoint;
   final Map<String, MethodConnector> methodConnectors;
 
-  EndpointConnector({this.name, this.endpoint, this.methodConnectors});
+  EndpointConnector({required this.name, required this.endpoint, required this.methodConnectors});
 }
 
 typedef Future MethodCall(Session session, Map<String, dynamic> params);
@@ -145,14 +145,14 @@ class MethodConnector {
   final Map<String, ParameterDescription> params;
   final MethodCall call;
 
-  MethodConnector({this.name, this.params, this.call});
+  MethodConnector({required this.name, required this.params, required this.call});
 }
 
 class ParameterDescription {
   final String name;
   final Type type;
 
-  ParameterDescription({this.name, this.type});
+  ParameterDescription({required this.name, required this.type});
 }
 
 abstract class Result {}
@@ -178,7 +178,7 @@ class ResultAuthenticationFailed extends Result {
 class ResultInternalServerError extends Result {
   final String exception;
   final StackTrace stackTrace;
-  final int sessionLogId;
+  final int? sessionLogId;
   ResultInternalServerError(this.exception, this.stackTrace, this.sessionLogId);
   @override
   String toString() {

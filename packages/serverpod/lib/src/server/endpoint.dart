@@ -3,10 +3,10 @@ import 'serverpod.dart';
 import '../authentication/scope.dart';
 
 class Endpoint {
-  String _name;
+  late String _name;
   String get name => _name;
 
-  Server _server;
+  late Server _server;
   Server get server => _server;
 
   Serverpod get pod => server.serverpod;

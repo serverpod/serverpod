@@ -15,9 +15,9 @@ class Database {
   final String databaseName;
   final String userName;
   final String password;
-  SerializationManager _serializationManager;
+  late SerializationManager _serializationManager;
   SerializationManager get serializationManager => _serializationManager;
-  PgPool _pgPool;
+  late PgPool _pgPool;
   PgPool get pool => _pgPool;
 
   final tableClassMapping; // = <String, String>{};
@@ -102,7 +102,7 @@ class Expression {
 
 abstract class Column extends Expression {
   final Type type;
-  final int varcharLength;
+  final int? varcharLength;
   final String _columnName;
 
   const Column(String this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
@@ -113,14 +113,14 @@ abstract class Column extends Expression {
 class ColumnInt extends Column {
   const ColumnInt(String name) : super (name, int);
 
-  Expression equals(int value) {
+  Expression equals(int? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NULL');
     else
       return Expression('"${this.columnName}" = $value');
   }
 
-  Expression notEquals(int value) {
+  Expression notEquals(int? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NOT NULL');
     else
@@ -131,14 +131,14 @@ class ColumnInt extends Column {
 class ColumnDouble extends Column {
   const ColumnDouble(String name) : super (name, double);
 
-  Expression equals(double value) {
+  Expression equals(double? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NULL');
     else
       return Expression('"${this.columnName}" = $value');
   }
 
-  Expression notEquals(double value) {
+  Expression notEquals(double? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NOT NULL');
     else
@@ -147,16 +147,16 @@ class ColumnDouble extends Column {
 }
 
 class ColumnString extends Column {
-  const ColumnString(String name, {int varcharLength}) : super (name, String, varcharLength: varcharLength);
+  const ColumnString(String name, {int? varcharLength}) : super (name, String, varcharLength: varcharLength);
 
-  Expression equals(String value) {
+  Expression equals(String? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NULL');
     else
       return Expression('"${this.columnName}" = ${Database.encoder.convert(value)}');
   }
 
-  Expression notEquals(String value) {
+  Expression notEquals(String? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NOT NULL');
     else
@@ -175,14 +175,14 @@ class ColumnString extends Column {
 class ColumnBool extends Column {
   const ColumnBool(String name) : super (name, bool);
 
-  Expression equals(bool value) {
+  Expression equals(bool? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NULL');
     else
       return Expression('"${this.columnName}" = $value');
   }
 
-  Expression notEquals(bool value) {
+  Expression notEquals(bool? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NOT NULL');
     else
@@ -197,14 +197,14 @@ class ColumnBool extends Column {
 class ColumnDateTime extends Column {
   const ColumnDateTime(String name) : super (name, DateTime);
 
-  Expression equals(DateTime value) {
+  Expression equals(DateTime? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NULL');
     else
       return Expression('"${this.columnName}" = ${Database.encoder.convert(value)}');
   }
 
-  Expression notEquals(DateTime value) {
+  Expression notEquals(DateTime? value) {
     if (value == null)
       return Expression('"${this.columnName}" IS NOT NULL');
     else
@@ -218,10 +218,10 @@ class Constant extends Expression {
 
 class Table {
   final String tableName;
-  List<Column> _columns;
-  List<Column> get columns => _columns;
+  late List<Column>? _columns;
+  List<Column> get columns => _columns!;
 
-  Table({this.tableName, List<Column> columns}) {
+  Table({required this.tableName, List<Column>? columns}) {
     _columns = columns;
   }
 

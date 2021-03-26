@@ -11,16 +11,16 @@ class RuntimeSettings extends TableRow {
   String get className => 'RuntimeSettings';
   String get tableName => 'serverpod_runtime_settings';
 
-  int id;
-  bool logAllCalls;
-  bool logAllQueries;
-  bool logSlowCalls;
-  bool logSlowQueries;
-  bool logFailedCalls;
-  bool logMalformedCalls;
-  int logLevel;
-  double slowQueryDuration;
-  double slowCallDuration;
+  int? id;
+  bool? logAllCalls;
+  bool? logAllQueries;
+  bool? logSlowCalls;
+  bool? logSlowQueries;
+  bool? logFailedCalls;
+  bool? logMalformedCalls;
+  int? logLevel;
+  double? slowQueryDuration;
+  double? slowCallDuration;
 
   RuntimeSettings({
     this.id,

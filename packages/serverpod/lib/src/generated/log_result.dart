@@ -10,8 +10,8 @@ import 'protocol.dart';
 class LogResult extends SerializableEntity {
   String get className => 'LogResult';
 
-  int id;
-  List<LogEntry> entries;
+  int? id;
+  List<LogEntry>? entries;
 
   LogResult({
     this.id,

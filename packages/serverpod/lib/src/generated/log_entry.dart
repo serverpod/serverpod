@@ -11,13 +11,13 @@ class LogEntry extends TableRow {
   String get className => 'LogEntry';
   String get tableName => 'serverpod_log';
 
-  int id;
-  int serverId;
-  DateTime time;
-  int logLevel;
-  String message;
-  String stackTrace;
-  int sessionLogId;
+  int? id;
+  int? serverId;
+  DateTime? time;
+  int? logLevel;
+  String? message;
+  String? stackTrace;
+  int? sessionLogId;
 
   LogEntry({
     this.id,

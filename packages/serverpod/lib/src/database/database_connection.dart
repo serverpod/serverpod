@@ -6,7 +6,7 @@ import '../server/session.dart';
 
 class DatabaseConnection {
   final Database database;
-  PgPool postgresConnection;
+  late PgPool postgresConnection;
 
 //  PostgreSQLConnection postgresConnection;
 
@@ -15,7 +15,7 @@ class DatabaseConnection {
   }
 
   Future<List<String>> getTableNames() async {
-    var tableNames = <String>[];
+    List<String?> tableNames = <String>[];
 
     var query = 'SELECT * FROM pg_catalog.pg_tables';
     var result = await postgresConnection.mappedResultsQuery(
@@ -31,10 +31,10 @@ class DatabaseConnection {
         tableNames.add(row['tablename']);
     }
 
-    return tableNames;
+    return tableNames as FutureOr<List<String>>;
   }
 
-  Future<Table> getTableDescription(String tableName) async {
+  Future<Table?> getTableDescription(String tableName) async {
     var query = 'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
     var result = await postgresConnection.mappedResultsQuery(
       query,
@@ -47,10 +47,10 @@ class DatabaseConnection {
     bool hasID = false;
     for (Map row in result) {
       row = row.values.first;
-      String columnName = row['column_name'];
-      String sqlType = row['data_type'];
-      int varcharLength = row['character_maximum_length'];
-      Type type = _sqlTypeToDartType(sqlType);
+      String? columnName = row['column_name'];
+      String? sqlType = row['data_type'];
+      int? varcharLength = row['character_maximum_length'];
+      Type? type = _sqlTypeToDartType(sqlType);
 
       if (columnName == 'id' && type == int)
         hasID = true;
@@ -60,13 +60,13 @@ class DatabaseConnection {
       }
 
       if (type == String)
-        columns.add(ColumnString(columnName, varcharLength: varcharLength));
+        columns.add(ColumnString(columnName!, varcharLength: varcharLength));
       else if (type == int)
-        columns.add(ColumnInt(columnName));
+        columns.add(ColumnInt(columnName!));
       else if (type == double)
-        columns.add(ColumnDouble(columnName));
+        columns.add(ColumnDouble(columnName!));
       else if (type == DateTime)
-        columns.add(ColumnDateTime(columnName));
+        columns.add(ColumnDateTime(columnName!));
     }
 
     if (!hasID) {
@@ -79,7 +79,7 @@ class DatabaseConnection {
     );
   }
 
-  Type _sqlTypeToDartType(String type) {
+  Type? _sqlTypeToDartType(String? type) {
     if (type == 'character varying' || type == 'text')
       return String;
     if (type == 'integer')
@@ -93,7 +93,7 @@ class DatabaseConnection {
     return null;
   }
 
-  Future<TableRow> findById(Table table, int id, {Session session}) async {
+  Future<TableRow?> findById(Table table, int id, {Session? session}) async {
     var result = await find(
       table,
       where: Expression('id = $id'),
@@ -104,7 +104,7 @@ class DatabaseConnection {
     return result[0];
   }
 
-  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, List<Order> orderByList, bool orderDescending=false, bool useCache=true, Session session}) async {
+  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true, Session? session}) async {
     assert(orderByList == null || orderBy == null);
 
     var startTime = DateTime.now();
@@ -132,7 +132,7 @@ class DatabaseConnection {
     if (offset != null)
       query += ' OFFSET $offset';
 
-    var list = <TableRow>[];
+    List<TableRow?> list = <TableRow>[];
     try {
       var result = await postgresConnection.mappedResultsQuery(
         query,
@@ -150,10 +150,10 @@ class DatabaseConnection {
     }
 
     _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list;
+    return list as FutureOr<List<TableRow>>;
   }
 
-  Future<TableRow> findSingleRow(Table table, {Expression where, int offset, Column orderBy, bool orderDescending=false, bool useCache=true, Session session}) async {
+  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true, Session? session}) async {
     var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
 
     if (result.length == 0)
@@ -162,14 +162,14 @@ class DatabaseConnection {
       return result[0];
   }
 
-  TableRow _formatTableRow(String tableName, Map<String, dynamic> rawRow) {
-    String className = database.tableClassMapping[tableName];
+  TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
+    String? className = database.tableClassMapping[tableName];
     if (className == null)
       return null;
 
     var data = <String, dynamic>{};
 
-    for (var columnName in rawRow.keys) {
+    for (var columnName in rawRow!.keys) {
       var value = rawRow[columnName];
       if (value is DateTime)
         data[columnName] = value.toIso8601String();
@@ -179,10 +179,10 @@ class DatabaseConnection {
 
     var serialization = <String, dynamic> {'data': data, 'class': className};
 
-    return database.serializationManager.createEntityFromSerialization(serialization);
+    return database.serializationManager.createEntityFromSerialization(serialization) as TableRow?;
   }
 
-  Future<int> count(Table table, {Expression where, int limit, bool useCache=true, Session session}) async {
+  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true, Session? session}) async {
     var startTime = DateTime.now();
 
     if (where == null)
@@ -212,16 +212,16 @@ class DatabaseConnection {
     }
   }
 
-  Future<bool> update(TableRow row, {Transaction transaction, Session session}) async {
+  Future<bool> update(TableRow row, {Transaction? transaction, Session? session}) async {
     DateTime startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
 
-    int id = data['id'];
+    int? id = data['id'];
 
     var updatesList = <String>[];
 
-    for(String column in data.keys) {
+    for(String column in data.keys as Iterable<String>) {
       if (column == 'id')
         continue;
       String value = Database.encoder.convert(data[column]);
@@ -235,7 +235,7 @@ class DatabaseConnection {
     if (transaction != null) {
       transaction._queries.add(query);
       transaction.connection = this;
-      return null;
+      return false;
     }
 
     try {
@@ -248,7 +248,7 @@ class DatabaseConnection {
     }
   }
 
-  Future<bool> insert(TableRow row, {Transaction transaction, Session session}) async {
+  Future<bool> insert(TableRow row, {Transaction? transaction, Session? session}) async {
     DateTime startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -256,7 +256,7 @@ class DatabaseConnection {
     var columnsList = <String>[];
     var valueList = <String>[];
 
-    for(String column in data.keys) {
+    for(String column in data.keys as Iterable<String>) {
       if (column == 'id')
         continue;
 
@@ -275,7 +275,7 @@ class DatabaseConnection {
     if (transaction != null) {
       transaction._queries.add(query);
       transaction.connection = this;
-      return null;
+      return false;
     }
 
     List<List<dynamic>> result;
@@ -300,7 +300,7 @@ class DatabaseConnection {
     return true;
   }
 
-  Future<int> delete(Table table, {Expression where, Transaction transaction, Session session}) async {
+  Future<int> delete(Table table, {required Expression where, Transaction? transaction, Session? session}) async {
     DateTime startTime = DateTime.now();
 
     assert(where != null, 'Missing where parameter');
@@ -312,7 +312,7 @@ class DatabaseConnection {
     if (transaction != null) {
       transaction._queries.add(query);
       transaction.connection = this;
-      return null;
+      return 0;
     }
 
     try {
@@ -326,7 +326,7 @@ class DatabaseConnection {
     }
   }
 
-  Future<bool> deleteRow(TableRow row, {Transaction transaction, Session session}) async {
+  Future<bool> deleteRow(TableRow row, {Transaction? transaction, Session? session}) async {
     DateTime startTime = DateTime.now();
 
     var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
@@ -334,7 +334,7 @@ class DatabaseConnection {
     if (transaction != null) {
       transaction._queries.add(query);
       transaction.connection = this;
-      return null;
+      return false;
     }
 
     try {
@@ -348,7 +348,7 @@ class DatabaseConnection {
     }
   }
 
-  Future<List<List<dynamic>>> query(String query, {Session session, int timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(String query, {Session? session, int? timeoutInSeconds}) async {
     DateTime startTime = DateTime.now();
 
     try {
@@ -362,7 +362,7 @@ class DatabaseConnection {
     }
   }
 
-  void _logQuery(Session session, String query, DateTime startTime, {int numRowsAffected, exception, StackTrace trace}) {
+  void _logQuery(Session? session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
     if (session == null)
       return;
 
@@ -382,7 +382,7 @@ class Order {
   final Column column;
   final bool orderDescending;
 
-  Order({this.column, this.orderDescending=false});
+  Order({required this.column, this.orderDescending=false});
 
   @override
   String toString() {
@@ -397,7 +397,7 @@ class Order {
 
 class Transaction {
   List<String> _queries = [];
-  DatabaseConnection connection;
+  DatabaseConnection? connection;
 
   Future<bool> execute() async {
     assert(_queries.length > 0, 'No queries added to transaction');

@@ -22,35 +22,35 @@ import 'session.dart';
 typedef Future<List<internal.ServerHealthMetric>> HealthCheckHandler(Serverpod pod);
 
 class Serverpod {
-  String _runMode;
+  late String _runMode;
   String get runMode => _runMode;
 
-  ServerConfig config;
+  late ServerConfig config;
   Map<String, String> _passwords = <String, String>{};
 
-  final AuthenticationHandler authenticationHandler;
+  final AuthenticationHandler? authenticationHandler;
   final HealthCheckHandler healthCheckHandler;
   
   final SerializationManager serializationManager;
-  SerializationManager _internalSerializationManager;
+  late SerializationManager _internalSerializationManager;
 
   final EndpointDispatch endpoints;
 
-  Database database;
-  Caches _caches;
+  late Database database;
+  late Caches _caches;
   Caches get caches => _caches;
 
   int serverId = 0;
-  Server server;
-  Server _serviceServer;
-  Server get serviceServer => _serviceServer;
+  late Server server;
+  Server? _serviceServer;
+  Server get serviceServer => _serviceServer!;
 
-  internal.RuntimeSettings _runtimeSettings;
-  internal.RuntimeSettings get runtimeSettings => _runtimeSettings;
+  internal.RuntimeSettings? _runtimeSettings;
+  internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
 
-  List<String> whitelistedExternalCalls;
+  List<String>? whitelistedExternalCalls;
   
-  Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, this.healthCheckHandler}) {
+  Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, required this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
 
@@ -87,16 +87,14 @@ class Serverpod {
     }
 
     // Setup database
-    if (config.dbConfigured) {
-      database = Database(serializationManager, config.dbHost, config.dbPort, config.dbName, config.dbUser, config.dbPass);
-    }
+    database = Database(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
 
     _caches = Caches(serializationManager, config, serverId);
 
     server = Server(
       serverpod: this,
       serverId: serverId,
-      port: config?.port ?? 8080,
+      port: config.port ?? 8080,
       serializationManager: serializationManager,
       database: database,
       passwords: _passwords,
@@ -114,26 +112,23 @@ class Serverpod {
       () async {
         // Runtime settings
         try {
-          if (database != null) {
-            DatabaseConnection dbConn = DatabaseConnection(database);
+          DatabaseConnection dbConn = DatabaseConnection(database);
 
-            _runtimeSettings =
-            await dbConn.findSingleRow(internal.tRuntimeSettings);
-            if (_runtimeSettings == null) {
-              // Store default settings
-              _runtimeSettings = internal.RuntimeSettings(
-                logAllCalls: false,
-                logAllQueries: false,
-                logSlowCalls: true,
-                logSlowQueries: true,
-                logFailedCalls: true,
-                logMalformedCalls: false,
-                logLevel: internal.LogLevel.warning.index,
-                slowCallDuration: 1.0,
-                slowQueryDuration: 1.0,
-              );
-              await dbConn.insert(_runtimeSettings);
-            }
+          _runtimeSettings = await dbConn.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;
+          if (_runtimeSettings == null) {
+            // Store default settings
+            _runtimeSettings = internal.RuntimeSettings(
+              logAllCalls: false,
+              logAllQueries: false,
+              logSlowCalls: true,
+              logSlowQueries: true,
+              logFailedCalls: true,
+              logMalformedCalls: false,
+              logLevel: internal.LogLevel.warning.index,
+              slowCallDuration: 1.0,
+              slowQueryDuration: 1.0,
+            );
+            await dbConn.insert(_runtimeSettings!);
           }
         }
         catch(e, stackTrace) {
@@ -164,7 +159,7 @@ class Serverpod {
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
-      port: config?.servicePort ?? 8081,
+      port: config.servicePort ?? 8081,
       serializationManager: _internalSerializationManager,
       database: database,
       passwords: _passwords,
@@ -176,21 +171,21 @@ class Serverpod {
       endpoints: endpoints,
     );
 
-    await _serviceServer.start();
+    await _serviceServer!.start();
   }
 
   void addFutureCall(FutureCall call, String name) {
     server.addFutureCall(call, name);
   }
 
-  String getPassword(String key) {
+  String? getPassword(String key) {
     return _passwords[key];
   }
 
-  void log(internal.LogLevel level, String message, {StackTrace stackTrace, int sessionLogId}) async {
+  void log(internal.LogLevel level, String message, {StackTrace? stackTrace, int? sessionLogId}) async {
     int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
 
-    if (database != null && level.index >= serverLogLevel) {
+    if (level.index! >= serverLogLevel) {
       var entry = internal.LogEntry(
         serverId: serverId,
         time: DateTime.now(),
@@ -220,7 +215,7 @@ class Serverpod {
     }
   }
 
-  Future<int> logSession(String endpoint, String method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String authenticatedUser, String exception, StackTrace stackTrace) async {
+  Future<int?> logSession(String? endpoint, String? method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String? authenticatedUser, String? exception, StackTrace? stackTrace) async {
     if (_runMode == ServerpodRunMode.development) {
       print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
       if (exception != null) {
@@ -229,11 +224,11 @@ class Serverpod {
       }
     }
 
-    var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration * 1000000.0).toInt());
+    var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration! * 1000000.0).toInt());
 
-    if (_runtimeSettings.logAllCalls ||
-        _runtimeSettings.logSlowCalls && isSlow ||
-        _runtimeSettings.logFailedCalls && exception != null
+    if (runtimeSettings.logAllCalls! ||
+        runtimeSettings.logSlowCalls! && isSlow ||
+        runtimeSettings.logFailedCalls! && exception != null
     ) {
       var sessionLogEntry = internal.SessionLogEntry(
         serverId: serverId,
@@ -252,19 +247,19 @@ class Serverpod {
         DatabaseConnection dbConn = DatabaseConnection(database);
         await dbConn.insert(sessionLogEntry);
 
-        int sessionLogId = sessionLogEntry.id;
+        int? sessionLogId = sessionLogEntry.id;
 
         for (var logInfo in sessionLog) {
-          if (logInfo.level.index >= _runtimeSettings.logLevel) {
+          if (logInfo.level.index! >= runtimeSettings.logLevel!) {
             log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
                 sessionLogId: sessionLogId);
           }
         }
 
         for (var queryInfo in queries) {
-          if (_runtimeSettings.logAllQueries ||
-              _runtimeSettings.logSlowQueries && queryInfo.time > Duration(
-                  microseconds: (runtimeSettings.slowQueryDuration * 1000000.0)
+          if (runtimeSettings.logAllQueries! ||
+              runtimeSettings.logSlowQueries! && queryInfo.time > Duration(
+                  microseconds: (runtimeSettings.slowQueryDuration! * 1000000.0)
                       .toInt())
           ) {
             // Log query
@@ -284,8 +279,7 @@ class Serverpod {
         print('${DateTime.now()} FAILED TO LOG SESSION');
         print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
         print('CALL error: $exception');
-        if (logStackTrace != null)
-          print('$logStackTrace');
+        print('$logStackTrace');
 
         print('LOG ERRORS');
         print('$e');
@@ -300,7 +294,7 @@ class Serverpod {
   }
 
   void shutdown() {
-    server?.shutdown();
+    server.shutdown();
     _serviceServer?.shutdown();
   }
 }

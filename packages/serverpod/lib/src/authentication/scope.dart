@@ -1,7 +1,7 @@
 final scopeNone = Scope(null);
 
 class Scope {
-  final String name;
+  final String? name;
   const Scope(this.name);
 
   bool operator==(o) => o is Scope && o.name == this.name;

@@ -10,13 +10,15 @@ import 'local_cache.dart';
 
 class DistributedCache extends Cache {
   LocalCache _localCache;
-  List<RemoteServerConfig> _cluster = <RemoteServerConfig>[];
+  List<RemoteServerConfig?> _cluster = <RemoteServerConfig?>[];
   List<Client> _clients = <Client>[];
-  int _serverId;
+  int? _serverId;
   bool _isPrio;
   
-  DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio) : super(maxEntries, serializationManager) {
-    _localCache = LocalCache(maxEntries, Protocol());
+  DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio)
+      : _localCache = LocalCache(maxEntries, Protocol()),
+        super(maxEntries, serializationManager)
+  {
     _serverId = serverId;
     
     var serverKeys = config.cluster.keys.toList();
@@ -27,25 +29,25 @@ class DistributedCache extends Cache {
 
       var context = SecurityContext();
       context.setTrustedCertificates(sslCertificatePath(config.runMode, key));
-      _clients.add(Client('https://${config.cluster[key].address}:${config.cluster[key].servicePort}/', context: context));
+      _clients.add(Client('https://${config.cluster[key]!.address}:${config.cluster[key]!.servicePort}/', context: context));
     }
   }
   
-  Client _clientFromKey(String key) {
+  Client? _clientFromKey(String key) {
     int serverNum = key.hashCode % _cluster.length;
 
-    if (_cluster[serverNum].serverId == _serverId)
+    if (_cluster[serverNum]!.serverId == _serverId)
       return null;
 
     return _clients[serverNum];
   }
 
-  Future<Null> put(String key, SerializableEntity object, {Duration lifetime, String group}) async {
+  Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
     assert(key != null, 'Cannot use a null key');
     assert(object != null, 'Cannot put a null object');
     var client = _clientFromKey(key);
 
-    DateTime expiration;
+    DateTime? expiration;
     if (lifetime != null)
       expiration = DateTime.now().add(lifetime);
 
@@ -62,20 +64,20 @@ class DistributedCache extends Cache {
     }
   }
 
-  Future<SerializableEntity> get(String key) async {
+  Future<SerializableEntity?> get(String key) async {
     assert(key != null, 'Cannot use a null key');
     var client = _clientFromKey(key);
 
     if (client == null) {
-      DistributedCacheEntry entry = await _localCache.get(key);
+      DistributedCacheEntry? entry = await _localCache.get(key) as DistributedCacheEntry?;
       if (entry == null)
         return null;
 
-      Map<String, dynamic> serialization = jsonDecode(entry.data).cast<String, dynamic>();
+      Map<String, dynamic>? serialization = jsonDecode(entry.data!).cast<String, dynamic>();
       return serializationManager.createEntityFromSerialization(serialization);
     }
     else {
-      String value;
+      String? value;
       try {
         value = await client.cache.get(_isPrio, key);
       }
@@ -86,7 +88,7 @@ class DistributedCache extends Cache {
       if (value == null || value == 'null')
         return null;
 
-      Map<String, dynamic> serialization = jsonDecode(value).cast<String, dynamic>();
+      Map<String, dynamic>? serialization = jsonDecode(value).cast<String, dynamic>();
       return serializationManager.createEntityFromSerialization(serialization);
     }
   }
@@ -110,7 +112,7 @@ class DistributedCache extends Cache {
 
   Future< Null> invalidateGroup(String group) async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
-      if (_cluster[serverNum].serverId == _serverId) {
+      if (_cluster[serverNum]!.serverId == _serverId) {
         await _localCache.invalidateGroup(group);
       }
       else {
@@ -126,7 +128,7 @@ class DistributedCache extends Cache {
 
   Future<Null> clear() async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
-      if (_cluster[serverNum].serverId == _serverId) {
+      if (_cluster[serverNum]!.serverId == _serverId) {
         await _localCache.clear();
       }
       else {

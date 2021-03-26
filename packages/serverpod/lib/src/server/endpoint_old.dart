@@ -10,15 +10,15 @@ import 'session.dart';
 import '../database/database.dart';
 
 abstract class Endpoint {
-  String _name;
-  String get name => _name;
+  String? _name;
+  String? get name => _name;
 
-  final _methods = <String, _Method>{};
+  final _methods = <String?, _Method>{};
 
-  Server _server;
-  Server get server => _server;
+  Server? _server;
+  Server? get server => _server;
 
-  Database get database => _server.database;
+  Database get database => _server!.database;
 
   List<Scope> get requiredScopes => [];
 
@@ -35,7 +35,7 @@ abstract class Endpoint {
     ClassMirror classMirror = reflectClass(this.runtimeType);
 
     for (Symbol methodSymbol in classMirror.instanceMembers.keys) {
-      MethodMirror methodMirror = classMirror.instanceMembers[methodSymbol];
+      MethodMirror methodMirror = classMirror.instanceMembers[methodSymbol]!;
 
       var methodName = MirrorSystem.getName(methodSymbol);
 
@@ -45,7 +45,7 @@ abstract class Endpoint {
           methodMirror.parameters[0].type.reflectedType == Session &&
           !methodName.startsWith('_')) {
 
-        ClosureMirror closureMirror = mirror.getField(methodSymbol);
+        ClosureMirror closureMirror = mirror.getField(methodSymbol) as ClosureMirror;
         var method = _Method(methodSymbol, closureMirror, server);
         _methods[method.name] = method;
       }
@@ -56,7 +56,7 @@ abstract class Endpoint {
     List callArgs = [];
 
     Session session = Session(
-      server: server,
+      server: server!,
       uri: uri,
       body: body,
       endpointName: name,
@@ -92,7 +92,7 @@ abstract class Endpoint {
         }
 
         for (var requiredScope in requiredScopes) {
-          if (!(await session.scopes).contains(requiredScope)) {
+          if (!(await session.scopes)!.contains(requiredScope)) {
             await session.close();
             return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
           }
@@ -114,12 +114,12 @@ abstract class Endpoint {
           continue;
 
         // Check that it exists
-        String input = inputParams[requiredParam.name];
-        Object arg;
+        String? input = inputParams![requiredParam.name!];
+        Object? arg;
 
         // Validate argument
         if (input != null) {
-          arg = _formatArg(input, requiredParam, server.serializationManager);
+          arg = _formatArg(input, requiredParam, server!.serializationManager);
           if (arg == null) {
             await session.close();
             return ResultInvalidParams('Parameter ${requiredParam.name} has invalid type: $uri value: $input');
@@ -133,12 +133,12 @@ abstract class Endpoint {
       // Check optional parameters
       for (final optionalParam in method.paramsOptional) {
         // Check if it exists
-        String input = inputParams[optionalParam.name];
+        String? input = inputParams![optionalParam.name!];
         if (input == null)
           continue;
 
         // Validate argument
-        Object arg = _formatArg(input, optionalParam, server.serializationManager);
+        Object? arg = _formatArg(input, optionalParam, server!.serializationManager);
         if (arg == null) {
           await session.close();
           return ResultInvalidParams('Optional parameter ${optionalParam.name} has invalid type: $uri');
@@ -152,25 +152,25 @@ abstract class Endpoint {
       var result = await method.callMirror.apply(callArgs).reflectee;
 
       // Print session info
-      String authenticatedUser = requireLogin ? await session.authenticatedUser : null;
+      String? authenticatedUser = requireLogin ? await session.authenticatedUser : null;
       if (logSessions)
-        server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
+        server!.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
       await session.close();
       return result;
     }
     catch (exception, stackTrace) {
       // Something did not work out
-      int sessionLogId = 0;
+      int? sessionLogId = 0;
       if (logSessions)
-        sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
+        sessionLogId = await server!.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
 
       await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);
     }
   }
 
-  Object _formatArg(String input, _Parameter paramDef, SerializationManager serializationManager) {
+  Object? _formatArg(String input, _Parameter paramDef, SerializationManager serializationManager) {
     // Check for basic types
     if (paramDef.type == String)
       return input;
@@ -201,7 +201,7 @@ abstract class Endpoint {
     stdout.writeln('$name:');
 
     for (var methodName in _methods.keys) {
-      var method = _methods[methodName];
+      var method = _methods[methodName]!;
 
       stdout.writeln('  ${methodName}:');
       stdout.writeln('    requiredParameters:');
@@ -246,7 +246,7 @@ class ResultAuthenticationFailed extends Result {
 class ResultInternalServerError extends Result {
   final String exception;
   final StackTrace stackTrace;
-  final int sessionLogId;
+  final int? sessionLogId;
   ResultInternalServerError(this.exception, this.stackTrace, this.sessionLogId);
   @override
   String toString() {
@@ -264,12 +264,12 @@ class ResultStatusCode extends Result {
 }
 
 class _Method {
-  String name;
-  Type returnType;
+  String? name;
+  Type? returnType;
   final paramsRequired = <_Parameter>[];
   final paramsOptional = <_Parameter>[];
   final paramsNamed = <_Parameter>[];
-  ClosureMirror callMirror;
+  late ClosureMirror callMirror;
 
   _Method(Symbol symbol, ClosureMirror closureMirror, Server server) {
     final parameters = closureMirror.function.parameters;
@@ -300,8 +300,8 @@ class _Parameter {
     assert(type == Session || type == int || type == double || type == bool || type == String || type == DateTime || serializationManager.constructors[type.toString()] != null, 'Unserializable type $type');
   }
 
-  String name;
-  Type type;
+  String? name;
+  Type? type;
 
   @override
   String toString() {

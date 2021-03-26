@@ -11,8 +11,8 @@ class ReadWriteTestEntry extends TableRow {
   String get className => 'ReadWriteTestEntry';
   String get tableName => 'serverpod_readwrite_test';
 
-  int id;
-  int number;
+  int? id;
+  int? number;
 
   ReadWriteTestEntry({
     this.id,

@@ -15,7 +15,7 @@ class Endpoints extends EndpointDispatch {
 
     connectors['cache'] = EndpointConnector(
       name: 'cache',
-      endpoint: endpoints['cache'],
+      endpoint: endpoints['cache']!,
       methodConnectors: {
         'put': MethodConnector(
           name: 'put',
@@ -74,7 +74,7 @@ class Endpoints extends EndpointDispatch {
 
     connectors['insights'] = EndpointConnector(
       name: 'insights',
-      endpoint: endpoints['insights'],
+      endpoint: endpoints['insights']!,
       methodConnectors: {
         'getLog': MethodConnector(
           name: 'getLog',

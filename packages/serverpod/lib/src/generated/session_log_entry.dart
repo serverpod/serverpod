@@ -11,17 +11,17 @@ class SessionLogEntry extends TableRow {
   String get className => 'SessionLogEntry';
   String get tableName => 'serverpod_session_log';
 
-  int id;
-  int serverId;
-  DateTime time;
-  String endpoint;
-  String method;
-  double duration;
-  int numQueries;
-  bool slow;
-  String error;
-  String stackTrace;
-  String authenticatedUser;
+  int? id;
+  int? serverId;
+  DateTime? time;
+  String? endpoint;
+  String? method;
+  double? duration;
+  int? numQueries;
+  bool? slow;
+  String? error;
+  String? stackTrace;
+  String? authenticatedUser;
 
   SessionLogEntry({
     this.id,

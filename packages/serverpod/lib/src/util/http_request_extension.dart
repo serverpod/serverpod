@@ -3,7 +3,7 @@ import 'dart:io';
 extension RemoteIp on HttpRequest {
   String get remoteIpAddress {
     // Check headers to see if there is a forwarded client IP
-    List<String> forwardHeaders = headers['x-forwarded-for'];
+    List<String>? forwardHeaders = headers['x-forwarded-for'];
     if (forwardHeaders != null && forwardHeaders.length > 0) {
       String forwarded = forwardHeaders[0];
       var components = forwarded.split(',');
@@ -14,6 +14,6 @@ extension RemoteIp on HttpRequest {
     }
 
     // Fall back on IP number from connection
-    return connectionInfo.remoteAddress.address;
+    return connectionInfo!.remoteAddress.address;
   }
 }

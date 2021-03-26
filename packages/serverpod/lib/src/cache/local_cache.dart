@@ -11,7 +11,7 @@ class LocalCache extends Cache {
 
   LocalCache(int maxEntries, SerializationManager serializationManager) : super(maxEntries, serializationManager);
 
-  Future<Null> put(String key, SerializableEntity object, {Duration lifetime, String group}) async {
+  Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
     if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
     }
@@ -19,7 +19,7 @@ class LocalCache extends Cache {
     // Create entry
     var entry = _CacheEntry(
       key: key,
-      group: group,
+      group: group!,
       serializedObject: object.serializeAll(),
       lifetime: lifetime,
     );
@@ -48,7 +48,7 @@ class LocalCache extends Cache {
   void _removeOldestEntry() {
     // Remove oldest key
     var oldKey = _keyList.removeLast();
-    var entry = _entries.remove(oldKey.key);
+    var entry = _entries.remove(oldKey.key)!;
     assert (entry != null, 'Failed to find oldKey: $oldKey');
 
     // Remove from group
@@ -58,19 +58,19 @@ class LocalCache extends Cache {
 
   void _removeKeyFromGroup(String key, String group) {
     if (group != null) {
-      var groupKeys = _groups[group];
+      var groupKeys = _groups[group]!;
       groupKeys.remove(key);
       if (groupKeys.length == 0)
         _groups.remove(group);
     }
   }
 
-  Future<SerializableEntity> get(String key) async {
+  Future<SerializableEntity?> get(String key) async {
     var entry = _entries[key];
     if (entry == null)
       return null;
 
-    if (entry.expirationTime != null && entry.expirationTime.compareTo(DateTime.now()) < 0) {
+    if (entry.expirationTime != null && entry.expirationTime!.compareTo(DateTime.now()) < 0) {
       await invalidateKey(key);
       return null;
     }
@@ -147,10 +147,10 @@ class _CacheEntry {
   final String group;
   final Map<String, dynamic> serializedObject;
   final DateTime creationTime;
-  final Duration lifetime;
-  DateTime get expirationTime => lifetime == null ? null : creationTime.add(lifetime);
+  final Duration? lifetime;
+  DateTime? get expirationTime => lifetime == null ? null : creationTime.add(lifetime!);
 
-  _CacheEntry({this.key, this.group, this.serializedObject, this.lifetime,})
+  _CacheEntry({required this.key, required this.group, required this.serializedObject, this.lifetime,})
       : creationTime = DateTime.now();
 }
 

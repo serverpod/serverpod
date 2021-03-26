@@ -6,9 +6,9 @@ abstract class Cache {
 
   Cache(this.maxLocalEntries, this.serializationManager);
 
-  Future<Null> put(String key, SerializableEntity object, {Duration lifetime, String group});
+  Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group});
 
-  Future<SerializableEntity> get(String key);
+  Future<SerializableEntity?> get(String key);
 
   Future<Null> invalidateKey(String key);
 

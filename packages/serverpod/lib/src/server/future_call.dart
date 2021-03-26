@@ -3,10 +3,10 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'server.dart';
 
 abstract class FutureCall {
-  String _name;
+  late String _name;
   String get name => _name;
 
-  Server _server;
+  late Server _server;
   Server get server => _server;
 
   void initialize(Server server, String name) {
@@ -14,5 +14,5 @@ abstract class FutureCall {
     _name = name;
   }
 
-  Future<Null> invoke(SerializableEntity object);
+  Future<Null> invoke(SerializableEntity? object);
 }

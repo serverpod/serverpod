@@ -11,11 +11,11 @@ class QueryLogEntry extends TableRow {
   String get className => 'QueryLogEntry';
   String get tableName => 'serverpod_query_log';
 
-  int id;
-  int sessionLogId;
-  String query;
-  double duration;
-  int numRows;
+  int? id;
+  int? sessionLogId;
+  String? query;
+  double? duration;
+  int? numRows;
 
   QueryLogEntry({
     this.id,

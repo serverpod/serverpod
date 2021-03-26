@@ -10,8 +10,8 @@ import 'protocol.dart';
 class DistributedCacheEntry extends SerializableEntity {
   String get className => 'DistributedCacheEntry';
 
-  int id;
-  String data;
+  int? id;
+  String? data;
 
   DistributedCacheEntry({
     this.id,

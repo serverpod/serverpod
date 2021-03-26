@@ -9,7 +9,7 @@ const endpointNameInsights = 'insights';
 class InsightsEndpoint extends Endpoint {
   bool get requireLogin => true;
 
-  Future<LogResult> getLog(Session session, int numEntries) async {
+  Future<LogResult> getLog(Session session, int? numEntries) async {
     var rows = await session.find(
       tLogEntry,
       limit: numEntries,
@@ -21,7 +21,7 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
-  Future<SessionLogResult> getSessionLog(Session session, int numEntries) async {
+  Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {
     var rows = await session.find(
       tSessionLogEntry,
       limit: numEntries,
@@ -30,7 +30,7 @@ class InsightsEndpoint extends Endpoint {
     );
 
     var sessionLogInfo = <SessionLogInfo>[];
-    for (SessionLogEntry logEntry in rows) {
+    for (SessionLogEntry logEntry in rows as Iterable<SessionLogEntry>) {
       var messageLogRows = await session.find(
         tLogEntry,
         where: tLogEntry.sessionLogId.equals(logEntry.id),

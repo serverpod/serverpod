@@ -14,18 +14,18 @@ class Caches {
     _query = LocalCache(10000, _serializationManager);
   }
 
-  LocalCache _local;
+  late LocalCache _local;
   LocalCache get local => _local;
 
-  LocalCache _localPrio;
+  late LocalCache _localPrio;
   LocalCache get localPrio => _localPrio;
 
-  DistributedCache _distributed;
+  late DistributedCache _distributed;
   DistributedCache get distributed => _distributed;
 
-  DistributedCache _distributedPrio;
+  late DistributedCache _distributedPrio;
   DistributedCache get distributedPrio => _distributedPrio;
 
-  LocalCache _query;
+  late LocalCache _query;
   LocalCache get query => _query;
 }

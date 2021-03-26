@@ -9,75 +9,75 @@ import '../database/database_connection.dart';
 import '../database/table.dart';
 
 class Session {
-  final Uri uri;
-  final String body;
+  final Uri? uri;
+  final String? body;
   final Server server;
   final Duration maxLifeTime;
 
-  final HttpRequest httpRequest;
+  final HttpRequest? httpRequest;
   
-  DateTime _timeCreated;
+  late DateTime _timeCreated;
   final List<QueryInfo> queries = <QueryInfo>[];
   final List<LogInfo> log = <LogInfo>[];
 
-  String _authenticatedUser;
-  Set<Scope> _scopes;
+  String? _authenticatedUser;
+  Set<Scope>? _scopes;
 
-  String _authenticationKey;
-  String get authenticationKey => _authenticationKey;
+  String? _authenticationKey;
+  String? get authenticationKey => _authenticationKey;
 
-  String _methodName;
-  String get methodName => _methodName;
+  String? _methodName;
+  String? get methodName => _methodName;
 
-  DatabaseConnection _databaseConnection;
+  DatabaseConnection? _databaseConnection;
   Future<DatabaseConnection> get databaseConnection async {
     if (_databaseConnection != null)
-      return _databaseConnection;
+      return _databaseConnection!;
 
     return DatabaseConnection(server.database);
   }
 
-  Map<String, String> _queryParameters;
-  Map<String, String> get queryParameters => _queryParameters;
+  Map<String, String>? _queryParameters;
+  Map<String, String>? get queryParameters => _queryParameters;
 
-  final String endpointName;
+  final String? endpointName;
 
-  Session({this.server, this.uri, this.body, this.endpointName, String authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.httpRequest}) {
+  Session({required this.server, this.uri, this.body, this.endpointName, String? authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.httpRequest}) {
     _timeCreated = DateTime.now();
 
     if (body == null || body == '' || body == 'null') {
       _queryParameters = <String, String>{};
     }
     else {
-      _queryParameters = jsonDecode(body).cast<String, String>();
+      _queryParameters = jsonDecode(body!).cast<String, String>();
     }
 
     if (authenticationKey != null)
       _authenticationKey = authenticationKey;
     else
-      _authenticationKey = _queryParameters['auth'];
+      _authenticationKey = _queryParameters!['auth'];
 
-    _methodName = _queryParameters['method'];
+    _methodName = _queryParameters!['method'];
   }
 
   bool _initialized = false;
 
   Future<Null> _initialize() async {
     if (server.authenticationHandler != null  && authenticationKey != null) {
-      var authenticationInfo = await server.authenticationHandler(this, authenticationKey);
+      var authenticationInfo = await server.authenticationHandler!(this, authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUser;
     }
     _initialized = true;
   }
 
-  Future<String> get authenticatedUser async {
+  Future<String?> get authenticatedUser async {
     if (!_initialized)
       await _initialize();
     return _authenticatedUser;
   }
 
-  Future<Set<Scope>> get scopes async {
+  Future<Set<Scope>?> get scopes async {
     if (!_initialized)
       await _initialize();
     return _scopes;
@@ -100,19 +100,19 @@ class Session {
     log.add(LogInfo(LogLevel.info, message));
   }
 
-  logWarning(String message, {StackTrace stackTrace}) {
+  logWarning(String message, {StackTrace? stackTrace}) {
     log.add(LogInfo(LogLevel.warning, message, stackTrace: stackTrace));
   }
 
-  logError(String message, {StackTrace stackTrace}) {
+  logError(String message, {StackTrace? stackTrace}) {
     log.add(LogInfo(LogLevel.error, message, stackTrace: stackTrace));
   }
 
-  logFatal(String message, {StackTrace stackTrace}) {
+  logFatal(String message, {StackTrace? stackTrace}) {
     log.add(LogInfo(LogLevel.fatal, message, stackTrace: stackTrace));
   }
 
-  Future<TableRow> findById(Table table, int id) async {
+  Future<TableRow?> findById(Table table, int id) async {
     var conn = await databaseConnection;
     if (conn == null)
       return null;
@@ -120,10 +120,8 @@ class Session {
     return await conn.findById(table, id, session: this);
   }
 
-  Future<List<TableRow>> find(Table table, {Expression where, int limit, int offset, Column orderBy, List<Order> orderByList, bool orderDescending=false, bool useCache=true}) async {
+  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
     
     return await conn.find(
       table,
@@ -138,7 +136,7 @@ class Session {
     );
   }
 
-  Future<TableRow> findSingleRow(Table table, {Expression where, int offset, Column orderBy, bool orderDescending=false, bool useCache=true}) async {
+  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true}) async {
     var conn = await databaseConnection;
     if (conn == null)
       return null;
@@ -154,10 +152,8 @@ class Session {
     );
   }
 
-  Future<int> count(Table table, {Expression where, int limit, bool useCache=true}) async {
+  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
 
     return await conn.count(
       table,
@@ -168,10 +164,8 @@ class Session {
     );
   }
 
-  Future<bool> update(TableRow row, {Transaction transaction}) async {
+  Future<bool> update(TableRow row, {Transaction? transaction}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
 
     return await conn.update(
       row,
@@ -180,10 +174,8 @@ class Session {
     );
   }
 
-  Future<bool> insert(TableRow row, {Transaction transaction}) async {
+  Future<bool> insert(TableRow row, {Transaction? transaction}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
 
     return await conn.insert(
       row,
@@ -192,23 +184,19 @@ class Session {
     );
   }
 
-  Future<int> delete(Table table, {Expression where, Transaction transaction}) async {
+  Future<int> delete(Table table, {Expression? where, Transaction? transaction}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
 
     return await conn.delete(
       table,
-      where: where,
+      where: where!,
       transaction: transaction,
       session: this,
     );
   }
 
-  Future<bool> deleteRow(TableRow row, {Transaction transaction}) async {
+  Future<bool> deleteRow(TableRow row, {Transaction? transaction}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
 
     return await conn.deleteRow(
       row,
@@ -217,10 +205,8 @@ class Session {
     );
   }
 
-  Future<List<List<dynamic>>> query(String query, {int timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(String query, {int? timeoutInSeconds}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
 
     return conn.query(
       query,
@@ -233,17 +219,17 @@ class Session {
 class QueryInfo {
   final String query;
   final Duration time;
-  final int numRows;
+  final int? numRows;
   final dynamic exception;
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
-  QueryInfo({this.query, this.time, this.numRows, this.exception, this.stackTrace});
+  QueryInfo({required this.query, required this.time, this.numRows, this.exception, this.stackTrace});
 }
 
 class LogInfo {
   final LogLevel level;
   final String message;
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   LogInfo(this.level, this.message, {this.stackTrace});
 }

@@ -2,7 +2,7 @@ import 'authentication_info.dart';
 import 'scope.dart';
 import '../server/session.dart';
 
-Future<AuthenticationInfo> serviceAuthenticationHandler(Session session, String key) async {
+Future<AuthenticationInfo?> serviceAuthenticationHandler(Session session, String key) async {
   try {
     var parts = key.split(':');
     var name = parts[0];

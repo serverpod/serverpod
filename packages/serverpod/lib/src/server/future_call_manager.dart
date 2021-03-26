@@ -10,12 +10,12 @@ class FutureCallManager {
   final Server _server;
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
-  Timer _timer;
+  Timer? _timer;
 
   FutureCallManager(this._server, this._serializationManager);
 
-  Future<Null> scheduleFutureCall(String name, SerializableEntity object, DateTime time, int serverId) async {
-    String serialization;
+  Future<Null> scheduleFutureCall(String name, SerializableEntity? object, DateTime time, int serverId) async {
+    String? serialization;
     if (object != null)
       serialization = jsonEncode(object.serializeAll());
 
@@ -64,22 +64,22 @@ class FutureCallManager {
             .equals(_server.serverId),
       );
 
-      for (FutureCallEntry entry in rows) {
-        FutureCall call = _futureCalls[entry.name];
+      for (FutureCallEntry entry in rows.cast<FutureCallEntry>()) {
+        FutureCall? call = _futureCalls[entry.name!];
         if (call == null)
           continue;
 
-        SerializableEntity object;
+        SerializableEntity? object;
         if (entry.serializedObject != null) {
-          Map data = jsonDecode(entry.serializedObject);
-          object = _serializationManager.createEntityFromSerialization(data);
+          Map? data = jsonDecode(entry.serializedObject!);
+          object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
         }
         try {
           call.invoke(object);
         }
         catch(e, stackTrace) {
           // TODO: Log errors
-          _server.logError(e, stackTrace: stackTrace);
+          _server.logError('$e', stackTrace: stackTrace);
         }
       }
 

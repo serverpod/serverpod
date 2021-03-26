@@ -6,7 +6,7 @@ const cacheMaxSize = 10;
 
 void main() {
   Protocol serializationManager;
-  LocalCache cache;
+  late LocalCache cache;
 
   setUp(() {
     serializationManager = Protocol();
@@ -17,13 +17,13 @@ void main() {
     var entry = FutureCallEntry(serverId: 0);
     
     await cache.put('entry', entry);
-    FutureCallEntry retrieved = await cache.get('entry');
+    FutureCallEntry retrieved = await cache.get('entry') as FutureCallEntry;
     expect(retrieved.serverId, equals(0));
 
-    retrieved = await cache.get('missing');
+    retrieved = await cache.get('missing') as FutureCallEntry;
     expect(retrieved, isNull);
 
-    retrieved = await cache.get('entry');
+    retrieved = await cache.get('entry') as FutureCallEntry;
     expect(retrieved.serverId, equals(0));
 
     expect(cache.localSize, equals(1));
@@ -33,11 +33,11 @@ void main() {
     var entry = FutureCallEntry(serverId: 0);
 
     await cache.put('entry', entry, lifetime: Duration(milliseconds: 100));
-    FutureCallEntry retrieved = await cache.get('entry');
+    FutureCallEntry retrieved = await cache.get('entry') as FutureCallEntry;
     expect(retrieved.serverId, equals(0));
 
     await Future.delayed(Duration(milliseconds: 110));
-    retrieved = await cache.get('entry');
+    retrieved = await cache.get('entry') as FutureCallEntry;
     expect(retrieved, isNull);
 
     expect(cache.localSize, equals(0));
@@ -50,7 +50,7 @@ void main() {
     await cache.put('entry', entryA);
     await cache.put('entry', entryB);
 
-    FutureCallEntry retrieved = await cache.get('entry');
+    FutureCallEntry retrieved = await cache.get('entry') as FutureCallEntry;
     expect(retrieved.serverId, equals(1));
 
     expect(cache.localSize, equals(1));
@@ -66,10 +66,10 @@ void main() {
 
     expect(cache.localSize, equals(cacheMaxSize));
 
-    FutureCallEntry first = await cache.get('entry:0');
+    FutureCallEntry? first = await cache.get('entry:0') as FutureCallEntry?;
     expect(first, isNull);
 
-    FutureCallEntry last = await cache.get('entry:${numEntries - 1}');
+    FutureCallEntry last = await cache.get('entry:${numEntries - 1}') as FutureCallEntry;
     expect(last.serverId, equals(numEntries - 1));
   });
 
@@ -81,11 +81,11 @@ void main() {
 
     int middleId = cacheMaxSize ~/ 4;
 
-    FutureCallEntry retrieved = await cache.get('entry:$middleId');
+    FutureCallEntry retrieved = await cache.get('entry:$middleId') as FutureCallEntry;
     expect(retrieved.serverId, equals(middleId));
 
     await cache.invalidateKey('entry:$middleId');
-    retrieved = await cache.get('entry:$middleId');
+    retrieved = await cache.get('entry:$middleId') as FutureCallEntry;
     expect(retrieved, isNull);
 
     expect(cache.localSize, equals(cacheMaxSize - 1));
@@ -106,11 +106,11 @@ void main() {
     await cache.invalidateGroup('group:0');
     expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
-    FutureCallEntry retrieved = await cache.get('entry:0');
+    FutureCallEntry? retrieved = await cache.get('entry:0') as FutureCallEntry;
     expect(retrieved, isNull);
 
-    retrieved = await cache.get('entry:${cacheMaxSize - 1}');
-    expect(retrieved.serverId, equals(cacheMaxSize - 1));
+    retrieved = await cache.get('entry:${cacheMaxSize - 1}') as FutureCallEntry?;
+    expect(retrieved!.serverId, equals(cacheMaxSize - 1));
 
     await cache.invalidateGroup('group:1');
     expect(cache.localSize, equals(0));
@@ -130,10 +130,10 @@ void main() {
     }
 
     await cache.invalidateKey('entry:0');
-    FutureCallEntry retrieved = await cache.get('entry:0');
+    FutureCallEntry? retrieved = await cache.get('entry:0') as FutureCallEntry;
     expect(retrieved, isNull);
 
-    retrieved = await cache.get('entry:1');
+    retrieved = await cache.get('entry:1') as FutureCallEntry;
     expect(retrieved.serverId, equals(1));
 
     await cache.invalidateGroup('group:0');
