@@ -29,7 +29,7 @@ dependencies:
     path: ../serverpod_service_client
 #  horizontal_data_table: ^2.5.2
   intl: ^0.17.0
-  yaml: ^2.1.15
+  yaml: ^3.1.0
   table_sticky_headers:
     path: ../../../sticky-headers-table
 
