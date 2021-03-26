@@ -1,0 +1,37 @@
+#/bin/sh
+
+echo "server pod"
+cd packages/serverpod
+pub get
+
+echo "\nserverpod_cli"
+cd ../serverpod_cli
+pub get
+
+echo "\nserverpod_client"
+cd ../serverpod_client
+pub get
+
+echo "\nserverpod_gui"
+cd ../serverpod_gui
+flutter packages get
+
+echo "\nserverpod_serialization"
+cd ../serverpod_serialization
+pub get
+
+echo "\nserverpod_service_client"
+cd ../serverpod_service_client
+pub get
+
+echo "\nserverpod_shared"
+cd ../serverpod_shared
+pub get
+
+echo "\nserverpod_test_client"
+cd ../serverpod_test_client
+pub get
+
+echo "\nserverpod_test_server"
+cd ../serverpod_test_server
+pub get
