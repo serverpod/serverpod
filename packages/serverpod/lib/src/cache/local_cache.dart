@@ -19,7 +19,7 @@ class LocalCache extends Cache {
     // Create entry
     var entry = _CacheEntry(
       key: key,
-      group: group!,
+      group: group,
       serializedObject: object.serializeAll(),
       lifetime: lifetime,
     );
@@ -49,20 +49,17 @@ class LocalCache extends Cache {
     // Remove oldest key
     var oldKey = _keyList.removeLast();
     var entry = _entries.remove(oldKey.key)!;
-    assert (entry != null, 'Failed to find oldKey: $oldKey');
 
     // Remove from group
     if (entry.group != null)
-      _removeKeyFromGroup(oldKey.key, entry.group);
+      _removeKeyFromGroup(oldKey.key, entry.group!);
   }
 
   void _removeKeyFromGroup(String key, String group) {
-    if (group != null) {
-      var groupKeys = _groups[group]!;
-      groupKeys.remove(key);
-      if (groupKeys.length == 0)
-        _groups.remove(group);
-    }
+    var groupKeys = _groups[group]!;
+    groupKeys.remove(key);
+    if (groupKeys.length == 0)
+    _groups.remove(group);
   }
 
   Future<SerializableEntity?> get(String key) async {
@@ -86,7 +83,7 @@ class LocalCache extends Cache {
 
     // Remove from group
     if (entry.group != null)
-      _removeKeyFromGroup(key, entry.group);
+      _removeKeyFromGroup(key, entry.group!);
 
     // Remove from chronological list
     _removeKeyFromKeyList(key, entry.creationTime);
@@ -113,9 +110,6 @@ class LocalCache extends Cache {
   }
 
   Future< Null> invalidateGroup(String group) async {
-    if (group == null)
-      return;
-
     var keys = _groups[group];
     if (keys == null)
       return;
@@ -144,13 +138,13 @@ class LocalCache extends Cache {
 
 class _CacheEntry {
   final String key;
-  final String group;
+  final String? group;
   final Map<String, dynamic> serializedObject;
   final DateTime creationTime;
   final Duration? lifetime;
   DateTime? get expirationTime => lifetime == null ? null : creationTime.add(lifetime!);
 
-  _CacheEntry({required this.key, required this.group, required this.serializedObject, this.lifetime,})
+  _CacheEntry({required this.key, this.group, required this.serializedObject, this.lifetime,})
       : creationTime = DateTime.now();
 }
 

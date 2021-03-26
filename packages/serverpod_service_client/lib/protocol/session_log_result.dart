@@ -27,7 +27,7 @@ class SessionLogResult extends SerializableEntity {
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'sessionLog': sessionLog?.map((SessionLogInfo a) => a.serialize())?.toList(),
+      'sessionLog': sessionLog?.map((SessionLogInfo a) => a.serialize()).toList(),
     });
   }
 }

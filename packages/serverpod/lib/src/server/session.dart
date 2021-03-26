@@ -114,9 +114,6 @@ class Session {
 
   Future<TableRow?> findById(Table table, int id) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
-    
     return await conn.findById(table, id, session: this);
   }
 
@@ -138,9 +135,7 @@ class Session {
 
   Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true}) async {
     var conn = await databaseConnection;
-    if (conn == null)
-      return null;
-    
+
     return await conn.findSingleRow(
       table,
       where: where,

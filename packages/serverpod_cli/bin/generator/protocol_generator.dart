@@ -84,7 +84,7 @@ abstract class ProtocolGenerator {
       out += '\n';
       out += '    connectors[\'${endpoint.name}\'] = EndpointConnector(\n';
       out += '      name: \'${endpoint.name}\',\n';
-      out += '      endpoint: endpoints[\'${endpoint.name}\'],\n';
+      out += '      endpoint: endpoints[\'${endpoint.name}\']!,\n';
       out += '      methodConnectors: {\n';
       for (var method in endpoint.methods) {
         out += '        \'${method.name}\': MethodConnector(\n';

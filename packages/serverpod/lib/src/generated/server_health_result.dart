@@ -30,14 +30,14 @@ class ServerHealthResult extends SerializableEntity {
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize())?.toList(),
+      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize()).toList(),
       'serverName': serverName,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize())?.toList(),
+      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize()).toList(),
       'serverName': serverName,
     });
   }
@@ -45,7 +45,7 @@ class ServerHealthResult extends SerializableEntity {
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize())?.toList(),
+      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize()).toList(),
       'serverName': serverName,
     });
   }

@@ -5,8 +5,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 class LogLevel extends SerializableEntity {
   String get className => 'LogLevel';
 
-  int? _index;
-  int? get index => _index;
+  late final int _index;
+  int get index => _index;
 
   LogLevel._internal(this._index); 
 

@@ -27,20 +27,20 @@ class LogResult extends SerializableEntity {
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'entries': entries?.map((LogEntry a) => a.serialize())?.toList(),
+      'entries': entries?.map((LogEntry a) => a.serialize()).toList(),
     });
   }
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'entries': entries?.map((LogEntry a) => a.serialize())?.toList(),
+      'entries': entries?.map((LogEntry a) => a.serialize()).toList(),
     });
   }
 
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'entries': entries?.map((LogEntry a) => a.serialize())?.toList(),
+      'entries': entries?.map((LogEntry a) => a.serialize()).toList(),
     });
   }
 }

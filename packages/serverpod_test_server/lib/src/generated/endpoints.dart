@@ -15,7 +15,7 @@ class Endpoints extends EndpointDispatch {
 
     connectors['basicTypes'] = EndpointConnector(
       name: 'basicTypes',
-      endpoint: endpoints['basicTypes'],
+      endpoint: endpoints['basicTypes']!,
       methodConnectors: {
         'testInt': MethodConnector(
           name: 'testInt',
@@ -49,7 +49,7 @@ class Endpoints extends EndpointDispatch {
 
     connectors['simple'] = EndpointConnector(
       name: 'simple',
-      endpoint: endpoints['simple'],
+      endpoint: endpoints['simple']!,
       methodConnectors: {
         'setGlobalInt': MethodConnector(
           name: 'setGlobalInt',

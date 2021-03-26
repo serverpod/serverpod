@@ -56,7 +56,7 @@ class SessionLogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
       'duration': duration,
@@ -71,7 +71,7 @@ class SessionLogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
       'duration': duration,
@@ -87,7 +87,7 @@ class SessionLogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
       'duration': duration,

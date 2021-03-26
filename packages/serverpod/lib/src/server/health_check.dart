@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import '../generated/protocol.dart';
@@ -7,7 +6,7 @@ import '../../serverpod.dart';
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
   var metrics = <ServerHealthMetric>[];
   if (pod.healthCheckHandler != null) {
-    metrics.addAll(await pod.healthCheckHandler(pod));
+    metrics.addAll(await pod.healthCheckHandler!(pod));
   }
 
   metrics.addAll(await defaultHealthCheckMetrics(pod));

@@ -37,7 +37,7 @@ class FutureCallEntry extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'name': name,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
     });

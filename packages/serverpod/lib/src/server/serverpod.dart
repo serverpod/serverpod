@@ -29,7 +29,7 @@ class Serverpod {
   Map<String, String> _passwords = <String, String>{};
 
   final AuthenticationHandler? authenticationHandler;
-  final HealthCheckHandler healthCheckHandler;
+  final HealthCheckHandler? healthCheckHandler;
   
   final SerializationManager serializationManager;
   late SerializationManager _internalSerializationManager;
@@ -50,7 +50,7 @@ class Serverpod {
 
   List<String>? whitelistedExternalCalls;
   
-  Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, required this.healthCheckHandler}) {
+  Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
 
@@ -107,7 +107,7 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
   }
 
-  void start() async {
+  Future<void> start() async {
     runZoned(
       () async {
         // Runtime settings
@@ -185,7 +185,7 @@ class Serverpod {
   void log(internal.LogLevel level, String message, {StackTrace? stackTrace, int? sessionLogId}) async {
     int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
 
-    if (level.index! >= serverLogLevel) {
+    if (level.index >= serverLogLevel) {
       var entry = internal.LogEntry(
         serverId: serverId,
         time: DateTime.now(),
@@ -250,7 +250,7 @@ class Serverpod {
         int? sessionLogId = sessionLogEntry.id;
 
         for (var logInfo in sessionLog) {
-          if (logInfo.level.index! >= runtimeSettings.logLevel!) {
+          if (logInfo.level.index >= runtimeSettings.logLevel!) {
             log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
                 sessionLogId: sessionLogId);
           }

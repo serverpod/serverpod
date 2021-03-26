@@ -40,10 +40,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += 'class $enumName extends SerializableEntity {\n';
         out += '  String get className => \'$enumName\';\n';
         out += '\n';
-        if (serverCode)
-          out += '  int _index;\n';
-        else
-          out += '  late final int _index;\n';
+        out += '  late final int _index;\n';
         out += '  int get index => _index;\n';
         out += '\n';
 
@@ -161,9 +158,8 @@ class ClassGeneratorDart extends ClassGenerator{
 
       // Fields
       for (var field in fields) {
-        // TODO: Remove serverCode check
         if (field.shouldIncludeField(serverCode))
-          out += '  ${serverCode ? field.type : field.typeWithNullability} ${field.name};\n';
+          out += '  ${field.typeWithNullability} ${field.name};\n';
       }
       out += '\n';
 
@@ -421,7 +417,7 @@ class _FieldDefinition {
         return name;
       }
       else {
-        return '$name?.map(($listType a) => a.serialize())?.toList()';
+        return '$name?.map(($listType a) => a.serialize()).toList()';
       }
     }
 
@@ -429,7 +425,7 @@ class _FieldDefinition {
       return name;
     }
     else if (type == 'DateTime') {
-      return '$name?.toUtc()?.toIso8601String()';
+      return '$name?.toUtc().toIso8601String()';
     }
     else {
       return '$name?.serialize()';

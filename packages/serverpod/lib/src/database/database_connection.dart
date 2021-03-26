@@ -261,8 +261,6 @@ class DatabaseConnection {
         continue;
 
       String value = Database.encoder.convert(data[column]);
-      if (value == null)
-        continue;
 
       columnsList.add('"$column"');
       valueList.add(value);
@@ -302,8 +300,6 @@ class DatabaseConnection {
 
   Future<int> delete(Table table, {required Expression where, Transaction? transaction, Session? session}) async {
     DateTime startTime = DateTime.now();
-
-    assert(where != null, 'Missing where parameter');
 
     String tableName = table.tableName;
 

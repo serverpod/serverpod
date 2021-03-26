@@ -30,7 +30,7 @@ class ServerHealthResult extends SerializableEntity {
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize())?.toList(),
+      'metrics': metrics?.map((ServerHealthMetric a) => a.serialize()).toList(),
       'serverName': serverName,
     });
   }

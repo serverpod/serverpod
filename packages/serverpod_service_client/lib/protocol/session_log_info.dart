@@ -34,8 +34,8 @@ class SessionLogInfo extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'sessionLogEntry': sessionLogEntry?.serialize(),
-      'queries': queries?.map((QueryLogEntry a) => a.serialize())?.toList(),
-      'messageLog': messageLog?.map((LogEntry a) => a.serialize())?.toList(),
+      'queries': queries?.map((QueryLogEntry a) => a.serialize()).toList(),
+      'messageLog': messageLog?.map((LogEntry a) => a.serialize()).toList(),
     });
   }
 }

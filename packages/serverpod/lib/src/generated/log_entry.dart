@@ -44,7 +44,7 @@ class LogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
       'stackTrace': stackTrace,
@@ -55,7 +55,7 @@ class LogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
       'stackTrace': stackTrace,
@@ -67,7 +67,7 @@ class LogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
       'stackTrace': stackTrace,

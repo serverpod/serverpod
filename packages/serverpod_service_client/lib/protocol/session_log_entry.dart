@@ -55,7 +55,7 @@ class SessionLogEntry extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc()?.toIso8601String(),
+      'time': time?.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
       'duration': duration,

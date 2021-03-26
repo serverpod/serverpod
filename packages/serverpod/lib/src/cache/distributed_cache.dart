@@ -43,8 +43,6 @@ class DistributedCache extends Cache {
   }
 
   Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
-    assert(key != null, 'Cannot use a null key');
-    assert(object != null, 'Cannot put a null object');
     var client = _clientFromKey(key);
 
     DateTime? expiration;
@@ -65,7 +63,6 @@ class DistributedCache extends Cache {
   }
 
   Future<SerializableEntity?> get(String key) async {
-    assert(key != null, 'Cannot use a null key');
     var client = _clientFromKey(key);
 
     if (client == null) {
@@ -94,7 +91,6 @@ class DistributedCache extends Cache {
   }
 
   Future<Null> invalidateKey(String key) async {
-    assert(key != null, 'Cannot use a null key');
     var client = _clientFromKey(key);
 
     if (client == null) {

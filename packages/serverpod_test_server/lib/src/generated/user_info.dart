@@ -11,11 +11,11 @@ class UserInfo extends TableRow {
   String get className => 'UserInfo';
   String get tableName => 'user_info';
 
-  int id;
-  String name;
-  String password;
-  int another;
-  String test;
+  int? id;
+  String? name;
+  String? password;
+  int? another;
+  String? test;
 
   UserInfo({
     this.id,

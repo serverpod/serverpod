@@ -4,9 +4,9 @@ int globalInt = 0;
 
 class BasicTypesEndpoint extends Endpoint {
 
-  Future<int> testInt(Session session, int value) async {
+  Future<int> testInt(Session session, int? value) async {
     print('testInt value: $value');
-    return value;
+    return value!;
   }
 
   Future<double> testDouble(Session session, double value) async {

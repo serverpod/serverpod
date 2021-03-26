@@ -10,14 +10,14 @@ import 'protocol.dart';
 class CompanyInfo extends SerializableEntity {
   String get className => 'CompanyInfo';
 
-  int id;
-  String name;
-  int numEmployees;
-  String address;
-  List<UserInfo> employee;
-  double value;
-  DateTime createdTime;
-  bool hasOffice;
+  int? id;
+  String? name;
+  int? numEmployees;
+  String? address;
+  List<UserInfo>? employee;
+  double? value;
+  DateTime? createdTime;
+  bool? hasOffice;
 
   CompanyInfo({
     this.id,
