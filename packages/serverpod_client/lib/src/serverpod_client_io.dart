@@ -9,14 +9,14 @@ import 'auth_key_manager.dart';
 typedef void ServerpodClientErrorCallback(var e, StackTrace stackTrace);
 
 class ServerpodClient {
-  final AuthenticationKeyManager authenticationKeyManager;
+  final AuthenticationKeyManager? authenticationKeyManager;
 
   final String host;
   final SerializationManager serializationManager;
-  HttpClient _httpClient;
-  String _authorizationKey;
+  late HttpClient _httpClient;
+  String? _authorizationKey;
   bool _initialized = false;
-  ServerpodClientErrorCallback errorHandler;
+  ServerpodClientErrorCallback? errorHandler;
 
   ServerpodClient(this.host, this.serializationManager, {dynamic context, this.errorHandler, this.authenticationKeyManager}) {
     assert(context == null || context is SecurityContext);
@@ -41,7 +41,7 @@ class ServerpodClient {
 
   Future<Null> _initialize() async {
     if (authenticationKeyManager != null)
-      _authorizationKey = await authenticationKeyManager.get();
+      _authorizationKey = await authenticationKeyManager!.get();
 
     _initialized = true;
   }
@@ -50,9 +50,9 @@ class ServerpodClient {
     if (!_initialized)
       await _initialize();
 
-    String data;
+    String? data;
     try {
-      var formattedArgs = <String, String>{};
+      var formattedArgs = <String, String?>{};
 
       for (var argName in args.keys) {
         var value = args[argName];
@@ -82,21 +82,21 @@ class ServerpodClient {
 
       // TODO: Support more types!
       if (returnTypeName == 'int')
-        return int.tryParse(data);
+        return int.tryParse(data!);
       else if (returnTypeName == 'double')
-        return double.tryParse(data);
+        return double.tryParse(data!);
       else if (returnTypeName == 'String')
         return data;
 
       return serializationManager.createEntityFromSerialization(
-          jsonDecode(data));
+          jsonDecode(data!));
     }
     catch(e, stackTrace) {
       print('Failed call: $endpoint.$method');
       print('data: $data');
 
       if (errorHandler != null)
-        errorHandler(e, stackTrace);
+        errorHandler!(e, stackTrace);
       else
         rethrow;
     }
@@ -115,7 +115,7 @@ class ServerpodClient {
     _authorizationKey = authorizationKey;
 
     if (authenticationKeyManager != null)
-      await authenticationKeyManager.put(authorizationKey);
+      await authenticationKeyManager!.put(authorizationKey);
   }
 
   void close() {

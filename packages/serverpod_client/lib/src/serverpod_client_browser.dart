@@ -9,14 +9,14 @@ import 'auth_key_manager.dart';
 typedef void ServerpodClientErrorCallback(var e, StackTrace stackTrace);
 
 class ServerpodClient {
-  final AuthenticationKeyManager authenticationKeyManager;
+  final AuthenticationKeyManager? authenticationKeyManager;
 
   final String host;
   final SerializationManager serializationManager;
-  http.Client _httpClient;
-  String _authorizationKey;
+  late http.Client _httpClient;
+  String? _authorizationKey;
   bool _initialized = false;
-  ServerpodClientErrorCallback errorHandler;
+  ServerpodClientErrorCallback? errorHandler;
 
   ServerpodClient(this.host, this.serializationManager, {this.errorHandler, this.authenticationKeyManager, dynamic context}) {
     _httpClient = http.Client();
@@ -26,7 +26,7 @@ class ServerpodClient {
 
   Future<Null> _initialize() async {
     if (authenticationKeyManager != null)
-      _authorizationKey = await authenticationKeyManager.get();
+      _authorizationKey = await authenticationKeyManager!.get();
 
     _initialized = true;
   }
@@ -35,9 +35,9 @@ class ServerpodClient {
     if (!_initialized)
       await _initialize();
 
-    String data;
+    String? data;
     try {
-      var formattedArgs = <String, String>{};
+      var formattedArgs = <String, String?>{};
 
       for (var argName in args.keys) {
         var value = args[argName];
@@ -83,7 +83,7 @@ class ServerpodClient {
       print('data: $data');
 
       if (errorHandler != null)
-        errorHandler(e, stackTrace);
+        errorHandler!(e, stackTrace);
       else
         rethrow;
     }
@@ -93,7 +93,7 @@ class ServerpodClient {
     _authorizationKey = authorizationKey;
 
     if (authenticationKeyManager != null)
-      await authenticationKeyManager.put(authorizationKey);
+      await authenticationKeyManager!.put(authorizationKey);
   }
 
   void close() {
