@@ -3,17 +3,16 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_shared/config.dart';
 import 'package:yaml/yaml.dart';
 
 import '../authentication/authentication_info.dart';
-import '../authentication/certificates.dart';
 import '../authentication/serviceAuthentication.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
 import '../generated/endpoints.dart' as internal;
-import 'config.dart';
 import 'endpoint_dispatch.dart';
 import 'future_call.dart';
 import 'runmode.dart';

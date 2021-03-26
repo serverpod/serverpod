@@ -11,6 +11,8 @@ dependencies:
   postgres_pool:
     path: ../../../postgres_pool
   yaml: ^3.1.0
+  serverpod_shared:
+    path: ../serverpod_shared
   serverpod_serialization:
     path: ../serverpod_serialization
   serverpod_service_client:

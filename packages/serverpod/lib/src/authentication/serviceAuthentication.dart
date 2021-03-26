@@ -1,8 +1,6 @@
 import 'authentication_info.dart';
 import 'scope.dart';
-import '../server/config.dart';
 import '../server/session.dart';
-import 'package:serverpod_client/src/auth_key_manager.dart';
 
 Future<AuthenticationInfo> serviceAuthenticationHandler(Session session, String key) async {
   try {
@@ -17,17 +15,4 @@ Future<AuthenticationInfo> serviceAuthenticationHandler(Session session, String 
   catch(e) {}
 
   return null;
-}
-
-class ServiceKeyManager extends AuthenticationKeyManager {
-  final String name;
-  final ServerConfig config;
-
-  ServiceKeyManager(this.name, this.config);
-
-  Future<String> get() async {
-    return 'name:${config.serviceSecret}';
-  }
-  Future<Null> put(String key) async {
-  }
 }

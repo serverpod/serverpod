@@ -1,4 +1,4 @@
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/config.dart';
 
 class ConfigInfo {
   int serverId;

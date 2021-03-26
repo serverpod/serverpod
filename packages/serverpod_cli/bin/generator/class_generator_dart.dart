@@ -1,4 +1,4 @@
-import 'package:recase/recase.dart';
+//import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
 import 'class_generator.dart';
@@ -355,9 +355,9 @@ class ClassGeneratorDart extends ClassGenerator{
     return out;
   }
 
-  String _endpointClassName(String endpointName) {
-    return '_Endpoint${ReCase(endpointName).pascalCase}';
-  }
+//  String _endpointClassName(String endpointName) {
+//    return '_Endpoint${ReCase(endpointName).pascalCase}';
+//  }
 }
 
 enum _FieldScope {

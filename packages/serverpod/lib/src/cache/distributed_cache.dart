@@ -3,9 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-
-import '../authentication/certificates.dart';
-import '../server/config.dart';
+import 'package:serverpod_shared/config.dart';
 
 import 'cache.dart';
 import 'local_cache.dart';

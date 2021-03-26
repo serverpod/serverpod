@@ -9,5 +9,4 @@ export 'src/server/serverpod.dart';
 export 'src/server/session.dart';
 export 'src/authentication/scope.dart';
 export 'src/authentication/authentication_info.dart';
-export 'src/server/config.dart';
 export 'src/generated/server_health_metric.dart';

@@ -79,8 +79,8 @@ class RemoteServerConfig {
   String address;
 
   RemoteServerConfig(this.serverId, Map data) :
-    port = data['port'] ?? 8080,
-    servicePort = data['servicePort'] ?? 8081,
-    address = data['address'] ?? 'localhost'
+        port = data['port'] ?? 8080,
+        servicePort = data['servicePort'] ?? 8081,
+        address = data['address'] ?? 'localhost'
   ;
 }

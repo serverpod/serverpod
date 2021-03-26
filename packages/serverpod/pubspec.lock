@@ -253,6 +253,13 @@ packages:
       relative: true
     source: path
     version: "0.0.0"
+  serverpod_shared:
+    dependency: "direct main"
+    description:
+      path: "../serverpod_shared"
+      relative: true
+    source: path
+    version: "0.0.0"
   serverpod_test_client:
     dependency: "direct dev"
     description:

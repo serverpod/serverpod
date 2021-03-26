@@ -11,8 +11,8 @@ dependencies:
   watcher: ^1.0.0
   analyzer: ^1.3.0
   path: ^1.8.0
-  serverpod:
-    path: ../serverpod
+  serverpod_shared:
+    path: ../serverpod_shared
   serverpod_service_client:
     path: ../serverpod_service_client
 

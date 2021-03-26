@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:colorize/colorize.dart';
 import 'package:intl/intl.dart';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/authentication/certificates.dart';
-import 'package:serverpod/src/authentication/serviceAuthentication.dart';
+import 'package:serverpod_shared/config.dart';
 import 'package:serverpod_service_client/protocol/protocol.dart';
 
 final _dateFormat = DateFormat('yyyy-MM-dd hh:mm:ss');
