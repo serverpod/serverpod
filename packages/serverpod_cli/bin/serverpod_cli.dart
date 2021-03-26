@@ -1,7 +1,6 @@
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
-import 'database_util/build_schema.dart';
 import 'certificates/generator.dart';
 import 'config_info/config_info.dart';
 import 'generator/generator.dart';
@@ -11,7 +10,6 @@ import 'insights/insights.dart';
 final cmdGenerate = 'generate';
 final cmdGenerateContinuously = 'generate-continuously';
 final cmdGenerateCertificates = 'generate-certs';
-final cmdBuildSchema = 'buildschema';
 final cmdShutdown = 'shutdown';
 final cmdLogs = 'logs';
 final cmdSessionLogs = 'sessionlog';
@@ -38,11 +36,6 @@ void main(List<String> args) async {
   generateCerts.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
   generateCerts.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerateCertificates, generateCerts);
-
-  // "buildschema" command
-  ArgParser buildschemaParser = ArgParser();
-  buildschemaParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
-  parser.addCommand(cmdBuildSchema, buildschemaParser);
 
   // "shutdown" command
   ArgParser shutdownParser = ArgParser();
@@ -96,10 +89,6 @@ void main(List<String> args) async {
     }
     if (results.command.name == cmdGenerateCertificates) {
       await performGenerateCerts(results.command['config'], results.command['verbose']);
-      return;
-    }
-    if (results.command.name == cmdBuildSchema) {
-      await performBuildSchema(results.command['verbose']);
       return;
     }
     if (results.command.name == cmdShutdown) {
