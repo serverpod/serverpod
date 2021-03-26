@@ -6,17 +6,17 @@ class ServerConfig {
   final String runMode;
   final int serverId;
 
-  int port;
-  int servicePort;
-  int maxRequestSize;
+  int? port;
+  int? servicePort;
+  int? maxRequestSize;
 
-  String dbHost;
-  int dbPort;
-  String dbUser;
-  String dbPass;
-  String dbName;
+  String? dbHost;
+  int? dbPort;
+  String? dbUser;
+  String? dbPass;
+  String? dbName;
 
-  String serviceSecret;
+  String? serviceSecret;
 
   Map<int, RemoteServerConfig> cluster = <int, RemoteServerConfig>{};
 
@@ -33,8 +33,8 @@ class ServerConfig {
       cluster[id] = RemoteServerConfig(id, clusterData[id]);
     }
 
-    port = cluster[serverId].port;
-    servicePort = cluster[serverId].servicePort;
+    port = cluster[serverId]!.port;
+    servicePort = cluster[serverId]!.servicePort;
     serviceSecret = doc['serviceSecret'] ?? '';
 
     // Get database setup
@@ -56,7 +56,7 @@ class ServerConfig {
     str += '\nport: $port';
 
     if (dbConfigured) {
-      String displayPass = dbPass == null ? null : '********';
+      String? displayPass = dbPass == null ? null : '********';
 
       str += '\ndatabase host: $dbHost';
       str += '\ndatabase port: $dbPort';
