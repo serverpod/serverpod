@@ -108,7 +108,7 @@ class Serverpod {
   }
 
   Future<void> start() async {
-    runZoned(
+    runZonedGuarded(
       () async {
         // Runtime settings
         try {
@@ -140,7 +140,7 @@ class Serverpod {
 
         await server.start();
       },
-      onError: (e, stackTrace) {
+      (e, stackTrace) {
         // Last resort error handling
         stderr.writeln('${DateTime.now()} Serverpod zoned error: $e');
         stderr.writeln('$stackTrace');
