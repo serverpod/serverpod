@@ -39,11 +39,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
         // Method definition
         out += '\n';
-        out += '  $returnType ${methodDef.name}(';
+        out += '  Future<$returnTypeNoFuture${returnTypeNoFuture != 'void' ? '?' : ''}> ${methodDef.name}(';
 
         if (requiredParams != null) {
           for (var paramDef in requiredParams) {
-            out += '${paramDef.type} ${paramDef.name},';
+            out += '${paramDef.type}? ${paramDef.name},';
           }
         }
 
@@ -51,7 +51,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
           out += '[';
 
           for (var paramDef in optionalParams) {
-            out += '${paramDef.type} ${paramDef.name},';
+            out += '${paramDef.type}? ${paramDef.name},';
           }
 
           out += ']';
@@ -86,11 +86,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += 'class Client extends ServerpodClient {\n';
 
     for (var endpointDef in protocolDefinition.endpoints) {
-      out += '  ${_endpointClassName(endpointDef.name)} ${endpointDef.name};\n';
+      out += '  late final ${_endpointClassName(endpointDef.name)} ${endpointDef.name};\n';
     }
 
     out += '\n';
-    out += '  Client(host, {SecurityContext context, ServerpodClientErrorCallback errorHandler, AuthenticationKeyManager authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {\n';
+    out += '  Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {\n';
     for (var endpointDef in protocolDefinition.endpoints) {
       out += '    ${endpointDef.name} = ${_endpointClassName(endpointDef.name)}(this);\n';
     }

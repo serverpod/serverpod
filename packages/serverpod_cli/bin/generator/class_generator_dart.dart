@@ -40,7 +40,10 @@ class ClassGeneratorDart extends ClassGenerator{
         out += 'class $enumName extends SerializableEntity {\n';
         out += '  String get className => \'$enumName\';\n';
         out += '\n';
-        out += '  int _index;\n';
+        if (serverCode)
+          out += '  int _index;\n';
+        else
+          out += '  late final int _index;\n';
         out += '  int get index => _index;\n';
         out += '\n';
 
@@ -71,7 +74,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '\n';
 
         out += '  int get hashCode => _index.hashCode;\n';
-        out += '  bool operator == (other) => other._index == _index;\n';
+        out += '  bool operator == (other) => other is $enumName && other._index == _index;\n';
 
         out += '\n';
 
@@ -87,7 +90,7 @@ class ClassGeneratorDart extends ClassGenerator{
         for (String value in doc['values']) {
           out += '    if (this == $value) return \'$value\';\n';
         }
-        out += '    return null;\n';
+        out += '    throw FormatException();\n';
         out += '  }\n';
 
         out += '}\n';
@@ -158,8 +161,9 @@ class ClassGeneratorDart extends ClassGenerator{
 
       // Fields
       for (var field in fields) {
+        // TODO: Remove serverCode check
         if (field.shouldIncludeField(serverCode))
-          out += '  ${field.type} ${field.name};\n';
+          out += '  ${serverCode ? field.type : field.typeWithNullability} ${field.name};\n';
       }
       out += '\n';
 
@@ -369,6 +373,7 @@ enum _FieldScope {
 class _FieldDefinition {
   String name;
   String type;
+  bool nullable = true;
 
   String get columnType {
     if (type == 'int')
@@ -383,6 +388,8 @@ class _FieldDefinition {
       return 'ColumnDateTime';
     return null;
   }
+
+  get typeWithNullability => nullable ? '$type?' : type;
 
   _FieldScope scope = _FieldScope.all;
 
