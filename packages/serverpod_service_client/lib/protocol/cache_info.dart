@@ -10,10 +10,10 @@ import 'protocol.dart';
 class CacheInfo extends SerializableEntity {
   String get className => 'CacheInfo';
 
-  int id;
-  int numEntries;
-  int maxEntries;
-  List<String> keys;
+  int? id;
+  int? numEntries;
+  int? maxEntries;
+  List<String>? keys;
 
   CacheInfo({
     this.id,

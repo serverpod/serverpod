@@ -10,17 +10,17 @@ import 'protocol.dart';
 class SessionLogEntry extends SerializableEntity {
   String get className => 'SessionLogEntry';
 
-  int id;
-  int serverId;
-  DateTime time;
-  String endpoint;
-  String method;
-  double duration;
-  int numQueries;
-  bool slow;
-  String error;
-  String stackTrace;
-  String authenticatedUser;
+  int? id;
+  int? serverId;
+  DateTime? time;
+  String? endpoint;
+  String? method;
+  double? duration;
+  int? numQueries;
+  bool? slow;
+  String? error;
+  String? stackTrace;
+  String? authenticatedUser;
 
   SessionLogEntry({
     this.id,

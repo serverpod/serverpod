@@ -10,8 +10,8 @@ import 'protocol.dart';
 class ReadWriteTestEntry extends SerializableEntity {
   String get className => 'ReadWriteTestEntry';
 
-  int id;
-  int number;
+  int? id;
+  int? number;
 
   ReadWriteTestEntry({
     this.id,

@@ -10,11 +10,11 @@ import 'protocol.dart';
 class UserInfo extends SerializableEntity {
   String get className => 'UserInfo';
 
-  int id;
-  String name;
-  String password;
-  int another;
-  String test;
+  int? id;
+  String? name;
+  String? password;
+  int? another;
+  String? test;
 
   UserInfo({
     this.id,

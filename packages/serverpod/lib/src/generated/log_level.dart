@@ -27,7 +27,7 @@ class LogLevel extends SerializableEntity {
   static final fatal = LogLevel._internal(4);
 
   int get hashCode => _index.hashCode;
-  bool operator == (other) => other._index == _index;
+  bool operator == (other) => other is LogLevel && other._index == _index;
 
   static final values = <LogLevel>[
     debug,
@@ -43,6 +43,6 @@ class LogLevel extends SerializableEntity {
     if (this == warning) return 'warning';
     if (this == error) return 'error';
     if (this == fatal) return 'fatal';
-    return null;
+    throw FormatException();
   }
 }

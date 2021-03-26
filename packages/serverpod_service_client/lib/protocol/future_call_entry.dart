@@ -10,11 +10,11 @@ import 'protocol.dart';
 class FutureCallEntry extends SerializableEntity {
   String get className => 'FutureCallEntry';
 
-  int id;
-  String name;
-  DateTime time;
-  String serializedObject;
-  int serverId;
+  int? id;
+  String? name;
+  DateTime? time;
+  String? serializedObject;
+  int? serverId;
 
   FutureCallEntry({
     this.id,

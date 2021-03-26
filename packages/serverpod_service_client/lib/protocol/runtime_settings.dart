@@ -10,16 +10,16 @@ import 'protocol.dart';
 class RuntimeSettings extends SerializableEntity {
   String get className => 'RuntimeSettings';
 
-  int id;
-  bool logAllCalls;
-  bool logAllQueries;
-  bool logSlowCalls;
-  bool logSlowQueries;
-  bool logFailedCalls;
-  bool logMalformedCalls;
-  int logLevel;
-  double slowQueryDuration;
-  double slowCallDuration;
+  int? id;
+  bool? logAllCalls;
+  bool? logAllQueries;
+  bool? logSlowCalls;
+  bool? logSlowQueries;
+  bool? logFailedCalls;
+  bool? logMalformedCalls;
+  int? logLevel;
+  double? slowQueryDuration;
+  double? slowCallDuration;
 
   RuntimeSettings({
     this.id,

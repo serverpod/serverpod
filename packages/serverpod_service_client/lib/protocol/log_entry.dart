@@ -10,13 +10,13 @@ import 'protocol.dart';
 class LogEntry extends SerializableEntity {
   String get className => 'LogEntry';
 
-  int id;
-  int serverId;
-  DateTime time;
-  int logLevel;
-  String message;
-  String stackTrace;
-  int sessionLogId;
+  int? id;
+  int? serverId;
+  DateTime? time;
+  int? logLevel;
+  String? message;
+  String? stackTrace;
+  int? sessionLogId;
 
   LogEntry({
     this.id,

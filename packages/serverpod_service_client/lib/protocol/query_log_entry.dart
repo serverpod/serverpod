@@ -10,11 +10,11 @@ import 'protocol.dart';
 class QueryLogEntry extends SerializableEntity {
   String get className => 'QueryLogEntry';
 
-  int id;
-  int sessionLogId;
-  String query;
-  double duration;
-  int numRows;
+  int? id;
+  int? sessionLogId;
+  String? query;
+  double? duration;
+  int? numRows;
 
   QueryLogEntry({
     this.id,

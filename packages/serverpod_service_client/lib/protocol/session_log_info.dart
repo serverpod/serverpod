@@ -10,10 +10,10 @@ import 'protocol.dart';
 class SessionLogInfo extends SerializableEntity {
   String get className => 'SessionLogInfo';
 
-  int id;
-  SessionLogEntry sessionLogEntry;
-  List<QueryLogEntry> queries;
-  List<LogEntry> messageLog;
+  int? id;
+  SessionLogEntry? sessionLogEntry;
+  List<QueryLogEntry>? queries;
+  List<LogEntry>? messageLog;
 
   SessionLogInfo({
     this.id,

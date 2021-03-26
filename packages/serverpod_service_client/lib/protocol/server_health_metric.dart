@@ -10,10 +10,10 @@ import 'protocol.dart';
 class ServerHealthMetric extends SerializableEntity {
   String get className => 'ServerHealthMetric';
 
-  int id;
-  String name;
-  bool isHealthy;
-  double value;
+  int? id;
+  String? name;
+  bool? isHealthy;
+  double? value;
 
   ServerHealthMetric({
     this.id,

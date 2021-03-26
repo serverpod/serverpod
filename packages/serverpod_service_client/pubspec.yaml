@@ -5,7 +5,7 @@ description: A starting point for Dart libraries or applications.
 # author: viktor <viktorlidholt@gmail.com>
 
 environment:
-  sdk: '>=2.10.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   serverpod_client:
