@@ -22,13 +22,13 @@ class SessionLogTable extends StatelessWidget {
     for (var logEntry in logInfos) {
       var row = <Widget>[
         _buildIndicator(context, logEntry),
-        Text(logEntry.sessionLogEntry.id.toString()),
-        Text(logEntry.sessionLogEntry.endpoint),
-        Text(logEntry.sessionLogEntry.method),
-        Text('${logEntry.sessionLogEntry.serverId}'),
-        Text(durationFormat.format(logEntry.sessionLogEntry.duration)),
-        Text(logEntry.sessionLogEntry.numQueries.toString()),
-        Text(dateFormat.format(logEntry.sessionLogEntry.time.toLocal())),
+        Text(logEntry.sessionLogEntry!.id.toString()),
+        Text(logEntry.sessionLogEntry!.endpoint!),
+        Text(logEntry.sessionLogEntry!.method!),
+        Text('${logEntry.sessionLogEntry!.serverId}'),
+        Text(durationFormat.format(logEntry.sessionLogEntry!.duration)),
+        Text(logEntry.sessionLogEntry!.numQueries.toString()),
+        Text(dateFormat.format(logEntry.sessionLogEntry!.time!.toLocal())),
       ];
 
       cells.add(
@@ -66,7 +66,7 @@ class SessionLogTable extends StatelessWidget {
 
   Widget _buildIndicator(BuildContext context, SessionLogInfo info) {
     List<Widget> row = [];
-    if (info.sessionLogEntry.error != null) {
+    if (info.sessionLogEntry!.error != null) {
       row.add(
         Icon(
           Icons.error_rounded,
@@ -76,7 +76,7 @@ class SessionLogTable extends StatelessWidget {
       );
     }
 
-    if (info.sessionLogEntry.slow) {
+    if (info.sessionLogEntry!.slow!) {
       row.add(
         Icon(
           Icons.timelapse_rounded,
@@ -117,13 +117,13 @@ class SessionLogSource extends DataTableSource {
     return DataRow(
       cells: [
         DataCell(
-          Text(logInfo.sessionLogEntry.endpoint),
+          Text(logInfo.sessionLogEntry!.endpoint!),
         ),
         DataCell(
-          Text(logInfo.sessionLogEntry.method),
+          Text(logInfo.sessionLogEntry!.method!),
         ),
         DataCell(
-          Text(logInfo.sessionLogEntry.duration.toString()),
+          Text(logInfo.sessionLogEntry!.duration!.toString()),
         ),
       ],
     );

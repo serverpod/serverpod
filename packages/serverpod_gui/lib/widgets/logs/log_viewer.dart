@@ -17,7 +17,7 @@ class _LogViewerState extends State<LogViewer> {
   @override
   void initState() {
     super.initState();
-    state.client?.insights.getSessionLog(100).then((SessionLogResult result) {
+    state.client?.insights.getSessionLog(100).then((SessionLogResult? result) {
       setState(() {
         _logs = result;
       });
@@ -38,7 +38,7 @@ class _LogViewerState extends State<LogViewer> {
               children: [
                 Expanded(
                   child: SessionLogTable(
-                    logInfos: _logs!.sessionLog,
+                    logInfos: _logs!.sessionLog!,
                     onSelectedEntry: (SessionLogInfo? entry) {
                       setState(() {
                         _selectedLogEntry = entry;

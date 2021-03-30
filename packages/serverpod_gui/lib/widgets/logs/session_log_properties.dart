@@ -33,19 +33,18 @@ class _PropertyInspector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String>? queries;
-    if (logInfo.queries != null && logInfo.queries.length > 0) {
-      queries = [];
-      for (var query in logInfo.queries) {
-        queries.add(query.query);
+    List<String> queries = [];
+    if (logInfo.queries != null && logInfo.queries!.length > 0) {
+      for (var query in logInfo.queries!) {
+        queries.add(query.query!);
       }
     }
 
     List<String>? logs;
-    if (logInfo.messageLog != null && logInfo.messageLog.length > 0) {
+    if (logInfo.messageLog != null && logInfo.messageLog!.length > 0) {
       logs = [];
-      for (var log in logInfo.messageLog) {
-        logs.add(log.message);
+      for (var log in logInfo.messageLog!) {
+        logs.add(log.message!);
       }
     }
 
@@ -54,9 +53,9 @@ class _PropertyInspector extends StatelessWidget {
         child: Text('Session Log Entry'),
       ),
       properties: [
-        PropertyInspectorTextProp(name: 'Session ID', value: logInfo.sessionLogEntry.id.toString()),
-        PropertyInspectorTextProp(name: 'Endpoint', value: logInfo.sessionLogEntry.endpoint),
-        PropertyInspectorTextProp(name: 'Method', value: logInfo.sessionLogEntry.method),
+        PropertyInspectorTextProp(name: 'Session ID', value: logInfo.sessionLogEntry!.id.toString()),
+        PropertyInspectorTextProp(name: 'Endpoint', value: logInfo.sessionLogEntry!.endpoint!),
+        PropertyInspectorTextProp(name: 'Method', value: logInfo.sessionLogEntry!.method!),
         PropertyInspectorDivider(),
         PropertyInspectorListProp(name: 'Log Entries', list: logs, fallbackText: 'No log entries were captured for this session.',),
         PropertyInspectorDivider(),

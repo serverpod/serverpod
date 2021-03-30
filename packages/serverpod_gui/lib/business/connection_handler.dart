@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'package:yaml/yaml.dart';
-
-import 'package:serverpod/src/server/config.dart';
-import 'package:serverpod/src/authentication/certificates.dart';
+import 'package:serverpod_shared/config.dart';
 import 'package:serverpod_service_client/protocol/protocol.dart';
-import 'key_manager.dart';
+// import 'key_manager.dart';
 
 class ConnectionHandler {
   Map<int, Client> _clients = <int, Client>{};
@@ -22,7 +20,7 @@ class ConnectionHandler {
     Directory.current = Directory('/Users/viktor/Projects/aspectorama');
 
     var config = ServerConfig(configFile, defaultServerId);
-    _keyManager = ServiceKeyManager('GUI', config.serviceSecret);
+    _keyManager = ServiceKeyManager('GUI', config);
     _defaultServerId = defaultServerId;
 
     for (int k in config.cluster.keys) {
