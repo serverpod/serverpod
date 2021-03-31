@@ -86,10 +86,9 @@ class ServerpodClient {
       else if (returnTypeName == 'double')
         return double.tryParse(data!);
       else if (returnTypeName == 'String')
-        return data;
+        return jsonDecode(data!);
 
-      return serializationManager.createEntityFromSerialization(
-          jsonDecode(data!));
+      return serializationManager.createEntityFromSerialization(jsonDecode(data!));
     }
     catch(e, stackTrace) {
       print('Failed call: $endpoint.$method');
