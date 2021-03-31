@@ -85,6 +85,10 @@ class ServerpodClient {
         return int.tryParse(data!);
       else if (returnTypeName == 'double')
         return double.tryParse(data!);
+      else if (returnTypeName == 'bool')
+        return jsonDecode(data!);
+      else if (returnTypeName == 'DateTime')
+        return DateTime.tryParse(data!);
       else if (returnTypeName == 'String')
         return jsonDecode(data!);
 

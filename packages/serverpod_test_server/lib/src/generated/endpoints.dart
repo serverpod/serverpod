@@ -2,6 +2,7 @@
 /*   To generate run: "serverpod generate"    */
 
 import 'package:serverpod/serverpod.dart';
+
 import 'protocol.dart';
 
 import '../endpoints/basic_types.dart';
@@ -36,6 +37,24 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicTypes'] as BasicTypesEndpoint).testDouble(session,params['value'],);
+          },
+        ),
+        'testBool': MethodConnector(
+          name: 'testBool',
+          params: {
+            'value': ParameterDescription(name: 'value', type: bool),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint).testBool(session,params['value'],);
+          },
+        ),
+        'testDateTime': MethodConnector(
+          name: 'testDateTime',
+          params: {
+            'dateTime': ParameterDescription(name: 'dateTime', type: DateTime),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint).testDateTime(session,params['dateTime'],);
           },
         ),
         'testString': MethodConnector(

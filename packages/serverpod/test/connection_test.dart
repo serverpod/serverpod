@@ -8,6 +8,8 @@ void main() {
   });
 
   group('Basic types', () {
+    var dateTime = DateTime(1976, 9, 10, 2, 10);
+
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
       await client.simple.addToGlobalInt();
@@ -35,6 +37,16 @@ void main() {
       expect(result, isNull);
     });
 
+    test('Type bool', () async {
+      bool? result = await client.basicTypes.testBool(true);
+      expect(result, equals(true));
+    });
+
+    test('Type null bool', () async {
+      bool? result = await client.basicTypes.testBool(null);
+      expect(result, isNull);
+    });
+
     test('Type String', () async {
       String? result = await client.basicTypes.testString('test');
       expect(result, 'test');
@@ -47,6 +59,16 @@ void main() {
 
     test('Type null String', () async {
       String? result = await client.basicTypes.testString(null);
+      expect(result, isNull);
+    });
+
+    test('Type DateTime', () async {
+      DateTime? result = await client.basicTypes.testDateTime(dateTime);
+      expect(result!.toLocal(), equals(dateTime));
+    });
+
+    test('Type null DateTime', () async {
+      DateTime? result = await client.basicTypes.testDateTime(null);
       expect(result, isNull);
     });
   });

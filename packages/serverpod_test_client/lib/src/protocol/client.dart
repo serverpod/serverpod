@@ -21,6 +21,18 @@ class _EndpointBasicTypes {
     });
   }
 
+  Future<bool?> testBool(bool? value,) async {
+    return await client.callServerEndpoint('basicTypes', 'testBool', 'bool', {
+      'value':value,
+    });
+  }
+
+  Future<DateTime?> testDateTime(DateTime? dateTime,) async {
+    return await client.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
+      'dateTime':dateTime,
+    });
+  }
+
   Future<String?> testString(String? value,) async {
     return await client.callServerEndpoint('basicTypes', 'testString', 'String', {
       'value':value,

@@ -12,6 +12,14 @@ class BasicTypesEndpoint extends Endpoint {
     return value;
   }
 
+  Future<bool?> testBool(Session session, bool? value) async {
+    return value;
+  }
+
+  Future<DateTime?> testDateTime(Session session, DateTime? dateTime) async {
+    return dateTime;
+  }
+
   Future<String?> testString(Session session, String? value) async {
     return value;
   }
