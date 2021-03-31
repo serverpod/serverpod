@@ -6,9 +6,11 @@ library protocol;
 import 'package:serverpod/serverpod.dart';
 
 import 'user_info.dart';
+import 'types.dart';
 import 'company_info.dart';
 
 export 'user_info.dart';
+export 'types.dart';
 export 'company_info.dart';
 
 class Protocol extends SerializationManager {
@@ -21,8 +23,10 @@ class Protocol extends SerializationManager {
 
   Protocol() {
     constructors['UserInfo'] = (Map<String, dynamic> serialization) => UserInfo.fromSerialization(serialization);
+    constructors['Types'] = (Map<String, dynamic> serialization) => Types.fromSerialization(serialization);
     constructors['CompanyInfo'] = (Map<String, dynamic> serialization) => CompanyInfo.fromSerialization(serialization);
 
     tableClassMapping['user_info'] = 'UserInfo';
+    tableClassMapping['types'] = 'Types';
   }
 }

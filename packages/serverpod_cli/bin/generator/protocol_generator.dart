@@ -59,6 +59,8 @@ abstract class ProtocolGenerator {
     // Imports
     out += 'import \'package:serverpod/serverpod.dart\';\n';
     out += '\n';
+    out += 'import \'protocol.dart\';\n';
+    out += '\n';
     for (var importPath in protocolDefinition.filePaths) {
       var fileName = '../endpoints/' + p.basename(importPath);
       out += 'import \'$fileName\';\n';

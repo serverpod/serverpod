@@ -7,46 +7,114 @@ void main() {
   setUp(() {
   });
 
-  test('Simple calls', () async {
-    await client.simple.setGlobalInt(10);
-    await client.simple.addToGlobalInt();
-    int? value = await client.simple.getGlobalInt();
-    expect(value, equals(11));
+  group('Basic types', () {
+    test('Simple calls', () async {
+      await client.simple.setGlobalInt(10);
+      await client.simple.addToGlobalInt();
+      int? value = await client.simple.getGlobalInt();
+      expect(value, equals(11));
+    });
+
+    test('Type int', () async {
+      int? result = await client.basicTypes.testInt(10);
+      expect(result, equals(10));
+    });
+
+    test('Type null int', () async {
+      int? result = await client.basicTypes.testInt(null);
+      expect(result, isNull);
+    });
+
+    test('Type double', () async {
+      double? result = await client.basicTypes.testDouble(10.0);
+      expect(result, equals(10.0));
+    });
+
+    test('Type null double', () async {
+      double? result = await client.basicTypes.testDouble(null);
+      expect(result, isNull);
+    });
+
+    test('Type String', () async {
+      String? result = await client.basicTypes.testString('test');
+      expect(result, 'test');
+    });
+
+    test('Type String with value \'null\'', () async {
+      String? result = await client.basicTypes.testString('null');
+      expect(result, 'null');
+    });
+
+    test('Type null String', () async {
+      String? result = await client.basicTypes.testString(null);
+      expect(result, isNull);
+    });
   });
 
-  test('Type int', () async {
-    int? result = await client.basicTypes.testInt(10);
-    expect(result, equals(10));
-  });
+  group('Database', () {
+    test('Write and read', () async {
+      var dateTime = DateTime(1976, 9, 10, 2, 10);
 
-  test('Type null int', () async {
-    int? result = await client.basicTypes.testInt(null);
-    expect(result, isNull);
-  });
+      var types = Types(
+        aBool: true,
+        aDouble: 1.5,
+        anInt: 42,
+        aDateTime: dateTime,
+        aString: 'Foo',
+      );
 
-  test('Type double', () async {
-    double? result = await client.basicTypes.testDouble(10.0);
-    expect(result, equals(10.0));
-  });
+      int? count = await client.basicDatabase.countRows();
+      expect(count, isNotNull);
 
-  test('Type null double', () async {
-    double? result = await client.basicTypes.testDouble(null);
-    expect(result, isNull);
-  });
+      int? id = await client.basicDatabase.storeTypes(types);
+      expect(id, isNotNull);
 
-  test('Type String', () async {
-    String? result = await client.basicTypes.testString('test');
-    expect(result, 'test');
-  });
+      int? newCount = await client.basicDatabase.countRows();
+      expect(newCount, isNotNull);
+      expect(newCount, equals(count! + 1));
 
-  test('Type String with value \'null\'', () async {
-    String? result = await client.basicTypes.testString('null');
-    expect(result, 'null');
-  });
+      Types? storedTypes = await client.basicDatabase.getTypes(id);
+      expect(storedTypes, isNotNull);
 
-  test('Type null String', () async {
-    String? result = await client.basicTypes.testString(null);
-    expect(result, isNull);
+      if (storedTypes != null) {
+        expect(storedTypes.id, equals(id));
+
+        expect(storedTypes.aBool, equals(true));
+        expect(storedTypes.anInt, equals(42));
+        expect(storedTypes.aDouble, equals(1.5));
+        expect(storedTypes.aString, equals('Foo'));
+        expect(storedTypes.aDateTime?.toLocal(), equals(dateTime));
+      }
+    });
+
+    test('Write and read null values', () async {
+      var dateTime = DateTime(1976, 9, 10, 2, 10);
+
+      var types = Types();
+
+      int? count = await client.basicDatabase.countRows();
+      expect(count, isNotNull);
+
+      int? id = await client.basicDatabase.storeTypes(types);
+      expect(id, isNotNull);
+
+      int? newCount = await client.basicDatabase.countRows();
+      expect(newCount, isNotNull);
+      expect(newCount, equals(count! + 1));
+
+      Types? storedTypes = await client.basicDatabase.getTypes(id);
+      expect(storedTypes, isNotNull);
+
+      if (storedTypes != null) {
+        expect(storedTypes.id, equals(id));
+
+        expect(storedTypes.aBool, isNull);
+        expect(storedTypes.anInt, isNull);
+        expect(storedTypes.aDouble, isNull);
+        expect(storedTypes.aString, isNull);
+        expect(storedTypes.aDateTime, isNull);
+      }
+    });
   });
 
 //  test('Type List<int>', () async {

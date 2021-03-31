@@ -194,7 +194,7 @@ class DatabaseConnection {
       query += ' LIMIT $limit';
 
     try {
-      var result = await postgresConnection.query(query, allowReuse: false);
+      var result = await postgresConnection.query(query, allowReuse: false, substitutionValues: {});
 
       if (result.length != 1)
         return 0;
@@ -278,7 +278,7 @@ class DatabaseConnection {
 
     List<List<dynamic>> result;
     try {
-      result = await postgresConnection.query(query, allowReuse: false);
+      result = await postgresConnection.query(query, allowReuse: false, substitutionValues: {});
       if (result.length != 1)
         return false;
     }

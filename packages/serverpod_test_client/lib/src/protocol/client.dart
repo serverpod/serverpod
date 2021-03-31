@@ -28,6 +28,28 @@ class _EndpointBasicTypes {
   }
 }
 
+class _EndpointBasicDatabase {
+  Client client;
+  _EndpointBasicDatabase(this.client);
+
+  Future<int?> storeTypes(Types? types,) async {
+    return await client.callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
+      'types':types,
+    });
+  }
+
+  Future<Types?> getTypes(int? id,) async {
+    return await client.callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
+      'id':id,
+    });
+  }
+
+  Future<int?> countRows() async {
+    return await client.callServerEndpoint('basicDatabase', 'countRows', 'int', {
+    });
+  }
+}
+
 class _EndpointSimple {
   Client client;
   _EndpointSimple(this.client);
@@ -52,10 +74,12 @@ class _EndpointSimple {
 
 class Client extends ServerpodClient {
   late final _EndpointBasicTypes basicTypes;
+  late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointSimple simple;
 
   Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     basicTypes = _EndpointBasicTypes(this);
+    basicDatabase = _EndpointBasicDatabase(this);
     simple = _EndpointSimple(this);
   }
 }

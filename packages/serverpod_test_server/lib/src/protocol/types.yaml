@@ -1,0 +1,8 @@
+class: Types
+tableName: types
+fields:
+  anInt: int
+  aBool: bool
+  aDouble: double
+  aDateTime: DateTime
+  aString: String

@@ -48,9 +48,9 @@ class CompanyInfo extends SerializableEntity {
       'name': name,
       'numEmployees': numEmployees,
       'address': address,
-      'employee': employee?.map((UserInfo a) => a.serialize())?.toList(),
+      'employee': employee?.map((UserInfo a) => a.serialize()).toList(),
       'value': value,
-      'createdTime': createdTime?.toUtc()?.toIso8601String(),
+      'createdTime': createdTime?.toUtc().toIso8601String(),
       'hasOffice': hasOffice,
     });
   }
