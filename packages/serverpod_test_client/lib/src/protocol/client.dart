@@ -93,6 +93,12 @@ class _EndpointBasicDatabase {
       'num':num,
     });
   }
+
+  Future<bool?> findAndDeleteSimpleTestData(int? num,) async {
+    return await client.callServerEndpoint('basicDatabase', 'findAndDeleteSimpleTestData', 'bool', {
+      'num':num,
+    });
+  }
 }
 
 class _EndpointSimple {

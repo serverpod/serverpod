@@ -165,6 +165,20 @@ void main() {
       count = await client.basicDatabase.countSimpleData();
       expect(count, equals(50));
     });
+
+    test('Delete single row', () async {
+      await client.basicDatabase.deleteAllSimpleTestData();
+      await client.basicDatabase.createSimpleTestData(100);
+
+      int? count = await client.basicDatabase.countSimpleData();
+      expect(count, equals(100));
+
+      bool? success = await client.basicDatabase.findAndDeleteSimpleTestData(50);
+      expect(success, equals(true));
+
+      count = await client.basicDatabase.countSimpleData();
+      expect(count, equals(99));
+    });
   });
 
 //  test('Type List<int>', () async {

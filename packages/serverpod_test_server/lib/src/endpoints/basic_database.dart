@@ -58,4 +58,13 @@ class BasicDatabase extends Endpoint {
   Future<void> deleteSimpleTestDataLessThan(Session session, int num) async {
     await session.db.delete(tSimpleData, where: (tSimpleData.num < num));
   }
+
+  Future<bool?> findAndDeleteSimpleTestData(Session session, int num) async {
+    SimpleData? data = await session.db.findSingleRow(
+      tSimpleData,
+      where: tSimpleData.num.equals(num),
+    ) as SimpleData?;
+
+    return await session.db.deleteRow(data!);
+  }
 }

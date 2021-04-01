@@ -150,6 +150,15 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).deleteSimpleTestDataLessThan(session,params['num'],);
           },
         ),
+        'findAndDeleteSimpleTestData': MethodConnector(
+          name: 'findAndDeleteSimpleTestData',
+          params: {
+            'num': ParameterDescription(name: 'num', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).findAndDeleteSimpleTestData(session,params['num'],);
+          },
+        ),
       },
     );
 
