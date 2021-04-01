@@ -29,9 +29,8 @@ class BasicDatabase extends Endpoint {
     return row[0] as int;
   }
 
-  Future<int?> countRows(Session session) async {
-    int numRows = await session.db.count(tTypes);
-    return numRows;
+  Future<int?> countTypesRows(Session session) async {
+    return await session.db.count(tTypes);
   }
 
   Future<int?> deleteAllInTypes(Session session) async {
@@ -39,5 +38,24 @@ class BasicDatabase extends Endpoint {
       tTypes,
       where: Constant(true),
     );
+  }
+
+  Future<void> createSimpleTestData(Session session, int numRows) async {
+    for (int i = 0; i < numRows; i++) {
+      var data = SimpleData(num: i,);
+      await session.db.insert(data);
+    }
+  }
+
+  Future<int?> countSimpleData(Session session) async {
+    return await session.db.count(tSimpleData);
+  }
+
+  Future<void> deleteAllSimpleTestData(Session session) async {
+    await session.db.delete(tSimpleData, where: Constant(true));
+  }
+
+  Future<void> deleteSimpleTestDataLessThan(Session session, int num) async {
+    await session.db.delete(tSimpleData, where: (tSimpleData.num < num));
   }
 }

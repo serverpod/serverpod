@@ -85,13 +85,13 @@ void main() {
         aString: 'Foo',
       );
 
-      int? count = await client.basicDatabase.countRows();
+      int? count = await client.basicDatabase.countTypesRows();
       expect(count, isNotNull);
 
       int? id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
 
-      int? newCount = await client.basicDatabase.countRows();
+      int? newCount = await client.basicDatabase.countTypesRows();
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
@@ -112,13 +112,13 @@ void main() {
     test('Write and read null values', () async {
       var types = Types();
 
-      int? count = await client.basicDatabase.countRows();
+      int? count = await client.basicDatabase.countTypesRows();
       expect(count, isNotNull);
 
       int? id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
 
-      int? newCount = await client.basicDatabase.countRows();
+      int? newCount = await client.basicDatabase.countTypesRows();
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
@@ -150,8 +150,20 @@ void main() {
       int? removedRows = await client.basicDatabase.deleteAllInTypes();
       expect(removedRows, greaterThan(0));
 
-      int? count = await client.basicDatabase.countRows();
+      int? count = await client.basicDatabase.countTypesRows();
       expect(count, equals(0));
+    });
+
+    test('Delete where', () async {
+      await client.basicDatabase.deleteAllSimpleTestData();
+      await client.basicDatabase.createSimpleTestData(100);
+
+      int? count = await client.basicDatabase.countSimpleData();
+      expect(count, equals(100));
+
+      await client.basicDatabase.deleteSimpleTestDataLessThan(50);
+      count = await client.basicDatabase.countSimpleData();
+      expect(count, equals(50));
     });
   });
 

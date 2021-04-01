@@ -100,12 +100,12 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).getTypesRawQuery(session,params['id'],);
           },
         ),
-        'countRows': MethodConnector(
-          name: 'countRows',
+        'countTypesRows': MethodConnector(
+          name: 'countTypesRows',
           params: {
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase).countRows(session,);
+            return (endpoints['basicDatabase'] as BasicDatabase).countTypesRows(session,);
           },
         ),
         'deleteAllInTypes': MethodConnector(
@@ -114,6 +114,40 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicDatabase'] as BasicDatabase).deleteAllInTypes(session,);
+          },
+        ),
+        'createSimpleTestData': MethodConnector(
+          name: 'createSimpleTestData',
+          params: {
+            'numRows': ParameterDescription(name: 'numRows', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).createSimpleTestData(session,params['numRows'],);
+          },
+        ),
+        'countSimpleData': MethodConnector(
+          name: 'countSimpleData',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).countSimpleData(session,);
+          },
+        ),
+        'deleteAllSimpleTestData': MethodConnector(
+          name: 'deleteAllSimpleTestData',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).deleteAllSimpleTestData(session,);
+          },
+        ),
+        'deleteSimpleTestDataLessThan': MethodConnector(
+          name: 'deleteSimpleTestDataLessThan',
+          params: {
+            'num': ParameterDescription(name: 'num', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).deleteSimpleTestDataLessThan(session,params['num'],);
           },
         ),
       },

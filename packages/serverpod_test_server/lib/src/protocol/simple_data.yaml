@@ -1,4 +1,4 @@
 class: SimpleData
-tableName: simple_data
+table: simple_data
 fields:
   num: int

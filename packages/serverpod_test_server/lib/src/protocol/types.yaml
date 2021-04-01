@@ -1,5 +1,5 @@
 class: Types
-tableName: types
+table: types
 fields:
   anInt: int
   aBool: bool

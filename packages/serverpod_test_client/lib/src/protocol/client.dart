@@ -62,13 +62,35 @@ class _EndpointBasicDatabase {
     });
   }
 
-  Future<int?> countRows() async {
-    return await client.callServerEndpoint('basicDatabase', 'countRows', 'int', {
+  Future<int?> countTypesRows() async {
+    return await client.callServerEndpoint('basicDatabase', 'countTypesRows', 'int', {
     });
   }
 
   Future<int?> deleteAllInTypes() async {
     return await client.callServerEndpoint('basicDatabase', 'deleteAllInTypes', 'int', {
+    });
+  }
+
+  Future<void> createSimpleTestData(int? numRows,) async {
+    return await client.callServerEndpoint('basicDatabase', 'createSimpleTestData', 'void', {
+      'numRows':numRows,
+    });
+  }
+
+  Future<int?> countSimpleData() async {
+    return await client.callServerEndpoint('basicDatabase', 'countSimpleData', 'int', {
+    });
+  }
+
+  Future<void> deleteAllSimpleTestData() async {
+    return await client.callServerEndpoint('basicDatabase', 'deleteAllSimpleTestData', 'void', {
+    });
+  }
+
+  Future<void> deleteSimpleTestDataLessThan(int? num,) async {
+    return await client.callServerEndpoint('basicDatabase', 'deleteSimpleTestDataLessThan', 'void', {
+      'num':num,
     });
   }
 }
