@@ -33,4 +33,11 @@ class BasicDatabase extends Endpoint {
     int numRows = await session.db.count(tTypes);
     return numRows;
   }
+
+  Future<int?> deleteAllInTypes(Session session) async {
+    return await session.db.delete(
+      tTypes,
+      where: Constant(true),
+    );
+  }
 }

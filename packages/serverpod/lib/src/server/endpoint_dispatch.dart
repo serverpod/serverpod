@@ -39,11 +39,6 @@ abstract class EndpointDispatch {
     var inputParams = session.methodCall!.queryParameters;
 
     try {
-      if (methodName == null) {
-        await session.close();
-        return ResultInvalidParams('method missing in call: $uri');
-      }
-
       if (connector.endpoint.requireLogin) {
         if (auth == null) {
           await session.close();

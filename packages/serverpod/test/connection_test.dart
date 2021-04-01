@@ -145,6 +145,14 @@ void main() {
       int? storedId = await client.basicDatabase.getTypesRawQuery(id);
       expect(storedId, equals(id));
     });
+
+    test('Delete all', () async {
+      int? removedRows = await client.basicDatabase.deleteAllInTypes();
+      expect(removedRows, greaterThan(0));
+
+      int? count = await client.basicDatabase.countRows();
+      expect(count, equals(0));
+    });
   });
 
 //  test('Type List<int>', () async {

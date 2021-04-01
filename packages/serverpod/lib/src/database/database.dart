@@ -83,12 +83,12 @@ class Database {
     );
   }
 
-  Future<int> delete(Table table, {Expression? where, Transaction? transaction}) async {
+  Future<int> delete(Table table, {required Expression where, Transaction? transaction}) async {
     var conn = await databaseConnection;
 
     return await conn.delete(
       table,
-      where: where!,
+      where: where,
       transaction: transaction,
       session: session,
     );

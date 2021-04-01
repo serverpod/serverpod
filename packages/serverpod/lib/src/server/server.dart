@@ -10,7 +10,6 @@ import 'serverpod.dart';
 import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
 import '../database/database_config.dart';
-import '../generated/protocol.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
 class Server {

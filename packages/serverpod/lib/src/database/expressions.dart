@@ -3,7 +3,7 @@ import 'database_config.dart';
 class Expression {
   final String expression;
 
-  const Expression(this.expression);
+  Expression(this.expression);
 
   @override
   String toString() {
@@ -43,14 +43,6 @@ class Expression {
       other = DatabaseConfig.encoder.convert(other);
     return Expression('($this <= $other)');
   }
-
-  Expression operator + (dynamic other) {
-    return Expression('($this = $other)');
-  }
-
-  Expression operator - (dynamic other) {
-    return Expression('($this != $other)');
-  }
 }
 
 abstract class Column extends Expression {
@@ -58,13 +50,13 @@ abstract class Column extends Expression {
   final int? varcharLength;
   final String _columnName;
 
-  const Column(String this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
+  Column(String this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
 
   String get columnName => _columnName;
 }
 
 class ColumnInt extends Column {
-  const ColumnInt(String name) : super (name, int);
+  ColumnInt(String name) : super (name, int);
 
   Expression equals(int? value) {
     if (value == null)
@@ -82,7 +74,7 @@ class ColumnInt extends Column {
 }
 
 class ColumnDouble extends Column {
-  const ColumnDouble(String name) : super (name, double);
+  ColumnDouble(String name) : super (name, double);
 
   Expression equals(double? value) {
     if (value == null)
@@ -100,7 +92,7 @@ class ColumnDouble extends Column {
 }
 
 class ColumnString extends Column {
-  const ColumnString(String name, {int? varcharLength}) : super (name, String, varcharLength: varcharLength);
+  ColumnString(String name, {int? varcharLength}) : super (name, String, varcharLength: varcharLength);
 
   Expression equals(String? value) {
     if (value == null)
@@ -126,7 +118,7 @@ class ColumnString extends Column {
 }
 
 class ColumnBool extends Column {
-  const ColumnBool(String name) : super (name, bool);
+  ColumnBool(String name) : super (name, bool);
 
   Expression equals(bool? value) {
     if (value == null)
@@ -148,7 +140,7 @@ class ColumnBool extends Column {
 }
 
 class ColumnDateTime extends Column {
-  const ColumnDateTime(String name) : super (name, DateTime);
+  ColumnDateTime(String name) : super (name, DateTime);
 
   Expression equals(DateTime? value) {
     if (value == null)
@@ -166,7 +158,19 @@ class ColumnDateTime extends Column {
 }
 
 class Constant extends Expression {
-  const Constant(String value) : super('\'$value\'');
+  // TODO: Handle more types
+  Constant(dynamic? value) : super(_formatValue(value));
+
+  static String _formatValue(dynamic value) {
+    if (value == null)
+      return 'NULL';
+    if (value is bool)
+      return '$value'.toUpperCase();
+    else if (value is String)
+      return '\'$value\'';
+    else
+      throw FormatException();
+  }
 }
 
 class Table {

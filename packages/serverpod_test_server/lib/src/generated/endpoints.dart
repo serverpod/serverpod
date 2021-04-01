@@ -108,6 +108,14 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).countRows(session,);
           },
         ),
+        'deleteAllInTypes': MethodConnector(
+          name: 'deleteAllInTypes',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).deleteAllInTypes(session,);
+          },
+        ),
       },
     );
 

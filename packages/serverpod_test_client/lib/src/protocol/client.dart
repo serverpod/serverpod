@@ -66,6 +66,11 @@ class _EndpointBasicDatabase {
     return await client.callServerEndpoint('basicDatabase', 'countRows', 'int', {
     });
   }
+
+  Future<int?> deleteAllInTypes() async {
+    return await client.callServerEndpoint('basicDatabase', 'deleteAllInTypes', 'int', {
+    });
+  }
 }
 
 class _EndpointSimple {
