@@ -1,6 +1,7 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'server.dart';
+import 'session.dart';
 
 abstract class FutureCall {
   late String _name;
@@ -14,5 +15,5 @@ abstract class FutureCall {
     _name = name;
   }
 
-  Future<Null> invoke(SerializableEntity? object);
+  Future<Null> invoke(Session session, SerializableEntity? object);
 }

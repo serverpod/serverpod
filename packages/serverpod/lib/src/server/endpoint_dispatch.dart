@@ -19,17 +19,24 @@ abstract class EndpointDispatch {
     if (connector == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
 
-    Session session = Session(
-      server: server,
-      uri: uri,
-      body: body,
-      endpointName: endpointName,
-      httpRequest: request,
-    );
+    Session session;
 
-    var methodName = session.methodName;
+    try {
+      session = Session(
+        server: server,
+        uri: uri,
+        body: body,
+        endpointName: endpointName,
+        httpRequest: request,
+      );
+    }
+    catch(e) {
+      return ResultInvalidParams('Malformed call: $uri');
+    }
+
+    var methodName = session.methodCall!.methodName;
     var auth = session.authenticationKey;
-    var inputParams = session.queryParameters;
+    var inputParams = session.methodCall!.queryParameters;
 
     try {
       if (methodName == null) {
@@ -72,7 +79,7 @@ abstract class EndpointDispatch {
       // TODO: Check paramters
 
       Map<String, dynamic> paramMap = {};
-      for (var paramName in inputParams!.keys) {
+      for (var paramName in inputParams.keys) {
         Type? type = method.params[paramName]?.type;
         if (type == null)
           continue;
@@ -85,7 +92,7 @@ abstract class EndpointDispatch {
       // Print session info
       String? authenticatedUser = connector.endpoint.requireLogin ? await session.authenticatedUser : null;
       if (connector.endpoint.logSessions)
-        server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
+        server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
 
       await session.close();
 
@@ -95,7 +102,7 @@ abstract class EndpointDispatch {
       // Something did not work out
       int? sessionLogId = 0;
       if (connector.endpoint.logSessions)
-        sessionLogId = await server.serverpod.logSession(session.endpointName, session.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
+        sessionLogId = await server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
 
       await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);

@@ -66,15 +66,15 @@ class Serverpod {
       serverId = int.tryParse(results['server-id']) ?? 0;
     }
     catch(e) {
-      log(internal.LogLevel.warning, 'Unknown run mode, defaulting to development');
+      print('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
     }
 
     // Load config file
-    log(internal.LogLevel.info, 'Mode: $_runMode');
+    print('Mode: $_runMode');
 
     config = ServerConfig(_runMode, serverId);
-    log(internal.LogLevel.info, config.toString());
+    print(config.toString());
 
     // Load passwords
     try {
@@ -182,7 +182,7 @@ class Serverpod {
     return _passwords[key];
   }
 
-  void log(internal.LogLevel level, String message, {StackTrace? stackTrace, int? sessionLogId}) async {
+  void _log(internal.LogLevel level, String message, {StackTrace? stackTrace, int? sessionLogId}) async {
     int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
 
     if (level.index >= serverLogLevel) {
@@ -250,10 +250,8 @@ class Serverpod {
         int? sessionLogId = sessionLogEntry.id;
 
         for (var logInfo in sessionLog) {
-          if (logInfo.level.index >= runtimeSettings.logLevel!) {
-            log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
-                sessionLogId: sessionLogId);
-          }
+          _log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
+              sessionLogId: sessionLogId);
         }
 
         for (var queryInfo in queries) {

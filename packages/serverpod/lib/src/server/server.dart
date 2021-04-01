@@ -90,14 +90,18 @@ class Server {
             }
           },
           onError: (e, StackTrace stackTrace) {
-            logError(e.toString(), stackTrace: stackTrace);
+            stderr.writeln('Internal server error.');
+            stderr.writeln('$e');
+            stderr.writeln('$stackTrace');
           },
         ).onDone(() {
-          logInfo('$name stopped');
+          print('$name stopped');
         });
       },
       onError: (e, StackTrace stackTrace) {
-        logError(e.toString(), stackTrace: stackTrace);
+        stderr.writeln('Internal server error.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
       });
     }
     else {
@@ -115,14 +119,18 @@ class Server {
             }
           },
           onError: (e, StackTrace stackTrace) {
-            logError(e.toString(), stackTrace: stackTrace);
+            stderr.writeln('Internal server error.');
+            stderr.writeln('$e');
+            stderr.writeln('$stackTrace');
           },
         ).onDone(() {
-          logInfo('$name stopped');
+          print('$name stopped');
         });
       },
       onError: (e, StackTrace stackTrace) {
-        logError(e.toString(), stackTrace: stackTrace);
+        stderr.writeln('Internal server error.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
       });
     }
 
@@ -130,7 +138,7 @@ class Server {
     _futureCallManager.start();
 
     _running = true;
-    logInfo('$name listening on port ${port}');
+    print('$name listening on port ${port}');
   }
 
   Future<Null> _handleRequest(HttpRequest request) async {
@@ -141,7 +149,7 @@ class Server {
     }
     catch(e) {
       if (serverpod.runtimeSettings.logMalformedCalls!)
-        logDebug('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        print('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
 
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
@@ -194,7 +202,9 @@ class Server {
       body = await _readBody(request); // request.transform(Utf8Decoder()).join();
     }
     catch (e, stackTrace) {
-      logError('$e', stackTrace: stackTrace);
+      stderr.writeln('Internal server error.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
@@ -204,14 +214,14 @@ class Server {
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls!)
-        logDebug('Malformed call: $result');
+        print('Malformed call: $result');
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
     }
     else if (result is ResultAuthenticationFailed) {
       if (serverpod.runtimeSettings.logMalformedCalls!)
-        logDebug('Access denied: $result');
+        print('Access denied: $result');
       request.response.statusCode = HttpStatus.forbidden;
       request.response.close();
       return;
@@ -262,25 +272,25 @@ class Server {
 //    return endpoint.handleUriCall(uri, body, request);
   }
 
-  void logDebug(String message) {
-    serverpod.log(LogLevel.debug, message);
-  }
-
-  void logInfo(String message) {
-    serverpod.log(LogLevel.info, message);
-  }
-
-  void logWarning(String warning, {StackTrace? stackTrace}) {
-    serverpod.log(LogLevel.warning, warning, stackTrace: stackTrace);
-  }
-
-  void logError(String error, {StackTrace? stackTrace}) {
-    serverpod.log(LogLevel.error, error, stackTrace: stackTrace);
-  }
-
-  void logFatal(String error, {StackTrace? stackTrace}) {
-    serverpod.log(LogLevel.fatal, error, stackTrace: stackTrace);
-  }
+  // void logDebug(String message) {
+  //   serverpod.log(LogLevel.debug, message);
+  // }
+  //
+  // void logInfo(String message) {
+  //   serverpod.log(LogLevel.info, message);
+  // }
+  //
+  // void logWarning(String warning, {StackTrace? stackTrace}) {
+  //   serverpod.log(LogLevel.warning, warning, stackTrace: stackTrace);
+  // }
+  //
+  // void logError(String error, {StackTrace? stackTrace}) {
+  //   serverpod.log(LogLevel.error, error, stackTrace: stackTrace);
+  // }
+  //
+  // void logFatal(String error, {StackTrace? stackTrace}) {
+  //   serverpod.log(LogLevel.fatal, error, stackTrace: stackTrace);
+  // }
 
   void shutdown() {
     _httpServer.close();

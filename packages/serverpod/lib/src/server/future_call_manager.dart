@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'future_call.dart';
+import 'session.dart';
 import 'server.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart';
@@ -32,7 +34,7 @@ class FutureCallManager {
 
   void addFutureCall(FutureCall call, String name) {
     if (_futureCalls.containsKey(name))
-      _server.logWarning('Added future call with duplicate name ($name)');
+      throw Exception('Added future call with duplicate name ($name)');
 
     call.initialize(_server, name);
     _futureCalls[name] = call;
@@ -75,11 +77,19 @@ class FutureCallManager {
           object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
         }
         try {
-          call.invoke(object);
+          Session session = Session(
+            type: SessionType.futureCall,
+            server: _server,
+            futureCallName: entry.name,
+          );
+
+          await call.invoke(session, object);
         }
         catch(e, stackTrace) {
-          // TODO: Log errors
-          _server.logError('$e', stackTrace: stackTrace);
+          // Log errors
+          stderr.writeln('Internal server error.');
+          stderr.writeln('$e');
+          stderr.writeln('$stackTrace');
         }
       }
 
@@ -94,10 +104,10 @@ class FutureCallManager {
     }
     catch(e, stackTrace) {
       // Most likely we lost connection to the database
-      print('${DateTime.now()} Failed to connect to database in future call manager $e');
-      print('$stackTrace');
-      print('Local stacktrace:');
-      print('${StackTrace.current}');
+      stderr.writeln('${DateTime.now()} Failed to connect to database in future call manager $e');
+      stderr.writeln('$stackTrace');
+      stderr.writeln('Local stacktrace:');
+      stderr.writeln('${StackTrace.current}');
     }
 
     // Check the queue again in 5 seconds

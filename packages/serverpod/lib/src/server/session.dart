@@ -6,14 +6,17 @@ import 'package:serverpod/src/authentication/scope.dart';
 import '../generated/protocol.dart';
 import '../database/database.dart';
 
+enum SessionType {
+  methodCall,
+  futureCall,
+}
+
 class Session {
-  final Uri? uri;
-  final String? body;
+  final SessionType type;
+
   final Server server;
   final Duration maxLifeTime;
 
-  final HttpRequest? httpRequest;
-  
   late DateTime _timeCreated;
   final List<QueryInfo> queries = <QueryInfo>[];
   final List<LogInfo> log = <LogInfo>[];
@@ -21,44 +24,71 @@ class Session {
   String? _authenticatedUser;
   Set<Scope>? _scopes;
 
+  late final Database db;
+
+  MethodCallInfo? _methodCall;
+  MethodCallInfo? get methodCall => _methodCall;
+
+  FutureCallInfo? _futureCall;
+  FutureCallInfo? get futureCall => _futureCall;
+
   String? _authenticationKey;
   String? get authenticationKey => _authenticationKey;
 
-  String? _methodName;
-  String? get methodName => _methodName;
-
-  Map<String, String>? _queryParameters;
-  Map<String, String>? get queryParameters => _queryParameters;
-
-  final String? endpointName;
-
-  late final Database db;
-
-  Session({required this.server, this.uri, this.body, this.endpointName, String? authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.httpRequest}){
+  Session({
+    this.type = SessionType.methodCall,
+    required this.server,
+    Uri? uri,
+    String? body,
+    String? endpointName,
+    String? authenticationKey,
+    this.maxLifeTime=const Duration(minutes: 1),
+    HttpRequest? httpRequest,
+    String? futureCallName,
+  }){
     _timeCreated = DateTime.now();
 
-    if (body == null || body == '' || body == 'null') {
-      _queryParameters = <String, String>{};
-    }
-    else {
-      _queryParameters = jsonDecode(body!).cast<String, String>();
-    }
+    if (type == SessionType.methodCall) {
+      // Method call session
 
-    if (authenticationKey != null)
+      // Read query parameters
+      Map<String, String> queryParameters = {};
+      if (body != null && body != '' && body != 'null') {
+        queryParameters = jsonDecode(body).cast<String, String>();
+      }
+
+      // Get the the authentication key, if any
+      if (authenticationKey == null)
+        authenticationKey = queryParameters['auth'];
       _authenticationKey = authenticationKey;
-    else
-      _authenticationKey = _queryParameters!['auth'];
 
-    _methodName = _queryParameters!['method'];
+      String? methodName = queryParameters['method'];
 
-    db = Database(session: this);
+      db = Database(session: this);
+
+      _methodCall = MethodCallInfo(
+        uri: uri!,
+        body: body!,
+        queryParameters: queryParameters,
+        endpointName: endpointName!,
+        methodName: methodName!,
+        httpRequest: httpRequest!,
+      );
+    }
+    else if (type == SessionType.futureCall){
+      // Future call session
+
+      _futureCall = FutureCallInfo(
+        callName: futureCallName!,
+      );
+    }
   }
 
   bool _initialized = false;
 
   Future<Null> _initialize() async {
-    if (server.authenticationHandler != null  && authenticationKey != null) {
-      var authenticationInfo = await server.authenticationHandler!(this, authenticationKey!);
+    if (server.authenticationHandler != null  && _authenticationKey != null) {
+      var authenticationInfo = await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUser;
     }
@@ -105,6 +135,33 @@ class Session {
   logFatal(String message, {StackTrace? stackTrace}) {
     log.add(LogInfo(LogLevel.fatal, message, stackTrace: stackTrace));
   }
+}
+
+class MethodCallInfo {
+  final Uri uri;
+  final String body;
+  final Map<String, String> queryParameters;
+  final String endpointName;
+  final String methodName;
+  final HttpRequest httpRequest;
+  final String? authenticationKey;
+
+  MethodCallInfo({
+    required this.uri,
+    required this.body,
+    required this.queryParameters,
+    required this.endpointName,
+    required this.methodName,
+    required this.httpRequest,
+    this.authenticationKey,
+  });
+}
+
+class FutureCallInfo {
+  final String callName;
+  FutureCallInfo({
+    required this.callName,
+  });
 }
 
 class QueryInfo {
