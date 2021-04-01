@@ -110,8 +110,6 @@ void main() {
     });
 
     test('Write and read null values', () async {
-      var dateTime = DateTime(1976, 9, 10, 2, 10);
-
       var types = Types();
 
       int? count = await client.basicDatabase.countRows();
@@ -136,6 +134,16 @@ void main() {
         expect(storedTypes.aString, isNull);
         expect(storedTypes.aDateTime, isNull);
       }
+    });
+
+    test('Raw query', () async {
+      var types = Types();
+
+      int? id = await client.basicDatabase.storeTypes(types);
+      expect(id, isNotNull);
+
+      int? storedId = await client.basicDatabase.getTypesRawQuery(id);
+      expect(storedId, equals(id));
     });
   });
 

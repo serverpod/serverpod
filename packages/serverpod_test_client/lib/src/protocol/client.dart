@@ -56,6 +56,12 @@ class _EndpointBasicDatabase {
     });
   }
 
+  Future<int?> getTypesRawQuery(int? id,) async {
+    return await client.callServerEndpoint('basicDatabase', 'getTypesRawQuery', 'int', {
+      'id':id,
+    });
+  }
+
   Future<int?> countRows() async {
     return await client.callServerEndpoint('basicDatabase', 'countRows', 'int', {
     });

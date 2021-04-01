@@ -349,7 +349,7 @@ class DatabaseConnection {
     DateTime startTime = DateTime.now();
 
     try {
-      var result = await postgresConnection.query(query, allowReuse: false, timeoutInSeconds: timeoutInSeconds);
+      var result = await postgresConnection.query(query, allowReuse: false, timeoutInSeconds: timeoutInSeconds, substitutionValues: {});
       _logQuery(session, query, startTime);
       return result;
     }

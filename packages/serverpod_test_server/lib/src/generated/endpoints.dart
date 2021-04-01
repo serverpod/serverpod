@@ -91,6 +91,15 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).getTypes(session,params['id'],);
           },
         ),
+        'getTypesRawQuery': MethodConnector(
+          name: 'getTypesRawQuery',
+          params: {
+            'id': ParameterDescription(name: 'id', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).getTypesRawQuery(session,params['id'],);
+          },
+        ),
         'countRows': MethodConnector(
           name: 'countRows',
           params: {
