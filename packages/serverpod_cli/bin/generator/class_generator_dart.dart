@@ -101,7 +101,7 @@ class ClassGeneratorDart extends ClassGenerator{
 
     // Handle ordinary classes
     try {
-      String tableName = doc['tableName'];
+      String tableName = doc['table'];
       String className = _expectString(doc, 'class');
       Map docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
