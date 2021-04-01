@@ -26,7 +26,7 @@ class FutureCallManager {
       serverId: serverId,
     );
 
-    DatabaseConnection dbConn = DatabaseConnection(_server.database);
+    DatabaseConnection dbConn = DatabaseConnection(_server.databaseConnection);
     await dbConn.insert(entry);
   }
 
@@ -52,7 +52,7 @@ class FutureCallManager {
   }
 
   Future<Null> _checkQueue() async {
-    DatabaseConnection dbConn = DatabaseConnection(_server.database);
+    DatabaseConnection dbConn = DatabaseConnection(_server.databaseConnection);
 
     try {
       // Get calls

@@ -5,8 +5,6 @@ import 'server.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import '../generated/protocol.dart';
 import '../database/database.dart';
-import '../database/database_connection.dart';
-import '../database/table.dart';
 
 class Session {
   final Uri? uri;
@@ -29,20 +27,14 @@ class Session {
   String? _methodName;
   String? get methodName => _methodName;
 
-  DatabaseConnection? _databaseConnection;
-  Future<DatabaseConnection> get databaseConnection async {
-    if (_databaseConnection != null)
-      return _databaseConnection!;
-
-    return DatabaseConnection(server.database);
-  }
-
   Map<String, String>? _queryParameters;
   Map<String, String>? get queryParameters => _queryParameters;
 
   final String? endpointName;
 
-  Session({required this.server, this.uri, this.body, this.endpointName, String? authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.httpRequest}) {
+  late final Database db;
+
+  Session({required this.server, this.uri, this.body, this.endpointName, String? authenticationKey, this.maxLifeTime=const Duration(minutes: 2), this.httpRequest}){
     _timeCreated = DateTime.now();
 
     if (body == null || body == '' || body == 'null') {
@@ -58,6 +50,8 @@ class Session {
       _authenticationKey = _queryParameters!['auth'];
 
     _methodName = _queryParameters!['method'];
+
+    db = Database(session: this);
   }
 
   bool _initialized = false;
@@ -110,104 +104,6 @@ class Session {
 
   logFatal(String message, {StackTrace? stackTrace}) {
     log.add(LogInfo(LogLevel.fatal, message, stackTrace: stackTrace));
-  }
-
-  Future<TableRow?> findById(Table table, int id) async {
-    var conn = await databaseConnection;
-    return await conn.findById(table, id, session: this);
-  }
-
-  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true}) async {
-    var conn = await databaseConnection;
-    
-    return await conn.find(
-      table,
-      where: where,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      session: this,
-    );
-  }
-
-  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true}) async {
-    var conn = await databaseConnection;
-
-    return await conn.findSingleRow(
-      table,
-      where: where,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      session: this,
-    );
-  }
-
-  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true}) async {
-    var conn = await databaseConnection;
-
-    return await conn.count(
-      table,
-      where: where,
-      limit: limit,
-      useCache: useCache,
-      session: this,
-    );
-  }
-
-  Future<bool> update(TableRow row, {Transaction? transaction}) async {
-    var conn = await databaseConnection;
-
-    return await conn.update(
-      row,
-      transaction: transaction,
-      session: this,
-    );
-  }
-
-  Future<bool> insert(TableRow row, {Transaction? transaction}) async {
-    var conn = await databaseConnection;
-
-    return await conn.insert(
-      row,
-      transaction: transaction,
-      session: this,
-    );
-  }
-
-  Future<int> delete(Table table, {Expression? where, Transaction? transaction}) async {
-    var conn = await databaseConnection;
-
-    return await conn.delete(
-      table,
-      where: where!,
-      transaction: transaction,
-      session: this,
-    );
-  }
-
-  Future<bool> deleteRow(TableRow row, {Transaction? transaction}) async {
-    var conn = await databaseConnection;
-
-    return await conn.deleteRow(
-      row,
-      transaction: transaction,
-      session: this,
-    );
-  }
-
-  Future<List<List<dynamic>>> query(String query, {int? timeoutInSeconds}) async {
-    var conn = await databaseConnection;
-
-    return conn.query(
-      query,
-      session: this,
-      timeoutInSeconds: timeoutInSeconds,
-    );
   }
 }
 

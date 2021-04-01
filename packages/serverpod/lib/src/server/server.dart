@@ -9,7 +9,7 @@ import 'future_call_manager.dart';
 import 'serverpod.dart';
 import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
-import '../database/database.dart';
+import '../database/database_config.dart';
 import '../generated/protocol.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
@@ -18,7 +18,7 @@ class Server {
   final int serverId;
   final int port;
   final String runMode;
-  Database database;
+  DatabaseConfig databaseConnection;
   final SerializationManager serializationManager;
   final AuthenticationHandler? authenticationHandler;
   final Caches caches;
@@ -41,7 +41,7 @@ class Server {
     required this.serverId,
     required this.port,
     required this.serializationManager,
-    required this.database,
+    required this.databaseConnection,
     Map<String, String>? passwords,
     required this.runMode,
     this.authenticationHandler,

@@ -9,7 +9,7 @@ import 'package:yaml/yaml.dart';
 import '../authentication/authentication_info.dart';
 import '../authentication/serviceAuthentication.dart';
 import '../cache/caches.dart';
-import '../database/database.dart';
+import '../database/database_config.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
 import '../generated/endpoints.dart' as internal;
@@ -36,7 +36,7 @@ class Serverpod {
 
   final EndpointDispatch endpoints;
 
-  late Database database;
+  late DatabaseConfig database;
   late Caches _caches;
   Caches get caches => _caches;
 
@@ -87,7 +87,7 @@ class Serverpod {
     }
 
     // Setup database
-    database = Database(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
+    database = DatabaseConfig(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
 
     _caches = Caches(serializationManager, config, serverId);
 
@@ -96,7 +96,7 @@ class Serverpod {
       serverId: serverId,
       port: config.port ?? 8080,
       serializationManager: serializationManager,
-      database: database,
+      databaseConnection: database,
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
@@ -161,7 +161,7 @@ class Serverpod {
       serverId: serverId,
       port: config.servicePort ?? 8081,
       serializationManager: _internalSerializationManager,
-      database: database,
+      databaseConnection: database,
       passwords: _passwords,
       runMode: _runMode,
       name: 'Insights',

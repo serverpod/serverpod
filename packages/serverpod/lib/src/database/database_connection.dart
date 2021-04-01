@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'database.dart';
+import 'database_config.dart';
 import 'table.dart';
+import 'expressions.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import '../server/session.dart';
 
 class DatabaseConnection {
-  final Database database;
+  final DatabaseConfig database;
   late PgPool postgresConnection;
 
 //  PostgreSQLConnection postgresConnection;
@@ -224,7 +225,7 @@ class DatabaseConnection {
     for(String column in data.keys as Iterable<String>) {
       if (column == 'id')
         continue;
-      String value = Database.encoder.convert(data[column]);
+      String value = DatabaseConfig.encoder.convert(data[column]);
 
       updatesList.add('"$column" = $value');
     }
@@ -260,7 +261,7 @@ class DatabaseConnection {
       if (column == 'id')
         continue;
 
-      String value = Database.encoder.convert(data[column]);
+      String value = DatabaseConfig.encoder.convert(data[column]);
 
       columnsList.add('"$column"');
       valueList.add(value);

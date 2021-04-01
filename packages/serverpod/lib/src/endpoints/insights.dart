@@ -10,7 +10,7 @@ class InsightsEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   Future<LogResult> getLog(Session session, int? numEntries) async {
-    var rows = await session.find(
+    var rows = await session.db.find(
       tLogEntry,
       limit: numEntries,
       orderBy: tLogEntry.id,
@@ -22,7 +22,7 @@ class InsightsEndpoint extends Endpoint {
   }
 
   Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {
-    var rows = await session.find(
+    var rows = await session.db.find(
       tSessionLogEntry,
       limit: numEntries,
       orderBy: tSessionLogEntry.id,
@@ -31,14 +31,14 @@ class InsightsEndpoint extends Endpoint {
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (SessionLogEntry logEntry in rows as Iterable<SessionLogEntry>) {
-      var messageLogRows = await session.find(
+      var messageLogRows = await session.db.find(
         tLogEntry,
         where: tLogEntry.sessionLogId.equals(logEntry.id),
         orderBy: tLogEntry.id,
         orderDescending: true,
       );
 
-      var queryLogRows = await session.find(
+      var queryLogRows = await session.db.find(
         tQueryLogEntry,
         where: tQueryLogEntry.sessionLogId.equals(logEntry.id),
         orderBy: tQueryLogEntry.id,
