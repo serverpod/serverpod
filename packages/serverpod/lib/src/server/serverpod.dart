@@ -215,9 +215,9 @@ class Serverpod {
     }
   }
 
-  Future<int?> logSession(String? endpoint, String? method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, String? authenticatedUser, String? exception, StackTrace? stackTrace) async {
+  Future<int?> logSession(String? endpoint, String? method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, int? authenticatedUserId, String? exception, StackTrace? stackTrace) async {
     if (_runMode == ServerpodRunMode.development) {
-      print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
+      print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUserId');
       if (exception != null) {
         print('$exception');
         print('$stackTrace');
@@ -240,7 +240,7 @@ class Serverpod {
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
-        authenticatedUser: authenticatedUser,
+        authenticatedUserId: authenticatedUserId,
       );
 
       try {
@@ -275,7 +275,7 @@ class Serverpod {
       }
       catch(e, logStackTrace) {
         print('${DateTime.now()} FAILED TO LOG SESSION');
-        print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUser');
+        print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUserId');
         print('CALL error: $exception');
         print('$logStackTrace');
 

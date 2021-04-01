@@ -21,7 +21,7 @@ class SessionLogEntry extends TableRow {
   bool? slow;
   String? error;
   String? stackTrace;
-  String? authenticatedUser;
+  int? authenticatedUserId;
 
   SessionLogEntry({
     this.id,
@@ -34,7 +34,7 @@ class SessionLogEntry extends TableRow {
     this.slow,
     this.error,
     this.stackTrace,
-    this.authenticatedUser,
+    this.authenticatedUserId,
 });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -49,7 +49,7 @@ class SessionLogEntry extends TableRow {
     slow = _data['slow'];
     error = _data['error'];
     stackTrace = _data['stackTrace'];
-    authenticatedUser = _data['authenticatedUser'];
+    authenticatedUserId = _data['authenticatedUserId'];
   }
 
   Map<String, dynamic> serialize() {
@@ -64,7 +64,7 @@ class SessionLogEntry extends TableRow {
       'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUser': authenticatedUser,
+      'authenticatedUserId': authenticatedUserId,
     });
   }
   Map<String, dynamic> serializeForDatabase() {
@@ -79,7 +79,7 @@ class SessionLogEntry extends TableRow {
       'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUser': authenticatedUser,
+      'authenticatedUserId': authenticatedUserId,
     });
   }
 
@@ -95,7 +95,7 @@ class SessionLogEntry extends TableRow {
       'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUser': authenticatedUser,
+      'authenticatedUserId': authenticatedUserId,
     });
   }
 }
@@ -114,7 +114,7 @@ class SessionLogEntryTable extends Table {
   final slow = ColumnBool('slow');
   final error = ColumnString('error');
   final stackTrace = ColumnString('stackTrace');
-  final authenticatedUser = ColumnString('authenticatedUser');
+  final authenticatedUserId = ColumnInt('authenticatedUserId');
 
   List<Column> get columns => [
     id,
@@ -127,7 +127,7 @@ class SessionLogEntryTable extends Table {
     slow,
     error,
     stackTrace,
-    authenticatedUser,
+    authenticatedUserId,
   ];
 }
 

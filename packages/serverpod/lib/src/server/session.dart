@@ -21,7 +21,7 @@ class Session {
   final List<QueryInfo> queries = <QueryInfo>[];
   final List<LogInfo> log = <LogInfo>[];
 
-  String? _authenticatedUser;
+  int? _authenticatedUser;
   Set<Scope>? _scopes;
 
   late final Database db;
@@ -90,12 +90,12 @@ class Session {
     if (server.authenticationHandler != null  && _authenticationKey != null) {
       var authenticationInfo = await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
-      _authenticatedUser = authenticationInfo?.authenticatedUser;
+      _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
     _initialized = true;
   }
 
-  Future<String?> get authenticatedUser async {
+  Future<int?> get authenticatedUserId async {
     if (!_initialized)
       await _initialize();
     return _authenticatedUser;
@@ -108,7 +108,7 @@ class Session {
   }
 
   Future<bool> get isUserSignedIn async {
-    return (await authenticatedUser) != null;
+    return (await authenticatedUserId) != null;
   }
   
   Duration get runningTime => DateTime.now().difference(_timeCreated);

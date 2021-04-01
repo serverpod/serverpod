@@ -90,9 +90,9 @@ abstract class EndpointDispatch {
       var result = await method.call(session, paramMap);
 
       // Print session info
-      String? authenticatedUser = connector.endpoint.requireLogin ? await session.authenticatedUser : null;
+      int? authenticatedUserId = connector.endpoint.requireLogin ? await session.authenticatedUserId : null;
       if (connector.endpoint.logSessions)
-        server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.log, authenticatedUser, null, null);
+        server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.log, authenticatedUserId, null, null);
 
       await session.close();
 

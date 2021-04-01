@@ -20,7 +20,7 @@ class SessionLogEntry extends SerializableEntity {
   bool? slow;
   String? error;
   String? stackTrace;
-  String? authenticatedUser;
+  int? authenticatedUserId;
 
   SessionLogEntry({
     this.id,
@@ -33,7 +33,7 @@ class SessionLogEntry extends SerializableEntity {
     this.slow,
     this.error,
     this.stackTrace,
-    this.authenticatedUser,
+    this.authenticatedUserId,
 });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -48,7 +48,7 @@ class SessionLogEntry extends SerializableEntity {
     slow = _data['slow'];
     error = _data['error'];
     stackTrace = _data['stackTrace'];
-    authenticatedUser = _data['authenticatedUser'];
+    authenticatedUserId = _data['authenticatedUserId'];
   }
 
   Map<String, dynamic> serialize() {
@@ -63,7 +63,7 @@ class SessionLogEntry extends SerializableEntity {
       'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUser': authenticatedUser,
+      'authenticatedUserId': authenticatedUserId,
     });
   }
 }
