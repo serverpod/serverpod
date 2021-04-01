@@ -1,0 +1,4 @@
+class: SimpleData
+tableName: simple_data
+fields:
+  num: int
