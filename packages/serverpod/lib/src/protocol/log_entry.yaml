@@ -1,5 +1,5 @@
 class: LogEntry
-tableName: serverpod_log
+table: serverpod_log
 fields:
   serverId: int
   time: DateTime

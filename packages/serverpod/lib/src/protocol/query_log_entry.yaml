@@ -1,5 +1,5 @@
 class: QueryLogEntry
-tableName: serverpod_query_log
+table: serverpod_query_log
 fields:
   sessionLogId: int
   query: String

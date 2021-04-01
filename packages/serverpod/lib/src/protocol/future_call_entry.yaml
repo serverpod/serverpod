@@ -1,5 +1,5 @@
 class: FutureCallEntry
-tableName: serverpod_future_call
+table: serverpod_future_call
 fields:
   name: String
   time: DateTime

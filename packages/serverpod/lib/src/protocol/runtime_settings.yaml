@@ -1,5 +1,5 @@
 class: RuntimeSettings
-tableName: serverpod_runtime_settings
+table: serverpod_runtime_settings
 fields:
   logAllCalls: bool
   logAllQueries: bool
