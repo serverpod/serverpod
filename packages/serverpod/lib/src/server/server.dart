@@ -245,34 +245,7 @@ class Server {
   Future _handleUriCall(Uri uri, String body, HttpRequest request) async {
     String endpointName = uri.path.substring(1);
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
-
-//    Endpoint endpoint = endpoints[endpointName];
-//
-//    if (endpoints.connectors[endpointName] == null)
-//      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri from ${request.connectionInfo.remoteAddress.address}');
-//
-//    return endpoint.handleUriCall(uri, body, request);
   }
-
-  // void logDebug(String message) {
-  //   serverpod.log(LogLevel.debug, message);
-  // }
-  //
-  // void logInfo(String message) {
-  //   serverpod.log(LogLevel.info, message);
-  // }
-  //
-  // void logWarning(String warning, {StackTrace? stackTrace}) {
-  //   serverpod.log(LogLevel.warning, warning, stackTrace: stackTrace);
-  // }
-  //
-  // void logError(String error, {StackTrace? stackTrace}) {
-  //   serverpod.log(LogLevel.error, error, stackTrace: stackTrace);
-  // }
-  //
-  // void logFatal(String error, {StackTrace? stackTrace}) {
-  //   serverpod.log(LogLevel.fatal, error, stackTrace: stackTrace);
-  // }
 
   void shutdown() {
     _httpServer.close();
