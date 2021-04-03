@@ -56,14 +56,6 @@ class Server {
     _futureCallManager = FutureCallManager(this, serializationManager);
   }
 
-//  void addEndpoint(Endpoint endpoint, String name) {
-//    if (endpoints.containsKey(name))
-//      logWarning('Added endpoint with duplicate name ($name)');
-//
-//    endpoint.initialize(this, name);
-//    endpoints[name] = endpoint;
-//  }
-
   void addFutureCall(FutureCall call, String name) {
     _futureCallManager.addFutureCall(call, name);
   }
@@ -181,7 +173,7 @@ class Server {
 
     String? body;
     try {
-      body = await _readBody(request); // request.transform(Utf8Decoder()).join();
+      body = await _readBody(request);
     }
     catch (e, stackTrace) {
       stderr.writeln('Internal server error.');
