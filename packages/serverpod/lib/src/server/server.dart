@@ -75,28 +75,8 @@ class Server {
 
   Future<void> start() async {
     if (securityContext != null) {
-      HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then((HttpServer httpServer) {
-        _httpServer = httpServer;
-        httpServer.autoCompress = true;
-        httpServer.listen(
-          (HttpRequest request) {
-            try {
-              _handleRequest(request);
-            }
-            catch(e, t) {
-              print(e);
-              print(t);
-            }
-          },
-          onError: (e, StackTrace stackTrace) {
-            stderr.writeln('Internal server error.');
-            stderr.writeln('$e');
-            stderr.writeln('$stackTrace');
-          },
-        ).onDone(() {
-          print('$name stopped');
-        });
-      },
+      HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then(
+      _runServer,
       onError: (e, StackTrace stackTrace) {
         stderr.writeln('Internal server error.');
         stderr.writeln('$e');
@@ -104,28 +84,8 @@ class Server {
       });
     }
     else {
-      HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
-        _httpServer = httpServer;
-        httpServer.autoCompress = true;
-        httpServer.listen(
-          (HttpRequest request) {
-            try {
-              _handleRequest(request);
-            }
-            catch(e, t) {
-              print(e);
-              print(t);
-            }
-          },
-          onError: (e, StackTrace stackTrace) {
-            stderr.writeln('Internal server error.');
-            stderr.writeln('$e');
-            stderr.writeln('$stackTrace');
-          },
-        ).onDone(() {
-          print('$name stopped');
-        });
-      },
+      HttpServer.bind(InternetAddress.anyIPv6, port).then(
+      _runServer,
       onError: (e, StackTrace stackTrace) {
         stderr.writeln('Internal server error.');
         stderr.writeln('$e');
@@ -138,6 +98,29 @@ class Server {
 
     _running = true;
     print('$name listening on port ${port}');
+  }
+
+  void _runServer(HttpServer httpServer) {
+    _httpServer = httpServer;
+    httpServer.autoCompress = true;
+    httpServer.listen(
+          (HttpRequest request) {
+        try {
+          _handleRequest(request);
+        }
+        catch(e, t) {
+          print(e);
+          print(t);
+        }
+      },
+      onError: (e, StackTrace stackTrace) {
+        stderr.writeln('Internal server error.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+      },
+    ).onDone(() {
+      print('$name stopped');
+    });
   }
 
   Future<Null> _handleRequest(HttpRequest request) async {
