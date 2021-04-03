@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
@@ -207,48 +209,70 @@ void main() {
       expect(list.rows!.first.num, equals(0));
       expect(list.rows!.last.num, equals(19));
     });
+
+    test('Update row', () async {
+      await setupTestData(client);
+
+      bool? result = await client.basicDatabase.updateSimpleDataRow(0, 1000);
+      expect(result, isNotNull);
+      expect(result, equals(true));
+
+      int? count = await client.basicDatabase.countSimpleData();
+      expect(count, isNotNull);
+      expect(count, equals(100));
+
+      SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(100, 0, 100, true);
+      expect(list, isNotNull);
+      expect(list!.rows!.length, equals(99));
+    });
+
+    test('Simple transaction', () async {
+      await setupTestData(client);
+
+      await client.transactionsDatabase.removeRow(50);
+
+      int? count = await client.basicDatabase.countSimpleData();
+      expect(count, isNotNull);
+      expect(count, equals(99));
+    });
+
+    test('Complex transaction', () async {
+      await setupTestData(client);
+
+      bool? result = await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
+      expect(result, isNotNull);
+      expect(result, equals(true));
+
+      SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
+      expect(list, isNotNull);
+      expect(list!.rows!.length, equals(100));
+
+      expect(list.rows!.first.num, equals(1));
+      expect(list.rows![98].num, equals(500));
+      expect(list.rows!.last.num, equals(1000));
+    });
   });
 
-  test('Update row', () async {
-    await setupTestData(client);
+  group('Async tasks', () {
+    test('Async database insert', () async {
+      await setupTestData(client);
 
-    bool? result = await client.basicDatabase.updateSimpleDataRow(0, 1000);
-    expect(result, isNotNull);
-    expect(result, equals(true));
+      await client.asyncTasks.insertRowToSimpleDataAfterDelay(1000, 1);
+      int? numRows = await client.basicDatabase.countSimpleData();
+      expect(numRows, isNotNull);
+      expect(numRows, equals(100));
 
-    int? count = await client.basicDatabase.countSimpleData();
-    expect(count, isNotNull);
-    expect(count, equals(100));
+      await Future.delayed(Duration(seconds: 2));
 
-    SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(100, 0, 100, true);
-    expect(list, isNotNull);
-    expect(list!.rows!.length, equals(99));
-  });
+      numRows = await client.basicDatabase.countSimpleData();
+      expect(numRows, isNotNull);
+      expect(numRows, equals(101));
+    });
 
-  test('Simple transaction', () async {
-    await setupTestData(client);
-
-    await client.transactionsDatabase.removeRow(50);
-
-    int? count = await client.basicDatabase.countSimpleData();
-    expect(count, isNotNull);
-    expect(count, equals(99));
-  });
-
-  test('Complex transaction', () async {
-    await setupTestData(client);
-
-    bool? result = await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
-    expect(result, isNotNull);
-    expect(result, equals(true));
-
-    SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
-    expect(list, isNotNull);
-    expect(list!.rows!.length, equals(100));
-
-    expect(list.rows!.first.num, equals(1));
-    expect(list.rows![98].num, equals(500));
-    expect(list.rows!.last.num, equals(1000));
+    test('Exception after delay', () async {
+      await client.asyncTasks.throwExceptionAfterDelay(1);
+      // TODO: Check that it is recorded in error logs.
+    });
   });
 
 //  test('Type List<int>', () async {

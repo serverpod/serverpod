@@ -139,6 +139,24 @@ class _EndpointSimple {
   }
 }
 
+class _EndpointAsyncTasks {
+  Client client;
+  _EndpointAsyncTasks(this.client);
+
+  Future<void> insertRowToSimpleDataAfterDelay(int? num,int? seconds,) async {
+    return await client.callServerEndpoint('asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
+      'num':num,
+      'seconds':seconds,
+    });
+  }
+
+  Future<void> throwExceptionAfterDelay(int? seconds,) async {
+    return await client.callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
+      'seconds':seconds,
+    });
+  }
+}
+
 class _EndpointTransactionsDatabase {
   Client client;
   _EndpointTransactionsDatabase(this.client);
@@ -162,12 +180,14 @@ class Client extends ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
   late final _EndpointSimple simple;
+  late final _EndpointAsyncTasks asyncTasks;
   late final _EndpointTransactionsDatabase transactionsDatabase;
 
   Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
     simple = _EndpointSimple(this);
+    asyncTasks = _EndpointAsyncTasks(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
   }
 }

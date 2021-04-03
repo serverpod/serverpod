@@ -8,6 +8,7 @@ import 'protocol.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
 import '../endpoints/simple.dart';
+import '../endpoints/async_tasks.dart';
 import '../endpoints/database_transactions.dart';
 
 class Endpoints extends EndpointDispatch {
@@ -16,6 +17,7 @@ class Endpoints extends EndpointDispatch {
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
       'simple': SimpleEndpoint()..initialize(server, 'simple'),
+      'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks'),
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
     };
 
@@ -213,6 +215,32 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['simple'] as SimpleEndpoint).getGlobalInt(session,);
+          },
+        ),
+      },
+    );
+
+    connectors['asyncTasks'] = EndpointConnector(
+      name: 'asyncTasks',
+      endpoint: endpoints['asyncTasks']!,
+      methodConnectors: {
+        'insertRowToSimpleDataAfterDelay': MethodConnector(
+          name: 'insertRowToSimpleDataAfterDelay',
+          params: {
+            'num': ParameterDescription(name: 'num', type: int),
+            'seconds': ParameterDescription(name: 'seconds', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['asyncTasks'] as AsyncTasksEndpoint).insertRowToSimpleDataAfterDelay(session,params['num'],params['seconds'],);
+          },
+        ),
+        'throwExceptionAfterDelay': MethodConnector(
+          name: 'throwExceptionAfterDelay',
+          params: {
+            'seconds': ParameterDescription(name: 'seconds', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['asyncTasks'] as AsyncTasksEndpoint).throwExceptionAfterDelay(session,params['seconds'],);
           },
         ),
       },
