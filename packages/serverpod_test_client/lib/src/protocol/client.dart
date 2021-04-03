@@ -5,41 +5,6 @@ import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
-class _EndpointBasicTypes {
-  Client client;
-  _EndpointBasicTypes(this.client);
-
-  Future<int?> testInt(int? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testInt', 'int', {
-      'value':value,
-    });
-  }
-
-  Future<double?> testDouble(double? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testDouble', 'double', {
-      'value':value,
-    });
-  }
-
-  Future<bool?> testBool(bool? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testBool', 'bool', {
-      'value':value,
-    });
-  }
-
-  Future<DateTime?> testDateTime(DateTime? dateTime,) async {
-    return await client.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
-      'dateTime':dateTime,
-    });
-  }
-
-  Future<String?> testString(String? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testString', 'String', {
-      'value':value,
-    });
-  }
-}
-
 class _EndpointBasicDatabase {
   Client client;
   _EndpointBasicDatabase(this.client);
@@ -117,6 +82,41 @@ class _EndpointBasicDatabase {
   }
 }
 
+class _EndpointBasicTypes {
+  Client client;
+  _EndpointBasicTypes(this.client);
+
+  Future<int?> testInt(int? value,) async {
+    return await client.callServerEndpoint('basicTypes', 'testInt', 'int', {
+      'value':value,
+    });
+  }
+
+  Future<double?> testDouble(double? value,) async {
+    return await client.callServerEndpoint('basicTypes', 'testDouble', 'double', {
+      'value':value,
+    });
+  }
+
+  Future<bool?> testBool(bool? value,) async {
+    return await client.callServerEndpoint('basicTypes', 'testBool', 'bool', {
+      'value':value,
+    });
+  }
+
+  Future<DateTime?> testDateTime(DateTime? dateTime,) async {
+    return await client.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
+      'dateTime':dateTime,
+    });
+  }
+
+  Future<String?> testString(String? value,) async {
+    return await client.callServerEndpoint('basicTypes', 'testString', 'String', {
+      'value':value,
+    });
+  }
+}
+
 class _EndpointSimple {
   Client client;
   _EndpointSimple(this.client);
@@ -139,14 +139,35 @@ class _EndpointSimple {
   }
 }
 
+class _EndpointTransactionsDatabase {
+  Client client;
+  _EndpointTransactionsDatabase(this.client);
+
+  Future<void> removeRow(int? num,) async {
+    return await client.callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
+      'num':num,
+    });
+  }
+
+  Future<bool?> updateInsertDelete(int? numUpdate,int? numInsert,int? numDelete,) async {
+    return await client.callServerEndpoint('transactionsDatabase', 'updateInsertDelete', 'bool', {
+      'numUpdate':numUpdate,
+      'numInsert':numInsert,
+      'numDelete':numDelete,
+    });
+  }
+}
+
 class Client extends ServerpodClient {
-  late final _EndpointBasicTypes basicTypes;
   late final _EndpointBasicDatabase basicDatabase;
+  late final _EndpointBasicTypes basicTypes;
   late final _EndpointSimple simple;
+  late final _EndpointTransactionsDatabase transactionsDatabase;
 
   Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
-    basicTypes = _EndpointBasicTypes(this);
     basicDatabase = _EndpointBasicDatabase(this);
+    basicTypes = _EndpointBasicTypes(this);
     simple = _EndpointSimple(this);
+    transactionsDatabase = _EndpointTransactionsDatabase(this);
   }
 }

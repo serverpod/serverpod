@@ -113,4 +113,13 @@ class Database {
       timeoutInSeconds: timeoutInSeconds,
     );
   }
+
+  Future<bool> executeTransation(Transaction transaction) async {
+    var conn = await databaseConnection;
+
+    return conn.executeTransaction(
+      transaction,
+      session: session,
+    );
+  }
 }

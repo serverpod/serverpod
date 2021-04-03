@@ -225,6 +225,32 @@ void main() {
     expect(list!.rows!.length, equals(99));
   });
 
+  test('Simple transaction', () async {
+    await setupTestData(client);
+
+    await client.transactionsDatabase.removeRow(50);
+
+    int? count = await client.basicDatabase.countSimpleData();
+    expect(count, isNotNull);
+    expect(count, equals(99));
+  });
+
+  test('Complex transaction', () async {
+    await setupTestData(client);
+
+    bool? result = await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
+    expect(result, isNotNull);
+    expect(result, equals(true));
+
+    SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
+    expect(list, isNotNull);
+    expect(list!.rows!.length, equals(100));
+
+    expect(list.rows!.first.num, equals(1));
+    expect(list.rows![98].num, equals(500));
+    expect(list.rows!.last.num, equals(1000));
+  });
+
 //  test('Type List<int>', () async {
 //    List<int> result = await client.basicTypes.testIntList([1, 2, 3]);
 //    expect(result, equals([1, 2, 3]));

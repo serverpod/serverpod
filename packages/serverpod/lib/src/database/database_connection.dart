@@ -235,7 +235,6 @@ class DatabaseConnection {
 
     if (transaction != null) {
       transaction._queries.add(query);
-      transaction.connection = this;
       return false;
     }
 
@@ -273,7 +272,6 @@ class DatabaseConnection {
 
     if (transaction != null) {
       transaction._queries.add(query);
-      transaction.connection = this;
       return false;
     }
 
@@ -308,7 +306,6 @@ class DatabaseConnection {
 
     if (transaction != null) {
       transaction._queries.add(query);
-      transaction.connection = this;
       return 0;
     }
 
@@ -330,7 +327,6 @@ class DatabaseConnection {
 
     if (transaction != null) {
       transaction._queries.add(query);
-      transaction.connection = this;
       return false;
     }
 
@@ -357,6 +353,10 @@ class DatabaseConnection {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
+  }
+
+  Future<bool> executeTransaction(Transaction transaction, {Session? session}) async {
+    return await transaction._execute(postgresConnection);
   }
 
   void _logQuery(Session? session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
@@ -394,22 +394,29 @@ class Order {
 
 class Transaction {
   List<String> _queries = [];
-  DatabaseConnection? connection;
 
-  Future<bool> execute() async {
-    assert(_queries.length > 0, 'No queries added to transaction');
-    assert(connection != null, 'Database cannot be null');
+  Future<bool> _execute(PgPool postgresConnection) async {
+    // Ignore empty transactions
+    if (_queries.length == 0)
+      return true;
 
     try {
-      // TODO: Comply with new format
-//      await connection.postgresConnection.transaction((
-//          PostgreSQLExecutionContext ctx) async {
-//        for (var query in _queries) {
-//          await ctx.query(query);
-//        }
-//      });
+
+      var result = await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
+       for (var query in _queries) {
+         await ctx.query(
+           query,
+           substitutionValues: {},
+         );
+         print('TX query: $query');
+       }
+      });
+
+      print('result: $result');
     }
-    catch (e) {
+    catch (e, stackTrace) {
+      print('Failed transaction: $e');
+      print('$stackTrace');
       return false;
     }
     return true;
