@@ -240,7 +240,7 @@ class DatabaseConnection {
     }
 
     try {
-      int affectedRows = await postgresConnection.execute(query);
+      int affectedRows = await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {

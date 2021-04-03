@@ -1,0 +1,3 @@
+class: SimpleDataList
+fields:
+  rows: List<SimpleData>

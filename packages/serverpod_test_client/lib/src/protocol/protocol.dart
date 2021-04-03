@@ -7,9 +7,11 @@ import 'package:serverpod_client/serverpod_client.dart';
 
 import 'simple_data.dart';
 import 'types.dart';
+import 'simple_data_list.dart';
 
 export 'simple_data.dart';
 export 'types.dart';
+export 'simple_data_list.dart';
 export 'client.dart';
 
 class Protocol extends SerializationManager {
@@ -23,5 +25,6 @@ class Protocol extends SerializationManager {
   Protocol() {
     constructors['SimpleData'] = (Map<String, dynamic> serialization) => SimpleData.fromSerialization(serialization);
     constructors['Types'] = (Map<String, dynamic> serialization) => Types.fromSerialization(serialization);
+    constructors['SimpleDataList'] = (Map<String, dynamic> serialization) => SimpleDataList.fromSerialization(serialization);
   }
 }

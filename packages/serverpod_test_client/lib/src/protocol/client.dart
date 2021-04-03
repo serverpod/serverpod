@@ -99,6 +99,22 @@ class _EndpointBasicDatabase {
       'num':num,
     });
   }
+
+  Future<SimpleDataList?> findSimpleDataRowsLessThan(int? num,int? offset,int? limit,bool? descending,) async {
+    return await client.callServerEndpoint('basicDatabase', 'findSimpleDataRowsLessThan', 'SimpleDataList', {
+      'num':num,
+      'offset':offset,
+      'limit':limit,
+      'descending':descending,
+    });
+  }
+
+  Future<bool?> updateSimpleDataRow(int? num,int? newNum,) async {
+    return await client.callServerEndpoint('basicDatabase', 'updateSimpleDataRow', 'bool', {
+      'num':num,
+      'newNum':newNum,
+    });
+  }
 }
 
 class _EndpointSimple {

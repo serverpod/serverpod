@@ -159,6 +159,28 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).findAndDeleteSimpleTestData(session,params['num'],);
           },
         ),
+        'findSimpleDataRowsLessThan': MethodConnector(
+          name: 'findSimpleDataRowsLessThan',
+          params: {
+            'num': ParameterDescription(name: 'num', type: int),
+            'offset': ParameterDescription(name: 'offset', type: int),
+            'limit': ParameterDescription(name: 'limit', type: int),
+            'descending': ParameterDescription(name: 'descending', type: bool),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).findSimpleDataRowsLessThan(session,params['num'],params['offset'],params['limit'],params['descending'],);
+          },
+        ),
+        'updateSimpleDataRow': MethodConnector(
+          name: 'updateSimpleDataRow',
+          params: {
+            'num': ParameterDescription(name: 'num', type: int),
+            'newNum': ParameterDescription(name: 'newNum', type: int),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).updateSimpleDataRow(session,params['num'],params['newNum'],);
+          },
+        ),
       },
     );
 

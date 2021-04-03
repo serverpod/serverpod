@@ -67,4 +67,32 @@ class BasicDatabase extends Endpoint {
 
     return await session.db.deleteRow(data!);
   }
+
+  Future<SimpleDataList?> findSimpleDataRowsLessThan(Session session, int num, int offset, int limit, bool descending) async {
+    var rows = await session.db.find(
+      tSimpleData,
+      where: (tSimpleData.num < num),
+      offset: offset,
+      limit: limit,
+      orderBy: tSimpleData.num,
+      orderDescending: descending,
+    );
+
+    return SimpleDataList(
+      rows: rows.cast<SimpleData>(),
+    );
+  }
+
+  Future<bool?> updateSimpleDataRow(Session session, int num, int newNum) async {
+    SimpleData? data = await session.db.findSingleRow(
+      tSimpleData,
+      where: tSimpleData.num.equals(num),
+    ) as SimpleData?;
+
+    if (data == null)
+      return false;
+
+    data.num = newNum;
+    return await session.db.update(data);
+  }
 }
