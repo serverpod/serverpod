@@ -1,0 +1,34 @@
+class: Nullability
+fields:
+  anInt: int
+  aNullableInt: int?
+
+  aDouble: double
+  aNullableDouble: double?
+
+  aBool: bool
+  aNullableBool: bool?
+
+  aString: String
+  aNullableString: String
+
+  aDateTime: DateTime
+  aNullableDateTime: DateTime?
+
+  anObject: SimpleData
+  aNullableObject: SimpleData?
+
+  anIntList: List<int>
+  aNullableIntList: List<int>?
+  aListWithNullableInts: List<int?>
+  aNullableListWithNullableInts: List<int?>?
+
+  anObjectList: List<SimpleData>
+  aNullableObjectList: List<SimpleData>?
+  aListWithNullableObjects: List<SimpleData?>
+  aNullableListWithNullableObjects: List<SimpleData?>?
+
+  aDateTimeList: List<DateTime>
+  aNullableDateTimeList: List<DateTime>?
+  aListWithNullableDateTimes: List<DateTime?>
+  aNullableListWithNullableDateTimes: List<DateTime?>?

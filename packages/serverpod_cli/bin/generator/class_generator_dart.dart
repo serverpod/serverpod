@@ -2,6 +2,7 @@
 import 'package:yaml/yaml.dart';
 
 import 'class_generator.dart';
+import 'protocol_definition.dart';
 
 class ClassGeneratorDart extends ClassGenerator{
   final bool serverCode;
@@ -106,7 +107,7 @@ class ClassGeneratorDart extends ClassGenerator{
       Map docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
 
-      fields.add(_FieldDefinition('id', 'int'));
+      fields.add(_FieldDefinition('id', 'int?'));
       for (var docFieldName in docFields.keys) {
         fields.add(_FieldDefinition(docFieldName, docFields[docFieldName]));
       }
@@ -159,7 +160,7 @@ class ClassGeneratorDart extends ClassGenerator{
       // Fields
       for (var field in fields) {
         if (field.shouldIncludeField(serverCode))
-          out += '  ${field.typeWithNullability} ${field.name};\n';
+          out += '  ${field.type.nullable ? '' : 'late '}${field.type.type} ${field.name};\n';
       }
       out += '\n';
 
@@ -167,7 +168,7 @@ class ClassGeneratorDart extends ClassGenerator{
       out += '  $className({\n';
       for (var field in fields) {
         if (field.shouldIncludeField(serverCode))
-          out += '    this.${field.name},\n';
+          out += '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
       }
       out += '});\n';
       out += '\n';
@@ -275,7 +276,7 @@ class ClassGeneratorDart extends ClassGenerator{
     }
     else {
       print('Missing field (String) "$field"');
-      throw FormatException();
+      throw FormatException('Missing field (String) "$field"');
     }
   }
 
@@ -286,7 +287,7 @@ class ClassGeneratorDart extends ClassGenerator{
     }
     else {
       print('Missing field (Map) "$field"');
-      throw FormatException();
+      throw FormatException('Missing field (Map) "$field"');
     }
   }
 
@@ -362,105 +363,116 @@ class ClassGeneratorDart extends ClassGenerator{
 
 enum _FieldScope {
   database,
-  protocol,
+  api,
   all,
 }
 
 class _FieldDefinition {
   String name;
-  late String type;
+  late TypeDefinition type;
   bool nullable = true;
 
   String? get columnType {
-    if (type == 'int')
+    if (type.typeNonNullable == 'int')
       return 'ColumnInt';
-    if (type == 'double')
+    if (type.typeNonNullable == 'double')
       return 'ColumnDouble';
-    if (type == 'bool')
+    if (type.typeNonNullable == 'bool')
       return 'ColumnBool';
-    if (type == 'String')
+    if (type.typeNonNullable == 'String')
       return 'ColumnString';
-    if (type == 'DateTime')
+    if (type.typeNonNullable == 'DateTime')
       return 'ColumnDateTime';
     return null;
   }
 
-  get typeWithNullability => nullable ? '$type?' : type;
-
   _FieldScope scope = _FieldScope.all;
-
-  late bool isTypedList;
-  String? listType;
 
   _FieldDefinition(String name, String description) : this.name = name {
     var components = description.split(',').map((String s) { return s.trim(); }).toList();
-    type = components[0];
+    var typeStr = components[0];
 
     if (components.length == 2) {
       var scopeStr = components[1];
       if (scopeStr == 'database')
         scope = _FieldScope.database;
-      else if (scopeStr == 'protocol')
-        scope = _FieldScope.protocol;
+      else if (scopeStr == 'api')
+        scope = _FieldScope.api;
     }
 
-    isTypedList = type.startsWith('List<') && type.endsWith('>');
-    if (isTypedList)
-      listType = type.substring(5, type.length - 1);
+    type = TypeDefinition(typeStr);
   }
 
   String get serialization {
-    if (isTypedList) {
-      if (listType == 'String' || listType == 'int' || listType == 'double' || listType ==  'bool') {
+    if (type.isTypedList) {
+      if (type.listType!.typeNonNullable == 'String' || type.listType!.typeNonNullable == 'int' || type.listType!.typeNonNullable == 'double' || type.listType!.typeNonNullable ==  'bool') {
         return name;
       }
+      else if (type.listType!.typeNonNullable == 'DateTime') {
+        if (type.listType!.nullable)
+          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.toIso8601String())';
+        else
+          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String())';
+      }
       else {
-        return '$name?.map(($listType a) => a.serialize()).toList()';
+        return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
       }
     }
 
-    if (type == 'String' || type == 'int' || type == 'double' || type == 'bool') {
+    if (type.typeNonNullable == 'String' || type.typeNonNullable == 'int' || type.typeNonNullable == 'double' || type.typeNonNullable == 'bool') {
       return name;
     }
-    else if (type == 'DateTime') {
-      return '$name?.toUtc().toIso8601String()';
+    else if (type.typeNonNullable == 'DateTime') {
+      return '$name${type.nullable ? '?' : ''}.toUtc().toIso8601String()';
     }
     else {
-      return '$name?.serialize()';
+      return '$name${type.nullable ? '?' : ''}.serialize()';
     }
   }
 
   String get deserialization {
-    if (isTypedList) {
-      if (listType == 'String' || listType == 'int' || listType == 'double' || listType == 'bool') {
-        return '_data[\'$name\']?.cast<$listType>()';
+    if (type.isTypedList) {
+      if (type.listType!.typeNonNullable == 'String' || type.listType!.typeNonNullable == 'int' || type.listType!.typeNonNullable == 'double' || type.listType!.typeNonNullable == 'bool') {
+        return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<${type.listType!.type}>()';
+      }
+      else if (type.listType!.typeNonNullable == 'DateTime') {
+        if (type.listType!.nullable)
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null)';
+        else
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => DateTime.tryParse(a)!)';
       }
       else {
-        return '_data[\'$name\']?.map<$listType>((a) => $listType.fromSerialization(a))?.toList()';
+        return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
       }
     }
 
-    if (type == 'String' || type == 'int' || type == 'double' || type == 'bool') {
-      return '_data[\'$name\']';
+    if (type.typeNonNullable == 'String' || type.typeNonNullable == 'int' || type.typeNonNullable == 'double' || type.typeNonNullable == 'bool') {
+      return '_data[\'$name\']${type.nullable ? '' : '!'}';
     }
-    else if (type == 'DateTime') {
-      return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
+    else if (type.typeNonNullable == 'DateTime') {
+      if (type.nullable)
+        return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
+      else
+        return 'DateTime.tryParse(_data[\'$name\'])!';
     }
     else {
-      return '_data[\'$name\'] != null ? $type.fromSerialization(_data[\'$name\']) : null';
+      if (type.nullable)
+        return '_data[\'$name\'] != null ? $type.fromSerialization(_data[\'$name\']) : null';
+      else
+        return '$type.fromSerialization(_data[\'$name\'])';
     }
   }
 
   bool shouldIncludeField(bool serverCode) {
     if (serverCode)
       return true;
-    if (scope == _FieldScope.all || scope == _FieldScope.protocol)
+    if (scope == _FieldScope.all || scope == _FieldScope.api)
       return true;
     return false;
   }
 
   bool shouldSerializeField(bool serverCode) {
-    if (scope == _FieldScope.all || scope == _FieldScope.protocol)
+    if (scope == _FieldScope.all || scope == _FieldScope.api)
       return true;
     return false;
   }

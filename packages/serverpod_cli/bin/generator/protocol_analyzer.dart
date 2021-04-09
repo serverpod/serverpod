@@ -62,7 +62,7 @@ class ProtocolAnalyzer {
                 for (var param in parameters) {
                   var paramDef = ParameterDefinition(
                     name: param.name,
-                    type: param.type.getDisplayString(withNullability: false),
+                    type: TypeDefinition(param.type.getDisplayString(withNullability: false)),
                   );
                   
                   if (param.isRequiredPositional)

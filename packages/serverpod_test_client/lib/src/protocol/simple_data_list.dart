@@ -11,23 +11,23 @@ class SimpleDataList extends SerializableEntity {
   String get className => 'SimpleDataList';
 
   int? id;
-  List<SimpleData>? rows;
+  late List<SimpleData> rows;
 
   SimpleDataList({
     this.id,
-    this.rows,
+    required this.rows,
 });
 
   SimpleDataList.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    rows = _data['rows']?.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
+    rows = _data['rows']!.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
   }
 
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'rows': rows?.map((SimpleData a) => a.serialize()).toList(),
+      'rows': rows.map((SimpleData a) => a.serialize()).toList(),
     });
   }
 }

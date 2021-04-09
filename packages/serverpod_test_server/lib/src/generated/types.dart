@@ -12,29 +12,29 @@ class Types extends TableRow {
   String get tableName => 'types';
 
   int? id;
-  int? anInt;
-  bool? aBool;
-  double? aDouble;
-  DateTime? aDateTime;
-  String? aString;
+  late int anInt;
+  late bool aBool;
+  late double aDouble;
+  late DateTime aDateTime;
+  late String aString;
 
   Types({
     this.id,
-    this.anInt,
-    this.aBool,
-    this.aDouble,
-    this.aDateTime,
-    this.aString,
+    required this.anInt,
+    required this.aBool,
+    required this.aDouble,
+    required this.aDateTime,
+    required this.aString,
 });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    anInt = _data['anInt'];
-    aBool = _data['aBool'];
-    aDouble = _data['aDouble'];
-    aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
-    aString = _data['aString'];
+    anInt = _data['anInt']!;
+    aBool = _data['aBool']!;
+    aDouble = _data['aDouble']!;
+    aDateTime = DateTime.tryParse(_data['aDateTime'])!;
+    aString = _data['aString']!;
   }
 
   Map<String, dynamic> serialize() {
@@ -43,7 +43,7 @@ class Types extends TableRow {
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime?.toUtc().toIso8601String(),
+      'aDateTime': aDateTime.toUtc().toIso8601String(),
       'aString': aString,
     });
   }
@@ -53,7 +53,7 @@ class Types extends TableRow {
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime?.toUtc().toIso8601String(),
+      'aDateTime': aDateTime.toUtc().toIso8601String(),
       'aString': aString,
     });
   }
@@ -64,7 +64,7 @@ class Types extends TableRow {
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime?.toUtc().toIso8601String(),
+      'aDateTime': aDateTime.toUtc().toIso8601String(),
       'aString': aString,
     });
   }

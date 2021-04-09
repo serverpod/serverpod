@@ -25,7 +25,46 @@ class MethodDefinition {
 
 class ParameterDefinition {
   final String name;
-  final String type;
+  final TypeDefinition type;
 
   ParameterDefinition({required this.name, required this.type,});
+}
+
+class TypeDefinition {
+  late final bool nullable;
+  late final bool isTypedList;
+  late final TypeDefinition? listType;
+  late final String typeNonNullable;
+  late final String type;
+
+  TypeDefinition(String type) {
+    // Remove all spaces
+    var trimmed = type.replaceAll(' ', '');
+
+    // Check if it's a nullable type
+    nullable = trimmed.endsWith('?');
+    String withoutQuestion = nullable ? trimmed.substring(0, trimmed.length - 1) : trimmed;
+
+    // Check if it's a list
+    isTypedList = withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
+    if (isTypedList) {
+      String listTypeStr = withoutQuestion.substring(5, withoutQuestion.length - 1);
+      listType = TypeDefinition(listTypeStr);
+    }
+
+    // Generate type strings
+    if (isTypedList) {
+      this.type = 'List<${listType!.type}>${nullable ? '?': ''}';
+      typeNonNullable = 'List<${listType!.typeNonNullable}>';
+    }
+    else {
+      this.type = '$withoutQuestion${nullable ? '?': ''}';
+      this.typeNonNullable = withoutQuestion;
+    }
+  }
+
+  @override
+  String toString() {
+    return type;
+  }
 }

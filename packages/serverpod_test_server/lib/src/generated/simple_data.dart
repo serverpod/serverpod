@@ -12,17 +12,17 @@ class SimpleData extends TableRow {
   String get tableName => 'simple_data';
 
   int? id;
-  int? num;
+  late int num;
 
   SimpleData({
     this.id,
-    this.num,
+    required this.num,
 });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    num = _data['num'];
+    num = _data['num']!;
   }
 
   Map<String, dynamic> serialize() {

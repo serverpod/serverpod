@@ -5,10 +5,12 @@ library protocol;
 
 import 'package:serverpod_client/serverpod_client.dart';
 
+import 'nullability.dart';
 import 'simple_data.dart';
 import 'types.dart';
 import 'simple_data_list.dart';
 
+export 'nullability.dart';
 export 'simple_data.dart';
 export 'types.dart';
 export 'simple_data_list.dart';
@@ -23,6 +25,7 @@ class Protocol extends SerializationManager {
   Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
+    constructors['Nullability'] = (Map<String, dynamic> serialization) => Nullability.fromSerialization(serialization);
     constructors['SimpleData'] = (Map<String, dynamic> serialization) => SimpleData.fromSerialization(serialization);
     constructors['Types'] = (Map<String, dynamic> serialization) => Types.fromSerialization(serialization);
     constructors['SimpleDataList'] = (Map<String, dynamic> serialization) => SimpleDataList.fromSerialization(serialization);
