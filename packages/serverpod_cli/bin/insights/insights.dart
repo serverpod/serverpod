@@ -10,7 +10,7 @@ final _dateFormat = DateFormat('yyyy-MM-dd hh:mm:ss');
 
 class Insights {
   Map<int, Client> _clients = <int, Client>{};
-  ServiceKeyManager _keyManager;
+  ServiceKeyManager? _keyManager;
 
   Insights(String configFile, {int serverId=0}) {
     var config = ServerConfig(configFile, serverId);
@@ -19,7 +19,7 @@ class Insights {
     for (int k in config.cluster.keys) {
       var context = SecurityContext();
       context.setTrustedCertificates(sslCertificatePath(configFile, k));
-      _clients[k] = Client('https://${config.cluster[k].address}:${config.cluster[k].servicePort}/', authenticationKeyManager: _keyManager, context: context);
+      _clients[k] = Client('https://${config.cluster[k]!.address}:${config.cluster[k]!.servicePort}/', authenticationKeyManager: _keyManager, context: context);
     }
   }
 
@@ -36,17 +36,17 @@ class Insights {
 
   Future<Null> healthCheck() async {
     for (var serverId in _clients.keys) {
-      var client = _clients[serverId];
+      var client = _clients[serverId]!;
       print(Colorize('Server id $serverId')..bold());
       print('host: ${client.host}');
 
       try {
-        var result = await client.insights.checkHealth();
+        var result = await client.insights.checkHealth() as ServerHealthResult;
         print('name: ${result.serverName}');
 
-        for (var metric in result.metrics) {
-          String metricStr = '${metric.name}: ${metric.isHealthy ? 'Healthy' : 'Broken'}${metric.value != null ? ' : ${metric.value}': ''}';
-          if (metric.isHealthy)
+        for (var metric in result.metrics!) {
+          String metricStr = '${metric.name}: ${metric.isHealthy! ? 'Healthy' : 'Broken'}${metric.value != null ? ' : ${metric.value}': ''}';
+          if (metric.isHealthy!)
             metricStr = '${Colorize(metricStr)..green()}';
           else
             metricStr = '${Colorize(metricStr)..red()}';
@@ -66,8 +66,8 @@ class Insights {
     var client = _clients[0] ?? _clients.values.first;
 
     try {
-      var log = await client.insights.getLog(n);
-      for (var entry in log.entries.reversed) {
+      var log = await client.insights.getLog(n) as LogResult;
+      for (var entry in log.entries!.reversed) {
         _printLogEntry(entry);
       }
     }
@@ -77,7 +77,7 @@ class Insights {
   }
 
   void _printLogEntry(LogEntry entry) {
-    var logLevel = LogLevel.values[entry.logLevel];
+    var logLevel = LogLevel.values[entry.logLevel!];
     String levelName = logLevel.name.toUpperCase();
     if (logLevel == LogLevel.error || logLevel == LogLevel.fatal)
       levelName = (Colorize(levelName)..red()).toString();
@@ -88,37 +88,37 @@ class Insights {
     if (logLevel == LogLevel.debug)
       levelName = (Colorize(levelName)..darkGray()).toString();
 
-    print('[${entry.serverId} ${_dateFormat.format(entry.time)} $levelName] ${entry.message}');
+    print('[${entry.serverId} ${_dateFormat.format(entry.time!)} $levelName] ${entry.message}');
 
     if (entry.stackTrace != null && entry.stackTrace != 'null')
-      print(Colorize(entry.stackTrace)..red());
+      print(Colorize(entry.stackTrace!)..red());
   }
   
   Future<Null> printSessionLogs(int n) async {
     var client = _clients[0] ?? _clients.values.first;
 
     try {
-      var sessionLog = await client.insights.getSessionLog(n);
-      for (var entry in sessionLog.sessionLog.reversed) {
-        String methodName = '${Colorize('${entry.sessionLogEntry.endpoint}.${entry.sessionLogEntry.method}')..bold()}';
-        String message = '[${entry.sessionLogEntry.serverId} ${_dateFormat.format(entry.sessionLogEntry.time)}] ' + methodName + ' time: ${entry.sessionLogEntry.duration.toStringAsFixed(3)}s';
-        if (entry.sessionLogEntry.error != null) {
+      var sessionLog = await client.insights.getSessionLog(n) as SessionLogResult;
+      for (var entry in sessionLog.sessionLog!.reversed) {
+        String methodName = '${Colorize('${entry.sessionLogEntry!.endpoint}.${entry.sessionLogEntry!.method}')..bold()}';
+        String message = '[${entry.sessionLogEntry!.serverId} ${_dateFormat.format(entry.sessionLogEntry!.time!)}] ' + methodName + ' time: ${entry.sessionLogEntry!.duration!.toStringAsFixed(3)}s';
+        if (entry.sessionLogEntry!.error != null) {
           print(Colorize(message)..red());
-          print(Colorize(entry.sessionLogEntry.error)..red());
-          print(entry.sessionLogEntry.stackTrace);
+          print(Colorize(entry.sessionLogEntry!.error!)..red());
+          print(entry.sessionLogEntry!.stackTrace);
         }
-        else if (entry.sessionLogEntry.slow) {
+        else if (entry.sessionLogEntry!.slow!) {
           print(Colorize(message)..yellow());
         }
         else {
           print(message);
         }
 
-        for (var query in entry.queries) {
-          print('${query.query} time: ${query.duration.toStringAsFixed(3)}s rows: ${query.numRows}');
+        for (var query in entry.queries!) {
+          print('${query.query} time: ${query.duration!.toStringAsFixed(3)}s rows: ${query.numRows}');
         }
 
-        for (var messageLogEntry in entry.messageLog) {
+        for (var messageLogEntry in entry.messageLog!) {
           _printLogEntry(messageLogEntry);
         }
         
@@ -132,18 +132,18 @@ class Insights {
     }
   }
 
-  Future<Null> printCachesInfo(bool printKeys) async {
+  Future<Null> printCachesInfo(bool? printKeys) async {
 
     for (int serverId in _clients.keys) {
-      var client = _clients[serverId];
+      var client = _clients[serverId]!;
 
       try {
-        var cachesInfo = await client.insights.getCachesInfo(printKeys);
+        var cachesInfo = await client.insights.getCachesInfo(printKeys) as CachesInfo;
 
-        _printCacheInfo(cachesInfo.local, 'local', serverId);
-        _printCacheInfo(cachesInfo.localPrio, 'localPrio', serverId);
-        _printCacheInfo(cachesInfo.distributed, 'distributed', serverId);
-        _printCacheInfo(cachesInfo.distributedPrio, 'distributedPrio', serverId);
+        _printCacheInfo(cachesInfo.local!, 'local', serverId);
+        _printCacheInfo(cachesInfo.localPrio!, 'localPrio', serverId);
+        _printCacheInfo(cachesInfo.distributed!, 'distributed', serverId);
+        _printCacheInfo(cachesInfo.distributedPrio!, 'distributedPrio', serverId);
       }
       catch (e, t) {
         print('Failed to get caches info from server $e $t');
@@ -154,7 +154,7 @@ class Insights {
   void _printCacheInfo(CacheInfo info, String name, int serverId) {
     print('Server: $serverId Cache: $name size: ${info.numEntries} / ${info.maxEntries}');
     if (info.keys != null) {
-      for (var key in info.keys)
+      for (var key in info.keys!)
         print('  $key');
       print('');
     }

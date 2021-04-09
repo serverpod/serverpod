@@ -2,7 +2,7 @@ class ProtocolDefinition {
   final List<EndpointDefinition> endpoints;
   final List<String> filePaths;
 
-  ProtocolDefinition({this.endpoints, this.filePaths,});
+  ProtocolDefinition({required this.endpoints, required this.filePaths,});
 }
 
 class EndpointDefinition {
@@ -10,7 +10,7 @@ class EndpointDefinition {
   final String className;
   final List<MethodDefinition> methods;
 
-  EndpointDefinition({this.name, this.methods, this.className,});
+  EndpointDefinition({required this.name, required this.methods, required this.className,});
 }
 
 class MethodDefinition {
@@ -20,12 +20,12 @@ class MethodDefinition {
   final List<ParameterDefinition> parametersPositional;
   final List<ParameterDefinition> parametersNamed;
 
-  MethodDefinition({this.name, this.parameters, this.parametersPositional, this.parametersNamed, this.returnType});
+  MethodDefinition({required this.name, required this.parameters, required this.parametersPositional, required this.parametersNamed, required this.returnType});
 }
 
 class ParameterDefinition {
   final String name;
   final String type;
 
-  ParameterDefinition({this.name, this.type,});
+  ParameterDefinition({required this.name, required this.type,});
 }

@@ -1,19 +1,19 @@
 import 'package:serverpod_shared/config.dart';
 
 class ConfigInfo {
-  int serverId;
-  ServerConfig config;
-  ConfigInfo(String configFile, this.serverId) {
+  int? serverId;
+  late ServerConfig config;
+  ConfigInfo(String configFile, {this.serverId}) {
     config = ServerConfig(configFile, serverId ?? 0);
   }
 
   void printAddress() {
     if (serverId != null) {
-      print(config.cluster[serverId].address);
+      print(config.cluster[serverId]!.address);
     }
     else {
       for (var id in config.cluster.keys)
-        print(config.cluster[id].address);
+        print(config.cluster[id]!.address);
     }
   }
 

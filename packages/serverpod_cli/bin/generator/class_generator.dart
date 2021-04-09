@@ -49,7 +49,7 @@ abstract class ClassGenerator {
 
           // Save generated file
           outFile.createSync();
-          outFile.writeAsStringSync(out);
+          outFile.writeAsStringSync(out ?? '');
         }
         catch(e, stackTrace) {
           print('Failed to generate ${entity.path}');
@@ -64,12 +64,12 @@ abstract class ClassGenerator {
     var outFile = File(outputPath + '/protocol$outputExtension');
     var out = generateFactory(classInfos);
     outFile.createSync();
-    outFile.writeAsStringSync(out);
+    outFile.writeAsStringSync(out ?? '');
   }
 
-  String generateFile(String input, String outputFileName, Set<ClassInfo> classNames);
+  String? generateFile(String input, String outputFileName, Set<ClassInfo> classNames);
 
-  String generateFactory(Set<ClassInfo> classNames);
+  String? generateFactory(Set<ClassInfo> classNames);
 
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split('/');
@@ -83,7 +83,7 @@ abstract class ClassGenerator {
 class ClassInfo {
   final String className;
   final String fileName;
-  final String tableName;
+  final String? tableName;
 
-  ClassInfo({this.className, this.fileName, this.tableName});
+  ClassInfo({required this.className, required this.fileName, this.tableName});
 }

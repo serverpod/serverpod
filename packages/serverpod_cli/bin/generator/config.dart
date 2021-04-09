@@ -4,14 +4,14 @@ import 'package:yaml/yaml.dart';
 var config = GeneratorConfig();
 
 class GeneratorConfig {
-  String sourceProtocol;
-  String sourceEndpoints;
+  late String sourceProtocol;
+  late String sourceEndpoints;
 
-  String generatedClientDart;
-  String generatedServerProtocol;
+  late String generatedClientDart;
+  late String generatedServerProtocol;
 
   bool load() {
-    Map generatorConfig;
+    Map? generatorConfig;
     try {
       var file = File('config/generate.yaml');
       var yamlStr = file.readAsStringSync();
@@ -22,29 +22,21 @@ class GeneratorConfig {
       return false;
     }
 
+    if (generatorConfig!['source-protocol'] == null)
+      throw FormatException('Option "source-protocol" is required in config/generator.yaml');
     sourceProtocol = generatorConfig['source-protocol'];
-    if (sourceProtocol == null) {
-      print('Option "source-protocol" is required in config/generator.yaml');
-      return false;
-    }
 
+    if (generatorConfig['source-enpoints'] == null)
+      throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
     sourceEndpoints = generatorConfig['source-enpoints'];
-    if (sourceEndpoints == null) {
-      print('Option "source-enpoints" is required in config/generator.yaml');
-      return false;
-    }
 
+    if (generatorConfig['generated-client-dart'] == null)
+      throw FormatException('Option "source-protocol" is required in config/generator.yaml');
     generatedClientDart = generatorConfig['generated-client-dart'];
-    if (generatedClientDart == null) {
-      print('Option "source-protocol" is required in config/generator.yaml');
-      return false;
-    }
 
+    if (generatorConfig['generated-server-protocol'] == null)
+      throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
     generatedServerProtocol = generatorConfig['generated-server-protocol'];
-    if (generatedServerProtocol == null) {
-      print('Option "source-enpoints" is required in config/generator.yaml');
-      return false;
-    }
 
     return true;
   }

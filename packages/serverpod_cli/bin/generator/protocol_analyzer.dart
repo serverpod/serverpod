@@ -7,7 +7,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 
-ProtocolAnalyzer _analyzer;
+ProtocolAnalyzer? _analyzer;
 
 Future<ProtocolDefinition> performAnalysis(bool verbose) async {
   var analyzer = _analyzer ?? ProtocolAnalyzer(config.sourceEndpoints);
@@ -16,7 +16,7 @@ Future<ProtocolDefinition> performAnalysis(bool verbose) async {
 
 class ProtocolAnalyzer {
   final Directory endpointDirectory;
-  AnalysisContextCollection collection;
+  late AnalysisContextCollection collection;
 
   ProtocolAnalyzer(String filePath) : endpointDirectory = Directory(filePath) {
     collection = AnalysisContextCollection(
@@ -37,13 +37,13 @@ class ProtocolAnalyzer {
         filePaths.add(filePath);
 
         var library = await context.currentSession.getResolvedLibrary(filePath);
-        var element = library.element;
+        var element = library.element!;
         var topElements = element.topLevelElements;
 
         for (var element in topElements) {
           if (element is ClassElement) {
             String className = element.name;
-            String superclassName = element.supertype.element.name;
+            String superclassName = element.supertype!.element.name;
             String endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {

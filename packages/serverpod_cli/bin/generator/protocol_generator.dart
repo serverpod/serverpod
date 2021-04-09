@@ -46,7 +46,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
 abstract class ProtocolGenerator {
   final ProtocolDefinition protocolDefinition;
 
-  ProtocolGenerator({this.protocolDefinition});
+  ProtocolGenerator({required this.protocolDefinition});
 
   String generateServerEndpointDispatch() {
     String out = '';

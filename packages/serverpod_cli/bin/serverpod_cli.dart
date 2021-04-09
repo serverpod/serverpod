@@ -79,55 +79,55 @@ void main(List<String> args) async {
   var results = parser.parse(args);
 
   if (results.command != null) {
-    if (results.command.name == cmdGenerate) {
-      performGenerate(results.command['verbose']);
+    if (results.command!.name == cmdGenerate) {
+      performGenerate(results.command!['verbose']);
       return;
     }
-    if (results.command.name == cmdGenerateContinuously) {
-      performGenerateContinuously(results.command['verbose']);
+    if (results.command!.name == cmdGenerateContinuously) {
+      performGenerateContinuously(results.command!['verbose']);
       return;
     }
-    if (results.command.name == cmdGenerateCertificates) {
-      await performGenerateCerts(results.command['config'], results.command['verbose']);
+    if (results.command!.name == cmdGenerateCertificates) {
+      await performGenerateCerts(results.command!['config'], results.command!['verbose']);
       return;
     }
-    if (results.command.name == cmdShutdown) {
-      var insights = Insights(results.command['config']);
+    if (results.command!.name == cmdShutdown) {
+      var insights = Insights(results.command!['config']);
       await insights.shutdown();
       insights.close();
       return;
     }
-    if (results.command.name == cmdHealthCheck) {
-      var insights = Insights(results.command['config']);
+    if (results.command!.name == cmdHealthCheck) {
+      var insights = Insights(results.command!['config']);
       await insights.healthCheck();
       insights.close();
       return;
     }
-    if (results.command.name == cmdLogs) {
-      var insights = Insights(results.command['config']);
-      await insights.printLogs(int.tryParse(results.command['num-entries']) ?? 100);
+    if (results.command!.name == cmdLogs) {
+      var insights = Insights(results.command!['config']);
+      await insights.printLogs(int.tryParse(results.command!['num-entries']) ?? 100);
       insights.close();
       return;
     }
-    if (results.command.name == cmdSessionLogs) {
-      var insights = Insights(results.command['config']);
-      await insights.printSessionLogs(int.tryParse(results.command['num-entries']) ?? 100);
+    if (results.command!.name == cmdSessionLogs) {
+      var insights = Insights(results.command!['config']);
+      await insights.printSessionLogs(int.tryParse(results.command!['num-entries']) ?? 100);
       insights.close();
       return;
     }
-    if (results.command.name == cmdCacheInfo) {
-      var insights = Insights(results.command['config']);
-      await insights.printCachesInfo(results.command['fetch-keys']);
+    if (results.command!.name == cmdCacheInfo) {
+      var insights = Insights(results.command!['config']);
+      await insights.printCachesInfo(results.command!['fetch-keys']);
       insights.close();
       return;
     }
-    if (results.command.name == cmdServerAddress) {
-      var configInfo = ConfigInfo(results.command['config'], int.tryParse(results.command['id']));
+    if (results.command!.name == cmdServerAddress) {
+      var configInfo = ConfigInfo(results.command!['config'], serverId: int.tryParse(results.command!['id'])!);
       configInfo.printAddress();
       return;
     }
-    if (results.command.name ==cmdServerIds) {
-      var configInfo = ConfigInfo(results.command['config'], 0);
+    if (results.command!.name == cmdServerIds) {
+      var configInfo = ConfigInfo(results.command!['config']);
       configInfo.printIds();
       return;
     }
@@ -145,13 +145,13 @@ void _printUsage(ArgParser parser) {
   print('${Colorize('COMMANDS')..bold()}');
   print('');
 
-  _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]);
-  _printCommandUsage(cmdGenerateContinuously, 'Continuously generate code from yaml files for server and clients', parser.commands[cmdGenerate]);
-  _printCommandUsage(cmdGenerateCertificates, 'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory', parser.commands[cmdGenerateCertificates]);
-  _printCommandUsage(cmdLogs, 'Print logs from a serverpod or a serverpod cluster', parser.commands[cmdLogs]);
-  _printCommandUsage(cmdSessionLogs, 'Print logs from a serverpod or a serverpod cluster listed by session', parser.commands[cmdSessionLogs]);
-  _printCommandUsage(cmdCacheInfo, 'Print info about what is stored in a server\'s caches', parser.commands[cmdCacheInfo], true);
-  _printCommandUsage(cmdShutdown, 'Shutdown a server cluster', parser.commands[cmdGenerate], true);
+  _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]!);
+  _printCommandUsage(cmdGenerateContinuously, 'Continuously generate code from yaml files for server and clients', parser.commands[cmdGenerate]!);
+  _printCommandUsage(cmdGenerateCertificates, 'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory', parser.commands[cmdGenerateCertificates]!);
+  _printCommandUsage(cmdLogs, 'Print logs from a serverpod or a serverpod cluster', parser.commands[cmdLogs]!);
+  _printCommandUsage(cmdSessionLogs, 'Print logs from a serverpod or a serverpod cluster listed by session', parser.commands[cmdSessionLogs]!);
+  _printCommandUsage(cmdCacheInfo, 'Print info about what is stored in a server\'s caches', parser.commands[cmdCacheInfo]!, true);
+  _printCommandUsage(cmdShutdown, 'Shutdown a server cluster', parser.commands[cmdGenerate]!, true);
 }
 
 void _printCommandUsage(String name, String descr, ArgParser parser, [bool last=false]) {

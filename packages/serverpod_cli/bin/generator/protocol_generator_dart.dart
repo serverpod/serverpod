@@ -4,7 +4,7 @@ import 'protocol_definition.dart';
 import 'protocol_generator.dart';
 
 class ProtocolGeneratorDart extends ProtocolGenerator {
-  ProtocolGeneratorDart({ProtocolDefinition protocolDefinition}) : super(protocolDefinition: protocolDefinition);
+  ProtocolGeneratorDart({required ProtocolDefinition protocolDefinition}) : super(protocolDefinition: protocolDefinition);
 
   String generateClientEndpointCalls() {
     String out = '';
@@ -41,13 +41,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out += '\n';
         out += '  Future<$returnTypeNoFuture${returnTypeNoFuture != 'void' ? '?' : ''}> ${methodDef.name}(';
 
-        if (requiredParams != null) {
-          for (var paramDef in requiredParams) {
-            out += '${paramDef.type}? ${paramDef.name},';
-          }
+        for (var paramDef in requiredParams) {
+          out += '${paramDef.type}? ${paramDef.name},';
         }
 
-        if (optionalParams != null && optionalParams.length > 0) {
+        if (optionalParams.length > 0) {
           out += '[';
 
           for (var paramDef in optionalParams) {
@@ -62,16 +60,12 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         // Call to server endpoint
         out += '    return await client.callServerEndpoint(\'${endpointDef.name}\', \'${methodDef.name}\', \'$returnTypeNoFuture\', {\n';
 
-        if (requiredParams != null) {
-          for (var paramDef in requiredParams) {
-            out += '      \'${paramDef.name}\':${paramDef.name},\n';
-          }
+        for (var paramDef in requiredParams) {
+          out += '      \'${paramDef.name}\':${paramDef.name},\n';
         }
 
-        if (optionalParams != null) {
-          for (var paramDef in optionalParams) {
-            out += '      \'${paramDef.name}\': ${paramDef.name},\n';
-          }
+        for (var paramDef in optionalParams) {
+          out += '      \'${paramDef.name}\': ${paramDef.name},\n';
         }
 
         out += '    });\n';

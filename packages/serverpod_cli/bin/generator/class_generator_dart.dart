@@ -10,7 +10,7 @@ class ClassGeneratorDart extends ClassGenerator{
 
   ClassGeneratorDart(String inputPath, String outputPath, bool verbose, this.serverCode) : super(inputPath, outputPath, verbose);
 
-  String generateFile(String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
+  String? generateFile(String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
     var doc = loadYaml(yamlStr);
     String out = '';
 
@@ -101,7 +101,7 @@ class ClassGeneratorDart extends ClassGenerator{
 
     // Handle ordinary classes
     try {
-      String tableName = doc['table'];
+      String? tableName = doc['table'];
       String className = _expectString(doc, 'class');
       Map docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
@@ -269,7 +269,7 @@ class ClassGeneratorDart extends ClassGenerator{
   }
 
   String _expectString(dynamic doc, String field) {
-    String value = doc[field];
+    String? value = doc[field];
     if (value != null) {
       return value;
     }
@@ -280,7 +280,7 @@ class ClassGeneratorDart extends ClassGenerator{
   }
 
   Map _expectMap(dynamic doc, String field) {
-    Map map = doc[field];
+    Map? map = doc[field];
     if (map != null) {
       return map;
     }
@@ -368,10 +368,10 @@ enum _FieldScope {
 
 class _FieldDefinition {
   String name;
-  String type;
+  late String type;
   bool nullable = true;
 
-  String get columnType {
+  String? get columnType {
     if (type == 'int')
       return 'ColumnInt';
     if (type == 'double')
@@ -389,12 +389,10 @@ class _FieldDefinition {
 
   _FieldScope scope = _FieldScope.all;
 
-  bool isTypedList;
-  String listType;
+  late bool isTypedList;
+  String? listType;
 
-  _FieldDefinition(String name, String description) {
-    this.name = name;
-
+  _FieldDefinition(String name, String description) : this.name = name {
     var components = description.split(',').map((String s) { return s.trim(); }).toList();
     type = components[0];
 
