@@ -71,7 +71,7 @@ abstract class EndpointDispatch {
         return ResultInvalidParams('Method $methodName not found in call: $uri');
       }
 
-      // TODO: Check paramters
+      // TODO: Check parameters and check null safety
 
       Map<String, dynamic> paramMap = {};
       for (var paramName in inputParams.keys) {
