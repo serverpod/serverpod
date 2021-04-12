@@ -3,6 +3,7 @@
 
 import 'package:serverpod/serverpod.dart';
 
+// ignore: unused_import
 import 'protocol.dart';
 
 import '../endpoints/cache.dart';

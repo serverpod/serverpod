@@ -133,9 +133,9 @@ class _EndpointSimple {
     });
   }
 
-  Future<int?> getGlobalInt() async {
+  Future<int> getGlobalInt() async {
     return await client.callServerEndpoint('simple', 'getGlobalInt', 'int', {
-    });
+    })!;
   }
 }
 

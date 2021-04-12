@@ -21,7 +21,6 @@ void main() {
     SimpleData? retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));
 
-    var missing = await cache.get('missing');
     retrieved = await cache.get('missing') as SimpleData?;
     expect(retrieved, isNull);
 

@@ -18,7 +18,7 @@ void main() {
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
       await client.simple.addToGlobalInt();
-      int? value = await client.simple.getGlobalInt();
+      int value = await client.simple.getGlobalInt();
       expect(value, equals(11));
     });
 
