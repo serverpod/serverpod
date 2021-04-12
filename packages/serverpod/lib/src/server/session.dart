@@ -86,7 +86,7 @@ class Session {
 
   bool _initialized = false;
 
-  Future<Null> _initialize() async {
+  Future<void> _initialize() async {
     if (server.authenticationHandler != null  && _authenticationKey != null) {
       var authenticationInfo = await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
@@ -113,7 +113,7 @@ class Session {
   
   Duration get runningTime => DateTime.now().difference(_timeCreated);
 
-  Future<Null> close() async {
+  Future<void> close() async {
   }
 
   logDebug(String message) {

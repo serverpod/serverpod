@@ -8,29 +8,34 @@ import 'package:serverpod/database.dart';
 import 'protocol.dart';
 
 class ReadWriteTestEntry extends TableRow {
+  @override
   String get className => 'ReadWriteTestEntry';
+  @override
   String get tableName => 'serverpod_readwrite_test';
 
   int? id;
-  int? number;
+  late int number;
 
   ReadWriteTestEntry({
     this.id,
-    this.number,
+    required this.number,
 });
 
   ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    number = _data['number'];
+    number = _data['number']!;
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'number': number,
     });
   }
+
+  @override
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
@@ -38,6 +43,7 @@ class ReadWriteTestEntry extends TableRow {
     });
   }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,

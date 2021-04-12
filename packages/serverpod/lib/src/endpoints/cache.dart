@@ -19,7 +19,7 @@ class CacheEndpoint extends Endpoint {
     _cachePrio = distributedCachePrio.localCache;
   }
 
-  Future<Null> put(Session session, bool priority, String key, String? data, String group, DateTime? expiration) async {
+  Future<void> put(Session session, bool priority, String key, String data, String? group, DateTime? expiration) async {
     Duration? lifetime;
     if (expiration != null)
       lifetime = expiration.difference(DateTime.now());
@@ -34,15 +34,15 @@ class CacheEndpoint extends Endpoint {
     return entry.data;
   }
 
-  Future<Null> invalidateKey(Session session, bool priority, String key) async {
+  Future<void> invalidateKey(Session session, bool priority, String key) async {
     await (priority ? _cachePrio : _cache).invalidateKey(key);
   }
 
-  Future< Null> invalidateGroup(Session session, bool priority, String group) async {
+  Future<void> invalidateGroup(Session session, bool priority, String group) async {
     await (priority ? _cachePrio : _cache).invalidateGroup(group);
   }
 
-  Future<Null> clear(Session session, bool priority) async {
+  Future<void> clear(Session session, bool priority) async {
     await (priority ? _cachePrio : _cache).clear();
   }
 }

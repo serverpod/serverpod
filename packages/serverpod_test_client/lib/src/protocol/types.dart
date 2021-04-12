@@ -8,41 +8,43 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class Types extends SerializableEntity {
+  @override
   String get className => 'Types';
 
   int? id;
-  late int anInt;
-  late bool aBool;
-  late double aDouble;
-  late DateTime aDateTime;
-  late String aString;
+  int? anInt;
+  bool? aBool;
+  double? aDouble;
+  DateTime? aDateTime;
+  String? aString;
 
   Types({
     this.id,
-    required this.anInt,
-    required this.aBool,
-    required this.aDouble,
-    required this.aDateTime,
-    required this.aString,
+    this.anInt,
+    this.aBool,
+    this.aDouble,
+    this.aDateTime,
+    this.aString,
 });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    anInt = _data['anInt']!;
-    aBool = _data['aBool']!;
-    aDouble = _data['aDouble']!;
-    aDateTime = DateTime.tryParse(_data['aDateTime'])!;
-    aString = _data['aString']!;
+    anInt = _data['anInt'];
+    aBool = _data['aBool'];
+    aDouble = _data['aDouble'];
+    aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
+    aString = _data['aString'];
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime.toUtc().toIso8601String(),
+      'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
     });
   }

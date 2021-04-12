@@ -39,6 +39,7 @@ class ClassGeneratorDart extends ClassGenerator{
           out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
 
         out += 'class $enumName extends SerializableEntity {\n';
+        out += '  @override\n';
         out += '  String get className => \'$enumName\';\n';
         out += '\n';
         out += '  late final int _index;\n';
@@ -56,6 +57,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '  }\n';
         out += '\n';
 
+        out += '  @override\n';
         out += '  Map<String, dynamic> serialize() {\n';
         out += '    return wrapSerializationData({\n';
         out += '      \'index\': _index,\n';
@@ -71,7 +73,9 @@ class ClassGeneratorDart extends ClassGenerator{
 
         out += '\n';
 
+        out += '  @override\n';
         out += '  int get hashCode => _index.hashCode;\n';
+        out += '  @override\n';
         out += '  bool operator == (other) => other is $enumName && other._index == _index;\n';
 
         out += '\n';
@@ -147,11 +151,14 @@ class ClassGeneratorDart extends ClassGenerator{
       // Row class definition
       if (serverCode && tableName != null) {
         out += 'class $className extends TableRow {\n';
+        out += '  @override\n';
         out += '  String get className => \'$className\';\n';
+        out += '  @override\n';
         out += '  String get tableName => \'$tableName\';\n';
       }
       else {
         out += 'class $className extends SerializableEntity {\n';
+        out += '  @override\n';
         out += '  String get className => \'$className\';\n';
       }
 
@@ -185,6 +192,7 @@ class ClassGeneratorDart extends ClassGenerator{
 
 
       // Serialization
+      out += '  @override\n';
       out += '  Map<String, dynamic> serialize() {\n';
       out += '    return wrapSerializationData({\n';
 
@@ -198,19 +206,23 @@ class ClassGeneratorDart extends ClassGenerator{
 
       // Serialization for database and everything
       if (serverCode) {
-        out += '  Map<String, dynamic> serializeForDatabase() {\n';
-        out += '    return wrapSerializationData({\n';
+        if (tableName != null) {
+          out += '\n';
+          out += '  @override\n';
+          out += '  Map<String, dynamic> serializeForDatabase() {\n';
+          out += '    return wrapSerializationData({\n';
 
-        for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode))
-            out += '      \'${field.name}\': ${field.serialization},\n';
+          for (var field in fields) {
+            if (field.shouldSerializeFieldForDatabase(serverCode))
+              out += '      \'${field.name}\': ${field.serialization},\n';
+          }
+
+          out += '    });\n';
+          out += '  }\n';
         }
 
-        out += '    });\n';
-        out += '  }\n';
-
         out += '\n';
-
+        out += '  @override\n';
         out += '  Map<String, dynamic> serializeAll() {\n';
         out += '    return wrapSerializationData({\n';
 
@@ -328,9 +340,11 @@ class ClassGeneratorDart extends ClassGenerator{
     out += '  static final Protocol instance = Protocol();\n';
     out += '\n';
 
-    out += '  Map<String, constructor> _constructors = {};\n';
+    out += '  final Map<String, constructor> _constructors = {};\n';
+    out += '  @override\n';
     out += '  Map<String, constructor> get constructors => _constructors;\n';
-    out += '  Map<String,String> _tableClassMapping = {};\n';
+    out += '  final Map<String,String> _tableClassMapping = {};\n';
+    out += '  @override\n';
     out += '  Map<String,String> get tableClassMapping => _tableClassMapping;\n';
     out += '\n';
 

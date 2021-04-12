@@ -40,9 +40,11 @@ export 'readwrite_test.dart';
 class Protocol extends SerializationManager {
   static final Protocol instance = Protocol();
 
-  Map<String, constructor> _constructors = {};
+  final Map<String, constructor> _constructors = {};
+  @override
   Map<String, constructor> get constructors => _constructors;
-  Map<String,String> _tableClassMapping = {};
+  final Map<String,String> _tableClassMapping = {};
+  @override
   Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {

@@ -75,7 +75,7 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
-  Future<Null> shutdown(Session session) async {
+  Future<void> shutdown(Session session) async {
     server.serverpod.shutdown();
   }
 

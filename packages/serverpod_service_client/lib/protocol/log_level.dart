@@ -3,6 +3,7 @@
 
 import 'package:serverpod_client/serverpod_client.dart';
 class LogLevel extends SerializableEntity {
+  @override
   String get className => 'LogLevel';
 
   late final int _index;
@@ -15,6 +16,7 @@ class LogLevel extends SerializableEntity {
     _index = data['index'];
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'index': _index,
@@ -26,7 +28,9 @@ class LogLevel extends SerializableEntity {
   static final error = LogLevel._internal(3);
   static final fatal = LogLevel._internal(4);
 
+  @override
   int get hashCode => _index.hashCode;
+  @override
   bool operator == (other) => other is LogLevel && other._index == _index;
 
   static final values = <LogLevel>[

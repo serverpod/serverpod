@@ -115,14 +115,14 @@ class Server {
     });
   }
 
-  Future<Null> _handleRequest(HttpRequest request) async {
+  Future<void> _handleRequest(HttpRequest request) async {
     Uri uri;
 
     try {
       uri = request.requestedUri;
     }
     catch(e) {
-      if (serverpod.runtimeSettings.logMalformedCalls!)
+      if (serverpod.runtimeSettings.logMalformedCalls)
         print('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -135,8 +135,8 @@ class Server {
       var checks = await performHealthChecks(this.serverpod);
       var issues = <String>[];
       var allOk = true;
-      for (var metric in checks.metrics!) {
-        if (!metric.isHealthy!) {
+      for (var metric in checks.metrics) {
+        if (!metric.isHealthy) {
           allOk = false;
           issues.add('${metric.name}: ${metric.value}');
         }
@@ -187,14 +187,14 @@ class Server {
     var result = await _handleUriCall(uri, body!, request);
 
     if (result is ResultInvalidParams) {
-      if (serverpod.runtimeSettings.logMalformedCalls!)
+      if (serverpod.runtimeSettings.logMalformedCalls)
         print('Malformed call: $result');
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
     }
     else if (result is ResultAuthenticationFailed) {
-      if (serverpod.runtimeSettings.logMalformedCalls!)
+      if (serverpod.runtimeSettings.logMalformedCalls)
         print('Access denied: $result');
       request.response.statusCode = HttpStatus.forbidden;
       request.response.close();

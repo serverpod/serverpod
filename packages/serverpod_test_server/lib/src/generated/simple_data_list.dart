@@ -8,6 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'protocol.dart';
 
 class SimpleDataList extends SerializableEntity {
+  @override
   String get className => 'SimpleDataList';
 
   int? id;
@@ -24,19 +25,15 @@ class SimpleDataList extends SerializableEntity {
     rows = _data['rows']!.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'rows': rows.map((SimpleData a) => a.serialize()).toList(),
     });
   }
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
-      'id': id,
-      'rows': rows.map((SimpleData a) => a.serialize()).toList(),
-    });
-  }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,

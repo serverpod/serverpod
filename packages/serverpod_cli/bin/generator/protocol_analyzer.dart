@@ -62,7 +62,7 @@ class ProtocolAnalyzer {
                 for (var param in parameters) {
                   var paramDef = ParameterDefinition(
                     name: param.name,
-                    type: TypeDefinition(param.type.getDisplayString(withNullability: false)),
+                    type: TypeDefinition(param.type.getDisplayString(withNullability: true)),
                   );
                   
                   if (param.isRequiredPositional)
@@ -73,7 +73,7 @@ class ProtocolAnalyzer {
                     paramNamedDefs.add(paramDef);
                 }
 
-                if (paramDefs.length >= 1 && paramDefs[0].type == 'Session') {
+                if (paramDefs.length >= 1 && paramDefs[0].type.type == 'Session') {
                   var methodDef = MethodDefinition(
                     name: method.name,
                     parameters: paramDefs.sublist(1), // Skip session parameter

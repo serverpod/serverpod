@@ -148,7 +148,7 @@ class Serverpod {
     );
   }
 
-  Future<Null> _startServiceServer() async {
+  Future<void> _startServiceServer() async {
 
     var context = SecurityContext();
     context.useCertificateChain(sslCertificatePath(_runMode, serverId));
@@ -224,11 +224,11 @@ class Serverpod {
       }
     }
 
-    var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration! * 1000000.0).toInt());
+    var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration * 1000000.0).toInt());
 
-    if (runtimeSettings.logAllCalls! ||
-        runtimeSettings.logSlowCalls! && isSlow ||
-        runtimeSettings.logFailedCalls! && exception != null
+    if (runtimeSettings.logAllCalls ||
+        runtimeSettings.logSlowCalls && isSlow ||
+        runtimeSettings.logFailedCalls && exception != null
     ) {
       var sessionLogEntry = internal.SessionLogEntry(
         serverId: serverId,
@@ -247,7 +247,7 @@ class Serverpod {
         DatabaseConnection dbConn = DatabaseConnection(database);
         await dbConn.insert(sessionLogEntry);
 
-        int? sessionLogId = sessionLogEntry.id;
+        int sessionLogId = sessionLogEntry.id!;
 
         for (var logInfo in sessionLog) {
           _log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
@@ -255,9 +255,9 @@ class Serverpod {
         }
 
         for (var queryInfo in queries) {
-          if (runtimeSettings.logAllQueries! ||
-              runtimeSettings.logSlowQueries! && queryInfo.time > Duration(
-                  microseconds: (runtimeSettings.slowQueryDuration! * 1000000.0)
+          if (runtimeSettings.logAllQueries ||
+              runtimeSettings.logSlowQueries && queryInfo.time > Duration(
+                  microseconds: (runtimeSettings.slowQueryDuration * 1000000.0)
                       .toInt())
           ) {
             // Log query

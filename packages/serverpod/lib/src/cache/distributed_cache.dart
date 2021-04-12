@@ -42,7 +42,7 @@ class DistributedCache extends Cache {
     return _clients[serverNum];
   }
 
-  Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
+  Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
     var client = _clientFromKey(key);
 
     DateTime? expiration;
@@ -70,7 +70,7 @@ class DistributedCache extends Cache {
       if (entry == null)
         return null;
 
-      Map<String, dynamic>? serialization = jsonDecode(entry.data!).cast<String, dynamic>();
+      Map<String, dynamic>? serialization = jsonDecode(entry.data).cast<String, dynamic>();
       return serializationManager.createEntityFromSerialization(serialization);
     }
     else {
@@ -90,7 +90,7 @@ class DistributedCache extends Cache {
     }
   }
 
-  Future<Null> invalidateKey(String key) async {
+  Future<void> invalidateKey(String key) async {
     var client = _clientFromKey(key);
 
     if (client == null) {
@@ -106,7 +106,7 @@ class DistributedCache extends Cache {
     }
   }
 
-  Future< Null> invalidateGroup(String group) async {
+  Future<void> invalidateGroup(String group) async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
       if (_cluster[serverNum]!.serverId == _serverId) {
         await _localCache.invalidateGroup(group);
@@ -122,7 +122,7 @@ class DistributedCache extends Cache {
     }
   }
 
-  Future<Null> clear() async {
+  Future<void> clear() async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
       if (_cluster[serverNum]!.serverId == _serverId) {
         await _localCache.clear();

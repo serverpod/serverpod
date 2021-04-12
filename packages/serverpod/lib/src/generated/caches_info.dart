@@ -8,57 +8,51 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'protocol.dart';
 
 class CachesInfo extends SerializableEntity {
+  @override
   String get className => 'CachesInfo';
 
   int? id;
-  CacheInfo? local;
-  CacheInfo? localPrio;
-  CacheInfo? distributed;
-  CacheInfo? distributedPrio;
+  late CacheInfo local;
+  late CacheInfo localPrio;
+  late CacheInfo distributed;
+  late CacheInfo distributedPrio;
 
   CachesInfo({
     this.id,
-    this.local,
-    this.localPrio,
-    this.distributed,
-    this.distributedPrio,
+    required this.local,
+    required this.localPrio,
+    required this.distributed,
+    required this.distributedPrio,
 });
 
   CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    local = _data['local'] != null ? CacheInfo.fromSerialization(_data['local']) : null;
-    localPrio = _data['localPrio'] != null ? CacheInfo.fromSerialization(_data['localPrio']) : null;
-    distributed = _data['distributed'] != null ? CacheInfo.fromSerialization(_data['distributed']) : null;
-    distributedPrio = _data['distributedPrio'] != null ? CacheInfo.fromSerialization(_data['distributedPrio']) : null;
+    local = CacheInfo.fromSerialization(_data['local']);
+    localPrio = CacheInfo.fromSerialization(_data['localPrio']);
+    distributed = CacheInfo.fromSerialization(_data['distributed']);
+    distributedPrio = CacheInfo.fromSerialization(_data['distributedPrio']);
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'local': local?.serialize(),
-      'localPrio': localPrio?.serialize(),
-      'distributed': distributed?.serialize(),
-      'distributedPrio': distributedPrio?.serialize(),
-    });
-  }
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
-      'id': id,
-      'local': local?.serialize(),
-      'localPrio': localPrio?.serialize(),
-      'distributed': distributed?.serialize(),
-      'distributedPrio': distributedPrio?.serialize(),
+      'local': local.serialize(),
+      'localPrio': localPrio.serialize(),
+      'distributed': distributed.serialize(),
+      'distributedPrio': distributedPrio.serialize(),
     });
   }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'local': local?.serialize(),
-      'localPrio': localPrio?.serialize(),
-      'distributed': distributed?.serialize(),
-      'distributedPrio': distributedPrio?.serialize(),
+      'local': local.serialize(),
+      'localPrio': localPrio.serialize(),
+      'distributed': distributed.serialize(),
+      'distributedPrio': distributedPrio.serialize(),
     });
   }
 }

@@ -8,22 +8,24 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class ReadWriteTestEntry extends SerializableEntity {
+  @override
   String get className => 'ReadWriteTestEntry';
 
   int? id;
-  int? number;
+  late int number;
 
   ReadWriteTestEntry({
     this.id,
-    this.number,
+    required this.number,
 });
 
   ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    number = _data['number'];
+    number = _data['number']!;
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,

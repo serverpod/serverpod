@@ -8,6 +8,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class Nullability extends SerializableEntity {
+  @override
   String get className => 'Nullability';
 
   int? id;
@@ -93,6 +94,7 @@ class Nullability extends SerializableEntity {
     aNullableListWithNullableDateTimes = _data['aNullableListWithNullableDateTimes']?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null);
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,

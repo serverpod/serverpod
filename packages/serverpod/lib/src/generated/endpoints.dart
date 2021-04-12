@@ -3,6 +3,8 @@
 
 import 'package:serverpod/serverpod.dart';
 
+import 'protocol.dart';
+
 import '../endpoints/cache.dart';
 import '../endpoints/insights.dart';
 
@@ -20,11 +22,11 @@ class Endpoints extends EndpointDispatch {
         'put': MethodConnector(
           name: 'put',
           params: {
-            'priority': ParameterDescription(name: 'priority', type: bool),
-            'key': ParameterDescription(name: 'key', type: String),
-            'data': ParameterDescription(name: 'data', type: String),
-            'group': ParameterDescription(name: 'group', type: String),
-            'expiration': ParameterDescription(name: 'expiration', type: DateTime),
+            'priority': ParameterDescription(name: 'priority', type: bool, nullable: false),
+            'key': ParameterDescription(name: 'key', type: String, nullable: false),
+            'data': ParameterDescription(name: 'data', type: String, nullable: false),
+            'group': ParameterDescription(name: 'group', type: String, nullable: true),
+            'expiration': ParameterDescription(name: 'expiration', type: DateTime, nullable: true),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cache'] as CacheEndpoint).put(session,params['priority'],params['key'],params['data'],params['group'],params['expiration'],);
@@ -33,8 +35,8 @@ class Endpoints extends EndpointDispatch {
         'get': MethodConnector(
           name: 'get',
           params: {
-            'priority': ParameterDescription(name: 'priority', type: bool),
-            'key': ParameterDescription(name: 'key', type: String),
+            'priority': ParameterDescription(name: 'priority', type: bool, nullable: false),
+            'key': ParameterDescription(name: 'key', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cache'] as CacheEndpoint).get(session,params['priority'],params['key'],);
@@ -43,8 +45,8 @@ class Endpoints extends EndpointDispatch {
         'invalidateKey': MethodConnector(
           name: 'invalidateKey',
           params: {
-            'priority': ParameterDescription(name: 'priority', type: bool),
-            'key': ParameterDescription(name: 'key', type: String),
+            'priority': ParameterDescription(name: 'priority', type: bool, nullable: false),
+            'key': ParameterDescription(name: 'key', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cache'] as CacheEndpoint).invalidateKey(session,params['priority'],params['key'],);
@@ -53,8 +55,8 @@ class Endpoints extends EndpointDispatch {
         'invalidateGroup': MethodConnector(
           name: 'invalidateGroup',
           params: {
-            'priority': ParameterDescription(name: 'priority', type: bool),
-            'group': ParameterDescription(name: 'group', type: String),
+            'priority': ParameterDescription(name: 'priority', type: bool, nullable: false),
+            'group': ParameterDescription(name: 'group', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cache'] as CacheEndpoint).invalidateGroup(session,params['priority'],params['group'],);
@@ -63,7 +65,7 @@ class Endpoints extends EndpointDispatch {
         'clear': MethodConnector(
           name: 'clear',
           params: {
-            'priority': ParameterDescription(name: 'priority', type: bool),
+            'priority': ParameterDescription(name: 'priority', type: bool, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cache'] as CacheEndpoint).clear(session,params['priority'],);
@@ -79,7 +81,7 @@ class Endpoints extends EndpointDispatch {
         'getLog': MethodConnector(
           name: 'getLog',
           params: {
-            'numEntries': ParameterDescription(name: 'numEntries', type: int),
+            'numEntries': ParameterDescription(name: 'numEntries', type: int, nullable: true),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['insights'] as InsightsEndpoint).getLog(session,params['numEntries'],);
@@ -88,7 +90,7 @@ class Endpoints extends EndpointDispatch {
         'getSessionLog': MethodConnector(
           name: 'getSessionLog',
           params: {
-            'numEntries': ParameterDescription(name: 'numEntries', type: int),
+            'numEntries': ParameterDescription(name: 'numEntries', type: int, nullable: true),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['insights'] as InsightsEndpoint).getSessionLog(session,params['numEntries'],);
@@ -97,7 +99,7 @@ class Endpoints extends EndpointDispatch {
         'getCachesInfo': MethodConnector(
           name: 'getCachesInfo',
           params: {
-            'fetchKeys': ParameterDescription(name: 'fetchKeys', type: bool),
+            'fetchKeys': ParameterDescription(name: 'fetchKeys', type: bool, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['insights'] as InsightsEndpoint).getCachesInfo(session,params['fetchKeys'],);

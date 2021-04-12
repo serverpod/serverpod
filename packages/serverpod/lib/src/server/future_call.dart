@@ -15,5 +15,5 @@ abstract class FutureCall {
     _name = name;
   }
 
-  Future<Null> invoke(Session session, SerializableEntity? object);
+  Future<void> invoke(Session session, SerializableEntity? object);
 }

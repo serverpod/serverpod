@@ -93,7 +93,7 @@ abstract class ProtocolGenerator {
         out += '          name: \'${method.name}\',\n';
         out += '          params: {\n';
         for (var param in method.parameters) {
-          out += '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type}),\n';
+          out += '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typeNonNullable}, nullable: ${param.type.nullable}),\n';
         }
         out += '          },\n';
         out += '          call: (Session session, Map<String, dynamic> params) async {\n';

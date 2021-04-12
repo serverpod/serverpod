@@ -8,56 +8,62 @@ import 'package:serverpod/database.dart';
 import 'protocol.dart';
 
 class FutureCallEntry extends TableRow {
+  @override
   String get className => 'FutureCallEntry';
+  @override
   String get tableName => 'serverpod_future_call';
 
   int? id;
-  String? name;
-  DateTime? time;
+  late String name;
+  late DateTime time;
   String? serializedObject;
-  int? serverId;
+  late int serverId;
 
   FutureCallEntry({
     this.id,
-    this.name,
-    this.time,
+    required this.name,
+    required this.time,
     this.serializedObject,
-    this.serverId,
+    required this.serverId,
 });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    name = _data['name'];
-    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    name = _data['name']!;
+    time = DateTime.tryParse(_data['time'])!;
     serializedObject = _data['serializedObject'];
-    serverId = _data['serverId'];
+    serverId = _data['serverId']!;
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'name': name,
-      'time': time?.toUtc().toIso8601String(),
-      'serializedObject': serializedObject,
-      'serverId': serverId,
-    });
-  }
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
-      'id': id,
-      'name': name,
-      'time': time?.toUtc().toIso8601String(),
+      'time': time.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
     });
   }
 
+  @override
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
+      'id': id,
+      'name': name,
+      'time': time.toUtc().toIso8601String(),
+      'serializedObject': serializedObject,
+      'serverId': serverId,
+    });
+  }
+
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
       'name': name,
-      'time': time?.toUtc().toIso8601String(),
+      'time': time.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
     });

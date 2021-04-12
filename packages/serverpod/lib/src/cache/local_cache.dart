@@ -11,7 +11,7 @@ class LocalCache extends Cache {
 
   LocalCache(int maxEntries, SerializationManager serializationManager) : super(maxEntries, serializationManager);
 
-  Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
+  Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
     if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
     }
@@ -75,7 +75,7 @@ class LocalCache extends Cache {
     return serializationManager.createEntityFromSerialization(entry.serializedObject);
   }
 
-  Future<Null> invalidateKey(String key) async {
+  Future<void> invalidateKey(String key) async {
     // Remove from entries
     var entry = _entries.remove(key);
     if (entry == null)
@@ -121,7 +121,7 @@ class LocalCache extends Cache {
     }
   }
 
-  Future<Null> clear() async {
+  Future<void> clear() async {
     _keyList.clear();
     _groups.clear();
     _entries.clear();

@@ -1,8 +1,8 @@
 class: Types
 table: types
 fields:
-  anInt: int
-  aBool: bool
-  aDouble: double
-  aDateTime: DateTime
-  aString: String
+  anInt: int?
+  aBool: bool?
+  aDouble: double?
+  aDateTime: DateTime?
+  aString: String?

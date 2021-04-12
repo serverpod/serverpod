@@ -14,7 +14,7 @@ void main() {
   });
 
   test('Put and get object', () async {
-    var entry = FutureCallEntry(serverId: 0);
+    var entry = FutureCallEntry(serverId: 0, name: 'test', time: DateTime.now());
     
     await cache.put('entry', entry);
     FutureCallEntry retrieved = await cache.get('entry') as FutureCallEntry;
@@ -30,7 +30,7 @@ void main() {
   });
 
   test('Put and get object with lifetime', () async {
-    var entry = FutureCallEntry(serverId: 0);
+    var entry = FutureCallEntry(serverId: 0, name: 'test', time: DateTime.now());
 
     await cache.put('entry', entry, lifetime: Duration(milliseconds: 100));
     FutureCallEntry retrieved = await cache.get('entry') as FutureCallEntry;
@@ -44,8 +44,8 @@ void main() {
   });
 
   test('Put multiple with same key', () async {
-    var entryA = FutureCallEntry(serverId: 0);
-    var entryB = FutureCallEntry(serverId: 1);
+    var entryA = FutureCallEntry(serverId: 0, name: 'test', time: DateTime.now());
+    var entryB = FutureCallEntry(serverId: 1, name: 'test', time: DateTime.now());
 
     await cache.put('entry', entryA);
     await cache.put('entry', entryB);
@@ -60,7 +60,7 @@ void main() {
     int numEntries = cacheMaxSize * 2;
 
     for (int i = 0; i < numEntries; i++) {
-      var entry = FutureCallEntry(serverId: i);
+      var entry = FutureCallEntry(serverId: i, name: 'test', time: DateTime.now());
       await cache.put('entry:$i', entry);
     }
 
@@ -75,7 +75,7 @@ void main() {
 
   test('Invalidate keys', () async {
     for (int i = 0; i < cacheMaxSize; i++) {
-      var entry = FutureCallEntry(serverId: i);
+      var entry = FutureCallEntry(serverId: i, name: 'test', time: DateTime.now());
       await cache.put('entry:$i', entry);
     }
 
@@ -93,11 +93,11 @@ void main() {
 
   test('Invalidate group', () async {
     for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
-      var entry = FutureCallEntry(serverId: i);
+      var entry = FutureCallEntry(serverId: i, name: 'test', time: DateTime.now());
       await cache.put('entry:$i', entry, group: 'group:0');
     }
     for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
-      var entry = FutureCallEntry(serverId: i);
+      var entry = FutureCallEntry(serverId: i, name: 'test', time: DateTime.now());
       await cache.put('entry:$i', entry, group: 'group:1');
     }
 
@@ -121,11 +121,11 @@ void main() {
 
   test('Invalidate key then group', () async {
     for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
-      var entry = FutureCallEntry(serverId: i);
+      var entry = FutureCallEntry(serverId: i, name: 'test', time: DateTime.now());
       await cache.put('entry:$i', entry, group: 'group:0');
     }
     for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
-      var entry = FutureCallEntry(serverId: i);
+      var entry = FutureCallEntry(serverId: i, name: 'test', time: DateTime.now());
       await cache.put('entry:$i', entry, group: 'group:1');
     }
 

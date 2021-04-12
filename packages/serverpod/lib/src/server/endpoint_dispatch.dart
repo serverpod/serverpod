@@ -153,8 +153,9 @@ class MethodConnector {
 class ParameterDescription {
   final String name;
   final Type type;
+  final bool nullable;
 
-  ParameterDescription({required this.name, required this.type});
+  ParameterDescription({required this.name, required this.type, required this.nullable});
 }
 
 abstract class Result {}

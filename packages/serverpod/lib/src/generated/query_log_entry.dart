@@ -8,32 +8,35 @@ import 'package:serverpod/database.dart';
 import 'protocol.dart';
 
 class QueryLogEntry extends TableRow {
+  @override
   String get className => 'QueryLogEntry';
+  @override
   String get tableName => 'serverpod_query_log';
 
   int? id;
-  int? sessionLogId;
-  String? query;
-  double? duration;
+  late int sessionLogId;
+  late String query;
+  late double duration;
   int? numRows;
 
   QueryLogEntry({
     this.id,
-    this.sessionLogId,
-    this.query,
-    this.duration,
+    required this.sessionLogId,
+    required this.query,
+    required this.duration,
     this.numRows,
 });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    sessionLogId = _data['sessionLogId'];
-    query = _data['query'];
-    duration = _data['duration'];
+    sessionLogId = _data['sessionLogId']!;
+    query = _data['query']!;
+    duration = _data['duration']!;
     numRows = _data['numRows'];
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
@@ -43,6 +46,8 @@ class QueryLogEntry extends TableRow {
       'numRows': numRows,
     });
   }
+
+  @override
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
@@ -53,6 +58,7 @@ class QueryLogEntry extends TableRow {
     });
   }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,

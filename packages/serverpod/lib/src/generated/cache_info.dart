@@ -8,28 +8,30 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'protocol.dart';
 
 class CacheInfo extends SerializableEntity {
+  @override
   String get className => 'CacheInfo';
 
   int? id;
-  int? numEntries;
-  int? maxEntries;
+  late int numEntries;
+  late int maxEntries;
   List<String>? keys;
 
   CacheInfo({
     this.id,
-    this.numEntries,
-    this.maxEntries,
+    required this.numEntries,
+    required this.maxEntries,
     this.keys,
 });
 
   CacheInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    numEntries = _data['numEntries'];
-    maxEntries = _data['maxEntries'];
+    numEntries = _data['numEntries']!;
+    maxEntries = _data['maxEntries']!;
     keys = _data['keys']?.cast<String>();
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
@@ -38,15 +40,8 @@ class CacheInfo extends SerializableEntity {
       'keys': keys,
     });
   }
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
-      'id': id,
-      'numEntries': numEntries,
-      'maxEntries': maxEntries,
-      'keys': keys,
-    });
-  }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,

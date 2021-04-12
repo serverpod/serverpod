@@ -6,15 +6,15 @@ abstract class Cache {
 
   Cache(this.maxLocalEntries, this.serializationManager);
 
-  Future<Null> put(String key, SerializableEntity object, {Duration? lifetime, String? group});
+  Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group});
 
   Future<SerializableEntity?> get(String key);
 
-  Future<Null> invalidateKey(String key);
+  Future<void> invalidateKey(String key);
 
-  Future< Null> invalidateGroup(String group);
+  Future<void> invalidateGroup(String group);
 
-  Future<Null> clear();
+  Future<void> clear();
 
   int get localSize;
 

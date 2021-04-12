@@ -8,22 +8,23 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class LogEntry extends SerializableEntity {
+  @override
   String get className => 'LogEntry';
 
   int? id;
-  int? serverId;
-  DateTime? time;
-  int? logLevel;
-  String? message;
+  late int serverId;
+  late DateTime time;
+  late int logLevel;
+  late String message;
   String? stackTrace;
   int? sessionLogId;
 
   LogEntry({
     this.id,
-    this.serverId,
-    this.time,
-    this.logLevel,
-    this.message,
+    required this.serverId,
+    required this.time,
+    required this.logLevel,
+    required this.message,
     this.stackTrace,
     this.sessionLogId,
 });
@@ -31,19 +32,20 @@ class LogEntry extends SerializableEntity {
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    serverId = _data['serverId'];
-    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
-    logLevel = _data['logLevel'];
-    message = _data['message'];
+    serverId = _data['serverId']!;
+    time = DateTime.tryParse(_data['time'])!;
+    logLevel = _data['logLevel']!;
+    message = _data['message']!;
     stackTrace = _data['stackTrace'];
     sessionLogId = _data['sessionLogId'];
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc().toIso8601String(),
+      'time': time.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
       'stackTrace': stackTrace,

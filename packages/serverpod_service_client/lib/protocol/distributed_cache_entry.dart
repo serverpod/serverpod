@@ -8,22 +8,24 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class DistributedCacheEntry extends SerializableEntity {
+  @override
   String get className => 'DistributedCacheEntry';
 
   int? id;
-  String? data;
+  late String data;
 
   DistributedCacheEntry({
     this.id,
-    this.data,
+    required this.data,
 });
 
   DistributedCacheEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    data = _data['data'];
+    data = _data['data']!;
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,

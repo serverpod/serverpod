@@ -9,8 +9,8 @@ class _EndpointCache {
   Client client;
   _EndpointCache(this.client);
 
-  Future<Null?> put(bool? priority,String? key,String? data,String? group,DateTime? expiration,) async {
-    return await client.callServerEndpoint('cache', 'put', 'Null', {
+  Future<void> put(bool priority,String key,String data,String? group,DateTime? expiration,) async {
+    return await client.callServerEndpoint('cache', 'put', 'void', {
       'priority':priority,
       'key':key,
       'data':data,
@@ -19,29 +19,29 @@ class _EndpointCache {
     });
   }
 
-  Future<String?> get(bool? priority,String? key,) async {
+  Future<String?> get(bool priority,String key,) async {
     return await client.callServerEndpoint('cache', 'get', 'String', {
       'priority':priority,
       'key':key,
     });
   }
 
-  Future<Null?> invalidateKey(bool? priority,String? key,) async {
-    return await client.callServerEndpoint('cache', 'invalidateKey', 'Null', {
+  Future<void> invalidateKey(bool priority,String key,) async {
+    return await client.callServerEndpoint('cache', 'invalidateKey', 'void', {
       'priority':priority,
       'key':key,
     });
   }
 
-  Future<Null?> invalidateGroup(bool? priority,String? group,) async {
-    return await client.callServerEndpoint('cache', 'invalidateGroup', 'Null', {
+  Future<void> invalidateGroup(bool priority,String group,) async {
+    return await client.callServerEndpoint('cache', 'invalidateGroup', 'void', {
       'priority':priority,
       'group':group,
     });
   }
 
-  Future<Null?> clear(bool? priority,) async {
-    return await client.callServerEndpoint('cache', 'clear', 'Null', {
+  Future<void> clear(bool priority,) async {
+    return await client.callServerEndpoint('cache', 'clear', 'void', {
       'priority':priority,
     });
   }
@@ -63,14 +63,14 @@ class _EndpointInsights {
     });
   }
 
-  Future<CachesInfo?> getCachesInfo(bool? fetchKeys,) async {
+  Future<CachesInfo?> getCachesInfo(bool fetchKeys,) async {
     return await client.callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
       'fetchKeys':fetchKeys,
     });
   }
 
-  Future<Null?> shutdown() async {
-    return await client.callServerEndpoint('insights', 'shutdown', 'Null', {
+  Future<void> shutdown() async {
+    return await client.callServerEndpoint('insights', 'shutdown', 'void', {
     });
   }
 

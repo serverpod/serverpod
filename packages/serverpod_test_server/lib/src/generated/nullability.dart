@@ -8,6 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'protocol.dart';
 
 class Nullability extends SerializableEntity {
+  @override
   String get className => 'Nullability';
 
   int? id;
@@ -93,6 +94,7 @@ class Nullability extends SerializableEntity {
     aNullableListWithNullableDateTimes = _data['aNullableListWithNullableDateTimes']?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null);
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
@@ -122,36 +124,8 @@ class Nullability extends SerializableEntity {
       'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes?.map<String?>((a) => a?.toIso8601String()),
     });
   }
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
-      'id': id,
-      'anInt': anInt,
-      'aNullableInt': aNullableInt,
-      'aDouble': aDouble,
-      'aNullableDouble': aNullableDouble,
-      'aBool': aBool,
-      'aNullableBool': aNullableBool,
-      'aString': aString,
-      'aNullableString': aNullableString,
-      'aDateTime': aDateTime.toUtc().toIso8601String(),
-      'aNullableDateTime': aNullableDateTime?.toUtc().toIso8601String(),
-      'anObject': anObject.serialize(),
-      'aNullableObject': aNullableObject?.serialize(),
-      'anIntList': anIntList,
-      'aNullableIntList': aNullableIntList,
-      'aListWithNullableInts': aListWithNullableInts,
-      'aNullableListWithNullableInts': aNullableListWithNullableInts,
-      'anObjectList': anObjectList.map((SimpleData a) => a.serialize()).toList(),
-      'aNullableObjectList': aNullableObjectList?.map((SimpleData a) => a.serialize()).toList(),
-      'aListWithNullableObjects': aListWithNullableObjects.map((SimpleData? a) => a?.serialize()).toList(),
-      'aNullableListWithNullableObjects': aNullableListWithNullableObjects?.map((SimpleData? a) => a?.serialize()).toList(),
-      'aDateTimeList': aDateTimeList.map<String>((a) => a.toIso8601String()),
-      'aNullableDateTimeList': aNullableDateTimeList?.map<String>((a) => a.toIso8601String()),
-      'aListWithNullableDateTimes': aListWithNullableDateTimes.map<String?>((a) => a?.toIso8601String()),
-      'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes?.map<String?>((a) => a?.toIso8601String()),
-    });
-  }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,

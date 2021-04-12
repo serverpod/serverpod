@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
@@ -102,7 +100,7 @@ void main() {
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
-      Types? storedTypes = await client.basicDatabase.getTypes(id);
+      Types? storedTypes = await client.basicDatabase.getTypes(id!);
       expect(storedTypes, isNotNull);
 
       if (storedTypes != null) {
@@ -129,7 +127,7 @@ void main() {
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
-      Types? storedTypes = await client.basicDatabase.getTypes(id);
+      Types? storedTypes = await client.basicDatabase.getTypes(id!);
       expect(storedTypes, isNotNull);
 
       if (storedTypes != null) {
@@ -149,7 +147,7 @@ void main() {
       int? id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
 
-      int? storedId = await client.basicDatabase.getTypesRawQuery(id);
+      int? storedId = await client.basicDatabase.getTypesRawQuery(id!);
       expect(storedId, equals(id));
     });
 
@@ -191,23 +189,23 @@ void main() {
       SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(75, 25, 25, true);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
-      expect(list.rows!.length, equals(25));
-      expect(list.rows!.first.num, equals(49));
-      expect(list.rows!.last.num, equals(25));
+      expect(list.rows.length, equals(25));
+      expect(list.rows.first.num, equals(49));
+      expect(list.rows.last.num, equals(25));
 
       list = await client.basicDatabase.findSimpleDataRowsLessThan(75, 25, 25, false);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
-      expect(list.rows!.length, equals(25));
-      expect(list.rows!.first.num, equals(25));
-      expect(list.rows!.last.num, equals(49));
+      expect(list.rows.length, equals(25));
+      expect(list.rows.first.num, equals(25));
+      expect(list.rows.last.num, equals(49));
 
       list = await client.basicDatabase.findSimpleDataRowsLessThan(20, 0, 25, false);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
-      expect(list.rows!.length, equals(20));
-      expect(list.rows!.first.num, equals(0));
-      expect(list.rows!.last.num, equals(19));
+      expect(list.rows.length, equals(20));
+      expect(list.rows.first.num, equals(0));
+      expect(list.rows.last.num, equals(19));
     });
 
     test('Update row', () async {
@@ -223,7 +221,7 @@ void main() {
 
       SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(100, 0, 100, true);
       expect(list, isNotNull);
-      expect(list!.rows!.length, equals(99));
+      expect(list!.rows.length, equals(99));
     });
 
     test('Simple transaction', () async {
@@ -245,11 +243,11 @@ void main() {
 
       SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
       expect(list, isNotNull);
-      expect(list!.rows!.length, equals(100));
+      expect(list!.rows.length, equals(100));
 
-      expect(list.rows!.first.num, equals(1));
-      expect(list.rows![98].num, equals(500));
-      expect(list.rows!.last.num, equals(1000));
+      expect(list.rows.first.num, equals(1));
+      expect(list.rows[98].num, equals(500));
+      expect(list.rows.last.num, equals(1000));
     });
   });
 

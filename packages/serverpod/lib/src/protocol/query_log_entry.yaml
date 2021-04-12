@@ -4,4 +4,4 @@ fields:
   sessionLogId: int
   query: String
   duration: double
-  numRows: int
+  numRows: int?

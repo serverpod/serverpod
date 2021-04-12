@@ -8,30 +8,32 @@ import 'package:serverpod/database.dart';
 import 'protocol.dart';
 
 class SessionLogEntry extends TableRow {
+  @override
   String get className => 'SessionLogEntry';
+  @override
   String get tableName => 'serverpod_session_log';
 
   int? id;
-  int? serverId;
-  DateTime? time;
+  late int serverId;
+  late DateTime time;
   String? endpoint;
   String? method;
-  double? duration;
-  int? numQueries;
-  bool? slow;
+  late double duration;
+  late int numQueries;
+  late bool slow;
   String? error;
   String? stackTrace;
   int? authenticatedUserId;
 
   SessionLogEntry({
     this.id,
-    this.serverId,
-    this.time,
+    required this.serverId,
+    required this.time,
     this.endpoint,
     this.method,
-    this.duration,
-    this.numQueries,
-    this.slow,
+    required this.duration,
+    required this.numQueries,
+    required this.slow,
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
@@ -40,38 +42,24 @@ class SessionLogEntry extends TableRow {
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    serverId = _data['serverId'];
-    time = _data['time'] != null ? DateTime.tryParse(_data['time']) : null;
+    serverId = _data['serverId']!;
+    time = DateTime.tryParse(_data['time'])!;
     endpoint = _data['endpoint'];
     method = _data['method'];
-    duration = _data['duration'];
-    numQueries = _data['numQueries'];
-    slow = _data['slow'];
+    duration = _data['duration']!;
+    numQueries = _data['numQueries']!;
+    slow = _data['slow']!;
     error = _data['error'];
     stackTrace = _data['stackTrace'];
     authenticatedUserId = _data['authenticatedUserId'];
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc().toIso8601String(),
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-    });
-  }
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
-      'id': id,
-      'serverId': serverId,
-      'time': time?.toUtc().toIso8601String(),
+      'time': time.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
       'duration': duration,
@@ -83,11 +71,29 @@ class SessionLogEntry extends TableRow {
     });
   }
 
+  @override
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
+      'id': id,
+      'serverId': serverId,
+      'time': time.toUtc().toIso8601String(),
+      'endpoint': endpoint,
+      'method': method,
+      'duration': duration,
+      'numQueries': numQueries,
+      'slow': slow,
+      'error': error,
+      'stackTrace': stackTrace,
+      'authenticatedUserId': authenticatedUserId,
+    });
+  }
+
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time?.toUtc().toIso8601String(),
+      'time': time.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
       'duration': duration,

@@ -8,7 +8,9 @@ import 'package:serverpod/database.dart';
 import 'protocol.dart';
 
 class SimpleData extends TableRow {
+  @override
   String get className => 'SimpleData';
+  @override
   String get tableName => 'simple_data';
 
   int? id;
@@ -25,12 +27,15 @@ class SimpleData extends TableRow {
     num = _data['num']!;
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
       'num': num,
     });
   }
+
+  @override
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
@@ -38,6 +43,7 @@ class SimpleData extends TableRow {
     });
   }
 
+  @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,

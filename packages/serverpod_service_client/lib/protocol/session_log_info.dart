@@ -8,34 +8,36 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class SessionLogInfo extends SerializableEntity {
+  @override
   String get className => 'SessionLogInfo';
 
   int? id;
-  SessionLogEntry? sessionLogEntry;
-  List<QueryLogEntry>? queries;
-  List<LogEntry>? messageLog;
+  late SessionLogEntry sessionLogEntry;
+  late List<QueryLogEntry> queries;
+  late List<LogEntry> messageLog;
 
   SessionLogInfo({
     this.id,
-    this.sessionLogEntry,
-    this.queries,
-    this.messageLog,
+    required this.sessionLogEntry,
+    required this.queries,
+    required this.messageLog,
 });
 
   SessionLogInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    sessionLogEntry = _data['sessionLogEntry'] != null ? SessionLogEntry.fromSerialization(_data['sessionLogEntry']) : null;
-    queries = _data['queries']?.map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))?.toList();
-    messageLog = _data['messageLog']?.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
+    sessionLogEntry = SessionLogEntry.fromSerialization(_data['sessionLogEntry']);
+    queries = _data['queries']!.map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))?.toList();
+    messageLog = _data['messageLog']!.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'sessionLogEntry': sessionLogEntry?.serialize(),
-      'queries': queries?.map((QueryLogEntry a) => a.serialize()).toList(),
-      'messageLog': messageLog?.map((LogEntry a) => a.serialize()).toList(),
+      'sessionLogEntry': sessionLogEntry.serialize(),
+      'queries': queries.map((QueryLogEntry a) => a.serialize()).toList(),
+      'messageLog': messageLog.map((LogEntry a) => a.serialize()).toList(),
     });
   }
 }

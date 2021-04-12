@@ -8,46 +8,48 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class RuntimeSettings extends SerializableEntity {
+  @override
   String get className => 'RuntimeSettings';
 
   int? id;
-  bool? logAllCalls;
-  bool? logAllQueries;
-  bool? logSlowCalls;
-  bool? logSlowQueries;
-  bool? logFailedCalls;
-  bool? logMalformedCalls;
-  int? logLevel;
-  double? slowQueryDuration;
-  double? slowCallDuration;
+  late bool logAllCalls;
+  late bool logAllQueries;
+  late bool logSlowCalls;
+  late bool logSlowQueries;
+  late bool logFailedCalls;
+  late bool logMalformedCalls;
+  late int logLevel;
+  late double slowQueryDuration;
+  late double slowCallDuration;
 
   RuntimeSettings({
     this.id,
-    this.logAllCalls,
-    this.logAllQueries,
-    this.logSlowCalls,
-    this.logSlowQueries,
-    this.logFailedCalls,
-    this.logMalformedCalls,
-    this.logLevel,
-    this.slowQueryDuration,
-    this.slowCallDuration,
+    required this.logAllCalls,
+    required this.logAllQueries,
+    required this.logSlowCalls,
+    required this.logSlowQueries,
+    required this.logFailedCalls,
+    required this.logMalformedCalls,
+    required this.logLevel,
+    required this.slowQueryDuration,
+    required this.slowCallDuration,
 });
 
   RuntimeSettings.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    logAllCalls = _data['logAllCalls'];
-    logAllQueries = _data['logAllQueries'];
-    logSlowCalls = _data['logSlowCalls'];
-    logSlowQueries = _data['logSlowQueries'];
-    logFailedCalls = _data['logFailedCalls'];
-    logMalformedCalls = _data['logMalformedCalls'];
-    logLevel = _data['logLevel'];
-    slowQueryDuration = _data['slowQueryDuration'];
-    slowCallDuration = _data['slowCallDuration'];
+    logAllCalls = _data['logAllCalls']!;
+    logAllQueries = _data['logAllQueries']!;
+    logSlowCalls = _data['logSlowCalls']!;
+    logSlowQueries = _data['logSlowQueries']!;
+    logFailedCalls = _data['logFailedCalls']!;
+    logMalformedCalls = _data['logMalformedCalls']!;
+    logLevel = _data['logLevel']!;
+    slowQueryDuration = _data['slowQueryDuration']!;
+    slowCallDuration = _data['slowCallDuration']!;
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,

@@ -91,36 +91,36 @@ void main(List<String> args) async {
       await performGenerateCerts(results.command!['config'], results.command!['verbose']);
       return;
     }
-    if (results.command!.name == cmdShutdown) {
-      var insights = Insights(results.command!['config']);
-      await insights.shutdown();
-      insights.close();
-      return;
-    }
-    if (results.command!.name == cmdHealthCheck) {
-      var insights = Insights(results.command!['config']);
-      await insights.healthCheck();
-      insights.close();
-      return;
-    }
-    if (results.command!.name == cmdLogs) {
-      var insights = Insights(results.command!['config']);
-      await insights.printLogs(int.tryParse(results.command!['num-entries']) ?? 100);
-      insights.close();
-      return;
-    }
-    if (results.command!.name == cmdSessionLogs) {
-      var insights = Insights(results.command!['config']);
-      await insights.printSessionLogs(int.tryParse(results.command!['num-entries']) ?? 100);
-      insights.close();
-      return;
-    }
-    if (results.command!.name == cmdCacheInfo) {
-      var insights = Insights(results.command!['config']);
-      await insights.printCachesInfo(results.command!['fetch-keys']);
-      insights.close();
-      return;
-    }
+    // if (results.command!.name == cmdShutdown) {
+    //   var insights = Insights(results.command!['config']);
+    //   await insights.shutdown();
+    //   insights.close();
+    //   return;
+    // }
+    // if (results.command!.name == cmdHealthCheck) {
+    //   var insights = Insights(results.command!['config']);
+    //   await insights.healthCheck();
+    //   insights.close();
+    //   return;
+    // }
+    // if (results.command!.name == cmdLogs) {
+    //   var insights = Insights(results.command!['config']);
+    //   await insights.printLogs(int.tryParse(results.command!['num-entries']) ?? 100);
+    //   insights.close();
+    //   return;
+    // }
+    // if (results.command!.name == cmdSessionLogs) {
+    //   var insights = Insights(results.command!['config']);
+    //   await insights.printSessionLogs(int.tryParse(results.command!['num-entries']) ?? 100);
+    //   insights.close();
+    //   return;
+    // }
+    // if (results.command!.name == cmdCacheInfo) {
+    //   var insights = Insights(results.command!['config']);
+    //   await insights.printCachesInfo(results.command!['fetch-keys']);
+    //   insights.close();
+    //   return;
+    // }
     if (results.command!.name == cmdServerAddress) {
       var configInfo = ConfigInfo(results.command!['config'], serverId: int.tryParse(results.command!['id'])!);
       configInfo.printAddress();

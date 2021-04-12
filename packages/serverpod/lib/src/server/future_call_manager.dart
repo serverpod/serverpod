@@ -16,7 +16,7 @@ class FutureCallManager {
 
   FutureCallManager(this._server, this._serializationManager);
 
-  Future<Null> scheduleFutureCall(String name, SerializableEntity? object, DateTime time, int serverId) async {
+  Future<void> scheduleFutureCall(String name, SerializableEntity? object, DateTime time, int serverId) async {
     String? serialization;
     if (object != null)
       serialization = jsonEncode(object.serializeAll());
@@ -53,7 +53,7 @@ class FutureCallManager {
     _checkQueue();
   }
 
-  Future<Null> _checkQueue() async {
+  Future<void> _checkQueue() async {
     DatabaseConnection dbConn = DatabaseConnection(_server.databaseConnection);
 
     try {
@@ -67,7 +67,7 @@ class FutureCallManager {
       );
 
       for (FutureCallEntry entry in rows.cast<FutureCallEntry>()) {
-        FutureCall? call = _futureCalls[entry.name!];
+        FutureCall? call = _futureCalls[entry.name];
         if (call == null)
           continue;
 

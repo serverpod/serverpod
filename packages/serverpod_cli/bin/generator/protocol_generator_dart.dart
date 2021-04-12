@@ -42,14 +42,14 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out += '  Future<$returnTypeNoFuture${returnTypeNoFuture != 'void' ? '?' : ''}> ${methodDef.name}(';
 
         for (var paramDef in requiredParams) {
-          out += '${paramDef.type}? ${paramDef.name},';
+          out += '${paramDef.type} ${paramDef.name},';
         }
 
         if (optionalParams.length > 0) {
           out += '[';
 
           for (var paramDef in optionalParams) {
-            out += '${paramDef.type}? ${paramDef.name},';
+            out += '${paramDef.type.type} ${paramDef.name},';
           }
 
           out += ']';

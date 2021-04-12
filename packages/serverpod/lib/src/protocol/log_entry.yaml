@@ -5,5 +5,5 @@ fields:
   time: DateTime
   logLevel: int
   message: String
-  stackTrace: String
-  sessionLogId: int
+  stackTrace: String?
+  sessionLogId: int?

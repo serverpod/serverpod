@@ -8,26 +8,28 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 class LogResult extends SerializableEntity {
+  @override
   String get className => 'LogResult';
 
   int? id;
-  List<LogEntry>? entries;
+  late List<LogEntry> entries;
 
   LogResult({
     this.id,
-    this.entries,
+    required this.entries,
 });
 
   LogResult.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    entries = _data['entries']?.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
+    entries = _data['entries']!.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
   }
 
+  @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'entries': entries?.map((LogEntry a) => a.serialize()).toList(),
+      'entries': entries.map((LogEntry a) => a.serialize()).toList(),
     });
   }
 }

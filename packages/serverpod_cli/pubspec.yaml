@@ -13,8 +13,8 @@ dependencies:
   path: ^1.8.0
   serverpod_shared:
     path: ../serverpod_shared
-  serverpod_service_client:
-    path: ../serverpod_service_client
+#  serverpod_service_client:
+#    path: ../serverpod_service_client
 
 dev_dependencies:
 #  unittest: any
