@@ -51,19 +51,19 @@ class _EndpointInsights {
   Client client;
   _EndpointInsights(this.client);
 
-  Future<LogResult?> getLog(int? numEntries,) async {
+  Future<LogResult> getLog(int? numEntries,) async {
     return await client.callServerEndpoint('insights', 'getLog', 'LogResult', {
       'numEntries':numEntries,
     });
   }
 
-  Future<SessionLogResult?> getSessionLog(int? numEntries,) async {
+  Future<SessionLogResult> getSessionLog(int? numEntries,) async {
     return await client.callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
       'numEntries':numEntries,
     });
   }
 
-  Future<CachesInfo?> getCachesInfo(bool fetchKeys,) async {
+  Future<CachesInfo> getCachesInfo(bool fetchKeys,) async {
     return await client.callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
       'fetchKeys':fetchKeys,
     });
@@ -74,7 +74,7 @@ class _EndpointInsights {
     });
   }
 
-  Future<ServerHealthResult?> checkHealth() async {
+  Future<ServerHealthResult> checkHealth() async {
     return await client.callServerEndpoint('insights', 'checkHealth', 'ServerHealthResult', {
     });
   }
