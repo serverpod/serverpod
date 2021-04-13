@@ -1,7 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 
-int globalInt = 0;
-
 class BasicTypesEndpoint extends Endpoint {
 
   Future<int?> testInt(Session session, int? value) async {
