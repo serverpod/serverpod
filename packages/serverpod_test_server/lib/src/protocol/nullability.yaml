@@ -10,7 +10,7 @@ fields:
   aNullableBool: bool?
 
   aString: String
-  aNullableString: String
+  aNullableString: String?
 
   aDateTime: DateTime
   aNullableDateTime: DateTime?

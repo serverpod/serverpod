@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-// import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 

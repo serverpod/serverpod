@@ -424,9 +424,9 @@ class _FieldDefinition {
       }
       else if (type.listType!.typeNonNullable == 'DateTime') {
         if (type.listType!.nullable)
-          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.toIso8601String())';
+          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.toIso8601String()).toList()';
         else
-          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String())';
+          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String()).toList()';
       }
       else {
         return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
@@ -451,12 +451,15 @@ class _FieldDefinition {
       }
       else if (type.listType!.typeNonNullable == 'DateTime') {
         if (type.listType!.nullable)
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null)';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
         else
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => DateTime.tryParse(a)!)';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
       }
       else {
-        return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
+        if (type.listType!.nullable)
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
+        else
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
       }
     }
 

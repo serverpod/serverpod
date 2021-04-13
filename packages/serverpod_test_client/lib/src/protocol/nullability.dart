@@ -19,7 +19,7 @@ class Nullability extends SerializableEntity {
   late bool aBool;
   bool? aNullableBool;
   late String aString;
-  late String aNullableString;
+  String? aNullableString;
   late DateTime aDateTime;
   DateTime? aNullableDateTime;
   late SimpleData anObject;
@@ -46,7 +46,7 @@ class Nullability extends SerializableEntity {
     required this.aBool,
     this.aNullableBool,
     required this.aString,
-    required this.aNullableString,
+    this.aNullableString,
     required this.aDateTime,
     this.aNullableDateTime,
     required this.anObject,
@@ -75,7 +75,7 @@ class Nullability extends SerializableEntity {
     aBool = _data['aBool']!;
     aNullableBool = _data['aNullableBool'];
     aString = _data['aString']!;
-    aNullableString = _data['aNullableString']!;
+    aNullableString = _data['aNullableString'];
     aDateTime = DateTime.tryParse(_data['aDateTime'])!;
     aNullableDateTime = _data['aNullableDateTime'] != null ? DateTime.tryParse(_data['aNullableDateTime']) : null;
     anObject = SimpleData.fromSerialization(_data['anObject']);
@@ -86,12 +86,12 @@ class Nullability extends SerializableEntity {
     aNullableListWithNullableInts = _data['aNullableListWithNullableInts']?.cast<int?>();
     anObjectList = _data['anObjectList']!.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
     aNullableObjectList = _data['aNullableObjectList']?.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
-    aListWithNullableObjects = _data['aListWithNullableObjects']!.map<SimpleData?>((a) => SimpleData?.fromSerialization(a))?.toList();
-    aNullableListWithNullableObjects = _data['aNullableListWithNullableObjects']?.map<SimpleData?>((a) => SimpleData?.fromSerialization(a))?.toList();
-    aDateTimeList = _data['aDateTimeList']!.map<DateTime?>((a) => DateTime.tryParse(a)!);
-    aNullableDateTimeList = _data['aNullableDateTimeList']?.map<DateTime?>((a) => DateTime.tryParse(a)!);
-    aListWithNullableDateTimes = _data['aListWithNullableDateTimes']!.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null);
-    aNullableListWithNullableDateTimes = _data['aNullableListWithNullableDateTimes']?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null);
+    aListWithNullableObjects = _data['aListWithNullableObjects']!.map<SimpleData?>((a) => a != null ? SimpleData?.fromSerialization(a) : null)?.toList();
+    aNullableListWithNullableObjects = _data['aNullableListWithNullableObjects']?.map<SimpleData?>((a) => a != null ? SimpleData?.fromSerialization(a) : null)?.toList();
+    aDateTimeList = _data['aDateTimeList']!.map<DateTime>((a) => DateTime.tryParse(a)!).toList();
+    aNullableDateTimeList = _data['aNullableDateTimeList']?.map<DateTime>((a) => DateTime.tryParse(a)!).toList();
+    aListWithNullableDateTimes = _data['aListWithNullableDateTimes']!.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList();
+    aNullableListWithNullableDateTimes = _data['aNullableListWithNullableDateTimes']?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList();
   }
 
   @override
@@ -118,10 +118,10 @@ class Nullability extends SerializableEntity {
       'aNullableObjectList': aNullableObjectList?.map((SimpleData a) => a.serialize()).toList(),
       'aListWithNullableObjects': aListWithNullableObjects.map((SimpleData? a) => a?.serialize()).toList(),
       'aNullableListWithNullableObjects': aNullableListWithNullableObjects?.map((SimpleData? a) => a?.serialize()).toList(),
-      'aDateTimeList': aDateTimeList.map<String>((a) => a.toIso8601String()),
-      'aNullableDateTimeList': aNullableDateTimeList?.map<String>((a) => a.toIso8601String()),
-      'aListWithNullableDateTimes': aListWithNullableDateTimes.map<String?>((a) => a?.toIso8601String()),
-      'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes?.map<String?>((a) => a?.toIso8601String()),
+      'aDateTimeList': aDateTimeList.map<String>((a) => a.toIso8601String()).toList(),
+      'aNullableDateTimeList': aNullableDateTimeList?.map<String>((a) => a.toIso8601String()).toList(),
+      'aListWithNullableDateTimes': aListWithNullableDateTimes.map<String?>((a) => a?.toIso8601String()).toList(),
+      'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes?.map<String?>((a) => a?.toIso8601String()).toList(),
     });
   }
 }
