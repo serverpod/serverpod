@@ -32,14 +32,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       for (MethodDefinition methodDef in endpointDef.methods) {
         var requiredParams = methodDef.parameters;
         var optionalParams = methodDef.parametersPositional;
-        String returnType = methodDef.returnType;
-        assert(returnType.startsWith('Future<'));
-        assert(returnType.endsWith('>'));
-        String returnTypeNoFuture = returnType.substring(7, returnType.length -1);
+        var returnType = methodDef.returnType;
 
         // Method definition
         out += '\n';
-        out += '  Future<$returnTypeNoFuture${returnTypeNoFuture != 'void' ? '?' : ''}> ${methodDef.name}(';
+        out += '  Future<${returnType.type}> ${methodDef.name}(';
 
         for (var paramDef in requiredParams) {
           out += '${paramDef.type} ${paramDef.name},';
@@ -58,7 +55,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out += ') async {\n';
 
         // Call to server endpoint
-        out += '    return await client.callServerEndpoint(\'${endpointDef.name}\', \'${methodDef.name}\', \'$returnTypeNoFuture\', {\n';
+        out += '    return await client.callServerEndpoint(\'${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
 
         for (var paramDef in requiredParams) {
           out += '      \'${paramDef.name}\':${paramDef.name},\n';

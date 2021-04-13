@@ -79,7 +79,7 @@ class ProtocolAnalyzer {
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
-                    returnType: method.returnType.getDisplayString(withNullability: false),
+                    returnType: TypeDefinition(method.returnType.getDisplayString(withNullability: true), stripFuture: true),
                   );
                   methodDefs.add(methodDef);
                 }

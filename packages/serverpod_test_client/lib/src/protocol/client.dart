@@ -135,7 +135,7 @@ class _EndpointSimple {
 
   Future<int> getGlobalInt() async {
     return await client.callServerEndpoint('simple', 'getGlobalInt', 'int', {
-    })!;
+    });
   }
 }
 
@@ -167,7 +167,7 @@ class _EndpointTransactionsDatabase {
     });
   }
 
-  Future<bool?> updateInsertDelete(int numUpdate,int numInsert,int numDelete,) async {
+  Future<bool> updateInsertDelete(int numUpdate,int numInsert,int numDelete,) async {
     return await client.callServerEndpoint('transactionsDatabase', 'updateInsertDelete', 'bool', {
       'numUpdate':numUpdate,
       'numInsert':numInsert,

@@ -15,7 +15,7 @@ class EndpointDefinition {
 
 class MethodDefinition {
   final String name;
-  final String returnType;
+  final TypeDefinition returnType;
   final List<ParameterDefinition> parameters;
   final List<ParameterDefinition> parametersPositional;
   final List<ParameterDefinition> parametersNamed;
@@ -37,9 +37,15 @@ class TypeDefinition {
   late final String typeNonNullable;
   late final String type;
 
-  TypeDefinition(String type) {
+  TypeDefinition(String type, {bool stripFuture=false}) {
     // Remove all spaces
     var trimmed = type.replaceAll(' ', '');
+
+    if (stripFuture) {
+      if (!trimmed.startsWith('Future<') || ! trimmed.endsWith('>'))
+        throw(FormatException('Expected type to be future'));
+      trimmed = trimmed.substring(7, trimmed.length - 1);
+    }
 
     // Check if it's a nullable type
     nullable = trimmed.endsWith('?');
