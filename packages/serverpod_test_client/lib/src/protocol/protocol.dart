@@ -9,11 +9,13 @@ import 'nullability.dart';
 import 'simple_data.dart';
 import 'types.dart';
 import 'simple_data_list.dart';
+import 'object_with_object.dart';
 
 export 'nullability.dart';
 export 'simple_data.dart';
 export 'types.dart';
 export 'simple_data_list.dart';
+export 'object_with_object.dart';
 export 'client.dart';
 
 class Protocol extends SerializationManager {
@@ -31,5 +33,6 @@ class Protocol extends SerializationManager {
     constructors['SimpleData'] = (Map<String, dynamic> serialization) => SimpleData.fromSerialization(serialization);
     constructors['Types'] = (Map<String, dynamic> serialization) => Types.fromSerialization(serialization);
     constructors['SimpleDataList'] = (Map<String, dynamic> serialization) => SimpleDataList.fromSerialization(serialization);
+    constructors['ObjectWithObject'] = (Map<String, dynamic> serialization) => ObjectWithObject.fromSerialization(serialization);
   }
 }

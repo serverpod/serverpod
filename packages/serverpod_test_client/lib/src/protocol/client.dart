@@ -80,6 +80,18 @@ class _EndpointBasicDatabase {
       'newNum':newNum,
     });
   }
+
+  Future<int?> storeObjectWithObject(ObjectWithObject object,) async {
+    return await client.callServerEndpoint('basicDatabase', 'storeObjectWithObject', 'int', {
+      'object':object,
+    });
+  }
+
+  Future<ObjectWithObject?> getObjectWithObject(int id,) async {
+    return await client.callServerEndpoint('basicDatabase', 'getObjectWithObject', 'ObjectWithObject', {
+      'id':id,
+    });
+  }
 }
 
 class _EndpointBasicTypes {

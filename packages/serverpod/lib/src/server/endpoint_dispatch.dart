@@ -13,8 +13,6 @@ abstract class EndpointDispatch {
   void initializeEndpoints(Server server);
 
   Future handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
-    print('handleUriCall server: $server endpoint: $endpointName uri: $uri');
-
     EndpointConnector? connector = connectors[endpointName];
     if (connector == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');

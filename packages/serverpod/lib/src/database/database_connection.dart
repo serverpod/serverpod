@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'database_config.dart';
 import 'table.dart';
 import 'expressions.dart';
@@ -260,6 +261,9 @@ class DatabaseConnection {
       if (column == 'id')
         continue;
 
+      if (data[column] is Map || data[column] is List)
+        data[column] = jsonEncode(data[column]);
+
       String value = DatabaseConfig.encoder.convert(data[column]);
 
       columnsList.add('"$column"');
@@ -401,18 +405,14 @@ class Transaction {
       return true;
 
     try {
-
       var result = await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
        for (var query in _queries) {
          await ctx.query(
            query,
            substitutionValues: {},
          );
-         print('TX query: $query');
        }
       });
-
-      print('result: $result');
     }
     catch (e, stackTrace) {
       print('Failed transaction: $e');

@@ -1,0 +1,9 @@
+class: ObjectWithObject
+table: object_with_object
+fields:
+  data: SimpleData
+  nullableData: SimpleData?
+  dataList: List<SimpleData>
+  nullableDataList: List<SimpleData>?
+  listWithNullableData: List<SimpleData?>
+  nullableListWithNullableData: List<SimpleData?>?

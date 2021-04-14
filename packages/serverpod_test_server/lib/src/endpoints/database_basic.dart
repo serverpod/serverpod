@@ -95,4 +95,14 @@ class BasicDatabase extends Endpoint {
     data.num = newNum;
     return await session.db.update(data);
   }
+
+  Future<int?> storeObjectWithObject(Session session, ObjectWithObject object) async {
+    await session.db.insert(object);
+    return object.id;
+  }
+
+  Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {
+    var object = await session.db.findById(tObjectWithObject, id) as ObjectWithObject?;
+    return object;
+  }
 }

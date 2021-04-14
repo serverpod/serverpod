@@ -134,6 +134,24 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).updateSimpleDataRow(session,params['num'],params['newNum'],);
           },
         ),
+        'storeObjectWithObject': MethodConnector(
+          name: 'storeObjectWithObject',
+          params: {
+            'object': ParameterDescription(name: 'object', type: ObjectWithObject, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).storeObjectWithObject(session,params['object'],);
+          },
+        ),
+        'getObjectWithObject': MethodConnector(
+          name: 'getObjectWithObject',
+          params: {
+            'id': ParameterDescription(name: 'id', type: int, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).getObjectWithObject(session,params['id'],);
+          },
+        ),
       },
     );
 

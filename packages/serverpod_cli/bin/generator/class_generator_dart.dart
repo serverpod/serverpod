@@ -397,7 +397,7 @@ class _FieldDefinition {
       return 'ColumnString';
     if (type.typeNonNullable == 'DateTime')
       return 'ColumnDateTime';
-    return null;
+    return 'ColumnSerializable';
   }
 
   _FieldScope scope = _FieldScope.all;

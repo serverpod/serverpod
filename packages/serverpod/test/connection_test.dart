@@ -249,6 +249,34 @@ void main() {
       expect(list.rows[98].num, equals(500));
       expect(list.rows.last.num, equals(1000));
     });
+
+    test('Store object with object', () async {
+      var object = ObjectWithObject(
+        data: SimpleData(num: 42),
+        dataList: [SimpleData(num: 10), SimpleData(num: 20)],
+        listWithNullableData: [SimpleData(num: 10), null],
+      );
+
+      int? id = await client.basicDatabase.storeObjectWithObject(object);
+      expect(id, isNotNull);
+
+      var result = await client.basicDatabase.getObjectWithObject(id!);
+
+      expect(result, isNotNull);
+      expect(result!.data.num, equals(42));
+      expect(result.nullableData, isNull);
+
+      expect(result.dataList.length, equals(2));
+      expect(result.dataList[0].num, equals(10));
+      expect(result.dataList[1].num, equals(20));
+
+      expect(result.listWithNullableData.length, equals(2));
+      expect(result.listWithNullableData[0]!.num, equals(10));
+      expect(result.listWithNullableData[1], isNull);
+
+      expect(result.nullableDataList, isNull);
+      expect(result.nullableListWithNullableData, isNull);
+    });
   });
 
   group('Async tasks', () {
@@ -272,9 +300,4 @@ void main() {
       // TODO: Check that it is recorded in error logs.
     });
   });
-
-//  test('Type List<int>', () async {
-//    List<int> result = await client.basicTypes.testIntList([1, 2, 3]);
-//    expect(result, equals([1, 2, 3]));
-//  });
 }

@@ -157,6 +157,12 @@ class ColumnDateTime extends Column {
   }
 }
 
+class ColumnSerializable extends Column {
+  ColumnSerializable(String name) : super (name, String);
+  
+  // TODO: Add comparisons and possibly other operations
+}
+
 class Constant extends Expression {
   // TODO: Handle more types
   Constant(dynamic? value) : super(_formatValue(value));
