@@ -18,6 +18,7 @@ import 'future_call.dart';
 import 'runmode.dart';
 import 'server.dart';
 import 'session.dart';
+import 'method_lookup.dart';
 
 typedef Future<List<internal.ServerHealthMetric>> HealthCheckHandler(Serverpod pod);
 
@@ -47,6 +48,8 @@ class Serverpod {
 
   internal.RuntimeSettings? _runtimeSettings;
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
+
+  final MethodLookup methodLookup = MethodLookup('generated/protocol.yaml');
 
   List<String>? whitelistedExternalCalls;
   
@@ -134,6 +137,14 @@ class Serverpod {
         }
         catch(e, stackTrace) {
           print('${DateTime.now()} Failed to connect to database: $e');
+          print('$stackTrace');
+        }
+
+        try {
+          methodLookup.load(DatabaseConnection(database));
+        }
+        catch(e, stackTrace) {
+          print('${DateTime.now()} Failed to load method lookup: $e');
           print('$stackTrace');
         }
 

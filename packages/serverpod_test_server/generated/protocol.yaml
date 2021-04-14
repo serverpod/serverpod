@@ -1,0 +1,32 @@
+basicDatabase:
+  - storeTypes:
+  - getTypes:
+  - getTypesRawQuery:
+  - countTypesRows:
+  - deleteAllInTypes:
+  - createSimpleTestData:
+  - countSimpleData:
+  - deleteAllSimpleTestData:
+  - deleteSimpleTestDataLessThan:
+  - findAndDeleteSimpleTestData:
+  - findSimpleDataRowsLessThan:
+  - updateSimpleDataRow:
+  - storeObjectWithObject:
+  - getObjectWithObject:
+basicTypes:
+  - testInt:
+  - testDouble:
+  - testBool:
+  - testDateTime:
+  - testString:
+simple:
+  - setGlobalInt:
+  - addToGlobalInt:
+  - getGlobalInt:
+asyncTasks:
+  - insertRowToSimpleDataAfterDelay:
+  - throwExceptionAfterDelay:
+transactionsDatabase:
+  - removeRow:
+  - updateInsertDelete:
+

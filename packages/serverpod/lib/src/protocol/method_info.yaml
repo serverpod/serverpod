@@ -1,0 +1,5 @@
+class: MethodInfo
+table: serverpod_method
+fields:
+  endpoint: String
+  method: String

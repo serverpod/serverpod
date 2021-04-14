@@ -10,7 +10,7 @@ import 'protocol_generator_dart.dart';
 Future<void> performGenerateProtocol(bool verbose) async {
   // Analyze the endpoint classes
   if (verbose)
-    print('Analyzing protol');
+    print('Analyzing protocol');
   ProtocolDefinition definition = await performAnalysis(verbose);
   var generator = ProtocolGeneratorDart(protocolDefinition: definition);
 
@@ -41,6 +41,15 @@ Future<void> performGenerateProtocol(bool verbose) async {
   File endpointsFile = File(endpointsFilePath);
   endpointsFile.createSync();
   endpointsFile.writeAsStringSync(endpointDispatch);
+
+  // Write endpoint definition
+  var endpointDef = generator.generateEndpointDefinition();
+  var endpointDefPath = 'generated/protocol.yaml';
+  if (verbose)
+    print('Writing: $endpointDefPath');
+  File endpointsDefFile = File(endpointDefPath);
+  endpointsDefFile.createSync();
+  endpointsDefFile.writeAsStringSync(endpointDef);
 }
 
 abstract class ProtocolGenerator {
@@ -125,4 +134,18 @@ abstract class ProtocolGenerator {
   }
 
   String generateClientEndpointCalls();
+
+  String generateEndpointDefinition() {
+    // TODO: Also output parameter and return type data
+    
+    String out = '';
+    for (var endpoint in protocolDefinition.endpoints) {
+      out += '${endpoint.name}:\n';
+      for (var method in endpoint.methods) {
+        out += '  - ${method.name}:\n';
+      }
+    }
+
+    return out;
+  }
 }
