@@ -1,0 +1,16 @@
+cache:
+  - put:
+  - get:
+  - invalidateKey:
+  - invalidateGroup:
+  - clear:
+insights:
+  - getRuntimeSettings:
+  - setRuntimeSettings:
+  - reloadRuntimeSettings:
+  - clearAllLogs:
+  - getLog:
+  - getSessionLog:
+  - getCachesInfo:
+  - shutdown:
+  - checkHealth:

@@ -11,4 +11,4 @@ database:
   user: postgres
   pass: rotkiv42
 
-serviceSecret: '382s736d34990823403e2322'
+serviceSecret: 'password'

@@ -23,10 +23,11 @@ simple:
   - setGlobalInt:
   - addToGlobalInt:
   - getGlobalInt:
+logging:
+  - logInfo:
 asyncTasks:
   - insertRowToSimpleDataAfterDelay:
   - throwExceptionAfterDelay:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
-

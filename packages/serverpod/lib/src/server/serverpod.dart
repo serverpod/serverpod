@@ -48,6 +48,39 @@ class Serverpod {
 
   internal.RuntimeSettings? _runtimeSettings;
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
+  set runtimeSettings(internal.RuntimeSettings settings) {
+    _runtimeSettings = settings;
+    _storeRuntimeSettings(settings);
+  }
+
+  Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
+    try {
+      DatabaseConnection dbConn = DatabaseConnection(database);
+
+      var oldRuntimeSettings = await dbConn.findSingleRow(
+          internal.tRuntimeSettings) as internal.RuntimeSettings?;
+      if (oldRuntimeSettings == null) {
+        settings.id = null;
+        await dbConn.insert(settings);
+      }
+
+      settings.id = oldRuntimeSettings!.id;
+      await dbConn.update(settings);
+    }
+    catch(e) {}
+  }
+
+  Future<void> reloadRuntimeSettings() async {
+    try {
+      DatabaseConnection dbConn = DatabaseConnection(database);
+
+      var settings = await dbConn.findSingleRow(
+          internal.tRuntimeSettings) as internal.RuntimeSettings?;
+      if (settings != null)
+        _runtimeSettings = settings;
+    }
+    catch(e) {}
+  }
 
   final MethodLookup methodLookup = MethodLookup('generated/protocol.yaml');
 
@@ -182,6 +215,7 @@ class Serverpod {
       securityContext: context,
       endpoints: endpoints,
     );
+    endpoints.initializeEndpoints(_serviceServer!);
 
     await _serviceServer!.start();
   }

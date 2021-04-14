@@ -51,6 +51,27 @@ class _EndpointInsights {
   Client client;
   _EndpointInsights(this.client);
 
+  Future<RuntimeSettings> getRuntimeSettings() async {
+    return await client.callServerEndpoint('insights', 'getRuntimeSettings', 'RuntimeSettings', {
+    });
+  }
+
+  Future<void> setRuntimeSettings(RuntimeSettings runtimeSettings,) async {
+    return await client.callServerEndpoint('insights', 'setRuntimeSettings', 'void', {
+      'runtimeSettings':runtimeSettings,
+    });
+  }
+
+  Future<void> reloadRuntimeSettings() async {
+    return await client.callServerEndpoint('insights', 'reloadRuntimeSettings', 'void', {
+    });
+  }
+
+  Future<void> clearAllLogs() async {
+    return await client.callServerEndpoint('insights', 'clearAllLogs', 'void', {
+    });
+  }
+
   Future<LogResult> getLog(int? numEntries,) async {
     return await client.callServerEndpoint('insights', 'getLog', 'LogResult', {
       'numEntries':numEntries,

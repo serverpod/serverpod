@@ -151,6 +151,17 @@ class _EndpointSimple {
   }
 }
 
+class _EndpointLogging {
+  Client client;
+  _EndpointLogging(this.client);
+
+  Future<void> logInfo(String message,) async {
+    return await client.callServerEndpoint('logging', 'logInfo', 'void', {
+      'message':message,
+    });
+  }
+}
+
 class _EndpointAsyncTasks {
   Client client;
   _EndpointAsyncTasks(this.client);
@@ -192,6 +203,7 @@ class Client extends ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
   late final _EndpointSimple simple;
+  late final _EndpointLogging logging;
   late final _EndpointAsyncTasks asyncTasks;
   late final _EndpointTransactionsDatabase transactionsDatabase;
 
@@ -199,6 +211,7 @@ class Client extends ServerpodClient {
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
     simple = _EndpointSimple(this);
+    logging = _EndpointLogging(this);
     asyncTasks = _EndpointAsyncTasks(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
   }

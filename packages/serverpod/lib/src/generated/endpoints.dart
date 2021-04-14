@@ -79,6 +79,39 @@ class Endpoints extends EndpointDispatch {
       name: 'insights',
       endpoint: endpoints['insights']!,
       methodConnectors: {
+        'getRuntimeSettings': MethodConnector(
+          name: 'getRuntimeSettings',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).getRuntimeSettings(session,);
+          },
+        ),
+        'setRuntimeSettings': MethodConnector(
+          name: 'setRuntimeSettings',
+          params: {
+            'runtimeSettings': ParameterDescription(name: 'runtimeSettings', type: RuntimeSettings, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).setRuntimeSettings(session,params['runtimeSettings'],);
+          },
+        ),
+        'reloadRuntimeSettings': MethodConnector(
+          name: 'reloadRuntimeSettings',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).reloadRuntimeSettings(session,);
+          },
+        ),
+        'clearAllLogs': MethodConnector(
+          name: 'clearAllLogs',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).clearAllLogs(session,);
+          },
+        ),
         'getLog': MethodConnector(
           name: 'getLog',
           params: {

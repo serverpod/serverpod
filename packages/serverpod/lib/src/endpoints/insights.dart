@@ -1,3 +1,5 @@
+import 'package:serverpod/database.dart';
+
 import '../../server.dart';
 import '../generated/protocol.dart';
 import '../cache/cache.dart';
@@ -8,6 +10,33 @@ const endpointNameInsights = 'insights';
 
 class InsightsEndpoint extends Endpoint {
   bool get requireLogin => true;
+
+  Future<RuntimeSettings> getRuntimeSettings(Session session) async {
+    return server.serverpod.runtimeSettings;
+  }
+
+  Future<void> setRuntimeSettings(Session session, RuntimeSettings runtimeSettings) async {
+    server.serverpod.runtimeSettings = runtimeSettings;
+  }
+
+  Future<void> reloadRuntimeSettings(Session session) async {
+    await server.serverpod.reloadRuntimeSettings();
+  }
+  
+  Future<void> clearAllLogs(Session session) async {
+    await session.db.delete(
+      tSessionLogEntry,
+      where: Constant(true),
+    );
+    await session.db.delete(
+      tQueryLogEntry,
+      where: Constant(true),
+    );
+    await session.db.delete(
+      tLogEntry,
+      where: Constant(true),
+    );
+  }
 
   Future<LogResult> getLog(Session session, int? numEntries) async {
     var rows = await session.db.find(
@@ -22,15 +51,16 @@ class InsightsEndpoint extends Endpoint {
   }
 
   Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {
-    var rows = await session.db.find(
+    print('getSessionLog');
+    var rows = (await session.db.find(
       tSessionLogEntry,
       limit: numEntries,
       orderBy: tSessionLogEntry.id,
       orderDescending: true,
-    );
+    )).cast<SessionLogEntry>();
 
     var sessionLogInfo = <SessionLogInfo>[];
-    for (SessionLogEntry logEntry in rows as Iterable<SessionLogEntry>) {
+    for (SessionLogEntry logEntry in rows) {
       var messageLogRows = await session.db.find(
         tLogEntry,
         where: tLogEntry.sessionLogId.equals(logEntry.id),

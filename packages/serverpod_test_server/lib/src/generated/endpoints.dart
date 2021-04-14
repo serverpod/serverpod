@@ -9,6 +9,7 @@ import 'protocol.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
 import '../endpoints/simple.dart';
+import '../endpoints/logging.dart';
 import '../endpoints/async_tasks.dart';
 import '../endpoints/database_transactions.dart';
 
@@ -18,6 +19,7 @@ class Endpoints extends EndpointDispatch {
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
       'simple': SimpleEndpoint()..initialize(server, 'simple'),
+      'logging': LoggingEndpoint()..initialize(server, 'logging'),
       'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks'),
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
     };
@@ -234,6 +236,22 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['simple'] as SimpleEndpoint).getGlobalInt(session,);
+          },
+        ),
+      },
+    );
+
+    connectors['logging'] = EndpointConnector(
+      name: 'logging',
+      endpoint: endpoints['logging']!,
+      methodConnectors: {
+        'logInfo': MethodConnector(
+          name: 'logInfo',
+          params: {
+            'message': ParameterDescription(name: 'message', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['logging'] as LoggingEndpoint).logInfo(session,params['message'],);
           },
         ),
       },
