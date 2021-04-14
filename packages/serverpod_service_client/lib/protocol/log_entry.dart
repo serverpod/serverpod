@@ -16,6 +16,7 @@ class LogEntry extends SerializableEntity {
   late DateTime time;
   late int logLevel;
   late String message;
+  String? exception;
   String? stackTrace;
   int? sessionLogId;
 
@@ -25,6 +26,7 @@ class LogEntry extends SerializableEntity {
     required this.time,
     required this.logLevel,
     required this.message,
+    this.exception,
     this.stackTrace,
     this.sessionLogId,
 });
@@ -36,6 +38,7 @@ class LogEntry extends SerializableEntity {
     time = DateTime.tryParse(_data['time'])!;
     logLevel = _data['logLevel']!;
     message = _data['message']!;
+    exception = _data['exception'];
     stackTrace = _data['stackTrace'];
     sessionLogId = _data['sessionLogId'];
   }
@@ -48,6 +51,7 @@ class LogEntry extends SerializableEntity {
       'time': time.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
+      'exception': exception,
       'stackTrace': stackTrace,
       'sessionLogId': sessionLogId,
     });

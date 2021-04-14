@@ -18,6 +18,7 @@ class SessionLogEntry extends TableRow {
   late DateTime time;
   String? endpoint;
   String? method;
+  String? futureCall;
   late double duration;
   late int numQueries;
   late bool slow;
@@ -31,6 +32,7 @@ class SessionLogEntry extends TableRow {
     required this.time,
     this.endpoint,
     this.method,
+    this.futureCall,
     required this.duration,
     required this.numQueries,
     required this.slow,
@@ -46,6 +48,7 @@ class SessionLogEntry extends TableRow {
     time = DateTime.tryParse(_data['time'])!;
     endpoint = _data['endpoint'];
     method = _data['method'];
+    futureCall = _data['futureCall'];
     duration = _data['duration']!;
     numQueries = _data['numQueries']!;
     slow = _data['slow']!;
@@ -62,6 +65,7 @@ class SessionLogEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
+      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,
@@ -79,6 +83,7 @@ class SessionLogEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
+      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,
@@ -96,6 +101,7 @@ class SessionLogEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
+      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,
@@ -115,6 +121,7 @@ class SessionLogEntryTable extends Table {
   final time = ColumnDateTime('time');
   final endpoint = ColumnString('endpoint');
   final method = ColumnString('method');
+  final futureCall = ColumnString('futureCall');
   final duration = ColumnDouble('duration');
   final numQueries = ColumnInt('numQueries');
   final slow = ColumnBool('slow');
@@ -128,6 +135,7 @@ class SessionLogEntryTable extends Table {
     time,
     endpoint,
     method,
+    futureCall,
     duration,
     numQueries,
     slow,

@@ -18,6 +18,7 @@ class LogEntry extends TableRow {
   late DateTime time;
   late int logLevel;
   late String message;
+  String? exception;
   String? stackTrace;
   int? sessionLogId;
 
@@ -27,6 +28,7 @@ class LogEntry extends TableRow {
     required this.time,
     required this.logLevel,
     required this.message,
+    this.exception,
     this.stackTrace,
     this.sessionLogId,
 });
@@ -38,6 +40,7 @@ class LogEntry extends TableRow {
     time = DateTime.tryParse(_data['time'])!;
     logLevel = _data['logLevel']!;
     message = _data['message']!;
+    exception = _data['exception'];
     stackTrace = _data['stackTrace'];
     sessionLogId = _data['sessionLogId'];
   }
@@ -50,6 +53,7 @@ class LogEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
+      'exception': exception,
       'stackTrace': stackTrace,
       'sessionLogId': sessionLogId,
     });
@@ -63,6 +67,7 @@ class LogEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
+      'exception': exception,
       'stackTrace': stackTrace,
       'sessionLogId': sessionLogId,
     });
@@ -76,6 +81,7 @@ class LogEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
+      'exception': exception,
       'stackTrace': stackTrace,
       'sessionLogId': sessionLogId,
     });
@@ -91,6 +97,7 @@ class LogEntryTable extends Table {
   final time = ColumnDateTime('time');
   final logLevel = ColumnInt('logLevel');
   final message = ColumnString('message');
+  final exception = ColumnString('exception');
   final stackTrace = ColumnString('stackTrace');
   final sessionLogId = ColumnInt('sessionLogId');
 
@@ -100,6 +107,7 @@ class LogEntryTable extends Table {
     time,
     logLevel,
     message,
+    exception,
     stackTrace,
     sessionLogId,
   ];

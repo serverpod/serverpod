@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import '../generated/protocol.dart';
+
 import 'database_config.dart';
 import 'table.dart';
 import 'expressions.dart';
@@ -368,12 +370,12 @@ class DatabaseConnection {
       return;
 
     session.queries.add(
-      QueryInfo(
+      QueryLogEntry(
         query: query,
-        time: DateTime.now().difference(startTime),
+        duration: DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
         numRows: numRowsAffected,
-        exception: exception,
-        stackTrace: trace,
+        exception: exception?.toString(),
+        stackTrace: trace?.toString(),
       ),
     );
   }

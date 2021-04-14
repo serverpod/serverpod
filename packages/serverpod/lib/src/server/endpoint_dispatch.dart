@@ -85,7 +85,7 @@ abstract class EndpointDispatch {
       // Print session info
       int? authenticatedUserId = connector.endpoint.requireLogin ? await session.authenticatedUserId : null;
       if (connector.endpoint.logSessions)
-        server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.log, authenticatedUserId, null, null);
+        server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.logs, authenticatedUserId, null, null);
 
       await session.close();
 
@@ -95,7 +95,7 @@ abstract class EndpointDispatch {
       // Something did not work out
       int? sessionLogId = 0;
       if (connector.endpoint.logSessions)
-        sessionLogId = await server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.log, null, exception.toString(), stackTrace);
+        sessionLogId = await server.serverpod.logSession(session.methodCall!.endpointName, session.methodCall!.methodName, session.runningTime, session.queries, session.logs, null, exception.toString(), stackTrace);
 
       await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);

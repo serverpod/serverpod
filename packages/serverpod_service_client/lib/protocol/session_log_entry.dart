@@ -16,6 +16,7 @@ class SessionLogEntry extends SerializableEntity {
   late DateTime time;
   String? endpoint;
   String? method;
+  String? futureCall;
   late double duration;
   late int numQueries;
   late bool slow;
@@ -29,6 +30,7 @@ class SessionLogEntry extends SerializableEntity {
     required this.time,
     this.endpoint,
     this.method,
+    this.futureCall,
     required this.duration,
     required this.numQueries,
     required this.slow,
@@ -44,6 +46,7 @@ class SessionLogEntry extends SerializableEntity {
     time = DateTime.tryParse(_data['time'])!;
     endpoint = _data['endpoint'];
     method = _data['method'];
+    futureCall = _data['futureCall'];
     duration = _data['duration']!;
     numQueries = _data['numQueries']!;
     slow = _data['slow']!;
@@ -60,6 +63,7 @@ class SessionLogEntry extends SerializableEntity {
       'time': time.toUtc().toIso8601String(),
       'endpoint': endpoint,
       'method': method,
+      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,

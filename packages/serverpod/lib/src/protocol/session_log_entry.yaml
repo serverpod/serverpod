@@ -5,6 +5,7 @@ fields:
   time: DateTime
   endpoint: String?
   method: String?
+  futureCall: String?
   duration: double
   numQueries: int
   slow: bool

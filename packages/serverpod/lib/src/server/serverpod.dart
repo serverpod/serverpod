@@ -194,18 +194,24 @@ class Serverpod {
     return _passwords[key];
   }
 
-  void _log(internal.LogLevel level, String message, {StackTrace? stackTrace, int? sessionLogId}) async {
+  Future<void> log(String message, {internal.LogLevel? level, dynamic? exception, StackTrace? stackTrace}) async {
+    var entry = internal.LogEntry(
+      serverId: server.serverId,
+      logLevel: (level ?? internal.LogLevel.info).index,
+      message: message,
+      time: DateTime.now(),
+      exception: '$exception',
+      stackTrace: '$stackTrace',
+    );
+
+    await _log(entry, null);
+  }
+
+  Future<void> _log(internal.LogEntry entry, int? sessionLogId) async {
     int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
 
-    if (level.index >= serverLogLevel) {
-      var entry = internal.LogEntry(
-        serverId: serverId,
-        time: DateTime.now(),
-        logLevel: level.index,
-        message: message,
-        stackTrace: stackTrace?.toString(),
-        sessionLogId: sessionLogId,
-      );
+    if (entry.logLevel >= serverLogLevel) {
+      entry.sessionLogId = sessionLogId;
 
       bool success;
 
@@ -217,17 +223,19 @@ class Serverpod {
         success = false;
       }
       if (!success)
-        print('${DateTime.now()} FAILED DB LOG ${level.name.toLowerCase()}: $message');
+        print('${DateTime.now()} FAILED DB LOG: $entry.message');
     }
 
     if (_runMode == ServerpodRunMode.development) {
-      print('${level.name.toUpperCase()}: $message');
-      if (stackTrace != null)
-        print(stackTrace.toString());
+      print('${internal.LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+      if (entry.exception != null)
+        print(entry.exception);
+      if (entry.stackTrace != null)
+        print(entry.stackTrace);
     }
   }
 
-  Future<int?> logSession(String? endpoint, String? method, Duration duration, List<QueryInfo> queries, List<LogInfo> sessionLog, int? authenticatedUserId, String? exception, StackTrace? stackTrace) async {
+  Future<int?> logSession(String? endpoint, String? method, Duration duration, List<internal.QueryLogEntry> queries, List<internal.LogEntry> sessionLog, int? authenticatedUserId, String? exception, StackTrace? stackTrace) async {
     if (_runMode == ServerpodRunMode.development) {
       print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUserId');
       if (exception != null) {
@@ -262,24 +270,18 @@ class Serverpod {
         int sessionLogId = sessionLogEntry.id!;
 
         for (var logInfo in sessionLog) {
-          _log(logInfo.level, logInfo.message, stackTrace: logInfo.stackTrace,
-              sessionLogId: sessionLogId);
+          _log(logInfo, sessionLogId);
         }
 
         for (var queryInfo in queries) {
           if (runtimeSettings.logAllQueries ||
-              runtimeSettings.logSlowQueries && queryInfo.time > Duration(
-                  microseconds: (runtimeSettings.slowQueryDuration * 1000000.0)
-                      .toInt())
+              runtimeSettings.logSlowQueries && queryInfo.duration > runtimeSettings.slowQueryDuration ||
+              runtimeSettings.logFailedQueries && queryInfo.exception != null
           ) {
             // Log query
-            var queryEntry = internal.QueryLogEntry(
-              sessionLogId: sessionLogId,
-              query: queryInfo.query,
-              duration: queryInfo.time.inMicroseconds / 1000000.0,
-              numRows: queryInfo.numRows,
-            );
-            await dbConn.insert(queryEntry);
+            queryInfo.sessionLogId = sessionLogId;
+            queryInfo.serverId = serverId;
+            await dbConn.insert(queryInfo);
           }
         }
 

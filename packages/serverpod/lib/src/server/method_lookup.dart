@@ -59,8 +59,6 @@ class MethodLookup {
         }
       }
     }
-
-    print('lookup: $_lookup');
   }
 
   int? lookupMethod(String endpoint, String method) {

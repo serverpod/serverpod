@@ -18,8 +18,8 @@ class Session {
   final Duration maxLifeTime;
 
   late DateTime _timeCreated;
-  final List<QueryInfo> queries = <QueryInfo>[];
-  final List<LogInfo> log = <LogInfo>[];
+  final List<QueryLogEntry> queries = [];
+  final List<LogEntry> logs = [];
 
   int? _authenticatedUser;
   Set<Scope>? _scopes;
@@ -116,24 +116,17 @@ class Session {
   Future<void> close() async {
   }
 
-  logDebug(String message) {
-    log.add(LogInfo(LogLevel.debug, message));
-  }
-
-  logInfo(String message) {
-    log.add(LogInfo(LogLevel.info, message));
-  }
-
-  logWarning(String message, {StackTrace? stackTrace}) {
-    log.add(LogInfo(LogLevel.warning, message, stackTrace: stackTrace));
-  }
-
-  logError(String message, {StackTrace? stackTrace}) {
-    log.add(LogInfo(LogLevel.error, message, stackTrace: stackTrace));
-  }
-
-  logFatal(String message, {StackTrace? stackTrace}) {
-    log.add(LogInfo(LogLevel.fatal, message, stackTrace: stackTrace));
+  void log(String message, {LogLevel? level, dynamic? exception, StackTrace? stackTrace}) {
+    logs.add(
+      LogEntry(
+        serverId: server.serverId,
+        logLevel: (level ?? LogLevel.info).index,
+        message: message,
+        time: DateTime.now(),
+        exception: '$exception',
+        stackTrace: '$stackTrace',
+      ),
+    );
   }
 }
 
@@ -162,22 +155,4 @@ class FutureCallInfo {
   FutureCallInfo({
     required this.callName,
   });
-}
-
-class QueryInfo {
-  final String query;
-  final Duration time;
-  final int? numRows;
-  final dynamic exception;
-  final StackTrace? stackTrace;
-
-  QueryInfo({required this.query, required this.time, this.numRows, this.exception, this.stackTrace});
-}
-
-class LogInfo {
-  final LogLevel level;
-  final String message;
-  final StackTrace? stackTrace;
-
-  LogInfo(this.level, this.message, {this.stackTrace});
 }
