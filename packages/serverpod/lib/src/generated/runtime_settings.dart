@@ -19,6 +19,7 @@ class RuntimeSettings extends TableRow {
   late bool logSlowCalls;
   late bool logSlowQueries;
   late bool logFailedCalls;
+  late bool logFailedQueries;
   late bool logMalformedCalls;
   late int logLevel;
   late double slowQueryDuration;
@@ -31,6 +32,7 @@ class RuntimeSettings extends TableRow {
     required this.logSlowCalls,
     required this.logSlowQueries,
     required this.logFailedCalls,
+    required this.logFailedQueries,
     required this.logMalformedCalls,
     required this.logLevel,
     required this.slowQueryDuration,
@@ -45,6 +47,7 @@ class RuntimeSettings extends TableRow {
     logSlowCalls = _data['logSlowCalls']!;
     logSlowQueries = _data['logSlowQueries']!;
     logFailedCalls = _data['logFailedCalls']!;
+    logFailedQueries = _data['logFailedQueries']!;
     logMalformedCalls = _data['logMalformedCalls']!;
     logLevel = _data['logLevel']!;
     slowQueryDuration = _data['slowQueryDuration']!;
@@ -60,6 +63,7 @@ class RuntimeSettings extends TableRow {
       'logSlowCalls': logSlowCalls,
       'logSlowQueries': logSlowQueries,
       'logFailedCalls': logFailedCalls,
+      'logFailedQueries': logFailedQueries,
       'logMalformedCalls': logMalformedCalls,
       'logLevel': logLevel,
       'slowQueryDuration': slowQueryDuration,
@@ -76,6 +80,7 @@ class RuntimeSettings extends TableRow {
       'logSlowCalls': logSlowCalls,
       'logSlowQueries': logSlowQueries,
       'logFailedCalls': logFailedCalls,
+      'logFailedQueries': logFailedQueries,
       'logMalformedCalls': logMalformedCalls,
       'logLevel': logLevel,
       'slowQueryDuration': slowQueryDuration,
@@ -92,6 +97,7 @@ class RuntimeSettings extends TableRow {
       'logSlowCalls': logSlowCalls,
       'logSlowQueries': logSlowQueries,
       'logFailedCalls': logFailedCalls,
+      'logFailedQueries': logFailedQueries,
       'logMalformedCalls': logMalformedCalls,
       'logLevel': logLevel,
       'slowQueryDuration': slowQueryDuration,
@@ -110,6 +116,7 @@ class RuntimeSettingsTable extends Table {
   final logSlowCalls = ColumnBool('logSlowCalls');
   final logSlowQueries = ColumnBool('logSlowQueries');
   final logFailedCalls = ColumnBool('logFailedCalls');
+  final logFailedQueries = ColumnBool('logFailedQueries');
   final logMalformedCalls = ColumnBool('logMalformedCalls');
   final logLevel = ColumnInt('logLevel');
   final slowQueryDuration = ColumnDouble('slowQueryDuration');
@@ -122,6 +129,7 @@ class RuntimeSettingsTable extends Table {
     logSlowCalls,
     logSlowQueries,
     logFailedCalls,
+    logFailedQueries,
     logMalformedCalls,
     logLevel,
     slowQueryDuration,

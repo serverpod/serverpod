@@ -123,6 +123,7 @@ class Serverpod {
               logSlowCalls: true,
               logSlowQueries: true,
               logFailedCalls: true,
+              logFailedQueries: true,
               logMalformedCalls: false,
               logLevel: internal.LogLevel.warning.index,
               slowCallDuration: 1.0,

@@ -17,6 +17,7 @@ class RuntimeSettings extends SerializableEntity {
   late bool logSlowCalls;
   late bool logSlowQueries;
   late bool logFailedCalls;
+  late bool logFailedQueries;
   late bool logMalformedCalls;
   late int logLevel;
   late double slowQueryDuration;
@@ -29,6 +30,7 @@ class RuntimeSettings extends SerializableEntity {
     required this.logSlowCalls,
     required this.logSlowQueries,
     required this.logFailedCalls,
+    required this.logFailedQueries,
     required this.logMalformedCalls,
     required this.logLevel,
     required this.slowQueryDuration,
@@ -43,6 +45,7 @@ class RuntimeSettings extends SerializableEntity {
     logSlowCalls = _data['logSlowCalls']!;
     logSlowQueries = _data['logSlowQueries']!;
     logFailedCalls = _data['logFailedCalls']!;
+    logFailedQueries = _data['logFailedQueries']!;
     logMalformedCalls = _data['logMalformedCalls']!;
     logLevel = _data['logLevel']!;
     slowQueryDuration = _data['slowQueryDuration']!;
@@ -58,6 +61,7 @@ class RuntimeSettings extends SerializableEntity {
       'logSlowCalls': logSlowCalls,
       'logSlowQueries': logSlowQueries,
       'logFailedCalls': logFailedCalls,
+      'logFailedQueries': logFailedQueries,
       'logMalformedCalls': logMalformedCalls,
       'logLevel': logLevel,
       'slowQueryDuration': slowQueryDuration,
