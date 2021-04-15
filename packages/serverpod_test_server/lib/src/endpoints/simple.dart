@@ -5,7 +5,6 @@ int globalInt = 0;
 class SimpleEndpoint extends Endpoint {
   
   Future<void> setGlobalInt(Session session, int? value, [int? secondValue]) async {
-    print('setGlobalInt value: $value secondValue: $secondValue');
     globalInt = value!;
   }
 

@@ -51,7 +51,6 @@ class InsightsEndpoint extends Endpoint {
   }
 
   Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {
-    print('getSessionLog');
     var rows = (await session.db.find(
       tSessionLogEntry,
       limit: numEntries,
@@ -88,7 +87,6 @@ class InsightsEndpoint extends Endpoint {
   }
 
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {
-    print('getCachesInfo fetchKeys: $fetchKeys');
     return CachesInfo(
       local: _getCacheInfo(pod.caches.local, fetchKeys),
       localPrio: _getCacheInfo(pod.caches.localPrio, fetchKeys),
