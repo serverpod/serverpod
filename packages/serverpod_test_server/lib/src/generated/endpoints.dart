@@ -12,6 +12,7 @@ import '../endpoints/simple.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/async_tasks.dart';
 import '../endpoints/database_transactions.dart';
+import '../endpoints/logging_disabled.dart';
 
 class Endpoints extends EndpointDispatch {
   void initializeEndpoints(Server server) {
@@ -22,6 +23,7 @@ class Endpoints extends EndpointDispatch {
       'logging': LoggingEndpoint()..initialize(server, 'logging'),
       'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks'),
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
+      'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled'),
     };
 
     connectors['basicDatabase'] = EndpointConnector(
@@ -265,6 +267,14 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['logging'] as LoggingEndpoint).logDebugAndInfoAndError(session,params['debug'],params['info'],params['error'],);
           },
         ),
+        'twoQueries': MethodConnector(
+          name: 'twoQueries',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['logging'] as LoggingEndpoint).twoQueries(session,);
+          },
+        ),
       },
     );
 
@@ -316,6 +326,22 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['transactionsDatabase'] as TransactionsDatabaseEndpoint).updateInsertDelete(session,params['numUpdate'],params['numInsert'],params['numDelete'],);
+          },
+        ),
+      },
+    );
+
+    connectors['loggingDisabled'] = EndpointConnector(
+      name: 'loggingDisabled',
+      endpoint: endpoints['loggingDisabled']!,
+      methodConnectors: {
+        'logInfo': MethodConnector(
+          name: 'logInfo',
+          params: {
+            'message': ParameterDescription(name: 'message', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['loggingDisabled'] as LoggingDisabledEndpoint).logInfo(session,params['message'],);
           },
         ),
       },

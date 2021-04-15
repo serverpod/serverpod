@@ -63,7 +63,7 @@ void main() {
       expect(logResult.sessionLog[0].messageLog[0].message, equals('test'));
     });
 
-    test('Log levels', () async {
+    test('All log levels', () async {
       await client.logging.logDebugAndInfoAndError('debug', 'info', 'error');
 
       // Writing of logs may still be going on after the call has returned,
@@ -73,16 +73,73 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1);
       expect(logResult.sessionLog.length, equals(1));
 
-      print('Session ID: ${logResult.sessionLog[0].messageLog[0].sessionLogId}');
-
-      for(var logEntry in logResult.sessionLog[0].messageLog) {
-        print('entry: ${logEntry.message} level: ${logEntry.logLevel}');
-      }
-
       expect(logResult.sessionLog[0].messageLog.length, equals(3));
       expect(logResult.sessionLog[0].messageLog[0].message, equals('debug'));
       expect(logResult.sessionLog[0].messageLog[1].message, equals('info'));
       expect(logResult.sessionLog[0].messageLog[2].message, equals('error'));
+    });
+
+    test('Error log level', () async {
+      // Set log level to error
+      var settings = service.RuntimeSettings(
+        logAllCalls: true,
+        logSlowCalls: true,
+        logFailedCalls: true,
+        logAllQueries: true,
+        logSlowQueries: true,
+        logFailedQueries: true,
+        logMalformedCalls: true,
+        slowCallDuration: 1.0,
+        slowQueryDuration: 1.0,
+        logLevel: service.LogLevel.error.index,
+      );
+      await serviceClient.insights.setRuntimeSettings(settings);
+
+      await client.logging.logDebugAndInfoAndError('debug', 'info', 'error');
+
+      // Writing of logs may still be going on after the call has returned,
+      // wait a second to make sure the log has been flushed to the database
+      await Future.delayed(Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+
+      // Debug and info logs should be ignored
+      expect(logResult.sessionLog[0].messageLog.length, equals(1));
+      expect(logResult.sessionLog[0].messageLog[0].message, equals('error'));
+    });
+
+    test('Query log', () async {
+      await client.logging.twoQueries();
+
+      // Writing of logs may still be going on after the call has returned,
+      // wait a second to make sure the log has been flushed to the database
+      await Future.delayed(Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+
+      expect(logResult.sessionLog[0].queries.length, equals(2));
+    });
+
+    test('Disabled logging', () async {
+      await client.logging.logInfo('test');
+      await Future.delayed(Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+      expect(logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
+      expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
+
+      await client.logging.logInfo('test');
+      await Future.delayed(Duration(seconds: 1));
+      await client.loggingDisabled.logInfo('test');
+      await Future.delayed(Duration(seconds: 1));
+
+      logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+      expect(logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
+      expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
     });
   });
 }

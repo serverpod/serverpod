@@ -26,9 +26,12 @@ simple:
 logging:
   - logInfo:
   - logDebugAndInfoAndError:
+  - twoQueries:
 asyncTasks:
   - insertRowToSimpleDataAfterDelay:
   - throwExceptionAfterDelay:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+loggingDisabled:
+  - logInfo:

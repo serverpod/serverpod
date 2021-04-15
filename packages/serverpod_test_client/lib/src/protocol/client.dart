@@ -168,6 +168,11 @@ class _EndpointLogging {
       'error':error,
     });
   }
+
+  Future<void> twoQueries() async {
+    return await client.callServerEndpoint('logging', 'twoQueries', 'void', {
+    });
+  }
 }
 
 class _EndpointAsyncTasks {
@@ -207,6 +212,17 @@ class _EndpointTransactionsDatabase {
   }
 }
 
+class _EndpointLoggingDisabled {
+  Client client;
+  _EndpointLoggingDisabled(this.client);
+
+  Future<void> logInfo(String message,) async {
+    return await client.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
+      'message':message,
+    });
+  }
+}
+
 class Client extends ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
@@ -214,6 +230,7 @@ class Client extends ServerpodClient {
   late final _EndpointLogging logging;
   late final _EndpointAsyncTasks asyncTasks;
   late final _EndpointTransactionsDatabase transactionsDatabase;
+  late final _EndpointLoggingDisabled loggingDisabled;
 
   Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     basicDatabase = _EndpointBasicDatabase(this);
@@ -222,5 +239,6 @@ class Client extends ServerpodClient {
     logging = _EndpointLogging(this);
     asyncTasks = _EndpointAsyncTasks(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
+    loggingDisabled = _EndpointLoggingDisabled(this);
   }
 }
