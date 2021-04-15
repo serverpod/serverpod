@@ -38,16 +38,29 @@ void main() {
     });
 
     test('Clear logs', () async {
-      // Make sure there is at least one log entry
-      await client.logging.logInfo('Log test');
+      // Make sure there is at least 10 log entries
+      for (int i = 0; i < 10; i += 1) {
+        await client.logging.logInfo('Log test $i');
+      }
 
-      service.SessionLogResult logResult = await serviceClient.insights.getSessionLog(1);
-      expect(logResult.sessionLog.length, equals(1));
+      service.SessionLogResult logResult = await serviceClient.insights.getSessionLog(10);
+      expect(logResult.sessionLog.length, equals(10));
 
       await serviceClient.insights.clearAllLogs();
 
-      logResult = await serviceClient.insights.getSessionLog(1);
-      expect(logResult.sessionLog.length, equals(0));
+      logResult = await serviceClient.insights.getSessionLog(10);
+      // Expect 1 entry as the clean logs call will be logged
+      expect(logResult.sessionLog.length, equals(1));
+    });
+
+    test('Log entry', () async {
+      await client.logging.logInfo('test');
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+
+      expect(logResult.sessionLog[0].messageLog.length, equals(1));
+      expect(logResult.sessionLog[0].messageLog[0].message, equals('test'));
     });
   });
 }
