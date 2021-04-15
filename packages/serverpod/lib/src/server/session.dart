@@ -123,8 +123,8 @@ class Session {
         logLevel: (level ?? LogLevel.info).index,
         message: message,
         time: DateTime.now(),
-        exception: '$exception',
-        stackTrace: '$stackTrace',
+        exception: exception != null ? '$exception' : null,
+        stackTrace: stackTrace != null ? '$stackTrace' : null,
       ),
     );
   }
