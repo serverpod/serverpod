@@ -254,6 +254,17 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['logging'] as LoggingEndpoint).logInfo(session,params['message'],);
           },
         ),
+        'logDebugAndInfoAndError': MethodConnector(
+          name: 'logDebugAndInfoAndError',
+          params: {
+            'debug': ParameterDescription(name: 'debug', type: String, nullable: false),
+            'info': ParameterDescription(name: 'info', type: String, nullable: false),
+            'error': ParameterDescription(name: 'error', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['logging'] as LoggingEndpoint).logDebugAndInfoAndError(session,params['debug'],params['info'],params['error'],);
+          },
+        ),
       },
     );
 

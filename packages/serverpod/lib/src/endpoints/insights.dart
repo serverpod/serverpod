@@ -65,14 +65,14 @@ class InsightsEndpoint extends Endpoint {
         tLogEntry,
         where: tLogEntry.sessionLogId.equals(logEntry.id),
         orderBy: tLogEntry.id,
-        orderDescending: true,
+        orderDescending: false,
       );
 
       var queryLogRows = await session.db.find(
         tQueryLogEntry,
         where: tQueryLogEntry.sessionLogId.equals(logEntry.id),
         orderBy: tQueryLogEntry.id,
-        orderDescending: true,
+        orderDescending: false,
       );
 
       sessionLogInfo.add(

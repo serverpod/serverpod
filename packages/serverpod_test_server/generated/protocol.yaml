@@ -25,6 +25,7 @@ simple:
   - getGlobalInt:
 logging:
   - logInfo:
+  - logDebugAndInfoAndError:
 asyncTasks:
   - insertRowToSimpleDataAfterDelay:
   - throwExceptionAfterDelay:

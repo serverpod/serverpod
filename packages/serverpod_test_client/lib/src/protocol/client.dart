@@ -160,6 +160,14 @@ class _EndpointLogging {
       'message':message,
     });
   }
+
+  Future<void> logDebugAndInfoAndError(String debug,String info,String error,) async {
+    return await client.callServerEndpoint('logging', 'logDebugAndInfoAndError', 'void', {
+      'debug':debug,
+      'info':info,
+      'error':error,
+    });
+  }
 }
 
 class _EndpointAsyncTasks {

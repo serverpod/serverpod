@@ -62,6 +62,28 @@ void main() {
       expect(logResult.sessionLog[0].messageLog.length, equals(1));
       expect(logResult.sessionLog[0].messageLog[0].message, equals('test'));
     });
+
+    test('Log levels', () async {
+      await client.logging.logDebugAndInfoAndError('debug', 'info', 'error');
+
+      // Writing of logs may still be going on after the call has returned,
+      // wait a second to make sure the log has been flushed to the database
+      await Future.delayed(Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+
+      print('Session ID: ${logResult.sessionLog[0].messageLog[0].sessionLogId}');
+
+      for(var logEntry in logResult.sessionLog[0].messageLog) {
+        print('entry: ${logEntry.message} level: ${logEntry.logLevel}');
+      }
+
+      expect(logResult.sessionLog[0].messageLog.length, equals(3));
+      expect(logResult.sessionLog[0].messageLog[0].message, equals('debug'));
+      expect(logResult.sessionLog[0].messageLog[1].message, equals('info'));
+      expect(logResult.sessionLog[0].messageLog[2].message, equals('error'));
+    });
   });
 }
 
