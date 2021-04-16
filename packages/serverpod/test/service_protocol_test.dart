@@ -161,7 +161,7 @@ void main() {
       await client.futureCalls.makeFutureCall(SimpleData(num: 42));
 
       // Make sure that the future call has been executed (it's set for 1 s)
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(Duration(seconds: 3));
 
       var logResult = await serviceClient.insights.getSessionLog(1);
       expect(logResult.sessionLog.length, equals(1));
