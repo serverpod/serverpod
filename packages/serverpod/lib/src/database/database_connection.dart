@@ -12,8 +12,6 @@ class DatabaseConnection {
   final DatabaseConfig database;
   late PgPool postgresConnection;
 
-//  PostgreSQLConnection postgresConnection;
-
   DatabaseConnection(this.database) {
     postgresConnection = database.pool;
   }
