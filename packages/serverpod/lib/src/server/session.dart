@@ -17,7 +17,8 @@ class Session {
   final Server server;
   final Duration maxLifeTime;
 
-  late DateTime _timeCreated;
+  late DateTime _startTime;
+  DateTime get startTime => _startTime;
   final List<QueryLogEntry> queries = [];
   final List<LogEntry> logs = [];
 
@@ -46,7 +47,7 @@ class Session {
     HttpRequest? httpRequest,
     String? futureCallName,
   }){
-    _timeCreated = DateTime.now();
+    _startTime = DateTime.now();
 
     if (type == SessionType.methodCall) {
       // Method call session
@@ -111,7 +112,7 @@ class Session {
     return (await authenticatedUserId) != null;
   }
   
-  Duration get runningTime => DateTime.now().difference(_timeCreated);
+  Duration get duration => DateTime.now().difference(_startTime);
 
   Future<void> close() async {
   }

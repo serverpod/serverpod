@@ -269,9 +269,12 @@ class Serverpod {
     }
   }
 
-  Future<int?> logSession(String? endpoint, String? method, Duration duration, List<internal.QueryLogEntry> queries, List<internal.LogEntry> sessionLog, int? authenticatedUserId, String? exception, StackTrace? stackTrace) async {
+  Future<int?> logSession(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
+    Duration duration = session.duration;
+
     if (_runMode == ServerpodRunMode.development) {
-      print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUserId');
+      if (session.methodCall != null)
+        print('CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
       if (exception != null) {
         print('$exception');
         print('$stackTrace');
@@ -287,10 +290,10 @@ class Serverpod {
       var sessionLogEntry = internal.SessionLogEntry(
         serverId: serverId,
         time: DateTime.now(),
-        endpoint: endpoint,
-        method: method,
+        endpoint: session.methodCall?.endpointName,
+        method: session.methodCall?.methodName,
         duration: duration.inMicroseconds / 1000000.0,
-        numQueries: queries.length,
+        numQueries: session.queries.length,
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
@@ -303,11 +306,11 @@ class Serverpod {
 
         int sessionLogId = sessionLogEntry.id!;
 
-        for (var logInfo in sessionLog) {
+        for (var logInfo in session.logs) {
           _log(logInfo, sessionLogId);
         }
 
-        for (var queryInfo in queries) {
+        for (var queryInfo in session.queries) {
           if (runtimeSettings.logAllQueries ||
               runtimeSettings.logSlowQueries && queryInfo.duration > runtimeSettings.slowQueryDuration ||
               runtimeSettings.logFailedQueries && queryInfo.exception != null
@@ -323,7 +326,8 @@ class Serverpod {
       }
       catch(e, logStackTrace) {
         print('${DateTime.now()} FAILED TO LOG SESSION');
-        print('CALL: $endpoint.$method duration: ${duration.inMilliseconds}ms numQueries: ${queries.length} authenticatedUser: $authenticatedUserId');
+        if (session.methodCall != null)
+          print('CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
         print('CALL error: $exception');
         print('$logStackTrace');
 
