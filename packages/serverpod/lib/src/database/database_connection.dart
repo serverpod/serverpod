@@ -362,7 +362,7 @@ class DatabaseConnection {
   }
 
   Future<bool> executeTransaction(Transaction transaction, {Session? session}) async {
-    return await transaction._execute(postgresConnection);
+    return await transaction._execute(postgresConnection, this, session);
   }
 
   void _logQuery(Session? session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
@@ -401,10 +401,15 @@ class Order {
 class Transaction {
   List<String> _queries = [];
 
-  Future<bool> _execute(PgPool postgresConnection) async {
+  Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn, Session? session) async {
     // Ignore empty transactions
     if (_queries.length == 0)
       return true;
+
+    String query = _queries.join('\n');
+    query = 'BEGIN;\n$query\nCOMMIT;';
+
+    DateTime startTime = DateTime.now();
 
     try {
       var result = await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
@@ -417,10 +422,13 @@ class Transaction {
       });
     }
     catch (e, stackTrace) {
+      conn._logQuery(session, query, startTime, exception: e);
       print('Failed transaction: $e');
       print('$stackTrace');
       return false;
     }
+
+    conn._logQuery(session, query, startTime);
     return true;
   }
 }

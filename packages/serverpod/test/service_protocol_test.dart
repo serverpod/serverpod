@@ -3,6 +3,11 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart' as service;
 import 'package:serverpod_client/src/auth_key_manager.dart';
 
+Future<void> setupTestData(Client client) async {
+  await client.basicDatabase.deleteAllSimpleTestData();
+  await client.basicDatabase.createSimpleTestData(100);
+}
+
 void main() {
   var client = Client('http://localhost:8080/');
   var serviceClient = service.Client(
@@ -120,6 +125,18 @@ void main() {
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].queries.length, equals(2));
+    });
+
+    test('Transaction query log', () async {
+      await setupTestData(client);
+      await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
+      await Future.delayed(Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+
+      expect(logResult.sessionLog[0].queries.length, equals(2));
+      expect(logResult.sessionLog[0].queries[1].query.startsWith('BEGIN'), equals(true));
     });
 
     test('Disabled logging', () async {
