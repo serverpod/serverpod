@@ -19,6 +19,8 @@ basicTypes:
   - testBool:
   - testDateTime:
   - testString:
+futureCalls:
+  - makeFutureCall:
 simple:
   - setGlobalInt:
   - addToGlobalInt:

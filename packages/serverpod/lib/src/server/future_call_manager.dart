@@ -76,16 +76,19 @@ class FutureCallManager {
           Map? data = jsonDecode(entry.serializedObject!);
           object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
         }
-        try {
-          Session session = Session(
-            type: SessionType.futureCall,
-            server: _server,
-            futureCallName: entry.name,
-          );
 
+        Session session = Session(
+          type: SessionType.futureCall,
+          server: _server,
+          futureCallName: entry.name,
+        );
+
+        try {
           await call.invoke(session, object);
+          _server.serverpod.logSession(session);
         }
         catch(e, stackTrace) {
+          _server.serverpod.logSession(session, exception: '$e', stackTrace: stackTrace);
           // Log errors
           stderr.writeln('Internal server error.');
           stderr.writeln('$e');

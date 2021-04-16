@@ -141,6 +141,35 @@ void main() {
       expect(logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
     });
+
+    test('Future call logging', () async {
+      // Set log level to info
+      var settings = service.RuntimeSettings(
+        logAllCalls: true,
+        logSlowCalls: true,
+        logFailedCalls: true,
+        logAllQueries: true,
+        logSlowQueries: true,
+        logFailedQueries: true,
+        logMalformedCalls: true,
+        slowCallDuration: 1.0,
+        slowQueryDuration: 1.0,
+        logLevel: service.LogLevel.info.index,
+      );
+      await serviceClient.insights.setRuntimeSettings(settings);
+
+      await client.futureCalls.makeFutureCall(SimpleData(num: 42));
+
+      // Make sure that the future call has been executed (it's set for 1 s)
+      await Future.delayed(Duration(seconds: 2));
+
+      var logResult = await serviceClient.insights.getSessionLog(1);
+      expect(logResult.sessionLog.length, equals(1));
+
+      expect(logResult.sessionLog[0].messageLog.length, equals(1));
+      expect(logResult.sessionLog[0].messageLog[0].message, equals('42'));
+      expect(logResult.sessionLog[0].sessionLogEntry.futureCall, equals('testCall'));
+    });
   });
 }
 

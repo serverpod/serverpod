@@ -220,8 +220,8 @@ class Serverpod {
     await _serviceServer!.start();
   }
 
-  void addFutureCall(FutureCall call, String name) {
-    server.addFutureCall(call, name);
+  void registerFutureCall(FutureCall call, String name) {
+    server.registerFutureCall(call, name);
   }
 
   String? getPassword(String key) {
@@ -273,8 +273,10 @@ class Serverpod {
     Duration duration = session.duration;
 
     if (_runMode == ServerpodRunMode.development) {
-      if (session.methodCall != null)
-        print('CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
+      if (session.type == SessionType.methodCall)
+        print('METHOD CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
+      else if (session.type == SessionType.futureCall)
+        print('FUTURE CALL: ${session.futureCall!.callName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length}');
       if (exception != null) {
         print('$exception');
         print('$stackTrace');
@@ -292,6 +294,7 @@ class Serverpod {
         time: DateTime.now(),
         endpoint: session.methodCall?.endpointName,
         method: session.methodCall?.methodName,
+        futureCall: session.futureCall?.callName,
         duration: duration.inMicroseconds / 1000000.0,
         numQueries: session.queries.length,
         slow: isSlow,

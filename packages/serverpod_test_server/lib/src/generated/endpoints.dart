@@ -8,6 +8,7 @@ import 'protocol.dart';
 
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
+import '../endpoints/future_calls.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/async_tasks.dart';
@@ -19,6 +20,7 @@ class Endpoints extends EndpointDispatch {
     Map<String, Endpoint> endpoints = {
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
+      'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls'),
       'simple': SimpleEndpoint()..initialize(server, 'simple'),
       'logging': LoggingEndpoint()..initialize(server, 'logging'),
       'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks'),
@@ -206,6 +208,22 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicTypes'] as BasicTypesEndpoint).testString(session,params['value'],);
+          },
+        ),
+      },
+    );
+
+    connectors['futureCalls'] = EndpointConnector(
+      name: 'futureCalls',
+      endpoint: endpoints['futureCalls']!,
+      methodConnectors: {
+        'makeFutureCall': MethodConnector(
+          name: 'makeFutureCall',
+          params: {
+            'data': ParameterDescription(name: 'data', type: SimpleData, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['futureCalls'] as FutureCallsEndpoint).makeFutureCall(session,params['data'],);
           },
         ),
       },

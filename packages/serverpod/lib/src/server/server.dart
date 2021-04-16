@@ -56,11 +56,11 @@ class Server {
     _futureCallManager = FutureCallManager(this, serializationManager);
   }
 
-  void addFutureCall(FutureCall call, String name) {
+  void registerFutureCall(FutureCall call, String name) {
     _futureCallManager.addFutureCall(call, name);
   }
 
-  void callWithDelay(String callName, SerializableEntity object, Duration delay) {
+  void callWithDelay(String callName, SerializableEntity? object, Duration delay) {
     assert(_running, 'Server is not running, call start() before using future calls');
     _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
   }
