@@ -162,6 +162,7 @@ class Serverpod {
               logFailedQueries: true,
               logMalformedCalls: false,
               logLevel: internal.LogLevel.warning.index,
+              logServiceCalls: false,
               slowCallDuration: 1.0,
               slowQueryDuration: 1.0,
             );

@@ -26,6 +26,7 @@ void main() {
         logSlowQueries: true,
         logFailedQueries: true,
         logMalformedCalls: true,
+        logServiceCalls: false,
         slowCallDuration: 1.0,
         slowQueryDuration: 1.0,
         logLevel: service.LogLevel.debug.index,
@@ -54,8 +55,7 @@ void main() {
       await serviceClient.insights.clearAllLogs();
 
       logResult = await serviceClient.insights.getSessionLog(10);
-      // Expect 1 entry as the clean logs call will be logged
-      expect(logResult.sessionLog.length, equals(1));
+      expect(logResult.sessionLog.length, equals(0));
     });
 
     test('Log entry', () async {
@@ -94,6 +94,7 @@ void main() {
         logSlowQueries: true,
         logFailedQueries: true,
         logMalformedCalls: true,
+        logServiceCalls: false,
         slowCallDuration: 1.0,
         slowQueryDuration: 1.0,
         logLevel: service.LogLevel.error.index,
@@ -169,6 +170,7 @@ void main() {
         logSlowQueries: true,
         logFailedQueries: true,
         logMalformedCalls: true,
+        logServiceCalls: false,
         slowCallDuration: 1.0,
         slowQueryDuration: 1.0,
         logLevel: service.LogLevel.info.index,

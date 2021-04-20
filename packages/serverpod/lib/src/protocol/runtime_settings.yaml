@@ -8,6 +8,7 @@ fields:
   logFailedCalls: bool
   logFailedQueries: bool
   logMalformedCalls: bool
+  logServiceCalls: bool
   logLevel: int
   slowQueryDuration: double
   slowCallDuration: double

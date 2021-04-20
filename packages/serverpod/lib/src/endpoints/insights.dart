@@ -9,7 +9,11 @@ import 'package:serverpod/src/server/health_check.dart';
 const endpointNameInsights = 'insights';
 
 class InsightsEndpoint extends Endpoint {
+  @override
   bool get requireLogin => true;
+
+  @override
+  bool get logSessions => server.serverpod.runtimeSettings.logServiceCalls;
 
   Future<RuntimeSettings> getRuntimeSettings(Session session) async {
     return server.serverpod.runtimeSettings;
