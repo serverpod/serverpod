@@ -170,16 +170,18 @@ class Serverpod {
           }
         }
         catch(e, stackTrace) {
-          print('${DateTime.now()} Failed to connect to database: $e');
-          print('$stackTrace');
+          stderr.writeln('${DateTime.now().toUtc()} Failed to connect to database.');
+          stderr.writeln('$e');
+          stderr.writeln('$stackTrace');
         }
 
         try {
           methodLookup.load(DatabaseConnection(database));
         }
         catch(e, stackTrace) {
-          print('${DateTime.now()} Failed to load method lookup: $e');
-          print('$stackTrace');
+          stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
+          stderr.writeln('$e');
+          stderr.writeln('$stackTrace');
         }
 
         await _startServiceServer();
@@ -188,8 +190,11 @@ class Serverpod {
       },
       (e, stackTrace) {
         // Last resort error handling
-        stderr.writeln('${DateTime.now()} Serverpod zoned error: $e');
+        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Zoned exception.');
+        stderr.writeln('$e');
         stderr.writeln('$stackTrace');
+
+        log('Zoned exception.', exception: e, stackTrace: stackTrace, level: internal.LogLevel.warning);
       }
     );
   }
@@ -258,7 +263,7 @@ class Serverpod {
         success = false;
       }
       if (!success)
-        print('${DateTime.now()} FAILED DB LOG: $entry.message');
+        print('${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
     }
 
     if (_runMode == ServerpodRunMode.development) {
@@ -329,17 +334,17 @@ class Serverpod {
         return sessionLogId;
       }
       catch(e, logStackTrace) {
-        print('${DateTime.now()} FAILED TO LOG SESSION');
+        stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         if (session.methodCall != null)
-          print('CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
-        print('CALL error: $exception');
-        print('$logStackTrace');
+          stderr.writeln('CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
+        stderr.writeln('CALL error: $exception');
+        stderr.writeln('$logStackTrace');
 
-        print('LOG ERRORS');
-        print('$e');
-        print('$logStackTrace');
-        print('Current stacktrace:');
-        print('${StackTrace.current}');
+        stderr.writeln('LOG ERRORS');
+        stderr.writeln('$e');
+        stderr.writeln('$logStackTrace');
+        stderr.writeln('Current stacktrace:');
+        stderr.writeln('${StackTrace.current}');
 
       }
     }

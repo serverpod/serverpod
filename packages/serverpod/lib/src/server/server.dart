@@ -70,7 +70,7 @@ class Server {
       HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then(
       _runServer,
       onError: (e, StackTrace stackTrace) {
-        stderr.writeln('Internal server error.');
+        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       });
@@ -79,7 +79,7 @@ class Server {
       HttpServer.bind(InternetAddress.anyIPv6, port).then(
       _runServer,
       onError: (e, StackTrace stackTrace) {
-        stderr.writeln('Internal server error.');
+        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       });
@@ -100,13 +100,14 @@ class Server {
         try {
           _handleRequest(request);
         }
-        catch(e, t) {
-          print(e);
-          print(t);
+        catch(e, stackTrace) {
+          stderr.writeln('${DateTime.now().toUtc()} Internal server error. _handleRequest failed.');
+          stderr.writeln('$e');
+          stderr.writeln('$stackTrace');
         }
       },
       onError: (e, StackTrace stackTrace) {
-        stderr.writeln('Internal server error.');
+        stderr.writeln('${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       },
@@ -122,8 +123,11 @@ class Server {
       uri = request.requestedUri;
     }
     catch(e) {
-      if (serverpod.runtimeSettings.logMalformedCalls)
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        // TODO: Specific log for this?
+        serverpod.log('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
         print('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+      }
 
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
@@ -176,7 +180,7 @@ class Server {
       body = await _readBody(request);
     }
     catch (e, stackTrace) {
-      stderr.writeln('Internal server error.');
+      stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       request.response.statusCode = HttpStatus.badRequest;
@@ -187,15 +191,19 @@ class Server {
     var result = await _handleUriCall(uri, body!, request);
 
     if (result is ResultInvalidParams) {
-      if (serverpod.runtimeSettings.logMalformedCalls)
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        serverpod.log('Malformed call: $result');
         print('Malformed call: $result');
+      }
       request.response.statusCode = HttpStatus.badRequest;
       request.response.close();
       return;
     }
     else if (result is ResultAuthenticationFailed) {
-      if (serverpod.runtimeSettings.logMalformedCalls)
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        serverpod.log('Access denied: $result');
         print('Access denied: $result');
+      }
       request.response.statusCode = HttpStatus.forbidden;
       request.response.close();
       return;

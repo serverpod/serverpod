@@ -421,8 +421,6 @@ class Transaction {
     }
     catch (e, stackTrace) {
       conn._logQuery(session, query, startTime, exception: e);
-      print('Failed transaction: $e');
-      print('$stackTrace');
       return false;
     }
 

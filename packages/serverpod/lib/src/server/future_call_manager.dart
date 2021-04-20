@@ -89,10 +89,6 @@ class FutureCallManager {
         }
         catch(e, stackTrace) {
           _server.serverpod.logSession(session, exception: '$e', stackTrace: stackTrace);
-          // Log errors
-          stderr.writeln('Internal server error.');
-          stderr.writeln('$e');
-          stderr.writeln('$stackTrace');
         }
       }
 
@@ -107,7 +103,8 @@ class FutureCallManager {
     }
     catch(e, stackTrace) {
       // Most likely we lost connection to the database
-      stderr.writeln('${DateTime.now()} Failed to connect to database in future call manager $e');
+      stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to connect to database in future call manager.');
+      stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       stderr.writeln('Local stacktrace:');
       stderr.writeln('${StackTrace.current}');
