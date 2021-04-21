@@ -25,8 +25,6 @@ class ServerpodClient extends ServerpodClientShared {
     logFailedCalls: logFailedCalls,
   ) {
     assert(context == null || context is SecurityContext);
-    assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
-    assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
 
     // Setup client
     _httpClient = HttpClient(context: context);
@@ -80,8 +78,10 @@ class ServerpodClient extends ServerpodClientShared {
       return parseData(data!, returnTypeName, serializationManager);
     }
     catch(e, stackTrace) {
-      print('Failed call: $endpoint.$method');
-      print('$e');
+      if (logFailedCalls) {
+        print('Failed call: $endpoint.$method');
+        print('$e');
+      }
 
       if (errorHandler != null)
         errorHandler!(e, stackTrace);

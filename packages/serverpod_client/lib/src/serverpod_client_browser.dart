@@ -1,27 +1,28 @@
-import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-
+import 'serverpod_client_exception.dart';
+import 'serverpod_client_shared.dart';
+import 'serverpod_client_shared_private.dart';
 import 'auth_key_manager.dart';
 
-typedef void ServerpodClientErrorCallback(var e, StackTrace stackTrace);
-
-class ServerpodClient {
-  final AuthenticationKeyManager? authenticationKeyManager;
-
-  final String host;
-  final SerializationManager serializationManager;
+class ServerpodClient extends ServerpodClientShared {
   late http.Client _httpClient;
   String? _authorizationKey;
   bool _initialized = false;
-  ServerpodClientErrorCallback? errorHandler;
 
-  ServerpodClient(this.host, this.serializationManager, {this.errorHandler, this.authenticationKeyManager, dynamic context}) {
+  ServerpodClient(String host, SerializationManager serializationManager, {
+    dynamic context,
+    ServerpodClientErrorCallback? errorHandler,
+    AuthenticationKeyManager? authenticationKeyManager,
+    bool logFailedCalls=true,
+  }) : super(host, serializationManager,
+    errorHandler: errorHandler,
+    authenticationKeyManager: authenticationKeyManager,
+    logFailedCalls: logFailedCalls,
+  ) {
     _httpClient = http.Client();
-    assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
-    assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
   }
 
   Future<Null> _initialize() async {
@@ -37,50 +38,34 @@ class ServerpodClient {
 
     String? data;
     try {
-      var formattedArgs = <String, String?>{};
-
-      for (var argName in args.keys) {
-        var value = args[argName];
-        if (value != null) {
-          formattedArgs[argName] = value.toString();
-        }
-      }
-
-      if (_authorizationKey != null)
-        formattedArgs['auth'] = _authorizationKey;
-
-      formattedArgs['method'] = method;
-
-      String body = jsonEncode(formattedArgs);
-
+      String body = formatArgs(args, _authorizationKey, method);
       Uri url = Uri.parse('$host$endpoint');
-
-      print('POST');
-      print('url: $url');
-      print('body: $body');
 
       http.Response response = await _httpClient.post(
         url,
         body: body,
       );
 
-      print('response status: ${response.statusCode}');
-      print('response body: ${response.body}');
+      data = response.body;
 
-      String data = response.body;
+      if (response.statusCode != 200) {
+        throw(ServerpodClientException(data, response.statusCode));
+      }
 
-      // TODO: Support more types!
-      if (returnTypeName == 'int')
-        return int.tryParse(data);
-      else if (returnTypeName == 'String')
-        return data;
-
-      return serializationManager.createEntityFromSerialization(
-          jsonDecode(data));
+      return parseData(data, returnTypeName, serializationManager);
     }
     catch(e, stackTrace) {
-      print('Failed call: $endpoint.$method');
-      print('data: $data');
+      if (e is http.ClientException) {
+        print('Failed call: $endpoint.$method');
+        String message = data == null ? 'Likely internal server error.' : data;
+        print(message);
+        throw(ServerpodClientException(message, 500));
+      }
+
+      if (logFailedCalls) {
+        print('Failed call: $endpoint.$method');
+        print('$e');
+      }
 
       if (errorHandler != null)
         errorHandler!(e, stackTrace);

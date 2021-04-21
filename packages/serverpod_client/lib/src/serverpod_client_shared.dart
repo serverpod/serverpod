@@ -10,5 +10,13 @@ abstract class ServerpodClientShared {
   final AuthenticationKeyManager? authenticationKeyManager;
   ServerpodClientErrorCallback? errorHandler;
 
-  ServerpodClientShared(this.host, this.serializationManager, {dynamic context, this.errorHandler, this.authenticationKeyManager, this.logFailedCalls=true});
+  ServerpodClientShared(this.host, this.serializationManager, {
+    dynamic context,
+    this.errorHandler,
+    this.authenticationKeyManager,
+    this.logFailedCalls=true,
+  }){
+    assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
+    assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
+  }
 }
