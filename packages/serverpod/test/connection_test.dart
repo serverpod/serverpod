@@ -300,4 +300,19 @@ void main() {
       // TODO: Check that it is recorded in error logs.
     });
   });
+
+  group('Failed calls', () {
+    test('Exception in call', () async {
+      ServerpodClientException? clientException;
+      try {
+        await client.failedCalls.failedCall();
+      }
+      catch(e) {
+        clientException = e as ServerpodClientException?;
+      }
+
+      expect(clientException, isNotNull);
+      expect(clientException!.statusCode, equals(500));
+    });
+  });
 }

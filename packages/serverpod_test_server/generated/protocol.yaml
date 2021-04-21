@@ -19,6 +19,8 @@ basicTypes:
   - testBool:
   - testDateTime:
   - testString:
+failedCalls:
+  - failedCall:
 futureCalls:
   - makeFutureCall:
 simple:

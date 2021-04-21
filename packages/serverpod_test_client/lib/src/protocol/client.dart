@@ -129,6 +129,16 @@ class _EndpointBasicTypes {
   }
 }
 
+class _EndpointFailedCalls {
+  Client client;
+  _EndpointFailedCalls(this.client);
+
+  Future<void> failedCall() async {
+    return await client.callServerEndpoint('failedCalls', 'failedCall', 'void', {
+    });
+  }
+}
+
 class _EndpointFutureCalls {
   Client client;
   _EndpointFutureCalls(this.client);
@@ -237,6 +247,7 @@ class _EndpointLoggingDisabled {
 class Client extends ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
+  late final _EndpointFailedCalls failedCalls;
   late final _EndpointFutureCalls futureCalls;
   late final _EndpointSimple simple;
   late final _EndpointLogging logging;
@@ -247,6 +258,7 @@ class Client extends ServerpodClient {
   Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
+    failedCalls = _EndpointFailedCalls(this);
     futureCalls = _EndpointFutureCalls(this);
     simple = _EndpointSimple(this);
     logging = _EndpointLogging(this);

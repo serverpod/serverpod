@@ -8,6 +8,7 @@ import 'protocol.dart';
 
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
+import '../endpoints/failed_calls.dart';
 import '../endpoints/future_calls.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/logging.dart';
@@ -20,6 +21,7 @@ class Endpoints extends EndpointDispatch {
     Map<String, Endpoint> endpoints = {
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
+      'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls'),
       'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls'),
       'simple': SimpleEndpoint()..initialize(server, 'simple'),
       'logging': LoggingEndpoint()..initialize(server, 'logging'),
@@ -208,6 +210,21 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicTypes'] as BasicTypesEndpoint).testString(session,params['value'],);
+          },
+        ),
+      },
+    );
+
+    connectors['failedCalls'] = EndpointConnector(
+      name: 'failedCalls',
+      endpoint: endpoints['failedCalls']!,
+      methodConnectors: {
+        'failedCall': MethodConnector(
+          name: 'failedCall',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint).failedCall(session,);
           },
         ),
       },
