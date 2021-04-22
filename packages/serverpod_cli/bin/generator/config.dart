@@ -13,7 +13,7 @@ class GeneratorConfig {
   bool load() {
     Map? generatorConfig;
     try {
-      var file = File('config/generate.yaml');
+      var file = File('config/generator.yaml');
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     }
