@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:serverpod/src/server/password_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/config.dart';
 import 'package:yaml/yaml.dart';
@@ -109,21 +110,21 @@ class Serverpod {
       _runMode = ServerpodRunMode.development;
     }
 
-    // Load config file
+    // Load config files
     print('Mode: $_runMode');
 
-    config = ServerConfig(_runMode, serverId);
-    print(config.toString());
-
     // Load passwords
-    try {
-      String passwordYaml = File('config/passwords.yaml').readAsStringSync();
-      Map passwords = loadYaml(passwordYaml);
-      _passwords = passwords.cast<String, String>();
-    }
-    catch(_) {
-      _passwords = <String, String>{};
-    }
+    _passwords = PasswordManager(passwordFile: 'config/passwords.yaml', runMode: runMode).loadPasswords() ?? {};
+
+    // Load config
+    config = ServerConfig(_runMode, serverId);
+    if (_passwords['database'] != null)
+      config.dbPass = _passwords['database'];
+    if (_passwords['serviceSecret'] != null)
+      config.serviceSecret = _passwords['serviceSecret'];
+
+    // Print config
+    print(config.toString());
 
     // Setup database
     database = DatabaseConfig(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);

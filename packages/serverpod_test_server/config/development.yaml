@@ -9,6 +9,3 @@ database:
   port: 5432
   name: serverpod_test
   user: postgres
-  pass: rotkiv42
-
-serviceSecret: 'password'
