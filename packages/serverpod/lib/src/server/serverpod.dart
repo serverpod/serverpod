@@ -23,6 +23,9 @@ import 'method_lookup.dart';
 typedef Future<List<internal.ServerHealthMetric>> HealthCheckHandler(Serverpod pod);
 
 class Serverpod {
+  static Serverpod? _instance;
+  static Serverpod? get instance => _instance;
+
   late String _runMode;
   String get runMode => _runMode;
 
@@ -141,6 +144,8 @@ class Serverpod {
       endpoints: endpoints,
     );
     endpoints.initializeEndpoints(server);
+
+    _instance = this;
   }
 
   Future<void> start() async {
