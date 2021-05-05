@@ -64,6 +64,8 @@ class Session {
       _authenticationKey = authenticationKey;
 
       String? methodName = queryParameters['method'];
+      if (methodName == null && endpointName == 'webserver')
+        methodName = '';
 
       db = Database(session: this);
 

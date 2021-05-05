@@ -6,6 +6,8 @@ environment:
 dependencies:
   serverpod:
     path: ../serverpod
+  serverpod_relic:
+    path: ../serverpod_relic
 
 dev_dependencies:
 #  unittest: any
