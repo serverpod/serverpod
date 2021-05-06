@@ -3,10 +3,12 @@ import 'package:colorize/colorize.dart';
 
 import 'certificates/generator.dart';
 import 'config_info/config_info.dart';
+import 'create/create.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 import 'insights/insights.dart';
 
+final cmdCreate = 'create';
 final cmdGenerate = 'generate';
 final cmdGenerateContinuously = 'generate-continuously';
 final cmdGenerateCertificates = 'generate-certs';
@@ -22,6 +24,11 @@ final runModes = <String>['development', 'staging', 'production'];
 
 void main(List<String> args) async {
   ArgParser parser = ArgParser();
+
+  // "create" command
+  ArgParser createParser = ArgParser();
+  createParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
   ArgParser generateParser = ArgParser();
@@ -81,6 +88,15 @@ void main(List<String> args) async {
   var results = parser.parse(args);
 
   if (results.command != null) {
+    if (results.command!.name == cmdCreate) {
+      var name = results.arguments.last;
+      bool verbose = results.command!['verbose'];
+      var re = RegExp(r'^[a-z0-9_]+$');
+      if (results.arguments.length > 1 && re.hasMatch(name)) {
+        performCreate(name, verbose);
+        return;
+      }
+    }
     if (results.command!.name == cmdGenerate) {
       performGenerate(results.command!['verbose']);
       return;
@@ -147,6 +163,7 @@ void _printUsage(ArgParser parser) {
   print('${Colorize('COMMANDS')..bold()}');
   print('');
 
+  _printCommandUsage(cmdCreate, 'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).', parser.commands[cmdCreate]!);
   _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]!);
   _printCommandUsage(cmdGenerateContinuously, 'Continuously generate code from yaml files for server and clients', parser.commands[cmdGenerate]!);
   _printCommandUsage(cmdGenerateCertificates, 'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory', parser.commands[cmdGenerateCertificates]!);
