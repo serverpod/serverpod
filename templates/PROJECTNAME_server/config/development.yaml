@@ -1,0 +1,11 @@
+cluster:
+  0:
+    port: 8080
+    servicePort: 8081
+    address: localhost
+
+database:
+  host: localhost
+  port: 5432
+  name: serverpod_test
+  user: postgres
