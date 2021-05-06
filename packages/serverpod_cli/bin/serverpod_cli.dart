@@ -18,6 +18,8 @@ final cmdServerAddress = 'serveraddress';
 final cmdServerIds = 'serverids';
 final cmdHealthCheck = 'healthcheck';
 
+final runModes = <String>['development', 'staging', 'production'];
+
 void main(List<String> args) async {
   ArgParser parser = ArgParser();
 
@@ -33,47 +35,47 @@ void main(List<String> args) async {
 
   // "generatecerts" command
   ArgParser generateCerts = ArgParser();
-  generateCerts.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  generateCerts.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   generateCerts.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerateCertificates, generateCerts);
 
   // "shutdown" command
   ArgParser shutdownParser = ArgParser();
-  shutdownParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  shutdownParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdShutdown, shutdownParser);
 
   // "logs" command
   ArgParser logsParser = ArgParser();
-  logsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  logsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   logsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdLogs, logsParser);
 
   // "sessionlogs" command
   ArgParser sessionLogsParser = ArgParser();
-  sessionLogsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  sessionLogsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   sessionLogsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdSessionLogs, sessionLogsParser);
 
   // "cacheinfo" command
   ArgParser cacheinfoParser = ArgParser();
-  cacheinfoParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  cacheinfoParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   cacheinfoParser.addFlag('fetch-keys', abbr: 'k', help: 'Fetch all keys stored in the caches of the specificed server');
   parser.addCommand(cmdCacheInfo, cacheinfoParser);
 
   // "serveraddress" command
   ArgParser serverAddressParser = ArgParser();
-  serverAddressParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  serverAddressParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   serverAddressParser.addOption('id', abbr: 'i', defaultsTo: 'foo', help: 'The id of the server to print the address of');
   parser.addCommand(cmdServerAddress, serverAddressParser);
 
   // "serverids" command
   ArgParser serverIdsParser = ArgParser();
-  serverIdsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  serverIdsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdServerIds, serverIdsParser);
 
   // "healthcheck" command
   ArgParser healthCheckParser = ArgParser();
-  healthCheckParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: ['development', 'production'], help: 'Specifies config file used to connect to serverpods');
+  healthCheckParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdHealthCheck, healthCheckParser);
 
   var results = parser.parse(args);

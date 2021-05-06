@@ -98,7 +98,7 @@ class Serverpod {
     try {
       final argParser = ArgParser()
         ..addOption('mode', abbr: 'm',
-            allowed: [ServerpodRunMode.development, ServerpodRunMode.production,],
+            allowed: [ServerpodRunMode.development, ServerpodRunMode.staging, ServerpodRunMode.production,],
             defaultsTo: ServerpodRunMode.development)
         ..addOption('server-id', abbr: 'i', defaultsTo: '0');
       ArgResults results = argParser.parse(args);
