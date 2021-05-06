@@ -1,0 +1,4 @@
+cluster:
+  0:
+    port: 8082
+    hostname: localhost

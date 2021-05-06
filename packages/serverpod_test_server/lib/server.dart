@@ -20,7 +20,7 @@ void run(List<String> args) async {
   await pod.start();
 
   // Add relic / webserver
-  final webserver = WebServer(serverpod: pod, port: 8082);
+  final webserver = WebServer(serverpod: pod);
   webserver.addRoute(RouteRoot(), '/');
   webserver.start();
 }

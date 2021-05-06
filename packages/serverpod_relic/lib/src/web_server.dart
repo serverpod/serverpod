@@ -6,17 +6,26 @@ import 'package:serverpod/serverpod.dart';
 
 import 'web_widget.dart';
 import 'templates.dart';
+import 'config.dart';
 
 class WebServer {
   final Serverpod serverpod;
   final int serverId;
-  final int port;
+  late final int port;
+  late final String hostname;
   final List<Route> routes = <Route>[];
 
   WebServer({
     required this.serverpod,
-    required this.port,
-  }) : serverId = serverpod.serverId;
+  }) : serverId = serverpod.serverId {
+    var config = WebserverConfig(
+      serverId: serverId,
+      runMode: serverpod.runMode,
+    );
+
+    port = config.port!;
+    hostname = config.hostname!;
+  }
 
   bool _running = false;
   bool get running => _running;
@@ -84,16 +93,8 @@ class WebServer {
       return;
     }
 
-    // TODO: Fix run modes
-    if (serverpod.runMode == 'development' && uri.host != 'localhost') {
-      var redirect = uri.replace(host: 'localhost');
-      request.response.headers.add('Location', redirect.toString());
-      request.response.statusCode = HttpStatus.movedPermanently;
-      await request.response.close();
-      return;
-    }
-    else if (serverpod.runMode == 'production' && uri.host != 'example.com') {
-      var redirect = uri.replace(host: 'example.com');
+    if (uri.host != hostname) {
+      var redirect = uri.replace(host: hostname);
       request.response.headers.add('Location', redirect.toString());
       request.response.statusCode = HttpStatus.movedPermanently;
       await request.response.close();
