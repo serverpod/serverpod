@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
@@ -7,6 +9,7 @@ import 'create/create.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 import 'insights/insights.dart';
+import 'shared/environment.dart';
 
 final cmdCreate = 'create';
 final cmdGenerate = 'generate';
@@ -23,6 +26,10 @@ final cmdHealthCheck = 'healthcheck';
 final runModes = <String>['development', 'staging', 'production'];
 
 void main(List<String> args) async {
+  if (!loadEnvironmentVars()) {
+    return;
+  }
+
   ArgParser parser = ArgParser();
 
   // "create" command
