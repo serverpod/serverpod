@@ -3,11 +3,18 @@ import 'package:yaml/yaml.dart';
 
 var config = GeneratorConfig();
 
+enum PackageType {
+  server,
+  bundle,
+}
+
 class GeneratorConfig {
+  late PackageType type;
+
   late String sourceProtocol;
   late String sourceEndpoints;
 
-  late String generatedClientDart;
+  String? generatedClientDart;
   late String generatedServerProtocol;
 
   bool load() {
@@ -22,7 +29,13 @@ class GeneratorConfig {
       return false;
     }
 
-    if (generatorConfig!['source-protocol'] == null)
+    var typeStr = generatorConfig!['type'];
+    if (typeStr == 'bundle')
+      type = PackageType.bundle;
+    else
+      type = PackageType.server;
+
+    if (generatorConfig['source-protocol'] == null)
       throw FormatException('Option "source-protocol" is required in config/generator.yaml');
     sourceProtocol = generatorConfig['source-protocol'];
 
@@ -30,7 +43,7 @@ class GeneratorConfig {
       throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
     sourceEndpoints = generatorConfig['source-enpoints'];
 
-    if (generatorConfig['generated-client-dart'] == null)
+    if (type == PackageType.server && generatorConfig['generated-client-dart'] == null)
       throw FormatException('Option "source-protocol" is required in config/generator.yaml');
     generatedClientDart = generatorConfig['generated-client-dart'];
 

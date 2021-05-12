@@ -10,9 +10,11 @@ void performGenerateClasses(bool verbose) {
   serverGenerator.generate();
 
   // Generate client side code
-  print('Generating Dart client side code.');
-  var clientGenerator = ClassGeneratorDart(config.sourceProtocol, config.generatedClientDart, verbose, false);
-  clientGenerator.generate();
+  if (config.type == PackageType.server) {
+    print('Generating Dart client side code.');
+    var clientGenerator = ClassGeneratorDart(config.sourceProtocol, config.generatedClientDart!, verbose, false);
+    clientGenerator.generate();
+  }
 
   print('Done.');
 }

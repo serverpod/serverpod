@@ -8,6 +8,9 @@ void performGenerate(bool verbose) {
 
   print('Generating classes');
   performGenerateClasses(verbose);
-  print('Generating protocol');
-  performGenerateProtocol(verbose);
+
+  if (config.type == PackageType.server) {
+    print('Generating protocol');
+    performGenerateProtocol(verbose);
+  }
 }

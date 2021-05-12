@@ -1,0 +1,4 @@
+class: BundleClass
+fields:
+  name: String
+  data: int

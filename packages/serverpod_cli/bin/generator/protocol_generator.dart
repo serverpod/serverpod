@@ -21,7 +21,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   if (verbose)
     print(protocol);
 
-  var filePath = config.generatedClientDart + '/client.dart';
+  var filePath = config.generatedClientDart! + '/client.dart';
   if (verbose)
     print('Writing: $filePath');
   File outFile = File(filePath);
