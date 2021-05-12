@@ -17,10 +17,12 @@ class GeneratorConfig {
   String? generatedClientDart;
   late String generatedServerProtocol;
 
-  bool load() {
+  List<BundleConfig> bundles = [];
+
+  bool load([String dir = '']) {
     Map? generatorConfig;
     try {
-      var file = File('config/generator.yaml');
+      var file = File('${dir}config/generator.yaml');
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     }
@@ -51,6 +53,63 @@ class GeneratorConfig {
       throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
     generatedServerProtocol = generatorConfig['generated-server-protocol'];
 
+    // Load bundle settings
+    if (type == PackageType.server) {
+      try {
+        if (generatorConfig['bundles'] != null) {
+          Map bundlesData = generatorConfig['bundles'];
+          for (var package in bundlesData.keys) {
+            bundles.add(BundleConfig._withMap(package, bundlesData[package]));
+          }
+        }
+      }
+      catch(e) {
+        throw FormatException('Failed to load bundle config');
+      }
+    }
+
+    // print(this);
+
     return true;
+  }
+
+  @override
+  String toString() {
+    var str = '''type: $type
+sourceProtocol: $sourceProtocol
+sourceEndpoints: $sourceEndpoints
+generatedClientDart: $generatedClientDart
+generatedServerProtocol: $generatedServerProtocol
+''';
+    if (bundles.length > 0) {
+      str += '\nbundles:\n\n';
+      for (var bundle in bundles) {
+        str += '$bundle';
+      }
+    }
+    return str;
+  }
+}
+
+class BundleConfig {
+  String path;
+  String name;
+  String package;
+  GeneratorConfig config = GeneratorConfig();
+
+  BundleConfig._withMap(this.package, Map map) :
+    path=map['path']!,
+    name=map['name']! {
+    print('');
+    config.load('$path/');
+  }
+
+  @override
+  String toString() {
+    return '''package: $package
+path: $path
+name: $name
+config:
+$config''';
   }
 }

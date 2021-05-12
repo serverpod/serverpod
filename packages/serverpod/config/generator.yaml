@@ -1,3 +1,5 @@
+type: internal
+
 generated-client-dart: ../serverpod_service_client/lib/protocol
 generated-server-protocol: lib/src/generated
 source-protocol: lib/src/protocol
