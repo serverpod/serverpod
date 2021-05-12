@@ -5,7 +5,6 @@ import 'package:args/args.dart';
 import 'package:serverpod/src/server/password_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/config.dart';
-import 'package:yaml/yaml.dart';
 
 import '../authentication/authentication_info.dart';
 import '../authentication/serviceAuthentication.dart';

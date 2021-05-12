@@ -419,7 +419,7 @@ class Transaction {
        }
       });
     }
-    catch (e, stackTrace) {
+    catch (e) {
       conn._logQuery(session, query, startTime, exception: e);
       return false;
     }
