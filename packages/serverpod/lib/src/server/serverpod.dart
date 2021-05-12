@@ -357,6 +357,10 @@ class Serverpod {
     return null;
   }
 
+  void registerBundle(SerializationManager bundleProtocol, String name) {
+    serializationManager.merge(bundleProtocol);
+  }
+
   void shutdown() {
     server.shutdown();
     _serviceServer?.shutdown();

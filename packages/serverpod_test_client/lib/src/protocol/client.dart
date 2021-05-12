@@ -5,6 +5,16 @@ import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
+class _EndpointBundleSerialization {
+  Client client;
+  _EndpointBundleSerialization(this.client);
+
+  Future<bool> serializeBundleObject() async {
+    return await client.callServerEndpoint('bundleSerialization', 'serializeBundleObject', 'bool', {
+    });
+  }
+}
+
 class _EndpointBasicDatabase {
   Client client;
   _EndpointBasicDatabase(this.client);
@@ -245,6 +255,7 @@ class _EndpointLoggingDisabled {
 }
 
 class Client extends ServerpodClient {
+  late final _EndpointBundleSerialization bundleSerialization;
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
   late final _EndpointFailedCalls failedCalls;
@@ -256,6 +267,7 @@ class Client extends ServerpodClient {
   late final _EndpointLoggingDisabled loggingDisabled;
 
   Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+    bundleSerialization = _EndpointBundleSerialization(this);
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
     failedCalls = _EndpointFailedCalls(this);

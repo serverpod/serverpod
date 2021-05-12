@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 // ignore: unused_import
 import 'protocol.dart';
 
+import '../endpoints/bundle_serialization.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
 import '../endpoints/failed_calls.dart';
@@ -19,6 +20,7 @@ import '../endpoints/logging_disabled.dart';
 class Endpoints extends EndpointDispatch {
   void initializeEndpoints(Server server) {
     Map<String, Endpoint> endpoints = {
+      'bundleSerialization': BundleSerializationEndpoint()..initialize(server, 'bundleSerialization'),
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
       'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls'),
@@ -29,6 +31,21 @@ class Endpoints extends EndpointDispatch {
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
       'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled'),
     };
+
+    connectors['bundleSerialization'] = EndpointConnector(
+      name: 'bundleSerialization',
+      endpoint: endpoints['bundleSerialization']!,
+      methodConnectors: {
+        'serializeBundleObject': MethodConnector(
+          name: 'serializeBundleObject',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['bundleSerialization'] as BundleSerializationEndpoint).serializeBundleObject(session,);
+          },
+        ),
+      },
+    );
 
     connectors['basicDatabase'] = EndpointConnector(
       name: 'basicDatabase',

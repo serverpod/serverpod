@@ -1,3 +1,5 @@
+bundleSerialization:
+  - serializeBundleObject:
 basicDatabase:
   - storeTypes:
   - getTypes:
