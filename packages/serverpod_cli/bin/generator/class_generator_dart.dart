@@ -2,6 +2,7 @@
 import 'package:yaml/yaml.dart';
 
 import 'class_generator.dart';
+import 'config.dart';
 import 'protocol_definition.dart';
 
 class ClassGeneratorDart extends ClassGenerator{
@@ -152,14 +153,14 @@ class ClassGeneratorDart extends ClassGenerator{
       if (serverCode && tableName != null) {
         out += 'class $className extends TableRow {\n';
         out += '  @override\n';
-        out += '  String get className => \'$className\';\n';
+        out += '  String get className => \'$classPrefix$className\';\n';
         out += '  @override\n';
         out += '  String get tableName => \'$tableName\';\n';
       }
       else {
         out += 'class $className extends SerializableEntity {\n';
         out += '  @override\n';
-        out += '  String get className => \'$className\';\n';
+        out += '  String get className => \'$classPrefix$className\';\n';
       }
 
       out += '\n';
@@ -352,7 +353,7 @@ class ClassGeneratorDart extends ClassGenerator{
     out += '  Protocol() {\n';
 
     for (ClassInfo classInfo in classInfos) {
-      out += '    constructors[\'${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
+      out += '    constructors[\'$classPrefix${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
     }
 
     if (serverCode) {
@@ -368,6 +369,13 @@ class ClassGeneratorDart extends ClassGenerator{
     out += '}\n';
 
     return out;
+  }
+
+  String get classPrefix {
+    if (config.type == PackageType.server)
+      return '';
+    else
+      return '${config.packageName}.';
   }
 
 //  String _endpointClassName(String endpointName) {

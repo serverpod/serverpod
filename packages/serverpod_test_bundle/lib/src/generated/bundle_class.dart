@@ -9,7 +9,7 @@ import 'protocol.dart';
 
 class BundleClass extends SerializableEntity {
   @override
-  String get className => 'BundleClass';
+  String get className => 'serverpod_test_bundle.BundleClass';
 
   int? id;
   late String name;

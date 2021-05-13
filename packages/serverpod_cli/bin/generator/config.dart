@@ -9,6 +9,7 @@ enum PackageType {
 }
 
 class GeneratorConfig {
+  late String packageName;
   late PackageType type;
 
   late String sourceProtocol;
@@ -20,6 +21,21 @@ class GeneratorConfig {
   List<BundleConfig> bundles = [];
 
   bool load([String dir = '']) {
+    Map? pubspec;
+    try {
+      var file = File('${dir}pubspec.yaml');
+      var yamlStr = file.readAsStringSync();
+      pubspec = loadYaml(yamlStr);
+    }
+    catch(_) {
+      print('Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
+      return false;
+    }
+
+    if (pubspec!['name'] == null)
+      throw FormatException('Package name is missing in pubspec.yaml');
+    packageName = pubspec['name'];
+
     Map? generatorConfig;
     try {
       var file = File('${dir}config/generator.yaml');
@@ -27,7 +43,7 @@ class GeneratorConfig {
       generatorConfig = loadYaml(yamlStr);
     }
     catch(_) {
-      print('Failed to load config/generator.yaml. Are you running serverpod from your projects root directory?');
+      print('Failed to load config/generator.yaml. Is this a Serverpod project?');
       return false;
     }
 
