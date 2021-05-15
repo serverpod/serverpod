@@ -12,5 +12,10 @@ void main() {
       var success = await client.bundleSerialization.serializeBundleObject();
       expect(success, equals(true));
     });
+
+    test('Bundle call', () async {
+      String result = await client.bundles.bundle.bundle.hello('World');
+      expect(result, equals('Hello World'));
+    });
   });
 }

@@ -1,4 +1,4 @@
-name: serverpod_test_client
+name: serverpod_test_bundle_client
 version: 0.0.1
 description: A sample command-line application
 environment:
@@ -6,8 +6,6 @@ environment:
 dependencies:
   serverpod_client:
     path: ../serverpod_client
-  serverpod_test_bundle_client:
-    path: ../serverpod_test_bundle_client
 
 #dev_dependencies:
 #  unittest: any

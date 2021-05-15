@@ -15,8 +15,10 @@ class GeneratorConfig {
   late String sourceProtocol;
   late String sourceEndpoints;
 
-  String? generatedClientDart;
+  late String generatedClientDart;
   late String generatedServerProtocol;
+
+  String? clientPackage;
 
   List<BundleConfig> bundles = [];
 
@@ -61,8 +63,8 @@ class GeneratorConfig {
       throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
     sourceEndpoints = generatorConfig['source-enpoints'];
 
-    if (type == PackageType.server && generatorConfig['generated-client-dart'] == null)
-      throw FormatException('Option "source-protocol" is required in config/generator.yaml');
+    if (generatorConfig['generated-client-dart'] == null)
+      throw FormatException('Option "generated-client-dart" is required in config/generator.yaml');
     generatedClientDart = generatorConfig['generated-client-dart'];
 
     if (generatorConfig['generated-server-protocol'] == null)
@@ -82,6 +84,11 @@ class GeneratorConfig {
       catch(e) {
         throw FormatException('Failed to load bundle config');
       }
+    }
+    else {
+      if (generatorConfig['client-package'] == null)
+        throw FormatException('Option "client-package" is required in config/generator.yaml');
+      clientPackage = generatorConfig['client-package'];
     }
 
     // print(this);

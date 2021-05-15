@@ -51,6 +51,7 @@ class ServerpodClient extends ServerpodClientShared {
     _initialized = true;
   }
 
+  @override
   Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) async {
     if (!_initialized)
       await _initialize();

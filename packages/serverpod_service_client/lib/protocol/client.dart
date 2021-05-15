@@ -3,14 +3,15 @@
 
 import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
+// ignore: unused_import
 import 'protocol.dart';
 
 class _EndpointCache {
-  Client client;
-  _EndpointCache(this.client);
+  EndpointCaller caller;
+  _EndpointCache(this.caller);
 
   Future<void> put(bool priority,String key,String data,String? group,DateTime? expiration,) async {
-    return await client.callServerEndpoint('cache', 'put', 'void', {
+    return await caller.callServerEndpoint('cache', 'put', 'void', {
       'priority':priority,
       'key':key,
       'data':data,
@@ -20,83 +21,83 @@ class _EndpointCache {
   }
 
   Future<String?> get(bool priority,String key,) async {
-    return await client.callServerEndpoint('cache', 'get', 'String', {
+    return await caller.callServerEndpoint('cache', 'get', 'String', {
       'priority':priority,
       'key':key,
     });
   }
 
   Future<void> invalidateKey(bool priority,String key,) async {
-    return await client.callServerEndpoint('cache', 'invalidateKey', 'void', {
+    return await caller.callServerEndpoint('cache', 'invalidateKey', 'void', {
       'priority':priority,
       'key':key,
     });
   }
 
   Future<void> invalidateGroup(bool priority,String group,) async {
-    return await client.callServerEndpoint('cache', 'invalidateGroup', 'void', {
+    return await caller.callServerEndpoint('cache', 'invalidateGroup', 'void', {
       'priority':priority,
       'group':group,
     });
   }
 
   Future<void> clear(bool priority,) async {
-    return await client.callServerEndpoint('cache', 'clear', 'void', {
+    return await caller.callServerEndpoint('cache', 'clear', 'void', {
       'priority':priority,
     });
   }
 }
 
 class _EndpointInsights {
-  Client client;
-  _EndpointInsights(this.client);
+  EndpointCaller caller;
+  _EndpointInsights(this.caller);
 
   Future<RuntimeSettings> getRuntimeSettings() async {
-    return await client.callServerEndpoint('insights', 'getRuntimeSettings', 'RuntimeSettings', {
+    return await caller.callServerEndpoint('insights', 'getRuntimeSettings', 'RuntimeSettings', {
     });
   }
 
   Future<void> setRuntimeSettings(RuntimeSettings runtimeSettings,) async {
-    return await client.callServerEndpoint('insights', 'setRuntimeSettings', 'void', {
+    return await caller.callServerEndpoint('insights', 'setRuntimeSettings', 'void', {
       'runtimeSettings':runtimeSettings,
     });
   }
 
   Future<void> reloadRuntimeSettings() async {
-    return await client.callServerEndpoint('insights', 'reloadRuntimeSettings', 'void', {
+    return await caller.callServerEndpoint('insights', 'reloadRuntimeSettings', 'void', {
     });
   }
 
   Future<void> clearAllLogs() async {
-    return await client.callServerEndpoint('insights', 'clearAllLogs', 'void', {
+    return await caller.callServerEndpoint('insights', 'clearAllLogs', 'void', {
     });
   }
 
   Future<LogResult> getLog(int? numEntries,) async {
-    return await client.callServerEndpoint('insights', 'getLog', 'LogResult', {
+    return await caller.callServerEndpoint('insights', 'getLog', 'LogResult', {
       'numEntries':numEntries,
     });
   }
 
   Future<SessionLogResult> getSessionLog(int? numEntries,) async {
-    return await client.callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
+    return await caller.callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
       'numEntries':numEntries,
     });
   }
 
   Future<CachesInfo> getCachesInfo(bool fetchKeys,) async {
-    return await client.callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
+    return await caller.callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
       'fetchKeys':fetchKeys,
     });
   }
 
   Future<void> shutdown() async {
-    return await client.callServerEndpoint('insights', 'shutdown', 'void', {
+    return await caller.callServerEndpoint('insights', 'shutdown', 'void', {
     });
   }
 
   Future<ServerHealthResult> checkHealth() async {
-    return await client.callServerEndpoint('insights', 'checkHealth', 'ServerHealthResult', {
+    return await caller.callServerEndpoint('insights', 'checkHealth', 'ServerHealthResult', {
     });
   }
 }
@@ -105,7 +106,7 @@ class Client extends ServerpodClient {
   late final _EndpointCache cache;
   late final _EndpointInsights insights;
 
-  Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+  Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     cache = _EndpointCache(this);
     insights = _EndpointInsights(this);
   }

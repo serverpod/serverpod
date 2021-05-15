@@ -10,8 +10,9 @@ import '../endpoints/cache.dart';
 import '../endpoints/insights.dart';
 
 class Endpoints extends EndpointDispatch {
+  @override
   void initializeEndpoints(Server server) {
-    Map<String, Endpoint> endpoints = {
+    var endpoints = <String, Endpoint>{
       'cache': CacheEndpoint()..initialize(server, 'cache'),
       'insights': InsightsEndpoint()..initialize(server, 'insights'),
     };

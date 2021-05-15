@@ -9,13 +9,36 @@ import 'session.dart';
 
 abstract class EndpointDispatch {
   Map<String, EndpointConnector> connectors = {};
+  Map<String, EndpointDispatch> bundles = {};
 
   void initializeEndpoints(Server server);
 
   Future handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
-    EndpointConnector? connector = connectors[endpointName];
-    if (connector == null)
-      return ResultInvalidParams('Endpoint $endpointName does not exist in $uri');
+    var endpointComponents = endpointName.split('.');
+    if (endpointComponents.length < 1 || endpointComponents.length > 2)
+      return ResultInvalidParams('Endpoint $endpointName is not a valid endpoint name');
+
+    // Find correct connector
+    EndpointConnector? connector;
+
+    if (endpointComponents.length == 1) {
+      // This is a standard server endpoint
+      connector = connectors[endpointName];
+      if (connector == null)
+        return ResultInvalidParams('Endpoint $endpointName does not exist');
+    }
+    else {
+      // Connector is in a bundle
+      var bundlePackage = endpointComponents[0];
+      endpointName = endpointComponents[1];
+      var bundle = bundles[bundlePackage];
+      if (bundle == null)
+        return ResultInvalidParams('Bundle $bundlePackage does not exist');
+
+      connector = bundle.connectors[endpointName];
+      if (connector == null)
+        return ResultInvalidParams('Endpoint $bundlePackage.$endpointName does not exist');
+    }
 
     Session session;
 

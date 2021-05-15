@@ -3,80 +3,83 @@
 
 import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
+// ignore: unused_import
 import 'protocol.dart';
 
+import 'package:serverpod_test_bundle_client/bundle.dart' as serverpod_test_bundle;
+
 class _EndpointBundleSerialization {
-  Client client;
-  _EndpointBundleSerialization(this.client);
+  EndpointCaller caller;
+  _EndpointBundleSerialization(this.caller);
 
   Future<bool> serializeBundleObject() async {
-    return await client.callServerEndpoint('bundleSerialization', 'serializeBundleObject', 'bool', {
+    return await caller.callServerEndpoint('bundleSerialization', 'serializeBundleObject', 'bool', {
     });
   }
 }
 
 class _EndpointBasicDatabase {
-  Client client;
-  _EndpointBasicDatabase(this.client);
+  EndpointCaller caller;
+  _EndpointBasicDatabase(this.caller);
 
   Future<int?> storeTypes(Types types,) async {
-    return await client.callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
+    return await caller.callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
       'types':types,
     });
   }
 
   Future<Types?> getTypes(int id,) async {
-    return await client.callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
+    return await caller.callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
       'id':id,
     });
   }
 
   Future<int?> getTypesRawQuery(int id,) async {
-    return await client.callServerEndpoint('basicDatabase', 'getTypesRawQuery', 'int', {
+    return await caller.callServerEndpoint('basicDatabase', 'getTypesRawQuery', 'int', {
       'id':id,
     });
   }
 
   Future<int?> countTypesRows() async {
-    return await client.callServerEndpoint('basicDatabase', 'countTypesRows', 'int', {
+    return await caller.callServerEndpoint('basicDatabase', 'countTypesRows', 'int', {
     });
   }
 
   Future<int?> deleteAllInTypes() async {
-    return await client.callServerEndpoint('basicDatabase', 'deleteAllInTypes', 'int', {
+    return await caller.callServerEndpoint('basicDatabase', 'deleteAllInTypes', 'int', {
     });
   }
 
   Future<void> createSimpleTestData(int numRows,) async {
-    return await client.callServerEndpoint('basicDatabase', 'createSimpleTestData', 'void', {
+    return await caller.callServerEndpoint('basicDatabase', 'createSimpleTestData', 'void', {
       'numRows':numRows,
     });
   }
 
   Future<int?> countSimpleData() async {
-    return await client.callServerEndpoint('basicDatabase', 'countSimpleData', 'int', {
+    return await caller.callServerEndpoint('basicDatabase', 'countSimpleData', 'int', {
     });
   }
 
   Future<void> deleteAllSimpleTestData() async {
-    return await client.callServerEndpoint('basicDatabase', 'deleteAllSimpleTestData', 'void', {
+    return await caller.callServerEndpoint('basicDatabase', 'deleteAllSimpleTestData', 'void', {
     });
   }
 
   Future<void> deleteSimpleTestDataLessThan(int num,) async {
-    return await client.callServerEndpoint('basicDatabase', 'deleteSimpleTestDataLessThan', 'void', {
+    return await caller.callServerEndpoint('basicDatabase', 'deleteSimpleTestDataLessThan', 'void', {
       'num':num,
     });
   }
 
   Future<bool?> findAndDeleteSimpleTestData(int num,) async {
-    return await client.callServerEndpoint('basicDatabase', 'findAndDeleteSimpleTestData', 'bool', {
+    return await caller.callServerEndpoint('basicDatabase', 'findAndDeleteSimpleTestData', 'bool', {
       'num':num,
     });
   }
 
   Future<SimpleDataList?> findSimpleDataRowsLessThan(int num,int offset,int limit,bool descending,) async {
-    return await client.callServerEndpoint('basicDatabase', 'findSimpleDataRowsLessThan', 'SimpleDataList', {
+    return await caller.callServerEndpoint('basicDatabase', 'findSimpleDataRowsLessThan', 'SimpleDataList', {
       'num':num,
       'offset':offset,
       'limit':limit,
@@ -85,115 +88,115 @@ class _EndpointBasicDatabase {
   }
 
   Future<bool?> updateSimpleDataRow(int num,int newNum,) async {
-    return await client.callServerEndpoint('basicDatabase', 'updateSimpleDataRow', 'bool', {
+    return await caller.callServerEndpoint('basicDatabase', 'updateSimpleDataRow', 'bool', {
       'num':num,
       'newNum':newNum,
     });
   }
 
   Future<int?> storeObjectWithObject(ObjectWithObject object,) async {
-    return await client.callServerEndpoint('basicDatabase', 'storeObjectWithObject', 'int', {
+    return await caller.callServerEndpoint('basicDatabase', 'storeObjectWithObject', 'int', {
       'object':object,
     });
   }
 
   Future<ObjectWithObject?> getObjectWithObject(int id,) async {
-    return await client.callServerEndpoint('basicDatabase', 'getObjectWithObject', 'ObjectWithObject', {
+    return await caller.callServerEndpoint('basicDatabase', 'getObjectWithObject', 'ObjectWithObject', {
       'id':id,
     });
   }
 }
 
 class _EndpointBasicTypes {
-  Client client;
-  _EndpointBasicTypes(this.client);
+  EndpointCaller caller;
+  _EndpointBasicTypes(this.caller);
 
   Future<int?> testInt(int? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testInt', 'int', {
+    return await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
       'value':value,
     });
   }
 
   Future<double?> testDouble(double? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testDouble', 'double', {
+    return await caller.callServerEndpoint('basicTypes', 'testDouble', 'double', {
       'value':value,
     });
   }
 
   Future<bool?> testBool(bool? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testBool', 'bool', {
+    return await caller.callServerEndpoint('basicTypes', 'testBool', 'bool', {
       'value':value,
     });
   }
 
   Future<DateTime?> testDateTime(DateTime? dateTime,) async {
-    return await client.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
+    return await caller.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
       'dateTime':dateTime,
     });
   }
 
   Future<String?> testString(String? value,) async {
-    return await client.callServerEndpoint('basicTypes', 'testString', 'String', {
+    return await caller.callServerEndpoint('basicTypes', 'testString', 'String', {
       'value':value,
     });
   }
 }
 
 class _EndpointFailedCalls {
-  Client client;
-  _EndpointFailedCalls(this.client);
+  EndpointCaller caller;
+  _EndpointFailedCalls(this.caller);
 
   Future<void> failedCall() async {
-    return await client.callServerEndpoint('failedCalls', 'failedCall', 'void', {
+    return await caller.callServerEndpoint('failedCalls', 'failedCall', 'void', {
     });
   }
 }
 
 class _EndpointFutureCalls {
-  Client client;
-  _EndpointFutureCalls(this.client);
+  EndpointCaller caller;
+  _EndpointFutureCalls(this.caller);
 
   Future<void> makeFutureCall(SimpleData? data,) async {
-    return await client.callServerEndpoint('futureCalls', 'makeFutureCall', 'void', {
+    return await caller.callServerEndpoint('futureCalls', 'makeFutureCall', 'void', {
       'data':data,
     });
   }
 }
 
 class _EndpointSimple {
-  Client client;
-  _EndpointSimple(this.client);
+  EndpointCaller caller;
+  _EndpointSimple(this.caller);
 
   Future<void> setGlobalInt(int? value,[int? secondValue,]) async {
-    return await client.callServerEndpoint('simple', 'setGlobalInt', 'void', {
+    return await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
       'value':value,
       'secondValue': secondValue,
     });
   }
 
   Future<void> addToGlobalInt() async {
-    return await client.callServerEndpoint('simple', 'addToGlobalInt', 'void', {
+    return await caller.callServerEndpoint('simple', 'addToGlobalInt', 'void', {
     });
   }
 
   Future<int> getGlobalInt() async {
-    return await client.callServerEndpoint('simple', 'getGlobalInt', 'int', {
+    return await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {
     });
   }
 }
 
 class _EndpointLogging {
-  Client client;
-  _EndpointLogging(this.client);
+  EndpointCaller caller;
+  _EndpointLogging(this.caller);
 
   Future<void> logInfo(String message,) async {
-    return await client.callServerEndpoint('logging', 'logInfo', 'void', {
+    return await caller.callServerEndpoint('logging', 'logInfo', 'void', {
       'message':message,
     });
   }
 
   Future<void> logDebugAndInfoAndError(String debug,String info,String error,) async {
-    return await client.callServerEndpoint('logging', 'logDebugAndInfoAndError', 'void', {
+    return await caller.callServerEndpoint('logging', 'logDebugAndInfoAndError', 'void', {
       'debug':debug,
       'info':info,
       'error':error,
@@ -201,41 +204,41 @@ class _EndpointLogging {
   }
 
   Future<void> twoQueries() async {
-    return await client.callServerEndpoint('logging', 'twoQueries', 'void', {
+    return await caller.callServerEndpoint('logging', 'twoQueries', 'void', {
     });
   }
 }
 
 class _EndpointAsyncTasks {
-  Client client;
-  _EndpointAsyncTasks(this.client);
+  EndpointCaller caller;
+  _EndpointAsyncTasks(this.caller);
 
   Future<void> insertRowToSimpleDataAfterDelay(int num,int seconds,) async {
-    return await client.callServerEndpoint('asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
+    return await caller.callServerEndpoint('asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
       'num':num,
       'seconds':seconds,
     });
   }
 
   Future<void> throwExceptionAfterDelay(int seconds,) async {
-    return await client.callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
+    return await caller.callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
       'seconds':seconds,
     });
   }
 }
 
 class _EndpointTransactionsDatabase {
-  Client client;
-  _EndpointTransactionsDatabase(this.client);
+  EndpointCaller caller;
+  _EndpointTransactionsDatabase(this.caller);
 
   Future<void> removeRow(int num,) async {
-    return await client.callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
+    return await caller.callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
       'num':num,
     });
   }
 
   Future<bool> updateInsertDelete(int numUpdate,int numInsert,int numDelete,) async {
-    return await client.callServerEndpoint('transactionsDatabase', 'updateInsertDelete', 'bool', {
+    return await caller.callServerEndpoint('transactionsDatabase', 'updateInsertDelete', 'bool', {
       'numUpdate':numUpdate,
       'numInsert':numInsert,
       'numDelete':numDelete,
@@ -244,13 +247,21 @@ class _EndpointTransactionsDatabase {
 }
 
 class _EndpointLoggingDisabled {
-  Client client;
-  _EndpointLoggingDisabled(this.client);
+  EndpointCaller caller;
+  _EndpointLoggingDisabled(this.caller);
 
   Future<void> logInfo(String message,) async {
-    return await client.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
+    return await caller.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
       'message':message,
     });
+  }
+}
+
+class _Bundles {
+  late final serverpod_test_bundle.Caller bundle;
+
+  _Bundles(Client client) {
+    bundle = serverpod_test_bundle.Caller(client);
   }
 }
 
@@ -265,8 +276,10 @@ class Client extends ServerpodClient {
   late final _EndpointAsyncTasks asyncTasks;
   late final _EndpointTransactionsDatabase transactionsDatabase;
   late final _EndpointLoggingDisabled loggingDisabled;
+  late final _Bundles bundles;
 
-  Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+
+  Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     bundleSerialization = _EndpointBundleSerialization(this);
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
@@ -277,5 +290,6 @@ class Client extends ServerpodClient {
     asyncTasks = _EndpointAsyncTasks(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
+    bundles = _Bundles(this);
   }
 }

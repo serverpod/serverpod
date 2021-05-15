@@ -3,6 +3,8 @@
 
 import 'package:serverpod/serverpod.dart';
 
+import 'package:serverpod_test_bundle/bundle.dart' as serverpod_test_bundle;
+
 // ignore: unused_import
 import 'protocol.dart';
 
@@ -18,8 +20,9 @@ import '../endpoints/database_transactions.dart';
 import '../endpoints/logging_disabled.dart';
 
 class Endpoints extends EndpointDispatch {
+  @override
   void initializeEndpoints(Server server) {
-    Map<String, Endpoint> endpoints = {
+    var endpoints = <String, Endpoint>{
       'bundleSerialization': BundleSerializationEndpoint()..initialize(server, 'bundleSerialization'),
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
@@ -398,6 +401,8 @@ class Endpoints extends EndpointDispatch {
         ),
       },
     );
+
+bundles['serverpod_test_bundle'] = serverpod_test_bundle.Endpoints()..initializeEndpoints(server);
   }
 }
 

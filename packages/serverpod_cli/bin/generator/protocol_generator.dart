@@ -21,7 +21,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   if (verbose)
     print(protocol);
 
-  var filePath = config.generatedClientDart! + '/client.dart';
+  var filePath = config.generatedClientDart + '/client.dart';
   if (verbose)
     print('Writing: $filePath');
   File outFile = File(filePath);
@@ -58,6 +58,8 @@ abstract class ProtocolGenerator {
   ProtocolGenerator({required this.protocolDefinition});
 
   String generateServerEndpointDispatch() {
+    var hasBundles = config.bundles.length > 0;
+
     String out = '';
 
     // Header
@@ -68,6 +70,12 @@ abstract class ProtocolGenerator {
     // Imports
     out += 'import \'package:serverpod/serverpod.dart\';\n';
     out += '\n';
+    if (hasBundles) {
+      for (var bundle in config.bundles) {
+        out += 'import \'package:${bundle.package}/bundle.dart\' as ${bundle.package};\n';
+      }
+      out += '\n';
+    }
     out += '// ignore: unused_import\n';
     out += 'import \'protocol.dart\';\n';
     out += '\n';
@@ -81,11 +89,12 @@ abstract class ProtocolGenerator {
     out += 'class Endpoints extends EndpointDispatch {\n';
 
     // Init method
+    out += '  @override\n';
     out += '  void initializeEndpoints(Server server) {\n';
 
 
     // Endpoints lookup map
-    out += '    Map<String, Endpoint> endpoints = {\n';
+    out += '    var endpoints = <String, Endpoint>{\n';
     for (var endpoint in protocolDefinition.endpoints) {
       out += '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\'),\n';
     }
@@ -120,6 +129,14 @@ abstract class ProtocolGenerator {
       }
       out += '      },\n';
       out += '    );\n';
+    }
+
+    // Hook up bundles
+    if (hasBundles) {
+      out += '\n';
+      for (var bundle in config.bundles) {
+        out += 'bundles[\'${bundle.package}\'] = ${bundle.package}.Endpoints()..initializeEndpoints(server);\n';
+      }
     }
 
     // End init method
