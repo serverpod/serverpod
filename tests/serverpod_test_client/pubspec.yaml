@@ -7,7 +7,7 @@ dependencies:
   serverpod_client:
     path: ../../packages/serverpod_client
   serverpod_test_module_client:
-    path: ../serverpod_test_module_client
+    path: ../serverpod_test_module/serverpod_test_module_client
 
 #dev_dependencies:
 #  unittest: any

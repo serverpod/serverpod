@@ -9,7 +9,7 @@ dependencies:
   serverpod_relic:
     path: ../../packages/serverpod_relic
   serverpod_test_module_server:
-    path: ../serverpod_test_module_server
+    path: ../serverpod_test_module/serverpod_test_module_server
 
 #dev_dependencies:
 #  unittest: any
