@@ -410,7 +410,7 @@ class Transaction {
     DateTime startTime = DateTime.now();
 
     try {
-      var result = await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
+      await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
        for (var query in _queries) {
          await ctx.query(
            query,
