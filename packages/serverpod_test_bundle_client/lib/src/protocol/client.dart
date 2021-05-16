@@ -15,6 +15,12 @@ class _EndpointBundle {
       'name':name,
     });
   }
+
+  Future<BundleClass> modifyBundleObject(BundleClass object,) async {
+    return await caller.callServerEndpoint('serverpod_test_bundle.bundle', 'modifyBundleObject', 'BundleClass', {
+      'object':object,
+    });
+  }
 }
 
 class Caller extends BundleEndpointCaller {

@@ -19,6 +19,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
     assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
   }
+
+  void registerBundleProtocol(SerializationManager protocol) {
+    serializationManager.merge(protocol);
+  }
 }
 
 abstract class BundleEndpointCaller extends EndpointCaller {

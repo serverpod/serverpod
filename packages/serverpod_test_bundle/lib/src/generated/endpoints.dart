@@ -28,6 +28,15 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['bundle'] as BundleEndpoint).hello(session,params['name'],);
           },
         ),
+        'modifyBundleObject': MethodConnector(
+          name: 'modifyBundleObject',
+          params: {
+            'object': ParameterDescription(name: 'object', type: BundleClass, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['bundle'] as BundleEndpoint).modifyBundleObject(session,params['object'],);
+          },
+        ),
       },
     );
   }
