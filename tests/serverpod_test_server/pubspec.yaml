@@ -5,11 +5,11 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 dependencies:
   serverpod:
-    path: ../serverpod
+    path: ../../packages/serverpod
   serverpod_relic:
-    path: ../serverpod_relic
+    path: ../../packages/serverpod_relic
   serverpod_test_module:
     path: ../serverpod_test_module
 
-dev_dependencies:
+#dev_dependencies:
 #  unittest: any

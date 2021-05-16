@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   serverpod:
-    path: ../serverpod
+    path: ../../packages/serverpod
 
 dev_dependencies:
   pedantic: ^1.9.0

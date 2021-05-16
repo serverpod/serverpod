@@ -263,14 +263,14 @@ packages:
   serverpod_test_client:
     dependency: "direct dev"
     description:
-      path: "../serverpod_test_client"
+      path: "../../tests/serverpod_test_client"
       relative: true
     source: path
     version: "0.0.1"
   serverpod_test_module_client:
     dependency: transitive
     description:
-      path: "../serverpod_test_module_client"
+      path: "../../tests/serverpod_test_module_client"
       relative: true
     source: path
     version: "0.0.1"

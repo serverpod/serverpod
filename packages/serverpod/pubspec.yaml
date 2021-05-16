@@ -21,4 +21,4 @@ dependencies:
 dev_dependencies:
   test: ^1.16.8
   serverpod_test_client:
-    path: ../serverpod_test_client
+    path: ../../tests/serverpod_test_client
