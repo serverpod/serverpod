@@ -1,4 +1,1 @@
 generated_client_dart: ../PROJECTNAME_client/lib/src/protocol
-generated_server_protocol: lib/src/generated
-source_protocol: lib/src/protocol
-source_endpoints: lib/src/endpoints

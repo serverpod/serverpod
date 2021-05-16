@@ -6,12 +6,12 @@ import 'config.dart';
 void performGenerateClasses(bool verbose) {
   // Generate server side code
   print('Generating server side code.');
-  var serverGenerator = ClassGeneratorDart(config.sourceProtocol, config.generatedServerProtocol, verbose, true);
+  var serverGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedServerProtocolPath, verbose, true);
   serverGenerator.generate();
 
   // Generate client side code
   print('Generating Dart client side code.');
-  var clientGenerator = ClassGeneratorDart(config.sourceProtocol, config.generatedClientDart, verbose, false);
+  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedClientDart, verbose, false);
   clientGenerator.generate();
 
   print('Done.');

@@ -12,11 +12,11 @@ class GeneratorConfig {
   late String packageName;
   late PackageType type;
 
-  late String sourceProtocol;
-  late String sourceEndpoints;
+  final String protocolSourcePath = 'lib/src/protocol';
+  final String endpointsSourcePath = 'lib/src/endpoints';
 
   late String generatedClientDart;
-  late String generatedServerProtocol;
+  final String generatedServerProtocolPath = 'lib/src/generated';
 
   String? clientPackage;
 
@@ -55,21 +55,9 @@ class GeneratorConfig {
     else
       type = PackageType.server;
 
-    if (generatorConfig['source_protocol'] == null)
-      throw FormatException('Option "source_protocol" is required in config/generator.yaml');
-    sourceProtocol = generatorConfig['source_protocol'];
-
-    if (generatorConfig['source_endpoints'] == null)
-      throw FormatException('Option "source_endpoints" is required in config/generator.yaml');
-    sourceEndpoints = generatorConfig['source_endpoints'];
-
     if (generatorConfig['generated_client_dart'] == null)
       throw FormatException('Option "generated_client_dart" is required in config/generator.yaml');
     generatedClientDart = generatorConfig['generated_client_dart'];
-
-    if (generatorConfig['generated_server_protocol'] == null)
-      throw FormatException('Option "generated_server_protocol" is required in config/generator.yaml');
-    generatedServerProtocol = generatorConfig['generated_server_protocol'];
 
     // Load module settings
     if (type == PackageType.server) {
@@ -99,10 +87,10 @@ class GeneratorConfig {
   @override
   String toString() {
     var str = '''type: $type
-sourceProtocol: $sourceProtocol
-sourceEndpoints: $sourceEndpoints
+sourceProtocol: $protocolSourcePath
+sourceEndpoints: $endpointsSourcePath
 generatedClientDart: $generatedClientDart
-generatedServerProtocol: $generatedServerProtocol
+generatedServerProtocol: $generatedServerProtocolPath
 ''';
     if (modules.length > 0) {
       str += '\nmodules:\n\n';

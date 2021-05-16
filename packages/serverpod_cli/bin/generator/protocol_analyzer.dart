@@ -12,7 +12,7 @@ import 'protocol_definition.dart';
 ProtocolAnalyzer? _analyzer;
 
 Future<ProtocolDefinition> performAnalysis(bool verbose) async {
-  var analyzer = _analyzer ?? ProtocolAnalyzer(config.sourceEndpoints);
+  var analyzer = _analyzer ?? ProtocolAnalyzer(config.endpointsSourcePath);
   return await analyzer.analyze(verbose);
 }
 

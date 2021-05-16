@@ -35,7 +35,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   if (verbose)
     print(endpointDispatch);
 
-  var endpointsFilePath = config.generatedServerProtocol + '/endpoints.dart';
+  var endpointsFilePath = config.generatedServerProtocolPath + '/endpoints.dart';
   if (verbose)
     print('Writing: $endpointsFilePath');
   File endpointsFile = File(endpointsFilePath);
