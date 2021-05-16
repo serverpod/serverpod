@@ -357,8 +357,8 @@ class Serverpod {
     return null;
   }
 
-  void registerBundle(SerializationManager bundleProtocol, String name) {
-    serializationManager.merge(bundleProtocol);
+  void registerModule(SerializationManager moduleProtocol, String name) {
+    serializationManager.merge(moduleProtocol);
   }
 
   void shutdown() {

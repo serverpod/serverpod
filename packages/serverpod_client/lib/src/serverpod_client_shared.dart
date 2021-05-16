@@ -20,14 +20,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
     assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
   }
 
-  void registerBundleProtocol(SerializationManager protocol) {
+  void registerModuleProtocol(SerializationManager protocol) {
     serializationManager.merge(protocol);
   }
 }
 
-abstract class BundleEndpointCaller extends EndpointCaller {
+abstract class ModuleEndpointCaller extends EndpointCaller {
   final ServerpodClientShared client;
-  BundleEndpointCaller(this.client);
+  ModuleEndpointCaller(this.client);
 
   Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) {
     return client.callServerEndpoint(endpoint, method, returnTypeName, args);

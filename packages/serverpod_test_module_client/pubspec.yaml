@@ -1,4 +1,4 @@
-name: serverpod_test_bundle_client
+name: serverpod_test_module_client
 version: 0.0.1
 description: A sample command-line application
 environment:

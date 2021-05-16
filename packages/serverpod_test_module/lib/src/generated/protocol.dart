@@ -3,12 +3,11 @@
 
 library protocol;
 
-import 'package:serverpod_client/serverpod_client.dart';
+import 'package:serverpod/serverpod.dart';
 
-import 'bundle_class.dart';
+import 'module_class.dart';
 
-export 'bundle_class.dart';
-export 'client.dart';
+export 'module_class.dart';
 
 class Protocol extends SerializationManager {
   static final Protocol instance = Protocol();
@@ -21,6 +20,7 @@ class Protocol extends SerializationManager {
   Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['serverpod_test_bundle.BundleClass'] = (Map<String, dynamic> serialization) => BundleClass.fromSerialization(serialization);
+    constructors['serverpod_test_module.ModuleClass'] = (Map<String, dynamic> serialization) => ModuleClass.fromSerialization(serialization);
+
   }
 }

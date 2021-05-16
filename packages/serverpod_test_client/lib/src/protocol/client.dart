@@ -6,23 +6,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 // ignore: unused_import
 import 'protocol.dart';
 
-import 'package:serverpod_test_bundle_client/bundle.dart' as serverpod_test_bundle;
-
-class _EndpointBundleSerialization {
-  EndpointCaller caller;
-  _EndpointBundleSerialization(this.caller);
-
-  Future<bool> serializeBundleObject() async {
-    return await caller.callServerEndpoint('bundleSerialization', 'serializeBundleObject', 'bool', {
-    });
-  }
-
-  Future<serverpod_test_bundle.BundleClass> modifyBundleObject(serverpod_test_bundle.BundleClass object,) async {
-    return await caller.callServerEndpoint('bundleSerialization', 'modifyBundleObject', 'BundleClass', {
-      'object':object,
-    });
-  }
-}
+import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
 
 class _EndpointBasicDatabase {
   EndpointCaller caller;
@@ -158,6 +142,22 @@ class _EndpointFailedCalls {
   }
 }
 
+class _EndpointModuleSerialization {
+  EndpointCaller caller;
+  _EndpointModuleSerialization(this.caller);
+
+  Future<bool> serializeModuleObject() async {
+    return await caller.callServerEndpoint('moduleSerialization', 'serializeModuleObject', 'bool', {
+    });
+  }
+
+  Future<serverpod_test_module.ModuleClass> modifyModuleObject(serverpod_test_module.ModuleClass object,) async {
+    return await caller.callServerEndpoint('moduleSerialization', 'modifyModuleObject', 'ModuleClass', {
+      'object':object,
+    });
+  }
+}
+
 class _EndpointFutureCalls {
   EndpointCaller caller;
   _EndpointFutureCalls(this.caller);
@@ -263,39 +263,39 @@ class _EndpointLoggingDisabled {
   }
 }
 
-class _Bundles {
-  late final serverpod_test_bundle.Caller bundle;
+class _Modules {
+  late final serverpod_test_module.Caller module;
 
-  _Bundles(Client client) {
-    bundle = serverpod_test_bundle.Caller(client);
+  _Modules(Client client) {
+    module = serverpod_test_module.Caller(client);
   }
 }
 
 class Client extends ServerpodClient {
-  late final _EndpointBundleSerialization bundleSerialization;
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
   late final _EndpointFailedCalls failedCalls;
+  late final _EndpointModuleSerialization moduleSerialization;
   late final _EndpointFutureCalls futureCalls;
   late final _EndpointSimple simple;
   late final _EndpointLogging logging;
   late final _EndpointAsyncTasks asyncTasks;
   late final _EndpointTransactionsDatabase transactionsDatabase;
   late final _EndpointLoggingDisabled loggingDisabled;
-  late final _Bundles bundles;
+  late final _Modules modules;
 
 
   Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
-    bundleSerialization = _EndpointBundleSerialization(this);
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
     failedCalls = _EndpointFailedCalls(this);
+    moduleSerialization = _EndpointModuleSerialization(this);
     futureCalls = _EndpointFutureCalls(this);
     simple = _EndpointSimple(this);
     logging = _EndpointLogging(this);
     asyncTasks = _EndpointAsyncTasks(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
-    bundles = _Bundles(this);
+    modules = _Modules(this);
   }
 }

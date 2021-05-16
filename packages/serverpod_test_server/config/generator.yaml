@@ -5,7 +5,7 @@ generated_server_protocol: lib/src/generated
 source_protocol: lib/src/protocol
 source_endpoints: lib/src/endpoints
 
-bundles:
-  serverpod_test_bundle:
-    path: ../serverpod_test_bundle
-    name: bundle
+modules:
+  serverpod_test_module:
+    path: ../serverpod_test_module
+    name: module

@@ -9,7 +9,7 @@ import 'session.dart';
 
 abstract class EndpointDispatch {
   Map<String, EndpointConnector> connectors = {};
-  Map<String, EndpointDispatch> bundles = {};
+  Map<String, EndpointDispatch> modules = {};
 
   void initializeEndpoints(Server server);
 
@@ -28,16 +28,16 @@ abstract class EndpointDispatch {
         return ResultInvalidParams('Endpoint $endpointName does not exist');
     }
     else {
-      // Connector is in a bundle
-      var bundlePackage = endpointComponents[0];
+      // Connector is in a module
+      var modulePackage = endpointComponents[0];
       endpointName = endpointComponents[1];
-      var bundle = bundles[bundlePackage];
-      if (bundle == null)
-        return ResultInvalidParams('Bundle $bundlePackage does not exist');
+      var module = modules[modulePackage];
+      if (module == null)
+        return ResultInvalidParams('Module $modulePackage does not exist');
 
-      connector = bundle.connectors[endpointName];
+      connector = module.connectors[endpointName];
       if (connector == null)
-        return ResultInvalidParams('Endpoint $bundlePackage.$endpointName does not exist');
+        return ResultInvalidParams('Endpoint $modulePackage.$endpointName does not exist');
     }
 
     Session session;

@@ -8,8 +8,8 @@ dependencies:
     path: ../serverpod
   serverpod_relic:
     path: ../serverpod_relic
-  serverpod_test_bundle:
-    path: ../serverpod_test_bundle
+  serverpod_test_module:
+    path: ../serverpod_test_module
 
 dev_dependencies:
 #  unittest: any

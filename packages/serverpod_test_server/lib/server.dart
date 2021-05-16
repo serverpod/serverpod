@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/src/web/routes/root.dart';
 import 'src/futureCalls/test_call.dart';
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
-import 'package:serverpod_test_bundle/bundle.dart' as bundle;
+import 'package:serverpod_test_module/module.dart' as module;
 
 void run(List<String> args) async {
   // Create serverpod
@@ -17,8 +17,8 @@ void run(List<String> args) async {
   // Add future calls
   pod.registerFutureCall(TestCall(), 'testCall');
 
-  // Register bundles
-  pod.registerBundle(bundle.Protocol(), 'bundle');
+  // Register modules
+  pod.registerModule(module.Protocol(), 'module');
 
   // Start the server
   await pod.start();

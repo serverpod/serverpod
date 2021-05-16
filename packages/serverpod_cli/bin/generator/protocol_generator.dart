@@ -58,7 +58,7 @@ abstract class ProtocolGenerator {
   ProtocolGenerator({required this.protocolDefinition});
 
   String generateServerEndpointDispatch() {
-    var hasBundles = config.bundles.length > 0;
+    var hasModules = config.modules.length > 0;
 
     String out = '';
 
@@ -70,9 +70,9 @@ abstract class ProtocolGenerator {
     // Imports
     out += 'import \'package:serverpod/serverpod.dart\';\n';
     out += '\n';
-    if (hasBundles) {
-      for (var bundle in config.bundles) {
-        out += 'import \'package:${bundle.package}/bundle.dart\' as ${bundle.package};\n';
+    if (hasModules) {
+      for (var module in config.modules) {
+        out += 'import \'package:${module.package}/module.dart\' as ${module.package};\n';
       }
       out += '\n';
     }
@@ -131,11 +131,11 @@ abstract class ProtocolGenerator {
       out += '    );\n';
     }
 
-    // Hook up bundles
-    if (hasBundles) {
+    // Hook up modules
+    if (hasModules) {
       out += '\n';
-      for (var bundle in config.bundles) {
-        out += '    bundles[\'${bundle.package}\'] = ${bundle.package}.Endpoints()..initializeEndpoints(server);\n';
+      for (var module in config.modules) {
+        out += '    modules[\'${module.package}\'] = ${module.package}.Endpoints()..initializeEndpoints(server);\n';
       }
     }
 

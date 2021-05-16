@@ -7,21 +7,21 @@ import 'package:serverpod_client/serverpod_client.dart';
 // ignore: unused_import
 import 'protocol.dart';
 
-class BundleClass extends SerializableEntity {
+class ModuleClass extends SerializableEntity {
   @override
-  String get className => 'serverpod_test_bundle.BundleClass';
+  String get className => 'serverpod_test_module.ModuleClass';
 
   int? id;
   late String name;
   late int data;
 
-  BundleClass({
+  ModuleClass({
     this.id,
     required this.name,
     required this.data,
 });
 
-  BundleClass.fromSerialization(Map<String, dynamic> serialization) {
+  ModuleClass.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     name = _data['name']!;

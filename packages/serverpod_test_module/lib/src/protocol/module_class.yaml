@@ -1,4 +1,4 @@
-class: BundleClass
+class: ModuleClass
 fields:
   name: String
   data: int

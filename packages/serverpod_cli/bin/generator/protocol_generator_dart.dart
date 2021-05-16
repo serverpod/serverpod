@@ -21,10 +21,10 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += 'import \'protocol.dart\';\n';
     out += '\n';
 
-    var hasBundles = config.bundles.length > 0 && config.type == PackageType.server;
-    if (hasBundles) {
-      for (var bundle in config.bundles) {
-        out += 'import \'package:${bundle.config.clientPackage}/bundle.dart\' as ${bundle.package};\n';
+    var hasModules = config.modules.length > 0 && config.type == PackageType.server;
+    if (hasModules) {
+      for (var module in config.modules) {
+        out += 'import \'package:${module.config.clientPackage}/module.dart\' as ${module.package};\n';
       }
       out += '\n';
     }
@@ -84,16 +84,16 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += '\n';
     }
 
-    if (hasBundles) {
-      out += 'class _Bundles {\n';
-      for (var bundle in config.bundles) {
-        out += '  late final ${bundle.package}.Caller ${bundle.name};\n';
+    if (hasModules) {
+      out += 'class _Modules {\n';
+      for (var module in config.modules) {
+        out += '  late final ${module.package}.Caller ${module.name};\n';
       }
       out += '\n';
 
-      out += '  _Bundles(Client client) {\n';
-      for (var bundle in config.bundles) {
-        out += '    bundle = ${bundle.package}.Caller(client);\n';
+      out += '  _Modules(Client client) {\n';
+      for (var module in config.modules) {
+        out += '    module = ${module.package}.Caller(client);\n';
       }
 
       out += '  }\n';
@@ -105,14 +105,14 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     if (config.type == PackageType.server)
       out += 'class Client extends ServerpodClient {\n';
     else
-      out += 'class Caller extends BundleEndpointCaller {\n';
+      out += 'class Caller extends ModuleEndpointCaller {\n';
 
     for (var endpointDef in protocolDefinition.endpoints) {
       out += '  late final ${_endpointClassName(endpointDef.name)} ${endpointDef.name};\n';
     }
 
-    if (hasBundles) {
-      out += '  late final _Bundles bundles;\n';
+    if (hasModules) {
+      out += '  late final _Modules modules;\n';
       out += '\n';
     }
 
@@ -125,8 +125,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += '    ${endpointDef.name} = ${_endpointClassName(endpointDef.name)}(this);\n';
     }
 
-    if (hasBundles) {
-      out += '    bundles = _Bundles(this);\n';
+    if (hasModules) {
+      out += '    modules = _Modules(this);\n';
     }
 
     out += '  }\n';

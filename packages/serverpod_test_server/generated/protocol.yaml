@@ -1,6 +1,3 @@
-bundleSerialization:
-  - serializeBundleObject:
-  - modifyBundleObject:
 basicDatabase:
   - storeTypes:
   - getTypes:
@@ -24,6 +21,9 @@ basicTypes:
   - testString:
 failedCalls:
   - failedCall:
+moduleSerialization:
+  - serializeModuleObject:
+  - modifyModuleObject:
 futureCalls:
   - makeFutureCall:
 simple:

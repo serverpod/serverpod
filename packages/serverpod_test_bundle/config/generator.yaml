@@ -1,8 +1,0 @@
-# generated-client-dart: ../serverpod_testbundle_client/lib/src/protocol
-type: bundle
-
-generated_client_dart: ../serverpod_test_bundle_client/lib/src/protocol
-generated_server_protocol: lib/src/generated
-source_protocol: lib/src/protocol
-source_endpoints: lib/src/endpoints
-client_package: serverpod_test_bundle_client

@@ -6,18 +6,18 @@ import 'package:serverpod/serverpod.dart';
 // ignore: unused_import
 import 'protocol.dart';
 
-import '../endpoints/bundle_endpoint.dart';
+import '../endpoints/module_endpoint.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'bundle': BundleEndpoint()..initialize(server, 'bundle'),
+      'module': ModuleEndpoint()..initialize(server, 'module'),
     };
 
-    connectors['bundle'] = EndpointConnector(
-      name: 'bundle',
-      endpoint: endpoints['bundle']!,
+    connectors['module'] = EndpointConnector(
+      name: 'module',
+      endpoint: endpoints['module']!,
       methodConnectors: {
         'hello': MethodConnector(
           name: 'hello',
@@ -25,16 +25,16 @@ class Endpoints extends EndpointDispatch {
             'name': ParameterDescription(name: 'name', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['bundle'] as BundleEndpoint).hello(session,params['name'],);
+            return (endpoints['module'] as ModuleEndpoint).hello(session,params['name'],);
           },
         ),
-        'modifyBundleObject': MethodConnector(
-          name: 'modifyBundleObject',
+        'modifyModuleObject': MethodConnector(
+          name: 'modifyModuleObject',
           params: {
-            'object': ParameterDescription(name: 'object', type: BundleClass, nullable: false),
+            'object': ParameterDescription(name: 'object', type: ModuleClass, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['bundle'] as BundleEndpoint).modifyBundleObject(session,params['object'],);
+            return (endpoints['module'] as ModuleEndpoint).modifyModuleObject(session,params['object'],);
           },
         ),
       },

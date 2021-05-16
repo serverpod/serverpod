@@ -5,7 +5,7 @@ var config = GeneratorConfig();
 
 enum PackageType {
   server,
-  bundle,
+  module,
 }
 
 class GeneratorConfig {
@@ -20,7 +20,7 @@ class GeneratorConfig {
 
   String? clientPackage;
 
-  List<BundleConfig> bundles = [];
+  List<ModuleConfig> modules = [];
 
   bool load([String dir = '']) {
     Map? pubspec;
@@ -50,8 +50,8 @@ class GeneratorConfig {
     }
 
     var typeStr = generatorConfig!['type'];
-    if (typeStr == 'bundle')
-      type = PackageType.bundle;
+    if (typeStr == 'module')
+      type = PackageType.module;
     else
       type = PackageType.server;
 
@@ -71,18 +71,18 @@ class GeneratorConfig {
       throw FormatException('Option "generated_server_protocol" is required in config/generator.yaml');
     generatedServerProtocol = generatorConfig['generated_server_protocol'];
 
-    // Load bundle settings
+    // Load module settings
     if (type == PackageType.server) {
       try {
-        if (generatorConfig['bundles'] != null) {
-          Map bundlesData = generatorConfig['bundles'];
-          for (var package in bundlesData.keys) {
-            bundles.add(BundleConfig._withMap(package, bundlesData[package]));
+        if (generatorConfig['modules'] != null) {
+          Map modulesData = generatorConfig['modules'];
+          for (var package in modulesData.keys) {
+            modules.add(ModuleConfig._withMap(package, modulesData[package]));
           }
         }
       }
       catch(e) {
-        throw FormatException('Failed to load bundle config');
+        throw FormatException('Failed to load module config');
       }
     }
     else {
@@ -104,23 +104,23 @@ sourceEndpoints: $sourceEndpoints
 generatedClientDart: $generatedClientDart
 generatedServerProtocol: $generatedServerProtocol
 ''';
-    if (bundles.length > 0) {
-      str += '\nbundles:\n\n';
-      for (var bundle in bundles) {
-        str += '$bundle';
+    if (modules.length > 0) {
+      str += '\nmodules:\n\n';
+      for (var module in modules) {
+        str += '$module';
       }
     }
     return str;
   }
 }
 
-class BundleConfig {
+class ModuleConfig {
   String path;
   String name;
   String package;
   GeneratorConfig config = GeneratorConfig();
 
-  BundleConfig._withMap(this.package, Map map) :
+  ModuleConfig._withMap(this.package, Map map) :
     path=map['path']!,
     name=map['name']! {
     print('');

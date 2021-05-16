@@ -1,5 +1,5 @@
-name: serverpod_test_bundle
-description: A simple Serverpod bundle.
+name: serverpod_test_module
+description: A simple Serverpod module.
 # version: 1.0.0
 # homepage: https://www.example.com
 

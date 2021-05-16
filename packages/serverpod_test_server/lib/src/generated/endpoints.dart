@@ -3,15 +3,15 @@
 
 import 'package:serverpod/serverpod.dart';
 
-import 'package:serverpod_test_bundle/bundle.dart' as serverpod_test_bundle;
+import 'package:serverpod_test_module/module.dart' as serverpod_test_module;
 
 // ignore: unused_import
 import 'protocol.dart';
 
-import '../endpoints/bundle_serialization.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
 import '../endpoints/failed_calls.dart';
+import '../endpoints/module_serialization.dart';
 import '../endpoints/future_calls.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/logging.dart';
@@ -23,10 +23,10 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'bundleSerialization': BundleSerializationEndpoint()..initialize(server, 'bundleSerialization'),
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
       'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls'),
+      'moduleSerialization': ModuleSerializationEndpoint()..initialize(server, 'moduleSerialization'),
       'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls'),
       'simple': SimpleEndpoint()..initialize(server, 'simple'),
       'logging': LoggingEndpoint()..initialize(server, 'logging'),
@@ -34,30 +34,6 @@ class Endpoints extends EndpointDispatch {
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
       'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled'),
     };
-
-    connectors['bundleSerialization'] = EndpointConnector(
-      name: 'bundleSerialization',
-      endpoint: endpoints['bundleSerialization']!,
-      methodConnectors: {
-        'serializeBundleObject': MethodConnector(
-          name: 'serializeBundleObject',
-          params: {
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['bundleSerialization'] as BundleSerializationEndpoint).serializeBundleObject(session,);
-          },
-        ),
-        'modifyBundleObject': MethodConnector(
-          name: 'modifyBundleObject',
-          params: {
-            'object': ParameterDescription(name: 'object', type: serverpod_test_bundle.BundleClass, nullable: false),
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['bundleSerialization'] as BundleSerializationEndpoint).modifyBundleObject(session,params['object'],);
-          },
-        ),
-      },
-    );
 
     connectors['basicDatabase'] = EndpointConnector(
       name: 'basicDatabase',
@@ -259,6 +235,30 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
+    connectors['moduleSerialization'] = EndpointConnector(
+      name: 'moduleSerialization',
+      endpoint: endpoints['moduleSerialization']!,
+      methodConnectors: {
+        'serializeModuleObject': MethodConnector(
+          name: 'serializeModuleObject',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['moduleSerialization'] as ModuleSerializationEndpoint).serializeModuleObject(session,);
+          },
+        ),
+        'modifyModuleObject': MethodConnector(
+          name: 'modifyModuleObject',
+          params: {
+            'object': ParameterDescription(name: 'object', type: serverpod_test_module.ModuleClass, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['moduleSerialization'] as ModuleSerializationEndpoint).modifyModuleObject(session,params['object'],);
+          },
+        ),
+      },
+    );
+
     connectors['futureCalls'] = EndpointConnector(
       name: 'futureCalls',
       endpoint: endpoints['futureCalls']!,
@@ -411,7 +411,7 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
-    bundles['serverpod_test_bundle'] = serverpod_test_bundle.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_test_module'] = serverpod_test_module.Endpoints()..initializeEndpoints(server);
   }
 }
 
