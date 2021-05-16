@@ -42,8 +42,9 @@ class TypeDefinition {
 
   String get typePrefix {
     String prefix = '';
-    if (package != null && package != 'core' && package != config.packageName)
-      prefix = '$package.';
+    if (package != null && package != 'core' && package != config.serverPackage) {
+      prefix = '${stripPackage(package!)}.';
+    }
     return prefix;
   }
 

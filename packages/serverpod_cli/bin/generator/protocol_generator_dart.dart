@@ -24,7 +24,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     var hasModules = config.modules.length > 0 && config.type == PackageType.server;
     if (hasModules) {
       for (var module in config.modules) {
-        out += 'import \'package:${module.config.clientPackage}/module.dart\' as ${module.package};\n';
+        out += 'import \'package:${module.clientPackage}/module.dart\' as ${module.name};\n';
       }
       out += '\n';
     }
@@ -65,7 +65,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out += ') async {\n';
 
         // Call to server endpoint
-        var prefix = config.type == PackageType.server ? '' : '${config.packageName}.';
+        var prefix = config.type == PackageType.server ? '' : '${config.name}.';
         out += '    return await caller.callServerEndpoint(\'$prefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
 
         for (var paramDef in requiredParams) {
@@ -87,13 +87,13 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     if (hasModules) {
       out += 'class _Modules {\n';
       for (var module in config.modules) {
-        out += '  late final ${module.package}.Caller ${module.name};\n';
+        out += '  late final ${module.name}.Caller ${module.nickname};\n';
       }
       out += '\n';
 
       out += '  _Modules(Client client) {\n';
       for (var module in config.modules) {
-        out += '    module = ${module.package}.Caller(client);\n';
+        out += '    module = ${module.name}.Caller(client);\n';
       }
 
       out += '  }\n';

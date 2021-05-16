@@ -375,7 +375,7 @@ class ClassGeneratorDart extends ClassGenerator{
     if (config.type == PackageType.server)
       return '';
     else
-      return '${config.packageName}.';
+      return '${config.serverPackage}.';
   }
 
 //  String _endpointClassName(String endpointName) {

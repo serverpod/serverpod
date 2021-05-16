@@ -1,4 +1,3 @@
 type: module
 
 generated_client_dart: ../serverpod_test_module_client/lib/src/protocol
-client_package: serverpod_test_module_client

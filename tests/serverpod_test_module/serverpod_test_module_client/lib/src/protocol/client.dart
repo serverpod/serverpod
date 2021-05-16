@@ -11,13 +11,13 @@ class _EndpointModule {
   _EndpointModule(this.caller);
 
   Future<String> hello(String name,) async {
-    return await caller.callServerEndpoint('serverpod_test_module_server.module', 'hello', 'String', {
+    return await caller.callServerEndpoint('serverpod_test_module.module', 'hello', 'String', {
       'name':name,
     });
   }
 
   Future<ModuleClass> modifyModuleObject(ModuleClass object,) async {
-    return await caller.callServerEndpoint('serverpod_test_module_server.module', 'modifyModuleObject', 'ModuleClass', {
+    return await caller.callServerEndpoint('serverpod_test_module.module', 'modifyModuleObject', 'ModuleClass', {
       'object':object,
     });
   }

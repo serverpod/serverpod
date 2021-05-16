@@ -72,7 +72,7 @@ abstract class ProtocolGenerator {
     out += '\n';
     if (hasModules) {
       for (var module in config.modules) {
-        out += 'import \'package:${module.package}/module.dart\' as ${module.package};\n';
+        out += 'import \'package:${module.serverPackage}/module.dart\' as ${module.name};\n';
       }
       out += '\n';
     }
@@ -135,7 +135,7 @@ abstract class ProtocolGenerator {
     if (hasModules) {
       out += '\n';
       for (var module in config.modules) {
-        out += '    modules[\'${module.package}\'] = ${module.package}.Endpoints()..initializeEndpoints(server);\n';
+        out += '    modules[\'${module.name}\'] = ${module.name}.Endpoints()..initializeEndpoints(server);\n';
       }
     }
 

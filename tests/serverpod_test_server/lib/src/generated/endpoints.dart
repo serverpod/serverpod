@@ -3,7 +3,7 @@
 
 import 'package:serverpod/serverpod.dart';
 
-import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module_server;
+import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module;
 
 // ignore: unused_import
 import 'protocol.dart';
@@ -250,7 +250,7 @@ class Endpoints extends EndpointDispatch {
         'modifyModuleObject': MethodConnector(
           name: 'modifyModuleObject',
           params: {
-            'object': ParameterDescription(name: 'object', type: serverpod_test_module_server.ModuleClass, nullable: false),
+            'object': ParameterDescription(name: 'object', type: serverpod_test_module.ModuleClass, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['moduleSerialization'] as ModuleSerializationEndpoint).modifyModuleObject(session,params['object'],);
@@ -411,7 +411,7 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
-    modules['serverpod_test_module_server'] = serverpod_test_module_server.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_test_module'] = serverpod_test_module.Endpoints()..initializeEndpoints(server);
   }
 }
 

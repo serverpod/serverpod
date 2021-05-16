@@ -9,7 +9,8 @@ enum PackageType {
 }
 
 class GeneratorConfig {
-  late String packageName;
+  late String serverPackage;
+  late String name;
   late PackageType type;
 
   final String protocolSourcePath = 'lib/src/protocol';
@@ -17,8 +18,6 @@ class GeneratorConfig {
 
   late String generatedClientDart;
   final String generatedServerProtocolPath = 'lib/src/generated';
-
-  String? clientPackage;
 
   List<ModuleConfig> modules = [];
 
@@ -36,7 +35,8 @@ class GeneratorConfig {
 
     if (pubspec!['name'] == null)
       throw FormatException('Package name is missing in pubspec.yaml');
-    packageName = pubspec['name'];
+    serverPackage = pubspec['name'];
+    name = stripPackage(serverPackage);
 
     Map? generatorConfig;
     try {
@@ -73,11 +73,6 @@ class GeneratorConfig {
         throw FormatException('Failed to load module config');
       }
     }
-    else {
-      if (generatorConfig['client_package'] == null)
-        throw FormatException('Option "client_package" is required in config/generator.yaml');
-      clientPackage = generatorConfig['client_package'];
-    }
 
     // print(this);
 
@@ -103,24 +98,32 @@ generatedServerProtocol: $generatedServerProtocolPath
 }
 
 class ModuleConfig {
-  String path;
+  String nickname;
   String name;
-  String package;
-  GeneratorConfig config = GeneratorConfig();
+  String clientPackage;
+  String serverPackage;
 
-  ModuleConfig._withMap(this.package, Map map) :
-    path=map['path']!,
-    name=map['name']! {
-    print('');
-    config.load('$path/');
-  }
+  ModuleConfig._withMap(this.name, Map map) :
+    clientPackage = '${name}_client',
+    serverPackage = '${name}_server',
+    nickname=map['nickname']!;
 
   @override
   String toString() {
-    return '''package: $package
-path: $path
-name: $name
+    return '''name: $name
+nickname: $nickname
+clientPackage: $clientPackage
+serverPackage: $serverPackage;
 config:
 $config''';
   }
+}
+
+String stripPackage(String package) {
+  String strippedPackage = package;
+  if (strippedPackage.endsWith('_server'))
+    return strippedPackage.substring(0, strippedPackage.length - 7);
+  if (strippedPackage.endsWith('_client'))
+    return strippedPackage.substring(0, strippedPackage.length - 7);
+  return package;
 }
