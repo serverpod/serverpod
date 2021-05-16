@@ -55,21 +55,21 @@ class GeneratorConfig {
     else
       type = PackageType.server;
 
-    if (generatorConfig['source-protocol'] == null)
-      throw FormatException('Option "source-protocol" is required in config/generator.yaml');
-    sourceProtocol = generatorConfig['source-protocol'];
+    if (generatorConfig['source_protocol'] == null)
+      throw FormatException('Option "source_protocol" is required in config/generator.yaml');
+    sourceProtocol = generatorConfig['source_protocol'];
 
-    if (generatorConfig['source-enpoints'] == null)
-      throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
-    sourceEndpoints = generatorConfig['source-enpoints'];
+    if (generatorConfig['source_endpoints'] == null)
+      throw FormatException('Option "source_endpoints" is required in config/generator.yaml');
+    sourceEndpoints = generatorConfig['source_endpoints'];
 
-    if (generatorConfig['generated-client-dart'] == null)
-      throw FormatException('Option "generated-client-dart" is required in config/generator.yaml');
-    generatedClientDart = generatorConfig['generated-client-dart'];
+    if (generatorConfig['generated_client_dart'] == null)
+      throw FormatException('Option "generated_client_dart" is required in config/generator.yaml');
+    generatedClientDart = generatorConfig['generated_client_dart'];
 
-    if (generatorConfig['generated-server-protocol'] == null)
-      throw FormatException('Option "source-enpoints" is required in config/generator.yaml');
-    generatedServerProtocol = generatorConfig['generated-server-protocol'];
+    if (generatorConfig['generated_server_protocol'] == null)
+      throw FormatException('Option "generated_server_protocol" is required in config/generator.yaml');
+    generatedServerProtocol = generatorConfig['generated_server_protocol'];
 
     // Load bundle settings
     if (type == PackageType.server) {
@@ -86,9 +86,9 @@ class GeneratorConfig {
       }
     }
     else {
-      if (generatorConfig['client-package'] == null)
-        throw FormatException('Option "client-package" is required in config/generator.yaml');
-      clientPackage = generatorConfig['client-package'];
+      if (generatorConfig['client_package'] == null)
+        throw FormatException('Option "client_package" is required in config/generator.yaml');
+      clientPackage = generatorConfig['client_package'];
     }
 
     // print(this);
