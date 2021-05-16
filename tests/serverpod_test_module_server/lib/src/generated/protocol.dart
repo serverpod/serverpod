@@ -20,7 +20,7 @@ class Protocol extends SerializationManager {
   Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['serverpod_test_module.ModuleClass'] = (Map<String, dynamic> serialization) => ModuleClass.fromSerialization(serialization);
+    constructors['serverpod_test_module_server.ModuleClass'] = (Map<String, dynamic> serialization) => ModuleClass.fromSerialization(serialization);
 
   }
 }

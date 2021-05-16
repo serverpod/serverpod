@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_module/module.dart' as module;
+import 'package:serverpod_test_module_server/module.dart' as module;
 import '../generated/protocol.dart';
 
 class ModuleSerializationEndpoint extends Endpoint {

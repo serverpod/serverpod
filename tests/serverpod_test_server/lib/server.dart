@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/src/web/routes/root.dart';
 import 'src/futureCalls/test_call.dart';
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
-import 'package:serverpod_test_module/module.dart' as module;
+import 'package:serverpod_test_module_server/module.dart' as module;
 
 void run(List<String> args) async {
   // Create serverpod

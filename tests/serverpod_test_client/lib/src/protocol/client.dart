@@ -6,7 +6,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 // ignore: unused_import
 import 'protocol.dart';
 
-import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
+import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module_server;
 
 class _EndpointBasicDatabase {
   EndpointCaller caller;
@@ -151,7 +151,7 @@ class _EndpointModuleSerialization {
     });
   }
 
-  Future<serverpod_test_module.ModuleClass> modifyModuleObject(serverpod_test_module.ModuleClass object,) async {
+  Future<serverpod_test_module_server.ModuleClass> modifyModuleObject(serverpod_test_module_server.ModuleClass object,) async {
     return await caller.callServerEndpoint('moduleSerialization', 'modifyModuleObject', 'ModuleClass', {
       'object':object,
     });
@@ -264,10 +264,10 @@ class _EndpointLoggingDisabled {
 }
 
 class _Modules {
-  late final serverpod_test_module.Caller module;
+  late final serverpod_test_module_server.Caller module;
 
   _Modules(Client client) {
-    module = serverpod_test_module.Caller(client);
+    module = serverpod_test_module_server.Caller(client);
   }
 }
 

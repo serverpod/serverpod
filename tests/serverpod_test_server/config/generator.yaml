@@ -3,6 +3,6 @@ type: server
 generated_client_dart: ../serverpod_test_client/lib/src/protocol
 
 modules:
-  serverpod_test_module:
-    path: ../serverpod_test_module
+  serverpod_test_module_server:
+    path: ../serverpod_test_module_server
     name: module
