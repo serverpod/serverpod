@@ -9,14 +9,16 @@ enum PackageType {
 }
 
 class GeneratorConfig {
-  late String serverPackage;
   late String name;
   late PackageType type;
+
+  late String serverPackage;
 
   final String protocolSourcePath = 'lib/src/protocol';
   final String endpointsSourcePath = 'lib/src/endpoints';
 
-  late String generatedClientDart;
+  late String clientPackagePath;
+  late String generatedClientProtocolPath;
   final String generatedServerProtocolPath = 'lib/src/generated';
 
   List<ModuleConfig> modules = [];
@@ -55,9 +57,10 @@ class GeneratorConfig {
     else
       type = PackageType.server;
 
-    if (generatorConfig['generated_client_dart'] == null)
-      throw FormatException('Option "generated_client_dart" is required in config/generator.yaml');
-    generatedClientDart = generatorConfig['generated_client_dart'];
+    if (generatorConfig['client_package_path'] == null)
+      throw FormatException('Option "client_package_path" is required in config/generator.yaml');
+    clientPackagePath = generatorConfig['client_package_path'];
+    generatedClientProtocolPath = '$clientPackagePath/lib/src/protocol';
 
     // Load module settings
     if (type == PackageType.server) {
@@ -84,7 +87,7 @@ class GeneratorConfig {
     var str = '''type: $type
 sourceProtocol: $protocolSourcePath
 sourceEndpoints: $endpointsSourcePath
-generatedClientDart: $generatedClientDart
+generatedClientDart: $generatedClientProtocolPath
 generatedServerProtocol: $generatedServerProtocolPath
 ''';
     if (modules.length > 0) {

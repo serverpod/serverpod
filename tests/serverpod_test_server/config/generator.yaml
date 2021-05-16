@@ -1,6 +1,6 @@
 type: server
 
-generated_client_dart: ../serverpod_test_client/lib/src/protocol
+client_package_path: ../serverpod_test_client
 
 modules:
   serverpod_test_module:

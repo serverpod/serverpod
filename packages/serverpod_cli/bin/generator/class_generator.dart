@@ -11,7 +11,7 @@ void performGenerateClasses(bool verbose) {
 
   // Generate client side code
   print('Generating Dart client side code.');
-  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedClientDart, verbose, false);
+  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedClientProtocolPath, verbose, false);
   clientGenerator.generate();
 
   print('Done.');

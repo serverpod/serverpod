@@ -3,6 +3,6 @@
 /// More dartdocs go here.
 library serverpod_service_client;
 
-export 'protocol/protocol.dart';
+export 'src/protocol/protocol.dart';
 
 // TODO: Export any libraries intended for clients of this package.

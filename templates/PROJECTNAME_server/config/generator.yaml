@@ -1,1 +1,3 @@
-generated_client_dart: ../PROJECTNAME_client/lib/src/protocol
+type: server
+
+client_package_path: ../PROJECTNAME_client

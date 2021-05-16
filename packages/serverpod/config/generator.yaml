@@ -1,3 +1,3 @@
 type: internal
 
-generated_client_dart: ../serverpod_service_client/lib/protocol
+client_package_path: ../serverpod_service_client
