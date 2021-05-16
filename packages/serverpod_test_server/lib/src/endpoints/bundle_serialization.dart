@@ -22,4 +22,9 @@ class BundleSerializationEndpoint extends Endpoint {
       return false;
     }
   }
+
+  Future<bundle.BundleClass> modifyBundleObject(Session session, bundle.BundleClass object) async {
+    object.data = 42;
+    return object;
+  }
 }

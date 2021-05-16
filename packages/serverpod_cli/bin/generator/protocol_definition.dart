@@ -1,3 +1,5 @@
+import 'config.dart';
+
 class ProtocolDefinition {
   final List<EndpointDefinition> endpoints;
   final List<String> filePaths;
@@ -27,7 +29,7 @@ class ParameterDefinition {
   final String name;
   final TypeDefinition type;
 
-  ParameterDefinition({required this.name, required this.type,});
+  ParameterDefinition({required this.name, required this.type});
 }
 
 class TypeDefinition {
@@ -36,8 +38,16 @@ class TypeDefinition {
   late final TypeDefinition? listType;
   late final String typeNonNullable;
   late final String type;
+  final String? package;
 
-  TypeDefinition(String type, {bool stripFuture=false}) {
+  String get typePrefix {
+    String prefix = '';
+    if (package != null && package != 'core' && package != config.packageName)
+      prefix = '$package.';
+    return prefix;
+  }
+
+  TypeDefinition(String type, this.package, {bool stripFuture=false}) {
     // Remove all spaces
     var trimmed = type.replaceAll(' ', '');
 
@@ -55,7 +65,7 @@ class TypeDefinition {
     isTypedList = withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
     if (isTypedList) {
       String listTypeStr = withoutQuestion.substring(5, withoutQuestion.length - 1);
-      listType = TypeDefinition(listTypeStr);
+      listType = TypeDefinition(listTypeStr, package);
     }
 
     // Generate type strings

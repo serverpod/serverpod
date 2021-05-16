@@ -16,6 +16,12 @@ class _EndpointBundleSerialization {
     return await caller.callServerEndpoint('bundleSerialization', 'serializeBundleObject', 'bool', {
     });
   }
+
+  Future<serverpod_test_bundle.BundleClass> modifyBundleObject(serverpod_test_bundle.BundleClass object,) async {
+    return await caller.callServerEndpoint('bundleSerialization', 'modifyBundleObject', 'BundleClass', {
+      'object':object,
+    });
+  }
 }
 
 class _EndpointBasicDatabase {

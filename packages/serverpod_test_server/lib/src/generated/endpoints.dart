@@ -47,6 +47,15 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['bundleSerialization'] as BundleSerializationEndpoint).serializeBundleObject(session,);
           },
         ),
+        'modifyBundleObject': MethodConnector(
+          name: 'modifyBundleObject',
+          params: {
+            'object': ParameterDescription(name: 'object', type: serverpod_test_bundle.BundleClass, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['bundleSerialization'] as BundleSerializationEndpoint).modifyBundleObject(session,params['object'],);
+          },
+        ),
       },
     );
 
@@ -402,7 +411,7 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
-bundles['serverpod_test_bundle'] = serverpod_test_bundle.Endpoints()..initializeEndpoints(server);
+    bundles['serverpod_test_bundle'] = serverpod_test_bundle.Endpoints()..initializeEndpoints(server);
   }
 }
 

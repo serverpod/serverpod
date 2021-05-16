@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 
 import 'config.dart';
 import 'protocol_definition.dart';
@@ -60,9 +62,10 @@ class ProtocolAnalyzer {
                 List<ParameterDefinition> paramNamedDefs = [];
                 var parameters = method.parameters;
                 for (var param in parameters) {
+                  String? package = param.type.element?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
-                    type: TypeDefinition(param.type.getDisplayString(withNullability: true)),
+                    type: TypeDefinition(param.type.getDisplayString(withNullability: true), package),
                   );
                   
                   if (param.isRequiredPositional)
@@ -73,13 +76,22 @@ class ProtocolAnalyzer {
                     paramNamedDefs.add(paramDef);
                 }
 
-                if (paramDefs.length >= 1 && paramDefs[0].type.type == 'Session') {
+                if (paramDefs.length >= 1 && paramDefs[0].type.type == 'Session' && method.returnType.isDartAsyncFuture) {
+                  String? package;
+                  var returnType = method.returnType;
+                  if (returnType is InterfaceType) {
+                    InterfaceType interfaceType = returnType;
+                    if (interfaceType.typeArguments.length == 1) {
+                      package = interfaceType.typeArguments[0].element?.librarySource?.uri.pathSegments[0];
+                    }
+                  }
+
                   var methodDef = MethodDefinition(
                     name: method.name,
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
-                    returnType: TypeDefinition(method.returnType.getDisplayString(withNullability: true), stripFuture: true),
+                    returnType: TypeDefinition(method.returnType.getDisplayString(withNullability: true), package, stripFuture: true),
                   );
                   methodDefs.add(methodDef);
                 }

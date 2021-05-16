@@ -112,7 +112,7 @@ abstract class ProtocolGenerator {
         out += '          name: \'${method.name}\',\n';
         out += '          params: {\n';
         for (var param in method.parameters) {
-          out += '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typeNonNullable}, nullable: ${param.type.nullable}),\n';
+          out += '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typePrefix}${param.type.typeNonNullable}, nullable: ${param.type.nullable}),\n';
         }
         out += '          },\n';
         out += '          call: (Session session, Map<String, dynamic> params) async {\n';
@@ -135,7 +135,7 @@ abstract class ProtocolGenerator {
     if (hasBundles) {
       out += '\n';
       for (var bundle in config.bundles) {
-        out += 'bundles[\'${bundle.package}\'] = ${bundle.package}.Endpoints()..initializeEndpoints(server);\n';
+        out += '    bundles[\'${bundle.package}\'] = ${bundle.package}.Endpoints()..initializeEndpoints(server);\n';
       }
     }
 

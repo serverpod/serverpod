@@ -422,7 +422,8 @@ class _FieldDefinition {
         scope = _FieldScope.api;
     }
 
-    type = TypeDefinition(typeStr);
+    // TODO: Fix?
+    type = TypeDefinition(typeStr, null);
   }
 
   String get serialization {
