@@ -144,6 +144,7 @@ class Serverpod {
       endpoints: endpoints,
     );
     endpoints.initializeEndpoints(server);
+    endpoints.registerModules(this);
 
     _instance = this;
   }

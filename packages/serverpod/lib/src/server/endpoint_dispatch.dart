@@ -5,6 +5,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
 import 'server.dart';
+import 'serverpod.dart';
 import 'session.dart';
 
 abstract class EndpointDispatch {
@@ -12,6 +13,8 @@ abstract class EndpointDispatch {
   Map<String, EndpointDispatch> modules = {};
 
   void initializeEndpoints(Server server);
+
+  void registerModules(Serverpod pod);
 
   Future handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
     var endpointComponents = endpointName.split('.');

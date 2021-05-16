@@ -413,5 +413,10 @@ class Endpoints extends EndpointDispatch {
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()..initializeEndpoints(server);
   }
+
+  @override
+  void registerModules(Serverpod pod) {
+    pod.registerModule(serverpod_test_module.Protocol(), 'module');
+  }
 }
 

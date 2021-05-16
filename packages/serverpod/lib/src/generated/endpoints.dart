@@ -159,5 +159,9 @@ class Endpoints extends EndpointDispatch {
       },
     );
   }
+
+  @override
+  void registerModules(Serverpod pod) {
+  }
 }
 

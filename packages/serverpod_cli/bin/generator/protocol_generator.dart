@@ -142,6 +142,15 @@ abstract class ProtocolGenerator {
     // End init method
     out += '  }\n';
 
+    // Register modules
+    out += '\n';
+    out += '  @override\n';
+    out += '  void registerModules(Serverpod pod) {\n';
+    for (var module in config.modules) {
+      out += '    pod.registerModule(${module.name}.Protocol(), \'${module.nickname}\');\n';
+    }
+    out += '  }\n';
+
     // Endpoint class end
     out += '}\n';
 

@@ -17,9 +17,6 @@ void run(List<String> args) async {
   // Add future calls
   pod.registerFutureCall(TestCall(), 'testCall');
 
-  // Register modules
-  pod.registerModule(module.Protocol(), 'module');
-
   // Start the server
   await pod.start();
 
