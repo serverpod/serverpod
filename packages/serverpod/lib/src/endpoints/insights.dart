@@ -63,7 +63,7 @@ class InsightsEndpoint extends Endpoint {
     )).cast<SessionLogEntry>();
 
     var sessionLogInfo = <SessionLogInfo>[];
-    for (SessionLogEntry logEntry in rows) {
+    for (var logEntry in rows) {
       var messageLogRows = await session.db.find(
         tLogEntry,
         where: tLogEntry.sessionLogId.equals(logEntry.id),

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 void main() {
-  Protocol protocol = Protocol();
+  var protocol = Protocol();
 
   group('Serializations', () {
     test('Simple data', () {
@@ -17,7 +17,7 @@ void main() {
     test('Basic types with null values', () {
       var types = Types();
       var s = protocol.serializeEntity(types)!;
-      Types unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
       expect(unpacked.aBool, isNull);
       expect(unpacked.anInt, isNull);
       expect(unpacked.aString, isNull);
@@ -34,7 +34,7 @@ void main() {
         aDateTime: DateTime.utc(1976),
       );
       var s = protocol.serializeEntity(types)!;
-      Types unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
       expect(unpacked.aBool, equals(true));
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aString, equals('42'));
@@ -59,7 +59,7 @@ void main() {
       );
 
       var s = protocol.serializeEntity(nullability)!;
-      Nullability unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aBool, equals(true));
@@ -135,7 +135,7 @@ void main() {
       );
 
       var s = protocol.serializeEntity(nullability)!;
-      Nullability unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
       expect(unpacked.aNullableInt, equals(42));
       expect(unpacked.aNullableDouble, equals(42.42));
       expect(unpacked.aNullableBool, equals(true));

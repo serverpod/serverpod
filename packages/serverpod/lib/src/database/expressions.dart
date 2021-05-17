@@ -50,7 +50,7 @@ abstract class Column extends Expression {
   final int? varcharLength;
   final String _columnName;
 
-  Column(String this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
+  Column(this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
 
   String get columnName => _columnName;
 }
@@ -60,16 +60,16 @@ class ColumnInt extends Column {
 
   Expression equals(int? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NULL');
+      return Expression('"$columnName" IS NULL');
     else
-      return Expression('"${this.columnName}" = $value');
+      return Expression('"$columnName" = $value');
   }
 
   Expression notEquals(int? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NOT NULL');
+      return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"${this.columnName}" != $value');
+      return Expression('"$columnName" != $value');
   }
 }
 
@@ -78,16 +78,16 @@ class ColumnDouble extends Column {
 
   Expression equals(double? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NULL');
+      return Expression('"$columnName" IS NULL');
     else
-      return Expression('"${this.columnName}" = $value');
+      return Expression('"$columnName" = $value');
   }
 
   Expression notEquals(double? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NOT NULL');
+      return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"${this.columnName}" != $value');
+      return Expression('"$columnName" != $value');
   }
 }
 
@@ -96,24 +96,24 @@ class ColumnString extends Column {
 
   Expression equals(String? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NULL');
+      return Expression('"$columnName" IS NULL');
     else
-      return Expression('"${this.columnName}" = ${DatabaseConfig.encoder.convert(value)}');
+      return Expression('"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
   }
 
   Expression notEquals(String? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NOT NULL');
+      return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"${this.columnName}" != ${DatabaseConfig.encoder.convert(value)}');
+      return Expression('"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
   }
 
   Expression like(String value) {
-    return Expression('"${this.columnName}" LIKE ${DatabaseConfig.encoder.convert(value)}');
+    return Expression('"$columnName" LIKE ${DatabaseConfig.encoder.convert(value)}');
   }
 
   Expression ilike(String value) {
-    return Expression('"${this.columnName}" ILIKE ${DatabaseConfig.encoder.convert(value)}');
+    return Expression('"$columnName" ILIKE ${DatabaseConfig.encoder.convert(value)}');
   }
 }
 
@@ -122,20 +122,20 @@ class ColumnBool extends Column {
 
   Expression equals(bool? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NULL');
+      return Expression('"$columnName" IS NULL');
     else
-      return Expression('"${this.columnName}" = $value');
+      return Expression('"$columnName" = $value');
   }
 
   Expression notEquals(bool? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NOT NULL');
+      return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"${this.columnName}" != $value');
+      return Expression('"$columnName" != $value');
   }
 
   Expression isDistinctFrom(bool value) {
-    return Expression('"${this.columnName}" IS DISTINCT FROM $value');
+    return Expression('"$columnName" IS DISTINCT FROM $value');
   }
 }
 
@@ -144,16 +144,16 @@ class ColumnDateTime extends Column {
 
   Expression equals(DateTime? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NULL');
+      return Expression('"$columnName" IS NULL');
     else
-      return Expression('"${this.columnName}" = ${DatabaseConfig.encoder.convert(value)}');
+      return Expression('"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
   }
 
   Expression notEquals(DateTime? value) {
     if (value == null)
-      return Expression('"${this.columnName}" IS NOT NULL');
+      return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"${this.columnName}" != ${DatabaseConfig.encoder.convert(value)}');
+      return Expression('"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
   }
 }
 
@@ -190,7 +190,7 @@ class Table {
 
   @override
   String toString() {
-    String str = '$tableName\n';
+    var str = '$tableName\n';
     for (var col in columns) {
       str += '  ${col.columnName} (${col.type})\n';
     }

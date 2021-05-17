@@ -2,9 +2,9 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import '../../server.dart';
 import '../cache/local_cache.dart';
-import '../cache/distributed_cache.dart';
 
 class CacheEndpoint extends Endpoint {
+  @override
   bool get logSessions => false;
 
   late LocalCache _cache;
@@ -13,8 +13,8 @@ class CacheEndpoint extends Endpoint {
   @override
   void initialize(Server server, String name) {
     super.initialize(server, name);
-    DistributedCache distributedCache = pod.caches.distributed;
-    DistributedCache distributedCachePrio = pod.caches.distributedPrio;
+    var distributedCache = pod.caches.distributed;
+    var distributedCachePrio = pod.caches.distributedPrio;
     _cache = distributedCache.localCache;
     _cachePrio = distributedCachePrio.localCache;
   }
@@ -28,7 +28,7 @@ class CacheEndpoint extends Endpoint {
   }
 
   Future<String?> get(Session session, bool priority, String key) async {
-    DistributedCacheEntry? entry = await ((priority ? _cachePrio : _cache).get(key)) as DistributedCacheEntry?;
+    var entry = await ((priority ? _cachePrio : _cache).get(key)) as DistributedCacheEntry?;
     if (entry == null)
       return null;
     return entry.data;

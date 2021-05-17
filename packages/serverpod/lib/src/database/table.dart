@@ -8,7 +8,7 @@ abstract class TableRow extends SerializableEntity {
 
   Map<String, dynamic> serializeForDatabase();
 
-  setColumn(String columnName, dynamic value) {
+  void setColumn(String columnName, dynamic value) {
     var instance = reflect(this);
     instance.setField(Symbol(columnName), value);
   }

@@ -14,7 +14,7 @@ class PasswordManager {
     try {
       var passwords = <String, String>{};
 
-      String passwordYaml = File('config/passwords.yaml').readAsStringSync();
+      var passwordYaml = File('config/passwords.yaml').readAsStringSync();
       var data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
       var sharedPasswords = data['shared']?.cast<String,String>();
       var runModePasswords = data[runMode]?.cast<String,String>();

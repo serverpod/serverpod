@@ -5,12 +5,13 @@ import 'cache.dart';
 
 class LocalCache extends Cache {
 
-  List<_KeyListKey> _keyList = <_KeyListKey>[];
-  Map<String, _CacheEntry> _entries = <String, _CacheEntry>{};
-  Map<String, Set<String>> _groups = <String, Set<String>>{};
+  final List<_KeyListKey> _keyList = <_KeyListKey>[];
+  final Map<String, _CacheEntry> _entries = <String, _CacheEntry>{};
+  final Map<String, Set<String>> _groups = <String, Set<String>>{};
 
   LocalCache(int maxEntries, SerializationManager serializationManager) : super(maxEntries, serializationManager);
 
+  @override
   Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
     if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
@@ -58,10 +59,11 @@ class LocalCache extends Cache {
   void _removeKeyFromGroup(String key, String group) {
     var groupKeys = _groups[group]!;
     groupKeys.remove(key);
-    if (groupKeys.length == 0)
+    if (groupKeys.isEmpty)
     _groups.remove(group);
   }
 
+  @override
   Future<SerializableEntity?> get(String key) async {
     var entry = _entries[key];
     if (entry == null)
@@ -75,6 +77,7 @@ class LocalCache extends Cache {
     return serializationManager.createEntityFromSerialization(entry.serializedObject);
   }
 
+  @override
   Future<void> invalidateKey(String key) async {
     // Remove from entries
     var entry = _entries.remove(key);
@@ -90,7 +93,7 @@ class LocalCache extends Cache {
   }
 
   void _removeKeyFromKeyList(String key, DateTime time) {
-    int idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time), compare: (_KeyListKey a, _KeyListKey b) {
+    var idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time), compare: (_KeyListKey a, _KeyListKey b) {
       return b.creationTime.compareTo(a.creationTime);
     });
 
@@ -109,6 +112,7 @@ class LocalCache extends Cache {
     _keyList.removeAt(idx);
   }
 
+  @override
   Future< Null> invalidateGroup(String group) async {
     var keys = _groups[group];
     if (keys == null)
@@ -121,18 +125,21 @@ class LocalCache extends Cache {
     }
   }
 
+  @override
   Future<void> clear() async {
     _keyList.clear();
     _groups.clear();
     _entries.clear();
   }
 
+  @override
   int get localSize  {
     assert(_entries.length == _keyList.length, 'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
     assert(_groups.length <= _entries.length);
     return _entries.length;
   }
 
+  @override
   List<String> get localKeys => _entries.keys.toList();
 }
 
@@ -154,5 +161,6 @@ class _KeyListKey {
 
   _KeyListKey(this.key, this.creationTime);
 
+  @override
   String toString() => 'KeyListKey($key, $creationTime)';
 }

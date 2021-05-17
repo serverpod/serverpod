@@ -12,7 +12,9 @@ Future<AuthenticationInfo?> serviceAuthenticationHandler(Session session, String
       return AuthenticationInfo(0, <Scope>{scopeNone});
     }
   }
-  catch(e) {}
+  catch(e) {
+    return null;
+  }
 
   return null;
 }

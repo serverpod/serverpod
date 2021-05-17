@@ -53,17 +53,16 @@ class Session {
       // Method call session
 
       // Read query parameters
-      Map<String, String> queryParameters = {};
+      var queryParameters = <String, String>{};
       if (body != null && body != '' && body != 'null') {
         queryParameters = jsonDecode(body).cast<String, String>();
       }
 
       // Get the the authentication key, if any
-      if (authenticationKey == null)
-        authenticationKey = queryParameters['auth'];
+      authenticationKey ??= queryParameters['auth'];
       _authenticationKey = authenticationKey;
 
-      String? methodName = queryParameters['method'];
+      var methodName = queryParameters['method'];
       if (methodName == null && endpointName == 'webserver')
         methodName = '';
 

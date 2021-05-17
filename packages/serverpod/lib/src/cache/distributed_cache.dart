@@ -9,11 +9,11 @@ import 'cache.dart';
 import 'local_cache.dart';
 
 class DistributedCache extends Cache {
-  LocalCache _localCache;
-  List<RemoteServerConfig?> _cluster = <RemoteServerConfig?>[];
-  List<Client> _clients = <Client>[];
+  final LocalCache _localCache;
+  final List<RemoteServerConfig?> _cluster = <RemoteServerConfig?>[];
+  final List<Client> _clients = <Client>[];
   int? _serverId;
-  bool _isPrio;
+  final bool _isPrio;
   
   DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio)
       : _localCache = LocalCache(maxEntries, Protocol()),
@@ -24,7 +24,7 @@ class DistributedCache extends Cache {
     var serverKeys = config.cluster.keys.toList();
     serverKeys.sort();
     
-    for (int key in serverKeys) {
+    for (var key in serverKeys) {
       _cluster.add(config.cluster[key]);
 
       var context = SecurityContext();
@@ -34,7 +34,7 @@ class DistributedCache extends Cache {
   }
   
   Client? _clientFromKey(String key) {
-    int serverNum = key.hashCode % _cluster.length;
+    var serverNum = key.hashCode % _cluster.length;
 
     if (_cluster[serverNum]!.serverId == _serverId)
       return null;
@@ -42,6 +42,7 @@ class DistributedCache extends Cache {
     return _clients[serverNum];
   }
 
+  @override
   Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
     var client = _clientFromKey(key);
 
@@ -49,7 +50,7 @@ class DistributedCache extends Cache {
     if (lifetime != null)
       expiration = DateTime.now().add(lifetime);
 
-    String data = jsonEncode(object.serializeAll());
+    var data = jsonEncode(object.serializeAll());
 
     if (client == null) {
       await _localCache.put(key, DistributedCacheEntry(data: data), lifetime: lifetime, group: group);
@@ -58,15 +59,18 @@ class DistributedCache extends Cache {
       try {
         await client.cache.put(_isPrio, key, data, group, expiration);
       }
-      catch (e) {}
+      catch (e) {
+        return;
+      }
     }
   }
 
+  @override
   Future<SerializableEntity?> get(String key) async {
     var client = _clientFromKey(key);
 
     if (client == null) {
-      DistributedCacheEntry? entry = await _localCache.get(key) as DistributedCacheEntry?;
+      var entry = await _localCache.get(key) as DistributedCacheEntry?;
       if (entry == null)
         return null;
 
@@ -90,6 +94,7 @@ class DistributedCache extends Cache {
     }
   }
 
+  @override
   Future<void> invalidateKey(String key) async {
     var client = _clientFromKey(key);
 
@@ -106,6 +111,7 @@ class DistributedCache extends Cache {
     }
   }
 
+  @override
   Future<void> invalidateGroup(String group) async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
       if (_cluster[serverNum]!.serverId == _serverId) {
@@ -122,6 +128,7 @@ class DistributedCache extends Cache {
     }
   }
 
+  @override
   Future<void> clear() async {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
       if (_cluster[serverNum]!.serverId == _serverId) {
@@ -140,7 +147,9 @@ class DistributedCache extends Cache {
 
   LocalCache get localCache => _localCache;
 
+  @override
   int get localSize => _localCache.localSize;
 
+  @override
   List<String> get localKeys => _localCache.localKeys;
 }

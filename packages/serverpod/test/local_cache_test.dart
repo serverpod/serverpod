@@ -17,7 +17,7 @@ void main() {
     var entry = SimpleData(num: 0);
     
     await cache.put('entry', entry);
-    SimpleData? retrieved = await cache.get('entry') as SimpleData?;
+    var retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));
 
     retrieved = await cache.get('missing') as SimpleData?;
@@ -33,7 +33,7 @@ void main() {
     var entry = SimpleData(num: 0);
 
     await cache.put('entry', entry, lifetime: Duration(milliseconds: 100));
-    SimpleData? retrieved = await cache.get('entry') as SimpleData?;
+    var retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));
 
     await Future.delayed(Duration(milliseconds: 110));
@@ -50,38 +50,38 @@ void main() {
     await cache.put('entry', entryA);
     await cache.put('entry', entryB);
 
-    SimpleData? retrieved = await cache.get('entry') as SimpleData?;
+    var retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(1));
 
     expect(cache.localSize, equals(1));
   });
 
   test('Cache overflow', () async {
-    int numEntries = cacheMaxSize * 2;
+    var numEntries = cacheMaxSize * 2;
 
-    for (int i = 0; i < numEntries; i++) {
+    for (var i = 0; i < numEntries; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry);
     }
 
     expect(cache.localSize, equals(cacheMaxSize));
 
-    SimpleData? first = await cache.get('entry:0') as SimpleData?;
+    var first = await cache.get('entry:0') as SimpleData?;
     expect(first, isNull);
 
-    SimpleData? last = await cache.get('entry:${numEntries - 1}') as SimpleData?;
+    var last = await cache.get('entry:${numEntries - 1}') as SimpleData?;
     expect(last!.num, equals(numEntries - 1));
   });
 
   test('Invalidate keys', () async {
-    for (int i = 0; i < cacheMaxSize; i++) {
+    for (var i = 0; i < cacheMaxSize; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry);
     }
 
-    int middleId = cacheMaxSize ~/ 4;
+    var middleId = cacheMaxSize ~/ 4;
 
-    SimpleData? retrieved = await cache.get('entry:$middleId') as SimpleData?;
+    var retrieved = await cache.get('entry:$middleId') as SimpleData?;
     expect(retrieved!.num, equals(middleId));
 
     await cache.invalidateKey('entry:$middleId');
@@ -92,11 +92,11 @@ void main() {
   });
 
   test('Invalidate group', () async {
-    for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
+    for (var i = 0; i < cacheMaxSize ~/ 2; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:0');
     }
-    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+    for (var i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:1');
     }
@@ -106,7 +106,7 @@ void main() {
     await cache.invalidateGroup('group:0');
     expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
-    SimpleData? retrieved = await cache.get('entry:0') as SimpleData?;
+    var retrieved = await cache.get('entry:0') as SimpleData?;
     expect(retrieved, isNull);
 
     retrieved = await cache.get('entry:${cacheMaxSize - 1}') as SimpleData?;
@@ -120,17 +120,17 @@ void main() {
   });
 
   test('Invalidate key then group', () async {
-    for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
+    for (var i = 0; i < cacheMaxSize ~/ 2; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:0');
     }
-    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+    for (var i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
       var entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:1');
     }
 
     await cache.invalidateKey('entry:0');
-    SimpleData? retrieved = await cache.get('entry:0') as SimpleData?;
+    var retrieved = await cache.get('entry:0') as SimpleData?;
     expect(retrieved, isNull);
 
     retrieved = await cache.get('entry:1') as SimpleData?;
@@ -140,7 +140,7 @@ void main() {
 
     expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
-    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+    for (var i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
       await cache.invalidateKey('entry:$i');
     }
 

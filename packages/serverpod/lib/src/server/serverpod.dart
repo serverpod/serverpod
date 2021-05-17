@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/src/server/password_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/config.dart';
@@ -20,7 +21,7 @@ import 'server.dart';
 import 'session.dart';
 import 'method_lookup.dart';
 
-typedef Future<List<internal.ServerHealthMetric>> HealthCheckHandler(Serverpod pod);
+typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(Serverpod pod);
 
 class Serverpod {
   static Serverpod? _instance;
@@ -58,7 +59,7 @@ class Serverpod {
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     try {
-      DatabaseConnection dbConn = DatabaseConnection(database);
+      var dbConn = DatabaseConnection(database);
 
       var oldRuntimeSettings = await dbConn.findSingleRow(
           internal.tRuntimeSettings) as internal.RuntimeSettings?;
@@ -70,19 +71,23 @@ class Serverpod {
       settings.id = oldRuntimeSettings!.id;
       await dbConn.update(settings);
     }
-    catch(e) {}
+    catch(e) {
+      return;
+    }
   }
 
   Future<void> reloadRuntimeSettings() async {
     try {
-      DatabaseConnection dbConn = DatabaseConnection(database);
+      var dbConn = DatabaseConnection(database);
 
       var settings = await dbConn.findSingleRow(
           internal.tRuntimeSettings) as internal.RuntimeSettings?;
       if (settings != null)
         _runtimeSettings = settings;
     }
-    catch(e) {}
+    catch(e) {
+      return;
+    }
   }
 
   final MethodLookup methodLookup = MethodLookup('generated/protocol.yaml');
@@ -100,7 +105,7 @@ class Serverpod {
             allowed: [ServerpodRunMode.development, ServerpodRunMode.staging, ServerpodRunMode.production,],
             defaultsTo: ServerpodRunMode.development)
         ..addOption('server-id', abbr: 'i', defaultsTo: '0');
-      ArgResults results = argParser.parse(args);
+      var results = argParser.parse(args);
       _runMode = results['mode'];
       serverId = int.tryParse(results['server-id']) ?? 0;
     }
@@ -150,11 +155,11 @@ class Serverpod {
   }
 
   Future<void> start() async {
-    runZonedGuarded(
+    await runZonedGuarded(
       () async {
         // Runtime settings
         try {
-          DatabaseConnection dbConn = DatabaseConnection(database);
+          var dbConn = DatabaseConnection(database);
 
           _runtimeSettings = await dbConn.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;
           if (_runtimeSettings == null) {
@@ -182,7 +187,7 @@ class Serverpod {
         }
 
         try {
-          methodLookup.load(DatabaseConnection(database));
+          await methodLookup.load(DatabaseConnection(database));
         }
         catch(e, stackTrace) {
           stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
@@ -254,7 +259,7 @@ class Serverpod {
   }
 
   Future<void> _log(internal.LogEntry entry, int? sessionLogId) async {
-    int serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
+    var serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
 
     if (entry.logLevel >= serverLogLevel) {
       entry.sessionLogId = sessionLogId;
@@ -262,7 +267,7 @@ class Serverpod {
       bool success;
 
       try {
-        DatabaseConnection dbConn = DatabaseConnection(database);
+        var dbConn = DatabaseConnection(database);
         success = await dbConn.insert(entry);
       }
       catch(e) {
@@ -282,7 +287,7 @@ class Serverpod {
   }
 
   Future<int?> logSession(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
-    Duration duration = session.duration;
+    var duration = session.duration;
 
     if (_runMode == ServerpodRunMode.development) {
       if (session.type == SessionType.methodCall)
@@ -316,13 +321,13 @@ class Serverpod {
       );
 
       try {
-        DatabaseConnection dbConn = DatabaseConnection(database);
+        var dbConn = DatabaseConnection(database);
         await dbConn.insert(sessionLogEntry);
 
-        int sessionLogId = sessionLogEntry.id!;
+        var sessionLogId = sessionLogEntry.id!;
 
         for (var logInfo in session.logs) {
-          _log(logInfo, sessionLogId);
+          unawaited(_log(logInfo, sessionLogId));
         }
 
         for (var queryInfo in session.queries) {

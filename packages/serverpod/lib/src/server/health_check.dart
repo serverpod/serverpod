@@ -73,14 +73,14 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
   */
 
   // Check database response time
-  double dbResponseTime = 0.0;
-  bool dbHealthy = false;
+  var dbResponseTime = 0.0;
+  var dbHealthy = false;
 
   try {
     var startTime = DateTime.now();
-    int rnd = Random().nextInt(1000000);
+    var rnd = Random().nextInt(1000000);
 
-    DatabaseConnection databaseConnection = pod.database.createConnection();
+    var databaseConnection = pod.database.createConnection();
 
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(
@@ -97,8 +97,8 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
 
     dbResponseTime = DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
   }
-  catch(e) {
-  }
+  // ignore: empty_catches
+  catch(e) {}
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
   var connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();

@@ -46,13 +46,13 @@ class DatabaseConnection {
     );
     var columns = <Column>[];
 
-    bool hasID = false;
+    var hasID = false;
     for (Map row in result) {
       row = row.values.first;
       String? columnName = row['column_name'];
       String? sqlType = row['data_type'];
       int? varcharLength = row['character_maximum_length'];
-      Type? type = _sqlTypeToDartType(sqlType);
+      var type = _sqlTypeToDartType(sqlType);
 
       if (columnName == 'id' && type == int)
         hasID = true;
@@ -101,7 +101,7 @@ class DatabaseConnection {
       where: Expression('id = $id'),
       session: session,
     );
-    if (result.length == 0)
+    if (result.isEmpty)
       return null;
     return result[0];
   }
@@ -110,10 +110,9 @@ class DatabaseConnection {
     assert(orderByList == null || orderBy == null);
 
     var startTime = DateTime.now();
-    if (where == null)
-      where = Expression('TRUE');
+    where ??= Expression('TRUE');
 
-    String tableName = table.tableName;
+    var tableName = table.tableName;
     var query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
       query += ' ORDER BY $orderBy';
@@ -121,7 +120,7 @@ class DatabaseConnection {
         query += ' DESC';
     }
     else if (orderByList != null) {
-      assert(orderByList.length > 0);
+      assert(orderByList.isNotEmpty);
 
       var strList = <String>[];
       for (var order in orderByList)
@@ -158,7 +157,7 @@ class DatabaseConnection {
   Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true, Session? session}) async {
     var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
 
-    if (result.length == 0)
+    if (result.isEmpty)
       return null;
     else
       return result[0];
@@ -187,10 +186,9 @@ class DatabaseConnection {
   Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true, Session? session}) async {
     var startTime = DateTime.now();
 
-    if (where == null)
-      where = Expression('TRUE');
+    where ??= Expression('TRUE');
 
-    String tableName = table.tableName;
+    var tableName = table.tableName;
     var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
     if (limit != null)
       query += ' LIMIT $limit';
@@ -215,7 +213,7 @@ class DatabaseConnection {
   }
 
   Future<bool> update(TableRow row, {Transaction? transaction, Session? session}) async {
-    DateTime startTime = DateTime.now();
+    var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
 
@@ -223,14 +221,14 @@ class DatabaseConnection {
 
     var updatesList = <String>[];
 
-    for(String column in data.keys as Iterable<String>) {
+    for(var column in data.keys as Iterable<String>) {
       if (column == 'id')
         continue;
-      String value = DatabaseConfig.encoder.convert(data[column]);
+      var value = DatabaseConfig.encoder.convert(data[column]);
 
       updatesList.add('"$column" = $value');
     }
-    String updates = updatesList.join(', ');
+    var updates = updatesList.join(', ');
 
     var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
 
@@ -240,7 +238,7 @@ class DatabaseConnection {
     }
 
     try {
-      int affectedRows = await postgresConnection.execute(query, substitutionValues: {});
+      var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {
@@ -250,27 +248,27 @@ class DatabaseConnection {
   }
 
   Future<bool> insert(TableRow row, {Transaction? transaction, Session? session}) async {
-    DateTime startTime = DateTime.now();
+    var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
 
     var columnsList = <String>[];
     var valueList = <String>[];
 
-    for(String column in data.keys as Iterable<String>) {
+    for(var column in data.keys as Iterable<String>) {
       if (column == 'id')
         continue;
 
       if (data[column] is Map || data[column] is List)
         data[column] = jsonEncode(data[column]);
 
-      String value = DatabaseConfig.encoder.convert(data[column]);
+      var value = DatabaseConfig.encoder.convert(data[column]);
 
       columnsList.add('"$column"');
       valueList.add(value);
     }
-    String columns = columnsList.join(', ');
-    String values = valueList.join(', ');
+    var columns = columnsList.join(', ');
+    var values = valueList.join(', ');
 
     var query = 'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
 
@@ -290,7 +288,7 @@ class DatabaseConnection {
       return false;
     }
 
-    List returnedRow = result[0];
+    var returnedRow = result[0];
 
     _logQuery(session, query, startTime, numRowsAffected: returnedRow.length);
 
@@ -302,9 +300,9 @@ class DatabaseConnection {
   }
 
   Future<int> delete(Table table, {required Expression where, Transaction? transaction, Session? session}) async {
-    DateTime startTime = DateTime.now();
+    var startTime = DateTime.now();
 
-    String tableName = table.tableName;
+    var tableName = table.tableName;
 
     var query = 'DELETE FROM $tableName WHERE $where';
 
@@ -314,7 +312,7 @@ class DatabaseConnection {
     }
 
     try {
-      int affectedRows = await postgresConnection.execute(query, substitutionValues: {});
+      var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows;
     }
@@ -325,7 +323,7 @@ class DatabaseConnection {
   }
 
   Future<bool> deleteRow(TableRow row, {Transaction? transaction, Session? session}) async {
-    DateTime startTime = DateTime.now();
+    var startTime = DateTime.now();
 
     var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
 
@@ -335,7 +333,7 @@ class DatabaseConnection {
     }
 
     try {
-      int affectedRows = await postgresConnection.execute(query, substitutionValues: {});
+      var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     }
@@ -346,7 +344,7 @@ class DatabaseConnection {
   }
 
   Future<List<List<dynamic>>> query(String query, {Session? session, int? timeoutInSeconds}) async {
-    DateTime startTime = DateTime.now();
+    var startTime = DateTime.now();
 
     try {
       var result = await postgresConnection.query(query, allowReuse: false, timeoutInSeconds: timeoutInSeconds, substitutionValues: {});
@@ -397,17 +395,17 @@ class Order {
 // TODO: Transactions
 
 class Transaction {
-  List<String> _queries = [];
+  final List<String> _queries = [];
 
   Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn, Session? session) async {
     // Ignore empty transactions
-    if (_queries.length == 0)
+    if (_queries.isEmpty)
       return true;
 
-    String query = _queries.join('\n');
+    var query = _queries.join('\n');
     query = 'BEGIN;\n$query\nCOMMIT;';
 
-    DateTime startTime = DateTime.now();
+    var startTime = DateTime.now();
 
     try {
       await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {

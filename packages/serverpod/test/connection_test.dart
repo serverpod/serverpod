@@ -7,7 +7,7 @@ Future<void> setupTestData(Client client) async {
 }
 
 void main() {
-  Client client = Client('http://localhost:8080/');
+  var client = Client('http://localhost:8080/');
 
   setUp(() {
   });
@@ -18,62 +18,62 @@ void main() {
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
       await client.simple.addToGlobalInt();
-      int value = await client.simple.getGlobalInt();
+      var value = await client.simple.getGlobalInt();
       expect(value, equals(11));
     });
 
     test('Type int', () async {
-      int? result = await client.basicTypes.testInt(10);
+      var result = await client.basicTypes.testInt(10);
       expect(result, equals(10));
     });
 
     test('Type null int', () async {
-      int? result = await client.basicTypes.testInt(null);
+      var result = await client.basicTypes.testInt(null);
       expect(result, isNull);
     });
 
     test('Type double', () async {
-      double? result = await client.basicTypes.testDouble(10.0);
+      var result = await client.basicTypes.testDouble(10.0);
       expect(result, equals(10.0));
     });
 
     test('Type null double', () async {
-      double? result = await client.basicTypes.testDouble(null);
+      var result = await client.basicTypes.testDouble(null);
       expect(result, isNull);
     });
 
     test('Type bool', () async {
-      bool? result = await client.basicTypes.testBool(true);
+      var result = await client.basicTypes.testBool(true);
       expect(result, equals(true));
     });
 
     test('Type null bool', () async {
-      bool? result = await client.basicTypes.testBool(null);
+      var result = await client.basicTypes.testBool(null);
       expect(result, isNull);
     });
 
     test('Type String', () async {
-      String? result = await client.basicTypes.testString('test');
+      var result = await client.basicTypes.testString('test');
       expect(result, 'test');
     });
 
     test('Type String with value \'null\'', () async {
-      String? result = await client.basicTypes.testString('null');
+      var result = await client.basicTypes.testString('null');
       expect(result, 'null');
     });
 
     test('Type null String', () async {
-      String? result = await client.basicTypes.testString(null);
+      var result = await client.basicTypes.testString(null);
       expect(result, isNull);
     });
 
     test('Type DateTime', () async {
-      DateTime? result = await client.basicTypes.testDateTime(dateTime);
+      var result = await client.basicTypes.testDateTime(dateTime);
       expect(result!.toLocal(), equals(dateTime));
     });
 
     test('Type null DateTime', () async {
-      DateTime? result = await client.basicTypes.testDateTime(null);
+      var result = await client.basicTypes.testDateTime(null);
       expect(result, isNull);
     });
   });
@@ -90,17 +90,17 @@ void main() {
         aString: 'Foo',
       );
 
-      int? count = await client.basicDatabase.countTypesRows();
+      var count = await client.basicDatabase.countTypesRows();
       expect(count, isNotNull);
 
-      int? id = await client.basicDatabase.storeTypes(types);
+      var id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
 
-      int? newCount = await client.basicDatabase.countTypesRows();
+      var newCount = await client.basicDatabase.countTypesRows();
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
-      Types? storedTypes = await client.basicDatabase.getTypes(id!);
+      var storedTypes = await client.basicDatabase.getTypes(id!);
       expect(storedTypes, isNotNull);
 
       if (storedTypes != null) {
@@ -117,17 +117,17 @@ void main() {
     test('Write and read null values', () async {
       var types = Types();
 
-      int? count = await client.basicDatabase.countTypesRows();
+      var count = await client.basicDatabase.countTypesRows();
       expect(count, isNotNull);
 
-      int? id = await client.basicDatabase.storeTypes(types);
+      var id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
 
-      int? newCount = await client.basicDatabase.countTypesRows();
+      var newCount = await client.basicDatabase.countTypesRows();
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
-      Types? storedTypes = await client.basicDatabase.getTypes(id!);
+      var storedTypes = await client.basicDatabase.getTypes(id!);
       expect(storedTypes, isNotNull);
 
       if (storedTypes != null) {
@@ -144,25 +144,25 @@ void main() {
     test('Raw query', () async {
       var types = Types();
 
-      int? id = await client.basicDatabase.storeTypes(types);
+      var id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
 
-      int? storedId = await client.basicDatabase.getTypesRawQuery(id!);
+      var storedId = await client.basicDatabase.getTypesRawQuery(id!);
       expect(storedId, equals(id));
     });
 
     test('Delete all', () async {
-      int? removedRows = await client.basicDatabase.deleteAllInTypes();
+      var removedRows = await client.basicDatabase.deleteAllInTypes();
       expect(removedRows, greaterThan(0));
 
-      int? count = await client.basicDatabase.countTypesRows();
+      var count = await client.basicDatabase.countTypesRows();
       expect(count, equals(0));
     });
 
     test('Delete where', () async {
       await setupTestData(client);
 
-      int? count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabase.countSimpleData();
       expect(count, equals(100));
 
       await client.basicDatabase.deleteSimpleTestDataLessThan(50);
@@ -173,10 +173,10 @@ void main() {
     test('Delete single row', () async {
       await setupTestData(client);
 
-      int? count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabase.countSimpleData();
       expect(count, equals(100));
 
-      bool? success = await client.basicDatabase.findAndDeleteSimpleTestData(50);
+      var success = await client.basicDatabase.findAndDeleteSimpleTestData(50);
       expect(success, equals(true));
 
       count = await client.basicDatabase.countSimpleData();
@@ -186,7 +186,7 @@ void main() {
     test('Find with limit', () async {
       await setupTestData(client);
 
-      SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(75, 25, 25, true);
+      var list = await client.basicDatabase.findSimpleDataRowsLessThan(75, 25, 25, true);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
       expect(list.rows.length, equals(25));
@@ -211,15 +211,15 @@ void main() {
     test('Update row', () async {
       await setupTestData(client);
 
-      bool? result = await client.basicDatabase.updateSimpleDataRow(0, 1000);
+      var result = await client.basicDatabase.updateSimpleDataRow(0, 1000);
       expect(result, isNotNull);
       expect(result, equals(true));
 
-      int? count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabase.countSimpleData();
       expect(count, isNotNull);
       expect(count, equals(100));
 
-      SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(100, 0, 100, true);
+      var list = await client.basicDatabase.findSimpleDataRowsLessThan(100, 0, 100, true);
       expect(list, isNotNull);
       expect(list!.rows.length, equals(99));
     });
@@ -229,7 +229,7 @@ void main() {
 
       await client.transactionsDatabase.removeRow(50);
 
-      int? count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabase.countSimpleData();
       expect(count, isNotNull);
       expect(count, equals(99));
     });
@@ -241,7 +241,7 @@ void main() {
       expect(result, isNotNull);
       expect(result, equals(true));
 
-      SimpleDataList? list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
+      var list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
       expect(list, isNotNull);
       expect(list!.rows.length, equals(100));
 
@@ -257,7 +257,7 @@ void main() {
         listWithNullableData: [SimpleData(num: 10), null],
       );
 
-      int? id = await client.basicDatabase.storeObjectWithObject(object);
+      var id = await client.basicDatabase.storeObjectWithObject(object);
       expect(id, isNotNull);
 
       var result = await client.basicDatabase.getObjectWithObject(id!);
@@ -284,7 +284,7 @@ void main() {
       await setupTestData(client);
 
       await client.asyncTasks.insertRowToSimpleDataAfterDelay(1000, 1);
-      int? numRows = await client.basicDatabase.countSimpleData();
+      var numRows = await client.basicDatabase.countSimpleData();
       expect(numRows, isNotNull);
       expect(numRows, equals(100));
 

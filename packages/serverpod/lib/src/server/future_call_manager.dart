@@ -7,6 +7,7 @@ import 'server.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:pedantic/pedantic.dart';
 
 class FutureCallManager {
   final Server _server;
@@ -28,7 +29,7 @@ class FutureCallManager {
       serverId: serverId,
     );
 
-    DatabaseConnection dbConn = DatabaseConnection(_server.databaseConnection);
+    var dbConn = DatabaseConnection(_server.databaseConnection);
     await dbConn.insert(entry);
   }
 
@@ -50,15 +51,15 @@ class FutureCallManager {
   }
 
   void _run() async {
-    _checkQueue();
+    unawaited(_checkQueue());
   }
 
   Future<void> _checkQueue() async {
-    DatabaseConnection dbConn = DatabaseConnection(_server.databaseConnection);
+    var dbConn = DatabaseConnection(_server.databaseConnection);
 
     try {
       // Get calls
-      DateTime now = DateTime.now();
+      var now = DateTime.now();
 
       var rows = await dbConn.find(
         tFutureCallEntry,
@@ -66,8 +67,8 @@ class FutureCallManager {
             .equals(_server.serverId),
       );
 
-      for (FutureCallEntry entry in rows.cast<FutureCallEntry>()) {
-        FutureCall? call = _futureCalls[entry.name];
+      for (var entry in rows.cast<FutureCallEntry>()) {
+        var call = _futureCalls[entry.name];
         if (call == null)
           continue;
 
@@ -77,7 +78,7 @@ class FutureCallManager {
           object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
         }
 
-        Session session = Session(
+        var session = Session(
           type: SessionType.futureCall,
           server: _server,
           futureCallName: entry.name,
@@ -85,15 +86,15 @@ class FutureCallManager {
 
         try {
           await call.invoke(session, object);
-          _server.serverpod.logSession(session);
+          unawaited(_server.serverpod.logSession(session));
         }
         catch(e, stackTrace) {
-          _server.serverpod.logSession(session, exception: '$e', stackTrace: stackTrace);
+          unawaited(_server.serverpod.logSession(session, exception: '$e', stackTrace: stackTrace));
         }
       }
 
       // Remove the invoked calls
-      if (rows.length > 0) {
+      if (rows.isNotEmpty) {
         await dbConn.delete(
           tFutureCallEntry,
           where: tFutureCallEntry.serverId.equals(

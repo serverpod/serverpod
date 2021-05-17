@@ -11,15 +11,15 @@ class MethodLookup {
 
   Future<void> load(DatabaseConnection dbConn) async {
     try {
-      _attemptLoad(dbConn);
+      await _attemptLoad(dbConn);
     }
     catch(e) {
       // It's possible that another server instance is booting up at the same
       // time, in which case a write can fail if they are happening
       // simultaneously. Make a second attempt to load after waiting a second.
       print('Failed to load method lookup. Making second attempt in 1 second');
-      Future.delayed(Duration(seconds: 1));
-      _attemptLoad(dbConn);
+      await Future.delayed(Duration(seconds: 1));
+      await _attemptLoad(dbConn);
     }
   }
 
@@ -33,7 +33,7 @@ class MethodLookup {
         String method = methodDef.keys.first;
 
         // Find in database
-        internal.MethodInfo? methodInfo = await dbConn.findSingleRow(
+        var methodInfo = await dbConn.findSingleRow(
           internal.tMethodInfo,
           where: internal.tMethodInfo.endpoint.equals(endpoint) & internal.tMethodInfo.method.equals(method),
         ) as internal.MethodInfo?;

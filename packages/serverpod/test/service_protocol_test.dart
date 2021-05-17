@@ -45,11 +45,11 @@ void main() {
 
     test('Clear logs', () async {
       // Make sure there is at least 10 log entries
-      for (int i = 0; i < 10; i += 1) {
+      for (var i = 0; i < 10; i += 1) {
         await client.logging.logInfo('Log test $i');
       }
 
-      service.SessionLogResult logResult = await serviceClient.insights.getSessionLog(10);
+      var logResult = await serviceClient.insights.getSessionLog(10);
       expect(logResult.sessionLog.length, equals(10));
 
       await serviceClient.insights.clearAllLogs();
@@ -202,9 +202,11 @@ class ServiceKeyManager extends AuthenticationKeyManager {
 
   ServiceKeyManager(this.name, this.serviceSecret);
 
+  @override
   Future<String> get() async {
     return 'name:$serviceSecret';
   }
+  @override
   Future<Null> put(String key) async {
   }
 }

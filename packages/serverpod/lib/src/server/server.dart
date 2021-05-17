@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint_dispatch.dart';
@@ -50,7 +51,7 @@ class Server {
     this.whitelistedExternalCalls,
     required this.endpoints,
   }) :
-    this.name = name ?? 'Server id $serverId'
+    name = name ?? 'Server id $serverId'
   {
     // Setup future calls
     _futureCallManager = FutureCallManager(this, serializationManager);
@@ -67,7 +68,7 @@ class Server {
 
   Future<void> start() async {
     if (securityContext != null) {
-      HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then(
+      await HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then(
       _runServer,
       onError: (e, StackTrace stackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
@@ -76,7 +77,7 @@ class Server {
       });
     }
     else {
-      HttpServer.bind(InternetAddress.anyIPv6, port).then(
+      await HttpServer.bind(InternetAddress.anyIPv6, port).then(
       _runServer,
       onError: (e, StackTrace stackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
@@ -89,7 +90,7 @@ class Server {
     _futureCallManager.start();
 
     _running = true;
-    print('$name listening on port ${port}');
+    print('$name listening on port $port');
   }
 
   void _runServer(HttpServer httpServer) {
@@ -125,18 +126,18 @@ class Server {
     catch(e) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Specific log for this?
-        serverpod.log('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        unawaited(serverpod.log('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}'));
         print('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
       }
 
       request.response.statusCode = HttpStatus.badRequest;
-      request.response.close();
+      await request.response.close();
       return;
     }
 
     if (uri.path == '/') {
       // Perform health checks
-      var checks = await performHealthChecks(this.serverpod);
+      var checks = await performHealthChecks(serverpod);
       var issues = <String>[];
       var allOk = true;
       for (var metric in checks.metrics) {
@@ -153,7 +154,7 @@ class Server {
       for (var issue in issues)
         request.response.writeln(issue);
 
-      request.response.close();
+      await request.response.close();
       return;
     }
 
@@ -184,7 +185,7 @@ class Server {
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       request.response.statusCode = HttpStatus.badRequest;
-      request.response.close();
+      await request.response.close();
       return;
     }
 
@@ -192,47 +193,47 @@ class Server {
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        serverpod.log('Malformed call: $result');
+        unawaited(serverpod.log('Malformed call: $result'));
         print('Malformed call: $result');
       }
       request.response.statusCode = HttpStatus.badRequest;
-      request.response.close();
+      await request.response.close();
       return;
     }
     else if (result is ResultAuthenticationFailed) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        serverpod.log('Access denied: $result');
+        unawaited(serverpod.log('Access denied: $result'));
         print('Access denied: $result');
       }
       request.response.statusCode = HttpStatus.forbidden;
-      request.response.close();
+      await request.response.close();
       return;
     }
     else if (result is ResultInternalServerError) {
       request.response.statusCode = HttpStatus.internalServerError;
       request.response.writeln('Internal server error. Call log id: ${result.sessionLogId}');
-      request.response.close();
+      await request.response.close();
       return;
     }
     else if (result is ResultStatusCode) {
       request.response.statusCode = result.statusCode;
-      request.response.close();
+      await request.response.close();
       return;
     }
     else {
-      String? serializedEntity = serializationManager.serializeEntity(result);
+      var serializedEntity = serializationManager.serializeEntity(result);
       request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
       request.response.headers.add('Access-Control-Allow-Origin', '*');
       request.response.write(serializedEntity);
-      request.response.close();
+      await request.response.close();
       return;
     }
   }
 
   Future<String?> _readBody(HttpRequest request) async {
     // TODO: Find more efficient solution?
-    int len = 0;
-    List<int> data = [];
+    var len = 0;
+    var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
       if (len > serverpod.config.maxRequestSize!)
@@ -243,7 +244,7 @@ class Server {
   }
 
   Future _handleUriCall(Uri uri, String body, HttpRequest request) async {
-    String endpointName = uri.path.substring(1);
+    var endpointName = uri.path.substring(1);
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
   }
 

@@ -3,7 +3,7 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/module.dart' as module;
 
 void main() {
-  Client client = Client('http://localhost:8080/');
+  var client = Client('http://localhost:8080/');
 
   setUp(() {
   });
@@ -15,7 +15,7 @@ void main() {
     });
 
     test('Module call', () async {
-      String result = await client.modules.module.module.hello('World');
+      var result = await client.modules.module.module.hello('World');
       expect(result, equals('Hello World'));
     });
 

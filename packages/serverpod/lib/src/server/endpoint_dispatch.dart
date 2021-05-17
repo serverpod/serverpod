@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:pedantic/pedantic.dart';
 
 import 'endpoint.dart';
 import 'server.dart';
@@ -18,7 +19,7 @@ abstract class EndpointDispatch {
 
   Future handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
     var endpointComponents = endpointName.split('.');
-    if (endpointComponents.length < 1 || endpointComponents.length > 2)
+    if (endpointComponents.isEmpty || endpointComponents.length > 2)
       return ResultInvalidParams('Endpoint $endpointName is not a valid endpoint name');
 
     // Find correct connector
@@ -74,7 +75,7 @@ abstract class EndpointDispatch {
         }
       }
 
-      if (connector.endpoint.requiredScopes.length > 0) {
+      if (connector.endpoint.requiredScopes.isNotEmpty) {
 
         if (!await session.isUserSignedIn) {
           await session.close();
@@ -97,9 +98,9 @@ abstract class EndpointDispatch {
 
       // TODO: Check parameters and check null safety
 
-      Map<String, dynamic> paramMap = {};
+      var paramMap = <String, dynamic>{};
       for (var paramName in inputParams.keys) {
-        Type? type = method.params[paramName]?.type;
+        var type = method.params[paramName]?.type;
         if (type == null)
           continue;
         var formatted = _formatArg(inputParams[paramName], type, server.serializationManager);
@@ -109,9 +110,9 @@ abstract class EndpointDispatch {
       var result = await method.call(session, paramMap);
 
       // Print session info
-      int? authenticatedUserId = connector.endpoint.requireLogin ? await session.authenticatedUserId : null;
+      var authenticatedUserId = connector.endpoint.requireLogin ? await session.authenticatedUserId : null;
       if (connector.endpoint.logSessions)
-        server.serverpod.logSession(session, authenticatedUserId: authenticatedUserId);
+        unawaited(server.serverpod.logSession(session, authenticatedUserId: authenticatedUserId));
 
       await session.close();
 
@@ -164,7 +165,7 @@ class EndpointConnector {
   EndpointConnector({required this.name, required this.endpoint, required this.methodConnectors});
 }
 
-typedef Future MethodCall(Session session, Map<String, dynamic> params);
+typedef MethodCall = Future Function(Session session, Map<String, dynamic> params);
 
 class MethodConnector {
   final String name;

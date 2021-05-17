@@ -1,7 +1,7 @@
 import 'scope.dart';
 import '../server/session.dart';
 
-typedef Future<AuthenticationInfo?> AuthenticationHandler(Session session, String key);
+typedef AuthenticationHandler = Future<AuthenticationInfo?> Function(Session session, String key);
 
 class AuthenticationInfo {
   final int authenticatedUserId;
