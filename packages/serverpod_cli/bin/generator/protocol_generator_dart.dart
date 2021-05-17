@@ -126,7 +126,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     }
 
     if (hasModules) {
+      out += '\n';
       out += '    modules = _Modules(this);\n';
+      for (var module in config.modules) {
+        out += '    registerModuleProtocol(${module.name}.Protocol());\n';
+      }
     }
 
     out += '  }\n';

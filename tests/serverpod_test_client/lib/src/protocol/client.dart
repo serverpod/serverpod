@@ -296,6 +296,8 @@ class Client extends ServerpodClient {
     asyncTasks = _EndpointAsyncTasks(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
+
     modules = _Modules(this);
+    registerModuleProtocol(serverpod_test_module.Protocol());
   }
 }

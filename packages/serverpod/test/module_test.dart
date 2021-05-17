@@ -4,7 +4,6 @@ import 'package:serverpod_test_module_client/module.dart' as module;
 
 void main() {
   Client client = Client('http://localhost:8080/');
-  client.registerModuleProtocol(module.Protocol());
 
   setUp(() {
   });
