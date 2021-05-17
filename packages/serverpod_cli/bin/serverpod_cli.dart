@@ -35,6 +35,7 @@ void main(List<String> args) async {
   // "create" command
   ArgParser createParser = ArgParser();
   createParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  createParser.addOption('template', abbr: 't', defaultsTo: 'server', allowed: <String>['server', 'module'], help: 'Template to use when creating a new project, valid options are "server" or "module"');
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
@@ -98,9 +99,14 @@ void main(List<String> args) async {
     if (results.command!.name == cmdCreate) {
       var name = results.arguments.last;
       bool verbose = results.command!['verbose'];
+      String template = results.command!['template'];
+      if (name == 'server' || name == 'module' || name == 'create') {
+        _printUsage(parser);
+        return;
+      }
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
-        performCreate(name, verbose);
+        performCreate(name, verbose, template);
         return;
       }
     }
