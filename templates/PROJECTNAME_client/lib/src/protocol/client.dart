@@ -3,14 +3,15 @@
 
 import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
+// ignore: unused_import
 import 'protocol.dart';
 
 class _EndpointExample {
-  Client client;
-  _EndpointExample(this.client);
+  EndpointCaller caller;
+  _EndpointExample(this.caller);
 
   Future<String> hello(String name,) async {
-    return await client.callServerEndpoint('example', 'hello', 'String', {
+    return await caller.callServerEndpoint('example', 'hello', 'String', {
       'name':name,
     });
   }
@@ -19,7 +20,7 @@ class _EndpointExample {
 class Client extends ServerpodClient {
   late final _EndpointExample example;
 
-  Client(host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+  Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
     example = _EndpointExample(this);
   }
 }

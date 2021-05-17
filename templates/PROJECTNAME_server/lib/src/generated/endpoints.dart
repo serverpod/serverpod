@@ -9,8 +9,9 @@ import 'protocol.dart';
 import '../endpoints/example_endpoint.dart';
 
 class Endpoints extends EndpointDispatch {
+  @override
   void initializeEndpoints(Server server) {
-    Map<String, Endpoint> endpoints = {
+    var endpoints = <String, Endpoint>{
       'example': ExampleEndpoint()..initialize(server, 'example'),
     };
 
@@ -29,6 +30,10 @@ class Endpoints extends EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  void registerModules(Serverpod pod) {
   }
 }
 
