@@ -8,9 +8,11 @@ class ServiceKeyManager extends AuthenticationKeyManager {
 
   ServiceKeyManager(this.name, this.config);
 
+  @override
   Future<String> get() async {
     return 'name:${config.serviceSecret}';
   }
+  @override
   Future<Null> put(String key) async {
   }
 }

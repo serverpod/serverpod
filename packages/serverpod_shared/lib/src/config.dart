@@ -21,7 +21,7 @@ class ServerConfig {
   Map<int, RemoteServerConfig> cluster = <int, RemoteServerConfig>{};
 
   ServerConfig(this.runMode, this.serverId) : file = 'config/$runMode.yaml' {
-    String data = File(file).readAsStringSync();
+    var data = File(file).readAsStringSync();
     var doc = loadYaml(data);
 
     // Get max request size (default to 100kb)
@@ -52,11 +52,11 @@ class ServerConfig {
 
   @override
   String toString() {
-    String str = 'Config loaded from: $file';
+    var str = 'Config loaded from: $file';
     str += '\nport: $port';
 
     if (dbConfigured) {
-      String? displayPass = dbPass == null ? null : '********';
+      var displayPass = dbPass == null ? null : '********';
 
       str += '\ndatabase host: $dbHost';
       str += '\ndatabase port: $dbPort';
