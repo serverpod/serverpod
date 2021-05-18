@@ -11,7 +11,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   // Analyze the endpoint classes
   if (verbose)
     print('Analyzing protocol');
-  ProtocolDefinition definition = await performAnalysis(verbose);
+  var definition = await performAnalysis(verbose);
   var generator = ProtocolGeneratorDart(protocolDefinition: definition);
 
   // Generate code for the client
@@ -24,7 +24,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   var filePath = config.generatedClientProtocolPath + '/client.dart';
   if (verbose)
     print('Writing: $filePath');
-  File outFile = File(filePath);
+  var outFile = File(filePath);
   outFile.createSync();
   outFile.writeAsStringSync(protocol);
   
@@ -38,7 +38,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   var endpointsFilePath = config.generatedServerProtocolPath + '/endpoints.dart';
   if (verbose)
     print('Writing: $endpointsFilePath');
-  File endpointsFile = File(endpointsFilePath);
+  var endpointsFile = File(endpointsFilePath);
   endpointsFile.createSync();
   endpointsFile.writeAsStringSync(endpointDispatch);
 
@@ -47,7 +47,7 @@ Future<void> performGenerateProtocol(bool verbose) async {
   var endpointDefPath = 'generated/protocol.yaml';
   if (verbose)
     print('Writing: $endpointDefPath');
-  File endpointsDefFile = File(endpointDefPath);
+  var endpointsDefFile = File(endpointDefPath);
   endpointsDefFile.createSync();
   endpointsDefFile.writeAsStringSync(endpointDef);
 }
@@ -58,9 +58,9 @@ abstract class ProtocolGenerator {
   ProtocolGenerator({required this.protocolDefinition});
 
   String generateServerEndpointDispatch() {
-    var hasModules = config.modules.length > 0;
+    var hasModules = config.modules.isNotEmpty;
 
-    String out = '';
+    var out = '';
 
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
@@ -164,7 +164,7 @@ abstract class ProtocolGenerator {
   String generateEndpointDefinition() {
     // TODO: Also output parameter and return type data
     
-    String out = '';
+    var out = '';
     for (var endpoint in protocolDefinition.endpoints) {
       out += '${endpoint.name}:\n';
       for (var method in endpoint.methods) {

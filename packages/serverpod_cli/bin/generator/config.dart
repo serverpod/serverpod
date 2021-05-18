@@ -90,7 +90,7 @@ sourceEndpoints: $endpointsSourcePath
 generatedClientDart: $generatedClientProtocolPath
 generatedServerProtocol: $generatedServerProtocolPath
 ''';
-    if (modules.length > 0) {
+    if (modules.isNotEmpty) {
       str += '\nmodules:\n\n';
       for (var module in modules) {
         str += '$module';
@@ -123,7 +123,7 @@ $config''';
 }
 
 String stripPackage(String package) {
-  String strippedPackage = package;
+  var strippedPackage = package;
   if (strippedPackage.endsWith('_server'))
     return strippedPackage.substring(0, strippedPackage.length - 7);
   if (strippedPackage.endsWith('_client'))

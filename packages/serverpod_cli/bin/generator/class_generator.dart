@@ -27,7 +27,7 @@ abstract class ClassGenerator {
   String get outputExtension;
 
   void generate() {
-    var classInfos = Set<ClassInfo>();
+    var classInfos = <ClassInfo>{};
 
     // Generate files for each yaml file
     var dir = Directory(inputPath);
@@ -42,7 +42,7 @@ abstract class ClassGenerator {
           var outFile = File('$outputPath/$outFileName');
 
           // Read file
-          String yamlStr = entity.readAsStringSync();
+          var yamlStr = entity.readAsStringSync();
 
           // Generate the code
           var out = generateFile(yamlStr, outFileName, classInfos);
@@ -73,7 +73,7 @@ abstract class ClassGenerator {
 
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split('/');
-    String fileName = pathComponents[pathComponents.length-1];
+    var fileName = pathComponents[pathComponents.length-1];
     fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
     return fileName;
   }

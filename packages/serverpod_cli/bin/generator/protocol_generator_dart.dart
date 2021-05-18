@@ -7,8 +7,9 @@ import 'protocol_generator.dart';
 class ProtocolGeneratorDart extends ProtocolGenerator {
   ProtocolGeneratorDart({required ProtocolDefinition protocolDefinition}) : super(protocolDefinition: protocolDefinition);
 
+  @override
   String generateClientEndpointCalls() {
-    String out = '';
+    var out = '';
 
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
@@ -21,7 +22,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += 'import \'protocol.dart\';\n';
     out += '\n';
 
-    var hasModules = config.modules.length > 0 && config.type == PackageType.server;
+    var hasModules = config.modules.isNotEmpty && config.type == PackageType.server;
     if (hasModules) {
       for (var module in config.modules) {
         out += 'import \'package:${module.clientPackage}/module.dart\' as ${module.name};\n';
@@ -30,8 +31,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     }
 
     // Endpoints
-    for (EndpointDefinition endpointDef in protocolDefinition.endpoints) {
-      String endpointClassName = _endpointClassName(endpointDef.name);
+    for (var endpointDef in protocolDefinition.endpoints) {
+      var endpointClassName = _endpointClassName(endpointDef.name);
 
       out += 'class $endpointClassName {\n';
       out += '  EndpointCaller caller;\n';
@@ -39,7 +40,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += '  $endpointClassName(this.caller);\n';
 
       // Add methods
-      for (MethodDefinition methodDef in endpointDef.methods) {
+      for (var methodDef in endpointDef.methods) {
         var requiredParams = methodDef.parameters;
         var optionalParams = methodDef.parametersPositional;
         var returnType = methodDef.returnType;
@@ -52,7 +53,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
           out += '${paramDef.type.typePrefix}${paramDef.type} ${paramDef.name},';
         }
 
-        if (optionalParams.length > 0) {
+        if (optionalParams.isNotEmpty) {
           out += '[';
 
           for (var paramDef in optionalParams) {

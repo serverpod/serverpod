@@ -8,13 +8,15 @@ import 'protocol_definition.dart';
 class ClassGeneratorDart extends ClassGenerator{
   final bool serverCode;
 
+  @override
   String get outputExtension => '.dart';
 
   ClassGeneratorDart(String inputPath, String outputPath, bool verbose, this.serverCode) : super(inputPath, outputPath, verbose);
 
+  @override
   String? generateFile(String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
     var doc = loadYaml(yamlStr);
-    String out = '';
+    var out = '';
 
     // Handle enums
     try {
@@ -66,7 +68,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '  }\n';
 
         // Values
-        int i = 0;
+        var i = 0;
         for (String value in doc['values']) {
           out += '  static final $value = $enumName._internal($i);\n';
           i += 1;
@@ -108,8 +110,8 @@ class ClassGeneratorDart extends ClassGenerator{
     // Handle ordinary classes
     try {
       String? tableName = doc['table'];
-      String className = _expectString(doc, 'class');
-      Map docFields = _expectMap(doc, 'fields');
+      var className = _expectString(doc, 'class');
+      var docFields = _expectMap(doc, 'fields');
       var fields = <_FieldDefinition>[];
 
       fields.add(_FieldDefinition('id', 'int?'));
@@ -276,7 +278,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '\n';
 
         // Create instance of table
-        out += '${className}Table t${className} = ${className}Table();\n';
+        out += '${className}Table t$className = ${className}Table();\n';
       }
     }
     catch (e) {
@@ -309,8 +311,9 @@ class ClassGeneratorDart extends ClassGenerator{
     }
   }
 
+  @override
   String generateFactory(Set<ClassInfo> classInfos) {
-    String out = '';
+    var out = '';
 
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
@@ -328,13 +331,13 @@ class ClassGeneratorDart extends ClassGenerator{
     out += '\n';
     
     // Import generated files
-    for (ClassInfo classInfo in classInfos) {
+    for (var classInfo in classInfos) {
       out += 'import \'${classInfo.fileName}\';\n';
     }
     out += '\n';
 
     // Export generated files
-    for (ClassInfo classInfo in classInfos) {
+    for (var classInfo in classInfos) {
       out += 'export \'${classInfo.fileName}\';\n';
     }
     if (!serverCode)
@@ -357,13 +360,13 @@ class ClassGeneratorDart extends ClassGenerator{
     // Constructor
     out += '  Protocol() {\n';
 
-    for (ClassInfo classInfo in classInfos) {
+    for (var classInfo in classInfos) {
       out += '    constructors[\'$classPrefix${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
     }
 
     if (serverCode) {
       out += '\n';
-      for (ClassInfo classInfo in classInfos) {
+      for (var classInfo in classInfos) {
         if (classInfo.tableName == null)
           continue;
         out += '    tableClassMapping[\'${classInfo.tableName}\'] = \'${classInfo.className}\';\n';
@@ -415,7 +418,7 @@ class _FieldDefinition {
 
   _FieldScope scope = _FieldScope.all;
 
-  _FieldDefinition(String name, String description) : this.name = name {
+  _FieldDefinition(String name, String description) : name = name {
     var components = description.split(',').map((String s) { return s.trim(); }).toList();
     var typeStr = components[0];
 

@@ -41,7 +41,7 @@ class TypeDefinition {
   final String? package;
 
   String get typePrefix {
-    String prefix = '';
+    var prefix = '';
     if (package != null && package != 'core' && package != config.serverPackage) {
       prefix = '${stripPackage(package!)}.';
     }
@@ -60,12 +60,12 @@ class TypeDefinition {
 
     // Check if it's a nullable type
     nullable = trimmed.endsWith('?');
-    String withoutQuestion = nullable ? trimmed.substring(0, trimmed.length - 1) : trimmed;
+    var withoutQuestion = nullable ? trimmed.substring(0, trimmed.length - 1) : trimmed;
 
     // Check if it's a list
     isTypedList = withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
     if (isTypedList) {
-      String listTypeStr = withoutQuestion.substring(5, withoutQuestion.length - 1);
+      var listTypeStr = withoutQuestion.substring(5, withoutQuestion.length - 1);
       listType = TypeDefinition(listTypeStr, package);
     }
 
@@ -76,7 +76,7 @@ class TypeDefinition {
     }
     else {
       this.type = '$withoutQuestion${nullable ? '?': ''}';
-      this.typeNonNullable = withoutQuestion;
+      typeNonNullable = withoutQuestion;
     }
   }
 

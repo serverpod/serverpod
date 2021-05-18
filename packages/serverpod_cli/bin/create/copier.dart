@@ -29,7 +29,7 @@ class Copier {
         _copyFile(entity, relativePath);
       }
       if (entity is Directory) {
-        String dirName = p.basename(entity.path);
+        var dirName = p.basename(entity.path);
         if (dirName.startsWith('.'))
           continue;
         _copyDirectory(entity, '$relativePath$dirName/');
@@ -38,16 +38,16 @@ class Copier {
   }
 
   void _copyFile(File srcFile, String relativePath) {
-    String fileName = p.basename(srcFile.path);
+    var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.'))
       return;
 
-    String dstFileName = _replace('$relativePath$fileName', fileNameReplacements);
+    var dstFileName = _replace('$relativePath$fileName', fileNameReplacements);
     if (verbose)
       print('copy: $relativePath$fileName -> $dstFileName');
 
     var dstFile = File('${dstDir.path}/$dstFileName');
-    String contents = srcFile.readAsStringSync();
+    var contents = srcFile.readAsStringSync();
     contents = _replace(contents, replacements);
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
@@ -8,7 +6,7 @@ import 'config_info/config_info.dart';
 import 'create/create.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
-import 'insights/insights.dart';
+// import 'insights/insights.dart';
 import 'shared/environment.dart';
 
 final cmdCreate = 'create';
@@ -30,66 +28,66 @@ void main(List<String> args) async {
     return;
   }
 
-  ArgParser parser = ArgParser();
+  var parser = ArgParser();
 
   // "create" command
-  ArgParser createParser = ArgParser();
+  var createParser = ArgParser();
   createParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   createParser.addOption('template', abbr: 't', defaultsTo: 'server', allowed: <String>['server', 'module'], help: 'Template to use when creating a new project, valid options are "server" or "module"');
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
-  ArgParser generateParser = ArgParser();
+  var generateParser = ArgParser();
   generateParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerate, generateParser);
 
   // "generate-continuously" command
-  ArgParser generateContinuouslyParser = ArgParser();
+  var generateContinuouslyParser = ArgParser();
   generateContinuouslyParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerateContinuously, generateContinuouslyParser);
 
   // "generatecerts" command
-  ArgParser generateCerts = ArgParser();
+  var generateCerts = ArgParser();
   generateCerts.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   generateCerts.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerateCertificates, generateCerts);
 
   // "shutdown" command
-  ArgParser shutdownParser = ArgParser();
+  var shutdownParser = ArgParser();
   shutdownParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdShutdown, shutdownParser);
 
   // "logs" command
-  ArgParser logsParser = ArgParser();
+  var logsParser = ArgParser();
   logsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   logsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdLogs, logsParser);
 
   // "sessionlogs" command
-  ArgParser sessionLogsParser = ArgParser();
+  var sessionLogsParser = ArgParser();
   sessionLogsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   sessionLogsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdSessionLogs, sessionLogsParser);
 
   // "cacheinfo" command
-  ArgParser cacheinfoParser = ArgParser();
+  var cacheinfoParser = ArgParser();
   cacheinfoParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   cacheinfoParser.addFlag('fetch-keys', abbr: 'k', help: 'Fetch all keys stored in the caches of the specificed server');
   parser.addCommand(cmdCacheInfo, cacheinfoParser);
 
   // "serveraddress" command
-  ArgParser serverAddressParser = ArgParser();
+  var serverAddressParser = ArgParser();
   serverAddressParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   serverAddressParser.addOption('id', abbr: 'i', defaultsTo: 'foo', help: 'The id of the server to print the address of');
   parser.addCommand(cmdServerAddress, serverAddressParser);
 
   // "serverids" command
-  ArgParser serverIdsParser = ArgParser();
+  var serverIdsParser = ArgParser();
   serverIdsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdServerIds, serverIdsParser);
 
   // "healthcheck" command
-  ArgParser healthCheckParser = ArgParser();
+  var healthCheckParser = ArgParser();
   healthCheckParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdHealthCheck, healthCheckParser);
 

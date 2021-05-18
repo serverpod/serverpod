@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -28,8 +27,8 @@ class ProtocolAnalyzer {
   }
 
   Future<ProtocolDefinition> analyze(bool verbose) async {
-    List<EndpointDefinition> endpointDefs = [];
-    List<String> filePaths = [];
+    var endpointDefs = <EndpointDefinition>[];
+    var filePaths = <String>[];
 
     for (final context in collection.contexts) {
       for (final filePath in context.contextRoot.analyzedFiles()) {
@@ -44,25 +43,25 @@ class ProtocolAnalyzer {
 
         for (var element in topElements) {
           if (element is ClassElement) {
-            String className = element.name;
-            String superclassName = element.supertype!.element.name;
-            String endpointName = _formatEndpointName(className);
+            var className = element.name;
+            var superclassName = element.supertype!.element.name;
+            var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
 
-              List<MethodDefinition> methodDefs = [];
+              var methodDefs = <MethodDefinition>[];
               var methods = element.methods;
               for (var method in methods) {
                 // Skip private methods
                 if (method.isPrivate)
                   continue;
                 
-                List<ParameterDefinition> paramDefs = [];
-                List<ParameterDefinition> paramPositionalDefs = [];
-                List<ParameterDefinition> paramNamedDefs = [];
+                var paramDefs = <ParameterDefinition>[];
+                var paramPositionalDefs = <ParameterDefinition>[];
+                var paramNamedDefs = <ParameterDefinition>[];
                 var parameters = method.parameters;
                 for (var param in parameters) {
-                  String? package = param.type.element?.librarySource?.uri.pathSegments[0];
+                  var package = param.type.element?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
                     type: TypeDefinition(param.type.getDisplayString(withNullability: true), package),
@@ -76,11 +75,11 @@ class ProtocolAnalyzer {
                     paramNamedDefs.add(paramDef);
                 }
 
-                if (paramDefs.length >= 1 && paramDefs[0].type.type == 'Session' && method.returnType.isDartAsyncFuture) {
+                if (paramDefs.isNotEmpty && paramDefs[0].type.type == 'Session' && method.returnType.isDartAsyncFuture) {
                   String? package;
                   var returnType = method.returnType;
                   if (returnType is InterfaceType) {
-                    InterfaceType interfaceType = returnType;
+                    var interfaceType = returnType;
                     if (interfaceType.typeArguments.length == 1) {
                       package = interfaceType.typeArguments[0].element?.librarySource?.uri.pathSegments[0];
                     }
