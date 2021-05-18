@@ -2,6 +2,7 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 
 import 'package:serverpod/database.dart';
 // ignore: unused_import

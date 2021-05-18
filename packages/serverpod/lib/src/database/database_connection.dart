@@ -8,14 +8,23 @@ import 'expressions.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import '../server/session.dart';
 
+/// A connection to the database. In most cases the [Database] db object in
+/// the [Session] object should be used when connecting with the database.
 class DatabaseConnection {
-  final DatabaseConfig database;
+  /// Database configuration.
+  final DatabaseConfig config;
+
+  /// Access to the raw Postgresql connection pool.
   late PgPool postgresConnection;
 
-  DatabaseConnection(this.database) {
-    postgresConnection = database.pool;
+  /// Creates a new database connection from the configuration. For most cases
+  /// this shouldn't be called directly, use the db object in the [Session] to
+  /// access the database.
+  DatabaseConnection(this.config) {
+    postgresConnection = config.pool;
   }
 
+  /// Returns a list of names of all tables in the current database.
   Future<List<String>> getTableNames() async {
     List<String?> tableNames = <String>[];
 
@@ -36,6 +45,7 @@ class DatabaseConnection {
     return tableNames as FutureOr<List<String>>;
   }
 
+  /// Returns a description for a table in the database.
   Future<Table?> getTableDescription(String tableName) async {
     var query = 'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
     var result = await postgresConnection.mappedResultsQuery(
@@ -95,6 +105,7 @@ class DatabaseConnection {
     return null;
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<TableRow?> findById(Table table, int id, {Session? session}) async {
     var result = await find(
       table,
@@ -106,6 +117,7 @@ class DatabaseConnection {
     return result[0];
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true, Session? session}) async {
     assert(orderByList == null || orderBy == null);
 
@@ -154,6 +166,7 @@ class DatabaseConnection {
     return list as FutureOr<List<TableRow>>;
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true, Session? session}) async {
     var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
 
@@ -164,7 +177,7 @@ class DatabaseConnection {
   }
 
   TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
-    String? className = database.tableClassMapping[tableName];
+    String? className = config.tableClassMapping[tableName];
     if (className == null)
       return null;
 
@@ -180,9 +193,10 @@ class DatabaseConnection {
 
     var serialization = <String, dynamic> {'data': data, 'class': className};
 
-    return database.serializationManager.createEntityFromSerialization(serialization) as TableRow?;
+    return config.serializationManager.createEntityFromSerialization(serialization) as TableRow?;
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true, Session? session}) async {
     var startTime = DateTime.now();
 
@@ -212,6 +226,7 @@ class DatabaseConnection {
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<bool> update(TableRow row, {Transaction? transaction, Session? session}) async {
     var startTime = DateTime.now();
 
@@ -247,6 +262,7 @@ class DatabaseConnection {
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<bool> insert(TableRow row, {Transaction? transaction, Session? session}) async {
     var startTime = DateTime.now();
 
@@ -299,6 +315,7 @@ class DatabaseConnection {
     return true;
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<int> delete(Table table, {required Expression where, Transaction? transaction, Session? session}) async {
     var startTime = DateTime.now();
 
@@ -322,6 +339,7 @@ class DatabaseConnection {
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<bool> deleteRow(TableRow row, {Transaction? transaction, Session? session}) async {
     var startTime = DateTime.now();
 
@@ -343,6 +361,7 @@ class DatabaseConnection {
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<List<List<dynamic>>> query(String query, {Session? session, int? timeoutInSeconds}) async {
     var startTime = DateTime.now();
 
@@ -357,6 +376,7 @@ class DatabaseConnection {
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
   Future<bool> executeTransaction(Transaction transaction, {Session? session}) async {
     return await transaction._execute(postgresConnection, this, session);
   }
@@ -377,10 +397,16 @@ class DatabaseConnection {
   }
 }
 
+/// Defines how to order a database [column].
 class Order {
+  /// The columns to order by.
   final Column column;
+
+  /// Whether the column should be ordered ascending or descending.
   final bool orderDescending;
 
+  /// Creates a new [Order] definition for a specific [column] and whether it
+  /// should be ordered descending or ascending.
   Order({required this.column, this.orderDescending=false});
 
   @override
@@ -394,6 +420,7 @@ class Order {
 
 // TODO: Transactions
 
+/// Represents a database transaction.
 class Transaction {
   final List<String> _queries = [];
 

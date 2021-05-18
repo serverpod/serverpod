@@ -1,15 +1,20 @@
 import 'dart:io';
 import 'package:yaml/yaml.dart';
 
+/// Keeps track of passwords used by the server. Passwords are loaded from
+/// the config/passwords.yaml file.
 class PasswordManager {
-  String passwordFile;
+  /// The run mode the passwords are loaded from.
   String runMode;
 
+  /// Creates a new [PasswordManager] for the specified runMode. Typically,
+  /// this is automatically created by the [Serverpod].
   PasswordManager({
-    required this.passwordFile,
     required this.runMode,
   });
 
+  /// Load all passwords for the current run mode, or null if passwords fail
+  /// to load.
   Map<String,String>? loadPasswords() {
     try {
       var passwords = <String, String>{};

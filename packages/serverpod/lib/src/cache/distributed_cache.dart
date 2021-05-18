@@ -8,13 +8,19 @@ import 'package:serverpod_shared/config.dart';
 import 'cache.dart';
 import 'local_cache.dart';
 
+/// The [DistributedCache] provides a mean to cache [SerializableEntity]s
+/// across multiple clustered servers. When accessing an entity it will either
+/// be in a cache local to the server, or on another server. If it resides in
+/// another server it will be retrieved through an access call to that server.
+/// The caches are typically automatically setup and managed by the [Server].
 class DistributedCache extends Cache {
   final LocalCache _localCache;
   final List<RemoteServerConfig?> _cluster = <RemoteServerConfig?>[];
   final List<Client> _clients = <Client>[];
   int? _serverId;
   final bool _isPrio;
-  
+
+  /// Creates a new [DistributedCache].
   DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio)
       : _localCache = LocalCache(maxEntries, Protocol()),
         super(maxEntries, serializationManager)
@@ -145,6 +151,9 @@ class DistributedCache extends Cache {
     }
   }
 
+  /// Returns the local cache used by the distributed cache. A fraction of the
+  /// objects will be stored in the local cache, and can also be sent to other
+  /// servers in the server cluster.
   LocalCache get localCache => _localCache;
 
   @override

@@ -3,12 +3,15 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'cache.dart';
 
+/// The [LocalCache] stores objects in the RAM memory locally on a [Server]. The
+/// caches are typically automatically setup and managed by the [Server].
 class LocalCache extends Cache {
 
   final List<_KeyListKey> _keyList = <_KeyListKey>[];
   final Map<String, _CacheEntry> _entries = <String, _CacheEntry>{};
   final Map<String, Set<String>> _groups = <String, Set<String>>{};
 
+  /// Creates a new [LocalCache].
   LocalCache(int maxEntries, SerializationManager serializationManager) : super(maxEntries, serializationManager);
 
   @override

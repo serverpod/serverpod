@@ -9,15 +9,26 @@ import 'server.dart';
 import 'serverpod.dart';
 import 'session.dart';
 
+/// The [EndpointDispatch] is responsible for directing requests to the [Server]
+/// to the correct [Endpoint] and method. Typically, this class is overridden
+/// by an Endpoints class that is generated.
 abstract class EndpointDispatch {
+  /// All connectors associating endpoint method names with the actual methods.
   Map<String, EndpointConnector> connectors = {};
+
+  /// References to modules.
   Map<String, EndpointDispatch> modules = {};
 
+  /// Initializes all endpoints that are connected to the dispatch.
   void initializeEndpoints(Server server);
 
+  /// Registers any modules with the dispatch.
   void registerModules(Serverpod pod);
 
-  Future handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
+  /// Dispatches a call to the [Server] to the correct [Endpoint] method. If
+  /// successful, it returns the object from the method. If unsuccessful it will
+  /// return a [Result] object.
+  Future<Result> handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
     var endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2)
       return ResultInvalidParams('Endpoint $endpointName is not a valid endpoint name');
@@ -116,7 +127,7 @@ abstract class EndpointDispatch {
 
       await session.close();
 
-      return result;
+      return ResultSuccess(result);
     }
     catch (exception, stackTrace) {
       // Something did not work out
@@ -157,66 +168,127 @@ abstract class EndpointDispatch {
   }
 }
 
+/// The [EndpointConnector] associates a name with and endpoint and its
+/// [MethodConnector]s.
 class EndpointConnector {
+  /// Name of the [Endpoint].
   final String name;
+
+  /// Reference to the [Endpoint].
   final Endpoint endpoint;
+
+  /// All [MethodConnector]s associated with the [Endpoint].
   final Map<String, MethodConnector> methodConnectors;
 
+  /// Creates a new [EndpointConnector].
   EndpointConnector({required this.name, required this.endpoint, required this.methodConnectors});
 }
 
+/// Calls a named method referenced in a [MethodConnector].
 typedef MethodCall = Future Function(Session session, Map<String, dynamic> params);
 
+/// The [MethodConnector] hooks up a method with its name and the actual call
+/// to the method.
 class MethodConnector {
+  /// The name of the method.
   final String name;
+
+  /// List of parameters used by the method.
   final Map<String, ParameterDescription> params;
+
+  /// A function that performs a call to the named method.
   final MethodCall call;
 
+  /// Creates a new [MethodConnector].
   MethodConnector({required this.name, required this.params, required this.call});
 }
 
+/// Defines a parameter in a [MethodConnector].
 class ParameterDescription {
+  /// The name of the parameter.
   final String name;
+
+  /// The Dart type of the parameter.
   final Type type;
+
+  /// True if the parameter can be nullable.
   final bool nullable;
 
+  /// Creates a new [ParameterDescription].
   ParameterDescription({required this.name, required this.type, required this.nullable});
 }
 
+/// The [Result] of an [Endpoint] method call.
 abstract class Result {}
 
+/// A successful result from an [Endpoint] method call containing the return
+/// value of the call.
+class ResultSuccess extends Result {
+  /// The returned value of a successful [Endpoint] method call.
+  final dynamic returnValue;
+
+  /// Creates a new successful result with a value.
+  ResultSuccess(this.returnValue);
+}
+
+/// The result of a failed [Endpoint] method call where the parameters where not
+/// valid.
 class ResultInvalidParams extends Result {
+  /// Description of the error.
   final String errorDescription;
+
+  /// Creates a new [ResutInvalidParams] object.
   ResultInvalidParams(this.errorDescription);
+
   @override
   String toString() {
     return errorDescription;
   }
 }
 
+/// The result of a failed [Endpoint] method call where authentication failed.
 class ResultAuthenticationFailed extends Result {
+  /// Description of the error.
   final String errorDescription;
+
+  /// Creates a new [ResultAuthenticationFailed] object.
   ResultAuthenticationFailed(this.errorDescription);
+
   @override
   String toString() {
     return errorDescription;
   }
 }
 
+/// The result of a failed [Endpoint] method call where an [Exception] was
+/// thrown during execution of the method.
 class ResultInternalServerError extends Result {
+  /// The Exception that was thrown.
   final String exception;
+
+  /// Stack trace when the exception occurred.
   final StackTrace stackTrace;
+
+  /// The session log id.
   final int? sessionLogId;
+
+  /// Creates a new [ResultInternalServerError].
   ResultInternalServerError(this.exception, this.stackTrace, this.sessionLogId);
+
   @override
   String toString() {
     return '$exception\n$stackTrace';
   }
 }
 
+/// The result of a failed [Endpoint] method call, with a custom status code.
 class ResultStatusCode extends Result {
+  /// The status code to be returned to the client.
   final int statusCode;
+
+  /// Creates a new [ResultStatusCode].
   ResultStatusCode(this.statusCode);
+
   @override
   String toString() {
     return 'Status Code: $statusCode';

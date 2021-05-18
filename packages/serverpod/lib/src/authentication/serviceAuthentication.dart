@@ -2,6 +2,7 @@ import 'authentication_info.dart';
 import 'scope.dart';
 import '../server/session.dart';
 
+/// The [AuthenticationHandler] for the servers service connection.
 Future<AuthenticationInfo?> serviceAuthenticationHandler(Session session, String key) async {
   try {
     var parts = key.split(':');

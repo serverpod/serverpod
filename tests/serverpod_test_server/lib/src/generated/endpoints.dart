@@ -1,6 +1,8 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: public_member_api_docs
+
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module;

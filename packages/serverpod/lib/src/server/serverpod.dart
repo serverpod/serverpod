@@ -16,41 +16,68 @@ import '../generated/protocol.dart' as internal;
 import '../generated/endpoints.dart' as internal;
 import 'endpoint_dispatch.dart';
 import 'future_call.dart';
-import 'runmode.dart';
+import 'run_mode.dart';
 import 'server.dart';
 import 'session.dart';
 import 'method_lookup.dart';
 
+/// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(Serverpod pod);
 
+/// The [Serverpod] handles all setup and manages the main [Server]. In addition
+/// to the user managed server, it also runs a server for handling the
+/// [DistributedCache] and other connections through the [InsightsEndpoint].
 class Serverpod {
   static Serverpod? _instance;
+  /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
+  /// object, although it may be possible to run multiple instances in the same
+  /// program it's not recommended.
   static Serverpod? get instance => _instance;
 
   late String _runMode;
+  /// The servers run mode as specified in [ServerpodRunMode].
   String get runMode => _runMode;
 
+  /// The server configuration, as read from the config/ directory.
   late ServerConfig config;
   Map<String, String> _passwords = <String, String>{};
 
+  /// Custom [AuthenticationHandler] used to authenticate users.
   final AuthenticationHandler? authenticationHandler;
+
+  /// [HealthCheckHandler] for any custom health checks. This can be used to
+  /// check remotely if all services the server is depending on is up and
+  /// running.
   final HealthCheckHandler? healthCheckHandler;
-  
+
+  /// [SerializationManager] used to serialize [SerializableEntities], both
+  /// when sending data to a method in an [Endpoint], but also for caching, and
+  /// [FutureCall]s.
   final SerializationManager serializationManager;
   late SerializationManager _internalSerializationManager;
 
+  /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
 
-  late DatabaseConfig database;
+  /// The database configuration.
+  late DatabaseConfig databaseConfig;
+
   late Caches _caches;
+  /// Caches used by the server.
   Caches get caches => _caches;
 
+  /// The id of this [Serverpod].
   int serverId = 0;
+
+  /// The main server managed by this [Serverpod].
   late Server server;
+
   Server? _serviceServer;
+  /// The service server managed by this [Serverpod].
   Server get serviceServer => _serviceServer!;
 
   internal.RuntimeSettings? _runtimeSettings;
+  /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
   set runtimeSettings(internal.RuntimeSettings settings) {
     _runtimeSettings = settings;
@@ -59,7 +86,7 @@ class Serverpod {
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     try {
-      var dbConn = DatabaseConnection(database);
+      var dbConn = DatabaseConnection(databaseConfig);
 
       var oldRuntimeSettings = await dbConn.findSingleRow(
           internal.tRuntimeSettings) as internal.RuntimeSettings?;
@@ -76,9 +103,10 @@ class Serverpod {
     }
   }
 
+  /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
     try {
-      var dbConn = DatabaseConnection(database);
+      var dbConn = DatabaseConnection(databaseConfig);
 
       var settings = await dbConn.findSingleRow(
           internal.tRuntimeSettings) as internal.RuntimeSettings?;
@@ -90,10 +118,14 @@ class Serverpod {
     }
   }
 
+  /// Maps [Endpoint] methods to integer ids. Persistent through restarts and
+  /// updates to the server, and consistent between servers in the same cluster.
   final MethodLookup methodLookup = MethodLookup('generated/protocol.yaml');
 
+  /// Currently not used.
   List<String>? whitelistedExternalCalls;
-  
+
+  /// Creates a new Serverpod.
   Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
@@ -118,7 +150,7 @@ class Serverpod {
     print('Mode: $_runMode');
 
     // Load passwords
-    _passwords = PasswordManager(passwordFile: 'config/passwords.yaml', runMode: runMode).loadPasswords() ?? {};
+    _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
     config = ServerConfig(_runMode, serverId);
@@ -131,7 +163,7 @@ class Serverpod {
     print(config.toString());
 
     // Setup database
-    database = DatabaseConfig(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
+    databaseConfig = DatabaseConfig(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
 
     _caches = Caches(serializationManager, config, serverId);
 
@@ -140,7 +172,7 @@ class Serverpod {
       serverId: serverId,
       port: config.port ?? 8080,
       serializationManager: serializationManager,
-      databaseConnection: database,
+      databaseConfig: databaseConfig,
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
@@ -154,12 +186,13 @@ class Serverpod {
     _instance = this;
   }
 
+  /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
     await runZonedGuarded(
       () async {
         // Runtime settings
         try {
-          var dbConn = DatabaseConnection(database);
+          var dbConn = DatabaseConnection(databaseConfig);
 
           _runtimeSettings = await dbConn.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;
           if (_runtimeSettings == null) {
@@ -187,7 +220,7 @@ class Serverpod {
         }
 
         try {
-          await methodLookup.load(DatabaseConnection(database));
+          await methodLookup.load(DatabaseConnection(databaseConfig));
         }
         catch(e, stackTrace) {
           stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
@@ -223,7 +256,7 @@ class Serverpod {
       serverId: serverId,
       port: config.servicePort ?? 8081,
       serializationManager: _internalSerializationManager,
-      databaseConnection: database,
+      databaseConfig: databaseConfig,
       passwords: _passwords,
       runMode: _runMode,
       name: 'Insights',
@@ -237,14 +270,24 @@ class Serverpod {
     await _serviceServer!.start();
   }
 
+  /// Registers a [FutureCall] with the [Serverpod] and associates it with
+  /// the specified name.
   void registerFutureCall(FutureCall call, String name) {
     server.registerFutureCall(call, name);
   }
 
+  /// Retrieves a password for the given key. Passwords are loaded from the
+  /// config/passwords.yaml file.
   String? getPassword(String key) {
     return _passwords[key];
   }
 
+  /// Logs a message in the database. The message is ignored if the [Serverpod]s
+  /// [internal.LogLevel] is configured to be higher than the
+  /// [internal.LogLevel] used in the log call. Default [internal.LogLevel] is
+  /// [internal.LogLevel.info]. If the logging fails, the message is written to
+  /// stdout. In [ServerpodRunMode.development] all messages are written to
+  /// stdout.
   Future<void> log(String message, {internal.LogLevel? level, dynamic? exception, StackTrace? stackTrace}) async {
     var entry = internal.LogEntry(
       serverId: server.serverId,
@@ -267,7 +310,7 @@ class Serverpod {
       bool success;
 
       try {
-        var dbConn = DatabaseConnection(database);
+        var dbConn = DatabaseConnection(databaseConfig);
         success = await dbConn.insert(entry);
       }
       catch(e) {
@@ -286,6 +329,7 @@ class Serverpod {
     }
   }
 
+  /// Logs a [Session] after is has been completed.
   Future<int?> logSession(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
     var duration = session.duration;
 
@@ -321,7 +365,7 @@ class Serverpod {
       );
 
       try {
-        var dbConn = DatabaseConnection(database);
+        var dbConn = DatabaseConnection(databaseConfig);
         await dbConn.insert(sessionLogEntry);
 
         var sessionLogId = sessionLogEntry.id!;
@@ -363,10 +407,13 @@ class Serverpod {
     return null;
   }
 
+  /// Registers a module with the Serverpod. This is typically done from
+  /// generated code.
   void registerModule(SerializationManager moduleProtocol, String name) {
     serializationManager.merge(moduleProtocol);
   }
 
+  /// Shuts down the Serverpod and all associated servers.
   void shutdown() {
     server.shutdown();
     _serviceServer?.shutdown();

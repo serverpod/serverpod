@@ -3,12 +3,20 @@ import 'package:yaml/yaml.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
 
+// TODO: Use this for statistics in the future. Also, add support for modules.
+
+/// The [MethodLookup] maps [Endpoint] method calls to integer values. It's
+/// designed to be persistent between server updates and consistent between
+/// servers in the same cluster. It's used for minimizing storage when saving
+/// server statistics.
 class MethodLookup {
-  final String protocolPath;
+  final String _protocolPath;
   final Map<String, int> _lookup = {};
 
-  MethodLookup(this.protocolPath);
+  /// Creates a new lookup class using the generated protocol file.
+  MethodLookup(this._protocolPath);
 
+  /// Loads the lookup from database.
   Future<void> load(DatabaseConnection dbConn) async {
     try {
       await _attemptLoad(dbConn);
@@ -24,7 +32,8 @@ class MethodLookup {
   }
 
   Future<void> _attemptLoad(DatabaseConnection dbConn) async {
-    var file = File(protocolPath);
+    // TODO: Use transactions for this.
+    var file = File(_protocolPath);
     Map endpoints = loadYaml(file.readAsStringSync());
 
     for (String endpoint in endpoints.keys) {
@@ -61,6 +70,7 @@ class MethodLookup {
     }
   }
 
+  /// Lookup the id of a specified method.
   int? lookupMethod(String endpoint, String method) {
     return _lookup['$endpoint.$method'];
   }

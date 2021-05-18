@@ -5,20 +5,40 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'database_connection.dart';
 
+/// Configuration for connecting to the Postgresql database.
 class DatabaseConfig {
+  /// Host name.
   final String host;
+
+  /// Port to connect to.
   final int port;
+
+  /// Name of the database to use.
   final String databaseName;
+
+  /// User name.
   final String userName;
+
+  /// Password.
   final String password;
+
   late SerializationManager _serializationManager;
+  /// Access to the serialization manager.
   SerializationManager get serializationManager => _serializationManager;
+
   late PgPool _pgPool;
+  /// Postgresql connection pool created from configuration.
   PgPool get pool => _pgPool;
 
+  /// Maps tables to classes, used internally by the server when communicating
+  /// with the database.
   final tableClassMapping; // = <String, String>{};
+
+  /// The encoder used to encode objects for storing in the database.
   static final PostgresTextEncoder encoder = PostgresTextEncoder();
 
+  /// Creates a new [DatabaseConfig]. Typically, this is done automatically
+  /// when starting the [Server].
   DatabaseConfig(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password)
       : tableClassMapping = serializationManager.tableClassMapping {
     _serializationManager = serializationManager;
@@ -40,5 +60,8 @@ class DatabaseConfig {
     );
   }
 
+  /// Used internally by the [Server]. Creates a new connection to the database.
+  /// Typically, the [Database] provided by the [Session] object should be used
+  /// to connect with the database.
   DatabaseConnection createConnection() => DatabaseConnection(this);
 }

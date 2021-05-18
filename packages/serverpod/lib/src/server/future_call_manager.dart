@@ -9,14 +9,23 @@ import '../generated/protocol.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:pedantic/pedantic.dart';
 
+/// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
+/// be called at a certain time in the future. The call request and its
+/// arguments are stored in the database, so it is persistent even if the
+/// [Serverpod] is restarted.
 class FutureCallManager {
   final Server _server;
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
 
+  /// Creates a new [FutureCallManager]. Typically, this is done internally by
+  /// the [Serverpod].
   FutureCallManager(this._server, this._serializationManager);
 
+  /// Schedules a [FutureCall] by its [name]. A [SerializableEntity] can be
+  /// passed as an argument. The `invoke` method of the [FutureCall] will
+  /// be called at or after the specified [time].
   Future<void> scheduleFutureCall(String name, SerializableEntity? object, DateTime time, int serverId) async {
     String? serialization;
     if (object != null)
@@ -29,11 +38,12 @@ class FutureCallManager {
       serverId: serverId,
     );
 
-    var dbConn = DatabaseConnection(_server.databaseConnection);
+    var dbConn = DatabaseConnection(_server.databaseConfig);
     await dbConn.insert(entry);
   }
 
-  void addFutureCall(FutureCall call, String name) {
+  /// Registers a [FutureCall] with the manager.
+  void registerFutureCall(FutureCall call, String name) {
     if (_futureCalls.containsKey(name))
       throw Exception('Added future call with duplicate name ($name)');
 
@@ -41,10 +51,12 @@ class FutureCallManager {
     _futureCalls[name] = call;
   }
 
+  /// Starts the manager.
   void start() {
     _run();
   }
 
+  /// Stops the manager.
   void stop() {
     _timer?.cancel();
     _timer = null;
@@ -55,7 +67,7 @@ class FutureCallManager {
   }
 
   Future<void> _checkQueue() async {
-    var dbConn = DatabaseConnection(_server.databaseConnection);
+    var dbConn = DatabaseConnection(_server.databaseConfig);
 
     try {
       // Get calls

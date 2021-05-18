@@ -13,35 +13,63 @@ import '../cache/caches.dart';
 import '../database/database_config.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
+/// Handling incoming calls and routing them to the correct [Endpoint]
+/// methods.
 class Server {
+  /// The [Serverpod] managing the server.
   final Serverpod serverpod;
+
+  /// The id of the server. If running in a cluster, all servers need unique
+  /// ids.
   final int serverId;
+
+  /// Port the server is listening on.
   final int port;
+
+  /// The [ServerpodRunMode] the server is running in.
   final String runMode;
-  DatabaseConfig databaseConnection;
+
+  /// Current database configuration.
+  DatabaseConfig databaseConfig;
+
+  /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
+
+  /// [AuthenticationHandler] responsible for authenticating users.
   final AuthenticationHandler? authenticationHandler;
+
+  /// Caches used by the server.
   final Caches caches;
+
+  /// The name of the server.
   final String name;
+
+  /// Security context if the server is running over https.
   final SecurityContext? securityContext;
+
+  /// Responsible for dispatching calls to the correct [Endpoint] methods.
   final EndpointDispatch endpoints;
 
   bool _running = false;
+  /// True if the server is currently running.
   bool get running => _running;
-  
+
   late final HttpServer _httpServer;
+  /// The [HttpServer] responsible for handling calls.
   HttpServer get httpServer => _httpServer;
 
   late final FutureCallManager _futureCallManager;
 
+  /// Currently not in use.
   List<String>? whitelistedExternalCalls;
 
+  /// Creates a new [Server] object.
   Server({
     required this.serverpod,
     required this.serverId,
     required this.port,
     required this.serializationManager,
-    required this.databaseConnection,
+    required this.databaseConfig,
     Map<String, String>? passwords,
     required this.runMode,
     this.authenticationHandler,
@@ -57,15 +85,26 @@ class Server {
     _futureCallManager = FutureCallManager(this, serializationManager);
   }
 
+  /// Registers a future call by its name.
   void registerFutureCall(FutureCall call, String name) {
-    _futureCallManager.addFutureCall(call, name);
+    _futureCallManager.registerFutureCall(call, name);
   }
 
-  void callWithDelay(String callName, SerializableEntity? object, Duration delay) {
+  /// Calls a [FutureCall] by its name after the specified delay, optionally
+  /// passing a [SerializableEntity] object as parameter.
+  void futureCallWithDelay(String callName, SerializableEntity? object, Duration delay) {
     assert(_running, 'Server is not running, call start() before using future calls');
     _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
   }
 
+  /// Calls a [FutureCall] by its name at the specified time, optionally passing
+  /// a [SerializableEntity] object as parameter.
+  void futureCallAtTime(String callName, SerializableEntity? object, DateTime time) {
+    assert(_running, 'Server is not running, call start() before using future calls');
+    _futureCallManager.scheduleFutureCall(callName, object, time, serverId);
+  }
+
+  /// Starts the server.
   Future<void> start() async {
     if (securityContext != null) {
       await HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then(
@@ -220,8 +259,8 @@ class Server {
       await request.response.close();
       return;
     }
-    else {
-      var serializedEntity = serializationManager.serializeEntity(result);
+    else if (result is ResultSuccess) {
+      var serializedEntity = serializationManager.serializeEntity(result.returnValue);
       request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
       request.response.headers.add('Access-Control-Allow-Origin', '*');
       request.response.write(serializedEntity);
@@ -243,11 +282,12 @@ class Server {
     return Utf8Decoder().convert(data);
   }
 
-  Future _handleUriCall(Uri uri, String body, HttpRequest request) async {
+  Future<Result> _handleUriCall(Uri uri, String body, HttpRequest request) async {
     var endpointName = uri.path.substring(1);
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
   }
 
+  /// Shuts the server down.
   void shutdown() {
     _httpServer.close();
     _futureCallManager.stop();

@@ -6,8 +6,8 @@ import '../cache/cache.dart';
 
 import 'package:serverpod/src/server/health_check.dart';
 
-const endpointNameInsights = 'insights';
-
+/// The [InsightsEndpoint] provides a way to access real time information from
+/// the running server or to change settings.
 class InsightsEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
@@ -15,18 +15,23 @@ class InsightsEndpoint extends Endpoint {
   @override
   bool get logSessions => server.serverpod.runtimeSettings.logServiceCalls;
 
+  /// Get the current [RuntimeSettings] from the running [Server].
   Future<RuntimeSettings> getRuntimeSettings(Session session) async {
     return server.serverpod.runtimeSettings;
   }
 
+  /// Update the current [RuntimeSettings] in the running [Server].
   Future<void> setRuntimeSettings(Session session, RuntimeSettings runtimeSettings) async {
     server.serverpod.runtimeSettings = runtimeSettings;
   }
 
+  /// Reload the current [RuntimeSettings] in the running [Server] from what's
+  /// stored in the database.
   Future<void> reloadRuntimeSettings(Session session) async {
     await server.serverpod.reloadRuntimeSettings();
   }
-  
+
+  /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
     await session.db.delete(
       tSessionLogEntry,
@@ -42,6 +47,7 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
+  /// Get the latest [numEntries] from the message log.
   Future<LogResult> getLog(Session session, int? numEntries) async {
     var rows = await session.db.find(
       tLogEntry,
@@ -54,6 +60,7 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
+  /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {
     var rows = (await session.db.find(
       tSessionLogEntry,
@@ -90,6 +97,7 @@ class InsightsEndpoint extends Endpoint {
     return SessionLogResult(sessionLog: sessionLogInfo);
   }
 
+  /// Retrieve information about the state of the caches on this server.
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {
     return CachesInfo(
       local: _getCacheInfo(pod.caches.local, fetchKeys),
@@ -107,10 +115,12 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
+  /// Safely shuts down this [ServerPod].
   Future<void> shutdown(Session session) async {
     server.serverpod.shutdown();
   }
 
+  /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth(Session session) async {
     return await performHealthChecks(pod);
   }

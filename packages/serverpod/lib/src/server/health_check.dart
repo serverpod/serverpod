@@ -3,6 +3,7 @@ import 'dart:math';
 import '../generated/protocol.dart';
 import '../../serverpod.dart';
 
+/// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
   var metrics = <ServerHealthMetric>[];
   if (pod.healthCheckHandler != null) {
@@ -17,6 +18,7 @@ Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
   );
 }
 
+/// Performs all default health checks on the [Serverpod].
 Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async {
   /*
   // Check cpu
@@ -80,7 +82,7 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
     var startTime = DateTime.now();
     var rnd = Random().nextInt(1000000);
 
-    var databaseConnection = pod.database.createConnection();
+    var databaseConnection = pod.databaseConfig.createConnection();
 
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(

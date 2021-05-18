@@ -35,6 +35,8 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
         out += '/*   To generate run: "serverpod generate"    */\n';
         out += '\n';
+        out += '// ignore_for_file: public_member_api_docs\n';
+        out += '\n';
 
         if (serverCode)
           out += 'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
@@ -135,6 +137,7 @@ class ClassGeneratorDart extends ClassGenerator{
 
       // Ignore camel case warnings
       out += '// ignore_for_file: non_constant_identifier_names\n';
+      out += '// ignore_for_file: public_member_api_docs\n';
       out += '\n';
 
       if (serverCode) {
@@ -318,6 +321,8 @@ class ClassGeneratorDart extends ClassGenerator{
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
     out += '/*   To generate run: "serverpod generate"    */\n';
+    out += '\n';
+    out += '// ignore_for_file: public_member_api_docs\n';
     out += '\n';
     
     out+= 'library protocol;\n';
