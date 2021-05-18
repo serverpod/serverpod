@@ -167,8 +167,11 @@ class ClassGeneratorDart extends ClassGenerator{
 
       // Fields
       for (var field in fields) {
-        if (field.shouldIncludeField(serverCode))
+        if (field.shouldIncludeField(serverCode)) {
+          if (field.name == 'id' && serverCode && tableName != null)
+            out += '  @override\n';
           out += '  ${field.type.nullable ? '' : 'late '}${field.type.type} ${field.name};\n';
+        }
       }
       out += '\n';
 
@@ -247,6 +250,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '  ${className}Table() : super(tableName: \'$tableName\');\n';
         out += '\n';
 
+        out += '  @override\n';
         out += '  String tableName = \'$tableName\';\n';
 
         // Column descriptions
@@ -257,6 +261,7 @@ class ClassGeneratorDart extends ClassGenerator{
         out += '\n';
 
         // List of column values
+        out += '  @override\n';
         out += '  List<Column> get columns => [\n';
         for (var field in fields) {
           if (field.shouldSerializeFieldForDatabase(serverCode))

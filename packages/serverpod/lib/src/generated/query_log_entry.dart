@@ -13,6 +13,7 @@ class QueryLogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_query_log';
 
+  @override
   int? id;
   int? serverId;
   int? sessionLogId;
@@ -91,6 +92,7 @@ class QueryLogEntry extends TableRow {
 class QueryLogEntryTable extends Table {
   QueryLogEntryTable() : super(tableName: 'serverpod_query_log');
 
+  @override
   String tableName = 'serverpod_query_log';
   final id = ColumnInt('id');
   final serverId = ColumnInt('serverId');
@@ -101,6 +103,7 @@ class QueryLogEntryTable extends Table {
   final exception = ColumnString('exception');
   final stackTrace = ColumnString('stackTrace');
 
+  @override
   List<Column> get columns => [
     id,
     serverId,

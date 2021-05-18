@@ -13,6 +13,7 @@ class RuntimeSettings extends TableRow {
   @override
   String get tableName => 'serverpod_runtime_settings';
 
+  @override
   int? id;
   late bool logAllCalls;
   late bool logAllQueries;
@@ -115,6 +116,7 @@ class RuntimeSettings extends TableRow {
 class RuntimeSettingsTable extends Table {
   RuntimeSettingsTable() : super(tableName: 'serverpod_runtime_settings');
 
+  @override
   String tableName = 'serverpod_runtime_settings';
   final id = ColumnInt('id');
   final logAllCalls = ColumnBool('logAllCalls');
@@ -129,6 +131,7 @@ class RuntimeSettingsTable extends Table {
   final slowQueryDuration = ColumnDouble('slowQueryDuration');
   final slowCallDuration = ColumnDouble('slowCallDuration');
 
+  @override
   List<Column> get columns => [
     id,
     logAllCalls,

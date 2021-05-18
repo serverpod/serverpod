@@ -13,6 +13,7 @@ class MethodInfo extends TableRow {
   @override
   String get tableName => 'serverpod_method';
 
+  @override
   int? id;
   late String endpoint;
   late String method;
@@ -61,11 +62,13 @@ class MethodInfo extends TableRow {
 class MethodInfoTable extends Table {
   MethodInfoTable() : super(tableName: 'serverpod_method');
 
+  @override
   String tableName = 'serverpod_method';
   final id = ColumnInt('id');
   final endpoint = ColumnString('endpoint');
   final method = ColumnString('method');
 
+  @override
   List<Column> get columns => [
     id,
     endpoint,

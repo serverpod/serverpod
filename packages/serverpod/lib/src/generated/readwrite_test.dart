@@ -13,6 +13,7 @@ class ReadWriteTestEntry extends TableRow {
   @override
   String get tableName => 'serverpod_readwrite_test';
 
+  @override
   int? id;
   late int number;
 
@@ -55,10 +56,12 @@ class ReadWriteTestEntry extends TableRow {
 class ReadWriteTestEntryTable extends Table {
   ReadWriteTestEntryTable() : super(tableName: 'serverpod_readwrite_test');
 
+  @override
   String tableName = 'serverpod_readwrite_test';
   final id = ColumnInt('id');
   final number = ColumnInt('number');
 
+  @override
   List<Column> get columns => [
     id,
     number,

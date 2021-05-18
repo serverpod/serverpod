@@ -13,6 +13,7 @@ class LogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_log';
 
+  @override
   int? id;
   late int serverId;
   late DateTime time;
@@ -91,6 +92,7 @@ class LogEntry extends TableRow {
 class LogEntryTable extends Table {
   LogEntryTable() : super(tableName: 'serverpod_log');
 
+  @override
   String tableName = 'serverpod_log';
   final id = ColumnInt('id');
   final serverId = ColumnInt('serverId');
@@ -101,6 +103,7 @@ class LogEntryTable extends Table {
   final stackTrace = ColumnString('stackTrace');
   final sessionLogId = ColumnInt('sessionLogId');
 
+  @override
   List<Column> get columns => [
     id,
     serverId,

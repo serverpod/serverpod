@@ -13,6 +13,7 @@ class FutureCallEntry extends TableRow {
   @override
   String get tableName => 'serverpod_future_call';
 
+  @override
   int? id;
   late String name;
   late DateTime time;
@@ -73,6 +74,7 @@ class FutureCallEntry extends TableRow {
 class FutureCallEntryTable extends Table {
   FutureCallEntryTable() : super(tableName: 'serverpod_future_call');
 
+  @override
   String tableName = 'serverpod_future_call';
   final id = ColumnInt('id');
   final name = ColumnString('name');
@@ -80,6 +82,7 @@ class FutureCallEntryTable extends Table {
   final serializedObject = ColumnString('serializedObject');
   final serverId = ColumnInt('serverId');
 
+  @override
   List<Column> get columns => [
     id,
     name,
