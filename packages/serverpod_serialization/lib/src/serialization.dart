@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-typedef SerializableEntity constructor(Map<String, dynamic> serialization);
+typedef constructor = SerializableEntity Function(Map<String, dynamic> serialization);
 
 abstract class SerializableEntity {
   String get className;
@@ -67,13 +67,13 @@ abstract class SerializationManager {
   }
 
   void _appendConstructors(Map<String, constructor> map) {
-    for (String className in map.keys) {
+    for (var className in map.keys) {
       constructors[className] = map[className]!;
     }
   }
 
   void _appendTableClassMapping(Map<String, String> map) {
-    for (String tableName in map.keys) {
+    for (var tableName in map.keys) {
       tableClassMapping[tableName] = map[tableName]!;
     }
   }
