@@ -13,6 +13,7 @@ class SimpleData extends TableRow {
   @override
   String get tableName => 'simple_data';
 
+  @override
   int? id;
   late int num;
 
@@ -55,10 +56,12 @@ class SimpleData extends TableRow {
 class SimpleDataTable extends Table {
   SimpleDataTable() : super(tableName: 'simple_data');
 
+  @override
   String tableName = 'simple_data';
   final id = ColumnInt('id');
   final num = ColumnInt('num');
 
+  @override
   List<Column> get columns => [
     id,
     num,

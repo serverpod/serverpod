@@ -4,6 +4,7 @@ class ServerpodClientException implements Exception {
 
   const ServerpodClientException(this.message, this.statusCode);
 
+  @override
   String toString() {
     return ('ServerpodClientException: ${message.trim()}, statusCode = $statusCode');
   }

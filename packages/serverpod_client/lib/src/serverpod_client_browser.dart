@@ -32,16 +32,17 @@ class ServerpodClient extends ServerpodClientShared {
     _initialized = true;
   }
 
+  @override
   Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) async {
     if (!_initialized)
       await _initialize();
 
     String? data;
     try {
-      String body = formatArgs(args, _authorizationKey, method);
-      Uri url = Uri.parse('$host$endpoint');
+      var body = formatArgs(args, _authorizationKey, method);
+      var url = Uri.parse('$host$endpoint');
 
-      http.Response response = await _httpClient.post(
+      var response = await _httpClient.post(
         url,
         body: body,
       );
@@ -57,7 +58,7 @@ class ServerpodClient extends ServerpodClientShared {
     catch(e, stackTrace) {
       if (e is http.ClientException) {
         print('Failed call: $endpoint.$method');
-        String message = data == null ? 'Likely internal server error.' : data;
+        var message = data ?? 'Likely internal server error.';
         print(message);
         throw(ServerpodClientException(message, 500));
       }

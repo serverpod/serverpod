@@ -13,6 +13,7 @@ class Types extends TableRow {
   @override
   String get tableName => 'types';
 
+  @override
   int? id;
   int? anInt;
   bool? aBool;
@@ -79,6 +80,7 @@ class Types extends TableRow {
 class TypesTable extends Table {
   TypesTable() : super(tableName: 'types');
 
+  @override
   String tableName = 'types';
   final id = ColumnInt('id');
   final anInt = ColumnInt('anInt');
@@ -87,6 +89,7 @@ class TypesTable extends Table {
   final aDateTime = ColumnDateTime('aDateTime');
   final aString = ColumnString('aString');
 
+  @override
   List<Column> get columns => [
     id,
     anInt,

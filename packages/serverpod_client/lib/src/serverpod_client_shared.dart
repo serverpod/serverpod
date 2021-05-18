@@ -1,7 +1,7 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'auth_key_manager.dart';
 
-typedef void ServerpodClientErrorCallback(var e, StackTrace stackTrace);
+typedef ServerpodClientErrorCallback = void Function(dynamic e, StackTrace stackTrace);
 
 abstract class ServerpodClientShared extends EndpointCaller {
   final String host;
@@ -29,6 +29,7 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
   final ServerpodClientShared client;
   ModuleEndpointCaller(this.client);
 
+  @override
   Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) {
     return client.callServerEndpoint(endpoint, method, returnTypeName, args);
   }

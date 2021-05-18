@@ -60,16 +60,16 @@ class ServerpodClient extends ServerpodClientShared {
     try {
       var body = formatArgs(args, _authorizationKey, method);
 
-      Uri url = Uri.parse('$host$endpoint');
+      var url = Uri.parse('$host$endpoint');
 
-      HttpClientRequest request = await _httpClient.postUrl(url);
-      request.headers.contentType = new ContentType("application", "json", charset: "utf-8");
+      var request = await _httpClient.postUrl(url);
+      request.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
       request.contentLength = utf8.encode(body).length;
       request.write(body);
 
       await request.flush();
 
-      HttpClientResponse response = await request.close(); // done instead of close() ?
+      var response = await request.close(); // done instead of close() ?
       data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
@@ -92,8 +92,8 @@ class ServerpodClient extends ServerpodClientShared {
   }
 
   Future<dynamic> _readResponse(HttpClientResponse response) {
-    var completer = new Completer();
-    var contents = new StringBuffer();
+    var completer = Completer();
+    var contents = StringBuffer();
     response.transform(Utf8Decoder()).listen((String data) {
       contents.write(data);
     }, onDone: () => completer.complete(contents.toString()));

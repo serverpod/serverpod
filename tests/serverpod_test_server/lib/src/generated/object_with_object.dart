@@ -13,6 +13,7 @@ class ObjectWithObject extends TableRow {
   @override
   String get tableName => 'object_with_object';
 
+  @override
   int? id;
   late SimpleData data;
   SimpleData? nullableData;
@@ -85,6 +86,7 @@ class ObjectWithObject extends TableRow {
 class ObjectWithObjectTable extends Table {
   ObjectWithObjectTable() : super(tableName: 'object_with_object');
 
+  @override
   String tableName = 'object_with_object';
   final id = ColumnInt('id');
   final data = ColumnSerializable('data');
@@ -94,6 +96,7 @@ class ObjectWithObjectTable extends Table {
   final listWithNullableData = ColumnSerializable('listWithNullableData');
   final nullableListWithNullableData = ColumnSerializable('nullableListWithNullableData');
 
+  @override
   List<Column> get columns => [
     id,
     data,
