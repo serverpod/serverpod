@@ -4,7 +4,10 @@ BASE=`pwd`
 
 echo "Base directory $BASE"
 
-if test -z "$1"
+VERSION=`cat VERSION`
+VERSION=$VERSION | xargs
+
+if test -z "$VERSION"
 then
   echo "Version number is not defined"
   exit
@@ -17,11 +20,11 @@ else
   echo 'Git is clean'
 fi
 
-echo "Publish Serverpod version $1"
+echo "Publish Serverpod version $VERSION"
 
 echo "Updating pubspecs"
 cd $BASE
-serverpod generate-pubspecs --version $1 --mode production
+serverpod generate-pubspecs --version $VERSION --mode production
 
 echo "Publish packages"
 
