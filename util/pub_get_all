@@ -4,17 +4,13 @@ echo "server pod"
 cd packages/serverpod
 pub get
 
-echo "\nserverpod_cli"
-cd ../serverpod_cli
-pub get
-
 echo "\nserverpod_client"
 cd ../serverpod_client
 pub get
 
-echo "\nserverpod_gui"
-cd ../serverpod_gui
-flutter packages get
+echo "\nserverpod_relic"
+cd ../serverpod_relic
+pub get
 
 echo "\nserverpod_serialization"
 cd ../serverpod_serialization
@@ -29,9 +25,25 @@ cd ../serverpod_shared
 pub get
 
 echo "\nserverpod_test_client"
-cd ../serverpod_test_client
+cd ../../tests/serverpod_test_client
 pub get
 
 echo "\nserverpod_test_server"
 cd ../serverpod_test_server
 pub get
+
+echo "\nserverpod_test_module_client"
+cd ../serverpod_test_module/nserverpod_test_module_client
+pub get
+
+echo "\nserverpod_test_module_server"
+cd ../serverpod_test_module_server
+pub get
+
+echo "\nserverpod_cli"
+cd ../../../tools/serverpod_cli
+pub get
+
+# echo "\nserverpod_gui"
+# cd ../serverpod_gui
+# flutter packages get
