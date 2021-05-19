@@ -43,10 +43,10 @@ dart pub publish
 cd $BASE/tests/serverpod_test_client
 dart pub publish
 
-cd $BASE/tests/serverpod
+cd $BASE/packages/serverpod
 dart pub publish
 
-cd $BASE/tests/serverpod_relic
+cd $BASE/packages/serverpod_relic
 dart pub publish
 
 cd $BASE/tools/serverpod_cli
