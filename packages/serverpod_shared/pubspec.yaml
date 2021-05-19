@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_shared
-version: 0.8.2
+version: 0.8.3
 description: Severpod code that is shared between serverpod and tooling.
 
 environment:
@@ -11,5 +11,5 @@ environment:
 
 dependencies:
   yaml: ^3.1.0
-  serverpod_client: #^0.8.2
+  serverpod_client: #^0.8.3
     path: ../serverpod_client

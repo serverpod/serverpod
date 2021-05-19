@@ -1,0 +1,8 @@
+#!/bin/sh
+
+VERSION=`cat VERSION`
+VERSION=$VERSION | xargs
+
+echo "Update all pubspecs. Version is $VERSION."
+
+serverpod generate-pubspecs --version $VERSION --mode development
