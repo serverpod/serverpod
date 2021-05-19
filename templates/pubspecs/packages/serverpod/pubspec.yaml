@@ -1,4 +1,6 @@
 # TEMPLATE
+PUBLISH_TO
+
 name: serverpod
 version: VERSION
 description: Next generation app and web server.

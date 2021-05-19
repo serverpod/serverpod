@@ -22,6 +22,10 @@ void performGeneratePubspecs (String version, String mode) {
       dstDir: dirRoot,
       replacements: [
         Replacement(
+          slotName: 'PUBLISH_TO',
+          replacement: 'publish_to: none',
+        ),
+        Replacement(
           slotName: 'VERSION',
           replacement: version,
         ),
@@ -40,6 +44,10 @@ void performGeneratePubspecs (String version, String mode) {
       srcDir: dirTemplates,
       dstDir: dirRoot,
       replacements: [
+        Replacement(
+          slotName: 'PUBLISH_TO',
+          replacement: '',
+        ),
         Replacement(
           slotName: 'VERSION',
           replacement: version,

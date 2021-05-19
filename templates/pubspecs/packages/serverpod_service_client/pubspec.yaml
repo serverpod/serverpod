@@ -1,4 +1,5 @@
 # TEMPLATE
+PUBLISH_TO
 
 name: serverpod_service_client
 version: VERSION

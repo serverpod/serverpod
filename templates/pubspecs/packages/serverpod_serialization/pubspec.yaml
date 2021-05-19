@@ -1,4 +1,5 @@
 # TEMPLATE
+PUBLISH_TO
 
 name: serverpod_serialization
 version: VERSION
