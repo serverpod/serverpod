@@ -10,21 +10,28 @@ then
   exit
 fi
 
+if [[ $(git diff --stat) != '' ]]; then
+  echo 'Git is dirty. Please commit all changes before publishing.'
+  exit
+else
+  echo 'Git is clean'
+fi
+
 echo "Publish Serverpod version $1"
 
-echo "Updating pubspecs"
-cd $BASE
-serverpod generate-pubspecs --version $1 --mode production
-echo "pub get"
-util/pub_get_all
-
-echo "Publish packages"
-
-# cd packages/serverpod_serialization
-# pub publish
-
-cd $BASE
-echo "Restore pubspecs"
-serverpod generate-pubspecs --version $1 --mode development
-echo "pub get"
-util/pub_get_all
+# echo "Updating pubspecs"
+# cd $BASE
+# serverpod generate-pubspecs --version $1 --mode production
+# echo "pub get"
+# util/pub_get_all
+#
+# echo "Publish packages"
+#
+# # cd packages/serverpod_serialization
+# # pub publish
+#
+# cd $BASE
+# echo "Restore pubspecs"
+# serverpod generate-pubspecs --version $1 --mode development
+# echo "pub get"
+# util/pub_get_all
