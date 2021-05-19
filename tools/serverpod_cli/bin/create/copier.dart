@@ -70,7 +70,7 @@ class Copier {
       var lines = str.split('\n');
       var processedLines = <String>[];
       for (var line in lines) {
-        if (line.trim().startsWith(prefix))
+        if (line.trim().startsWith(prefix) && !line.trim().startsWith('path: ^'))
           continue;
         processedLines.add(line);
       }

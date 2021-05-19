@@ -13,6 +13,7 @@ dependencies:
   pedantic: ^1.11.0
   args: ^2.0.0
   collection: ^1.15.0
+  crypto: ^3.0.1
   postgres: ^2.3.0
   serverpod_postgres_pool: ^2.1.1
   yaml: ^3.1.0
