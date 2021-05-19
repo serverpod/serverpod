@@ -54,7 +54,7 @@ void performGeneratePubspecs (String version, String mode) {
         ),
       ],
       fileNameReplacements: [],
-      removePrefixes: ['path', 'serverpod_test_client'],
+      removePrefixes: ['path'],
     );
     copier.copyFiles();
   }

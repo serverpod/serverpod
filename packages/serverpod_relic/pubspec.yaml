@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: serverpod_relic
 version: 0.8.0
 description: Web server for Serverpod (still experimental, but working).
@@ -8,5 +11,5 @@ environment:
 dependencies:
   mustache_template: ^2.0.0
   yaml: ^3.1.0
-  serverpod:
+  serverpod: #^0.8.0
     path: ../serverpod

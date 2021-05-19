@@ -1,3 +1,5 @@
+# TEMPLATE
+
 name: serverpod_serialization
 version: VERSION
 description: Serialization package for Serverpod.

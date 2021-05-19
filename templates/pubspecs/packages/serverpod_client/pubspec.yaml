@@ -1,3 +1,5 @@
+# TEMPLATE
+
 name: serverpod_client
 version: VERSION
 description: Base classes for communication with the server.

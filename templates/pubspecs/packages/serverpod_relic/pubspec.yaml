@@ -1,3 +1,5 @@
+# TEMPLATE
+
 name: serverpod_relic
 version: VERSION
 description: Web server for Serverpod (still experimental, but working).

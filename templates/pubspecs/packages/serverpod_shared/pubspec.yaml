@@ -1,3 +1,5 @@
+# TEMPLATE
+
 name: serverpod_shared
 version: VERSION
 description: Severpod code that is shared between serverpod and tooling.

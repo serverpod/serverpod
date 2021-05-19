@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: serverpod_serialization
 version: 0.8.0
 description: Serialization package for Serverpod.

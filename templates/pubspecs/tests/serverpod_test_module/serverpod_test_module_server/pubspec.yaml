@@ -1,15 +1,14 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: serverpod_test_module_server
-version: 0.8.0
+version: VERSION
 description: A simple Serverpod module.
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  serverpod: #^0.8.0
+  serverpod: #^VERSION
     path: ../../../packages/serverpod
 
 dev_dependencies:
