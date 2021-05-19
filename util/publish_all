@@ -22,19 +22,34 @@ echo "Publish Serverpod version $1"
 echo "Updating pubspecs"
 cd $BASE
 serverpod generate-pubspecs --version $1 --mode production
-echo "dart pub get"
-util/pub_get_all
-#
-# echo "Publish packages"
-#
-# # cd packages/serverpod_serialization
-# # pub publish
-#
-# cd $BASE
-# echo "Restore pubspecs"
-# serverpod generate-pubspecs --version $1 --mode development
-# echo "pub get"
-# util/pub_get_all
+
+echo "Publish packages"
+
+cd $BASE/packages/serverpod_serialization
+dart pub publish
+
+cd $BASE/packages/serverpod_client
+dart pub publish
+
+cd $BASE/packages/serverpod_service_client
+dart pub publish
+
+cd $BASE/packages/serverpod_shared
+dart pub publish
+
+cd $BASE/tests/serverpod_test_module/serverpod_test_module_client
+dart pub publish
+
+cd $BASE/tests/serverpod_test_client
+dart pub publish
+
+cd $BASE/tests/serverpod
+dart pub publish
+
+cd $BASE/tests/serverpod_relic
+dart pub publish
+
+cd $BASE/tools/serverpod_cli
 
 echo "Restore pubspecs"
 cd $BASE

@@ -1,0 +1,23 @@
+# TEMPLATE
+PUBLISH_TO
+
+name: serverpod_cli
+version: VERSION
+description: Command line tools for Serverpod.
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  args: ^2.0.0
+  colorize: ^3.0.0
+  intl: ^0.17.0
+  recase: ^4.0.0-nullsafety.0
+  watcher: ^1.0.0
+  analyzer: ^1.3.0
+  path: ^1.8.0
+  serverpod_shared: #^VERSION
+    path: ../../packages/serverpod_shared
+
+executables:
+  serverpod: serverpod_cli
