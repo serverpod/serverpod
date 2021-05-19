@@ -1,5 +1,5 @@
 name: serverpod_relic
-version: 0.9.0
+version: VERSION
 description: Web server for Serverpod (still experimental, but working).
 
 environment:

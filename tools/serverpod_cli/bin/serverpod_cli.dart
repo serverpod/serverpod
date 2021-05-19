@@ -7,6 +7,7 @@ import 'create/create.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 // import 'insights/insights.dart';
+import 'internal_tools/generate_pubspecs.dart';
 import 'shared/environment.dart';
 
 final cmdCreate = 'create';
@@ -20,6 +21,7 @@ final cmdCacheInfo = 'cacheinfo';
 final cmdServerAddress = 'serveraddress';
 final cmdServerIds = 'serverids';
 final cmdHealthCheck = 'healthcheck';
+final cmdGeneratePubspecs = 'generate-pubspecs';
 
 final runModes = <String>['development', 'staging', 'production'];
 
@@ -91,6 +93,12 @@ void main(List<String> args) async {
   healthCheckParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdHealthCheck, healthCheckParser);
 
+  // "generate-pubspecs"
+  var generatePubspecs = ArgParser();
+  generatePubspecs.addOption('version', defaultsTo: 'X');
+  generatePubspecs.addOption('mode', defaultsTo: 'development', allowed: ['development', 'production']);
+  parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
+
   var results = parser.parse(args);
 
   if (results.command != null) {
@@ -158,6 +166,14 @@ void main(List<String> args) async {
     if (results.command!.name == cmdServerIds) {
       var configInfo = ConfigInfo(results.command!['config']);
       configInfo.printIds();
+      return;
+    }
+    if (results.command!.name == cmdGeneratePubspecs) {
+      if (results.command!['version'] == 'X') {
+        print('--version is not specified');
+        return;
+      }
+      performGeneratePubspecs(results.command!['version'], results.command!['mode']);
       return;
     }
   }

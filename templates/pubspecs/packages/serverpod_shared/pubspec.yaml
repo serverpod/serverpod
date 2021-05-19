@@ -1,5 +1,5 @@
 name: serverpod_shared
-version: 0.9.0
+version: VERSION
 description: Severpod code that is shared between serverpod and tooling.
 
 environment:
