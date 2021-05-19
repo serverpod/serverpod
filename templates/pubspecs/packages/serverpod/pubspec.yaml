@@ -12,7 +12,7 @@ dependencies:
   postgres: ^2.3.0
 #  postgres_pool: ^2.1.0
   postgres_pool:
-    path: ../../../postgres_pool
+    git: https://github.com/serverpod/postgres_pool.git
   yaml: ^3.1.0
   serverpod_shared: #^VERSION
     path: ../serverpod_shared
