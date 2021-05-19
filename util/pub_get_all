@@ -2,7 +2,7 @@
 
 BASE=`pwd`
 
-echo "server pod"
+echo "serverpod"
 cd $BASE/packages/serverpod
 dart pub get
 

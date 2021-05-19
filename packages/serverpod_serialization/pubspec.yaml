@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_serialization
-version: 0.8.0
+version: 0.8.2
 description: Serialization package for Serverpod.
 
 environment:

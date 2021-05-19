@@ -22,8 +22,12 @@ dependencies:
     path: ../serverpod_serialization
   serverpod_service_client: #^VERSION
     path: ../serverpod_service_client
+  serverpod_client: #^VERSION
+    path: ../serverpod_client
 
 dev_dependencies:
   test: ^1.16.8
   serverpod_test_client:
     path: ../../tests/serverpod_test_client
+  serverpod_test_module_client: #^VERSION
+    path: ../../tests/serverpod_test_module/serverpod_test_module_client
