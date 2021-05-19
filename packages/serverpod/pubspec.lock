@@ -211,13 +211,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.0"
-  postgres_pool:
-    dependency: "direct main"
-    description:
-      path: "../../../postgres_pool"
-      relative: true
-    source: path
-    version: "2.1.0"
   pub_semver:
     dependency: transitive
     description:
@@ -239,6 +232,13 @@ packages:
       relative: true
     source: path
     version: "0.8.0"
+  serverpod_postgres_pool:
+    dependency: "direct main"
+    description:
+      name: serverpod_postgres_pool
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   serverpod_serialization:
     dependency: "direct main"
     description:
@@ -266,14 +266,14 @@ packages:
       path: "../../tests/serverpod_test_client"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.8.0"
   serverpod_test_module_client:
     dependency: transitive
     description:
       path: "../../tests/serverpod_test_module/serverpod_test_module_client"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.8.0"
   shelf:
     dependency: transitive
     description:

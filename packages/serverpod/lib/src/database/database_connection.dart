@@ -5,7 +5,7 @@ import '../generated/protocol.dart';
 import 'database_config.dart';
 import 'table.dart';
 import 'expressions.dart';
-import 'package:postgres_pool/postgres_pool.dart';
+import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import '../server/session.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
