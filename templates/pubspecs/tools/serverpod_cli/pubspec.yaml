@@ -16,6 +16,7 @@ dependencies:
   watcher: ^1.0.0
   analyzer: ^1.3.0
   path: ^1.8.0
+  yaml: ^3.1.0
   serverpod_shared: #^VERSION
     path: ../../packages/serverpod_shared
 
