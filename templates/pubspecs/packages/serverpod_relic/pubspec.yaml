@@ -8,5 +8,5 @@ environment:
 dependencies:
   mustache_template: ^2.0.0
   yaml: ^3.1.0
-  serverpod:
+  serverpod: #^VERSION
     path: ../serverpod
