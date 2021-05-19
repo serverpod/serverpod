@@ -275,7 +275,7 @@ class Server {
     var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
-      if (len > serverpod.config.maxRequestSize!)
+      if (len > serverpod.config.maxRequestSize)
         return null;
       data += segment;
     }

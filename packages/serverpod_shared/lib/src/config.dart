@@ -1,25 +1,49 @@
 import 'dart:io';
 import 'package:yaml/yaml.dart';
 
+/// Parser for the server configuration file.
 class ServerConfig {
+  /// Path to the configuration file.
   final String file;
+
+  /// The servers run mode.
   final String runMode;
+
+  /// Id of the current server.
   final int serverId;
 
+  /// Port the server is running on.
   int? port;
-  int? servicePort;
-  int? maxRequestSize;
 
+  /// Service port of the server.
+  int? servicePort;
+
+  /// Max limit in bytes of requests to the server.
+  late int maxRequestSize;
+
+  /// Database host.
   String? dbHost;
+
+  /// Database port.
   int? dbPort;
+
+  /// Database user name.
   String? dbUser;
+
+  /// Database password.
   String? dbPass;
+
+  /// Database name.
   String? dbName;
 
+  /// Authentication key for service protocol.
   String? serviceSecret;
 
+  /// Configuration for other servers in the same cluster.
   Map<int, RemoteServerConfig> cluster = <int, RemoteServerConfig>{};
 
+  /// Loads and parses a server configuration file. Picks config file depending
+  /// on run mode.
   ServerConfig(this.runMode, this.serverId) : file = 'config/$runMode.yaml' {
     var data = File(file).readAsStringSync();
     var doc = loadYaml(data);
@@ -48,6 +72,7 @@ class ServerConfig {
     }
   }
 
+  /// Returns true if database is fully configured.
   bool get dbConfigured => dbHost != null && dbPort != null && dbUser != null && dbPass != null && dbName != null;
 
   @override
@@ -72,12 +97,21 @@ class ServerConfig {
   }
 }
 
+/// Represents a configuration of a server in the same cluster.
 class RemoteServerConfig {
+  /// Id of the server.
   final int serverId;
+
+  /// Port the server is running on.
   int port;
+
+  /// Service port of the server.
   int servicePort;
+
+  /// Address through which the server can be accessed.
   String address;
 
+  /// Creates a new [RemoteServerConfig].
   RemoteServerConfig(this.serverId, Map data) :
         port = data['port'] ?? 8080,
         servicePort = data['servicePort'] ?? 8081,
