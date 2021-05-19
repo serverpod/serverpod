@@ -9,6 +9,8 @@ class Copier {
   List<Replacement> replacements;
   List<Replacement> fileNameReplacements;
 
+  List<String> removePrefixes;
+
   bool verbose;
 
   Copier({
@@ -17,6 +19,7 @@ class Copier {
     required this.replacements,
     required this.fileNameReplacements,
     this.verbose = false,
+    this.removePrefixes = const <String>[],
   });
 
   void copyFiles() {
@@ -49,6 +52,7 @@ class Copier {
     var dstFile = File('${dstDir.path}/$dstFileName');
     var contents = srcFile.readAsStringSync();
     contents = _replace(contents, replacements);
+    contents = _filterLines(contents, removePrefixes);
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
   }
@@ -56,6 +60,21 @@ class Copier {
   String _replace(String str, List<Replacement> replacements) {
     for (var replacement in replacements) {
       str = str.replaceAll(replacement.slotName, replacement.replacement);
+    }
+    return str;
+  }
+
+
+  String _filterLines(String str, List<String> prefixes) {
+    for (var prefix in prefixes) {
+      var lines = str.split('\n');
+      var processedLines = <String>[];
+      for (var line in lines) {
+        if (line.trim().startsWith(prefix))
+          continue;
+        processedLines.add(line);
+      }
+      str = processedLines.join('\n');
     }
     return str;
   }
