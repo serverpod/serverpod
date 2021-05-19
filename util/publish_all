@@ -19,11 +19,11 @@ fi
 
 echo "Publish Serverpod version $1"
 
-# echo "Updating pubspecs"
-# cd $BASE
-# serverpod generate-pubspecs --version $1 --mode production
-# echo "pub get"
-# util/pub_get_all
+echo "Updating pubspecs"
+cd $BASE
+serverpod generate-pubspecs --version $1 --mode production
+echo "dart pub get"
+util/pub_get_all
 #
 # echo "Publish packages"
 #
@@ -35,3 +35,10 @@ echo "Publish Serverpod version $1"
 # serverpod generate-pubspecs --version $1 --mode development
 # echo "pub get"
 # util/pub_get_all
+
+echo "Restore pubspecs"
+cd $BASE
+git reset --hard HEAD
+
+echo "dart pub get"
+util/pub_get_all
