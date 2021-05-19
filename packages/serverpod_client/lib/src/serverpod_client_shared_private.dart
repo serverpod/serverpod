@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+/// Encodes arguments for serialization.
 String formatArgs(Map<String, dynamic> args, String? authorizationKey, String method) {
   var formattedArgs = <String, String?>{};
 
@@ -20,6 +21,7 @@ String formatArgs(Map<String, dynamic> args, String? authorizationKey, String me
   return jsonEncode(formattedArgs);
 }
 
+/// Deserializes data sent from the server based on the return type.
 dynamic parseData(String data, String returnTypeName, SerializationManager serializationManager) {
   // TODO: Support more types!
   if (returnTypeName == 'int')

@@ -7,11 +7,16 @@ import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 import 'auth_key_manager.dart';
 
-class ServerpodClient extends ServerpodClientShared {
+/// Handles communication with the server. Is typically overridden by
+/// generated code to provide implementations of methods for calling the server.
+/// This is the concrete implementation using the http library
+/// (for Flutter web).
+abstract class ServerpodClient extends ServerpodClientShared {
   late http.Client _httpClient;
   String? _authorizationKey;
   bool _initialized = false;
 
+  /// Creates a new ServerpodClient.
   ServerpodClient(String host, SerializationManager serializationManager, {
     dynamic context,
     ServerpodClientErrorCallback? errorHandler,
@@ -75,6 +80,7 @@ class ServerpodClient extends ServerpodClientShared {
     }
   }
 
+  /// Sets the authorization key to manage user sign-ins.
   Future<Null> setAuthorizationKey(String authorizationKey) async {
     _authorizationKey = authorizationKey;
 
@@ -82,6 +88,7 @@ class ServerpodClient extends ServerpodClientShared {
       await authenticationKeyManager!.put(authorizationKey);
   }
 
+  /// Closes the connection to the server.
   void close() {
     _httpClient.close();
   }
