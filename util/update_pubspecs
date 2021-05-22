@@ -6,3 +6,13 @@ VERSION=$VERSION | xargs
 echo "Update all pubspecs. Version is $VERSION."
 
 serverpod generate-pubspecs --version $VERSION --mode development
+
+echo "Copying CHANGELOG.md"
+cp CHANGELOG.md packages/serverpod/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_client/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_relic/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_serialization/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
+cp CHANGELOG.md templates/serverpod_templates/CHANGELOG.md
+cp CHANGELOG.md tools/serverpod_cli/CHANGELOG.md
