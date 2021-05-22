@@ -52,6 +52,9 @@ dart pub publish
 cd $BASE/packages/serverpod_relic
 dart pub publish
 
+cd $BASE/templates/serverpod_templates
+dart pub publish
+
 cd $BASE/tools/serverpod_cli
 dart pub publish
 
