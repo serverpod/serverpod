@@ -4,6 +4,7 @@ PUBLISH_TO
 name: serverpod_service_client
 version: VERSION
 description: Generated client for the Severpod service protocol.
+repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

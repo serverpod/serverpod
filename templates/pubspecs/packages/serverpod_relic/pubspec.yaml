@@ -4,6 +4,7 @@ PUBLISH_TO
 name: serverpod_relic
 version: VERSION
 description: Web server for Serverpod (still experimental, but working).
+repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

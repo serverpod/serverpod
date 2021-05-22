@@ -4,6 +4,7 @@ PUBLISH_TO
 name: serverpod_cli
 version: VERSION
 description: Command line tools for Serverpod.
+repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
