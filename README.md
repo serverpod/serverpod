@@ -4,7 +4,7 @@ Serverpod is a next-generation app and web server, explicitly built for the Flut
 
 ___Please note that Serverpod is still in early-stage development, and things may frequently change over the next few months.___
 
-Every design decision made in Serverpod aims to minimize the amount of code that needs to be written and make it as readable as possible. Apart from being just a server, it incorporates many common tasks that are otherwise cumbersome to implement or require external services.
+Every design decision made in Serverpod aims to minimize the amount of code that needs to be written and make it as readable as possible. Apart from being just a server, Serverpod incorporates many common tasks that are otherwise cumbersome to implement or require external services.
 
 - Serverpod will automatically generate the protocol and client-side code by analyzing your server. Calling a remote endpoint is as easy as making a local method call — no more deciphering and parsing REST API responses.
 - Connecting the database has never been easier. Database rows are represented by typed Dart classes and can even be serialized and sent directly to the client.
@@ -40,7 +40,7 @@ This command will create a new directory called `mypod`, with two dart packages 
 Now that the project has been created, you need to hook it up with the database. Open the `mypod_server` package in your favorite IDE. Edit the `config/development.yaml` file and replace `DATABASE_NAME` and `DATABASE_USER` with the database name and the user name required to connect to the database. You most likely set this up when you installed your Postgresql database. Open `config/passwords.yaml` and replace the `DATABASE_PASSWORD` with the password for the database.
 
 ### Create the default set of tables
-Finally, you need to populate the database with some tables that Serverpod uses internally. To do this, connect to your database and run the queries [found here](foo).
+Finally, you need to populate the database with some tables that Serverpod uses internally. To do this, connect to your database and run the queries [found here](https://github.com/serverpod/serverpod/blob/master/docs/database_setup.pgsql).
 
 ### Start the server
 Now you should be all set to run your server. Start it by changing into the mypod_server directory and type:
@@ -55,8 +55,8 @@ If everything is working you should see something like this on your terminal:
     port: 8080
     database host: localhost
     database port: 5432
-    database name: serverpod_test
-    database user: postgres
+    database name: mydatabase
+    database user: myusername
     database pass: ********
     Insights listening on port 8081
     Server id 0 listening on port 8080
