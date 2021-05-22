@@ -47,7 +47,14 @@ void performCreate(String name, bool verbose, String template) {
         ),
       ],
       fileNameReplacements: [
-        Replacement(slotName: 'PROJECTNAME', replacement: name),
+        Replacement(
+          slotName: 'PROJECTNAME',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
@@ -74,7 +81,14 @@ void performCreate(String name, bool verbose, String template) {
         ),
       ],
       fileNameReplacements: [
-        Replacement(slotName: 'PROJECTNAME', replacement: name),
+        Replacement(
+          slotName: 'PROJECTNAME',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
@@ -85,7 +99,7 @@ void performCreate(String name, bool verbose, String template) {
   else if (template == 'module') {
     // Copy server files
     var copier = Copier(
-      srcDir: Directory('$serverpodHome/templates/MODULENAME_server'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/MODULENAME_server'),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -93,20 +107,33 @@ void performCreate(String name, bool verbose, String template) {
           replacement: name,
         ),
         Replacement(
-          slotName: '../../packages/serverpod',
-          replacement: '$serverpodHome/packages/serverpod',
+          slotName: '#^',
+          replacement: '^',
+        ),
+        Replacement(
+          slotName: 'VERSION',
+          replacement: templateVersion,
         ),
       ],
       fileNameReplacements: [
-        Replacement(slotName: 'MODULENAME', replacement: name),
+        Replacement(
+          slotName: 'MODULENAME',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
       ],
+      removePrefixes: ['path'],
+      ignoreFileNames: ['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();
 
     // Copy client files
     copier = Copier(
-      srcDir: Directory('$serverpodHome/templates/MODULENAME_client'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/MODULENAME_client'),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -114,13 +141,26 @@ void performCreate(String name, bool verbose, String template) {
           replacement: name,
         ),
         Replacement(
-          slotName: '../../packages/serverpod',
-          replacement: '$serverpodHome/packages/serverpod',
+          slotName: '#^',
+          replacement: '^',
+        ),
+        Replacement(
+          slotName: 'VERSION',
+          replacement: templateVersion,
         ),
       ],
       fileNameReplacements: [
-        Replacement(slotName: 'MODULENAME', replacement: name),
+        Replacement(
+          slotName: 'MODULENAME',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
       ],
+      removePrefixes: ['path'],
+      ignoreFileNames: ['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();
