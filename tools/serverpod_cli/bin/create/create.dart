@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import '../generated/version.dart';
 import 'copier.dart';
+
+import '../downloads/resource_manager.dart';
 import '../shared/environment.dart';
 
 void performCreate(String name, bool verbose, String template) {
@@ -27,7 +30,7 @@ void performCreate(String name, bool verbose, String template) {
   if (template == 'server') {
     // Copy server files
     var copier = Copier(
-      srcDir: Directory('$serverpodHome/templates/PROJECTNAME_server'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -35,20 +38,26 @@ void performCreate(String name, bool verbose, String template) {
           replacement: name,
         ),
         Replacement(
-          slotName: '../../packages/serverpod',
-          replacement: '$serverpodHome/packages/serverpod',
+          slotName: '#^',
+          replacement: '^',
+        ),
+        Replacement(
+          slotName: 'VERSION',
+          replacement: templateVersion,
         ),
       ],
       fileNameReplacements: [
         Replacement(slotName: 'PROJECTNAME', replacement: name),
       ],
+      removePrefixes: ['path'],
+      ignoreFileNames: ['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();
 
     // Copy client files
     copier = Copier(
-      srcDir: Directory('$serverpodHome/templates/PROJECTNAME_client'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -56,13 +65,19 @@ void performCreate(String name, bool verbose, String template) {
           replacement: name,
         ),
         Replacement(
-          slotName: '../../packages/serverpod',
-          replacement: '$serverpodHome/packages/serverpod',
+          slotName: '#^',
+          replacement: '^',
+        ),
+        Replacement(
+          slotName: 'VERSION',
+          replacement: templateVersion,
         ),
       ],
       fileNameReplacements: [
         Replacement(slotName: 'PROJECTNAME', replacement: name),
       ],
+      removePrefixes: ['path'],
+      ignoreFileNames: ['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();

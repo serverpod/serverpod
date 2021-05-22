@@ -33,6 +33,10 @@ void performGeneratePubspecs (String version, String mode) {
           slotName: '# TEMPLATE',
           replacement: '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
         ),
+        Replacement(
+          slotName: 'PRODUCTION_MODE',
+          replacement: 'false',
+        ),
       ],
       fileNameReplacements: [],
     );
@@ -59,6 +63,10 @@ void performGeneratePubspecs (String version, String mode) {
         Replacement(
           slotName: '#^',
           replacement: '^',
+        ),
+        Replacement(
+          slotName: 'PRODUCTION_MODE',
+          replacement: 'true',
         ),
       ],
       fileNameReplacements: [],

@@ -4,6 +4,7 @@ import 'package:colorize/colorize.dart';
 import 'certificates/generator.dart';
 import 'config_info/config_info.dart';
 import 'create/create.dart';
+import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 // import 'insights/insights.dart';
@@ -28,6 +29,21 @@ final runModes = <String>['development', 'staging', 'production'];
 void main(List<String> args) async {
   if (!loadEnvironmentVars()) {
     return;
+  }
+
+  // Make sure all neccessary downloads are installed
+  if (!resourceManager.isTemplatesInstalled) {
+    try {
+      await resourceManager.installTemplates();
+    }
+    catch(e) {
+      print('Failed to download templates.');
+    }
+
+    if (!resourceManager.isTemplatesInstalled) {
+      print('Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
+      return;
+    }
   }
 
   var parser = ArgParser();

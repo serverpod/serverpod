@@ -1,5 +1,5 @@
 name: PROJECTNAME_client
-description: A starting point for Dart libraries or applications.
+description: Starting point for a Serverpod client.
 # version: 1.0.0
 # homepage: https://www.example.com
 
@@ -7,8 +7,8 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  serverpod_client:
-    path: ../../packages/serverpod_client
+  serverpod_client: #^VERSION
+    path: ../../../packages/serverpod_client
 
 dev_dependencies:
   pedantic: ^1.9.0

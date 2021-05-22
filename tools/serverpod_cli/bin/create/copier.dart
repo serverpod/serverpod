@@ -11,6 +11,8 @@ class Copier {
 
   List<String> removePrefixes;
 
+  List<String> ignoreFileNames;
+
   bool verbose;
 
   Copier({
@@ -20,6 +22,7 @@ class Copier {
     required this.fileNameReplacements,
     this.verbose = false,
     this.removePrefixes = const <String>[],
+    this.ignoreFileNames = const <String>[],
   });
 
   void copyFiles() {
@@ -29,6 +32,7 @@ class Copier {
   void _copyDirectory(Directory dir, String relativePath) {
     for (var entity in dir.listSync()) {
       if (entity is File) {
+        if (!ignoreFileNames.contains(p.basename(entity.path)))
         _copyFile(entity, relativePath);
       }
       if (entity is Directory) {
