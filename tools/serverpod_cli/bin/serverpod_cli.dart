@@ -1,7 +1,7 @@
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
-import 'certificates/generator.dart';
+import 'certificate_generator/generator.dart';
 import 'config_info/config_info.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
