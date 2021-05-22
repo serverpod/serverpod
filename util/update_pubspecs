@@ -14,5 +14,25 @@ cp CHANGELOG.md packages/serverpod_relic/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_serialization/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
+
 cp CHANGELOG.md templates/serverpod_templates/CHANGELOG.md
 cp CHANGELOG.md tools/serverpod_cli/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_client/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_server/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_client/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_server/CHANGELOG.md
+
+echo "Copying README.md"
+cp README.md packages/serverpod/README.md
+cp README_subpackage.md packages/serverpod_client/README.md
+cp README_subpackage.md packages/serverpod_relic/README.md
+cp README_subpackage.md packages/serverpod_serialization/README.md
+cp README_subpackage.md packages/serverpod_service_client/README.md
+cp README_subpackage.md packages/serverpod_shared/README.md
+
+cp README_subpackage.md templates/serverpod_templates/README.md
+cp README_subpackage.md tools/serverpod_cli/README.md
+cp README_subpackage.md tests/serverpod_test_client/README.md
+cp README_subpackage.md tests/serverpod_test_server/README.md
+cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_client/README.md
+cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_server/README.md
