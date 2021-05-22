@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_templates
-version: 0.8.4
+version: 0.8.5
 description: Templates for Serverpod.
 
 environment:
