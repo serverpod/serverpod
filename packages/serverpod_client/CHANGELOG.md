@@ -1,3 +1,7 @@
+## 0.8.5
+
+- Fixes compilation in broken serverpod_cli package
+
 ## 0.8.4
 
 - Updates template files and fixes `serverpod create` command.
