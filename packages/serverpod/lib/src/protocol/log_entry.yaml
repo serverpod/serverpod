@@ -8,3 +8,6 @@ fields:
   exception: String?
   stackTrace: String?
   sessionLogId: int?
+indexes:
+  serverpod_log_sessionLogId_idx:
+    fields: sessionLogId

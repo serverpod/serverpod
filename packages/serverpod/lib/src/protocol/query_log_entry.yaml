@@ -1,5 +1,6 @@
 class: QueryLogEntry
 table: serverpod_query_log
+
 fields:
   serverId: int?
   sessionLogId: int?
@@ -8,3 +9,7 @@ fields:
   numRows: int?
   exception: String?
   stackTrace: String?
+
+indexes:
+  serverpod_query_log_sessionLogId_idx:
+    fields: sessionLogId

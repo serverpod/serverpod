@@ -1,5 +1,11 @@
 class: MethodInfo
 table: serverpod_method
+
 fields:
   endpoint: String
   method: String
+
+indexes:
+  serverpod_method_endpoint_method_idx:
+    fields: endpoint, method
+    unique: true

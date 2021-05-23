@@ -1,7 +1,14 @@
 class: FutureCallEntry
 table: serverpod_future_call
+
 fields:
   name: String
   time: DateTime
   serializedObject: String?
   serverId: int
+
+indexes:
+  serverpod_future_call_time_idx:
+    fields: time
+  serverpod_future_call_serverId_idx:
+    fields: serverId

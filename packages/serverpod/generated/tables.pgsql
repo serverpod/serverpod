@@ -36,6 +36,9 @@ CREATE TABLE serverpod_future_call (
 ALTER TABLE ONLY serverpod_future_call
   ADD CONSTRAINT serverpod_future_call_pkey PRIMARY KEY (id);
 
+CREATE INDEX serverpod_future_call_time_idx ON serverpod_future_call USING btree ("time");
+CREATE INDEX serverpod_future_call_serverId_idx ON serverpod_future_call USING btree ("serverId");
+
 
 --
 -- Class QueryLogEntry as table serverpod_query_log
@@ -55,6 +58,8 @@ CREATE TABLE serverpod_query_log (
 ALTER TABLE ONLY serverpod_query_log
   ADD CONSTRAINT serverpod_query_log_pkey PRIMARY KEY (id);
 
+CREATE INDEX serverpod_query_log_sessionLogId_idx ON serverpod_query_log USING btree ("sessionLogId");
+
 
 --
 -- Class MethodInfo as table serverpod_method
@@ -68,6 +73,8 @@ CREATE TABLE serverpod_method (
 
 ALTER TABLE ONLY serverpod_method
   ADD CONSTRAINT serverpod_method_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON serverpod_method USING btree ("endpoint", "method");
 
 
 --
@@ -87,6 +94,8 @@ CREATE TABLE serverpod_log (
 
 ALTER TABLE ONLY serverpod_log
   ADD CONSTRAINT serverpod_log_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_log_sessionLogId_idx ON serverpod_log USING btree ("sessionLogId");
 
 
 --

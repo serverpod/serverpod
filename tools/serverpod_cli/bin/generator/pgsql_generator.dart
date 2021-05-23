@@ -53,16 +53,21 @@ class PgsqlGenerator {
     out += '\n);\n';
     out += '\n';
 
-    // // Sequence
-    // out += 'CREATE SEQUENCE ${classInfo.tableName}_id_seq\n';
-    // out += '  START WITH 1\n';
-    // out += '  OWNED BY ${classInfo.tableName}.id;\n';
-    // out += '\n';
-
     // Main index
     out += 'ALTER TABLE ONLY ${classInfo.tableName}\n';
     out += '  ADD CONSTRAINT ${classInfo.tableName}_pkey PRIMARY KEY (id);\n';
     out += '\n';
+
+    // Additional indexes
+    if (classInfo.indexes != null) {
+      for (var index in classInfo.indexes!) {
+        var uniqueStr = index.unique ? ' UNIQUE' : '';
+        out += 'CREATE$uniqueStr INDEX ${index.name} ON ${classInfo.tableName} USING ${index.type} (';
+        out += index.fields.map((String str) => '"$str"').join(', ');
+        out += ');\n';
+      }
+      out += '\n';
+    }
 
 
     out += '\n';

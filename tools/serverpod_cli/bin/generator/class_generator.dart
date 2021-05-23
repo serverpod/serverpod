@@ -83,17 +83,33 @@ abstract class ClassGenerator {
   }
 }
 
+class IndexDefinition {
+  final String name;
+  late final List<String> fields;
+  late final String type;
+  late final bool unique;
+
+  IndexDefinition(this.name, Map doc) {
+    String fieldsStr = doc['fields'];
+    fields = fieldsStr.split(',').map((String str) => str.trim()).toList();
+    type = doc['type'] ?? 'btree';
+    unique = (doc['unique'] ?? 'false') != 'false';
+  }
+}
+
 
 class ClassInfo {
   final String className;
   final String fileName;
   final String? tableName;
   final List<FieldDefinition> fields;
+  final List<IndexDefinition>? indexes;
 
   ClassInfo({
     required this.className,
     required this.fileName,
     required this.fields,
     this.tableName,
+    this.indexes,
   });
 }

@@ -122,6 +122,16 @@ class ClassGeneratorDart extends ClassGenerator{
         fields.add(FieldDefinition(docFieldName, docFields[docFieldName]));
       }
 
+      List<IndexDefinition>? indexes;
+
+      if (doc['indexes'] != null) {
+        indexes = [];
+        var docIndexes = _expectMap(doc, 'indexes');
+        for (var indexName in docIndexes.keys) {
+          indexes.add(IndexDefinition(indexName, docIndexes[indexName]));
+        }
+      }
+
       // Add class info to set
       classInfos.add(
         ClassInfo(
@@ -129,6 +139,7 @@ class ClassGeneratorDart extends ClassGenerator{
           tableName: tableName,
           fileName: outFileName,
           fields: fields,
+          indexes: indexes,
         )
       );
 
