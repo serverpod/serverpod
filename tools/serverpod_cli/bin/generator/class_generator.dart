@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'class_generator_dart.dart';
 import 'config.dart';
+import 'pgsql_generator.dart';
 
 void performGenerateClasses(bool verbose) {
   // Generate server side code
@@ -21,14 +22,13 @@ abstract class ClassGenerator {
   final String outputPath;
   final String inputPath;
   final bool verbose;
+  final classInfos = <ClassInfo>{};
 
   ClassGenerator(this.inputPath, this.outputPath, this.verbose,);
 
   String get outputExtension;
 
   void generate() {
-    var classInfos = <ClassInfo>{};
-
     // Generate files for each yaml file
     var dir = Directory(inputPath);
     var list = dir.listSync();
@@ -65,6 +65,10 @@ abstract class ClassGenerator {
     var out = generateFactory(classInfos);
     outFile.createSync();
     outFile.writeAsStringSync(out ?? '');
+
+    // Generate SQL statements
+    var pgsqlGenerator = PgsqlGenerator(classInfos: classInfos, outPath: 'generated/tables.pgsql');
+    pgsqlGenerator.generate();
   }
 
   String? generateFile(String input, String outputFileName, Set<ClassInfo> classNames);
@@ -84,6 +88,12 @@ class ClassInfo {
   final String className;
   final String fileName;
   final String? tableName;
+  final List<FieldDefinition> fields;
 
-  ClassInfo({required this.className, required this.fileName, this.tableName});
+  ClassInfo({
+    required this.className,
+    required this.fileName,
+    required this.fields,
+    this.tableName,
+  });
 }

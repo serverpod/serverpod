@@ -80,6 +80,21 @@ class TypeDefinition {
     }
   }
 
+  String get databaseType {
+    if (typeNonNullable == 'String')
+      return 'text';
+    if (typeNonNullable == 'bool')
+      return 'boolean';
+    if (typeNonNullable == 'int')
+      return 'integer';
+    if (typeNonNullable == 'double')
+      return 'double precision';
+    if (typeNonNullable == 'DateTime')
+      return 'timestamp without time zone';
+
+    return 'json';
+  }
+
   @override
   String toString() {
     return type;

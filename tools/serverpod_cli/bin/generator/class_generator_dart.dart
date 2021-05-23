@@ -28,6 +28,7 @@ class ClassGeneratorDart extends ClassGenerator{
             ClassInfo(
               className: enumName,
               fileName: outFileName,
+              fields: [],
             )
         );
 
@@ -114,11 +115,11 @@ class ClassGeneratorDart extends ClassGenerator{
       String? tableName = doc['table'];
       var className = _expectString(doc, 'class');
       var docFields = _expectMap(doc, 'fields');
-      var fields = <_FieldDefinition>[];
+      var fields = <FieldDefinition>[];
 
-      fields.add(_FieldDefinition('id', 'int?'));
+      fields.add(FieldDefinition('id', 'int?'));
       for (var docFieldName in docFields.keys) {
-        fields.add(_FieldDefinition(docFieldName, docFields[docFieldName]));
+        fields.add(FieldDefinition(docFieldName, docFields[docFieldName]));
       }
 
       // Add class info to set
@@ -127,6 +128,7 @@ class ClassGeneratorDart extends ClassGenerator{
           className: className,
           tableName: tableName,
           fileName: outFileName,
+          fields: fields,
         )
       );
 
@@ -396,16 +398,16 @@ class ClassGeneratorDart extends ClassGenerator{
 //  }
 }
 
-enum _FieldScope {
+enum FieldScope {
   database,
   api,
   all,
 }
 
-class _FieldDefinition {
+class FieldDefinition {
   String name;
   late TypeDefinition type;
-  bool nullable = true;
+  // bool nullable = true;
 
   String? get columnType {
     if (type.typeNonNullable == 'int')
@@ -421,21 +423,21 @@ class _FieldDefinition {
     return 'ColumnSerializable';
   }
 
-  _FieldScope scope = _FieldScope.all;
+  FieldScope scope = FieldScope.all;
 
-  _FieldDefinition(String name, String description) : name = name {
+  FieldDefinition(String name, String description) : name = name {
     var components = description.split(',').map((String s) { return s.trim(); }).toList();
     var typeStr = components[0];
 
     if (components.length == 2) {
       var scopeStr = components[1];
       if (scopeStr == 'database')
-        scope = _FieldScope.database;
+        scope = FieldScope.database;
       else if (scopeStr == 'api')
-        scope = _FieldScope.api;
+        scope = FieldScope.api;
     }
 
-    // TODO: Fix?
+    // TODO: Fix package?
     type = TypeDefinition(typeStr, null);
   }
 
@@ -505,20 +507,20 @@ class _FieldDefinition {
   bool shouldIncludeField(bool serverCode) {
     if (serverCode)
       return true;
-    if (scope == _FieldScope.all || scope == _FieldScope.api)
+    if (scope == FieldScope.all || scope == FieldScope.api)
       return true;
     return false;
   }
 
   bool shouldSerializeField(bool serverCode) {
-    if (scope == _FieldScope.all || scope == _FieldScope.api)
+    if (scope == FieldScope.all || scope == FieldScope.api)
       return true;
     return false;
   }
 
   bool shouldSerializeFieldForDatabase(bool serverCode) {
     assert(serverCode);
-    if (scope == _FieldScope.all || scope == _FieldScope.database)
+    if (scope == FieldScope.all || scope == FieldScope.database)
       return true;
     return false;
   }
