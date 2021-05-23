@@ -40,7 +40,7 @@ This command will create a new directory called `mypod`, with two dart packages 
 Now that the project has been created, you need to hook it up with the database. Open the `mypod_server` package in your favorite IDE. Edit the `config/development.yaml` file and replace `DATABASE_NAME` and `DATABASE_USER` with the database name and the user name required to connect to the database. You most likely set this up when you installed your Postgresql database. Open `config/passwords.yaml` and replace the `DATABASE_PASSWORD` with the password for the database.
 
 ### Create the default set of tables
-Finally, you need to populate the database with some tables that Serverpod uses internally. To do this, connect to your database and run the queries [found here](https://github.com/serverpod/serverpod/blob/master/docs/database_setup.pgsql).
+Finally, you need to populate the database with some tables that Serverpod uses internally. To do this, connect to your database and run the queries [found here](https://github.com/serverpod/serverpod/blob/master/packages/serverpod/generated/tables.pgsql).
 
 ### Start the server
 Now you should be all set to run your server. Start it by changing into the mypod_server directory and type:
