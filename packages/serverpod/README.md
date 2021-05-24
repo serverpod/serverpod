@@ -60,3 +60,70 @@ If everything is working you should see something like this on your terminal:
     database pass: ********
     Insights listening on port 8081
     Server id 0 listening on port 8080
+
+## Working with endpoints
+Endpoints are the connection points to the server from the client. With Serverpod, you add methods to your endpoint, and your client code will be generated to make the method call. For the code to be generated, you need to place your endpoint in the endpoints directory of your server. Your endpoint should extend the `Endpoint` class. For methods to be generated, they need to return a typed `Future`, and its first argument should be a `Session` object. The `Session` object holds information about the call being made to the server and provides access to the database.
+
+    import 'package:serverpod/serverpod.dart';
+
+    class ExampleEndpoint extends Endpoint {
+      Future<String> hello(Session session, String name) async {
+        return 'Hello $name';
+      }
+    }
+
+The above code will create an endpoint called `example` (the Endpoint suffix will be removed) with the single `hello` method. To generate the serverside code run `serverpod generate` in the home directory of the server.
+
+On the client side, you can now call the method by calling:
+
+    var result = await client.example.hello('World');
+
+### Passing parameters
+There are some limitations to how endpoint methods can be implemented. Currently named parameters are not yet supported. Parameters and return types can be of type `bool`, `int`, `double`, `String`, `DateTime`, or generated serializable objects (see next section). A typed `Future` should always be returned. Null safety is supported. When passing a `DateTime` it is always converted to UTC.
+
+## Generating serializable classes
+Serverpod makes it easy to generate serializable classes that can be passed between server and client or used to connect with the database. The structure for the classes is defined in yaml-files in the protocol directory. Run `serverpod generate` to build the Dart code for the classes and make them accessible to both the server and client.
+
+Here is a simple example of a yaml-file defining a serializable class:
+
+    class: Company
+    fields:
+      name: String
+      foundedDate: DateTime?
+      employees: List<Employee>
+
+Supported types are `bool`, `int`, `double`, `String`, `DateTime`, and other serializable classes. You can also use lists of objects. Null safety is supported. Once your classes are generated, you can use them as parameters or return types to endpoint methods.
+
+### Database mappings
+It's possible to map serializable classes straight to tables in your database. To do this, add the `table` key to your yaml file:
+
+    class: Company
+    table: company
+      name: String
+      foundedDate: DateTime?
+      employees: List<Employee>
+
+When running `serverpod generate`, the database schema will be saved in the `generated/tables.pgsql` file. You can use this to create the corresponding database tables.
+
+In some cases, you want to save a field to the database, but it should never be sent to the server. You can exclude it from the protocol by adding the `database` flag to the type.
+
+    class: UserData
+    fields:
+      name: String
+      password: String, database
+
+Likewise, if you only want a field to be accessible in the protocol but not stored in the server, you can add the `api` flag. By default, a field is accessible to both the API and the database.
+
+### Database indexes
+For performance reasons, you may want to add indexes to your database tables. You add these in the yaml-files defining the serializable objects.
+
+    class: Company
+    table: company
+      name: String
+      foundedDate: DateTime?
+      employees: List<Employee>
+    indexes:
+      company_name_idx:
+        fields: name
+
+The `fields` key holds a comma-separated list of column names. In addition, it's possible to add a type key (default is `btree`), and a `unique` key (default is `false`).

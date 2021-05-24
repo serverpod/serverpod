@@ -1,3 +1,8 @@
+## 0.8.6
+
+- Adds documentation.
+- Generates SQL files for creating database tables.
+
 ## 0.8.5
 
 - Fixes compilation in broken serverpod_cli package
