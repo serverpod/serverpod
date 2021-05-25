@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import '../cache/caches.dart';
 import 'server.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import '../generated/protocol.dart';
@@ -58,6 +59,8 @@ class Session {
   String? _authenticationKey;
   /// The authentication key passed from the client.
   String? get authenticationKey => _authenticationKey;
+
+  Caches get caches => server.caches;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
