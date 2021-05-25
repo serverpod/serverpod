@@ -205,3 +205,28 @@ Transactions and joins are still under development.
 Sometimes more advanced tasks need to be performed on the database. For those occasions, it's possible to run raw SQL queries on the database. Use the `query` method. A `List<List<dynamic>>` will be returned with rows and columns.
 
     var result = await session.db.query('SELECT * FROM mytable WHERE ...');
+
+## Caching
+Accessing the database can sometimes be expensive for complex database queries or if you need to run many different queries for a specific task. Serverpod makes it easy to cache frequently requested objects in RAM. Any serializable object can be cached. If your Serverpod is hosted across multiple servers in a cluster, objects can be stored in the distributed cache. When reading from the distributed cache, Serverpod will automatically figure out where it is stored. This is useful for objects that need to remain the same across servers but still can be cached.
+
+Caches can be accessed through the `Session` object. This is an example of an endpoint method for requesting data about a user:
+
+    Future<UserData> getUserData(Session session, int userId) async {
+      // Define a unique key for the UserData object
+      var cacheKey = 'UserData-$userId';
+
+      // Try to retrieve the object from the cache
+      var userData = await session.caches.local.get(cacheKey) as UserData?;
+
+      // If the object wasn't found in the cache, load it from the database and
+      // save it in the cache. Make it valid for 5 minutes.
+      if (userData == null) {
+        userData = session.db.findById(tUserData, userId) as UserData?;
+        await session.caches.local.put(cacheKey, userData!, lifetime: Duration(minutes: 5));
+      }
+
+      // Return the user data to the client
+      return userData;
+    }
+
+In total, there are four caches where you can store your objects. Two caches are local to the server handling the current session, and two are distributed across the server cluster. There are two variants for the local and distributed cache, one regular cache, and a priority cache. Place objects that are very frequently accessed in the priority cache.
