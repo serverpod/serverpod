@@ -141,21 +141,21 @@ Insert a new row in the database by calling the insert method of the `db` field 
     var myRow = Company(name: 'Serverpod corp.', employees: []);
     await session.db.insert(myRow);
 
-After the row has been inserted, you can access its `id` through the `id` field of the serializable object.
+After the object has been inserted, it's `id` field is set from its row in the database.
 
-## Finding a single row
+### Finding a single row
 You can find a single row, either by its `id` or using an expression. You need to pass a reference to the table description in the call. Table descriptions are accessible through global variables with the object's class name preceded by a `t`.
 
     var myCompany = await session.db.findById(tCompany, companyId) as Company?;
 
-If no matching row is found, `null` is returned. You can also search for rows using expressions using the `where` parameter.
+If no matching row is found, `null` is returned. You can also search for rows using expressions with the `where` parameter.
 
     var myCompany = await session.db.findSingleRow(
       tCompany,
       where: tCompany.name.equals('My Company'),
     );
 
-## Finding multiple rows
+### Finding multiple rows
 To find multiple rows, use the same principle as for finding a single row. Returned will be a `List` of `TableRow`s. Iterate over the list to access the indivitual rows.
 
     var rows = await session.db.find(
@@ -165,14 +165,14 @@ To find multiple rows, use the same principle as for finding a single row. Retur
     );
     var companies = rows.cast<Company>();
 
-## Updating a row
-To update a row, use the `update` method. The object that you update must have the `id` set to not `null`.
+### Updating a row
+To update a row, use the `update` method. The object that you update must have its `id` set to a non `null` value.
 
     var myCompany = await session.db.findById(tCompany, companyId) as Company?;
     myCompany.name = 'New name';
     await session.db.update(myCompany);
 
-## Deleting rows
+### Deleting rows
 Deleting a single row works similarly to the `update` method, but you can also delete rows using the where parameter.
 
     // Delete a single row
@@ -183,7 +183,7 @@ Deleting a single row works similarly to the `update` method, but you can also d
       where: tCompany.name.like('%Ltd'),
     );
 
-## Creating expressions
+### Creating expressions
 To find or delete specific rows, most often, expressions are needed. Serverpod makes it easy to build expressions that are statically type-checked. Columns are referenced using the global `Table` objects. The table objects are named the same as the generated object classes but prefixed with a `t`. The `>`, `>=`, `<`, `<=`, `&`, and `|` operators are overridden to make it easier to work with column values. When using the operators, it's good practice to place them within a set of parentheses as the precedence rules are not always what would be expected. These are some examples of expressions.
 
     // The name column of the Company table equals 'My company')
@@ -197,3 +197,11 @@ To find or delete specific rows, most often, expressions are needed. Serverpod m
 
     // Companies that has the founded date set
     tCompany.foundedDate.notEquals(null)
+
+### Transactions and joins
+Transactions and joins are still under development.
+
+### Executing raw queries
+Sometimes more advanced tasks need to be performed on the database. For those occasions, it's possible to run raw SQL queries on the database. Use the `query` method. A `List<List<dynamic>>` will be returned with rows and columns.
+
+    var result = await session.db.query('SELECT * FROM mytable WHERE ...');
