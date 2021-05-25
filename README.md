@@ -127,3 +127,73 @@ For performance reasons, you may want to add indexes to your database tables. Yo
         fields: name
 
 The `fields` key holds a comma-separated list of column names. In addition, it's possible to add a type key (default is `btree`), and a `unique` key (default is `false`).
+
+## Communicating with the database
+___Note that the Serverpod ORM is still under heavy development, and the APIs may change.___
+
+Serverpod makes it easy to communicate with your database using strictly typed objects without a single SQL line. But, if you need to do more complex tasks, you can always do direct SQL calls.
+
+For the communication to work, you need to have generated serializable classes with the `table` key set, and the corresponding table must have been created in the database.
+
+### Inserting a table row
+Insert a new row in the database by calling the insert method of the `db` field in your `Session` object.
+
+    var myRow = Company(name: 'Serverpod corp.', employees: []);
+    await session.db.insert(myRow);
+
+After the row has been inserted, you can access its `id` through the `id` field of the serializable object.
+
+## Finding a single row
+You can find a single row, either by its `id` or using an expression. You need to pass a reference to the table description in the call. Table descriptions are accessible through global variables with the object's class name preceded by a `t`.
+
+    var myCompany = await session.db.findById(tCompany, companyId) as Company?;
+
+If no matching row is found, `null` is returned. You can also search for rows using expressions using the `where` parameter.
+
+    var myCompany = await session.db.findSingleRow(
+      tCompany,
+      where: tCompany.name.equals('My Company'),
+    );
+
+## Finding multiple rows
+To find multiple rows, use the same principle as for finding a single row. Returned will be a `List` of `TableRow`s. Iterate over the list to access the indivitual rows.
+
+    var rows = await session.db.find(
+      tCompany,
+      where: tCompany.id < 100,
+      limit 50,
+    );
+    var companies = rows.cast<Company>();
+
+## Updating a row
+To update a row, use the `update` method. The object that you update must have the `id` set to not `null`.
+
+    var myCompany = await session.db.findById(tCompany, companyId) as Company?;
+    myCompany.name = 'New name';
+    await session.db.update(myCompany);
+
+## Deleting rows
+Deleting a single row works similarly to the `update` method, but you can also delete rows using the where parameter.
+
+    // Delete a single row
+    await session.db.deleteRow(myCompany);
+
+    // Delete all rows where the company name ends with 'Ltd'
+    await session.db.delete(
+      where: tCompany.name.like('%Ltd'),
+    );
+
+## Creating expressions
+To find or delete specific rows, most often, expressions are needed. Serverpod makes it easy to build expressions that are statically type-checked. Columns are referenced using the global `Table` objects. The table objects are named the same as the generated object classes but prefixed with a `t`. The `>`, `>=`, `<`, `<=`, `&`, and `|` operators are overridden to make it easier to work with column values. When using the operators, it's good practice to place them within a set of parentheses as the precedence rules are not always what would be expected. These are some examples of expressions.
+
+    // The name column of the Company table equals 'My company')
+    tCompany.name.equals('My company')
+
+    // Companies founded at or after 2020
+    tCompany.foundedDate >= DateTime.utc(2020)
+
+    // Companies with number of employees between 10 and 100
+    (tCompany.numEmployees > 10) & (tCompany.numEmployees <= 100)
+
+    // Companies that has the founded date set
+    tCompany.foundedDate.notEquals(null)
