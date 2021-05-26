@@ -63,6 +63,9 @@ class Server {
   /// Currently not in use.
   List<String>? whitelistedExternalCalls;
 
+  /// Map of passwords loaded from config/passwords.yaml
+  Map<String, String> passwords;
+
   /// Creates a new [Server] object.
   Server({
     required this.serverpod,
@@ -70,7 +73,7 @@ class Server {
     required this.port,
     required this.serializationManager,
     required this.databaseConfig,
-    Map<String, String>? passwords,
+    required this.passwords,
     required this.runMode,
     this.authenticationHandler,
     String? name,

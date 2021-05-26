@@ -60,7 +60,11 @@ class Session {
   /// The authentication key passed from the client.
   String? get authenticationKey => _authenticationKey;
 
+  /// Provides access to all caches used by the server.
   Caches get caches => server.caches;
+
+  /// Map of passwords loaded from config/passwords.yaml
+  Map<String, String> get passwords => server.passwords;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
