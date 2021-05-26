@@ -229,4 +229,18 @@ Caches can be accessed through the `Session` object. This is an example of an en
       return userData;
     }
 
-In total, there are four caches where you can store your objects. Two caches are local to the server handling the current session, and two are distributed across the server cluster. There are two variants for the local and distributed cache, one regular cache, and a priority cache. Place objects that are very frequently accessed in the priority cache.
+In total, there are four caches where you can store your objects. Two caches are local to the server handling the current session, and two are distributed across the server cluster. There are two variants for the local and distributed cache, one regular cache, and a priority cache. Place objects that are frequently accessed in the priority cache.
+
+## Logging
+Serverpod uses the database for storing logs; this makes it easy to search for errors, slow queries, or debug messages. To log custom messages during the execution of a session, use the `log` method of the `session` object. When the session is closed, either from successful execution or by failing from throwing an exception, the messages are written to the log. By default, session log entries are written for every completed session.
+
+    session.log('This is working well');
+
+Log entries are stored in the following tables of the database: `serverpod_log` for text messages, `serverpod_query_log` for queries, and `serverpod_session_log` for completed sessions. Optionally, it's possible to pass a log level with the message to filter out messages depending on the server's runtime settings.
+
+## Configuration files and deployment
+Serverpod has three main configuration files, depending on which mode the server is running; `development`, `staging`, or `production`. The files are located in the`config/` directory. By default, the server will start in development mode. To use another configuration file, use the `--mode` option when starting the server. If you are running multiple servers in a cluster, use the `--server-id` option to specify the id of each server. By default, the server will run as id 0. For instance, to start the server in production mode with id 2, run the following command:
+
+dart bin/main.dart --mode production --server-id 2
+
+Depending on how memory intensive the server is and how many requests it is serving at peak times, you may want to increase the maximum heap size Dart can use. You can do this by passing the `--old_gen_heap_size` option to dart. If you set it to `0` it will give Dart unlimited heap space. Serverpod will run on most operating systems where you can run Dart; Flutter is not required.
