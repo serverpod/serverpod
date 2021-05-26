@@ -245,7 +245,7 @@ Serverpod has three main configuration files, depending on which mode the server
 
 Depending on how memory intensive the server is and how many requests it is serving at peak times, you may want to increase the maximum heap size Dart can use. You can do this by passing the `--old_gen_heap_size` option to dart. If you set it to `0` it will give Dart unlimited heap space. Serverpod will run on most operating systems where you can run Dart; Flutter is not required.
 
-## Running a cluster of servers
+### Running a cluster of servers
 To improve scalability and reliability it's possible to run Serverpod over a cluster of servers. The ids of the servers should be in a consecutive sequence from 0 to n-1 where n is the number of servers in your cluster. You can set this up in the `production.yaml` configuration file.
 
 To run a cluster of servers, you need to place your servers behind a load balancer so that they have a common access point to the main API port. If you want to gather runtime information from the servers, the service port needs to be accessible not only between servers in the cluster but also from the outside. By default, communication with the service API is encrypted, while you most likely want to add an HTTPS certificate to your load balancer to make sure all communication with clients is encrypted.
