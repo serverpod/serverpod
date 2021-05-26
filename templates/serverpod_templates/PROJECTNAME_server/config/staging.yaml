@@ -3,7 +3,7 @@
 # possible and may connect to production databases services and data. You use it
 # for final testing before deploying the production server.
 #
-# To improve scalability and reliability its possible to run Serverpod over a
+# To improve scalability and reliability it's possible to run Serverpod over a
 # cluster of servers. The ids of the servers should be in a consecutive sequence
 # from 0 to n-1 where n is the number of servers in your cluster.
 
