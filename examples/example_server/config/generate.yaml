@@ -1,4 +1,0 @@
-binary: bin/example_server.dart
-source: bin/protocol/
-server: bin/generated/
-client-dart: ../example_client/lib/protocol/

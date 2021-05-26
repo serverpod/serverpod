@@ -1,9 +1,0 @@
-class: CompanyInfo
-fields:
-  name: String
-  numEmployees: int
-  address: String
-  employee: List<UserInfo>
-  value: double
-  createdTime: DateTime
-  hasOffice: bool
