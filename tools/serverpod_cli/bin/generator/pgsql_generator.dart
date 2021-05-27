@@ -13,7 +13,7 @@ class PgsqlGenerator {
   });
 
   void generate() {
-    String out = '';
+    var out = '';
 
     for (var classInfo in classInfos) {
       if (classInfo.tableName != null) {

@@ -4,7 +4,6 @@ import '../generated/version.dart';
 import 'copier.dart';
 
 import '../downloads/resource_manager.dart';
-import '../shared/environment.dart';
 
 void performCreate(String name, bool verbose, String template) {
   var projectDir = Directory(Directory.current.path + '/' + name);

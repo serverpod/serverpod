@@ -10,7 +10,7 @@ final resourceManager = ResourceManager();
 
 class ResourceManager {
   Directory get homeDirectory {
-    Map<String, String> envVars = Platform.environment;
+    var envVars = Platform.environment;
 
     if (Platform.isMacOS)
       return Directory(envVars['HOME']!);
@@ -57,12 +57,12 @@ class ResourceManager {
     for (var file in archive) {
       final outFileName = '${templateDirectory.path}/${file.name}';
       if (file.isFile) {
-        var outFile = new File(outFileName);
+        var outFile = File(outFileName);
         outFile = await outFile.create(recursive: true);
         await outFile.writeAsBytes(file.content);
       }
       else {
-        await new Directory(outFileName).create(recursive: true);
+        await Directory(outFileName).create(recursive: true);
       }
     }
     print('Download complete.\n');
