@@ -1,2 +1,2 @@
-library PROJECTNAME_client;
-export 'src/PROJECTNAME_client_base.dart';
+export 'src/protocol/protocol.dart';
+export 'package:serverpod_client/serverpod_client.dart';
