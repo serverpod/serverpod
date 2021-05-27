@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:serverpod_shared/config.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 Future<void> performGenerateCerts(String configFile, bool verbose) async {
   const certConfigFile = '.certconf';

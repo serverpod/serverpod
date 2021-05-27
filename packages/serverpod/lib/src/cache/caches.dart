@@ -1,5 +1,5 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_shared/config.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'local_cache.dart';
 import 'distributed_cache.dart';
 
