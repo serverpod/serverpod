@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:serverpod_shared/serverpod_shared.dart';
+
 import '../generated/version.dart';
 import 'copier.dart';
 
@@ -43,6 +45,18 @@ void performCreate(String name, bool verbose, String template) {
         Replacement(
           slotName: 'VERSION',
           replacement: templateVersion,
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_DEVELOPMENT',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_STAGING',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_PRODUCTION',
+          replacement: generateRandomString(),
         ),
       ],
       fileNameReplacements: [
