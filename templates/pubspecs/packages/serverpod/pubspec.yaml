@@ -3,7 +3,7 @@ PUBLISH_TO
 
 name: serverpod
 version: VERSION
-description: Next generation app and web server.
+description: Serverpod is a next-generation app and web server, explicitly built for the Flutter and Dart ecosystem.
 repository: https://github.com/serverpod/serverpod
 
 environment:
