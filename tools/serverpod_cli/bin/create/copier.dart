@@ -31,14 +31,17 @@ class Copier {
 
   void _copyDirectory(Directory dir, String relativePath) {
     for (var entity in dir.listSync()) {
+      var entityName = p.basename(entity.path);
+      if (ignoreFileNames.contains(entityName))
+        continue;
+      if (entityName.startsWith('.'))
+        continue;
+
       if (entity is File) {
-        if (!ignoreFileNames.contains(p.basename(entity.path)))
         _copyFile(entity, relativePath);
       }
       if (entity is Directory) {
         var dirName = p.basename(entity.path);
-        if (dirName.startsWith('.'))
-          continue;
         _copyDirectory(entity, '$relativePath$dirName/');
       }
     }

@@ -18,5 +18,5 @@ cluster:
 database:
   host: localhost
   port: 5432
-  name: DATABASE_NAME
-  user: DATABASE_USER
+  name: my_database # <-- UPDATE with your database name
+  user: my_database_user # <-- UPDATE with your database user name

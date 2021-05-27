@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../generated/version.dart';
+import 'command_line_tools.dart';
 import 'copier.dart';
 
 import '../downloads/resource_manager.dart';
 
-void performCreate(String name, bool verbose, String template) {
+Future<void> performCreate(String name, bool verbose, String template) async {
   var projectDir = Directory(Directory.current.path + '/' + name);
   if (projectDir.existsSync()) {
     print('Project $name already exists.');
@@ -26,7 +27,11 @@ void performCreate(String name, bool verbose, String template) {
   var clientDir = Directory(projectDir.path + '/' + name + '_client');
   if (verbose)
     print('Creating directory: ${clientDir.path}');
-  clientDir.createSync();
+
+  var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
+  if (verbose)
+    print('Creating directory: ${flutterDir.path}');
+  flutterDir.createSync();
 
   if (template == 'server') {
     // Copy server files
@@ -108,6 +113,44 @@ void performCreate(String name, bool verbose, String template) {
       verbose: verbose,
     );
     copier.copyFiles();
+
+    // Copy Flutter files
+    copier = Copier(
+      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
+      dstDir: flutterDir,
+      replacements: [
+        Replacement(
+          slotName: 'PROJECTNAME',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: '#^',
+          replacement: '^',
+        ),
+        Replacement(
+          slotName: 'VERSION',
+          replacement: templateVersion,
+        ),
+      ],
+      fileNameReplacements: [
+        Replacement(
+          slotName: 'PROJECTNAME',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'gitignore',
+          replacement: '.gitignore',
+        ),
+      ],
+      removePrefixes: [],
+      ignoreFileNames: ['pubspec.lock', 'ios', 'android', 'web', 'macos', 'build',],
+      verbose: verbose,
+    );
+    copier.copyFiles();
+
+    await CommandLineTools.dartPubGet(serverDir);
+    await CommandLineTools.dartPubGet(clientDir);
+    await CommandLineTools.flutterCreate(flutterDir);
   }
   else if (template == 'module') {
     // Copy server files

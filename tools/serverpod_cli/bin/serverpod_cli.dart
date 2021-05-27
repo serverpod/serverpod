@@ -128,7 +128,7 @@ void main(List<String> args) async {
       }
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
-        performCreate(name, verbose, template);
+        await performCreate(name, verbose, template);
         return;
       }
     }
