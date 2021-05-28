@@ -15,9 +15,11 @@ Future<void> performCreate(String name, bool verbose, String template) async {
     return;
   }
 
+  print('Creating project $name...');
+
   if (verbose)
     print('Creating directory: ${projectDir.path}');
-  projectDir.create();
+  projectDir.createSync();
 
   var serverDir = Directory(projectDir.path + '/' + name + '_server');
   if (verbose)
@@ -28,12 +30,12 @@ Future<void> performCreate(String name, bool verbose, String template) async {
   if (verbose)
     print('Creating directory: ${clientDir.path}');
 
-  var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
-  if (verbose)
-    print('Creating directory: ${flutterDir.path}');
-  flutterDir.createSync();
-
   if (template == 'server') {
+    var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
+    if (verbose)
+      print('Creating directory: ${flutterDir.path}');
+    flutterDir.createSync();
+
     // Copy server files
     var copier = Copier(
       srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_server'),

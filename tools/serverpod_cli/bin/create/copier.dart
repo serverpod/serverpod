@@ -53,8 +53,7 @@ class Copier {
       return;
 
     var dstFileName = _replace('$relativePath$fileName', fileNameReplacements);
-    if (verbose)
-      print('copy: $relativePath$fileName -> $dstFileName');
+    print('  ${dstDir.path}$relativePath$fileName');
 
     var dstFile = File('${dstDir.path}/$dstFileName');
     var contents = srcFile.readAsStringSync();
