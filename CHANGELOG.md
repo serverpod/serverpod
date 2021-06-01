@@ -1,3 +1,7 @@
+## 0.8.7
+
+- Support for static file directories in Relic.
+
 ## 0.8.6
 
 - Adds documentation.
