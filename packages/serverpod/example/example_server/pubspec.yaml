@@ -1,0 +1,13 @@
+name: example_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  serverpod: ^0.8.6
+
+dev_dependencies:
+  pedantic: ^1.9.0

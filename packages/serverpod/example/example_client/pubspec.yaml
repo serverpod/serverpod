@@ -1,0 +1,10 @@
+name: example_client
+description: Starting point for a Serverpod client.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  serverpod_client: ^0.8.6
