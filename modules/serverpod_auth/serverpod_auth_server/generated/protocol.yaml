@@ -1,0 +1,7 @@
+apple:
+  - authenticate:
+google:
+  - authenticate:
+user:
+  - getAuthenticatedUserInfo:
+  - updateUserInfo:

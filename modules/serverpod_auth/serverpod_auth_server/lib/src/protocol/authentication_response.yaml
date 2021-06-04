@@ -1,0 +1,6 @@
+class: AuthenticationResponse
+fields:
+  success: bool
+  key: String?
+  keyId: int?
+  userInfo: UserInfo?
