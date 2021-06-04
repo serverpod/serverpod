@@ -1,6 +1,7 @@
 ## 0.8.7
 
 - Support for static file directories in Relic.
+- Adds logos (psd and pngs).
 
 ## 0.8.6
 
