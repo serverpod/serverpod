@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   example_client:
     path: ../example_client
+  serverpod_auth_google_flutter:
+    path: ../../../../modules/serverpod_auth/serverpod_auth_google_flutter
 
 
   # The following adds the Cupertino Icons font to your application.

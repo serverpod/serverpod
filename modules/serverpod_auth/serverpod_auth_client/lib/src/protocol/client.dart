@@ -33,6 +33,11 @@ class _EndpointUser {
   EndpointCaller caller;
   _EndpointUser(this.caller);
 
+  Future<bool> isSignedIn() async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'isSignedIn', 'bool', {
+    });
+  }
+
   Future<UserInfo?> getAuthenticatedUserInfo() async {
     return await caller.callServerEndpoint('serverpod_auth.user', 'getAuthenticatedUserInfo', 'UserInfo', {
     });

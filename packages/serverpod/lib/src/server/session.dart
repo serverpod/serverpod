@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:serverpod_shared/serverpod_shared.dart';
+
 import '../cache/caches.dart';
-import 'server.dart';
-import 'package:serverpod/src/authentication/scope.dart';
+import '../authentication/scope.dart';
 import '../generated/protocol.dart';
 import '../database/database.dart';
+import '../authentication/util.dart';
+import 'server.dart';
 
 /// Defines the type of a [Session].
 enum SessionType {
@@ -66,6 +69,9 @@ class Session {
   /// Map of passwords loaded from config/passwords.yaml
   Map<String, String> get passwords => server.passwords;
 
+  /// Methods related to user authentication.
+  late final UserAuthetication auth;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     this.type = SessionType.methodCall,
@@ -77,8 +83,10 @@ class Session {
     this.maxLifeTime=const Duration(minutes: 1),
     HttpRequest? httpRequest,
     String? futureCallName,
-  }){
+  }) {
     _startTime = DateTime.now();
+
+    auth = UserAuthetication._(this);
 
     if (type == SessionType.methodCall) {
       // Method call session
@@ -128,14 +136,6 @@ class Session {
     _initialized = true;
   }
 
-  /// Returns the id of an authenticated user or null if the user isn't signed
-  /// in.
-  Future<int?> get authenticatedUserId async {
-    if (!_initialized)
-      await _initialize();
-    return _authenticatedUser;
-  }
-
   /// Returns the scopes associated with an authenticated user.
   Future<Set<Scope>?> get scopes async {
     if (!_initialized)
@@ -145,7 +145,7 @@ class Session {
 
   /// Returns true if the user is signed in.
   Future<bool> get isUserSignedIn async {
-    return (await authenticatedUserId) != null;
+    return (await auth.authenticatedUserId) != null;
   }
 
   /// Returns the duration this session has been open.
@@ -215,4 +215,62 @@ class FutureCallInfo {
   FutureCallInfo({
     required this.callName,
   });
+}
+
+/// Collects methods for authenticating users.
+class UserAuthetication {
+  Session _session;
+
+  UserAuthetication._(this._session);
+
+  /// Returns the id of an authenticated user or null if the user isn't signed
+  /// in.
+  Future<int?> get authenticatedUserId async {
+    if (!_session._initialized)
+      await _session._initialize();
+    return _session._authenticatedUser;
+  }
+
+  /// Signs in an user to the server. The user should have been authenticated
+  /// before signing them in. Send the AuthKey.id and key to the client and
+  /// use that to authenticate in future calls. In most cases, it's more
+  /// convenient to use the serverpod_auth module for authentication.
+  Future<AuthKey> signInUser(int userId, {List<Scope> scopes = const []}) async {
+    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+
+    var key = generateRandomString();
+    var hash = hashString(signInSalt, key);
+
+    var scopeStrs = <String>[];
+    for (var scope in scopes) {
+      if (scope.name != null)
+        scopeStrs.add(scope.name!);
+    }
+
+    var authKey = AuthKey(
+      userId: userId,
+      hash: hash,
+      key: key,
+      scopes: scopeStrs,
+    );
+
+    print('insert auth key');
+    await _session.db.insert(authKey);
+    print('inserted key: ${authKey.id}');
+
+    _session._authenticatedUser = userId;
+
+    return authKey;
+  }
+
+  /// Signs out a user from the server and deletes all authentication keys.
+  /// This means that the user will be signed out from all connected devices.
+  Future<void> signOutUser() async {
+    var userId = await authenticatedUserId;
+    if (userId == null)
+      return;
+
+    await _session.db.delete(tAuthKey, where: tAuthKey.userId.equals(userId));
+    _session._authenticatedUser = null;
+  }
 }

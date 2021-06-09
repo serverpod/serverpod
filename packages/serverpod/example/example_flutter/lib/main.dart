@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:example_client/example_client.dart';
+import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 // Sets up a singleton client object that can be used to talk to the server from
 // anywhere in our app. The client is generated from your server code.
 // The client is set up to connect to a Serverpod running on a local server on
 // the default port. You will need to modify this to connect to staging or
 // production servers.
-var client = Client('http://localhost:8080/');
+var client = Client(
+  'http://localhost:8080/',
+  authenticationKeyManager: FlutterAuthenticationKeyManager.instance,
+);
 
 void main() {
   runApp(MyApp());
@@ -16,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Serverpod Demo',
+      title: 'Serverpod Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -67,6 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.0),
+              child: SignInWithGoogleButton(caller: client.modules.auth),
+            ),
             Padding(
               padding: EdgeInsets.only(bottom: 16.0),
               child: TextField(

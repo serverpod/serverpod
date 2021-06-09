@@ -3,5 +3,6 @@ apple:
 google:
   - authenticate:
 user:
+  - isSignedIn:
   - getAuthenticatedUserInfo:
   - updateUserInfo:

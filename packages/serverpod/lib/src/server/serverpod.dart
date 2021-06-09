@@ -8,7 +8,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/authentication_info.dart';
-import '../authentication/serviceAuthentication.dart';
+import '../authentication/default_authentication_handler.dart';
+import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../database/database_config.dart';
 import '../database/database_connection.dart';
@@ -176,7 +177,7 @@ class Serverpod {
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
-      authenticationHandler: authenticationHandler,
+      authenticationHandler: authenticationHandler ?? defaultAuthenticationHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
     );

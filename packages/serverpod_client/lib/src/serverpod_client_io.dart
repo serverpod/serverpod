@@ -15,7 +15,6 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter native apps).
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
-  String? _authorizationKey;
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
@@ -50,9 +49,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   Future<Null> _initialize() async {
-    if (authenticationKeyManager != null)
-      _authorizationKey = await authenticationKeyManager!.get();
-
     _initialized = true;
   }
 
@@ -63,7 +59,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
     String? data;
     try {
-      var body = formatArgs(args, _authorizationKey, method);
+      var body = formatArgs(args, await authenticationKeyManager?.get(), method);
 
       var url = Uri.parse('$host$endpoint');
 
@@ -103,14 +99,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
       contents.write(data);
     }, onDone: () => completer.complete(contents.toString()));
     return completer.future;
-  }
-
-  /// Sets the authorization key to manage user sign-ins.
-  Future<Null> setAuthorizationKey(String authorizationKey) async {
-    _authorizationKey = authorizationKey;
-
-    if (authenticationKeyManager != null)
-      await authenticationKeyManager!.put(authorizationKey);
   }
 
   /// Closes the connection to the server.

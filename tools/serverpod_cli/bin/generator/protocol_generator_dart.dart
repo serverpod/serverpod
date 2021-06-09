@@ -96,7 +96,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
       out += '  _Modules(Client client) {\n';
       for (var module in config.modules) {
-        out += '    module = ${module.name}.Caller(client);\n';
+        out += '    ${module.nickname} = ${module.name}.Caller(client);\n';
       }
 
       out += '  }\n';

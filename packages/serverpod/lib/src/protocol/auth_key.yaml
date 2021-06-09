@@ -1,0 +1,7 @@
+class: AuthKey
+table: serverpod_auth_key
+fields:
+  userId: int
+  hash: String
+  key: String?, api
+  scopes: List<String>

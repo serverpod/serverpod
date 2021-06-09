@@ -231,7 +231,7 @@ packages:
       path: "../serverpod_client"
       relative: true
     source: path
-    version: "0.8.5"
+    version: "0.8.6"
   serverpod_postgres_pool:
     dependency: "direct main"
     description:
@@ -245,35 +245,35 @@ packages:
       path: "../serverpod_serialization"
       relative: true
     source: path
-    version: "0.8.5"
+    version: "0.8.6"
   serverpod_service_client:
     dependency: "direct main"
     description:
       path: "../serverpod_service_client"
       relative: true
     source: path
-    version: "0.8.5"
+    version: "0.8.6"
   serverpod_shared:
     dependency: "direct main"
     description:
       path: "../serverpod_shared"
       relative: true
     source: path
-    version: "0.8.5"
+    version: "0.8.6"
   serverpod_test_client:
     dependency: "direct dev"
     description:
       path: "../../tests/serverpod_test_client"
       relative: true
     source: path
-    version: "0.8.5"
+    version: "0.8.6"
   serverpod_test_module_client:
     dependency: "direct dev"
     description:
       path: "../../tests/serverpod_test_module/serverpod_test_module_client"
       relative: true
     source: path
-    version: "0.8.5"
+    version: "0.8.6"
   shelf:
     dependency: transitive
     description:

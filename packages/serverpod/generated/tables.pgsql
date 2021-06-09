@@ -122,6 +122,21 @@ ALTER TABLE ONLY serverpod_session_log
 
 
 --
+-- Class AuthKey as table serverpod_auth_key
+--
+
+CREATE TABLE serverpod_auth_key (
+  "id" serial,
+  "userId" integer NOT NULL,
+  "hash" text NOT NULL,
+  "scopes" json NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_auth_key
+  ADD CONSTRAINT serverpod_auth_key_pkey PRIMARY KEY (id);
+
+
+--
 -- Class ReadWriteTestEntry as table serverpod_readwrite_test
 --
 

@@ -1,7 +1,11 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: public_member_api_docs
+
 import 'package:serverpod/serverpod.dart';
+
+import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
 
 // ignore: unused_import
 import 'protocol.dart';
@@ -30,10 +34,13 @@ class Endpoints extends EndpointDispatch {
         ),
       },
     );
+
+    modules['serverpod_auth'] = serverpod_auth.Endpoints()..initializeEndpoints(server);
   }
 
   @override
   void registerModules(Serverpod pod) {
+    pod.registerModule(serverpod_auth.Protocol(), 'auth');
   }
 }
 

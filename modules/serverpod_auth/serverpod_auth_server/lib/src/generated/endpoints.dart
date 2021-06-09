@@ -56,6 +56,14 @@ class Endpoints extends EndpointDispatch {
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
+        'isSignedIn': MethodConnector(
+          name: 'isSignedIn',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).isSignedIn(session,);
+          },
+        ),
         'getAuthenticatedUserInfo': MethodConnector(
           name: 'getAuthenticatedUserInfo',
           params: {

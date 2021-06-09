@@ -17,10 +17,17 @@ import 'package:googleapis/people/v1.dart';
 import '../business/users.dart';
 import '../generated/protocol.dart';
 
+const _configFilePath = 'config/google_client_secret.json';
+
 class GoogleEndpoint extends Endpoint {
-  final _GoogleClientSecret _googleClientSecret = _GoogleClientSecret('config/google_client_secret.json');
+  final _GoogleClientSecret _googleClientSecret = _GoogleClientSecret(_configFilePath);
 
   Future<AuthenticationResponse> authenticate(Session session, String authenticationCode) async {
+    if (_googleClientSecret.json == null) {
+      session.log('Sign in with Google is not initialized', level: LogLevel.warning);
+      return AuthenticationResponse(success: false);
+    }
+
     var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
       _googleClientSecret.json!,
       authenticationCode, [
@@ -62,25 +69,29 @@ class GoogleEndpoint extends Endpoint {
     if (userInfo == null)
       return AuthenticationResponse(success: false);
 
+    var authKey = await session.auth.signInUser(userInfo.id!);
 
-
-    // return await users.registerSignIn(session, userId, name, fullName, email, image);
-
-    return AuthenticationResponse(success: false);
+    return AuthenticationResponse(
+      success: true,
+      keyId: authKey.id,
+      key: authKey.key,
+      userInfo: userInfo,
+    );
   }
 }
 
 class _GoogleUtils {
-  static Future<AutoRefreshingAuthClient> clientViaClientSecretAndCode(String json,
+  static Future<AutoRefreshingAuthClient> clientViaClientSecretAndCode(Map data,
       String authenticationCode, List<String> scopes) async {
-    Map data = jsonDecode(json);
     Map web = data['web'];
     String identifier = web['client_id'];
     String secret = web['client_secret'];
+    List redirectURIs = web['redirect_uris'];
+    String redirectURI = redirectURIs[0];
     var clientId = ClientId(identifier, secret);
     var client = http.Client();
     var credentials = await obtainAccessCredentialsUsingCode(
-        clientId, authenticationCode, 'https://newsvoice.com/dev/null', client);
+        clientId, authenticationCode, redirectURI, client);
 
     return AutoRefreshingClient(client, clientId, credentials,
         closeUnderlyingClient: true);
@@ -89,10 +100,16 @@ class _GoogleUtils {
 
 class _GoogleClientSecret {
   String path;
-  String? json;
+  Map? json;
 
   _GoogleClientSecret(this.path) {
-    var file = File(path);
-    json = file.readAsStringSync();
+    try {
+      var file = File(path);
+      var jsonData = file.readAsStringSync();
+      json = jsonDecode(jsonData);
+    }
+    catch(e) {
+      print('serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.');
+    }
   }
 }

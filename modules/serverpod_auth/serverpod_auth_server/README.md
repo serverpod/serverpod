@@ -1,1 +1,2 @@
-A sample Serverpod module.
+# Serverpod Authentication
+The Serverpod auth module makes it easy

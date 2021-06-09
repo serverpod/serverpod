@@ -7,7 +7,8 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  serverpod: ^0.8.6
+  serverpod: # ^0.8.6
+    path: ../../../packages/serverpod
   googleapis: ^3.0.0
   googleapis_auth: ^1.1.0
 
