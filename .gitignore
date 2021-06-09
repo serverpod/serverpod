@@ -24,3 +24,4 @@ ios/.generated/
 pubspec.lock
 .flutter-plugins
 .dart_tool
+google_client_secret.json
