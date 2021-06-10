@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mdi/mdi.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
@@ -27,6 +26,8 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
       style: widget.style ?? ElevatedButton.styleFrom(
         primary: Colors.white,
         onPrimary: Colors.grey[700],
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.symmetric(horizontal: 16),
       ),
       onPressed: () {
         signInWithGoogle(widget.caller,);

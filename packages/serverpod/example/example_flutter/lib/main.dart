@@ -1,3 +1,4 @@
+import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:example_client/example_client.dart';
 import 'package:serverpod_auth_client/module.dart';
@@ -82,6 +83,20 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           UserInfoTile(
             userInfo: sessionManager.signedInUser,
+          ),
+          ListTile(
+            title: Text('Sign In'),
+            onTap: () {
+              showSignInDialog(
+                context: context,
+                onSignedIn: () {
+                  setState(() {});
+                },
+                onFailure: () {
+                  setState(() {});
+                }
+              );
+            },
           ),
           Padding(
             padding: EdgeInsets.only(bottom: 16.0),
