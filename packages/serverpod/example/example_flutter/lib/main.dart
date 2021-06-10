@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:example_client/example_client.dart';
+import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
-// Sets up a singleton client object that can be used to talk to the server from
-// anywhere in our app. The client is generated from your server code.
-// The client is set up to connect to a Serverpod running on a local server on
-// the default port. You will need to modify this to connect to staging or
-// production servers.
-var client = Client(
-  'http://localhost:8080/',
-  authenticationKeyManager: FlutterAuthenticationKeyManager.instance,
-);
+late SessionManager sessionManager;
+late Client client;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // The session manager keeps track of the signed-in state of the user. You
+  // can query it to see if the user is currently signed in and get information
+  // about the user.
+  sessionManager = await SessionManager.instance;
+
+  // Sets up a singleton client object that can be used to talk to the server
+  // from anywhere in our app. The client is generated from your server code.
+  // The client is set up to connect to a Serverpod running on a local server on
+  // the default port. You will need to modify this to connect to staging or
+  // production servers.
+  client = Client(
+    'http://localhost:8080/',
+    authenticationKeyManager: sessionManager.keyManager,
+  );
+
   runApp(MyApp());
 }
 
@@ -67,36 +78,46 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: 16.0),
-              child: SignInWithGoogleButton(caller: client.modules.auth),
+      body: ListView(
+        children: [
+          UserInfoTile(
+            userInfo: sessionManager.signedInUser,
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 16.0),
+            child: SignInWithGoogleButton(
+              caller: client.modules.auth,
+              onFailure: () {
+                print('Failed to sign in');
+                setState(() {});
+              },
+              onSignedIn: () {
+                print('Successfully signed in');
+                setState(() {});
+              },
             ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 16.0),
-              child: TextField(
-                controller: _textEditingController,
-                decoration: InputDecoration(
-                  hintText: 'Enter your name',
-                ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 16.0),
+            child: TextField(
+              controller: _textEditingController,
+              decoration: InputDecoration(
+                hintText: 'Enter your name',
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 16.0),
-              child: ElevatedButton(
-                onPressed: _callHello,
-                child: Text('Send to Server'),
-              ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 16.0),
+            child: ElevatedButton(
+              onPressed: _callHello,
+              child: Text('Send to Server'),
             ),
-            _ResultDisplay(
-              resultMessage: _resultMessage,
-              errorMessage: _errorMessage,
-            ),
-          ],
-        ),
+          ),
+          _ResultDisplay(
+            resultMessage: _resultMessage,
+            errorMessage: _errorMessage,
+          ),
+        ],
       ),
     );
   }
@@ -136,4 +157,27 @@ class _ResultDisplay extends StatelessWidget {
     );
   }
 }
+
+class UserInfoTile extends StatelessWidget {
+  final UserInfo? userInfo;
+
+  UserInfoTile({this.userInfo});
+
+  @override
+  Widget build(BuildContext context) {
+    if (userInfo == null) {
+      return ListTile(
+        title: Text('Anonymous User'),
+        subtitle: Text('Tap to sign in'),
+      );
+    }
+    else {
+      return ListTile(
+        title: Text(userInfo!.userName),
+        subtitle: Text(userInfo!.email ?? 'Unknown email'),
+      );
+    }
+  }
+}
+
 
