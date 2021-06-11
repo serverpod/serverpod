@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'bytedata_base64_ext.dart';
 
 typedef constructor = SerializableEntity Function(Map<String, dynamic> serialization);
 
@@ -53,6 +55,8 @@ abstract class SerializationManager {
       return jsonEncode(entity);
     else if (entity is DateTime)
       return entity.toIso8601String();
+    else if (entity is ByteData)
+      return entity.base64encodedString();
     else if (entity is int || entity is bool || entity is double || entity is SerializableEntity)
       return '$entity';
     else {

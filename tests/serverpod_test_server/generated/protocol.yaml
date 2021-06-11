@@ -19,6 +19,7 @@ basicTypes:
   - testBool:
   - testDateTime:
   - testString:
+  - testByteData:
 failedCalls:
   - failedCall:
 moduleSerialization:

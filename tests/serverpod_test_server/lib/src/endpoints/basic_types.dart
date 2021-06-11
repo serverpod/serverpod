@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 
 class BasicTypesEndpoint extends Endpoint {
@@ -19,6 +20,10 @@ class BasicTypesEndpoint extends Endpoint {
   }
 
   Future<String?> testString(Session session, String? value) async {
+    return value;
+  }
+
+  Future<ByteData?> testByteData(Session session, ByteData? value) async {
     return value;
   }
 }

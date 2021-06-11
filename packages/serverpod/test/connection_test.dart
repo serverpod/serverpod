@@ -1,9 +1,18 @@
+import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
   await client.basicDatabase.createSimpleTestData(100);
+}
+
+ByteData createByteData() {
+  var ints = Uint8List(256);
+  for (var i = 0; i < 256; i++) {
+    ints[i] = i;
+  }
+  return ByteData.view(ints.buffer);
 }
 
 void main() {

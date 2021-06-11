@@ -2,10 +2,11 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
 import 'dart:io';
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
-// ignore: unused_import
 import 'protocol.dart';
 
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
@@ -129,6 +130,12 @@ class _EndpointBasicTypes {
 
   Future<String?> testString(String? value,) async {
     return await caller.callServerEndpoint('basicTypes', 'testString', 'String', {
+      'value':value,
+    });
+  }
+
+  Future<typed_data.ByteData?> testByteData(typed_data.ByteData? value,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testByteData', 'ByteData', {
       'value':value,
     });
   }

@@ -16,11 +16,12 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += '/*   To generate run: "serverpod generate"    */\n';
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
+    out += '// ignore_for_file: unused_import\n';
     out += '\n';
 
     out += 'import \'dart:io\';\n';
+    out += 'import \'dart:typed_data\' as typed_data;\n';
     out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-    out += '// ignore: unused_import\n';
     out += 'import \'protocol.dart\';\n';
     out += '\n';
 

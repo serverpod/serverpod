@@ -5,6 +5,8 @@
 
 library protocol;
 
+// ignore: unused_import
+import 'dart:typed_data';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'nullability.dart';

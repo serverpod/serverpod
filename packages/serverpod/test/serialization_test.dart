@@ -1,7 +1,16 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+
+ByteData createByteData() {
+  var ints = Uint8List(256);
+  for (var i = 0; i < 256; i++) {
+    ints[i] = i;
+  }
+  return ByteData.view(ints.buffer);
+}
 
 void main() {
   var protocol = Protocol();
@@ -23,6 +32,7 @@ void main() {
       expect(unpacked.aString, isNull);
       expect(unpacked.aDouble, isNull);
       expect(unpacked.aDateTime, isNull);
+      expect(unpacked.aByteData, isNull);
     });
 
     test('Basic types with values', () {
@@ -32,6 +42,7 @@ void main() {
         aString: '42',
         aDouble: 42.42,
         aDateTime: DateTime.utc(1976),
+        aByteData: createByteData(),
       );
       var s = protocol.serializeEntity(types)!;
       var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
@@ -40,6 +51,10 @@ void main() {
       expect(unpacked.aString, equals('42'));
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aByteData!.lengthInBytes, equals(256));
+      for (var i = 0; i < 256; i++) {
+        expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
+      }
     });
 
     test('Nullability with null types', () {
@@ -56,6 +71,10 @@ void main() {
         aListWithNullableObjects: [SimpleData(num: 10), null],
         aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aListWithNullableDateTimes: [DateTime.utc(1976), null],
+        aByteData: createByteData(),
+        aByteDataList: [createByteData(), createByteData()],
+        aListWithNullableByteDatas: [createByteData(), null],
+
       );
 
       var s = protocol.serializeEntity(nullability)!;
@@ -65,6 +84,7 @@ void main() {
       expect(unpacked.aBool, equals(true));
       expect(unpacked.aString, equals('foo'));
       expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aByteData.lengthInBytes, equals(256));
       expect(unpacked.anObject.num, equals(42));
 
       expect(unpacked.anIntList.length, equals(2));
@@ -91,11 +111,16 @@ void main() {
       expect(unpacked.aListWithNullableDateTimes[0]!.year, equals(1976));
       expect(unpacked.aListWithNullableDateTimes[1], isNull);
 
+      expect(unpacked.aListWithNullableByteDatas.length, equals(2));
+      expect(unpacked.aListWithNullableByteDatas[0]!.lengthInBytes, equals(256));
+      expect(unpacked.aListWithNullableByteDatas[1], isNull);
+
       expect(unpacked.aNullableInt, isNull);
       expect(unpacked.aNullableDouble, isNull);
       expect(unpacked.aNullableBool, isNull);
       expect(unpacked.aNullableString, isNull);
       expect(unpacked.aNullableDateTime, isNull);
+      expect(unpacked.aNullableByteData, isNull);
       expect(unpacked.aNullableObject, isNull);
 
       expect(unpacked.aNullableListWithNullableInts, isNull);
@@ -118,6 +143,8 @@ void main() {
         aNullableString: 'foo',
         aDateTime: DateTime.utc(1976),
         aNullableDateTime: DateTime.utc(1976),
+        aByteData: createByteData(),
+        aNullableByteData: createByteData(),
         anObject: SimpleData(num: 42),
         aNullableObject: SimpleData(num: 42),
         anIntList: [10, 20],
@@ -128,10 +155,16 @@ void main() {
         aNullableObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
         aListWithNullableObjects: [SimpleData(num: 10), null],
         aNullableListWithNullableObjects: [SimpleData(num: 10), null],
+
         aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aNullableDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aListWithNullableDateTimes: [DateTime.utc(1976), null],
         aNullableListWithNullableDateTimes: [DateTime.utc(1976), null],
+
+        aByteDataList: [createByteData(), createByteData()],
+        aNullableByteDataList: [createByteData(), createByteData()],
+        aListWithNullableByteDatas: [createByteData(), null],
+        aNullableListWithNullableByteDatas: [createByteData(), null],
       );
 
       var s = protocol.serializeEntity(nullability)!;
@@ -141,6 +174,7 @@ void main() {
       expect(unpacked.aNullableBool, equals(true));
       expect(unpacked.aNullableString, equals('foo'));
       expect(unpacked.aNullableDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aNullableByteData!.lengthInBytes, equals(256));
       expect(unpacked.aNullableObject!.num, equals(42));
 
       expect(unpacked.aNullableIntList!.length, equals(2));
@@ -166,6 +200,14 @@ void main() {
       expect(unpacked.aNullableListWithNullableDateTimes!.length, equals(2));
       expect(unpacked.aNullableListWithNullableDateTimes![0]!.year, equals(1976));
       expect(unpacked.aNullableListWithNullableDateTimes![1], isNull);
+
+      expect(unpacked.aNullableByteDataList!.length, equals(2));
+      expect(unpacked.aNullableByteDataList![0].lengthInBytes, equals(256));
+      expect(unpacked.aNullableByteDataList![1].lengthInBytes, equals(256));
+
+      expect(unpacked.aNullableListWithNullableByteDatas!.length, equals(2));
+      expect(unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes, equals(256));
+      expect(unpacked.aNullableListWithNullableByteDatas![1], isNull);
     });
   });
 }

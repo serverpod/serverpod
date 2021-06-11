@@ -3,9 +3,11 @@
 
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
 import 'package:serverpod/database.dart';
-// ignore: unused_import
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
 import 'protocol.dart';
 
 class Types extends TableRow {
@@ -21,6 +23,7 @@ class Types extends TableRow {
   double? aDouble;
   DateTime? aDateTime;
   String? aString;
+  ByteData? aByteData;
 
   Types({
     this.id,
@@ -29,6 +32,7 @@ class Types extends TableRow {
     this.aDouble,
     this.aDateTime,
     this.aString,
+    this.aByteData,
 });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
@@ -39,6 +43,7 @@ class Types extends TableRow {
     aDouble = _data['aDouble'];
     aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
     aString = _data['aString'];
+    aByteData = (_data['aByteData'] as String?)?.base64DecodedByteData();
   }
 
   @override
@@ -50,6 +55,7 @@ class Types extends TableRow {
       'aDouble': aDouble,
       'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
+      'aByteData': aByteData?.base64encodedString(),
     });
   }
 
@@ -62,6 +68,7 @@ class Types extends TableRow {
       'aDouble': aDouble,
       'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
+      'aByteData': aByteData?.base64encodedString(),
     });
   }
 
@@ -74,6 +81,7 @@ class Types extends TableRow {
       'aDouble': aDouble,
       'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
+      'aByteData': aByteData?.base64encodedString(),
     });
   }
 }
@@ -89,6 +97,7 @@ class TypesTable extends Table {
   final aDouble = ColumnDouble('aDouble');
   final aDateTime = ColumnDateTime('aDateTime');
   final aString = ColumnString('aString');
+  final aByteData = ColumnSerializable('aByteData');
 
   @override
   List<Column> get columns => [
@@ -98,6 +107,7 @@ class TypesTable extends Table {
     aDouble,
     aDateTime,
     aString,
+    aByteData,
   ];
 }
 

@@ -2,12 +2,13 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module;
 
-// ignore: unused_import
 import 'protocol.dart';
 
 import '../endpoints/database_basic.dart';
@@ -217,6 +218,15 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicTypes'] as BasicTypesEndpoint).testString(session,params['value'],);
+          },
+        ),
+        'testByteData': MethodConnector(
+          name: 'testByteData',
+          params: {
+            'value': ParameterDescription(name: 'value', type: typed_data.ByteData, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint).testByteData(session,params['value'],);
           },
         ),
       },

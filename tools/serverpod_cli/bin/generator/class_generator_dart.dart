@@ -151,19 +151,23 @@ class ClassGeneratorDart extends ClassGenerator{
       // Ignore camel case warnings
       out += '// ignore_for_file: non_constant_identifier_names\n';
       out += '// ignore_for_file: public_member_api_docs\n';
+      out += '// ignore_for_file: unused_import\n';
       out += '\n';
 
       if (serverCode) {
-        if (tableName != null)
+        if (tableName != null) {
           out += 'import \'package:serverpod/database.dart\';\n';
-        else
           out += 'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
+        }
+        else {
+          out += 'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
+        }
       }
       else {
         out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
       }
 
-      out += '// ignore: unused_import\n';
+      out += 'import \'dart:typed_data\';\n';
       out += 'import \'protocol.dart\';\n';
       out += '\n';
 
@@ -341,6 +345,8 @@ class ClassGeneratorDart extends ClassGenerator{
     out+= 'library protocol;\n';
     out += '\n';
 
+    out += '// ignore: unused_import\n';
+    out += 'import \'dart:typed_data\';\n';
     if (serverCode)
       out += 'import \'package:serverpod/serverpod.dart\';\n';
     else
@@ -463,6 +469,12 @@ class FieldDefinition {
         else
           return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String()).toList()';
       }
+      else if (type.listType!.typeNonNullable == 'ByteData') {
+        if (type.listType!.nullable)
+          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.base64encodedString()).toList()';
+        else
+          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.base64encodedString()).toList()';
+      }
       else {
         return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
       }
@@ -473,6 +485,9 @@ class FieldDefinition {
     }
     else if (type.typeNonNullable == 'DateTime') {
       return '$name${type.nullable ? '?' : ''}.toUtc().toIso8601String()';
+    }
+    else if (type.typeNonNullable == 'ByteData') {
+      return  '$name${type.nullable ? '?' : ''}.base64encodedString()';
     }
     else {
       return '$name${type.nullable ? '?' : ''}.serialize()';
@@ -490,6 +505,12 @@ class FieldDefinition {
         else
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
       }
+      else if (type.listType!.typeNonNullable == 'ByteData') {
+        if (type.listType!.nullable)
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
+        else
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()).toList()';
+      }
       else {
         if (type.listType!.nullable)
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
@@ -506,6 +527,12 @@ class FieldDefinition {
         return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
       else
         return 'DateTime.tryParse(_data[\'$name\'])!';
+    }
+    else if (type.typeNonNullable == 'ByteData') {
+      if (type.nullable)
+        return '(_data[\'$name\'] as String?)?.base64DecodedByteData()';
+      else
+        return '(_data[\'$name\'] as String?)!.base64DecodedByteData()';
     }
     else {
       if (type.nullable)

@@ -15,6 +15,9 @@ fields:
   aDateTime: DateTime
   aNullableDateTime: DateTime?
 
+  aByteData: ByteData
+  aNullableByteData: ByteData?
+
   anObject: SimpleData
   aNullableObject: SimpleData?
 
@@ -32,3 +35,8 @@ fields:
   aNullableDateTimeList: List<DateTime>?
   aListWithNullableDateTimes: List<DateTime?>
   aNullableListWithNullableDateTimes: List<DateTime?>?
+
+  aByteDataList: List<ByteData>
+  aNullableByteDataList: List<ByteData>?
+  aListWithNullableByteDatas: List<ByteData?>
+  aNullableListWithNullableByteDatas: List<ByteData?>?

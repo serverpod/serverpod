@@ -67,9 +67,11 @@ abstract class ProtocolGenerator {
     out += '/*   To generate run: "serverpod generate"    */\n';
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
+    out += '// ignore_for_file: unused_import\n';
     out += '\n';
 
     // Imports
+    out += 'import \'dart:typed_data\' as typed_data;\n';
     out += 'import \'package:serverpod/serverpod.dart\';\n';
     out += '\n';
     if (hasModules) {
@@ -78,7 +80,6 @@ abstract class ProtocolGenerator {
       }
       out += '\n';
     }
-    out += '// ignore: unused_import\n';
     out += 'import \'protocol.dart\';\n';
     out += '\n';
     for (var importPath in protocolDefinition.filePaths) {

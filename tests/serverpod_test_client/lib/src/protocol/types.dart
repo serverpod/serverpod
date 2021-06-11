@@ -3,9 +3,10 @@
 
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
 import 'package:serverpod_client/serverpod_client.dart';
-// ignore: unused_import
+import 'dart:typed_data';
 import 'protocol.dart';
 
 class Types extends SerializableEntity {
@@ -18,6 +19,7 @@ class Types extends SerializableEntity {
   double? aDouble;
   DateTime? aDateTime;
   String? aString;
+  ByteData? aByteData;
 
   Types({
     this.id,
@@ -26,6 +28,7 @@ class Types extends SerializableEntity {
     this.aDouble,
     this.aDateTime,
     this.aString,
+    this.aByteData,
 });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
@@ -36,6 +39,7 @@ class Types extends SerializableEntity {
     aDouble = _data['aDouble'];
     aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
     aString = _data['aString'];
+    aByteData = (_data['aByteData'] as String?)?.base64DecodedByteData();
   }
 
   @override
@@ -47,6 +51,7 @@ class Types extends SerializableEntity {
       'aDouble': aDouble,
       'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
+      'aByteData': aByteData?.base64encodedString(),
     });
   }
 }
