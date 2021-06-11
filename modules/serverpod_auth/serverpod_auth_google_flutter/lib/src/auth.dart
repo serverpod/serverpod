@@ -37,7 +37,9 @@ Future<UserInfo?> signInWithGoogle(Caller caller) async {
     // Return the user info.
     return serverResponse.userInfo;
   }
-  catch(e) {
+  catch(e, stackTrace) {
+    print('$e');
+    print('$stackTrace');
     return null;
   }
 }
