@@ -157,7 +157,7 @@ class Session {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
-  void log(String message, {LogLevel? level, dynamic? exception, StackTrace? stackTrace}) {
+  void log(String message, {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
     logs.add(
       LogEntry(
         serverId: server.serverId,
@@ -219,7 +219,7 @@ class FutureCallInfo {
 
 /// Collects methods for authenticating users.
 class UserAuthetication {
-  Session _session;
+  final Session _session;
 
   UserAuthetication._(this._session);
 
@@ -235,7 +235,7 @@ class UserAuthetication {
   /// before signing them in. Send the AuthKey.id and key to the client and
   /// use that to authenticate in future calls. In most cases, it's more
   /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, {List<Scope> scopes = const []}) async {
+  Future<AuthKey> signInUser(int userId, String method, {List<Scope> scopes = const []}) async {
     var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
     var key = generateRandomString();
@@ -252,6 +252,7 @@ class UserAuthetication {
       hash: hash,
       key: key,
       scopes: scopeStrs,
+      method: method,
     );
 
     print('insert auth key');

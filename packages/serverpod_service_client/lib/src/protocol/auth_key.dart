@@ -17,6 +17,7 @@ class AuthKey extends SerializableEntity {
   late String hash;
   String? key;
   late List<String> scopes;
+  late String method;
 
   AuthKey({
     this.id,
@@ -24,6 +25,7 @@ class AuthKey extends SerializableEntity {
     required this.hash,
     this.key,
     required this.scopes,
+    required this.method,
 });
 
   AuthKey.fromSerialization(Map<String, dynamic> serialization) {
@@ -33,6 +35,7 @@ class AuthKey extends SerializableEntity {
     hash = _data['hash']!;
     key = _data['key'];
     scopes = _data['scopes']!.cast<String>();
+    method = _data['method']!;
   }
 
   @override
@@ -43,6 +46,7 @@ class AuthKey extends SerializableEntity {
       'hash': hash,
       'key': key,
       'scopes': scopes,
+      'method': method,
     });
   }
 }

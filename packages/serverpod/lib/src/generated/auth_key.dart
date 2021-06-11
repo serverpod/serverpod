@@ -20,6 +20,7 @@ class AuthKey extends TableRow {
   late String hash;
   String? key;
   late List<String> scopes;
+  late String method;
 
   AuthKey({
     this.id,
@@ -27,6 +28,7 @@ class AuthKey extends TableRow {
     required this.hash,
     this.key,
     required this.scopes,
+    required this.method,
 });
 
   AuthKey.fromSerialization(Map<String, dynamic> serialization) {
@@ -36,6 +38,7 @@ class AuthKey extends TableRow {
     hash = _data['hash']!;
     key = _data['key'];
     scopes = _data['scopes']!.cast<String>();
+    method = _data['method']!;
   }
 
   @override
@@ -46,6 +49,7 @@ class AuthKey extends TableRow {
       'hash': hash,
       'key': key,
       'scopes': scopes,
+      'method': method,
     });
   }
 
@@ -56,6 +60,7 @@ class AuthKey extends TableRow {
       'userId': userId,
       'hash': hash,
       'scopes': scopes,
+      'method': method,
     });
   }
 
@@ -67,6 +72,7 @@ class AuthKey extends TableRow {
       'hash': hash,
       'key': key,
       'scopes': scopes,
+      'method': method,
     });
   }
 }
@@ -80,6 +86,7 @@ class AuthKeyTable extends Table {
   final userId = ColumnInt('userId');
   final hash = ColumnString('hash');
   final scopes = ColumnSerializable('scopes');
+  final method = ColumnString('method');
 
   @override
   List<Column> get columns => [
@@ -87,6 +94,7 @@ class AuthKeyTable extends Table {
     userId,
     hash,
     scopes,
+    method,
   ];
 }
 

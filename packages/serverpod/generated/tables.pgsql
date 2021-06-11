@@ -129,7 +129,8 @@ CREATE TABLE serverpod_auth_key (
   "id" serial,
   "userId" integer NOT NULL,
   "hash" text NOT NULL,
-  "scopes" json NOT NULL
+  "scopes" json NOT NULL,
+  "method" text NOT NULL
 );
 
 ALTER TABLE ONLY serverpod_auth_key

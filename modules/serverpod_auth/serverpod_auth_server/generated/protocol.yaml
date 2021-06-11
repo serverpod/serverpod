@@ -4,5 +4,6 @@ google:
   - authenticate:
 user:
   - isSignedIn:
+  - signOut:
   - getAuthenticatedUserInfo:
   - updateUserInfo:

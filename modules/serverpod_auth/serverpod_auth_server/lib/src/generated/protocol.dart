@@ -27,6 +27,6 @@ class Protocol extends SerializationManager {
     constructors['serverpod_auth_server.UserInfo'] = (Map<String, dynamic> serialization) => UserInfo.fromSerialization(serialization);
     constructors['serverpod_auth_server.AuthenticationResponse'] = (Map<String, dynamic> serialization) => AuthenticationResponse.fromSerialization(serialization);
 
-    tableClassMapping['serverpod_user_info'] = 'UserInfo';
+    tableClassMapping['serverpod_user_info'] = 'serverpod_auth_server.UserInfo';
   }
 }
