@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
           UserInfoTile(
             userInfo: sessionManager.signedInUser,
           ),
-          ListTile(
+          if (!sessionManager.isSignedIn) ListTile(
             title: Text('Sign In'),
             onTap: () {
               showSignInDialog(
@@ -92,25 +92,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 onSignedIn: () {
                   setState(() {});
                 },
-                onFailure: () {
-                  setState(() {});
-                }
               );
             },
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 16.0),
-            child: SignInWithGoogleButton(
-              caller: client.modules.auth,
-              onFailure: () {
-                print('Failed to sign in');
-                setState(() {});
-              },
-              onSignedIn: () {
-                print('Successfully signed in');
-                setState(() {});
-              },
-            ),
+          if (sessionManager.isSignedIn) ListTile(
+            title: Text('Sign Out'),
+            onTap: () {
+              setState(() {
+                sessionManager.signOut(client.modules.auth);
+              });
+            },
           ),
           Padding(
             padding: EdgeInsets.only(bottom: 16.0),

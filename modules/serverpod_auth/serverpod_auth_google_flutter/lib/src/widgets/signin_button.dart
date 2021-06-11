@@ -30,14 +30,28 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         padding: EdgeInsets.symmetric(horizontal: 16),
       ),
       onPressed: () {
-        signInWithGoogle(widget.caller,);
+        // Open a dialog with just the progress indicator that isn't
+        // dismissable.
+        showLoadingBarrier(context: context);
+
+        // Attempt to sign in the user.
+        signInWithGoogle(widget.caller,).then((UserInfo? userInfo) {
+          // Pop the loading barrier
+          Navigator.of(context).pop();
+
+          // Notify the parent.
+          if (userInfo != null)
+            widget.onSignedIn();
+          else
+            widget.onFailure();
+        });
       },
       label: Text('Sign in with Google'),
       icon: Image.asset(
         'assets/google-icon.png',
         package: 'serverpod_auth_google_flutter',
-        width: 18,
-        height: 18,
+        width: 24,
+        height: 24,
       ),
     );
   }

@@ -58,6 +58,7 @@ class GoogleEndpoint extends Endpoint {
       userInfo = UserInfo(
         userName: name,
         fullName: fullName,
+        email: email,
         active: true,
         blocked: false,
         created: DateTime.now().toUtc(),
@@ -69,7 +70,7 @@ class GoogleEndpoint extends Endpoint {
     if (userInfo == null)
       return AuthenticationResponse(success: false);
 
-    var authKey = await session.auth.signInUser(userInfo.id!);
+    var authKey = await session.auth.signInUser(userInfo.id!, 'google');
 
     return AuthenticationResponse(
       success: true,

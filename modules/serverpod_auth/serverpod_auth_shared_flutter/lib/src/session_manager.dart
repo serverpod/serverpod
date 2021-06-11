@@ -45,13 +45,19 @@ class SessionManager {
     await _loadSharedPrefs();
   }
 
-  /// Signs the user out from all connected devices.
-  Future<void> signOut(Caller caller) async {
+  /// Signs the user out from all connected devices. Returns true if successful.
+  Future<bool> signOut(Caller caller) async {
     if (!isSignedIn)
-      return;
+      return true;
 
-    // await caller.user.signOut();
-    signedInUser = null;
+    try {
+      await caller.user.signOut();
+      signedInUser = null;
+      return true;
+    }
+    catch(e) {
+      return false;
+    }
   }
 
   Future<void> _loadSharedPrefs() async {

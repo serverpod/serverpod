@@ -5,3 +5,7 @@ fields:
   hash: String
   key: String?, api
   scopes: List<String>
+  method: String
+indexes:
+  serverpod_auth_key_userId_idx:
+    fields: userId
