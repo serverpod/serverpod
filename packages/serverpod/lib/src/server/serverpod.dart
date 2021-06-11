@@ -289,7 +289,7 @@ class Serverpod {
   /// [internal.LogLevel.info]. If the logging fails, the message is written to
   /// stdout. In [ServerpodRunMode.development] all messages are written to
   /// stdout.
-  Future<void> log(String message, {internal.LogLevel? level, dynamic? exception, StackTrace? stackTrace}) async {
+  Future<void> log(String message, {internal.LogLevel? level, dynamic exception, StackTrace? stackTrace}) async {
     var entry = internal.LogEntry(
       serverId: server.serverId,
       logLevel: (level ?? internal.LogLevel.info).index,

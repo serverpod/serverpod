@@ -228,7 +228,7 @@ class Constant extends Expression {
   // TODO: Handle more types
 
   /// Creates a constant [Expression]. Currently supports [bool] and [String].
-  Constant(dynamic? value) : super(_formatValue(value));
+  Constant(dynamic value) : super(_formatValue(value));
 
   static String _formatValue(dynamic value) {
     if (value == null)
