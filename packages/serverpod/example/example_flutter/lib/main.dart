@@ -81,108 +81,57 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          UserInfoTile(
-            userInfo: sessionManager.signedInUser,
-          ),
-          if (!sessionManager.isSignedIn) ListTile(
-            title: Text('Sign In'),
-            onTap: () {
-              showSignInDialog(
-                context: context,
-                onSignedIn: () {
-                  setState(() {});
-                },
-              );
-            },
-          ),
-          if (sessionManager.isSignedIn) ListTile(
-            title: Text('Sign Out'),
-            onTap: () {
-              setState(() {
-                sessionManager.signOut(client.modules.auth);
-              });
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 16.0),
-            child: TextField(
-              controller: _textEditingController,
-              decoration: InputDecoration(
-                hintText: 'Enter your name',
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 16.0),
-            child: ElevatedButton(
-              onPressed: _callHello,
-              child: Text('Send to Server'),
-            ),
-          ),
-          _ResultDisplay(
-            resultMessage: _resultMessage,
-            errorMessage: _errorMessage,
-          ),
+          _UserInfoTile(),
         ],
       ),
     );
   }
 }
 
-// _ResultDisplays shows the result of the call. Either the returned result from
-// the `example.hello` endpoint method or an error message.
-class _ResultDisplay extends StatelessWidget {
-  final String? resultMessage;
-  final String? errorMessage;
-  
-  _ResultDisplay({this.resultMessage, this.errorMessage,});
-  
+class _UserInfoTile extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    String text;
-    Color backgroundColor;
-    if (errorMessage != null) {
-      backgroundColor = Colors.red[300]!;
-      text = errorMessage!;
-    }
-    else if (resultMessage != null) {
-      backgroundColor = Colors.green[300]!;
-      text = resultMessage!;
-    }
-    else {
-      backgroundColor = Colors.grey[300]!;
-      text = 'No server response yet.';
-    }
-    
-    return Container(
-      height: 50,
-      color: backgroundColor,
-      child: Center(
-        child: Text(text),
-      ),
-    );
-  }
+  State<StatefulWidget> createState() => _UserInfoTileState();
 }
 
-class UserInfoTile extends StatelessWidget {
-  final UserInfo? userInfo;
-
-  UserInfoTile({this.userInfo});
-
+class _UserInfoTileState extends State<_UserInfoTile> {
   @override
   Widget build(BuildContext context) {
+    var userInfo = sessionManager.signedInUser;
+
     if (userInfo == null) {
       return ListTile(
-        title: Text('Anonymous User'),
-        subtitle: Text('Tap to sign in'),
+        title: Text('Not signed in'),
+        trailing: OutlinedButton(
+          onPressed: _signIn,
+          child: Text('Sign In'),
+        ),
       );
     }
     else {
       return ListTile(
-        title: Text(userInfo!.userName),
-        subtitle: Text(userInfo!.email ?? 'Unknown email'),
+        title: Text(userInfo.userName),
+        subtitle: Text(userInfo.email ?? 'Unknown email'),
+        trailing: OutlinedButton(
+          onPressed: _signOut,
+          child: Text('Sign Out'),
+        ),
       );
     }
+  }
+
+  void _signOut() {
+    sessionManager.signOut(client.modules.auth).then((bool success) {
+      setState(() {});
+    });
+  }
+
+  void _signIn() {
+    showSignInDialog(
+      context: context,
+      onSignedIn: () {
+        setState(() {});
+      },
+    );
   }
 }
 
