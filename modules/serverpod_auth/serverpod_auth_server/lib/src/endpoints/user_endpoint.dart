@@ -4,11 +4,16 @@
 
 import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
+import '../business/users.dart';
 
 class UserEndpoint extends Endpoint {
   Future<bool> isSignedIn(Session session) async {
     var userId = await session.auth.authenticatedUserId;
     return userId != null;
+  }
+
+  Future<void> signOut(Session session) async {
+    await session.auth.signOutUser();
   }
 
   Future<UserInfo?> getAuthenticatedUserInfo(Session session) async {

@@ -38,6 +38,11 @@ class _EndpointUser {
     });
   }
 
+  Future<void> signOut() async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'signOut', 'void', {
+    });
+  }
+
   Future<UserInfo?> getAuthenticatedUserInfo() async {
     return await caller.callServerEndpoint('serverpod_auth.user', 'getAuthenticatedUserInfo', 'UserInfo', {
     });
