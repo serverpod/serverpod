@@ -46,19 +46,18 @@ class _SignInDialog extends StatelessWidget {
 
   void _signedIn(BuildContext context) {
     // Notify the caller that we successfully signed in and close the dialog.
-    print('successfully signed in!!');
     onSignedIn();
     Navigator.of(context).pop();
   }
 
   void _failedToSignIn() {
     // The user cancelled the signing in, or something went wrong.
-    print('failed to sign in');
   }
 }
 
 /// Opens the sign in dialog. If the user successfully signs in [onSignedIn] is
-/// called.
+/// called. After the user is signed in you can query [SessionManager] to find
+/// information about the current user.
 void showSignInDialog({
   required BuildContext context,
   required VoidCallback onSignedIn,
