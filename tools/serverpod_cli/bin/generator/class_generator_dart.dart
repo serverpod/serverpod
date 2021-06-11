@@ -387,7 +387,7 @@ class ClassGeneratorDart extends ClassGenerator{
       for (var classInfo in classInfos) {
         if (classInfo.tableName == null)
           continue;
-        out += '    tableClassMapping[\'${classInfo.tableName}\'] = \'${classInfo.className}\';\n';
+        out += '    tableClassMapping[\'${classInfo.tableName}\'] = \'$classPrefix${classInfo.className}\';\n';
       }
     }
 
