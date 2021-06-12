@@ -85,6 +85,16 @@ void main() {
       var result = await client.basicTypes.testDateTime(null);
       expect(result, isNull);
     });
+
+    test('Type ByteData', () async {
+      var result = await client.basicTypes.testByteData(createByteData());
+      expect(result!.lengthInBytes, equals(256));
+    });
+
+    test('Type null ByteData', () async {
+      var result = await client.basicTypes.testByteData(null);
+      expect(result, isNull);
+    });
   });
 
   group('Database', () {

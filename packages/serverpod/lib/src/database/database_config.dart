@@ -4,6 +4,7 @@ import 'package:postgres/src/text_codec.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'database_connection.dart';
+import 'value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
 class DatabaseConfig {
@@ -35,7 +36,7 @@ class DatabaseConfig {
   final tableClassMapping; // = <String, String>{};
 
   /// The encoder used to encode objects for storing in the database.
-  static final PostgresTextEncoder encoder = PostgresTextEncoder();
+  static final ValueEncoder encoder = ValueEncoder();
 
   /// Creates a new [DatabaseConfig]. Typically, this is done automatically
   /// when starting the [Server].

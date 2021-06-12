@@ -509,7 +509,7 @@ class FieldDefinition {
         if (type.listType!.nullable)
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
         else
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()).toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
       }
       else {
         if (type.listType!.nullable)
@@ -532,7 +532,7 @@ class FieldDefinition {
       if (type.nullable)
         return '(_data[\'$name\'] as String?)?.base64DecodedByteData()';
       else
-        return '(_data[\'$name\'] as String?)!.base64DecodedByteData()';
+        return '(_data[\'$name\'] as String?)!.base64DecodedByteData()!';
     }
     else {
       if (type.nullable)

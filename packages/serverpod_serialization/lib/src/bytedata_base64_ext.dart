@@ -12,7 +12,16 @@ extension Base64Enc on ByteData {
 /// Extension for decoding [ByteData] in protocol.
 extension Base64Dec on String {
   /// Returns [ByteData] from an encoded String.
-  ByteData base64DecodedByteData() {
-    return ByteData.view(base64Decode(substring(7)).buffer);
+  ByteData? base64DecodedByteData() {
+    if (this == 'null')
+      return null;
+    try {
+      return ByteData.view(base64Decode(substring(7)).buffer);
+    }
+    catch(e) {
+      print('$e');
+      print('data: $this');
+      return null;
+    }
   }
 }

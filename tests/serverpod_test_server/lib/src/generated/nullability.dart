@@ -92,7 +92,7 @@ class Nullability extends SerializableEntity {
     aNullableString = _data['aNullableString'];
     aDateTime = DateTime.tryParse(_data['aDateTime'])!;
     aNullableDateTime = _data['aNullableDateTime'] != null ? DateTime.tryParse(_data['aNullableDateTime']) : null;
-    aByteData = (_data['aByteData'] as String?)!.base64DecodedByteData();
+    aByteData = (_data['aByteData'] as String?)!.base64DecodedByteData()!;
     aNullableByteData = (_data['aNullableByteData'] as String?)?.base64DecodedByteData();
     anObject = SimpleData.fromSerialization(_data['anObject']);
     aNullableObject = _data['aNullableObject'] != null ? SimpleData?.fromSerialization(_data['aNullableObject']) : null;
@@ -108,8 +108,8 @@ class Nullability extends SerializableEntity {
     aNullableDateTimeList = _data['aNullableDateTimeList']?.map<DateTime>((a) => DateTime.tryParse(a)!).toList();
     aListWithNullableDateTimes = _data['aListWithNullableDateTimes']!.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList();
     aNullableListWithNullableDateTimes = _data['aNullableListWithNullableDateTimes']?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList();
-    aByteDataList = _data['aByteDataList']!.map<ByteData>((a) => (a as String).base64DecodedByteData()).toList();
-    aNullableByteDataList = _data['aNullableByteDataList']?.map<ByteData>((a) => (a as String).base64DecodedByteData()).toList();
+    aByteDataList = _data['aByteDataList']!.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList();
+    aNullableByteDataList = _data['aNullableByteDataList']?.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList();
     aListWithNullableByteDatas = _data['aListWithNullableByteDatas']!.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList();
     aNullableListWithNullableByteDatas = _data['aNullableListWithNullableByteDatas']?.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList();
   }

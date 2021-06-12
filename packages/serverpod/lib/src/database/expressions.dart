@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 
 import 'database_config.dart';
@@ -190,7 +192,8 @@ class ColumnBool extends Column {
   }
 }
 
-/// A [Column] holding an [DateTime].
+/// A [Column] holding an [DateTime]. In the database it is stored as a
+/// timestamp without time zone.
 class ColumnDateTime extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDateTime(String name) : super (name, DateTime);
@@ -212,6 +215,12 @@ class ColumnDateTime extends Column {
     else
       return Expression('"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
   }
+}
+
+/// A [Column] holding [ByteData].
+class ColumnByteData extends Column {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnByteData(String name) : super(name, ByteData);
 }
 
 /// A [Column] holding an [SerializableEntity]. The entity will be stored in the

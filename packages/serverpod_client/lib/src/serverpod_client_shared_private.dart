@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -9,7 +10,10 @@ String formatArgs(Map<String, dynamic> args, String? authorizationKey, String me
   for (var argName in args.keys) {
     var value = args[argName];
     if (value != null) {
-      formattedArgs[argName] = value.toString();
+      if (value is ByteData)
+        formattedArgs[argName] = value.base64encodedString();
+      else
+        formattedArgs[argName] = value.toString();
     }
   }
 
@@ -32,6 +36,8 @@ dynamic parseData(String data, String returnTypeName, SerializationManager seria
     return jsonDecode(data);
   else if (returnTypeName == 'DateTime')
     return DateTime.tryParse(data);
+  else if (returnTypeName == 'ByteData')
+    return data.base64DecodedByteData();
   else if (returnTypeName == 'String')
     return jsonDecode(data);
   return serializationManager.createEntityFromSerialization(jsonDecode(data));

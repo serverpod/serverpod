@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:pedantic/pedantic.dart';
@@ -157,6 +158,8 @@ abstract class EndpointDispatch {
     }
     if (type == DateTime)
       return DateTime.tryParse(input!);
+    if (type == ByteData)
+      return input?.base64DecodedByteData();
 
     try {
       var data = jsonDecode(input!);
@@ -165,6 +168,7 @@ abstract class EndpointDispatch {
     catch (error) {
       return null;
     }
+
   }
 }
 
