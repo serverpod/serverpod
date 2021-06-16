@@ -1,5 +1,4 @@
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
-import 'package:postgres/src/text_codec.dart';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
