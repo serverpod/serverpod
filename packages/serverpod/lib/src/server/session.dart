@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -67,14 +68,14 @@ class Session {
   /// Provides access to all caches used by the server.
   Caches get caches => server.caches;
 
-  /// Provides access to the cloud storages used by this [Serverpod].
-  Map<String, CloudStorage> get storage => server.serverpod.storage;
-
   /// Map of passwords loaded from config/passwords.yaml
   Map<String, String> get passwords => server.passwords;
 
   /// Methods related to user authentication.
   late final UserAuthetication auth;
+
+  /// Provides access to the cloud storages used by this [Serverpod].
+  late final StorageAccess storage;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
@@ -91,6 +92,7 @@ class Session {
     _startTime = DateTime.now();
 
     auth = UserAuthetication._(this);
+    storage = StorageAccess._(this);
 
     if (type == SessionType.methodCall) {
       // Method call session
@@ -277,5 +279,36 @@ class UserAuthetication {
 
     await _session.db.delete(tAuthKey, where: tAuthKey.userId.equals(userId));
     _session._authenticatedUser = null;
+  }
+}
+
+/// Collects methods for accessing cloud storage.
+class StorageAccess {
+  final Session _session;
+
+  StorageAccess._(this._session);
+
+  Future<void> storeFile({
+    required String storageId,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+  }) async {
+    var storage = _session.server.serverpod.storage[storageId];
+    if (storage == null)
+      throw CloudStorageException('Storage $storageId is not registered');
+
+    await storage.storeFile(session: _session, path: path, byteData: byteData);
+  }
+
+  Future<ByteData?> retrieveFile({
+    required String storageId,
+    required String path,
+  }) async {
+    var storage = _session.server.serverpod.storage[storageId];
+    if (storage == null)
+      throw CloudStorageException('Storage $storageId is not registered');
+
+    return await storage.retrieveFile(session: _session, path: path);
   }
 }
