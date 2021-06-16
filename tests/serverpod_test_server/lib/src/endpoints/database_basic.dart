@@ -10,12 +10,12 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<Types?> getTypes(Session session, int id) async {
-    Types? types = await session.db.findById(tTypes, id) as Types?;
+    var types = await session.db.findById(tTypes, id) as Types?;
     return types;
   }
 
   Future<int?> getTypesRawQuery(Session session, int id) async {
-    String query = 'SELECT * FROM types WHERE id = $id';
+    var query = 'SELECT * FROM types WHERE id = $id';
     var result = await session.db.query(query);
     if (result.length != 1) {
       print('getTypesRawQuery expected 1 row');
@@ -41,7 +41,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<void> createSimpleTestData(Session session, int numRows) async {
-    for (int i = 0; i < numRows; i++) {
+    for (var i = 0; i < numRows; i++) {
       var data = SimpleData(num: i,);
       await session.db.insert(data);
     }
@@ -60,7 +60,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<bool?> findAndDeleteSimpleTestData(Session session, int num) async {
-    SimpleData? data = await session.db.findSingleRow(
+    var data = await session.db.findSingleRow(
       tSimpleData,
       where: tSimpleData.num.equals(num),
     ) as SimpleData?;
@@ -84,7 +84,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<bool?> updateSimpleDataRow(Session session, int num, int newNum) async {
-    SimpleData? data = await session.db.findSingleRow(
+    var data = await session.db.findSingleRow(
       tSimpleData,
       where: tSimpleData.num.equals(num),
     ) as SimpleData?;
