@@ -39,7 +39,7 @@ class Types extends SerializableEntity {
     aDouble = _data['aDouble'];
     aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
     aString = _data['aString'];
-    aByteData = (_data['aByteData'] as String?)?.base64DecodedByteData();
+    aByteData = _data['aByteData'] == null ? null : (_data['aByteData'] is String ? (_data['aByteData'] as String).base64DecodedByteData() : ByteData.view((_data['aByteData'] as Uint8List).buffer));
   }
 
   @override

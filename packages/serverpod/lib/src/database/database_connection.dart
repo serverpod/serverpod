@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:serverpod/server.dart';
+
 import '../generated/protocol.dart';
 
 import 'database_config.dart';
@@ -185,10 +188,20 @@ class DatabaseConnection {
 
     for (var columnName in rawRow!.keys) {
       var value = rawRow[columnName];
-      if (value is DateTime)
+
+      if (value is DateTime) {
         data[columnName] = value.toIso8601String();
-      else
+      }
+      else if (value is Uint8List) {
+        throw(UnimplementedError('Binary storage is not yet supported.'));
+
+        // TODO: It seems like the Postgres driver is returning incorrect data
+        // var byteData = ByteData.view(value.buffer);
+        // data[columnName] = byteData.base64encodedString();
+      }
+      else {
         data[columnName] = value;
+      }
     }
 
     var serialization = <String, dynamic> {'data': data, 'class': className};
@@ -278,7 +291,22 @@ class DatabaseConnection {
       if (data[column] is Map || data[column] is List)
         data[column] = jsonEncode(data[column]);
 
-      var value = DatabaseConfig.encoder.convert(data[column]);
+      String value;
+      var unformattedValue = data[column];
+      // TODO: Support binary stores in the database
+      // if (unformattedValue is String && unformattedValue.startsWith('decode(\'')/* && unformattedValue.endsWith('\', \'base64\')') */) {
+      //   // TODO:
+      //   // This is a bit of a hack since strings that starts with
+      //   // `convert('` and ends with `', 'base64') will be incorrectly encoded
+      //   // to base64. Best would be to find a better way to detect when we are
+      //   // trying to store a ByteData.
+      //   print('DETECTED BINARY');
+      //   value = data[column];
+      // }
+      // else {
+      //   value = DatabaseConfig.encoder.convert(unformattedValue);
+      // }
+      value = DatabaseConfig.encoder.convert(unformattedValue);
 
       columnsList.add('"$column"');
       valueList.add(value);

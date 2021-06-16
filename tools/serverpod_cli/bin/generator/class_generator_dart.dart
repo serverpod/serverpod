@@ -437,6 +437,8 @@ class FieldDefinition {
       return 'ColumnString';
     if (type.typeNonNullable == 'DateTime')
       return 'ColumnDateTime';
+    if (type.typeNonNullable == 'ByteData')
+      return 'ColumnByteData';
     return 'ColumnSerializable';
   }
 
@@ -487,7 +489,7 @@ class FieldDefinition {
       return '$name${type.nullable ? '?' : ''}.toUtc().toIso8601String()';
     }
     else if (type.typeNonNullable == 'ByteData') {
-      return  '$name${type.nullable ? '?' : ''}.base64encodedString()';
+      return '$name${type.nullable ? '?' : ''}.base64encodedString()';
     }
     else {
       return '$name${type.nullable ? '?' : ''}.serialize()';
@@ -530,9 +532,11 @@ class FieldDefinition {
     }
     else if (type.typeNonNullable == 'ByteData') {
       if (type.nullable)
-        return '(_data[\'$name\'] as String?)?.base64DecodedByteData()';
+        // return '(_data[\'$name\'] as String?)?.base64DecodedByteData()';
+        return '_data[\'$name\'] == null ? null : (_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData() : ByteData.view((_data[\'$name\'] as Uint8List).buffer))';
       else
-        return '(_data[\'$name\'] as String?)!.base64DecodedByteData()!';
+        return '_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData()! : ByteData.view((_data[\'$name\'] as Uint8List).buffer)';
+        // return '(_data[\'$name\'] as String?)!.base64DecodedByteData()!';
     }
     else {
       if (type.nullable)

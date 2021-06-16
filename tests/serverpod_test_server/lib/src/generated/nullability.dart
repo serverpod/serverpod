@@ -92,8 +92,8 @@ class Nullability extends SerializableEntity {
     aNullableString = _data['aNullableString'];
     aDateTime = DateTime.tryParse(_data['aDateTime'])!;
     aNullableDateTime = _data['aNullableDateTime'] != null ? DateTime.tryParse(_data['aNullableDateTime']) : null;
-    aByteData = (_data['aByteData'] as String?)!.base64DecodedByteData()!;
-    aNullableByteData = (_data['aNullableByteData'] as String?)?.base64DecodedByteData();
+    aByteData = _data['aByteData'] is String ? (_data['aByteData'] as String).base64DecodedByteData()! : ByteData.view((_data['aByteData'] as Uint8List).buffer);
+    aNullableByteData = _data['aNullableByteData'] == null ? null : (_data['aNullableByteData'] is String ? (_data['aNullableByteData'] as String).base64DecodedByteData() : ByteData.view((_data['aNullableByteData'] as Uint8List).buffer));
     anObject = SimpleData.fromSerialization(_data['anObject']);
     aNullableObject = _data['aNullableObject'] != null ? SimpleData?.fromSerialization(_data['aNullableObject']) : null;
     anIntList = _data['anIntList']!.cast<int>();

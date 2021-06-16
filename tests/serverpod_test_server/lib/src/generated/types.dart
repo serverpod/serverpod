@@ -43,7 +43,7 @@ class Types extends TableRow {
     aDouble = _data['aDouble'];
     aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
     aString = _data['aString'];
-    aByteData = (_data['aByteData'] as String?)?.base64DecodedByteData();
+    aByteData = _data['aByteData'] == null ? null : (_data['aByteData'] is String ? (_data['aByteData'] as String).base64DecodedByteData() : ByteData.view((_data['aByteData'] as Uint8List).buffer));
   }
 
   @override
@@ -97,7 +97,7 @@ class TypesTable extends Table {
   final aDouble = ColumnDouble('aDouble');
   final aDateTime = ColumnDateTime('aDateTime');
   final aString = ColumnString('aString');
-  final aByteData = ColumnSerializable('aByteData');
+  final aByteData = ColumnByteData('aByteData');
 
   @override
   List<Column> get columns => [

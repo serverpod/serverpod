@@ -101,12 +101,14 @@ void main() {
     test('Write and read', () async {
       var dateTime = DateTime(1976, 9, 10, 2, 10);
 
+      // TODO: Support ByteData in database store
       var types = Types(
         aBool: true,
         aDouble: 1.5,
         anInt: 42,
         aDateTime: dateTime,
         aString: 'Foo',
+        // aByteData: createByteData(),
       );
 
       var count = await client.basicDatabase.countTypesRows();
@@ -130,6 +132,7 @@ void main() {
         expect(storedTypes.aDouble, equals(1.5));
         expect(storedTypes.aString, equals('Foo'));
         expect(storedTypes.aDateTime?.toLocal(), equals(dateTime));
+        // expect(storedTypes.aByteData!.lengthInBytes, equals(256));
       }
     });
 
