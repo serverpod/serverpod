@@ -1,7 +1,6 @@
 import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:example_client/example_client.dart';
-import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 late SessionManager sessionManager;
@@ -51,28 +50,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // These fields hold the last result or error message that we've received from
-  // the server or null if no result exists yet.
-  String? _resultMessage;
-  String? _errorMessage;
-
-  final _textEditingController = TextEditingController();
-
-  // Calls the `hello` method of the `example` endpoint. Will set either the
-  // `_resultMessage` or `_errorMessage` field, depending on if the call
-  // is successful.
-  void _callHello() {
-    client.example.hello(_textEditingController.text).then((String result) {
-      setState(() {
-        _resultMessage = result;
-      });
-    }, onError: (e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
