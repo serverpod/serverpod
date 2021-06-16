@@ -1,0 +1,14 @@
+class: CloudStorageEntry
+table: serverpod_cloud_storage
+fields:
+  storageId: String
+  path: String
+  addedTime: DateTime
+  expiration: DateTime?
+  byteData: ByteData
+indexes:
+  serverpod_cloud_storage_path_idx:
+    fields: storageId, path
+    unique: true
+  serverpod_cloud_storage_expiration:
+    fields: expiration

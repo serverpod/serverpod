@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
+import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/server/password_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -84,6 +86,16 @@ class Serverpod {
     _runtimeSettings = settings;
     _storeRuntimeSettings(settings);
   }
+
+  /// Cloud storages used by the serverpod. By default two storages are set up,
+  /// `public` and `private`. The default storages are using the database,
+  /// which may not be ideal for larger scale applications. Consider replacing
+  /// the storages with another service such as Google Cloud or Amazon S3,
+  /// especially in production environments.
+  final storage = <String, CloudStorage>{
+    'public': DatabaseCloudStorage('public'),
+    'private': DatabaseCloudStorage('private'),
+  };
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     try {

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../cache/caches.dart';
+import '../cloud_storage/cloud_storage.dart';
 import '../authentication/scope.dart';
 import '../generated/protocol.dart';
 import '../database/database.dart';
@@ -65,6 +66,9 @@ class Session {
 
   /// Provides access to all caches used by the server.
   Caches get caches => server.caches;
+
+  /// Provides access to the cloud storages used by this [Serverpod].
+  Map<String, CloudStorage> get storage => server.serverpod.storage;
 
   /// Map of passwords loaded from config/passwords.yaml
   Map<String, String> get passwords => server.passwords;

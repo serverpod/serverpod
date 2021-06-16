@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:serverpod/server.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
 
@@ -382,6 +383,62 @@ class DatabaseConnection {
       var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
+    }
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration, {Session? session}) async {
+    var startTime = DateTime.now();
+    var query = '';
+    try {
+      // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
+      var encoded = byteData.base64encodedString();
+      query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration';
+      await postgresConnection.query(
+        query,
+        allowReuse: false,
+        substitutionValues: {
+          'storageId': storageId,
+          'path': path,
+          'addedTime': DateTime.now().toUtc(),
+          'expiration': expiration?.toUtc(),
+          // TODO: Use substitution value for the data for efficiency (seems not to work with the driver currently).
+          // 'byteData': byteData.buffer.asUint8List(),
+        },
+      );
+      _logQuery(session, query, startTime);
+    }
+    catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<ByteData?> retrieveFile(String storageId, String path, {Session? session}) async {
+    var startTime = DateTime.now();
+    var query = '';
+    try {
+      // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
+      query = 'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path';
+      var result = await postgresConnection.query(
+        query,
+        allowReuse: false,
+        substitutionValues: {
+          'storageId': storageId,
+          'path': path,
+        },
+      );
+      _logQuery(session, query, startTime);
+      if (result.isNotEmpty) {
+        var encoded = (result.first.first as String).replaceAll('\n', '');
+        return ByteData.view(base64Decode(encoded).buffer);
+      }
+      return null;
     }
     catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);

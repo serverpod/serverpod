@@ -91,6 +91,8 @@ class TypeDefinition {
       return 'double precision';
     if (typeNonNullable == 'DateTime')
       return 'timestamp without time zone';
+    if (typeNonNullable == 'ByteData')
+      return 'bytea';
 
     return 'json';
   }

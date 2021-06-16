@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../server/session.dart';
 
 import 'database_connection.dart';
@@ -125,6 +127,23 @@ class Database {
       transaction: transaction,
       session: session,
     );
+  }
+
+  /// Stores a file in the database, specifically using the
+  /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
+  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration) async {
+    var conn = await databaseConnection;
+
+    return await conn.storeFile(storageId, path, byteData, expiration, session: session);
+  }
+
+  /// Retrieves a file stored in the database or null if it doesn't exist,
+  /// specifically using the serverpod_cloud_storage table. Used by the the
+  /// [DatabaseCloudStorage].
+  Future<ByteData?> retrieveFile(String storageId, String path,) async {
+    var conn = await databaseConnection;
+
+    return await conn.retrieveFile(storageId, path, session: session);
   }
 
   /// Executes a single SQL query. A [List] of rows represented of another
