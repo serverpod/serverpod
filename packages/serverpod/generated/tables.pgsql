@@ -99,6 +99,26 @@ CREATE INDEX serverpod_log_sessionLogId_idx ON serverpod_log USING btree ("sessi
 
 
 --
+-- Class CloudStorageEntry as table serverpod_cloud_storage
+--
+
+CREATE TABLE serverpod_cloud_storage (
+  "id" serial,
+  "storageId" text NOT NULL,
+  "path" text NOT NULL,
+  "addedTime" timestamp without time zone NOT NULL,
+  "expiration" timestamp without time zone,
+  "byteData" bytea NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_cloud_storage
+  ADD CONSTRAINT serverpod_cloud_storage_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_cloud_storage_path_idx ON serverpod_cloud_storage USING btree ("storageId", "path");
+CREATE INDEX serverpod_cloud_storage_expiration ON serverpod_cloud_storage USING btree ("expiration");
+
+
+--
 -- Class SessionLogEntry as table serverpod_session_log
 --
 
@@ -135,6 +155,8 @@ CREATE TABLE serverpod_auth_key (
 
 ALTER TABLE ONLY serverpod_auth_key
   ADD CONSTRAINT serverpod_auth_key_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_auth_key_userId_idx ON serverpod_auth_key USING btree ("userId");
 
 
 --

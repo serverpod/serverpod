@@ -3,9 +3,11 @@
 
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
 import 'package:serverpod/database.dart';
-// ignore: unused_import
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
 import 'protocol.dart';
 
 class RuntimeSettings extends TableRow {

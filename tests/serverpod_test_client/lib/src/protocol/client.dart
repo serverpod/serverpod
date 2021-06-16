@@ -11,6 +11,24 @@ import 'protocol.dart';
 
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
 
+class _EndpointCloudStorage {
+  EndpointCaller caller;
+  _EndpointCloudStorage(this.caller);
+
+  Future<void> storePublicFile(String path,typed_data.ByteData byteData,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'storePublicFile', 'void', {
+      'path':path,
+      'byteData':byteData,
+    });
+  }
+
+  Future<typed_data.ByteData?> retrievePublicFile(String path,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'retrievePublicFile', 'ByteData', {
+      'path':path,
+    });
+  }
+}
+
 class _EndpointBasicDatabase {
   EndpointCaller caller;
   _EndpointBasicDatabase(this.caller);
@@ -281,6 +299,7 @@ class _Modules {
 }
 
 class Client extends ServerpodClient {
+  late final _EndpointCloudStorage cloudStorage;
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
   late final _EndpointFailedCalls failedCalls;
@@ -295,6 +314,7 @@ class Client extends ServerpodClient {
 
 
   Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+    cloudStorage = _EndpointCloudStorage(this);
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
     failedCalls = _EndpointFailedCalls(this);

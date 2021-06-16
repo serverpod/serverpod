@@ -11,6 +11,7 @@ import 'package:serverpod_test_module_server/module.dart' as serverpod_test_modu
 
 import 'protocol.dart';
 
+import '../endpoints/cloud_storage.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
 import '../endpoints/failed_calls.dart';
@@ -26,6 +27,7 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
+      'cloudStorage': CloudStorageEndpoint()..initialize(server, 'cloudStorage'),
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
       'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls'),
@@ -37,6 +39,32 @@ class Endpoints extends EndpointDispatch {
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
       'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled'),
     };
+
+    connectors['cloudStorage'] = EndpointConnector(
+      name: 'cloudStorage',
+      endpoint: endpoints['cloudStorage']!,
+      methodConnectors: {
+        'storePublicFile': MethodConnector(
+          name: 'storePublicFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+            'byteData': ParameterDescription(name: 'byteData', type: typed_data.ByteData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['cloudStorage'] as CloudStorageEndpoint).storePublicFile(session,params['path'],params['byteData'],);
+          },
+        ),
+        'retrievePublicFile': MethodConnector(
+          name: 'retrievePublicFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['cloudStorage'] as CloudStorageEndpoint).retrievePublicFile(session,params['path'],);
+          },
+        ),
+      },
+    );
 
     connectors['basicDatabase'] = EndpointConnector(
       name: 'basicDatabase',

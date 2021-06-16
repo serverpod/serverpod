@@ -22,7 +22,7 @@ CREATE TABLE types (
   "aDouble" double precision,
   "aDateTime" timestamp without time zone,
   "aString" text,
-  "aByteData" json
+  "aByteData" bytea
 );
 
 ALTER TABLE ONLY types
