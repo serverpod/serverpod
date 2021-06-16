@@ -20,4 +20,18 @@ class CloudStorageEndpoint extends Endpoint {
       path: path,
     );
   }
+
+  Future<bool?> existsPublicFile(Session session, String path) async {
+    return await session.storage.fileExists(
+      storageId: 'public',
+      path: path,
+    );
+  }
+
+  Future<void> deletePublicFile(Session session, String path) async {
+    await session.storage.deleteFile(
+      storageId: 'public',
+      path: path,
+    );
+  }
 }

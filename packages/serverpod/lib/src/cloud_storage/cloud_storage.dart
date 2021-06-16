@@ -49,7 +49,7 @@ abstract class CloudStorage {
   });
 
   /// Returns true if the file exists.
-  Future<bool?> fileExists({
+  Future<bool> fileExists({
     required Session session,
     required String path,
   });

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/src/generated/cloud_storage.dart';
 import 'package:serverpod/src/server/session.dart';
 
 import 'cloud_storage.dart';
@@ -14,15 +15,32 @@ class DatabaseCloudStorage extends CloudStorage {
   DatabaseCloudStorage(String storageId) : super(storageId);
 
   @override
-  Future<void> deleteFile({required Session session, required String path}) {
-    // TODO: implement deleteFile
-    throw UnimplementedError();
+  Future<void> deleteFile({required Session session, required String path}) async {
+    try {
+      var numRows = await session.db.delete(
+        tCloudStorageEntry,
+        where: tCloudStorageEntry.storageId.equals(
+            storageId) & tCloudStorageEntry.path.equals(path),
+      );
+    }
+    catch(e) {
+      throw CloudStorageException('Failed to delete file. ($e)');
+    }
   }
 
   @override
-  Future<bool?> fileExists({required Session session, required String path}) {
-    // TODO: implement fileExists
-    throw UnimplementedError();
+  Future<bool> fileExists({required Session session, required String path}) async {
+    try {
+      var numRows = await session.db.count(
+        tCloudStorageEntry,
+        where: tCloudStorageEntry.storageId.equals(
+            storageId) & tCloudStorageEntry.path.equals(path),
+      );
+      return (numRows > 0);
+    }
+    catch(e) {
+      throw CloudStorageException('Failed to check if file exists. ($e)');
+    }
   }
 
   @override

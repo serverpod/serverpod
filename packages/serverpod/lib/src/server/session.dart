@@ -288,7 +288,7 @@ class StorageAccess {
 
   StorageAccess._(this._session);
 
-  Future<void> storeFile({
+  Future<void> storeFile ({
     required String storageId,
     required String path,
     required ByteData byteData,
@@ -310,5 +310,27 @@ class StorageAccess {
       throw CloudStorageException('Storage $storageId is not registered');
 
     return await storage.retrieveFile(session: _session, path: path);
+  }
+
+  Future<bool> fileExists({
+    required String storageId,
+    required String path,
+  }) async {
+    var storage = _session.server.serverpod.storage[storageId];
+    if (storage == null)
+      throw CloudStorageException('Storage $storageId is not registered');
+
+    return await storage.fileExists(session: _session, path: path);
+  }
+
+  Future<void> deleteFile({
+    required String storageId,
+    required String path,
+  }) async {
+    var storage = _session.server.serverpod.storage[storageId];
+    if (storage == null)
+      throw CloudStorageException('Storage $storageId is not registered');
+
+    await storage.deleteFile(session: _session, path: path);
   }
 }

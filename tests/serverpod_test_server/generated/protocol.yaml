@@ -1,6 +1,8 @@
 cloudStorage:
   - storePublicFile:
   - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
 basicDatabase:
   - storeTypes:
   - getTypes:

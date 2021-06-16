@@ -27,6 +27,18 @@ class _EndpointCloudStorage {
       'path':path,
     });
   }
+
+  Future<bool?> existsPublicFile(String path,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'existsPublicFile', 'bool', {
+      'path':path,
+    });
+  }
+
+  Future<void> deletePublicFile(String path,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'deletePublicFile', 'void', {
+      'path':path,
+    });
+  }
 }
 
 class _EndpointBasicDatabase {

@@ -43,5 +43,24 @@ void main() {
       var byteData = await client.cloudStorage.retrievePublicFile('testdir/myfile3.bin');
       expect(byteData, isNull);
     });
+
+    test('Exists file 1', () async {
+      var exists = await client.cloudStorage.existsPublicFile('testdir/myfile1.bin');
+      expect(exists, true);
+    });
+
+    test('Exists non existing file', () async {
+      var exists = await client.cloudStorage.existsPublicFile('testdir/myfile3.bin');
+      expect(exists, false);
+    });
+
+    test('Delete file 1', () async {
+      await client.cloudStorage.deletePublicFile('testdir/myfile1.bin');
+    });
+
+    test('Exists file 1 after deletion', () async {
+      var exists = await client.cloudStorage.existsPublicFile('testdir/myfile1.bin');
+      expect(exists, false);
+    });
   });
 }
