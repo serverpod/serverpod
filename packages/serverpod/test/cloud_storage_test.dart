@@ -46,8 +46,24 @@ void main() {
       expect(verifyByteData(byteData), equals(true));
     });
 
-    test('Retrieve file 1 through URL', () async {
+    test('Retrieve file 2 through URL', () async {
       var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile2.bin');
+      var response = await http.get(url);
+      expect(response.statusCode, equals(200));
+      var bytes = response.bodyBytes;
+      expect(bytes.length, equals(256));
+      verifyByteData(ByteData.view(bytes.buffer));
+    });
+
+    test('Retrieve file 1 URL', () async {
+      var urlStr = await client.cloudStorage.getPublicUrlForFile('testdir/myfile1.bin');
+      expect(urlStr, isNotNull);
+      print('URL: $urlStr');
+    });
+
+    test('Retrieve file 2 through fetched URL', () async {
+      var urlStr = await client.cloudStorage.getPublicUrlForFile('testdir/myfile2.bin');
+      var url = Uri.parse(urlStr!);
       var response = await http.get(url);
       expect(response.statusCode, equals(200));
       var bytes = response.bodyBytes;

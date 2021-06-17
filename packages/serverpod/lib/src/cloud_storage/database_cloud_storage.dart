@@ -44,9 +44,26 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<Uri?> getPublicUri({required Session session, required String path}) {
-    // TODO: implement getPublicUri
-    throw UnimplementedError();
+  Future<Uri?> getPublicUri({required Session session, required String path}) async {
+    if (storageId != 'public')
+      return null;
+
+    var exists = await fileExists(session: session, path: path);
+    if (!exists)
+      return null;
+
+    var config = session.server.serverpod.config;
+
+    return Uri(
+      scheme: config.publicScheme,
+      host: config.publicHost,
+      port: config.publicPort,
+      path: '/serverpod_cloud_storage',
+      queryParameters: {
+        'method': 'file',
+        'path': path,
+      },
+    );
   }
 
   @override

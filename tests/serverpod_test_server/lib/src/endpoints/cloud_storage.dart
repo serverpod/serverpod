@@ -34,4 +34,9 @@ class CloudStorageEndpoint extends Endpoint {
       path: path,
     );
   }
+
+  Future<String?> getPublicUrlForFile(Session session, String path) async {
+    var uri = await session.storage.getPublicUri(storageId: 'public', path: path);
+    return uri?.toString();
+  }
 }

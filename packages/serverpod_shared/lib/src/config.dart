@@ -11,6 +11,15 @@ class ServerConfig {
 
   /// Id of the current server.
   final int serverId;
+  
+  /// Public facing host name.
+  late final String publicHost;
+  
+  /// Public facing port number.
+  late final int publicPort;
+  
+  /// Public facing scheme (typically http or https).
+  late final String publicScheme;
 
   /// Port the server is running on.
   int? port;
@@ -47,6 +56,10 @@ class ServerConfig {
   ServerConfig(this.runMode, this.serverId) : file = 'config/$runMode.yaml' {
     var data = File(file).readAsStringSync();
     var doc = loadYaml(data);
+    
+    publicHost = doc['public_host'];
+    publicPort = doc['public_port'];
+    publicScheme = doc['public_scheme'];
 
     // Get max request size (default to 100kb)
     maxRequestSize = doc['maxRequestSize'] ?? 102400;

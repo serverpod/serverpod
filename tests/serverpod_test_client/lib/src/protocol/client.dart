@@ -39,6 +39,12 @@ class _EndpointCloudStorage {
       'path':path,
     });
   }
+
+  Future<String?> getPublicUrlForFile(String path,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'getPublicUrlForFile', 'String', {
+      'path':path,
+    });
+  }
 }
 
 class _EndpointBasicDatabase {

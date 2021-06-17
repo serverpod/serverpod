@@ -81,6 +81,15 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['cloudStorage'] as CloudStorageEndpoint).deletePublicFile(session,params['path'],);
           },
         ),
+        'getPublicUrlForFile': MethodConnector(
+          name: 'getPublicUrlForFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['cloudStorage'] as CloudStorageEndpoint).getPublicUrlForFile(session,params['path'],);
+          },
+        ),
       },
     );
 
