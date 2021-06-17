@@ -32,6 +32,14 @@ class Endpoint {
   /// override to change.
   bool get logSessions => true;
 
+  /// If true, returned [ByteData] from methods will be sent sent to the client
+  /// as raw data without any formatting. One use case is to return data through
+  /// a non-api call. Defaults to false, override to change. If used, the
+  /// endpoint method is responsible for correctly setting the contentType of
+  /// the http response (defaults to `text/plain`).
+  bool get sendByteDataAsRaw => false;
+
+
   /// Initializes the endpoint with the current [Server]. Typically, this is
   /// done from generated code.
   void initialize(Server server, String name) {

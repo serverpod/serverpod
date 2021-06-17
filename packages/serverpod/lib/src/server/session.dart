@@ -103,6 +103,11 @@ class Session {
         queryParameters = jsonDecode(body).cast<String, String>();
       }
 
+      // Add query parameters from uri
+      if (uri != null) {
+        queryParameters.addAll(uri.queryParameters);
+      }
+
       // Get the the authentication key, if any
       authenticationKey ??= queryParameters['auth'];
       _authenticationKey = authenticationKey;

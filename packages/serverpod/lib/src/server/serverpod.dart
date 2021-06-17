@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
+import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/server/password_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -203,6 +204,10 @@ class Serverpod {
   Future<void> start() async {
     await runZonedGuarded(
       () async {
+        // Register cloud store endpoint if we're using the database cloud store
+        if (storage['public'] is DatabaseCloudStorage)
+          CloudStoragePublicEndpoint().register(this);
+
         // Runtime settings
         try {
           var dbConn = DatabaseConnection(databaseConfig);

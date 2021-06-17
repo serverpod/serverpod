@@ -1,4 +1,6 @@
 import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
@@ -42,6 +44,15 @@ void main() {
       var byteData = await client.cloudStorage.retrievePublicFile('testdir/myfile1.bin');
       expect(byteData!.lengthInBytes, equals(128));
       expect(verifyByteData(byteData), equals(true));
+    });
+
+    test('Retrieve file 1 through URL', () async {
+      var uri = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile2.bin');
+      var response = await http.get(uri);
+      expect(response.statusCode, equals(200));
+      var bytes = response.bodyBytes;
+      expect(bytes.length, equals(256));
+      verifyByteData(ByteData.view(bytes.buffer));
     });
 
     test('Retrieve file 2', () async {

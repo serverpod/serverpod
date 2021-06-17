@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:pedantic/pedantic.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -263,10 +264,22 @@ class Server {
       return;
     }
     else if (result is ResultSuccess) {
-      var serializedEntity = serializationManager.serializeEntity(result.returnValue);
-      request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
+      // Set content type.
+      if (!result.sendByteDataAsRaw)
+        request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
+
+      // Set Access-Control-Allow-Origin, required for Flutter web.
       request.response.headers.add('Access-Control-Allow-Origin', '*');
-      request.response.write(serializedEntity);
+
+      // Send the response
+      if (result.sendByteDataAsRaw && result.returnValue is ByteData) {
+        var byteData = result.returnValue as ByteData;
+        request.response.add(byteData.buffer.asUint8List());
+      }
+      else {
+        var serializedEntity = serializationManager.serializeEntity(result.returnValue);
+        request.response.write(serializedEntity);
+      }
       await request.response.close();
       return;
     }

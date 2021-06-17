@@ -128,7 +128,10 @@ abstract class EndpointDispatch {
 
       await session.close();
 
-      return ResultSuccess(result);
+      return ResultSuccess(
+        result,
+        sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
+      );
     }
     catch (exception, stackTrace) {
       // Something did not work out
@@ -231,8 +234,11 @@ class ResultSuccess extends Result {
   /// The returned value of a successful [Endpoint] method call.
   final dynamic returnValue;
 
+  /// True if [ByteData] should not be embedded in API serialization.
+  final bool sendByteDataAsRaw;
+
   /// Creates a new successful result with a value.
-  ResultSuccess(this.returnValue);
+  ResultSuccess(this.returnValue, {this.sendByteDataAsRaw=false});
 }
 
 /// The result of a failed [Endpoint] method call where the parameters where not
