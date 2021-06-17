@@ -272,9 +272,10 @@ class Server {
       request.response.headers.add('Access-Control-Allow-Origin', '*');
 
       // Send the response
-      if (result.sendByteDataAsRaw && result.returnValue is ByteData) {
-        var byteData = result.returnValue as ByteData;
-        request.response.add(byteData.buffer.asUint8List());
+      if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {
+        var byteData = result.returnValue as ByteData?;
+        if (byteData != null)
+          request.response.add(byteData.buffer.asUint8List());
       }
       else {
         var serializedEntity = serializationManager.serializeEntity(result.returnValue);

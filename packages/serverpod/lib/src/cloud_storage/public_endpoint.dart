@@ -20,8 +20,18 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
   /// Retrieves a file from the public database cloud storage.
   Future<ByteData?> file(Session session, String path) async {
-    // TODO: Support more extension types.
     var response = session.methodCall!.httpRequest.response;
+
+    // Fetch the file from storage.
+    var file = await session.storage.retrieveFile(storageId: 'public', path: path);
+
+    // Set the response code
+    if (file == null) {
+      response.statusCode = HttpStatus.notFound;
+      return null;
+    }
+
+    // TODO: Support more extension types.
 
     var extension = p.extension(path);
     extension = extension.toLowerCase();
@@ -41,7 +51,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
       response.headers.contentType = ContentType('application', 'x-font-woff');
 
     // Retrieve the file from storage and return it.
-    return session.storage.retrieveFile(storageId: 'public', path: path);
+    return file;
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an

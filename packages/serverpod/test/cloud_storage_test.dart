@@ -47,8 +47,8 @@ void main() {
     });
 
     test('Retrieve file 1 through URL', () async {
-      var uri = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile2.bin');
-      var response = await http.get(uri);
+      var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile2.bin');
+      var response = await http.get(url);
       expect(response.statusCode, equals(200));
       var bytes = response.bodyBytes;
       expect(bytes.length, equals(256));
@@ -64,6 +64,27 @@ void main() {
     test('Retrieve non existing file', () async {
       var byteData = await client.cloudStorage.retrievePublicFile('testdir/myfile3.bin');
       expect(byteData, isNull);
+    });
+
+    test('Retrieve non existing file through URL', () async {
+      var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile3.bin');
+      var response = await http.get(url);
+      expect(response.statusCode, equals(404));
+      var bytes = response.bodyBytes;
+      expect(bytes.length, equals(0));
+    });
+
+    test('Attempt retrieve file through URL with invalid params', () async {
+      var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=file&foo=testdir/myfile2.bin');
+      var response = await http.get(url);
+      // TODO: Actual response should probably be 400 (see server todo with verification of parameters).
+      expect(response.statusCode, equals(500));
+    });
+
+    test('Attempt retrieve file through URL with invalid method', () async {
+      var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?foo=file&path=testdir/myfile2.bin');
+      var response = await http.get(url);
+      expect(response.statusCode, equals(400));
     });
 
     test('Exists file 1', () async {
