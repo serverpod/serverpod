@@ -10,6 +10,15 @@ ByteData createByteData(int len) {
   return ByteData.view(ints.buffer);
 }
 
+bool verifyByteData(ByteData byteData) {
+  var ints = byteData.buffer.asUint8List();
+  for (var i in ints) {
+    if (ints[i] != i % byteData.lengthInBytes)
+      return false;
+  }
+  return true;
+}
+
 void main() {
   var client = Client('http://localhost:8080/');
 
@@ -32,11 +41,13 @@ void main() {
     test('Retrieve file 1', () async {
       var byteData = await client.cloudStorage.retrievePublicFile('testdir/myfile1.bin');
       expect(byteData!.lengthInBytes, equals(128));
+      expect(verifyByteData(byteData), equals(true));
     });
 
     test('Retrieve file 2', () async {
       var byteData = await client.cloudStorage.retrievePublicFile('testdir/myfile2.bin');
       expect(byteData!.lengthInBytes, equals(256));
+      expect(verifyByteData(byteData), equals(true));
     });
 
     test('Retrieve non existing file', () async {
