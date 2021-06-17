@@ -24,10 +24,6 @@ class BasicTypesEndpoint extends Endpoint {
   }
 
   Future<ByteData?> testByteData(Session session, ByteData? value) async {
-    if (value == null)
-      print('ByteData is null');
-    else
-      print('ByteData length: ${value.lengthInBytes}');
     return value;
   }
 }
