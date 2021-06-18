@@ -3,6 +3,12 @@
 # need to add the name of the database you are connecting to and the user name.
 # The password for the database is stored in the config/passwords.yaml.
 
+# Defines public facing access to the server, in development mode this is
+# typically the same as your server setup.
+public_host: localhost
+public_port: 8080
+public_scheme: http
+
 cluster:
   0:
     # Main port to run the server on.

@@ -7,6 +7,12 @@
 # cluster of servers. The ids of the servers should be in a consecutive sequence
 # from 0 to n-1 where n is the number of servers in your cluster.
 
+# Defines public facing access to the server, in staging mode this will be
+# the address of your staging load balancer or cloud front.
+public_host: api.staging.example.com
+public_port: 443
+public_scheme: https
+
 cluster:
   # Configuration for server id 0
   0:
