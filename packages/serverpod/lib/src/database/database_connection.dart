@@ -253,6 +253,10 @@ class DatabaseConnection {
     for(var column in data.keys as Iterable<String>) {
       if (column == 'id')
         continue;
+
+      if (data[column] is Map || data[column] is List)
+        data[column] = jsonEncode(data[column]);
+
       var value = DatabaseConfig.encoder.convert(data[column]);
 
       updatesList.add('"$column" = $value');
