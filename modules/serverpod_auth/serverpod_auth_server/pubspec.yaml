@@ -11,6 +11,7 @@ dependencies:
     path: ../../../packages/serverpod
   googleapis: ^3.0.0
   googleapis_auth: ^1.1.0
+  jose: ^0.3.2
 
 dev_dependencies:
   pedantic: ^1.9.0

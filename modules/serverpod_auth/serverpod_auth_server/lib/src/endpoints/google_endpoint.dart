@@ -56,6 +56,7 @@ class GoogleEndpoint extends Endpoint {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
+        userIdentifier: email,
         userName: name,
         fullName: fullName,
         email: email,

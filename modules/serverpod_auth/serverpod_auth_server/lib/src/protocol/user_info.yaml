@@ -6,6 +6,7 @@
 class: UserInfo
 table: serverpod_user_info
 fields:
+  userIdentifier: String
   userName: String
   fullName: String?
   email: String?
@@ -14,3 +15,10 @@ fields:
   scopes: List<String>
   active: bool
   blocked: bool
+  suspendedUntil: DateTime?
+indexes:
+  serverpod_user_info_user_identifier:
+    fields: userIdentifier
+    unique: true
+  serverpod_user_info_email:
+    fields: email

@@ -266,9 +266,7 @@ class UserAuthetication {
       method: method,
     );
 
-    print('insert auth key');
     await _session.db.insert(authKey);
-    print('inserted key: ${authKey.id}');
 
     _session._authenticatedUser = userId;
 

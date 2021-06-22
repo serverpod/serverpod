@@ -2,18 +2,20 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
 import 'dart:io';
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
-// ignore: unused_import
 import 'protocol.dart';
 
 class _EndpointApple {
   EndpointCaller caller;
   _EndpointApple(this.caller);
 
-  Future<AuthenticationResponse> authenticate() async {
+  Future<AuthenticationResponse> authenticate(AppleAuthInfo authInfo,) async {
     return await caller.callServerEndpoint('serverpod_auth.apple', 'authenticate', 'AuthenticationResponse', {
+      'authInfo':authInfo,
     });
   }
 }

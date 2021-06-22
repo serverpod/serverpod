@@ -16,4 +16,11 @@ class Users {
       where: tUserInfo.email.equals(email),
     )) as UserInfo?;
   }
+
+  static Future<UserInfo?> findUserByIdentifier(Session session, String identifier) async {
+    return (await session.db.findSingleRow(
+      tUserInfo,
+      where: tUserInfo.userIdentifier.equals(identifier),
+    )) as UserInfo?;
+  }
 }

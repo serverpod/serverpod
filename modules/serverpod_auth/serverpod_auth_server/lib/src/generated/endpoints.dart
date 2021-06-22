@@ -2,10 +2,11 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod/serverpod.dart';
 
-// ignore: unused_import
 import 'protocol.dart';
 
 import '../endpoints/apple_endpoint.dart';
@@ -28,9 +29,10 @@ class Endpoints extends EndpointDispatch {
         'authenticate': MethodConnector(
           name: 'authenticate',
           params: {
+            'authInfo': ParameterDescription(name: 'authInfo', type: AppleAuthInfo, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['apple'] as AppleEndpoint).authenticate(session,);
+            return (endpoints['apple'] as AppleEndpoint).authenticate(session,params['authInfo'],);
           },
         ),
       },

@@ -1,0 +1,8 @@
+class: AppleAuthInfo
+fields:
+  userIdentifier: String
+  email: String?
+  fullName: String
+  nickname: String
+  identityToken: String
+  authorizationCode: String

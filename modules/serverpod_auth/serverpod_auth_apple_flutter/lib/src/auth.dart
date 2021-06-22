@@ -17,7 +17,39 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
       ],
     );
 
-    print('credential: $credential');
+    var userIdentifier = credential.userIdentifier!;
+    var nickname = credential.givenName ?? 'Unknown';
+    var fullName = '$nickname';
+    if (credential.familyName != null)
+      fullName += ' ${credential.familyName}';
+    var email = credential.email;
+    var identityToken = credential.identityToken!;
+    var authorizationCode = credential.authorizationCode;
+
+
+    var authInfo = AppleAuthInfo(
+      userIdentifier: userIdentifier,
+      email: email,
+      fullName: fullName,
+      nickname: nickname,
+      identityToken: identityToken,
+      authorizationCode: authorizationCode,
+    );
+
+    // Authenticate with the Serverpod server.
+    var serverResponse = await caller.apple.authenticate(authInfo);
+    if (!serverResponse.success)
+      return null;
+
+    // Authentication was successful, store the key.
+    var sessionManager = await SessionManager.instance;
+    await sessionManager.keyManager.put('${serverResponse.keyId}:${serverResponse.key}');
+
+    // Store the user info in the session manager.
+    sessionManager.signedInUser = serverResponse.userInfo;
+
+    // Return the user info.
+    return serverResponse.userInfo;
   }
   catch(e, stackTrace) {
     print('$e');

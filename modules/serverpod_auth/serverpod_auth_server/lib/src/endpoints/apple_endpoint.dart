@@ -1,12 +1,98 @@
-// Add your modules' endpoints to the `endpoints` directory. Run
-// `serverpod generate` to produce the modules server and client code. Refer to
-// the documentation on how to add endpoints to your server.
+import 'dart:io';
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'package:jose/jose.dart';
 
 import 'package:serverpod/serverpod.dart';
+import '../business/users.dart';
 import '../generated/protocol.dart';
 
+List<Map<String, dynamic>>? _applePublicKeys;
+
 class AppleEndpoint extends Endpoint {
-  Future<AuthenticationResponse> authenticate(Session session, ) async {
-    return AuthenticationResponse(success: false);
+  Future<AuthenticationResponse> authenticate(Session session, AppleAuthInfo authInfo) async {
+    // Load public keys
+    if (_applePublicKeys == null) {
+      var result = await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
+      if (result.statusCode != 200)
+        return AuthenticationResponse(success: false);
+
+      Map data = jsonDecode(result.body);
+      List keysData = data['keys'];
+      var keys = <Map<String, dynamic>>[];
+      for (Map keyData in keysData) {
+        keys.add(keyData.cast<String, dynamic>());
+      }
+      _applePublicKeys = keys;
+    }
+
+    var userIdentifier = authInfo.userIdentifier;
+    var fullName = authInfo.fullName;
+    var name = authInfo.nickname;
+    var email = authInfo.email;
+
+    // var identityTokenBytes = base64Decode(authInfo.identityToken);
+    // var identityToken = utf8.decode(identityTokenBytes);
+
+    // create a JsonWebSignature from the encoded string
+    var jws = JsonWebSignature.fromCompactSerialization(authInfo.identityToken);
+
+    // extract the payload
+    var payload = jws.unverifiedPayload;
+
+    var verified = false;
+    for (var applePublicKey in _applePublicKeys!) {
+      var jwk = JsonWebKey.fromJson(applePublicKey);
+
+      var keyStore = JsonWebKeyStore()..addKey(jwk);
+
+      // verify the signature
+      if (await jws.verify(keyStore))
+        verified = true;
+    }
+
+    if (!verified)
+      return AuthenticationResponse(success: false);
+
+    if (userIdentifier != payload.jsonContent['sub'])
+      return AuthenticationResponse(success: false);
+
+    print('checking email');
+    if (email != null && email != payload.jsonContent['email'])
+      return AuthenticationResponse(success: false);
+
+
+    email = email?.toLowerCase();
+
+    UserInfo? userInfo;
+    if (email != null)
+      userInfo = await Users.findUserByEmail(session, email);
+    userInfo ??= await Users.findUserByIdentifier(session, userIdentifier);
+    if (userInfo == null) {
+      userInfo = UserInfo(
+        userIdentifier: userIdentifier,
+        userName: name,
+        fullName: fullName,
+        email: email,
+        active: true,
+        blocked: false,
+        created: DateTime.now().toUtc(),
+        scopes: [],
+      );
+      userInfo = await Users.createUser(session, userInfo);
+    }
+
+    if (userInfo == null)
+      return AuthenticationResponse(success: false);
+
+    var authKey = await session.auth.signInUser(userInfo.id!, 'apple');
+
+    return AuthenticationResponse(
+      success: true,
+      keyId: authKey.id,
+      key: authKey.key,
+      userInfo: userInfo,
+    );
   }
 }
