@@ -43,7 +43,7 @@ abstract class CloudStorage {
 
   /// Returns a public link to a file in the storage. If the file isn't public
   /// or if no such file exists, null is returned.
-  Future<Uri?> getPublicUri({
+  Future<Uri?> getPublicUrl({
     required Session session,
     required String path,
   });

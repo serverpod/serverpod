@@ -1,0 +1,9 @@
+class: UserImage
+table: serverpod_user_image
+fields:
+  userId: int
+  version: int
+  url: String
+indexes:
+  serverpod_user_image_user_id:
+    fields: userId, version

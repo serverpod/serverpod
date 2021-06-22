@@ -19,7 +19,7 @@ class UserInfo extends SerializableEntity {
   String? fullName;
   String? email;
   late DateTime created;
-  String? avatarUrl;
+  String? imageUrl;
   late List<String> scopes;
   late bool active;
   late bool blocked;
@@ -32,7 +32,7 @@ class UserInfo extends SerializableEntity {
     this.fullName,
     this.email,
     required this.created,
-    this.avatarUrl,
+    this.imageUrl,
     required this.scopes,
     required this.active,
     required this.blocked,
@@ -47,7 +47,7 @@ class UserInfo extends SerializableEntity {
     fullName = _data['fullName'];
     email = _data['email'];
     created = DateTime.tryParse(_data['created'])!;
-    avatarUrl = _data['avatarUrl'];
+    imageUrl = _data['imageUrl'];
     scopes = _data['scopes']!.cast<String>();
     active = _data['active']!;
     blocked = _data['blocked']!;
@@ -63,7 +63,7 @@ class UserInfo extends SerializableEntity {
       'fullName': fullName,
       'email': email,
       'created': created.toUtc().toIso8601String(),
-      'avatarUrl': avatarUrl,
+      'imageUrl': imageUrl,
       'scopes': scopes,
       'active': active,
       'blocked': blocked,

@@ -13,6 +13,8 @@ import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:googleapis_auth/src/oauth2_flows/auth_code.dart';
 import 'package:googleapis_auth/src/auth_http_utils.dart';
 import 'package:googleapis/people/v1.dart';
+import 'package:serverpod_auth_server/src/business/config.dart';
+import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
@@ -66,6 +68,18 @@ class GoogleEndpoint extends Endpoint {
         scopes: [],
       );
       userInfo = await Users.createUser(session, userInfo);
+
+      // Set the user image.
+      if (userInfo?.id != null && (person.photos?.isNotEmpty ?? false)) {
+        var photo = person.photos![0];
+        var url = photo.url;
+        if (url != null && url.endsWith('s100')) {
+          url = url.substring(0, url.length - 4) + 's${AuthConfig.current.userImageSize}';
+        }
+
+        if (url != null)
+          await UserImages.setUserImageFromUrl(session, userInfo!.id!, Uri.parse(url));
+      }
     }
 
     if (userInfo == null)

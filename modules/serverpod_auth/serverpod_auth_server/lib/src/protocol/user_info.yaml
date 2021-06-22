@@ -11,7 +11,7 @@ fields:
   fullName: String?
   email: String?
   created: DateTime
-  avatarUrl: String?
+  imageUrl: String?
   scopes: List<String>
   active: bool
   blocked: bool

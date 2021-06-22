@@ -18,19 +18,14 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(Session session, String
       return null;
     var secret = parts[1];
 
-    print('keyId: $keyId secret: $secret');
-
     // Get the authentication key from the database
     var authKey = (await session.db.findById(tAuthKey, keyId)) as AuthKey?;
     if (authKey == null)
       return null;
 
-    print('authKey id: ${authKey.id} hash: ${authKey.hash}');
-
     // Hash the key from the user and check that it is what we expect
     var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
     var expectedHash = hashString(signInSalt, secret);
-    print('expectedHash: $expectedHash');
 
     if (authKey.hash != expectedHash)
       return null;

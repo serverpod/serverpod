@@ -23,7 +23,7 @@ class UserInfo extends TableRow {
   String? fullName;
   String? email;
   late DateTime created;
-  String? avatarUrl;
+  String? imageUrl;
   late List<String> scopes;
   late bool active;
   late bool blocked;
@@ -36,7 +36,7 @@ class UserInfo extends TableRow {
     this.fullName,
     this.email,
     required this.created,
-    this.avatarUrl,
+    this.imageUrl,
     required this.scopes,
     required this.active,
     required this.blocked,
@@ -51,7 +51,7 @@ class UserInfo extends TableRow {
     fullName = _data['fullName'];
     email = _data['email'];
     created = DateTime.tryParse(_data['created'])!;
-    avatarUrl = _data['avatarUrl'];
+    imageUrl = _data['imageUrl'];
     scopes = _data['scopes']!.cast<String>();
     active = _data['active']!;
     blocked = _data['blocked']!;
@@ -67,7 +67,7 @@ class UserInfo extends TableRow {
       'fullName': fullName,
       'email': email,
       'created': created.toUtc().toIso8601String(),
-      'avatarUrl': avatarUrl,
+      'imageUrl': imageUrl,
       'scopes': scopes,
       'active': active,
       'blocked': blocked,
@@ -84,7 +84,7 @@ class UserInfo extends TableRow {
       'fullName': fullName,
       'email': email,
       'created': created.toUtc().toIso8601String(),
-      'avatarUrl': avatarUrl,
+      'imageUrl': imageUrl,
       'scopes': scopes,
       'active': active,
       'blocked': blocked,
@@ -101,7 +101,7 @@ class UserInfo extends TableRow {
       'fullName': fullName,
       'email': email,
       'created': created.toUtc().toIso8601String(),
-      'avatarUrl': avatarUrl,
+      'imageUrl': imageUrl,
       'scopes': scopes,
       'active': active,
       'blocked': blocked,
@@ -121,7 +121,7 @@ class UserInfoTable extends Table {
   final fullName = ColumnString('fullName');
   final email = ColumnString('email');
   final created = ColumnDateTime('created');
-  final avatarUrl = ColumnString('avatarUrl');
+  final imageUrl = ColumnString('imageUrl');
   final scopes = ColumnSerializable('scopes');
   final active = ColumnBool('active');
   final blocked = ColumnBool('blocked');
@@ -135,7 +135,7 @@ class UserInfoTable extends Table {
     fullName,
     email,
     created,
-    avatarUrl,
+    imageUrl,
     scopes,
     active,
     blocked,

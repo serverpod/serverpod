@@ -337,7 +337,7 @@ class StorageAccess {
     await storage.deleteFile(session: _session, path: path);
   }
 
-  Future<Uri?> getPublicUri({
+  Future<Uri?> getPublicUrl({
     required String storageId,
     required String path,
   }) async {
@@ -345,6 +345,6 @@ class StorageAccess {
     if (storage == null)
       throw CloudStorageException('Storage $storageId is not registered');
 
-    return await storage.getPublicUri(session: _session, path: path);
+    return await storage.getPublicUrl(session: _session, path: path);
   }
 }

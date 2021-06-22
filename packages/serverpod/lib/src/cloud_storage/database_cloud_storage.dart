@@ -44,7 +44,7 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<Uri?> getPublicUri({required Session session, required String path}) async {
+  Future<Uri?> getPublicUrl({required Session session, required String path}) async {
     if (storageId != 'public')
       return null;
 

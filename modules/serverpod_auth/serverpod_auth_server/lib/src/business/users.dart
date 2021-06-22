@@ -23,4 +23,8 @@ class Users {
       where: tUserInfo.userIdentifier.equals(identifier),
     )) as UserInfo?;
   }
+
+  static Future<UserInfo?> findUserByUserId(Session session, int userId) async {
+    return (await session.db.findById(tUserInfo, userId)) as UserInfo?;
+  }
 }
