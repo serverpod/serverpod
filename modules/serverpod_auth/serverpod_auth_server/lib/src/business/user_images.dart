@@ -4,8 +4,9 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_auth_server/src/business/users.dart';
+import '../../module.dart';
+import '../business/users.dart';
+import '../util/roboto_138_fnt.dart';
 
 import 'config.dart';
 
@@ -25,6 +26,23 @@ class UserImages {
     if (image.width != imageSize || image.height != imageSize)
       image = copyResizeCropSquare(image, imageSize);
 
+    var imageData = _encodeImage(image);
+
+    return await _setUserImage(session, userId, imageData);
+  }
+
+  static Future<bool> setDefaultUserImage(Session session, int userId) async {
+    var userInfo = await Users.findUserByUserId(session, userId);
+    if (userInfo == null)
+      return false;
+
+    var image = await AuthConfig.current.userImageGenerator(userInfo);
+    var imageData = _encodeImage(image);
+
+    return await _setUserImage(session, userId, imageData);
+  }
+
+  static ByteData _encodeImage(Image image) {
     var format = AuthConfig.current.userImageFormat;
     List<int> encoded;
     if (format == UserImageType.jpg)
@@ -34,9 +52,7 @@ class UserImages {
 
     // Reference as ByteData.
     var encodedBytes = Uint8List.fromList(encoded);
-    var imageData = ByteData.view(encodedBytes.buffer);
-
-    return await _setUserImage(session, userId, imageData);
+    return ByteData.view(encodedBytes.buffer);
   }
 
   static Future<bool> _setUserImage(Session session, int userId, ByteData imageData) async {
@@ -87,4 +103,58 @@ class UserImageException extends IOException {
   String toString() {
     return 'UserImageException: $message';
   }
+}
+
+var _defaultUserImageColors = <int>[
+  _colorFromHexStr('D32F2F'),
+  _colorFromHexStr('D81B60'),
+  _colorFromHexStr('AB47BC'),
+  _colorFromHexStr('7E57C2'),
+  _colorFromHexStr('5C6BC0'),
+  _colorFromHexStr('1976D2'),
+  _colorFromHexStr('0277BD'),
+  _colorFromHexStr('006064'),
+  _colorFromHexStr('00796B'),
+  _colorFromHexStr('2E7D32'),
+  _colorFromHexStr('33691E'),
+  _colorFromHexStr('BF360C'),
+  _colorFromHexStr('8D6E63'),
+  _colorFromHexStr('546E7A'),
+];
+
+int _colorFromHexStr(String hexStr) {
+  return int.parse(hexStr, radix: 16) | 0xff000000;
+}
+
+Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
+  var imageSize = AuthConfig.current.userImageSize;
+  var image = Image(256, 256);
+
+  var font = roboto_138;
+
+  // Get first letter of the user name (or * if not found in bitmap font).
+  var name = userInfo.userName;
+  var charCode = (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*').codeUnits[0];
+  if (font.characters[charCode] == null)
+    charCode = '*'.codeUnits[0];
+
+  // Draw the image.
+  var chWidth = font.characters[charCode]!.width;
+  var chHeight = font.characters[charCode]!.height;
+  var chOffsetY = font.characters[charCode]!.yoffset;
+  var chOffsetX = font.characters[charCode]!.xoffset;
+  var xPos = 128 - chWidth ~/ 2;
+  var yPos = 128 - chHeight ~/ 2;
+
+  // Pick color based on user id from the default colors (from material design).
+  fill(image, _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length]);
+
+  // Draw the character on top of the solid filled image.
+  drawString(image, font, xPos - chOffsetX, yPos - chOffsetY, String.fromCharCode(charCode));
+
+  // Resize image if it's not the preferred size.
+  if (imageSize != 256)
+    image = copyResizeCropSquare(image, imageSize);
+
+  return image;
 }

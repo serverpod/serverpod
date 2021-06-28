@@ -3,6 +3,7 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
+import '../business/user_images.dart';
 import '../generated/protocol.dart';
 import '../business/users.dart';
 
@@ -26,5 +27,10 @@ class UserEndpoint extends Endpoint {
 
   Future<bool> updateUserInfo(Session session, UserInfo userInfo) async {
     return false;
+  }
+
+  Future<bool> removeUserImage(Session session) async {
+    var userId = await session.auth.authenticatedUserId;
+    return await UserImages.setDefaultUserImage(session, userId!);
   }
 }

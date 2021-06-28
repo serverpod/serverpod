@@ -55,6 +55,11 @@ class _EndpointUser {
       'userInfo':userInfo,
     });
   }
+
+  Future<bool> removeUserImage() async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'removeUserImage', 'bool', {
+    });
+  }
 }
 
 class Caller extends ModuleEndpointCaller {

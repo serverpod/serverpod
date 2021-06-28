@@ -59,6 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         children: [
           _UserInfoTile(),
+          if (sessionManager.isSignedIn) ListTile(
+            title: Text('Remove user image'),
+            onTap: () {
+              client.modules.auth.user.removeUserImage();
+            },
+          ),
         ],
       ),
     );

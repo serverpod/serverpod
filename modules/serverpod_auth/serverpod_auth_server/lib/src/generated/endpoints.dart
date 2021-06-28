@@ -91,6 +91,14 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['user'] as UserEndpoint).updateUserInfo(session,params['userInfo'],);
           },
         ),
+        'removeUserImage': MethodConnector(
+          name: 'removeUserImage',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).removeUserImage(session,);
+          },
+        ),
       },
     );
   }
