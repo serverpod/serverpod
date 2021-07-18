@@ -1,0 +1,7 @@
+class: UserSettingsConfig
+fields:
+  canSeeUserName: bool
+  canSeeFullName: bool
+  canEditUserName: bool
+  canEditFullName: bool
+  canEditUserImage: bool

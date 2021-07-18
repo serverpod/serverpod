@@ -19,6 +19,20 @@ class AuthConfig {
 
   static AuthConfig get current => _config;
 
+  final bool userCanEditUserImage;
+
+  final bool userCanEditUserName;
+
+  final bool userCanEditFullName;
+
+  final bool userCanSeeUserName;
+
+  final bool userCanSeeFullName;
+
+  final bool enableUserImages;
+
+  final bool importUserImagesFromGoogleSignIn;
+
   final int userImageSize;
 
   final UserImageType userImageFormat;
@@ -28,9 +42,16 @@ class AuthConfig {
   final UserImageGenerator userImageGenerator;
 
   AuthConfig({
+    this.enableUserImages = true,
+    this.importUserImagesFromGoogleSignIn = true,
     this.userImageSize = 256,
     this.userImageFormat = UserImageType.jpg,
     this.userImageQuality = 70,
     this.userImageGenerator = defaultUserImageGenerator,
+    this.userCanEditUserImage = true,
+    this.userCanEditUserName = true,
+    this.userCanEditFullName = false,
+    this.userCanSeeUserName = true,
+    this.userCanSeeFullName = true,
   });
 }

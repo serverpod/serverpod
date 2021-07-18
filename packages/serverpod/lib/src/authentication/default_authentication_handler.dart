@@ -9,7 +9,6 @@ import '../server/session.dart';
 /// database to authenticate a user.
 Future<AuthenticationInfo?> defaultAuthenticationHandler(Session session, String key) async {
   try {
-    print('defaultAuthenticationHandler');
     // Get the secret and user id
     var parts = key.split(':');
     var keyIdStr = parts[0];
@@ -37,9 +36,6 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(Session session, String
     for (var scopeName in authKey.scopes) {
       scopes.add(Scope(scopeName));
     }
-
-    print('scopes: $scopes');
-
     return AuthenticationInfo(authKey.userId, scopes);
   }
   catch(e, stackTrace) {

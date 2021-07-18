@@ -2,17 +2,13 @@ import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:example_client/example_client.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 late SessionManager sessionManager;
 late Client client;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // The session manager keeps track of the signed-in state of the user. You
-  // can query it to see if the user is currently signed in and get information
-  // about the user.
-  sessionManager = await SessionManager.instance;
 
   // Sets up a singleton client object that can be used to talk to the server
   // from anywhere in our app. The client is generated from your server code.
@@ -21,8 +17,16 @@ void main() async {
   // production servers.
   client = Client(
     'http://localhost:8080/',
-    authenticationKeyManager: sessionManager.keyManager,
+    authenticationKeyManager: FlutterAuthenticationKeyManager(),
   );
+
+  // The session manager keeps track of the signed-in state of the user. You
+  // can query it to see if the user is currently signed in and get information
+  // about the user.
+  sessionManager = SessionManager(
+    caller: client.modules.auth,
+  );
+  await sessionManager.initialize();
 
   runApp(MyApp());
 }
@@ -59,11 +63,30 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         children: [
           _UserInfoTile(),
-          if (sessionManager.isSignedIn) ListTile(
-            title: Text('Remove user image'),
-            onTap: () {
-              client.modules.auth.user.removeUserImage();
-            },
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: UserSettings(
+                  caller: client.modules.auth,
+                  sessionManager: sessionManager,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: UserSettings(
+                  compact: false,
+                  caller: client.modules.auth,
+                  sessionManager: sessionManager,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -92,8 +115,7 @@ class _UserInfoTileState extends State<_UserInfoTile> {
     }
     else {
       return ListTile(
-        title: Text(userInfo.userName),
-        subtitle: Text(userInfo.email ?? 'Unknown email'),
+        title: Text('You are signed in'),
         trailing: OutlinedButton(
           onPressed: _signOut,
           child: Text('Sign Out'),
@@ -103,7 +125,7 @@ class _UserInfoTileState extends State<_UserInfoTile> {
   }
 
   void _signOut() {
-    sessionManager.signOut(client.modules.auth).then((bool success) {
+    sessionManager.signOut().then((bool success) {
       setState(() {});
     });
   }

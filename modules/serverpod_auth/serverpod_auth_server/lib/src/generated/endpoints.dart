@@ -12,6 +12,7 @@ import 'protocol.dart';
 import '../endpoints/apple_endpoint.dart';
 import '../endpoints/google_endpoint.dart';
 import '../endpoints/user_endpoint.dart';
+import '../endpoints/status_endpoint.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
@@ -20,6 +21,7 @@ class Endpoints extends EndpointDispatch {
       'apple': AppleEndpoint()..initialize(server, 'apple'),
       'google': GoogleEndpoint()..initialize(server, 'google'),
       'user': UserEndpoint()..initialize(server, 'user'),
+      'status': StatusEndpoint()..initialize(server, 'status'),
     };
 
     connectors['apple'] = EndpointConnector(
@@ -58,12 +60,36 @@ class Endpoints extends EndpointDispatch {
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
+        'removeUserImage': MethodConnector(
+          name: 'removeUserImage',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).removeUserImage(session,);
+          },
+        ),
+        'setUserImage': MethodConnector(
+          name: 'setUserImage',
+          params: {
+            'image': ParameterDescription(name: 'image', type: typed_data.ByteData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).setUserImage(session,params['image'],);
+          },
+        ),
+      },
+    );
+
+    connectors['status'] = EndpointConnector(
+      name: 'status',
+      endpoint: endpoints['status']!,
+      methodConnectors: {
         'isSignedIn': MethodConnector(
           name: 'isSignedIn',
           params: {
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).isSignedIn(session,);
+            return (endpoints['status'] as StatusEndpoint).isSignedIn(session,);
           },
         ),
         'signOut': MethodConnector(
@@ -71,32 +97,23 @@ class Endpoints extends EndpointDispatch {
           params: {
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).signOut(session,);
+            return (endpoints['status'] as StatusEndpoint).signOut(session,);
           },
         ),
-        'getAuthenticatedUserInfo': MethodConnector(
-          name: 'getAuthenticatedUserInfo',
+        'getUserInfo': MethodConnector(
+          name: 'getUserInfo',
           params: {
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).getAuthenticatedUserInfo(session,);
+            return (endpoints['status'] as StatusEndpoint).getUserInfo(session,);
           },
         ),
-        'updateUserInfo': MethodConnector(
-          name: 'updateUserInfo',
-          params: {
-            'userInfo': ParameterDescription(name: 'userInfo', type: UserInfo, nullable: false),
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).updateUserInfo(session,params['userInfo'],);
-          },
-        ),
-        'removeUserImage': MethodConnector(
-          name: 'removeUserImage',
+        'getUserSettingsConfig': MethodConnector(
+          name: 'getUserSettingsConfig',
           params: {
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).removeUserImage(session,);
+            return (endpoints['status'] as StatusEndpoint).getUserSettingsConfig(session,);
           },
         ),
       },

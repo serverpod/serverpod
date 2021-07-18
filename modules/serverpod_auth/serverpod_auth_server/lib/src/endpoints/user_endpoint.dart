@@ -2,35 +2,24 @@
 // `serverpod generate` to produce the modules server and client code. Refer to
 // the documentation on how to add endpoints to your server.
 
+import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import '../business/user_images.dart';
 import '../generated/protocol.dart';
 import '../business/users.dart';
 
 class UserEndpoint extends Endpoint {
-  Future<bool> isSignedIn(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
-    return userId != null;
-  }
-
-  Future<void> signOut(Session session) async {
-    await session.auth.signOutUser();
-  }
-
-  Future<UserInfo?> getAuthenticatedUserInfo(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
-    if (userId == null)
-      return null;
-
-    return (await session.db.findById(tUserInfo, userId)) as UserInfo;
-  }
-
-  Future<bool> updateUserInfo(Session session, UserInfo userInfo) async {
-    return false;
-  }
+  @override
+  bool get requireLogin => true;
 
   Future<bool> removeUserImage(Session session) async {
     var userId = await session.auth.authenticatedUserId;
     return await UserImages.setDefaultUserImage(session, userId!);
+  }
+
+  Future<bool> setUserImage(Session session, ByteData image) async {
+    var userId = await session.auth.authenticatedUserId;
+    return await UserImages.setUserImageFromBytes(session, userId!, image.buffer.asUint8List());
   }
 }

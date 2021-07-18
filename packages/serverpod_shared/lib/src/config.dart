@@ -61,8 +61,8 @@ class ServerConfig {
     publicPort = doc['public_port'];
     publicScheme = doc['public_scheme'];
 
-    // Get max request size (default to 100kb)
-    maxRequestSize = doc['maxRequestSize'] ?? 102400;
+    // Get max request size (default to 512kb)
+    maxRequestSize = doc['maxRequestSize'] ?? 524288;
 
     // Get Cluster
     Map clusterData = doc['cluster'];

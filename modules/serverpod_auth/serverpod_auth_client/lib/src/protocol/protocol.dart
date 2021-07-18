@@ -9,11 +9,13 @@ library protocol;
 import 'dart:typed_data';
 import 'package:serverpod_client/serverpod_client.dart';
 
+import 'user_settings_config.dart';
 import 'user_info.dart';
 import 'authentication_response.dart';
 import 'user_image.dart';
 import 'apple_auth_info.dart';
 
+export 'user_settings_config.dart';
 export 'user_info.dart';
 export 'authentication_response.dart';
 export 'user_image.dart';
@@ -31,6 +33,7 @@ class Protocol extends SerializationManager {
   Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
+    constructors['serverpod_auth_server.UserSettingsConfig'] = (Map<String, dynamic> serialization) => UserSettingsConfig.fromSerialization(serialization);
     constructors['serverpod_auth_server.UserInfo'] = (Map<String, dynamic> serialization) => UserInfo.fromSerialization(serialization);
     constructors['serverpod_auth_server.AuthenticationResponse'] = (Map<String, dynamic> serialization) => AuthenticationResponse.fromSerialization(serialization);
     constructors['serverpod_auth_server.UserImage'] = (Map<String, dynamic> serialization) => UserImage.fromSerialization(serialization);

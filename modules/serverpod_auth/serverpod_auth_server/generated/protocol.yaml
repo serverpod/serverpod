@@ -3,8 +3,10 @@ apple:
 google:
   - authenticate:
 user:
+  - removeUserImage:
+  - setUserImage:
+status:
   - isSignedIn:
   - signOut:
-  - getAuthenticatedUserInfo:
-  - updateUserInfo:
-  - removeUserImage:
+  - getUserInfo:
+  - getUserSettingsConfig:

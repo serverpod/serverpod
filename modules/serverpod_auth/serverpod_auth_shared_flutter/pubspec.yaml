@@ -15,6 +15,15 @@ dependencies:
   serverpod_auth_client:
     path: ../serverpod_auth_client
   shared_preferences: ^2.0.6
+  cached_network_image: ^3.1.0
+  image: ^3.0.2
+
+  # See https://pub.dev/packages/image_cropper for installation instructions.
+  image_cropper: ^1.4.1
+
+  # See https://pub.dev/packages/image_picker for installation instructions.
+  image_picker: ^0.8.2
+
 
 dev_dependencies:
   flutter_test:
