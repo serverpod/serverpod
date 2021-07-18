@@ -21,9 +21,11 @@ import '../generated/protocol.dart';
 
 const _configFilePath = 'config/google_client_secret.json';
 
+/// Endpoint for handling Sign in with Google.
 class GoogleEndpoint extends Endpoint {
   final _GoogleClientSecret _googleClientSecret = _GoogleClientSecret(_configFilePath);
 
+  /// Authenticates a user with Google.
   Future<AuthenticationResponse> authenticate(Session session, String authenticationCode) async {
     if (_googleClientSecret.json == null) {
       session.log('Sign in with Google is not initialized', level: LogLevel.warning);

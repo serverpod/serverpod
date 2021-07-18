@@ -291,6 +291,10 @@ class StorageAccess {
 
   StorageAccess._(this._session);
 
+  /// Store a file in the cloud storage. [storageId] is typically 'public' or
+  /// 'private'. The public storage can be accessed through a public URL. The
+  /// file is stored at the [path] relative to the cloud storage root directory,
+  /// if a file already exists it will be replaced.
   Future<void> storeFile ({
     required String storageId,
     required String path,
@@ -304,6 +308,7 @@ class StorageAccess {
     await storage.storeFile(session: _session, path: path, byteData: byteData);
   }
 
+  /// Retrieve a file from cloud storage.
   Future<ByteData?> retrieveFile({
     required String storageId,
     required String path,
@@ -315,6 +320,7 @@ class StorageAccess {
     return await storage.retrieveFile(session: _session, path: path);
   }
 
+  /// Checks if a file exists in cloud storage.
   Future<bool> fileExists({
     required String storageId,
     required String path,
@@ -326,6 +332,7 @@ class StorageAccess {
     return await storage.fileExists(session: _session, path: path);
   }
 
+  /// Deletes a file from cloud storage.
   Future<void> deleteFile({
     required String storageId,
     required String path,
@@ -337,6 +344,7 @@ class StorageAccess {
     await storage.deleteFile(session: _session, path: path);
   }
 
+  /// Gets the public URL for a file, if the [storageId] is a public storage.
   Future<Uri?> getPublicUrl({
     required String storageId,
     required String path,

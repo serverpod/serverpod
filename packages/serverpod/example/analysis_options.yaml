@@ -1,0 +1,8 @@
+# Take our settings from the repo's main analysis_options.yaml file, and include
+# additional rules that are specific to production code.
+
+include: ../analysis_options.yaml
+
+linter:
+  rules:
+    public_member_api_docs: false

@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 
@@ -10,7 +8,10 @@ import '../generated/protocol.dart';
 
 List<Map<String, dynamic>>? _applePublicKeys;
 
+/// Endpoint for handling Sign in with Apple.
 class AppleEndpoint extends Endpoint {
+
+  /// Authenticates a user with Apple.
   Future<AuthenticationResponse> authenticate(Session session, AppleAuthInfo authInfo) async {
     // Load public keys
     if (_applePublicKeys == null) {
@@ -31,9 +32,6 @@ class AppleEndpoint extends Endpoint {
     var fullName = authInfo.fullName;
     var name = authInfo.nickname;
     var email = authInfo.email;
-
-    // var identityTokenBytes = base64Decode(authInfo.identityToken);
-    // var identityToken = utf8.decode(identityTokenBytes);
 
     // create a JsonWebSignature from the encoded string
     var jws = JsonWebSignature.fromCompactSerialization(authInfo.identityToken);

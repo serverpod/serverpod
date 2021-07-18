@@ -6,18 +6,20 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import '../business/user_images.dart';
-import '../generated/protocol.dart';
-import '../business/users.dart';
 
+/// Endpoint with methods for managing the currently signed in user.
 class UserEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
+  /// Removes the users uploaded image, replacing it with the default user
+  /// image.
   Future<bool> removeUserImage(Session session) async {
     var userId = await session.auth.authenticatedUserId;
     return await UserImages.setDefaultUserImage(session, userId!);
   }
 
+  /// Sets a new user image for the signed in user.
   Future<bool> setUserImage(Session session, ByteData image) async {
     var userId = await session.auth.authenticatedUserId;
     return await UserImages.setUserImageFromBytes(session, userId!, image.buffer.asUint8List());

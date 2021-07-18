@@ -10,13 +10,18 @@ import '../util/roboto_138_fnt.dart';
 
 import 'config.dart';
 
+/// Business logic to handle user images.
 class UserImages {
+  /// Sets a user's image from the provided [url]. Image is downloaded, stored
+  /// in the cloud and associated with the user.
   static Future<bool> setUserImageFromUrl(Session session, int userId, Uri url) async {
     var result = await http.get(url);
     var bytes = result.bodyBytes;
     return await setUserImageFromBytes(session, userId, bytes);
   }
 
+  /// Sets a user's image from image data. The image is resized before being
+  /// stored in the cloud and associated with the user.
   static Future<bool> setUserImageFromBytes(Session session, int userId, Uint8List bytes) async {
     var image = decodeImage(bytes);
     if (image == null)
@@ -31,6 +36,7 @@ class UserImages {
     return await _setUserImage(session, userId, imageData);
   }
 
+  /// Sets a user's image to the default image for that user.
   static Future<bool> setDefaultUserImage(Session session, int userId) async {
     var userInfo = await Users.findUserByUserId(session, userId);
     if (userInfo == null)
@@ -95,8 +101,12 @@ class UserImages {
   }
 }
 
+/// Exception thrown when setting a user's image.
 class UserImageException extends IOException {
+  /// Message describing the issue.
   final String message;
+
+  /// Creates a new exception.
   UserImageException(this.message);
 
   @override
@@ -126,6 +136,7 @@ int _colorFromHexStr(String hexStr) {
   return int.parse(hexStr, radix: 16) | 0xff000000;
 }
 
+/// The default [UserImageGenerator], mimics the default avatars used by Google.
 Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
   var imageSize = AuthConfig.current.userImageSize;
   var image = Image(256, 256);

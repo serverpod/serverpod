@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/src/generated/cloud_storage.dart';
@@ -17,7 +16,7 @@ class DatabaseCloudStorage extends CloudStorage {
   @override
   Future<void> deleteFile({required Session session, required String path}) async {
     try {
-      var numRows = await session.db.delete(
+      await session.db.delete(
         tCloudStorageEntry,
         where: tCloudStorageEntry.storageId.equals(
             storageId) & tCloudStorageEntry.path.equals(path),
