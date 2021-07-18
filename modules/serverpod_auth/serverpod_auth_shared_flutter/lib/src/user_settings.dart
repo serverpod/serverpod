@@ -1,21 +1,20 @@
-import 'dart:typed_data';
-
-
-
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 
 import 'session_manager.dart';
-import 'circular_user_image.dart';
 import 'user_image_button.dart';
 
+/// Simple user settings display, can currently only be used to edit the user's
+/// image.
 class UserSettings extends StatefulWidget {
-  final Caller caller;
+  /// The session manager from the auth module.
   final SessionManager sessionManager;
+
+  /// Display a compact version of the settings, defaults to true.
   final bool compact;
 
+  /// Creates a new user settings display.
   UserSettings({
-    required this.caller,
     required this.sessionManager,
     this.compact = true,
   });
@@ -51,7 +50,6 @@ class _UserSettingsState extends State<UserSettings> {
     if (_userInfo != null) {
       if (widget.compact) {
         return _CompactSettings(
-          caller: widget.caller,
           sessionManager: widget.sessionManager,
           userInfo: _userInfo,
           userName: _userInfo!.userName,
@@ -60,7 +58,6 @@ class _UserSettingsState extends State<UserSettings> {
       }
       else {
         return _LargeSettings(
-          caller: widget.caller,
           sessionManager: widget.sessionManager,
           userInfo: _userInfo,
           userName: _userInfo!.userName,
@@ -71,14 +68,12 @@ class _UserSettingsState extends State<UserSettings> {
     else {
       if (widget.compact) {
         return _CompactSettings(
-          caller: widget.caller,
           sessionManager: widget.sessionManager,
           userName: 'Not signed in',
         );
       }
       else {
         return _LargeSettings(
-          caller: widget.caller,
           sessionManager: widget.sessionManager,
           userName: 'Not signed in',
         );
@@ -88,7 +83,6 @@ class _UserSettingsState extends State<UserSettings> {
 }
 
 class _CompactSettings extends StatelessWidget {
-  final Caller caller;
   final SessionManager sessionManager;
 
   final String userName;
@@ -96,7 +90,6 @@ class _CompactSettings extends StatelessWidget {
   final UserInfo? userInfo;
 
   _CompactSettings({
-    required this.caller,
     required this.sessionManager,
     this.userInfo,
     required this.userName,
@@ -109,7 +102,6 @@ class _CompactSettings extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         UserImageButton(
-          caller: caller,
           sessionManager: sessionManager,
         ),
         Expanded(
@@ -146,7 +138,6 @@ class _CompactSettings extends StatelessWidget {
 }
 
 class _LargeSettings extends StatelessWidget {
-  final Caller caller;
   final SessionManager sessionManager;
 
   final String userName;
@@ -154,7 +145,6 @@ class _LargeSettings extends StatelessWidget {
   final UserInfo? userInfo;
 
   _LargeSettings({
-    required this.caller,
     required this.sessionManager,
     this.userInfo,
     required this.userName,
@@ -168,7 +158,6 @@ class _LargeSettings extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         UserImageButton(
-          caller: caller,
           sessionManager: sessionManager,
           compact: false,
           borderWidth: 4,

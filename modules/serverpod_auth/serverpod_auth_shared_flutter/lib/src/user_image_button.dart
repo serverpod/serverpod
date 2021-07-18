@@ -11,17 +11,28 @@ import 'package:serverpod_auth_client/module.dart';
 import 'session_manager.dart';
 import 'circular_user_image.dart';
 
+/// A circular user image button. When pressed, the user is allowed to upload a
+/// new user image to the server.
 class UserImageButton extends StatefulWidget {
-  final Caller caller;
+  /// The session manager from the auth module.
   final SessionManager sessionManager;
 
+  /// Use a smaller version of the button, defaults to true.
   final bool compact;
+
+  /// Elevation of the button. Defaults to 0.
   final double elevation;
+
+  /// The width of the buttons's border. Defaults to 0.
   final double borderWidth;
+
+  /// The color of buttons's border. Only used if the [borderWidth] is
+  /// non-zero. Defaults to white.
   final Color borderColor;
 
+  /// Creates a user image button, used to upload a new user image for a signed
+  /// in user.
   UserImageButton({
-    required this.caller,
     required this.sessionManager,
     this.compact = true,
     this.elevation = 0,

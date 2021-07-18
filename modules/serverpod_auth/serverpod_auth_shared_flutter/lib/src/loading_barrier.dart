@@ -11,6 +11,8 @@ class _LoadingBarrier extends StatelessWidget {
   }
 }
 
+/// Shows an non-dismissible barrier with a [CircularProgressIndicator]. Used
+/// to show progress and block user input when signing in.
 void showLoadingBarrier({required BuildContext context}) {
   showDialog(
     context: context,

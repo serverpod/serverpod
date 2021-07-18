@@ -2,10 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'authentication_key_manager.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
 
@@ -18,9 +17,13 @@ const _prefsKey = 'serverpod_userinfo_key';
 class SessionManager with ChangeNotifier {
   static SessionManager? _instance;
 
+  /// The auth module's caller.
   Caller caller;
+
+  /// The key manager, holding the key's of the user, if signed in.
   late AuthenticationKeyManager keyManager;
 
+  /// Creates a new session manager.
   SessionManager({
     required this.caller,
   }) {
@@ -49,9 +52,13 @@ class SessionManager with ChangeNotifier {
   /// Returns true if the user is currently signed in.
   bool get isSignedIn => signedInUser != null;
 
+  /// Initializes the session manager by reading the current state from
+  /// shared preferences.
   Future<void> initialize() async {
     await _loadSharedPrefs();
-    refreshSession();
+    unawaited(
+      refreshSession()
+    );
   }
 
   /// Signs the user out from all connected devices. Returns true if successful.
@@ -106,6 +113,8 @@ class SessionManager with ChangeNotifier {
     }
   }
 
+  /// Uploads a new user image if the user is signed in. Returns true if upload
+  /// was successful.
   Future<bool> uploadUserImage(ByteData image) async {
     if (_signedInUser == null)
       return false;

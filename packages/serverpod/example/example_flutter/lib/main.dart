@@ -8,6 +8,7 @@ late SessionManager sessionManager;
 late Client client;
 
 void main() async {
+  // Need to call this as we are using Flutter bindings before runApp is called.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Sets up a singleton client object that can be used to talk to the server
@@ -69,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: UserSettings(
-                  caller: client.modules.auth,
                   sessionManager: sessionManager,
                 ),
               ),
@@ -82,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(16),
                 child: UserSettings(
                   compact: false,
-                  caller: client.modules.auth,
                   sessionManager: sessionManager,
                 ),
               ),
