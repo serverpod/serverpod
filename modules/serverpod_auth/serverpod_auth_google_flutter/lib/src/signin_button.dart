@@ -2,12 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
+/// Sign in with Google button. When pressed, attempts to sign in with Google.
 class SignInWithGoogleButton extends StatefulWidget {
+  /// The Auth module's caller.
   final Caller caller;
+
+  /// Called if sign in is successful.
   final VoidCallback onSignedIn;
+
+  /// Called if sign in is unsuccessful.
   final VoidCallback onFailure;
+
+  /// The style of the button.
   final ButtonStyle? style;
 
+  /// Creates a new Sign in with Google button.
   SignInWithGoogleButton({
     required this.caller,
     required this.onSignedIn,

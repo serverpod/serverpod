@@ -2,6 +2,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
+/// Attempts to Sign in with Google. If successful, a [UserInfo] is returned.
+/// If the attempt is not a success, null is returned.
 Future<UserInfo?> signInWithGoogle(Caller caller) async {
   var _googleSignIn = GoogleSignIn(
     scopes: [

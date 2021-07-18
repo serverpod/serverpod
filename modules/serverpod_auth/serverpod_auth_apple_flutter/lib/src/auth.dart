@@ -2,6 +2,8 @@ import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+/// Attempts to Sign in with Apple. If successful, a [UserInfo] is returned.
+/// If the attempt is not a success, null is returned.
 Future<UserInfo?> signInWithApple(Caller caller) async {
   // Check that Sign in with Apple is available on this platform.
   try {
