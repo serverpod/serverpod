@@ -1,7 +1,6 @@
 import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:example_client/example_client.dart';
-import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 late SessionManager sessionManager;
