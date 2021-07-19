@@ -254,5 +254,5 @@ To improve scalability and reliability it's possible to run Serverpod over a clu
 
 To run a cluster of servers, you need to place your servers behind a load balancer so that they have a common access point to the main API port. If you want to gather runtime information from the servers, the service port needs to be accessible not only between servers in the cluster but also from the outside. By default, communication with the service API is encrypted, while you most likely want to add an HTTPS certificate to your load balancer to make sure all communication with clients is encrypted.
 
-# Signing in with Google and Apple
+## Signing in with Google and Apple
 Serverpod supports signing in with Google and Apple through the auth module. For more information on setting up authentication, check out the [auth documentation](https://github.com/serverpod/serverpod/tree/master/modules/serverpod_auth/serverpod_auth_server).
