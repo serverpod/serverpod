@@ -1,4 +1,4 @@
-## 0.8.9
+## 0.8.10
 
 - Support for static file directories in Relic.
 - Adds logos (psd and pngs).
