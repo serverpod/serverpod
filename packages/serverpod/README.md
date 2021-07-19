@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="150" height="131" src="https://github.com/serverpod/serverpod/raw/master/misc/logo/logo-blue.png">
+</p>
+
 # Serverpod
 
 Serverpod is a next-generation app and web server, explicitly built for the Flutter and Dart ecosystem. It allows you to write your server-side code in Dart, automatically generate your APIs, and hook up your database with minimal effort. Serverpod is open-source, and you can host your server anywhere.
@@ -249,3 +253,6 @@ Depending on how memory intensive the server is and how many requests it is serv
 To improve scalability and reliability it's possible to run Serverpod over a cluster of servers. The ids of the servers should be in a consecutive sequence from 0 to n-1 where n is the number of servers in your cluster. You can set this up in the `production.yaml` configuration file.
 
 To run a cluster of servers, you need to place your servers behind a load balancer so that they have a common access point to the main API port. If you want to gather runtime information from the servers, the service port needs to be accessible not only between servers in the cluster but also from the outside. By default, communication with the service API is encrypted, while you most likely want to add an HTTPS certificate to your load balancer to make sure all communication with clients is encrypted.
+
+## Signing in with Google and Apple
+Serverpod supports signing in with Google and Apple through the auth module. For more information on setting up authentication, check out the [auth documentation](https://github.com/serverpod/serverpod/tree/master/modules/serverpod_auth/serverpod_auth_server).

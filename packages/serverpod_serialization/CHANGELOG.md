@@ -1,3 +1,12 @@
+## 0.8.8
+
+- Support for static file directories in Relic.
+- Adds logos (psd and pngs).
+- Adds example project.
+- Initial version of authentication module.
+- Cloud storage support.
+- Adds auth module
+
 ## 0.8.6
 
 - Adds documentation.
