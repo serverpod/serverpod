@@ -7,7 +7,7 @@ import '../authentication/scope.dart';
 /// Code will generated that builds the corresponding client library. To add
 /// methods that can be accessed from the client, make sure that the first
 /// argument of the method is a [Session] parameter.
-class Endpoint {
+abstract class Endpoint {
   late String _name;
   /// The name of this [Endpoint]. It will be automatically generated from the
   /// name of the class (excluding any Endpoint suffix).

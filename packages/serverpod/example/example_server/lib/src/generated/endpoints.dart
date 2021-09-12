@@ -2,12 +2,13 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
 
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
 
-// ignore: unused_import
 import 'protocol.dart';
 
 import '../endpoints/example_endpoint.dart';

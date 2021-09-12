@@ -16,6 +16,7 @@ import 'serverpod_client_shared_private.dart';
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
   bool _initialized = false;
+  WebSocket? _webSocket;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(String host, SerializationManager serializationManager, {
@@ -101,8 +102,56 @@ abstract class ServerpodClient extends ServerpodClientShared {
     return completer.future;
   }
 
+  Future<void> connectWebSocket() async {
+    if (_webSocket != null)
+      return;
+
+    try {
+      var uri = Uri.parse(host);
+      if (uri.scheme == 'http')
+        uri = uri.replace(scheme: 'ws');
+      else if (uri.scheme == 'https')
+        uri = uri.replace(scheme: 'wss');
+      uri = uri.replace(path: '/websocket');
+      var wsHost = uri.toString();
+
+      print('Connecting webSocket to: $wsHost');
+      _webSocket = await WebSocket.connect(wsHost);
+    }
+    catch(e) {
+      print('connectWebSocket failed: $e');
+      _webSocket = null;
+    }
+  }
+
+  Future<void> _listenToWebSocketStream() async {
+    if (_webSocket == null)
+      return;
+
+    try {
+      await for (String message in _webSocket!) {
+        handleRawWebSocketMessage(message);
+      }
+      _webSocket = null;
+    }
+    catch(e, stackTrace) {
+      print('WS read error: $e\n$stackTrace');
+      _webSocket = null;
+    }
+  }
+
+  Future<void> sendRawWebSocketMessage(String message) async {
+    if (_webSocket == null || _webSocket!.readyState != WebSocket.open) {
+      print('WebSocket not connected');
+    }
+    print('WS send: $message');
+    _webSocket!.add(message);
+  }
+
   /// Closes the connection to the server.
   void close() {
     _httpClient.close();
+    _webSocket?.close();
+    _webSocket = null;
   }
 }

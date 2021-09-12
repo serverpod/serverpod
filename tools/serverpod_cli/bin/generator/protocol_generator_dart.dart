@@ -33,14 +33,18 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += '\n';
     }
 
+    var modulePrefix = config.type == PackageType.server ? '' : '${config.name}.';
+
     // Endpoints
     for (var endpointDef in protocolDefinition.endpoints) {
       var endpointClassName = _endpointClassName(endpointDef.name);
 
-      out += 'class $endpointClassName {\n';
-      out += '  EndpointCaller caller;\n';
+      out += 'class $endpointClassName extends EndpointRef {\n';
+      out += '  @override\n';
+      out += '  String get name => \'$modulePrefix${endpointDef.name}\';\n';
+      out += '\n';
 
-      out += '  $endpointClassName(this.caller);\n';
+      out += '  $endpointClassName(EndpointCaller caller) : super(caller);\n';
 
       // Add methods
       for (var methodDef in endpointDef.methods) {
@@ -69,8 +73,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out += ') async {\n';
 
         // Call to server endpoint
-        var prefix = config.type == PackageType.server ? '' : '${config.name}.';
-        out += '    return await caller.callServerEndpoint(\'$prefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
+        out += '    return await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
 
         for (var paramDef in requiredParams) {
           out += '      \'${paramDef.name}\':${paramDef.name},\n';
@@ -138,6 +141,24 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     }
 
     out += '  }\n';
+
+    out += '\n';
+    out += '  @override\n';
+    out += '  Map<String, EndpointRef> get endpointRefLookup => {\n';
+    for (var endpointDef in protocolDefinition.endpoints) {
+      out += '    \'$modulePrefix${endpointDef.name}\' : ${endpointDef.name},\n';
+    }
+    out += '  };\n';
+
+    if (config.type == PackageType.server) {
+      out += '\n';
+      out += '  @override\n';
+      out += '  Map<String, ModuleEndpointCaller> get moduleLookup => {\n';
+      for (var module in config.modules) {
+        out += '    \'${module.nickname}\': modules.${module.nickname},\n';
+      }
+      out += '  };\n';
+    }
 
     out += '}\n';
 

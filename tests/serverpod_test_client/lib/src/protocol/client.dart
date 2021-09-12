@@ -11,9 +11,11 @@ import 'protocol.dart';
 
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
 
-class _EndpointCloudStorage {
-  EndpointCaller caller;
-  _EndpointCloudStorage(this.caller);
+class _EndpointCloudStorage extends EndpointRef {
+  @override
+  String get name => 'cloudStorage';
+
+  _EndpointCloudStorage(EndpointCaller caller) : super(caller);
 
   Future<void> storePublicFile(String path,typed_data.ByteData byteData,) async {
     return await caller.callServerEndpoint('cloudStorage', 'storePublicFile', 'void', {
@@ -47,9 +49,11 @@ class _EndpointCloudStorage {
   }
 }
 
-class _EndpointBasicDatabase {
-  EndpointCaller caller;
-  _EndpointBasicDatabase(this.caller);
+class _EndpointBasicDatabase extends EndpointRef {
+  @override
+  String get name => 'basicDatabase';
+
+  _EndpointBasicDatabase(EndpointCaller caller) : super(caller);
 
   Future<int?> storeTypes(Types types,) async {
     return await caller.callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
@@ -136,9 +140,11 @@ class _EndpointBasicDatabase {
   }
 }
 
-class _EndpointBasicTypes {
-  EndpointCaller caller;
-  _EndpointBasicTypes(this.caller);
+class _EndpointBasicTypes extends EndpointRef {
+  @override
+  String get name => 'basicTypes';
+
+  _EndpointBasicTypes(EndpointCaller caller) : super(caller);
 
   Future<int?> testInt(int? value,) async {
     return await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
@@ -177,9 +183,11 @@ class _EndpointBasicTypes {
   }
 }
 
-class _EndpointFailedCalls {
-  EndpointCaller caller;
-  _EndpointFailedCalls(this.caller);
+class _EndpointFailedCalls extends EndpointRef {
+  @override
+  String get name => 'failedCalls';
+
+  _EndpointFailedCalls(EndpointCaller caller) : super(caller);
 
   Future<void> failedCall() async {
     return await caller.callServerEndpoint('failedCalls', 'failedCall', 'void', {
@@ -187,9 +195,11 @@ class _EndpointFailedCalls {
   }
 }
 
-class _EndpointModuleSerialization {
-  EndpointCaller caller;
-  _EndpointModuleSerialization(this.caller);
+class _EndpointModuleSerialization extends EndpointRef {
+  @override
+  String get name => 'moduleSerialization';
+
+  _EndpointModuleSerialization(EndpointCaller caller) : super(caller);
 
   Future<bool> serializeModuleObject() async {
     return await caller.callServerEndpoint('moduleSerialization', 'serializeModuleObject', 'bool', {
@@ -203,9 +213,11 @@ class _EndpointModuleSerialization {
   }
 }
 
-class _EndpointFutureCalls {
-  EndpointCaller caller;
-  _EndpointFutureCalls(this.caller);
+class _EndpointFutureCalls extends EndpointRef {
+  @override
+  String get name => 'futureCalls';
+
+  _EndpointFutureCalls(EndpointCaller caller) : super(caller);
 
   Future<void> makeFutureCall(SimpleData? data,) async {
     return await caller.callServerEndpoint('futureCalls', 'makeFutureCall', 'void', {
@@ -214,9 +226,11 @@ class _EndpointFutureCalls {
   }
 }
 
-class _EndpointSimple {
-  EndpointCaller caller;
-  _EndpointSimple(this.caller);
+class _EndpointSimple extends EndpointRef {
+  @override
+  String get name => 'simple';
+
+  _EndpointSimple(EndpointCaller caller) : super(caller);
 
   Future<void> setGlobalInt(int? value,[int? secondValue,]) async {
     return await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
@@ -236,9 +250,11 @@ class _EndpointSimple {
   }
 }
 
-class _EndpointLogging {
-  EndpointCaller caller;
-  _EndpointLogging(this.caller);
+class _EndpointLogging extends EndpointRef {
+  @override
+  String get name => 'logging';
+
+  _EndpointLogging(EndpointCaller caller) : super(caller);
 
   Future<void> logInfo(String message,) async {
     return await caller.callServerEndpoint('logging', 'logInfo', 'void', {
@@ -260,9 +276,11 @@ class _EndpointLogging {
   }
 }
 
-class _EndpointAsyncTasks {
-  EndpointCaller caller;
-  _EndpointAsyncTasks(this.caller);
+class _EndpointAsyncTasks extends EndpointRef {
+  @override
+  String get name => 'asyncTasks';
+
+  _EndpointAsyncTasks(EndpointCaller caller) : super(caller);
 
   Future<void> insertRowToSimpleDataAfterDelay(int num,int seconds,) async {
     return await caller.callServerEndpoint('asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
@@ -278,9 +296,11 @@ class _EndpointAsyncTasks {
   }
 }
 
-class _EndpointTransactionsDatabase {
-  EndpointCaller caller;
-  _EndpointTransactionsDatabase(this.caller);
+class _EndpointTransactionsDatabase extends EndpointRef {
+  @override
+  String get name => 'transactionsDatabase';
+
+  _EndpointTransactionsDatabase(EndpointCaller caller) : super(caller);
 
   Future<void> removeRow(int num,) async {
     return await caller.callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
@@ -297,9 +317,11 @@ class _EndpointTransactionsDatabase {
   }
 }
 
-class _EndpointLoggingDisabled {
-  EndpointCaller caller;
-  _EndpointLoggingDisabled(this.caller);
+class _EndpointLoggingDisabled extends EndpointRef {
+  @override
+  String get name => 'loggingDisabled';
+
+  _EndpointLoggingDisabled(EndpointCaller caller) : super(caller);
 
   Future<void> logInfo(String message,) async {
     return await caller.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
@@ -347,4 +369,24 @@ class Client extends ServerpodClient {
     modules = _Modules(this);
     registerModuleProtocol(serverpod_test_module.Protocol());
   }
+
+  @override
+  Map<String, EndpointRef> get endpointRefLookup => {
+    'cloudStorage' : cloudStorage,
+    'basicDatabase' : basicDatabase,
+    'basicTypes' : basicTypes,
+    'failedCalls' : failedCalls,
+    'moduleSerialization' : moduleSerialization,
+    'futureCalls' : futureCalls,
+    'simple' : simple,
+    'logging' : logging,
+    'asyncTasks' : asyncTasks,
+    'transactionsDatabase' : transactionsDatabase,
+    'loggingDisabled' : loggingDisabled,
+  };
+
+  @override
+  Map<String, ModuleEndpointCaller> get moduleLookup => {
+    'module': modules.module,
+  };
 }

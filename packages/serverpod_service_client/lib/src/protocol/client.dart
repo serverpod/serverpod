@@ -9,9 +9,11 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
-class _EndpointCache {
-  EndpointCaller caller;
-  _EndpointCache(this.caller);
+class _EndpointCache extends EndpointRef {
+  @override
+  String get name => 'cache';
+
+  _EndpointCache(EndpointCaller caller) : super(caller);
 
   Future<void> put(bool priority,String key,String data,String? group,DateTime? expiration,) async {
     return await caller.callServerEndpoint('cache', 'put', 'void', {
@@ -51,9 +53,11 @@ class _EndpointCache {
   }
 }
 
-class _EndpointInsights {
-  EndpointCaller caller;
-  _EndpointInsights(this.caller);
+class _EndpointInsights extends EndpointRef {
+  @override
+  String get name => 'insights';
+
+  _EndpointInsights(EndpointCaller caller) : super(caller);
 
   Future<RuntimeSettings> getRuntimeSettings() async {
     return await caller.callServerEndpoint('insights', 'getRuntimeSettings', 'RuntimeSettings', {
@@ -113,4 +117,14 @@ class Client extends ServerpodClient {
     cache = _EndpointCache(this);
     insights = _EndpointInsights(this);
   }
+
+  @override
+  Map<String, EndpointRef> get endpointRefLookup => {
+    'cache' : cache,
+    'insights' : insights,
+  };
+
+  @override
+  Map<String, ModuleEndpointCaller> get moduleLookup => {
+  };
 }

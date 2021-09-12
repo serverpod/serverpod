@@ -1,14 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
+
 import 'dart:io';
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
-// ignore: unused_import
 import 'protocol.dart';
 
-class _EndpointModule {
-  EndpointCaller caller;
-  _EndpointModule(this.caller);
+class _EndpointModule extends EndpointRef {
+  @override
+  String get name => 'serverpod_test_module.module';
+
+  _EndpointModule(EndpointCaller caller) : super(caller);
 
   Future<String> hello(String name,) async {
     return await caller.callServerEndpoint('serverpod_test_module.module', 'hello', 'String', {
@@ -29,4 +34,9 @@ class Caller extends ModuleEndpointCaller {
   Caller(ServerpodClientShared client) : super(client) {
     module = _EndpointModule(this);
   }
+
+  @override
+  Map<String, EndpointRef> get endpointRefLookup => {
+    'serverpod_test_module.module' : module,
+  };
 }

@@ -200,6 +200,11 @@ class Server {
       await request.response.close();
       return;
     }
+    else if (uri.path == '/websocket') {
+      var webSocket =  await WebSocketTransformer.upgrade(request);
+      unawaited(_handleWebsocket(webSocket));
+      return;
+    }
 
     // TODO: Limit check external calls
 //    bool checkLength = true;
@@ -302,6 +307,17 @@ class Server {
   Future<Result> _handleUriCall(Uri uri, String body, HttpRequest request) async {
     var endpointName = uri.path.substring(1);
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
+  }
+
+  Future<void> _handleWebsocket(WebSocket webSocket) async {
+    try {
+      await for (String data in webSocket) {
+        print('WS: $data');
+      }
+    }
+    catch(e) {
+      print('WS exception: $e');
+    }
   }
 
   /// Shuts the server down.

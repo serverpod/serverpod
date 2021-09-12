@@ -17,6 +17,9 @@ enum SessionType {
   /// The [Session] is a [Endpoint] method call.
   methodCall,
 
+  /// The [Session] is a [StreamingEndpoint] stream.
+  stream,
+
   /// The [Session] is a [FutureCall].
   futureCall,
 }
@@ -47,6 +50,10 @@ class Session {
 
   int? _authenticatedUser;
   Set<Scope>? _scopes;
+
+  /// An custom object associated with this [Session]. This is especially
+  /// useful for keeping track of the state in a [StreamingEndpoint].
+  dynamic userObject;
 
   /// Access to the database.
   late final Database db;
