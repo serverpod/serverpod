@@ -37,7 +37,10 @@ class MethodLookup {
     Map endpoints = loadYaml(file.readAsStringSync());
 
     for (String endpoint in endpoints.keys) {
-      List methods = endpoints[endpoint];
+      List? methods = endpoints[endpoint];
+      if (methods == null)
+        continue;
+
       for (Map methodDef in methods) {
         String method = methodDef.keys.first;
 
