@@ -63,6 +63,11 @@ class Session {
   /// [SessionType.methodCall], otherwise null.
   MethodCallInfo? get methodCall => _methodCall;
 
+  StreamInfo? _streamInfo;
+  /// Info about the current stream, only valid if the type is
+  /// [SessionType.stream], otherwise null.
+  StreamInfo? get streamInfo => _streamInfo;
+
   FutureCallInfo? _futureCall;
   /// Info about the current future call, only valid if the type is
   /// [SessionType.futureCall], otherwise null.
@@ -94,6 +99,7 @@ class Session {
     String? authenticationKey,
     this.maxLifeTime=const Duration(minutes: 1),
     HttpRequest? httpRequest,
+    WebSocket? webSocket,
     String? futureCallName,
   }) {
     _startTime = DateTime.now();
@@ -132,6 +138,28 @@ class Session {
         endpointName: endpointName!,
         methodName: methodName!,
         httpRequest: httpRequest!,
+      );
+    }
+    else if (type == SessionType.stream) {
+      // Stream call session
+
+      // Read query parameters
+      var queryParameters = <String, String>{};
+      if (uri != null) {
+        queryParameters.addAll(uri.queryParameters);
+      }
+
+      // Get the the authentication key, if any
+      authenticationKey ??= queryParameters['auth'];
+      _authenticationKey = authenticationKey;
+
+      db = Database(session: this);
+
+      _streamInfo = StreamInfo(
+        uri: uri!,
+        queryParameters: queryParameters,
+        httpRequest: httpRequest!,
+        webSocket: webSocket!,
       );
     }
     else if (type == SessionType.futureCall){
@@ -210,7 +238,7 @@ class MethodCallInfo {
   final HttpRequest httpRequest;
 
   /// The authentication key passed from the client.
-  final String? authenticationKey;
+  // final String? authenticationKey;
 
   /// Creates a new [MethodCallInfo].
   MethodCallInfo({
@@ -220,7 +248,34 @@ class MethodCallInfo {
     required this.endpointName,
     required this.methodName,
     required this.httpRequest,
-    this.authenticationKey,
+    // this.authenticationKey,
+  });
+}
+
+/// Information associated with a stream.
+class StreamInfo {
+  /// The uri that was used to call the server.
+  final Uri uri;
+
+  /// Query parameters of the server call.
+  final Map<String, String> queryParameters;
+
+  /// The [HttpRequest] associated with the call.
+  final HttpRequest httpRequest;
+
+  /// The underlying web socket that handles communication with the server.
+  final WebSocket webSocket;
+
+  /// The authentication key passed from the client.
+  // final String? authenticationKey;
+
+  /// Creates a new [StreamInfo].
+  StreamInfo({
+    required this.uri,
+    required this.queryParameters,
+    required this.httpRequest,
+    required this.webSocket,
+    // this.authenticationKey,
   });
 }
 

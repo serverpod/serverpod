@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 import 'server.dart';
 import 'serverpod.dart';
+import 'session.dart';
 import '../authentication/scope.dart';
 
 /// The [Endpoint] is an entrypoint to the [Server]. To add a custom [Endpoint]
@@ -45,5 +50,32 @@ abstract class Endpoint {
   void initialize(Server server, String name) {
     _server = server;
     _name = name;
+  }
+
+  /// Override this method to setup a new stream when a client connects to the
+  /// server.
+  Future<void> setupStream(Session session) async {}
+
+  /// Invoked when a message is sent to this endpoint from the client.
+  /// Override this method to create your own custom [StreamingEndpoint].
+  Future<void> handleStreamMessage(Session session, SerializableEntity message) async {}
+
+  /// Sends an event to the client represented by the [Session] object.
+  Future<void> sendStreamMessage(Session session, SerializableEntity message) async {
+    print('sendStreamMessage');
+    print('  - $name');
+
+    assert(session.type == SessionType.stream, 'Session must be of stream type to send a stream message.');
+
+    var data = {
+      'endpoint': name,
+      'object': message.serialize(),
+    };
+
+    var payload = jsonEncode(data);
+    print(' - payload: $payload');
+    session.streamInfo!.webSocket.add(payload);
+
+    print(' - message sent');
   }
 }

@@ -11,10 +11,24 @@ void main() {
 
   group('Basic websocket', () {
 
-    test('Connect and send string', () async {
+    test('Connect and send SimpleData', () async {
       await client.connectWebSocket();
-      // await client.modules
-      // await client.sendWebSocketString('Hello websocket');
+
+      var nums = [42, 1337, 69];
+
+      for (var num in nums) {
+        await client.streaming.sendToStream(SimpleData(num: num));
+      }
+
+      var n = 0;
+      await for (var message in client.streaming.stream) {
+        var simpleData = message as SimpleData;
+        expect(simpleData.num, nums[n]);
+
+        n += 1;
+        if (n == nums.length)
+          break;
+      }
     });
 
   });

@@ -11,6 +11,13 @@ import 'protocol.dart';
 
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
 
+class _EndpointStreaming extends EndpointRef {
+  @override
+  String get name => 'streaming';
+
+  _EndpointStreaming(EndpointCaller caller) : super(caller);
+}
+
 class _EndpointCloudStorage extends EndpointRef {
   @override
   String get name => 'cloudStorage';
@@ -339,6 +346,7 @@ class _Modules {
 }
 
 class Client extends ServerpodClient {
+  late final _EndpointStreaming streaming;
   late final _EndpointCloudStorage cloudStorage;
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
@@ -354,6 +362,7 @@ class Client extends ServerpodClient {
 
 
   Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+    streaming = _EndpointStreaming(this);
     cloudStorage = _EndpointCloudStorage(this);
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
@@ -372,6 +381,7 @@ class Client extends ServerpodClient {
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
+    'streaming' : streaming,
     'cloudStorage' : cloudStorage,
     'basicDatabase' : basicDatabase,
     'basicTypes' : basicTypes,

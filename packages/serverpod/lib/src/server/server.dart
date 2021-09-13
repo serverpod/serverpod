@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:pedantic/pedantic.dart';
+import 'package:serverpod/server.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint_dispatch.dart';
@@ -202,7 +203,7 @@ class Server {
     }
     else if (uri.path == '/websocket') {
       var webSocket =  await WebSocketTransformer.upgrade(request);
-      unawaited(_handleWebsocket(webSocket));
+      unawaited(_handleWebsocket(webSocket, request));
       return;
     }
 
@@ -309,14 +310,40 @@ class Server {
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
   }
 
-  Future<void> _handleWebsocket(WebSocket webSocket) async {
+  Future<void> _handleWebsocket(WebSocket webSocket, HttpRequest request) async {
     try {
-      await for (String data in webSocket) {
-        print('WS: $data');
+      var session = Session(
+        server: this,
+        type: SessionType.stream,
+        uri: request.uri,
+        httpRequest: request,
+        webSocket: webSocket,
+      );
+
+      try {
+        await for (String jsonData in webSocket) {
+          print('WS: $jsonData');
+
+          var data = jsonDecode(jsonData) as Map;
+          var endpointName = data['endpoint'] as String;
+          var serialization = data['object'] as Map;
+          var message = serializationManager.createEntityFromSerialization(serialization.cast<String,dynamic>());
+          if (message == null)
+            throw Exception('Streamed message was null');
+
+          var endpointConnector = endpoints.connectors[endpointName];
+          if (endpointConnector == null)
+            throw Exception('Endpoint not found ($endpointName)');
+
+          await endpointConnector.endpoint.handleStreamMessage(session, message);
+        }
+      }
+      catch(e) {
+        print('WS exception: $e');
       }
     }
     catch(e) {
-      print('WS exception: $e');
+      return;
     }
   }
 

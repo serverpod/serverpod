@@ -117,6 +117,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       print('Connecting webSocket to: $wsHost');
       _webSocket = await WebSocket.connect(wsHost);
+      _listenToWebSocketStream();
     }
     catch(e) {
       print('connectWebSocket failed: $e');

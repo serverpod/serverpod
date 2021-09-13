@@ -11,6 +11,7 @@ import 'package:serverpod_test_module_server/module.dart' as serverpod_test_modu
 
 import 'protocol.dart';
 
+import '../endpoints/streaming.dart';
 import '../endpoints/cloud_storage.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
@@ -27,6 +28,7 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
+      'streaming': StreamingEndpoint()..initialize(server, 'streaming'),
       'cloudStorage': CloudStorageEndpoint()..initialize(server, 'cloudStorage'),
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
@@ -39,6 +41,13 @@ class Endpoints extends EndpointDispatch {
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
       'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled'),
     };
+
+    connectors['streaming'] = EndpointConnector(
+      name: 'streaming',
+      endpoint: endpoints['streaming']!,
+      methodConnectors: {
+      },
+    );
 
     connectors['cloudStorage'] = EndpointConnector(
       name: 'cloudStorage',
