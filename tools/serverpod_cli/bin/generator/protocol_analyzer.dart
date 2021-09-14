@@ -8,6 +8,12 @@ import 'package:analyzer/dart/element/type.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 
+const _excludedMethodNameSet = {
+  'setupStream',
+  'handleStreamMessage',
+  'sendStreamMessage',
+};
+
 ProtocolAnalyzer? _analyzer;
 
 Future<ProtocolDefinition> performAnalysis(bool verbose) async {
@@ -54,6 +60,9 @@ class ProtocolAnalyzer {
               for (var method in methods) {
                 // Skip private methods
                 if (method.isPrivate)
+                  continue;
+                // Skip overridden methods from the Endpoint class
+                if (_excludedMethodNameSet.contains(method.name))
                   continue;
                 
                 var paramDefs = <ParameterDefinition>[];
