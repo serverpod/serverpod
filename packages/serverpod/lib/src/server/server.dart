@@ -321,6 +321,17 @@ class Server {
       );
 
       try {
+        try {
+          // Notify all streaming endpoints that the stream has started.
+          for (var endpointConnector in endpoints.connectors.values) {
+            await endpointConnector.endpoint.setupStream(session);
+          }
+        }
+        catch(e) {
+          print('Failed to setup stream');
+          // TODO: Logging
+        }
+
         await for (String jsonData in webSocket) {
           print('WS: $jsonData');
 
