@@ -333,18 +333,18 @@ class Server {
         }
 
         await for (String jsonData in webSocket) {
-          print('WS: $jsonData');
 
           var data = jsonDecode(jsonData) as Map;
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map;
           var message = serializationManager.createEntityFromSerialization(serialization.cast<String,dynamic>());
+
           if (message == null)
             throw Exception('Streamed message was null');
 
-          var endpointConnector = endpoints.connectors[endpointName];
+          var endpointConnector = endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null)
-            throw Exception('Endpoint not found ($endpointName)');
+            throw Exception('Endpoint not found: $endpointName');
 
           await endpointConnector.endpoint.handleStreamMessage(session, message);
         }

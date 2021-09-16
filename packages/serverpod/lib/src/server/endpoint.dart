@@ -18,6 +18,9 @@ abstract class Endpoint {
   /// name of the class (excluding any Endpoint suffix).
   String get name => _name;
 
+  String? _moduleName;
+  String? get moduleName => _moduleName;
+
   late Server _server;
   /// The [Server] this [Endpoint] is running on.
   Server get server => _server;
@@ -47,9 +50,10 @@ abstract class Endpoint {
 
   /// Initializes the endpoint with the current [Server]. Typically, this is
   /// done from generated code.
-  void initialize(Server server, String name) {
+  void initialize(Server server, String name, String? moduleName) {
     _server = server;
     _name = name;
+    _moduleName = moduleName;
   }
 
   /// Override this method to setup a new stream when a client connects to the
@@ -62,20 +66,16 @@ abstract class Endpoint {
 
   /// Sends an event to the client represented by the [Session] object.
   Future<void> sendStreamMessage(Session session, SerializableEntity message) async {
-    print('sendStreamMessage');
-    print('  - $name');
-
     assert(session.type == SessionType.stream, 'Session must be of stream type to send a stream message.');
 
+    var prefix = moduleName == null ? '' : '$moduleName.';
+
     var data = {
-      'endpoint': name,
+      'endpoint': '$prefix$name',
       'object': message.serialize(),
     };
 
     var payload = jsonEncode(data);
-    print(' - payload: $payload');
     session.streamInfo!.webSocket.add(payload);
-
-    print(' - message sent');
   }
 }

@@ -17,7 +17,7 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'example': ExampleEndpoint()..initialize(server, 'example'),
+      'example': ExampleEndpoint()..initialize(server, 'example', null),
     };
 
     connectors['example'] = EndpointConnector(

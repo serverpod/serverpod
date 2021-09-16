@@ -115,7 +115,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
       uri = uri.replace(path: '/websocket');
       var wsHost = uri.toString();
 
-      print('Connecting webSocket to: $wsHost');
       _webSocket = await WebSocket.connect(wsHost);
       _listenToWebSocketStream();
     }
@@ -145,7 +144,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
     if (_webSocket == null || _webSocket!.readyState != WebSocket.open) {
       print('WebSocket not connected');
     }
-    print('WS send: $message');
     _webSocket!.add(message);
   }
 

@@ -16,8 +16,8 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'cache': CacheEndpoint()..initialize(server, 'cache'),
-      'insights': InsightsEndpoint()..initialize(server, 'insights'),
+      'cache': CacheEndpoint()..initialize(server, 'cache', null),
+      'insights': InsightsEndpoint()..initialize(server, 'insights', null),
     };
 
     connectors['cache'] = EndpointConnector(

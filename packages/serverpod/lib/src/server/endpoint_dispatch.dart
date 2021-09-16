@@ -26,6 +26,36 @@ abstract class EndpointDispatch {
   /// Registers any modules with the dispatch.
   void registerModules(Serverpod pod);
 
+  EndpointConnector? getConnectorByName(String endpointName) {
+    var endpointComponents = endpointName.split('.');
+    if (endpointComponents.isEmpty || endpointComponents.length > 2)
+      return null;
+
+    // Find correct connector
+    EndpointConnector? connector;
+
+    if (endpointComponents.length == 1) {
+      // This is a standard server endpoint
+      connector = connectors[endpointName];
+      if (connector == null)
+        return null;
+    }
+    else {
+      // Connector is in a module
+      var modulePackage = endpointComponents[0];
+      endpointName = endpointComponents[1];
+      var module = modules[modulePackage];
+      if (module == null)
+        return null;
+
+      connector = module.connectors[endpointName];
+      if (connector == null)
+        return null;
+    }
+
+    return connector;
+  }
+
   /// Dispatches a call to the [Server] to the correct [Endpoint] method. If
   /// successful, it returns the object from the method. If unsuccessful it will
   /// return a [Result] object.
@@ -35,26 +65,9 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Endpoint $endpointName is not a valid endpoint name');
 
     // Find correct connector
-    EndpointConnector? connector;
-
-    if (endpointComponents.length == 1) {
-      // This is a standard server endpoint
-      connector = connectors[endpointName];
-      if (connector == null)
-        return ResultInvalidParams('Endpoint $endpointName does not exist');
-    }
-    else {
-      // Connector is in a module
-      var modulePackage = endpointComponents[0];
-      endpointName = endpointComponents[1];
-      var module = modules[modulePackage];
-      if (module == null)
-        return ResultInvalidParams('Module $modulePackage does not exist');
-
-      connector = module.connectors[endpointName];
-      if (connector == null)
-        return ResultInvalidParams('Endpoint $modulePackage.$endpointName does not exist');
-    }
+    EndpointConnector? connector = getConnectorByName(endpointName);
+    if (connector == null)
+      return ResultInvalidParams('Endpoint $endpointName does not exist');
 
     Session session;
 

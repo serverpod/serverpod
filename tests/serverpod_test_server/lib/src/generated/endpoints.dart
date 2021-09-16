@@ -28,18 +28,18 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'streaming': StreamingEndpoint()..initialize(server, 'streaming'),
-      'cloudStorage': CloudStorageEndpoint()..initialize(server, 'cloudStorage'),
-      'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase'),
-      'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes'),
-      'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls'),
-      'moduleSerialization': ModuleSerializationEndpoint()..initialize(server, 'moduleSerialization'),
-      'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls'),
-      'simple': SimpleEndpoint()..initialize(server, 'simple'),
-      'logging': LoggingEndpoint()..initialize(server, 'logging'),
-      'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks'),
-      'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase'),
-      'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled'),
+      'streaming': StreamingEndpoint()..initialize(server, 'streaming', null),
+      'cloudStorage': CloudStorageEndpoint()..initialize(server, 'cloudStorage', null),
+      'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase', null),
+      'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes', null),
+      'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls', null),
+      'moduleSerialization': ModuleSerializationEndpoint()..initialize(server, 'moduleSerialization', null),
+      'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls', null),
+      'simple': SimpleEndpoint()..initialize(server, 'simple', null),
+      'logging': LoggingEndpoint()..initialize(server, 'logging', null),
+      'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks', null),
+      'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase', null),
+      'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled', null),
     };
 
     connectors['streaming'] = EndpointConnector(

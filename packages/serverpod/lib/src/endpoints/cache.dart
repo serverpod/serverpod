@@ -13,8 +13,8 @@ class CacheEndpoint extends Endpoint {
   late LocalCache _cachePrio;
 
   @override
-  void initialize(Server server, String name) {
-    super.initialize(server, name);
+  void initialize(Server server, String name, String? moduleName) {
+    super.initialize(server, name, moduleName);
     var distributedCache = pod.caches.distributed;
     var distributedCachePrio = pod.caches.distributedPrio;
     _cache = distributedCache.localCache;

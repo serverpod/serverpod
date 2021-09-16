@@ -152,7 +152,7 @@ abstract class EndpointRef {
   Stream<SerializableEntity> get stream => _streamController.stream;
 
   /// Sends a message to the endpoint's stream.
-  Future<void> sendToStream(SerializableEntity message) async {
+  Future<void> sendStreamMessage(SerializableEntity message) async {
     return client._sendSerializableObjectToStream(name, message);
   }
 }

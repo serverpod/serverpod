@@ -97,9 +97,10 @@ abstract class ProtocolGenerator {
 
 
     // Endpoints lookup map
+    var moduleName = config.type == PackageType.server ? 'null' : '\'${config.name}\'';
     out += '    var endpoints = <String, Endpoint>{\n';
     for (var endpoint in protocolDefinition.endpoints) {
-      out += '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\'),\n';
+      out += '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\', $moduleName),\n';
     }
     out += '    };\n';
 
