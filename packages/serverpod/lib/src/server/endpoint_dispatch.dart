@@ -89,31 +89,9 @@ abstract class EndpointDispatch {
     var inputParams = session.methodCall!.queryParameters;
 
     try {
-      if (connector.endpoint.requireLogin) {
-        if (auth == null) {
-          await session.close();
-          return ResultAuthenticationFailed('No authentication provided');
-        }
-        if (!await session.isUserSignedIn) {
-          await session.close();
-          return ResultAuthenticationFailed('Authentication failed');
-        }
-      }
-
-      if (connector.endpoint.requiredScopes.isNotEmpty) {
-
-        if (!await session.isUserSignedIn) {
-          await session.close();
-          return ResultAuthenticationFailed('Sign in required to access this endpoint');
-        }
-
-        for (var requiredScope in connector.endpoint.requiredScopes) {
-          if (!(await session.scopes)!.contains(requiredScope)) {
-            await session.close();
-            return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
-          }
-        }
-      }
+      var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
+      if (authFailed != null)
+        return authFailed;
 
       var method = connector.methodConnectors[methodName];
       if (method == null) {
@@ -155,6 +133,38 @@ abstract class EndpointDispatch {
       await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);
     }
+  }
+
+  /// Checks if a user can access an [Endpoint]. If access is granted null is
+  /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
+  /// returned.
+  Future<ResultAuthenticationFailed?> canUserAccessEndpoint(Session session, Endpoint endpoint) async {
+    var auth = session.authenticationKey;
+    if (endpoint.requireLogin) {
+      if (auth == null) {
+        await session.close();
+        return ResultAuthenticationFailed('No authentication provided');
+      }
+      if (!await session.isUserSignedIn) {
+        await session.close();
+        return ResultAuthenticationFailed('Authentication failed');
+      }
+    }
+
+    if (endpoint.requiredScopes.isNotEmpty) {
+      if (!await session.isUserSignedIn) {
+        await session.close();
+        return ResultAuthenticationFailed('Sign in required to access this endpoint');
+      }
+
+      for (var requiredScope in endpoint.requiredScopes) {
+        if (!(await session.scopes)!.contains(requiredScope)) {
+          await session.close();
+          return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
+        }
+      }
+    }
+    return null;
   }
 
   Object? _formatArg(String? input, Type type, SerializationManager serializationManager) {

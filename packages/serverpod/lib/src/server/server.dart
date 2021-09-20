@@ -346,7 +346,9 @@ class Server {
           if (endpointConnector == null)
             throw Exception('Endpoint not found: $endpointName');
 
-          await endpointConnector.endpoint.handleStreamMessage(session, message);
+          var authFailed = await endpoints.canUserAccessEndpoint(session, endpointConnector.endpoint);
+          if (authFailed == null)
+            await endpointConnector.endpoint.handleStreamMessage(session, message);
         }
       }
       catch(e) {
