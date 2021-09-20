@@ -225,6 +225,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
+  serverpod_auth_client:
+    dependency: "direct dev"
+    description:
+      path: "../../modules/serverpod_auth/serverpod_auth_client"
+      relative: true
+    source: path
+    version: "0.0.0"
   serverpod_client:
     dependency: "direct main"
     description:

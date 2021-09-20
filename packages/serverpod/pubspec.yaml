@@ -35,3 +35,5 @@ dev_dependencies:
     path: ../../tests/serverpod_test_client
   serverpod_test_module_client: #^0.8.10
     path: ../../tests/serverpod_test_module/serverpod_test_module_client
+  serverpod_auth_client:
+    path: ../../modules/serverpod_auth/serverpod_auth_client

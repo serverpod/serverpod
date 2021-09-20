@@ -16,3 +16,5 @@ dependencies:
     path: ../../packages/serverpod_relic
   serverpod_test_module_server: #^0.8.10
     path: ../serverpod_test_module/serverpod_test_module_server
+  serverpod_auth_server:
+    path: ../../modules/serverpod_auth/serverpod_auth_server

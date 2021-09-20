@@ -5,3 +5,5 @@ client_package_path: ../serverpod_test_client
 modules:
   serverpod_test_module:
     nickname: module
+  serverpod_auth:
+    nickname: auth

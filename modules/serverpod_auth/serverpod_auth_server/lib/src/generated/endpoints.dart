@@ -18,10 +18,10 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'apple': AppleEndpoint()..initialize(server, 'apple'),
-      'google': GoogleEndpoint()..initialize(server, 'google'),
-      'user': UserEndpoint()..initialize(server, 'user'),
-      'status': StatusEndpoint()..initialize(server, 'status'),
+      'apple': AppleEndpoint()..initialize(server, 'apple', 'serverpod_auth'),
+      'google': GoogleEndpoint()..initialize(server, 'google', 'serverpod_auth'),
+      'user': UserEndpoint()..initialize(server, 'user', 'serverpod_auth'),
+      'status': StatusEndpoint()..initialize(server, 'status', 'serverpod_auth'),
     };
 
     connectors['apple'] = EndpointConnector(

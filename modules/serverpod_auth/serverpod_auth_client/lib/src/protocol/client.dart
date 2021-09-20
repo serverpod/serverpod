@@ -9,9 +9,11 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
-class _EndpointApple {
-  EndpointCaller caller;
-  _EndpointApple(this.caller);
+class _EndpointApple extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.apple';
+
+  _EndpointApple(EndpointCaller caller) : super(caller);
 
   Future<AuthenticationResponse> authenticate(AppleAuthInfo authInfo,) async {
     return await caller.callServerEndpoint('serverpod_auth.apple', 'authenticate', 'AuthenticationResponse', {
@@ -20,9 +22,11 @@ class _EndpointApple {
   }
 }
 
-class _EndpointGoogle {
-  EndpointCaller caller;
-  _EndpointGoogle(this.caller);
+class _EndpointGoogle extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.google';
+
+  _EndpointGoogle(EndpointCaller caller) : super(caller);
 
   Future<AuthenticationResponse> authenticate(String authenticationCode,) async {
     return await caller.callServerEndpoint('serverpod_auth.google', 'authenticate', 'AuthenticationResponse', {
@@ -31,9 +35,11 @@ class _EndpointGoogle {
   }
 }
 
-class _EndpointUser {
-  EndpointCaller caller;
-  _EndpointUser(this.caller);
+class _EndpointUser extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.user';
+
+  _EndpointUser(EndpointCaller caller) : super(caller);
 
   Future<bool> removeUserImage() async {
     return await caller.callServerEndpoint('serverpod_auth.user', 'removeUserImage', 'bool', {
@@ -47,9 +53,11 @@ class _EndpointUser {
   }
 }
 
-class _EndpointStatus {
-  EndpointCaller caller;
-  _EndpointStatus(this.caller);
+class _EndpointStatus extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.status';
+
+  _EndpointStatus(EndpointCaller caller) : super(caller);
 
   Future<bool> isSignedIn() async {
     return await caller.callServerEndpoint('serverpod_auth.status', 'isSignedIn', 'bool', {
@@ -84,4 +92,12 @@ class Caller extends ModuleEndpointCaller {
     user = _EndpointUser(this);
     status = _EndpointStatus(this);
   }
+
+  @override
+  Map<String, EndpointRef> get endpointRefLookup => {
+    'serverpod_auth.apple' : apple,
+    'serverpod_auth.google' : google,
+    'serverpod_auth.user' : user,
+    'serverpod_auth.status' : status,
+  };
 }

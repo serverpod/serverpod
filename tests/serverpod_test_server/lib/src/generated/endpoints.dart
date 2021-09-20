@@ -8,6 +8,7 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module;
+import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
 
 import 'protocol.dart';
 
@@ -15,12 +16,14 @@ import '../endpoints/streaming.dart';
 import '../endpoints/cloud_storage.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/basic_types.dart';
+import '../endpoints/authentication.dart';
 import '../endpoints/failed_calls.dart';
 import '../endpoints/module_serialization.dart';
 import '../endpoints/future_calls.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/async_tasks.dart';
+import '../endpoints/signin_required.dart';
 import '../endpoints/database_transactions.dart';
 import '../endpoints/logging_disabled.dart';
 
@@ -32,12 +35,14 @@ class Endpoints extends EndpointDispatch {
       'cloudStorage': CloudStorageEndpoint()..initialize(server, 'cloudStorage', null),
       'basicDatabase': BasicDatabase()..initialize(server, 'basicDatabase', null),
       'basicTypes': BasicTypesEndpoint()..initialize(server, 'basicTypes', null),
+      'authentication': AuthenticationEndpoint()..initialize(server, 'authentication', null),
       'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls', null),
       'moduleSerialization': ModuleSerializationEndpoint()..initialize(server, 'moduleSerialization', null),
       'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls', null),
       'simple': SimpleEndpoint()..initialize(server, 'simple', null),
       'logging': LoggingEndpoint()..initialize(server, 'logging', null),
       'asyncTasks': AsyncTasksEndpoint()..initialize(server, 'asyncTasks', null),
+      'signInRequired': SignInRequiredEndpoint()..initialize(server, 'signInRequired', null),
       'transactionsDatabase': TransactionsDatabaseEndpoint()..initialize(server, 'transactionsDatabase', null),
       'loggingDisabled': LoggingDisabledEndpoint()..initialize(server, 'loggingDisabled', null),
     };
@@ -296,6 +301,23 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
+    connectors['authentication'] = EndpointConnector(
+      name: 'authentication',
+      endpoint: endpoints['authentication']!,
+      methodConnectors: {
+        'authenticate': MethodConnector(
+          name: 'authenticate',
+          params: {
+            'email': ParameterDescription(name: 'email', type: String, nullable: false),
+            'password': ParameterDescription(name: 'password', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['authentication'] as AuthenticationEndpoint).authenticate(session,params['email'],params['password'],);
+          },
+        ),
+      },
+    );
+
     connectors['failedCalls'] = EndpointConnector(
       name: 'failedCalls',
       endpoint: endpoints['failedCalls']!,
@@ -444,6 +466,21 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
+    connectors['signInRequired'] = EndpointConnector(
+      name: 'signInRequired',
+      endpoint: endpoints['signInRequired']!,
+      methodConnectors: {
+        'testMethod': MethodConnector(
+          name: 'testMethod',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['signInRequired'] as SignInRequiredEndpoint).testMethod(session,);
+          },
+        ),
+      },
+    );
+
     connectors['transactionsDatabase'] = EndpointConnector(
       name: 'transactionsDatabase',
       endpoint: endpoints['transactionsDatabase']!,
@@ -488,11 +525,13 @@ class Endpoints extends EndpointDispatch {
     );
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = serverpod_auth.Endpoints()..initializeEndpoints(server);
   }
 
   @override
   void registerModules(Serverpod pod) {
     pod.registerModule(serverpod_test_module.Protocol(), 'module');
+    pod.registerModule(serverpod_auth.Protocol(), 'auth');
   }
 }
 

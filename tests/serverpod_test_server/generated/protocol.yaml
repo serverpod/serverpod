@@ -27,6 +27,8 @@ basicTypes:
   - testDateTime:
   - testString:
   - testByteData:
+authentication:
+  - authenticate:
 failedCalls:
   - failedCall:
 moduleSerialization:
@@ -45,6 +47,8 @@ logging:
 asyncTasks:
   - insertRowToSimpleDataAfterDelay:
   - throwExceptionAfterDelay:
+signInRequired:
+  - testMethod:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:

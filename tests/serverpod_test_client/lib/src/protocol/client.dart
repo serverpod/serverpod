@@ -10,6 +10,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
+import 'package:serverpod_auth_client/module.dart' as serverpod_auth;
 
 class _EndpointStreaming extends EndpointRef {
   @override
@@ -190,6 +191,20 @@ class _EndpointBasicTypes extends EndpointRef {
   }
 }
 
+class _EndpointAuthentication extends EndpointRef {
+  @override
+  String get name => 'authentication';
+
+  _EndpointAuthentication(EndpointCaller caller) : super(caller);
+
+  Future<serverpod_auth.AuthenticationResponse> authenticate(String email,String password,) async {
+    return await caller.callServerEndpoint('authentication', 'authenticate', 'AuthenticationResponse', {
+      'email':email,
+      'password':password,
+    });
+  }
+}
+
 class _EndpointFailedCalls extends EndpointRef {
   @override
   String get name => 'failedCalls';
@@ -303,6 +318,18 @@ class _EndpointAsyncTasks extends EndpointRef {
   }
 }
 
+class _EndpointSignInRequired extends EndpointRef {
+  @override
+  String get name => 'signInRequired';
+
+  _EndpointSignInRequired(EndpointCaller caller) : super(caller);
+
+  Future<bool> testMethod() async {
+    return await caller.callServerEndpoint('signInRequired', 'testMethod', 'bool', {
+    });
+  }
+}
+
 class _EndpointTransactionsDatabase extends EndpointRef {
   @override
   String get name => 'transactionsDatabase';
@@ -339,9 +366,11 @@ class _EndpointLoggingDisabled extends EndpointRef {
 
 class _Modules {
   late final serverpod_test_module.Caller module;
+  late final serverpod_auth.Caller auth;
 
   _Modules(Client client) {
     module = serverpod_test_module.Caller(client);
+    auth = serverpod_auth.Caller(client);
   }
 }
 
@@ -350,12 +379,14 @@ class Client extends ServerpodClient {
   late final _EndpointCloudStorage cloudStorage;
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointBasicTypes basicTypes;
+  late final _EndpointAuthentication authentication;
   late final _EndpointFailedCalls failedCalls;
   late final _EndpointModuleSerialization moduleSerialization;
   late final _EndpointFutureCalls futureCalls;
   late final _EndpointSimple simple;
   late final _EndpointLogging logging;
   late final _EndpointAsyncTasks asyncTasks;
+  late final _EndpointSignInRequired signInRequired;
   late final _EndpointTransactionsDatabase transactionsDatabase;
   late final _EndpointLoggingDisabled loggingDisabled;
   late final _Modules modules;
@@ -366,17 +397,20 @@ class Client extends ServerpodClient {
     cloudStorage = _EndpointCloudStorage(this);
     basicDatabase = _EndpointBasicDatabase(this);
     basicTypes = _EndpointBasicTypes(this);
+    authentication = _EndpointAuthentication(this);
     failedCalls = _EndpointFailedCalls(this);
     moduleSerialization = _EndpointModuleSerialization(this);
     futureCalls = _EndpointFutureCalls(this);
     simple = _EndpointSimple(this);
     logging = _EndpointLogging(this);
     asyncTasks = _EndpointAsyncTasks(this);
+    signInRequired = _EndpointSignInRequired(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
 
     modules = _Modules(this);
     registerModuleProtocol(serverpod_test_module.Protocol());
+    registerModuleProtocol(serverpod_auth.Protocol());
   }
 
   @override
@@ -385,12 +419,14 @@ class Client extends ServerpodClient {
     'cloudStorage' : cloudStorage,
     'basicDatabase' : basicDatabase,
     'basicTypes' : basicTypes,
+    'authentication' : authentication,
     'failedCalls' : failedCalls,
     'moduleSerialization' : moduleSerialization,
     'futureCalls' : futureCalls,
     'simple' : simple,
     'logging' : logging,
     'asyncTasks' : asyncTasks,
+    'signInRequired' : signInRequired,
     'transactionsDatabase' : transactionsDatabase,
     'loggingDisabled' : loggingDisabled,
   };
@@ -398,5 +434,6 @@ class Client extends ServerpodClient {
   @override
   Map<String, ModuleEndpointCaller> get moduleLookup => {
     'module': modules.module,
+    'auth': modules.auth,
   };
 }
