@@ -77,17 +77,21 @@ void main() {
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
+
+      // Restart streams
+      client.close();
+      await client.connectWebSocket();
     });
 
     test('Connect and send SimpleData while authenticated', () async {
-      var nums = [42, 1337, 69];
+      var nums = [11, 22, 33];
 
       for (var num in nums) {
-        await client.streaming.sendStreamMessage(SimpleData(num: num));
+        await client.signInRequired.sendStreamMessage(SimpleData(num: num));
       }
 
       var i = 0;
-      await for (var message in streamingStream) {
+      await for (var message in client.signInRequired.stream) {
         var simpleData = message as SimpleData;
         expect(simpleData.num, nums[i]);
 

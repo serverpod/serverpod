@@ -113,10 +113,21 @@ abstract class ServerpodClient extends ServerpodClientShared {
       else if (uri.scheme == 'https')
         uri = uri.replace(scheme: 'wss');
       uri = uri.replace(path: '/websocket');
+
+      if (authenticationKeyManager != null) {
+        var auth = await authenticationKeyManager!.get();
+        if (auth != null) {
+          uri = uri.replace(
+            queryParameters: {
+              'auth': auth,
+            },
+          );
+        }
+      }
       var wsHost = uri.toString();
 
       _webSocket = await WebSocket.connect(wsHost);
-      _listenToWebSocketStream();
+      unawaited(_listenToWebSocketStream());
     }
     catch(e) {
       print('connectWebSocket failed: $e');
