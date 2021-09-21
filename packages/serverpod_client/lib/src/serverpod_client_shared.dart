@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'auth_key_manager.dart';
 import 'serverpod_client_exception.dart';
@@ -14,6 +16,31 @@ typedef ServerpodClientErrorCallback = void Function(dynamic e, StackTrace stack
 abstract class ServerpodClientShared extends EndpointCaller {
   /// Full host name of the Serverpod server. E.g. "https://example.com/"
   final String host;
+
+  WebSocketChannel? _webSocket;
+
+  /// Full host name of the web socket endpoint.
+  /// E.g. "wss://example.com/websocket"
+  Future<String> get websocketHost async {
+    var uri = Uri.parse(host);
+    if (uri.scheme == 'http')
+      uri = uri.replace(scheme: 'ws');
+    else if (uri.scheme == 'https')
+      uri = uri.replace(scheme: 'wss');
+    uri = uri.replace(path: '/websocket');
+
+    if (authenticationKeyManager != null) {
+      var auth = await authenticationKeyManager!.get();
+      if (auth != null) {
+        uri = uri.replace(
+          queryParameters: {
+            'auth': auth,
+          },
+        );
+      }
+    }
+    return uri.toString();
+  }
 
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
@@ -66,7 +93,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Handles a message received from the WebSocket stream. Typically, this
   /// method shouldn't be called directly.
-  void handleRawWebSocketMessage(String message) {
+  void _handleRawWebSocketMessage(String message) {
     Map data = jsonDecode(message);
     String endpoint = data['endpoint'];
     Map objectData = data['object'];
@@ -84,7 +111,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Sends a message to the servers WebSocket stream. Typically, this method
   /// shouldn't be called directly, instead use [sendToStream].
-  Future<void> sendRawWebSocketMessage(String message);
+  Future<void> _sendRawWebSocketMessage(String message) async {
+    if (_webSocket == null)
+      throw ServerpodClientException('WebSocket is not connected', 0);
+    _webSocket!.sink.add(message);
+  }
 
   Future<void> _sendSerializableObjectToStream(String endpoint, SerializableEntity message) async {
     var objectData = message.serialize();
@@ -94,7 +125,44 @@ abstract class ServerpodClientShared extends EndpointCaller {
     };
 
     var serialization = jsonEncode(data);
-    await sendRawWebSocketMessage(serialization);
+    await _sendRawWebSocketMessage(serialization);
+  }
+
+  /// Closes all open connections to the server.
+  void close() {
+    _webSocket?.sink.close();
+    _webSocket = null;
+  }
+
+  /// Open up a web socket connection to the server.
+  Future<void> connectWebSocket() async {
+    if (_webSocket != null)
+      return;
+
+    try {
+      var host = await websocketHost;
+      _webSocket = WebSocketChannel.connect(Uri.parse(host));
+      unawaited(_listenToWebSocketStream());
+    }
+    catch(e) {
+      _webSocket = null;
+    }
+  }
+
+  Future<void> _listenToWebSocketStream() async {
+    if (_webSocket == null)
+      return;
+
+    try {
+      await for (String message in _webSocket!.stream) {
+        _handleRawWebSocketMessage(message);
+      }
+      _webSocket = null;
+    }
+    catch(e, stackTrace) {
+      print('WS read error: $e\n$stackTrace');
+      _webSocket = null;
+    }
   }
 }
 

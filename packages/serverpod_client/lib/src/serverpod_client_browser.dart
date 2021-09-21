@@ -89,7 +89,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   /// Closes the connection to the server.
+  @override
   void close() {
     _httpClient.close();
+    super.close();
   }
 }

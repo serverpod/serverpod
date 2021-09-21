@@ -80,6 +80,7 @@ void main() {
 
       // Restart streams
       client.close();
+      await Future.delayed(Duration(milliseconds: 100));
       await client.connectWebSocket();
     });
 
