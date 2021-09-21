@@ -143,6 +143,16 @@ class ClassGeneratorDart extends ClassGenerator{
         )
       );
 
+      // Find dependencies on other modules
+      var moduleDependencies = <String>{};
+      for (var field in fields) {
+        if (field.type.type.contains('.')) {
+          var nameComponents = field.type.type.split('.');
+          var moduleName = nameComponents[0];
+          moduleDependencies.add(moduleName);
+        }
+      }
+
       // Header
       out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
       out += '/*   To generate run: "serverpod generate"    */\n';
@@ -162,9 +172,15 @@ class ClassGeneratorDart extends ClassGenerator{
         else {
           out += 'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
         }
+        for (var dependencyName in moduleDependencies) {
+          out += 'import \'package:${dependencyName}_server/module.dart\' as $dependencyName;\n';
+        }
       }
       else {
         out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+        for (var dependencyName in moduleDependencies) {
+          out += 'import \'package:${dependencyName}_client/module.dart\' as $dependencyName;\n';
+        }
       }
 
       out += 'import \'dart:typed_data\';\n';
