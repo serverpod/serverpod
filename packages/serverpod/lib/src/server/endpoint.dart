@@ -47,6 +47,17 @@ abstract class Endpoint {
   /// the http response (defaults to `text/plain`).
   bool get sendByteDataAsRaw => false;
 
+  final Map<Session, dynamic> _userObjects = {};
+
+  /// Retrieves a custom object assiciated with this [Endpoint] and [Session].
+  dynamic getUserObject(Session session) {
+    return _userObjects[session];
+  }
+
+  /// Associate a custom object with this [Endpoint] and [Session].
+  dynamic setUserObject(Session session, dynamic userObject) {
+    _userObjects[session] = userObject;
+  }
 
   /// Initializes the endpoint with the current [Server]. Typically, this is
   /// done from generated code.

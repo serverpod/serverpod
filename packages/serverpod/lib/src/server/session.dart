@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/src/server/message_central.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../cache/caches.dart';
@@ -88,6 +89,10 @@ class Session {
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
+
+  /// Access to the [MessageCentral] for passing real time messages between
+  /// web socket streams and other listeners.
+  MessageCentral get messages => server.messageCentral;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
@@ -199,6 +204,7 @@ class Session {
 
   /// Closes the session.
   Future<void> close() async {
+    messages.removeListenersForSession(this);
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/server.dart';
+import 'package:serverpod/src/server/message_central.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint_dispatch.dart';
@@ -67,6 +68,9 @@ class Server {
 
   /// Map of passwords loaded from config/passwords.yaml
   Map<String, String> passwords;
+
+  /// Central message dispatch for real time messages.
+  MessageCentral messageCentral = MessageCentral();
 
   /// Creates a new [Server] object.
   Server({
