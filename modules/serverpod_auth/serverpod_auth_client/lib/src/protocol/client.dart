@@ -22,6 +22,20 @@ class _EndpointApple extends EndpointRef {
   }
 }
 
+class _EndpointEmail extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.email';
+
+  _EndpointEmail(EndpointCaller caller) : super(caller);
+
+  Future<AuthenticationResponse> authenticate(String email,String password,) async {
+    return await caller.callServerEndpoint('serverpod_auth.email', 'authenticate', 'AuthenticationResponse', {
+      'email':email,
+      'password':password,
+    });
+  }
+}
+
 class _EndpointGoogle extends EndpointRef {
   @override
   String get name => 'serverpod_auth.google';
@@ -82,12 +96,14 @@ class _EndpointStatus extends EndpointRef {
 
 class Caller extends ModuleEndpointCaller {
   late final _EndpointApple apple;
+  late final _EndpointEmail email;
   late final _EndpointGoogle google;
   late final _EndpointUser user;
   late final _EndpointStatus status;
 
   Caller(ServerpodClientShared client) : super(client) {
     apple = _EndpointApple(this);
+    email = _EndpointEmail(this);
     google = _EndpointGoogle(this);
     user = _EndpointUser(this);
     status = _EndpointStatus(this);
@@ -96,6 +112,7 @@ class Caller extends ModuleEndpointCaller {
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
     'serverpod_auth.apple' : apple,
+    'serverpod_auth.email' : email,
     'serverpod_auth.google' : google,
     'serverpod_auth.user' : user,
     'serverpod_auth.status' : status,

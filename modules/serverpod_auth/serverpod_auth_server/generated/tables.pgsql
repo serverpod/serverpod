@@ -24,6 +24,23 @@ CREATE INDEX serverpod_user_info_email ON serverpod_user_info USING btree ("emai
 
 
 --
+-- Class EmailAuth as table serverpod_email_auth
+--
+
+CREATE TABLE serverpod_email_auth (
+  "id" serial,
+  "userId" integer NOT NULL,
+  "email" text NOT NULL,
+  "hash" text NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_email_auth
+  ADD CONSTRAINT serverpod_email_auth_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_email_auth_email ON serverpod_email_auth USING btree ("email");
+
+
+--
 -- Class UserImage as table serverpod_user_image
 --
 

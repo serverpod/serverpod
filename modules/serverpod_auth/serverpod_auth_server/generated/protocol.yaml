@@ -1,5 +1,7 @@
 apple:
   - authenticate:
+email:
+  - authenticate:
 google:
   - authenticate:
 user:

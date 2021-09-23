@@ -11,12 +11,14 @@ import 'package:serverpod_client/serverpod_client.dart';
 
 import 'user_settings_config.dart';
 import 'user_info.dart';
+import 'email_auth.dart';
 import 'authentication_response.dart';
 import 'user_image.dart';
 import 'apple_auth_info.dart';
 
 export 'user_settings_config.dart';
 export 'user_info.dart';
+export 'email_auth.dart';
 export 'authentication_response.dart';
 export 'user_image.dart';
 export 'apple_auth_info.dart';
@@ -35,6 +37,7 @@ class Protocol extends SerializationManager {
   Protocol() {
     constructors['serverpod_auth_server.UserSettingsConfig'] = (Map<String, dynamic> serialization) => UserSettingsConfig.fromSerialization(serialization);
     constructors['serverpod_auth_server.UserInfo'] = (Map<String, dynamic> serialization) => UserInfo.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailAuth'] = (Map<String, dynamic> serialization) => EmailAuth.fromSerialization(serialization);
     constructors['serverpod_auth_server.AuthenticationResponse'] = (Map<String, dynamic> serialization) => AuthenticationResponse.fromSerialization(serialization);
     constructors['serverpod_auth_server.UserImage'] = (Map<String, dynamic> serialization) => UserImage.fromSerialization(serialization);
     constructors['serverpod_auth_server.AppleAuthInfo'] = (Map<String, dynamic> serialization) => AppleAuthInfo.fromSerialization(serialization);

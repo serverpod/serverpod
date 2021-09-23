@@ -1,0 +1,9 @@
+class: EmailAuth
+table: serverpod_email_auth
+fields:
+  userId: int
+  email: String
+  hash: String
+indexes:
+  serverpod_email_auth_email:
+    fields: email
