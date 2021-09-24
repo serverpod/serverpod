@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/src/business/user_images.dart';
 import '../generated/protocol.dart';
 import 'users.dart';
 
@@ -33,6 +34,8 @@ class Emails {
       hash: generatePasswordHash(password),
     );
     await session.db.insert(auth);
+
+    await UserImages.setDefaultUserImage(session, createdUser.id!);
 
     print('returning created user');
     return createdUser;
