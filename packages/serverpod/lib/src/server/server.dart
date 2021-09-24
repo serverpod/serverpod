@@ -315,10 +315,10 @@ class Server {
   }
 
   Future<void> _handleWebsocket(WebSocket webSocket, HttpRequest request) async {
+    print('_handleWebSocket');
     try {
-      var session = Session(
+      var session = StreamingSession(
         server: this,
-        type: SessionType.stream,
         uri: request.uri,
         httpRequest: request,
         webSocket: webSocket,
@@ -337,6 +337,7 @@ class Server {
         }
 
         await for (String jsonData in webSocket) {
+          print('got jsonData');
 
           var data = jsonDecode(jsonData) as Map;
           var endpointName = data['endpoint'] as String;
@@ -360,7 +361,9 @@ class Server {
         print('$stackTrace');
       }
     }
-    catch(e) {
+    catch(e, stackTrace) {
+      print('$e');
+      print('$stackTrace');
       return;
     }
   }

@@ -109,7 +109,7 @@ class WebServer {
     }
 
     // TODO: Fix body
-    var session = Session(
+    var session = MethodCallSession(
       server: serverpod.server,
       uri: uri,
       endpointName: 'webserver',

@@ -13,7 +13,9 @@ class RouteStaticDirectory extends Route {
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
-    var path = Uri.decodeFull(session.methodCall!.uri.path);
+    session as MethodCallSession;
+
+    var path = Uri.decodeFull(session.uri.path);
     print('handle static route path: $path');
 
     try {

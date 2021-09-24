@@ -69,10 +69,10 @@ abstract class EndpointDispatch {
     if (connector == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist');
 
-    Session session;
+    MethodCallSession session;
 
     try {
-      session = Session(
+      session = MethodCallSession(
         server: server,
         uri: uri,
         body: body,
@@ -84,9 +84,8 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Malformed call: $uri');
     }
 
-    var methodName = session.methodCall!.methodName;
-    var auth = session.authenticationKey;
-    var inputParams = session.methodCall!.queryParameters;
+    var methodName = session.methodName;
+    var inputParams = session.queryParameters;
 
     try {
       var authFailed = await canUserAccessEndpoint(session, connector.endpoint);

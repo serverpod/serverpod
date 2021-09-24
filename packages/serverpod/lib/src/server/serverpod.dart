@@ -352,10 +352,10 @@ class Serverpod {
     var duration = session.duration;
 
     if (_runMode == ServerpodRunMode.development) {
-      if (session.type == SessionType.methodCall)
-        print('METHOD CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
-      else if (session.type == SessionType.futureCall)
-        print('FUTURE CALL: ${session.futureCall!.callName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length}');
+      if (session is MethodCallSession)
+        print('METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
+      else if (session is FutureCallSession)
+        print('FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length}');
       if (exception != null) {
         print('$exception');
         print('$stackTrace');
@@ -368,12 +368,28 @@ class Serverpod {
         runtimeSettings.logSlowCalls && isSlow ||
         runtimeSettings.logFailedCalls && exception != null
     ) {
+      String? endpointName;
+      String? methodName;
+      String? futureCallName;
+
+      if (session is MethodCallSession) {
+        endpointName = session.endpointName;
+        methodName = session.methodName;
+      }
+      else if (session is StreamingSession) {
+        // TODO: Correctly log streaming sessions.
+        // endpointName = session
+      }
+      else if (session is FutureCallSession) {
+        futureCallName = session.futureCallName;
+      }
+
       var sessionLogEntry = internal.SessionLogEntry(
         serverId: serverId,
         time: DateTime.now(),
-        endpoint: session.methodCall?.endpointName,
-        method: session.methodCall?.methodName,
-        futureCall: session.futureCall?.callName,
+        endpoint: endpointName,
+        method: methodName,
+        futureCall: futureCallName,
         duration: duration.inMicroseconds / 1000000.0,
         numQueries: session.queries.length,
         slow: isSlow,
@@ -408,8 +424,8 @@ class Serverpod {
       }
       catch(e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
-        if (session.methodCall != null)
-          stderr.writeln('CALL: ${session.methodCall!.endpointName}.${session.methodCall!.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
+        if (methodName != null)
+          stderr.writeln('CALL: $endpointName.$methodName duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
 

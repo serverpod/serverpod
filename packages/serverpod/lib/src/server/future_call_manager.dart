@@ -90,8 +90,7 @@ class FutureCallManager {
           object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
         }
 
-        var session = Session(
-          type: SessionType.futureCall,
+        var session = FutureCallSession(
           server: _server,
           futureCallName: entry.name,
         );

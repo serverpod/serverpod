@@ -73,12 +73,10 @@ abstract class Endpoint {
 
   /// Invoked when a message is sent to this endpoint from the client.
   /// Override this method to create your own custom [StreamingEndpoint].
-  Future<void> handleStreamMessage(Session session, SerializableEntity message) async {}
+  Future<void> handleStreamMessage(StreamingSession session, SerializableEntity message) async {}
 
   /// Sends an event to the client represented by the [Session] object.
-  Future<void> sendStreamMessage(Session session, SerializableEntity message) async {
-    assert(session.type == SessionType.stream, 'Session must be of stream type to send a stream message.');
-
+  Future<void> sendStreamMessage(StreamingSession session, SerializableEntity message) async {
     var prefix = moduleName == null ? '' : '$moduleName.';
 
     var data = {
@@ -87,6 +85,6 @@ abstract class Endpoint {
     };
 
     var payload = jsonEncode(data);
-    session.streamInfo!.webSocket.add(payload);
+    session.webSocket.add(payload);
   }
 }

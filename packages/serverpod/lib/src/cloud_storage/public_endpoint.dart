@@ -19,8 +19,8 @@ class CloudStoragePublicEndpoint extends Endpoint {
   String get name => _endpointName;
 
   /// Retrieves a file from the public database cloud storage.
-  Future<ByteData?> file(Session session, String path) async {
-    var response = session.methodCall!.httpRequest.response;
+  Future<ByteData?> file(MethodCallSession session, String path) async {
+    var response = session.httpRequest.response;
 
     // Fetch the file from storage.
     var file = await session.storage.retrieveFile(storageId: 'public', path: path);
@@ -67,7 +67,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
             ),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return file(session, params['path']);
+            return file(session as MethodCallSession, params['path']);
           },
         ),
     });

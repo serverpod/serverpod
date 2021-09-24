@@ -11,7 +11,7 @@ class StreamingEndpoint extends Endpoint {
   }
 
   @override
-  Future<void> handleStreamMessage(Session session, SerializableEntity message) async {
+  Future<void> handleStreamMessage(StreamingSession session, SerializableEntity message) async {
     if (message is SimpleData) {
       unawaited(Future.delayed(Duration(seconds: 1)).then((value) async {
         await sendStreamMessage(session, message);

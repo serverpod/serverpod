@@ -13,26 +13,10 @@ import '../database/database.dart';
 import '../authentication/util.dart';
 import 'server.dart';
 
-/// Defines the type of a [Session].
-enum SessionType {
-  /// The [Session] is a [Endpoint] method call.
-  methodCall,
-
-  /// The [Session] is a [StreamingEndpoint] stream.
-  stream,
-
-  /// The [Session] is a [FutureCall].
-  futureCall,
-}
-
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
-class Session {
-  /// The type of session, depending on if it's created for a method call
-  /// or a future call.
-  final SessionType type;
-
+abstract class Session {
   /// The [Server] that created the session.
   final Server server;
 
@@ -59,21 +43,6 @@ class Session {
   /// Access to the database.
   late final Database db;
 
-  MethodCallInfo? _methodCall;
-  /// Info about the current method call, only valid if the type is
-  /// [SessionType.methodCall], otherwise null.
-  MethodCallInfo? get methodCall => _methodCall;
-
-  StreamInfo? _streamInfo;
-  /// Info about the current stream, only valid if the type is
-  /// [SessionType.stream], otherwise null.
-  StreamInfo? get streamInfo => _streamInfo;
-
-  FutureCallInfo? _futureCall;
-  /// Info about the current future call, only valid if the type is
-  /// [SessionType.futureCall], otherwise null.
-  FutureCallInfo? get futureCall => _futureCall;
-
   String? _authenticationKey;
   /// The authentication key passed from the client.
   String? get authenticationKey => _authenticationKey;
@@ -96,11 +65,7 @@ class Session {
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
-    this.type = SessionType.methodCall,
     required this.server,
-    Uri? uri,
-    String? body,
-    String? endpointName,
     String? authenticationKey,
     this.maxLifeTime=const Duration(minutes: 1),
     HttpRequest? httpRequest,
@@ -112,68 +77,7 @@ class Session {
     auth = UserAuthetication._(this);
     storage = StorageAccess._(this);
 
-    if (type == SessionType.methodCall) {
-      // Method call session
-
-      // Read query parameters
-      var queryParameters = <String, String>{};
-      if (body != null && body != '' && body != 'null') {
-        queryParameters = jsonDecode(body).cast<String, String>();
-      }
-
-      // Add query parameters from uri
-      if (uri != null) {
-        queryParameters.addAll(uri.queryParameters);
-      }
-
-      // Get the the authentication key, if any
-      authenticationKey ??= queryParameters['auth'];
-      _authenticationKey = authenticationKey;
-
-      var methodName = queryParameters['method'];
-      if (methodName == null && endpointName == 'webserver')
-        methodName = '';
-
-      db = Database(session: this);
-
-      _methodCall = MethodCallInfo(
-        uri: uri!,
-        body: body!,
-        queryParameters: queryParameters,
-        endpointName: endpointName!,
-        methodName: methodName!,
-        httpRequest: httpRequest!,
-      );
-    }
-    else if (type == SessionType.stream) {
-      // Stream call session
-
-      // Read query parameters
-      var queryParameters = <String, String>{};
-      if (uri != null) {
-        queryParameters.addAll(uri.queryParameters);
-      }
-
-      // Get the the authentication key, if any
-      authenticationKey ??= queryParameters['auth'];
-      _authenticationKey = authenticationKey;
-
-      db = Database(session: this);
-
-      _streamInfo = StreamInfo(
-        uri: uri!,
-        queryParameters: queryParameters,
-        httpRequest: httpRequest!,
-        webSocket: webSocket!,
-      );
-    }
-    else if (type == SessionType.futureCall){
-      // Future call session
-
-      _futureCall = FutureCallInfo(
-        callName: futureCallName!,
-      );
-    }
+    db = Database(session: this);
   }
 
   bool _initialized = false;
@@ -223,8 +127,10 @@ class Session {
   }
 }
 
-/// Information associated with a method call.
-class MethodCallInfo {
+/// When a call is made to the [Server] a [MethodCallSession] object is created.
+/// It contains all data associated with the current connection and provides
+/// easy access to the database.
+class MethodCallSession extends Session {
   /// The uri that was used to call the server.
   final Uri uri;
 
@@ -232,39 +138,55 @@ class MethodCallInfo {
   final String body;
 
   /// Query parameters of the server call.
-  final Map<String, String> queryParameters;
+  late final Map<String, String> queryParameters;
 
   /// The name of the called [Endpoint].
   final String endpointName;
 
   /// The name of the method that is being called.
-  final String methodName;
+  late final String methodName;
 
   /// The [HttpRequest] associated with the call.
   final HttpRequest httpRequest;
 
-  /// The authentication key passed from the client.
-  // final String? authenticationKey;
-
-  /// Creates a new [MethodCallInfo].
-  MethodCallInfo({
+  /// Creates a new [Session] for a method call to an endpoint.
+  MethodCallSession({
+    required Server server,
     required this.uri,
     required this.body,
-    required this.queryParameters,
     required this.endpointName,
-    required this.methodName,
     required this.httpRequest,
-    // this.authenticationKey,
-  });
+    String? authenticationKey,
+  }) : super(server: server) {
+    // Read query parameters
+    var queryParameters = <String, String>{};
+    if (body != '' && body != 'null') {
+      queryParameters = jsonDecode(body).cast<String, String>();
+    }
+
+    // Add query parameters from uri
+    queryParameters.addAll(uri.queryParameters);
+    this.queryParameters = queryParameters;
+
+    var methodName = queryParameters['method'];
+    if (methodName == null && endpointName == 'webserver')
+      methodName = '';
+    this.methodName = methodName!;
+
+    // Get the the authentication key, if any
+    _authenticationKey = authenticationKey ?? queryParameters['auth'];
+  }
 }
 
-/// Information associated with a stream.
-class StreamInfo {
+/// When a web socket connection is opened to the [Server] a [StreamingSession]
+/// object is created. It contains all data associated with the current
+/// connection and provides easy access to the database.
+class StreamingSession extends Session {
   /// The uri that was used to call the server.
   final Uri uri;
 
   /// Query parameters of the server call.
-  final Map<String, String> queryParameters;
+  late final Map<String, String> queryParameters;
 
   /// The [HttpRequest] associated with the call.
   final HttpRequest httpRequest;
@@ -272,28 +194,34 @@ class StreamInfo {
   /// The underlying web socket that handles communication with the server.
   final WebSocket webSocket;
 
-  /// The authentication key passed from the client.
-  // final String? authenticationKey;
-
-  /// Creates a new [StreamInfo].
-  StreamInfo({
+  /// Creates a new [Session] for the web socket stream.
+  StreamingSession({
+    required Server server,
     required this.uri,
-    required this.queryParameters,
     required this.httpRequest,
     required this.webSocket,
-    // this.authenticationKey,
-  });
+  }) : super(server: server) {
+    // Read query parameters
+    var queryParameters = <String, String>{};
+    if (uri != null) {
+      queryParameters.addAll(uri.queryParameters);
+    }
+    this.queryParameters = queryParameters;
+
+    // Get the the authentication key, if any
+    _authenticationKey = queryParameters['auth'];
+  }
 }
 
-/// Information associated with a [FutureCall].
-class FutureCallInfo {
+class FutureCallSession extends Session {
   /// Name of the [FutureCall].
-  final String callName;
+  final String futureCallName;
 
-  /// Creates a new [FutureCallInfo].
-  FutureCallInfo({
-    required this.callName,
-  });
+  /// Creates a new [Session] for a [FutureCall].
+  FutureCallSession({
+    required Server server,
+    required this.futureCallName,
+  }) : super(server: server);
 }
 
 /// Collects methods for authenticating users.
