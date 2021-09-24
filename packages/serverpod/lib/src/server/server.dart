@@ -355,8 +355,9 @@ class Server {
             await endpointConnector.endpoint.handleStreamMessage(session, message);
         }
       }
-      catch(e) {
+      catch(e, stackTrace) {
         print('WS exception: $e');
+        print('$stackTrace');
       }
     }
     catch(e) {
