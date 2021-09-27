@@ -330,6 +330,10 @@ class Server {
           for (var endpointConnector in endpoints.connectors.values) {
             await endpointConnector.endpoint.streamOpened(session);
           }
+          for (var module in endpoints.modules.values) {
+            for (var endpointConnector in module.connectors.values)
+              await endpointConnector.endpoint.streamOpened(session);
+          }
         }
         catch(e) {
           print('Failed to setup stream');
@@ -365,6 +369,10 @@ class Server {
         // Notify all streaming endpoints that the stream has ended.
         for (var endpointConnector in endpoints.connectors.values) {
           await endpointConnector.endpoint.streamClosed(session);
+        }
+        for (var module in endpoints.modules.values) {
+          for (var endpointConnector in module.connectors.values)
+            await endpointConnector.endpoint.streamClosed(session);
         }
       }
       catch(e) {
