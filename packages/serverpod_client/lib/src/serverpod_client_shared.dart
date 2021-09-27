@@ -149,6 +149,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
   }
 
+  Future<void> reconnectWebSocket() async {
+    if (_webSocket == null)
+      return;
+
+    _webSocket?.sink.close();
+    _webSocket = null;
+    connectWebSocket();
+  }
+
   Future<void> _listenToWebSocketStream() async {
     if (_webSocket == null)
       return;
@@ -214,7 +223,7 @@ abstract class EndpointRef {
 
   /// The stream controller handles the stream of [SerializableEntity] sent
   /// from the server endpoint to the client, if it supports streaming.
-  final _streamController = StreamController<SerializableEntity>();
+  var _streamController = StreamController<SerializableEntity>();
 
   /// Stream of messages sent from an endpoint that supports streaming.
   Stream<SerializableEntity> get stream => _streamController.stream;
@@ -222,5 +231,9 @@ abstract class EndpointRef {
   /// Sends a message to the endpoint's stream.
   Future<void> sendStreamMessage(SerializableEntity message) async {
     return client._sendSerializableObjectToStream(name, message);
+  }
+
+  void resetStream() {
+    _streamController = StreamController<SerializableEntity>();
   }
 }

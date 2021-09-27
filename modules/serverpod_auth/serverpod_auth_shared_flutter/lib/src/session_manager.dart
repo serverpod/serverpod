@@ -46,6 +46,7 @@ class SessionManager with ChangeNotifier {
   set signedInUser(UserInfo? userInfo) {
     _signedInUser = userInfo;
     _storeSharedPrefs();
+    caller.client.reconnectWebSocket();
     notifyListeners();
   }
 
@@ -68,6 +69,7 @@ class SessionManager with ChangeNotifier {
 
     try {
       await caller.status.signOut();
+      caller.client.reconnectWebSocket();
       signedInUser = null;
       notifyListeners();
       return true;
