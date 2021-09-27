@@ -127,6 +127,15 @@ abstract class Session {
   }
 }
 
+/// A Session used internally in the [ServerPod]. Typically used to access
+/// the database and do logging for events that are not triggered from a call,
+/// or a stream.
+class InternalSession extends Session {
+  /// Creates a new [InternalSession]. Consider using the createSession
+  /// method of [ServerPod] to create a new session.
+  InternalSession({required Server server}) : super(server: server);
+}
+
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
 /// It contains all data associated with the current connection and provides
 /// easy access to the database.

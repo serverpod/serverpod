@@ -347,6 +347,12 @@ class Serverpod {
     }
   }
 
+  /// Creates a new [InternalSession]. Used to access the database and do
+  /// logging outside of sessions triggered by external events.
+  InternalSession createSession() {
+    return InternalSession(server: server);
+  }
+
   /// Logs a [Session] after is has been completed.
   Future<int?> logSession(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
     var duration = session.duration;
