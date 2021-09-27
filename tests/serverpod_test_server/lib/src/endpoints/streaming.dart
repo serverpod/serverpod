@@ -7,7 +7,7 @@ int globalInt = 0;
 
 class StreamingEndpoint extends Endpoint {
   @override
-  Future<void> setupStream(Session session) async {
+  Future<void> streamOpened(Session session) async {
   }
 
   @override

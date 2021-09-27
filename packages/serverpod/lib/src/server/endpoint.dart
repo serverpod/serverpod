@@ -69,7 +69,10 @@ abstract class Endpoint {
 
   /// Override this method to setup a new stream when a client connects to the
   /// server.
-  Future<void> setupStream(Session session) async {}
+  Future<void> streamOpened(StreamingSession session) async {}
+
+  /// Called when a stream was closed.
+  Future<void> streamClosed(StreamingSession session) async {}
 
   /// Invoked when a message is sent to this endpoint from the client.
   /// Override this method to create your own custom [StreamingEndpoint].

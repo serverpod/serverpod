@@ -328,7 +328,7 @@ class Server {
         try {
           // Notify all streaming endpoints that the stream has started.
           for (var endpointConnector in endpoints.connectors.values) {
-            await endpointConnector.endpoint.setupStream(session);
+            await endpointConnector.endpoint.streamOpened(session);
           }
         }
         catch(e) {
@@ -359,6 +359,17 @@ class Server {
       catch(e, stackTrace) {
         print('WS exception: $e');
         print('$stackTrace');
+      }
+
+      try {
+        // Notify all streaming endpoints that the stream has ended.
+        for (var endpointConnector in endpoints.connectors.values) {
+          await endpointConnector.endpoint.streamClosed(session);
+        }
+      }
+      catch(e) {
+        print('Failed to setup stream');
+        // TODO: Logging
       }
     }
     catch(e, stackTrace) {
