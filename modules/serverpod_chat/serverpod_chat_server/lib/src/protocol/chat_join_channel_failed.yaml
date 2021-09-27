@@ -1,0 +1,3 @@
+class: ChatJoinChannelFailed
+fields:
+  reason: String

@@ -1,0 +1,10 @@
+class: ChatMessage
+table: serverpod_chat_message
+fields:
+  channel: String
+  type: String
+  message: String
+  time: DateTime
+  sender: int
+  senderInfo: serverpod_auth.UserInfo?, protocol
+  removed: bool

@@ -1,0 +1,5 @@
+class: ChatMessagePost
+fields:
+  channel: String
+  type: String
+  message: String

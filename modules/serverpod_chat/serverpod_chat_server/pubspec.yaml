@@ -1,0 +1,16 @@
+name: serverpod_chat_server
+description: Starting point for a Serverpod module.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_auth_server:
+    path: ../../serverpod_auth/serverpod_auth_server
+
+dev_dependencies:
+  pedantic: ^1.9.0

@@ -1,0 +1,3 @@
+class: ChatJoinChannel
+fields:
+  channel: String
