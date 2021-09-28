@@ -76,11 +76,15 @@ class _ChatViewState extends State<ChatView> {
 
         // _pinnedToBottom = _scrollController.position == _scrollController.position.maxScrollExtent;
 
-        return ListView.builder(
-          reverse: false,
-          controller: _scrollController,
-          itemBuilder: _chatItemBuilder,
-          itemCount: _messages.length,
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: ListView.builder(
+            shrinkWrap: true,
+            reverse: false,
+            controller: _scrollController,
+            itemBuilder: _chatItemBuilder,
+            itemCount: _messages.length,
+          ),
         );
       },
     );
