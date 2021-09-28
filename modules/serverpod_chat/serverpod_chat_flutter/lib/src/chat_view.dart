@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
+
+typedef ChatTileBuilder = Widget Function(BuildContext context, ChatMessage message, ChatMessage? previous);
 
 class ChatView extends StatefulWidget {
   final Caller caller;
   final String channel;
+  final ChatTileBuilder? tileBuilder;
 
   const ChatView({
     Key? key,
     required this.caller,
     required this.channel,
+    this.tileBuilder,
   }) : super(key: key);
 
   @override
@@ -28,7 +33,6 @@ class _ChatViewState extends State<ChatView> {
   }
 
   void _handleChatMessage(ChatMessage message) {
-    print('adding chat message');
     setState(() {
       _messages.add(message);
     });
@@ -36,19 +40,29 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    var tiles = <ListTile>[];
-    for (var message in _messages) {
-      tiles.add(
-        ListTile(
-          title: Text(message.message),
-          subtitle: Text(message.senderInfo?.userName ?? 'Unknown user'),
-        ),
-      );
-    }
-
-    return ListView(
+    return ListView.builder(
+      reverse: true,
       controller: _scrollController,
-      children: tiles,
+      itemBuilder: _chatItemBuilder,
+      itemCount: _messages.length,
+    );
+  }
+
+  Widget _chatItemBuilder(BuildContext context, int item) {
+    // Revers the list, because the scroll view is reversed
+    var message = _messages[_messages.length - item - 1];
+    ChatMessage? previous;
+    if (item < _messages.length - 1) {
+      previous = _messages[_messages.length - item - 2];
+    }
+    var tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
+    return tileBuilder(context, message, previous);
+  }
+
+  Widget _defaultTileBuilder(BuildContext context, ChatMessage message) {
+    return ListTile(
+      title: Text(message.message),
+      subtitle: Text(message.senderInfo?.userName ?? 'Unknown user'),
     );
   }
 }

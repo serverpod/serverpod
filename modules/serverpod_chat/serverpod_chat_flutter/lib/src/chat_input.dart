@@ -10,6 +10,7 @@ class ChatInput extends StatefulWidget {
   final BoxDecoration? boxDecoration;
   final EdgeInsets? padding;
   final String? hintText;
+  final TextStyle? style;
 
   const ChatInput({
     Key? key,
@@ -19,6 +20,7 @@ class ChatInput extends StatefulWidget {
     this.boxDecoration,
     this.padding,
     this.hintText,
+    this.style,
   }) : super(key: key);
 
   @override
@@ -68,7 +70,7 @@ class _ChatInputState extends State<ChatInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: widget.boxDecoration ?? BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.all(Radius.circular(6)),
@@ -78,7 +80,7 @@ class _ChatInputState extends State<ChatInput> {
           Expanded(
             child: TextField(
               autofocus: true,
-              // expands: true,
+              style: widget.style,
               minLines: 1,
               maxLines: 10,
               controller: _textController,
