@@ -18,6 +18,7 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   final _messages = <ChatMessage>[];
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _ChatViewState extends State<ChatView> {
     }
 
     return ListView(
+      controller: _scrollController,
       children: tiles,
     );
   }
