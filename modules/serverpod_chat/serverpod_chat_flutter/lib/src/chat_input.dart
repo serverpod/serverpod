@@ -70,7 +70,6 @@ class _ChatInputState extends State<ChatInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: widget.boxDecoration ?? BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.all(Radius.circular(6)),
@@ -78,24 +77,27 @@ class _ChatInputState extends State<ChatInput> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              autofocus: true,
-              style: widget.style,
-              minLines: 1,
-              maxLines: 10,
-              controller: _textController,
-              focusNode: _focusNode,
-              decoration: widget.inputDecoration ?? const InputDecoration(
-                hintText: 'Send a message...',
-                isDense: false,
-                border: InputBorder.none,
-              ).copyWith(hintText: widget.hintText),
+            child: Padding(
+              padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: TextField(
+                autofocus: true,
+                style: widget.style,
+                minLines: 1,
+                maxLines: 10,
+                controller: _textController,
+                focusNode: _focusNode,
+                decoration: widget.inputDecoration ?? const InputDecoration(
+                  hintText: 'Send a message...',
+                  isDense: false,
+                  border: InputBorder.none,
+                ).copyWith(hintText: widget.hintText),
+              ),
             ),
           ),
-          Icon(
-            Icons.attach_file_rounded,
-            color: Theme.of(context).textTheme.caption!.color,
-          ),
+          // Icon(
+          //   Icons.attach_file_rounded,
+          //   color: Theme.of(context).textTheme.caption!.color,
+          // ),
         ],
       ),
     );

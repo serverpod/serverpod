@@ -25,6 +25,12 @@ class _ChatViewState extends State<ChatView> {
   final _messages = <ChatMessage>[];
   final _scrollController = ScrollController();
 
+  var _messageAdded = false;
+  var _offset = 0.0;
+  var _maxExtent = 0.0;
+
+  var _lastHeight = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +39,10 @@ class _ChatViewState extends State<ChatView> {
   }
 
   void _handleChatMessage(ChatMessage message) {
+    _offset = _scrollController.offset;
+    _maxExtent = _scrollController.position.maxScrollExtent;
+    _messageAdded = true;
+
     setState(() {
       _messages.add(message);
     });
@@ -40,20 +50,48 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      reverse: true,
-      controller: _scrollController,
-      itemBuilder: _chatItemBuilder,
-      itemCount: _messages.length,
+    if (_messageAdded) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        if (_offset == _maxExtent) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 300),
+          );
+        }
+      });
+    }
+
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        if (_lastHeight != constraints.maxHeight) {
+          _lastHeight = constraints.maxHeight;
+
+          if (_scrollController.hasClients && _scrollController.offset == _scrollController.position.maxScrollExtent) {
+            WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+            });
+          }
+        }
+
+        // _pinnedToBottom = _scrollController.position == _scrollController.position.maxScrollExtent;
+
+        return ListView.builder(
+          reverse: false,
+          controller: _scrollController,
+          itemBuilder: _chatItemBuilder,
+          itemCount: _messages.length,
+        );
+      },
     );
   }
 
   Widget _chatItemBuilder(BuildContext context, int item) {
     // Revers the list, because the scroll view is reversed
-    var message = _messages[_messages.length - item - 1];
+    var message = _messages[item];
     ChatMessage? previous;
-    if (item < _messages.length - 1) {
-      previous = _messages[_messages.length - item - 2];
+    if (item > 0) {
+      previous = _messages[item - 1];
     }
     var tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
