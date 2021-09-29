@@ -62,6 +62,8 @@ class AuthConfig {
   /// mimics Google's default avatars is used.
   final UserImageGenerator userImageGenerator;
 
+  final Duration userInfoCacheLifetime;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings.
   AuthConfig({
@@ -76,5 +78,6 @@ class AuthConfig {
     this.userCanEditFullName = false,
     this.userCanSeeUserName = true,
     this.userCanSeeFullName = true,
+    this.userInfoCacheLifetime = const Duration(minutes: 1),
   });
 }

@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/src/business/config.dart';
 import '../generated/protocol.dart';
 
 /// Business logic for handling users.
@@ -30,8 +31,29 @@ class Users {
     )) as UserInfo?;
   }
 
-  /// Find a user by its id. Returns null if no user is found.
-  static Future<UserInfo?> findUserByUserId(Session session, int userId) async {
-    return (await session.db.findById(tUserInfo, userId)) as UserInfo?;
+  /// Find a user by its id. Returns null if no user is found. By default the
+  /// result is cached locally on the server. You can configure the cache
+  /// lifetime in [AuthConfig], or disable it on a call to call basis by
+  /// setting [useCache] to false.
+  static Future<UserInfo?> findUserByUserId(Session session, int userId, {bool useCache = true}) async {
+    final cacheKey = 'serverpod_auth_userinfo_$userId';
+    UserInfo? userInfo;
+
+    if (useCache) {
+      userInfo = await session.caches.local.get(cacheKey) as UserInfo?;
+      if (userInfo != null)
+        return userInfo;
+    }
+
+    userInfo = (await session.db.findById(tUserInfo, userId)) as UserInfo?;
+
+    if (useCache && userInfo != null) {
+      await session.caches.local.put(
+        cacheKey, userInfo,
+        lifetime: AuthConfig.current.userInfoCacheLifetime,
+      );
+    }
+
+    return userInfo;
   }
 }
