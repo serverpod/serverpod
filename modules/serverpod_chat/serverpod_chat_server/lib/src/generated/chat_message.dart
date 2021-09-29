@@ -26,6 +26,8 @@ class ChatMessage extends TableRow {
   late int sender;
   serverpod_auth.UserInfo? senderInfo;
   late bool removed;
+  int? clientMessageId;
+  bool? sent;
 
   ChatMessage({
     this.id,
@@ -36,6 +38,8 @@ class ChatMessage extends TableRow {
     required this.sender,
     this.senderInfo,
     required this.removed,
+    this.clientMessageId,
+    this.sent,
 });
 
   ChatMessage.fromSerialization(Map<String, dynamic> serialization) {
@@ -48,6 +52,8 @@ class ChatMessage extends TableRow {
     sender = _data['sender']!;
     senderInfo = _data['senderInfo'] != null ? serverpod_auth.UserInfo?.fromSerialization(_data['senderInfo']) : null;
     removed = _data['removed']!;
+    clientMessageId = _data['clientMessageId'];
+    sent = _data['sent'];
   }
 
   @override
@@ -61,6 +67,8 @@ class ChatMessage extends TableRow {
       'sender': sender,
       'senderInfo': senderInfo?.serialize(),
       'removed': removed,
+      'clientMessageId': clientMessageId,
+      'sent': sent,
     });
   }
 
@@ -73,7 +81,6 @@ class ChatMessage extends TableRow {
       'message': message,
       'time': time.toUtc().toIso8601String(),
       'sender': sender,
-      'senderInfo': senderInfo?.serialize(),
       'removed': removed,
     });
   }
@@ -89,6 +96,8 @@ class ChatMessage extends TableRow {
       'sender': sender,
       'senderInfo': senderInfo?.serialize(),
       'removed': removed,
+      'clientMessageId': clientMessageId,
+      'sent': sent,
     });
   }
 }
@@ -104,7 +113,6 @@ class ChatMessageTable extends Table {
   final message = ColumnString('message');
   final time = ColumnDateTime('time');
   final sender = ColumnInt('sender');
-  final senderInfo = ColumnSerializable('senderInfo');
   final removed = ColumnBool('removed');
 
   @override
@@ -115,7 +123,6 @@ class ChatMessageTable extends Table {
     message,
     time,
     sender,
-    senderInfo,
     removed,
   ];
 }

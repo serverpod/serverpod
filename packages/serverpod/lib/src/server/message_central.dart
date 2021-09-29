@@ -48,6 +48,32 @@ class MessageCentral {
     callbacks.add(listener);
   }
 
+  void removeListener(Session session, String channelName, MessageCentralListenerCallback listener) {
+    var channel = _channels[channelName];
+    if (channel != null) {
+      channel.remove(listener);
+      if (channel.isEmpty) {
+        _channels.remove(channelName);
+      }
+    }
+
+    var subscribedChannels = _sessionToChannelNamesLookup[session];
+    if (subscribedChannels != null) {
+      subscribedChannels.remove(channelName);
+      if (subscribedChannels.isEmpty) {
+        _sessionToChannelNamesLookup.remove(session);
+      }
+    }
+
+    var callbacks = _sessionToCallbacksLookup[session];
+    if (callbacks != null) {
+      callbacks.remove(listener);
+      if (callbacks.isEmpty) {
+        _sessionToCallbacksLookup.remove(session);
+      }
+    }
+  }
+
   void removeListenersForSession(Session session) {
     // Get subscribed channels
     var channelNames = _sessionToChannelNamesLookup[session];

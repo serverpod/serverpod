@@ -1,9 +1,12 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import '../generated/protocol.dart';
+import '../business/config.dart';
 
 class ChatEndpoint extends Endpoint {
-  static const _channelPrefix = 'serverpod_chat_';
+  static const _channelPrefix = 'serverpod_chat.';
+  static const _initialMessageChunkSize = 20;
+  static const _messageChunkSize = 100;
 
   @override
   bool get requireLogin => true;
@@ -22,26 +25,51 @@ class ChatEndpoint extends Endpoint {
     var chatSession = getUserObject(session) as ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
-      print('Join channel');
-      // TODO: Check if we are allowed to join this channel
+      print('Join channel: ${message.channel}');
+      // Check if user is allowed to access this channel
+      if (!await ChatConfig.current.channelAccessVerification(session, (await session.auth.authenticatedUserId)!, message.channel)) {
+        print(' - Access denied');
+        await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'Access denied'));
+        return;
+      }
+
+      // Setup a listener that passes on messages from the subscribed channel
       var messageListener = (SerializableEntity message) {
         print('passing on message');
         sendStreamMessage(session, message);
       };
-      session.messages.addListener(session, _channelPrefix + message.channel, messageListener);
+      session.messages.addListener(_channelPrefix + message.channel, messageListener);
       chatSession.messageListeners[message.channel] = messageListener;
 
       // TODO: Fetch old messages
+      var initialMessageChunk = await _fetchMessageChunk(session, message.channel, _initialMessageChunkSize);
+
       await sendStreamMessage(
         session,
-        ChatJoinedChannel(channel: message.channel, messages: []),
+        ChatJoinedChannel(
+          channel: message.channel,
+          initialMessageChunk: initialMessageChunk,
+        ),
       );
     }
     else if (message is ChatLeaveChannel) {
-      // TODO: Remove listener
+      // Remove listener for a subscribed channel
+      var listener = chatSession.messageListeners[message.channel];
+      if (listener != null) {
+        session.messages.removeListener(message.className, listener);
+        chatSession.messageListeners.remove(message.channel);
+      }
     }
     else if (message is ChatMessagePost) {
+      // Check that the message is in a channel we're subscribed to
+      if (!chatSession.messageListeners.containsKey(message.channel)) {
+        print('Got message, but client is not subscribed to channel: ${message.channel}');
+        return;
+      }
+
       print('Got message');
+
+      // Write the message to the database, then pass it on to this and other clients.
       var chatMessage = ChatMessage(
         channel: message.channel,
         type: message.type,
@@ -50,10 +78,47 @@ class ChatEndpoint extends Endpoint {
         sender: (await session.auth.authenticatedUserId)!,
         senderInfo: chatSession.userInfo,
         removed: false,
+        clientMessageId: message.clientMessageId,
+        sent: true,
       );
+
+      await session.db.insert(chatMessage);
 
       session.messages.postMessage(_channelPrefix + message.channel, chatMessage);
     }
+  }
+
+  Future<ChatMessageChunk> _fetchMessageChunk(Session session, String channel, int size, [int? lastId]) async {
+    List<ChatMessage> messages;
+    if (lastId != null) {
+      messages = (await session.db.find(
+        tChatMessage,
+        where: (tChatMessage.channel.equals(channel)) & tChatMessage.id < lastId,
+        orderBy: tChatMessage.id,
+        orderDescending: true,
+        limit: size + 1,
+      )).cast<ChatMessage>();
+    }
+    else {
+      messages = (await session.db.find(
+        tChatMessage,
+        where: (tChatMessage.channel.equals(channel)),
+        orderBy: tChatMessage.id,
+        orderDescending: true,
+        limit: size + 1,
+      )).cast<ChatMessage>();
+    }
+
+    var hasOlderMessages = false;
+    if (messages.length > size) {
+      hasOlderMessages = true;
+      messages.removeLast();
+    }
+
+    return ChatMessageChunk(
+      messages: messages.reversed.toList(),
+      hasOlderMessages: hasOlderMessages,
+    );
   }
 }
 

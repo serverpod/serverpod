@@ -6,14 +6,12 @@ import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
 typedef ChatTileBuilder = Widget Function(BuildContext context, ChatMessage message, ChatMessage? previous);
 
 class ChatView extends StatefulWidget {
-  final Caller caller;
-  final String channel;
+  final ChatController controller;
   final ChatTileBuilder? tileBuilder;
 
   const ChatView({
     Key? key,
-    required this.caller,
-    required this.channel,
+    required this.controller,
     this.tileBuilder,
   }) : super(key: key);
 
@@ -34,8 +32,13 @@ class _ChatViewState extends State<ChatView> {
   @override
   void initState() {
     super.initState();
-    var dispatch = ChatDispatch.getInstance(widget.caller);
-    dispatch.addListener(widget.channel, _handleChatMessage);
+    widget.controller.addMessageListener(_handleChatMessage);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeMessageListener(_handleChatMessage);
+    super.dispose();
   }
 
   void _handleChatMessage(ChatMessage message) {

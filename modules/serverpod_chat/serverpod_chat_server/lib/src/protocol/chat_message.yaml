@@ -6,5 +6,10 @@ fields:
   message: String
   time: DateTime
   sender: int
-  senderInfo: serverpod_auth.UserInfo?, protocol
+  senderInfo: serverpod_auth.UserInfo?, api
   removed: bool
+  clientMessageId: int?, api
+  sent: bool?, api
+indexes:
+  serverpod_chat_message_channel_idx:
+    fields: channel

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
 
 class ChatInput extends StatefulWidget {
-  final Caller caller;
-  final String channel;
+  final ChatController controller;
   final InputDecoration? inputDecoration;
   final BoxDecoration? boxDecoration;
   final EdgeInsets? padding;
@@ -14,8 +14,7 @@ class ChatInput extends StatefulWidget {
 
   const ChatInput({
     Key? key,
-    required this.caller,
-    required this.channel,
+    required this.controller,
     this.inputDecoration,
     this.boxDecoration,
     this.padding,
@@ -29,7 +28,6 @@ class ChatInput extends StatefulWidget {
 
 class _ChatInputState extends State<ChatInput> {
   final _textController = TextEditingController();
-  late ChatDispatch _chatDispatch;
 
   late final _focusNode = FocusNode(
     onKey: (FocusNode node, RawKeyEvent evt) {
@@ -45,24 +43,13 @@ class _ChatInputState extends State<ChatInput> {
     },
   );
 
-  @override
-  void initState() {
-    super.initState();
-    _chatDispatch = ChatDispatch.getInstance(widget.caller);
-  }
-
   void _sendMessage() {
     String text = _textController.text.trim();
     if (text.isEmpty)
       return;
 
-    _chatDispatch.postMessage(
-      ChatMessagePost(
-        channel: widget.channel,
-        type: 'text',
-        message: text,
-      ),
-    );
+    widget.controller.postTextMessage(text);
+
     _textController.text = '';
     _focusNode.requestFocus();
   }

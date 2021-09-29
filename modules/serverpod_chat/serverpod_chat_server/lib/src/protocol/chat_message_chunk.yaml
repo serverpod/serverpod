@@ -1,0 +1,4 @@
+class: ChatMessageChunk
+fields:
+  messages: List<ChatMessage>
+  hasOlderMessages: bool

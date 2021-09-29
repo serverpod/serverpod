@@ -22,6 +22,8 @@ class ChatMessage extends SerializableEntity {
   late int sender;
   serverpod_auth.UserInfo? senderInfo;
   late bool removed;
+  int? clientMessageId;
+  bool? sent;
 
   ChatMessage({
     this.id,
@@ -32,6 +34,8 @@ class ChatMessage extends SerializableEntity {
     required this.sender,
     this.senderInfo,
     required this.removed,
+    this.clientMessageId,
+    this.sent,
 });
 
   ChatMessage.fromSerialization(Map<String, dynamic> serialization) {
@@ -44,6 +48,8 @@ class ChatMessage extends SerializableEntity {
     sender = _data['sender']!;
     senderInfo = _data['senderInfo'] != null ? serverpod_auth.UserInfo?.fromSerialization(_data['senderInfo']) : null;
     removed = _data['removed']!;
+    clientMessageId = _data['clientMessageId'];
+    sent = _data['sent'];
   }
 
   @override
@@ -57,6 +63,8 @@ class ChatMessage extends SerializableEntity {
       'sender': sender,
       'senderInfo': senderInfo?.serialize(),
       'removed': removed,
+      'clientMessageId': clientMessageId,
+      'sent': sent,
     });
   }
 }

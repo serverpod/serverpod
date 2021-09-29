@@ -1,4 +1,4 @@
 class: ChatJoinedChannel
 fields:
   channel: String
-  messages: List<ChatMessage>
+  initialMessageChunk: ChatMessageChunk

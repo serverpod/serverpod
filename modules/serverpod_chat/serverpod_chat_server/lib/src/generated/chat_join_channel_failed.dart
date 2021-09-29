@@ -14,16 +14,19 @@ class ChatJoinChannelFailed extends SerializableEntity {
   String get className => 'serverpod_chat_server.ChatJoinChannelFailed';
 
   int? id;
+  late String channel;
   late String reason;
 
   ChatJoinChannelFailed({
     this.id,
+    required this.channel,
     required this.reason,
 });
 
   ChatJoinChannelFailed.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
+    channel = _data['channel']!;
     reason = _data['reason']!;
   }
 
@@ -31,6 +34,7 @@ class ChatJoinChannelFailed extends SerializableEntity {
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
+      'channel': channel,
       'reason': reason,
     });
   }
@@ -39,6 +43,7 @@ class ChatJoinChannelFailed extends SerializableEntity {
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
+      'channel': channel,
       'reason': reason,
     });
   }

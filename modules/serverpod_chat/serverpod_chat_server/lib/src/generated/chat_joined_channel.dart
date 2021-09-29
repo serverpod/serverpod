@@ -15,19 +15,19 @@ class ChatJoinedChannel extends SerializableEntity {
 
   int? id;
   late String channel;
-  late List<ChatMessage> messages;
+  late ChatMessageChunk initialMessageChunk;
 
   ChatJoinedChannel({
     this.id,
     required this.channel,
-    required this.messages,
+    required this.initialMessageChunk,
 });
 
   ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
-    messages = _data['messages']!.map<ChatMessage>((a) => ChatMessage.fromSerialization(a))?.toList();
+    initialMessageChunk = ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
   }
 
   @override
@@ -35,7 +35,7 @@ class ChatJoinedChannel extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'messages': messages.map((ChatMessage a) => a.serialize()).toList(),
+      'initialMessageChunk': initialMessageChunk.serialize(),
     });
   }
 
@@ -44,7 +44,7 @@ class ChatJoinedChannel extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'messages': messages.map((ChatMessage a) => a.serialize()).toList(),
+      'initialMessageChunk': initialMessageChunk.serialize(),
     });
   }
 }

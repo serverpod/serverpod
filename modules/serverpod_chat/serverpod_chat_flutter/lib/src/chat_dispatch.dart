@@ -1,6 +1,6 @@
 import 'package:serverpod_chat_client/module.dart';
 
-typedef ChatMessageListener = void Function(ChatMessage);
+typedef ChatMessageListener = void Function(SerializableEntity message);
 
 class ChatDispatch {
   static ChatDispatch? _singleton;
@@ -32,11 +32,21 @@ class ChatDispatch {
     await for (var message in caller.chat.stream) {
       print('Received message: ${message.runtimeType}');
       if (message is ChatMessage) {
-        var listener = _listeners[message.channel];
-        if (listener != null) {
-          listener(message);
-        }
+        _routeMessageToChannel(message.channel, message);
       }
+      else if (message is ChatJoinedChannel) {
+        _routeMessageToChannel(message.channel, message);
+      }
+      else if (message is ChatJoinChannelFailed) {
+        _routeMessageToChannel(message.channel, message);
+      }
+    }
+  }
+
+  void _routeMessageToChannel(String channel, SerializableEntity message) {
+    var listener = _listeners[channel];
+    if (listener != null) {
+      listener(message);
     }
   }
 

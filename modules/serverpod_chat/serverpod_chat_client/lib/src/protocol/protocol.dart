@@ -10,6 +10,7 @@ import 'dart:typed_data';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'chat_leave_channel.dart';
+import 'chat_message_chunk.dart';
 import 'chat_join_channel.dart';
 import 'chat_join_channel_failed.dart';
 import 'chat_message.dart';
@@ -17,6 +18,7 @@ import 'chat_message_post.dart';
 import 'chat_joined_channel.dart';
 
 export 'chat_leave_channel.dart';
+export 'chat_message_chunk.dart';
 export 'chat_join_channel.dart';
 export 'chat_join_channel_failed.dart';
 export 'chat_message.dart';
@@ -36,6 +38,7 @@ class Protocol extends SerializationManager {
 
   Protocol() {
     constructors['serverpod_chat_server.ChatLeaveChannel'] = (Map<String, dynamic> serialization) => ChatLeaveChannel.fromSerialization(serialization);
+    constructors['serverpod_chat_server.ChatMessageChunk'] = (Map<String, dynamic> serialization) => ChatMessageChunk.fromSerialization(serialization);
     constructors['serverpod_chat_server.ChatJoinChannel'] = (Map<String, dynamic> serialization) => ChatJoinChannel.fromSerialization(serialization);
     constructors['serverpod_chat_server.ChatJoinChannelFailed'] = (Map<String, dynamic> serialization) => ChatJoinChannelFailed.fromSerialization(serialization);
     constructors['serverpod_chat_server.ChatMessage'] = (Map<String, dynamic> serialization) => ChatMessage.fromSerialization(serialization);

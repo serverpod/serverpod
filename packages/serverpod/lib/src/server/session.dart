@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/src/server/message_central.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../cache/caches.dart';
@@ -61,7 +62,7 @@ abstract class Session {
 
   /// Access to the [MessageCentral] for passing real time messages between
   /// web socket streams and other listeners.
-  MessageCentral get messages => server.messageCentral;
+  late MessageCentralAccess messages;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
@@ -76,6 +77,7 @@ abstract class Session {
 
     auth = UserAuthetication._(this);
     storage = StorageAccess._(this);
+    messages = MessageCentralAccess._(this);
 
     db = Database(session: this);
   }
@@ -108,7 +110,7 @@ abstract class Session {
 
   /// Closes the session.
   Future<void> close() async {
-    messages.removeListenersForSession(this);
+    server.messageCentral.removeListenersForSession(this);
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
@@ -359,5 +361,23 @@ class StorageAccess {
       throw CloudStorageException('Storage $storageId is not registered');
 
     return await storage.getPublicUrl(session: _session, path: path);
+  }
+}
+
+class MessageCentralAccess {
+  final Session _session;
+
+  MessageCentralAccess._(this._session);
+
+  void addListener(String channelName, MessageCentralListenerCallback listener) {
+    _session.server.messageCentral.addListener(_session, channelName, listener);
+  }
+
+  void removeListener(String channelName, MessageCentralListenerCallback listener) {
+    _session.server.messageCentral.removeListener(_session, channelName, listener);
+  }
+
+  void postMessage(String channelName, SerializableEntity message, {int? destinationServerId}) {
+    _session.server.messageCentral.postMessage(channelName, message, destinationServerId: destinationServerId);
   }
 }

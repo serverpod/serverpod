@@ -17,12 +17,14 @@ class ChatMessagePost extends SerializableEntity {
   late String channel;
   late String type;
   late String message;
+  late int clientMessageId;
 
   ChatMessagePost({
     this.id,
     required this.channel,
     required this.type,
     required this.message,
+    required this.clientMessageId,
 });
 
   ChatMessagePost.fromSerialization(Map<String, dynamic> serialization) {
@@ -31,6 +33,7 @@ class ChatMessagePost extends SerializableEntity {
     channel = _data['channel']!;
     type = _data['type']!;
     message = _data['message']!;
+    clientMessageId = _data['clientMessageId']!;
   }
 
   @override
@@ -40,6 +43,7 @@ class ChatMessagePost extends SerializableEntity {
       'channel': channel,
       'type': type,
       'message': message,
+      'clientMessageId': clientMessageId,
     });
   }
 
@@ -50,6 +54,7 @@ class ChatMessagePost extends SerializableEntity {
       'channel': channel,
       'type': type,
       'message': message,
+      'clientMessageId': clientMessageId,
     });
   }
 }

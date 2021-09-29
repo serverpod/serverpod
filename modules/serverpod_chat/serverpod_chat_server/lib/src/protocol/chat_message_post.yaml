@@ -3,3 +3,4 @@ fields:
   channel: String
   type: String
   message: String
+  clientMessageId: int
