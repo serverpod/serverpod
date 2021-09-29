@@ -115,10 +115,18 @@ class ChatEndpoint extends Endpoint {
       messages.removeLast();
     }
 
+    for (var message in messages) {
+      await _formatChatMessage(session, message);
+    }
+
     return ChatMessageChunk(
       messages: messages.reversed.toList(),
       hasOlderMessages: hasOlderMessages,
     );
+  }
+
+  Future<void> _formatChatMessage(Session session, ChatMessage message) async {
+    message.senderInfo = await Users.findUserByUserId(session, message.sender);
   }
 }
 

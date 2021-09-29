@@ -20,7 +20,6 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-  final _messages = <ChatMessage>[];
   final _scrollController = ScrollController();
 
   var _messageAdded = false;
@@ -46,9 +45,7 @@ class _ChatViewState extends State<ChatView> {
     _maxExtent = _scrollController.position.maxScrollExtent;
     _messageAdded = true;
 
-    setState(() {
-      _messages.add(message);
-    });
+    setState(() {});
   }
 
   @override
@@ -86,7 +83,7 @@ class _ChatViewState extends State<ChatView> {
             reverse: false,
             controller: _scrollController,
             itemBuilder: _chatItemBuilder,
-            itemCount: _messages.length,
+            itemCount: widget.controller.messages.length,
           ),
         );
       },
@@ -95,10 +92,10 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _chatItemBuilder(BuildContext context, int item) {
     // Revers the list, because the scroll view is reversed
-    var message = _messages[item];
+    var message = widget.controller.messages[item];
     ChatMessage? previous;
     if (item > 0) {
-      previous = _messages[item - 1];
+      previous = widget.controller.messages[item - 1];
     }
     var tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
