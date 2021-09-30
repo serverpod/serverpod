@@ -53,6 +53,10 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     _fadeInAnimation.addListener(() {
       setState(() {});
     });
+
+    if (!_jumpToBottom) {
+      _fadeIn();
+    }
   }
 
   @override
@@ -75,6 +79,10 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     setState(() {});
   }
 
+  void _fadeIn() {
+    _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_messageAdded) {
@@ -95,7 +103,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
         _jumpToBottom = false;
 
         // Start the fade in when we know we are at the bottom.
-        _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
+        _fadeIn();
       }
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         _scrollController.jumpTo(

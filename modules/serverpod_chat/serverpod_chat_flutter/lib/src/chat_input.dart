@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
 
 class ChatInput extends StatefulWidget {
   final ChatController controller;

@@ -30,7 +30,6 @@ class ChatDispatch {
 
   Future<void> _handleStreamMessages() async {
     await for (var message in caller.chat.stream) {
-      print('Received message: ${message.runtimeType}');
       if (message is ChatMessage) {
         _routeMessageToChannel(message.channel, message);
       }
