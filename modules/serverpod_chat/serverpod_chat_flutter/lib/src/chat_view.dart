@@ -86,22 +86,24 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
   }
 
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      curve: Curves.linear,
+      duration: const Duration(milliseconds: 200),
+    ).then((_) {
+      if (_scrollController.offset != _scrollController.position.maxScrollExtent) {
+        _scrollToBottom();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_messageAdded) {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         if (_offset == _maxExtent || _messageAddedByUser) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            curve: Curves.easeIn,
-            duration: const Duration(milliseconds: 150),
-          ).then((_) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              curve: Curves.easeOut,
-              duration: const Duration(milliseconds: 150),
-            );
-          });
+          _scrollToBottom();
           _messageAddedByUser = false;
         }
       });
