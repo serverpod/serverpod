@@ -66,6 +66,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     widget.controller.removeMessageReceivedListener(_handleNewChatMessage);
     widget.controller.removeMessageUpdatedListener(_handleUpdatedChatMessage);
     _scrollController.dispose();
+    _fadeInAnimation.dispose();
     super.dispose();
   }
 
