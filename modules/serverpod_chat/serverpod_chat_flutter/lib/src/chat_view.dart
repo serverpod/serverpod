@@ -23,7 +23,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   late final ScrollController _scrollController;
   late final AnimationController _fadeInAnimation;
 
-  var _scrollToBottom = true;
+  var _jumpToBottom = true;
   var _messageAdded = false;
   var _offset = 0.0;
   var _maxExtent = 0.0;
@@ -40,7 +40,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     _scrollController = ScrollController(
       initialScrollOffset: widget.controller.scrollOffset,
     );
-    _scrollToBottom = widget.controller.scrollAtBottom;
+    _jumpToBottom = widget.controller.scrollAtBottom;
 
     _scrollController.addListener(() {
       widget.controller.scrollOffset = _scrollController.offset;
@@ -53,7 +53,6 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     _fadeInAnimation.addListener(() {
       setState(() {});
     });
-    _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
   }
 
   @override
@@ -89,14 +88,21 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
         }
       });
     }
-    if (_scrollToBottom) {
+    if (_jumpToBottom) {
+      // Check if jump to bottom is complete (we may need multiple attempts as
+      // maxScrollExtent is a guesstimate).
+      if (_scrollController.hasClients && _scrollController.offset == _scrollController.position.maxScrollExtent) {
+        _jumpToBottom = false;
+
+        // Start the fade in when we know we are at the bottom.
+        _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
+      }
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         _scrollController.jumpTo(
           _scrollController.position.maxScrollExtent,
         );
-        setState(() {
-          _scrollToBottom = false;
-        });
+        // Trigger another build.
+        setState(() {});
       });
     }
 
