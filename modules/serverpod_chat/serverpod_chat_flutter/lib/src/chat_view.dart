@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
@@ -25,6 +26,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
 
   var _jumpToBottom = true;
   var _messageAdded = false;
+  var _messageAddedByUser = false;
   var _offset = 0.0;
   var _maxExtent = 0.0;
 
@@ -67,10 +69,11 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  void _handleNewChatMessage(ChatMessage message) {
+  void _handleNewChatMessage(ChatMessage message, bool addedByUser) {
     _offset = _scrollController.offset;
     _maxExtent = _scrollController.position.maxScrollExtent;
     _messageAdded = true;
+    _messageAddedByUser = addedByUser;
 
     setState(() {});
   }
@@ -87,14 +90,22 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     if (_messageAdded) {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
-        if (_offset == _maxExtent) {
+        if (_offset == _maxExtent || _messageAddedByUser) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
-            curve: Curves.easeInOut,
-            duration: const Duration(milliseconds: 300),
-          );
+            curve: Curves.easeIn,
+            duration: const Duration(milliseconds: 150),
+          ).then((_) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 150),
+            );
+          });
+          _messageAddedByUser = false;
         }
       });
+      _messageAdded = false;
     }
     if (_jumpToBottom) {
       // Check if jump to bottom is complete (we may need multiple attempts as

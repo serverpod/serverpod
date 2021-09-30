@@ -5,7 +5,7 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
-typedef ChatControllerReceivedMessageCallback = void Function(ChatMessage message);
+typedef ChatControllerReceivedMessageCallback = void Function(ChatMessage message, bool addedByUser);
 
 class ChatController {
   final String channel;
@@ -70,7 +70,7 @@ class ChatController {
       }
       if(!updated) {
         messages.add(serverMessage);
-        _notifyMessageListeners(serverMessage);
+        _notifyMessageListeners(serverMessage, false);
       }
     }
     else if (serverMessage is ChatJoinedChannel) {
@@ -115,7 +115,7 @@ class ChatController {
     );
     messages.add(dummy);
 
-    _notifyMessageListeners(dummy);
+    _notifyMessageListeners(dummy, true);
     _clientMessageId += 1;
   }
 
@@ -127,9 +127,9 @@ class ChatController {
     _receivedMessageListeners.remove(listener);
   }
 
-  void _notifyMessageListeners(ChatMessage message) {
+  void _notifyMessageListeners(ChatMessage message, bool addedByUser) {
     for (var listener in _receivedMessageListeners) {
-      listener(message);
+      listener(message, addedByUser);
     }
   }
 
