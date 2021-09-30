@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   serverpod_chat_client:
     path: ../serverpod_chat_client
+  serverpod_auth_shared_flutter:
+    path: ../../serverpod_auth/serverpod_auth_shared_flutter
 
 dev_dependencies:
   flutter_test:

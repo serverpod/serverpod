@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
@@ -5,7 +7,8 @@ typedef ChatControllerReceivedMessageCallback = void Function(ChatMessage messag
 
 class ChatController {
   final String channel;
-  final Caller caller;
+  final Caller module;
+  final SessionManager sessionManager;
 
   late final ChatDispatch dispatch;
 
@@ -26,12 +29,17 @@ class ChatController {
   int _clientMessageId = 0;
 
   final _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
+  final _messageUpdatedListeners = <VoidCallback>{};
+
+  double scrollOffset = 0;
+  bool scrollAtBottom = true;
 
   ChatController({
     required this.channel,
-    required this.caller,
+    required this.module,
+    required this.sessionManager,
   }) {
-    dispatch = ChatDispatch.getInstance(caller);
+    dispatch = ChatDispatch.getInstance(module);
     dispatch.addListener(channel, _handleServerMessage);
   }
 
@@ -42,8 +50,23 @@ class ChatController {
 
   void _handleServerMessage(SerializableEntity serverMessage) {
     if (serverMessage is ChatMessage) {
-      messages.add(serverMessage);
-      _notifyMessageListeners(serverMessage);
+      if (serverMessage.sender == sessionManager.signedInUser?.id!) {
+        // This user is the sender of the message, mark message as sent
+        var updated = false;
+        for (var message in messages) {
+          if (message.clientMessageId == serverMessage.clientMessageId) {
+            message.sent = true;
+            updated = true;
+          }
+        }
+        if (updated) {
+          _notifyMessageUpdatedListeners();
+        }
+      }
+      else {
+        messages.add(serverMessage);
+        _notifyMessageListeners(serverMessage);
+      }
     }
     else if (serverMessage is ChatJoinedChannel) {
       messages.addAll(serverMessage.initialMessageChunk.messages);
@@ -57,28 +80,65 @@ class ChatController {
   }
 
   void postTextMessage(String message) {
+    if (!sessionManager.isSignedIn) {
+      return;
+    }
+
+    const type = 'text';
+
+    // Send to server
     dispatch.postMessage(
       ChatMessagePost(
         channel: channel,
-        type: 'text',
+        type: type,
         message: message,
         clientMessageId: _clientMessageId,
       ),
     );
+
+    // Post dummy message
+    var dummy = ChatMessage(
+        channel: channel,
+        type: type,
+        message: message,
+        time: DateTime.now().toUtc(),
+        sent: false,
+        sender: sessionManager.signedInUser!.id!,
+        senderInfo: sessionManager.signedInUser!,
+        removed: false,
+        clientMessageId: _clientMessageId,
+    );
+    messages.add(dummy);
+
+    _notifyMessageListeners(dummy);
     _clientMessageId += 1;
   }
 
-  void addMessageListener(ChatControllerReceivedMessageCallback listener) {
+  void addMessageReceivedListener(ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.add(listener);
   }
 
-  void removeMessageListener(ChatControllerReceivedMessageCallback listener) {
+  void removeMessageReceivedListener(ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.remove(listener);
   }
 
   void _notifyMessageListeners(ChatMessage message) {
     for (var listener in _receivedMessageListeners) {
       listener(message);
+    }
+  }
+
+  void addMessageUpdatedListener(VoidCallback listener) {
+    _messageUpdatedListeners.add(listener);
+  }
+
+  void removeMessageUpdatedListener(VoidCallback listener) {
+    _messageUpdatedListeners.remove(listener);
+  }
+
+  void _notifyMessageUpdatedListeners() {
+    for (var listener in _messageUpdatedListeners) {
+      listener();
     }
   }
 }
