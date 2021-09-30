@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
@@ -39,6 +41,9 @@ class ChatController {
     required this.module,
     required this.sessionManager,
   }) {
+    // Pick a random number and hope no other client with the same user logged
+    // in picks the same. If so, messages may be incorrectly marked as delivered.
+    _clientMessageId = Random().nextInt(10000000);
     dispatch = ChatDispatch.getInstance(module);
     dispatch.addListener(channel, _handleServerMessage);
   }
@@ -50,9 +55,9 @@ class ChatController {
 
   void _handleServerMessage(SerializableEntity serverMessage) {
     if (serverMessage is ChatMessage) {
+      var updated = false;
       if (serverMessage.sender == sessionManager.signedInUser?.id!) {
         // This user is the sender of the message, mark message as sent
-        var updated = false;
         for (var message in messages) {
           if (message.clientMessageId == serverMessage.clientMessageId) {
             message.sent = true;
@@ -63,7 +68,7 @@ class ChatController {
           _notifyMessageUpdatedListeners();
         }
       }
-      else {
+      if(!updated) {
         messages.add(serverMessage);
         _notifyMessageListeners(serverMessage);
       }
