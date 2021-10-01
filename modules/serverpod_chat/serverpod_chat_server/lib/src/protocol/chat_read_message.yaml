@@ -1,0 +1,10 @@
+class: ChatReadMessage
+table: serverpod_chat_read_message
+fields:
+  channel: String
+  userId: int
+  lastReadMessageId: int
+indexes:
+  serverpod_chat_read_message_channel_user_idx:
+    fields: channel, userId
+    unique: true

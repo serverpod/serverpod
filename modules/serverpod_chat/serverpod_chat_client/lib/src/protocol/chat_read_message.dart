@@ -9,27 +9,27 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class ChatJoinedChannel extends SerializableEntity {
+class ChatReadMessage extends SerializableEntity {
   @override
-  String get className => 'serverpod_chat_server.ChatJoinedChannel';
+  String get className => 'serverpod_chat_server.ChatReadMessage';
 
   int? id;
   late String channel;
-  late ChatMessageChunk initialMessageChunk;
+  late int userId;
   late int lastReadMessageId;
 
-  ChatJoinedChannel({
+  ChatReadMessage({
     this.id,
     required this.channel,
-    required this.initialMessageChunk,
+    required this.userId,
     required this.lastReadMessageId,
 });
 
-  ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
+  ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
-    initialMessageChunk = ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
+    userId = _data['userId']!;
     lastReadMessageId = _data['lastReadMessageId']!;
   }
 
@@ -38,7 +38,7 @@ class ChatJoinedChannel extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'initialMessageChunk': initialMessageChunk.serialize(),
+      'userId': userId,
       'lastReadMessageId': lastReadMessageId,
     });
   }

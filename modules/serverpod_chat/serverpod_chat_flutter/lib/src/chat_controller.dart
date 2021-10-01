@@ -88,6 +88,7 @@ class ChatController {
     else if (serverMessage is ChatJoinedChannel) {
       messages.addAll(serverMessage.initialMessageChunk.messages);
       _hasOlderMessages = serverMessage.initialMessageChunk.hasOlderMessages;
+      _lastReadMessage = serverMessage.lastReadMessageId;
       _joinedChannel = true;
       _updateUnreadMessages();
     }
@@ -141,6 +142,13 @@ class ChatController {
     if (messageId > _lastReadMessage) {
       _lastReadMessage = messageId;
       print('TODO: Update server on last read message: $messageId');
+      module.chat.sendStreamMessage(
+        ChatReadMessage(
+          channel: channel,
+          userId: sessionManager.signedInUser!.id!,
+          lastReadMessageId: messageId,
+        ),
+      );
       _updateUnreadMessages();
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import '../generated/protocol.dart';
@@ -41,7 +43,6 @@ class ChatEndpoint extends Endpoint {
       session.messages.addListener(_channelPrefix + message.channel, messageListener);
       chatSession.messageListeners[message.channel] = messageListener;
 
-      // TODO: Fetch old messages
       var initialMessageChunk = await _fetchMessageChunk(session, message.channel, _initialMessageChunkSize);
 
       await sendStreamMessage(
@@ -49,6 +50,7 @@ class ChatEndpoint extends Endpoint {
         ChatJoinedChannel(
           channel: message.channel,
           initialMessageChunk: initialMessageChunk,
+          lastReadMessageId: await _getLastReadMessage(session, message.channel, chatSession.userInfo!.id!),
         ),
       );
     }
@@ -85,6 +87,15 @@ class ChatEndpoint extends Endpoint {
       await session.db.insert(chatMessage);
 
       session.messages.postMessage(_channelPrefix + message.channel, chatMessage);
+    }
+    else if (message is ChatReadMessage) {
+      // Store last read message.
+      await _setLastReadMessage(
+        session,
+        message.channel,
+        (await session.auth.authenticatedUserId)!,
+        message.lastReadMessageId,
+      );
     }
   }
 
@@ -127,6 +138,39 @@ class ChatEndpoint extends Endpoint {
 
   Future<void> _formatChatMessage(Session session, ChatMessage message) async {
     message.senderInfo = await Users.findUserByUserId(session, message.sender);
+  }
+
+  Future<int> _getLastReadMessage(Session session, String channel, int userId) async {
+    var readMessageRow = (await session.db.findSingleRow(
+      tChatReadMessage,
+      where: tChatReadMessage.channel.equals(channel) & tChatReadMessage.userId.equals(userId),
+    )) as ChatReadMessage?;
+
+    if (readMessageRow == null) {
+      return 0;
+    }
+    return readMessageRow.lastReadMessageId;
+  }
+
+  Future<void> _setLastReadMessage(Session session, String channel, int userId, int lastReadMessageId) async {
+    print('setLastReadMessage channel: $channel user: $userId message: $lastReadMessageId');
+    var readMessageRow = (await session.db.findSingleRow(
+      tChatReadMessage,
+      where: tChatReadMessage.channel.equals(channel) & tChatReadMessage.userId.equals(userId),
+    )) as ChatReadMessage?;
+
+    if (readMessageRow == null) {
+      readMessageRow = ChatReadMessage(
+        channel: channel,
+        userId: userId,
+        lastReadMessageId: lastReadMessageId,
+      );
+      await session.db.insert(readMessageRow);
+    }
+    else {
+      readMessageRow.lastReadMessageId = lastReadMessageId;
+      await session.db.update(readMessageRow);
+    }
   }
 }
 

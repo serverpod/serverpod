@@ -16,11 +16,13 @@ class ChatJoinedChannel extends SerializableEntity {
   int? id;
   late String channel;
   late ChatMessageChunk initialMessageChunk;
+  late int lastReadMessageId;
 
   ChatJoinedChannel({
     this.id,
     required this.channel,
     required this.initialMessageChunk,
+    required this.lastReadMessageId,
 });
 
   ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
@@ -28,6 +30,7 @@ class ChatJoinedChannel extends SerializableEntity {
     id = _data['id'];
     channel = _data['channel']!;
     initialMessageChunk = ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
+    lastReadMessageId = _data['lastReadMessageId']!;
   }
 
   @override
@@ -36,6 +39,7 @@ class ChatJoinedChannel extends SerializableEntity {
       'id': id,
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.serialize(),
+      'lastReadMessageId': lastReadMessageId,
     });
   }
 
@@ -45,6 +49,7 @@ class ChatJoinedChannel extends SerializableEntity {
       'id': id,
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.serialize(),
+      'lastReadMessageId': lastReadMessageId,
     });
   }
 }

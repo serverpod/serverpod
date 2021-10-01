@@ -2,3 +2,4 @@ class: ChatJoinedChannel
 fields:
   channel: String
   initialMessageChunk: ChatMessageChunk
+  lastReadMessageId: int
