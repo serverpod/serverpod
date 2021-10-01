@@ -35,6 +35,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
+
     widget.controller.addMessageReceivedListener(_handleNewChatMessage);
     widget.controller.addMessageUpdatedListener(_handleUpdatedChatMessage);
 
@@ -47,6 +48,9 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     _scrollController.addListener(() {
       widget.controller.scrollOffset = _scrollController.offset;
       widget.controller.scrollAtBottom = _scrollController.offset == _scrollController.position.maxScrollExtent;
+      if (widget.controller.scrollAtBottom) {
+        widget.controller.markLastMessageRead();
+      }
     });
 
     // Fade in animation to mask initial jump to bottom of scroll view
@@ -120,6 +124,8 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
         _fadeIn();
       }
       WidgetsBinding.instance!.addPostFrameCallback((_) {
+        widget.controller.markLastMessageRead();
+
         _scrollController.jumpTo(
           _scrollController.position.maxScrollExtent,
         );

@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
@@ -32,9 +33,12 @@ class ChatController {
 
   final _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
   final _messageUpdatedListeners = <VoidCallback>{};
+  final _unreadMessagesListeners = <VoidCallback>{};
 
   double scrollOffset = 0;
   bool scrollAtBottom = true;
+
+  int _lastReadMessage = 0;
 
   ChatController({
     required this.channel,
@@ -55,12 +59,18 @@ class ChatController {
 
   void _handleServerMessage(SerializableEntity serverMessage) {
     if (serverMessage is ChatMessage) {
+      // Mark as read if a view is attached and scroll is at bottom.
+      if (scrollAtBottom && _receivedMessageListeners.isNotEmpty) {
+        markLastMessageRead();
+      }
+
       var updated = false;
       if (serverMessage.sender == sessionManager.signedInUser?.id!) {
         // This user is the sender of the message, mark message as sent
         for (var message in messages) {
           if (message.clientMessageId == serverMessage.clientMessageId) {
             message.sent = true;
+            message.id = serverMessage.id;
             updated = true;
           }
         }
@@ -72,11 +82,14 @@ class ChatController {
         messages.add(serverMessage);
         _notifyMessageListeners(serverMessage, false);
       }
+
+      _updateUnreadMessages();
     }
     else if (serverMessage is ChatJoinedChannel) {
       messages.addAll(serverMessage.initialMessageChunk.messages);
       _hasOlderMessages = serverMessage.initialMessageChunk.hasOlderMessages;
       _joinedChannel = true;
+      _updateUnreadMessages();
     }
     else if (serverMessage is ChatJoinChannelFailed) {
       _joinFailed = true;
@@ -119,6 +132,52 @@ class ChatController {
     _clientMessageId += 1;
   }
 
+  void markLastMessageRead() {
+    var messageId = _getLastMessageId();
+    if (messageId == null) {
+      return;
+    }
+
+    if (messageId > _lastReadMessage) {
+      _lastReadMessage = messageId;
+      print('TODO: Update server on last read message: $messageId');
+      _updateUnreadMessages();
+    }
+  }
+
+  bool _unreadMessagesLast = false;
+  void _updateUnreadMessages() {
+    print('updateUnreadMessages last: $_unreadMessagesLast current: $hasUnreadMessages');
+    var hasUnread = hasUnreadMessages;
+    if (_unreadMessagesLast != hasUnread) {
+      print(' - notify listeners');
+      _unreadMessagesLast = hasUnread;
+      _notifyUnreadMessagesListeners();
+    }
+  }
+
+  int? _getLastMessageId() {
+    int? lastMessageId;
+    for (var i = messages.length - 1; i >= 0; i -= 1) {
+      if (messages[i].sender != sessionManager.signedInUser!.id!) {
+        lastMessageId = messages[i].id!;
+        break;
+      }
+    }
+    return lastMessageId;
+  }
+
+  bool get hasUnreadMessages {
+    // Find last message that user didn't send
+    int? lastMessageId = _getLastMessageId();
+    if (lastMessageId == null) {
+      return false;
+    }
+    return lastMessageId != _lastReadMessage;
+  }
+
+  // Listeners for received messages
+
   void addMessageReceivedListener(ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.add(listener);
   }
@@ -133,6 +192,8 @@ class ChatController {
     }
   }
 
+  // Listeners for updated messages
+
   void addMessageUpdatedListener(VoidCallback listener) {
     _messageUpdatedListeners.add(listener);
   }
@@ -143,6 +204,22 @@ class ChatController {
 
   void _notifyMessageUpdatedListeners() {
     for (var listener in _messageUpdatedListeners) {
+      listener();
+    }
+  }
+
+  // Listeners for unread messages
+
+  void addUnreadMessagesListener(VoidCallback listener) {
+    _unreadMessagesListeners.add(listener);
+  }
+
+  void removeUnreadMessagesListener(VoidCallback listener) {
+    _unreadMessagesListeners.remove(listener);
+  }
+
+  void _notifyUnreadMessagesListeners() {
+    for (var listener in _unreadMessagesListeners) {
       listener();
     }
   }
