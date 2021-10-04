@@ -56,6 +56,9 @@ class ChatController {
   void dispose() {
     dispatch.removeListener(channel);
     _receivedMessageListeners.clear();
+    _messageUpdatedListeners.clear();
+    _unreadMessagesListeners.clear();
+    _connectionStatusListeners.clear();
   }
 
   void _handleServerMessage(SerializableEntity serverMessage) {
