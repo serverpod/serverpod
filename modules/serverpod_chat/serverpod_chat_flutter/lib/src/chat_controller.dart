@@ -34,6 +34,7 @@ class ChatController {
   final _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
   final _messageUpdatedListeners = <VoidCallback>{};
   final _unreadMessagesListeners = <VoidCallback>{};
+  final _connectionStatusListeners = <VoidCallback>{};
 
   double scrollOffset = 0;
   bool scrollAtBottom = true;
@@ -91,10 +92,12 @@ class ChatController {
       _lastReadMessage = serverMessage.lastReadMessageId;
       _joinedChannel = true;
       _updateUnreadMessages();
+      _notifyConnectionStatusListener();
     }
     else if (serverMessage is ChatJoinChannelFailed) {
       _joinFailed = true;
       _joinFailedReason = serverMessage.reason;
+      _notifyConnectionStatusListener();
     }
   }
 
@@ -228,6 +231,24 @@ class ChatController {
 
   void _notifyUnreadMessagesListeners() {
     for (var listener in _unreadMessagesListeners) {
+      listener();
+    }
+  }
+  
+  // Listeners for connection status
+
+  void addConnectionStatusListener(VoidCallback listener) {
+    print('addConnectionStatusListener');
+    _connectionStatusListeners.add(listener);
+  }
+
+  void removeConnectionStatusListener(VoidCallback listener) {
+    _connectionStatusListeners.remove(listener);
+  }
+
+  void _notifyConnectionStatusListener() {
+    for (var listener in _connectionStatusListeners) {
+      print('notifying connection listener');
       listener();
     }
   }
