@@ -9,6 +9,7 @@ import 'serverpod_client_exception.dart';
 
 /// Method called when errors occur in communication with the server.
 typedef ServerpodClientErrorCallback = void Function(dynamic e, StackTrace stackTrace);
+typedef VoidCallback = void Function();
 
 /// Superclass with shared methods for handling communication with the server.
 /// It's overridden i two different versions depending on if the dart:io library
@@ -18,6 +19,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
   final String host;
 
   WebSocketChannel? _webSocket;
+
+  final List<VoidCallback> _websocketConnectionStatusListeners = [];
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
@@ -147,15 +150,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
     catch(e) {
       _webSocket = null;
     }
+    _notifyWebSocketConnectionStatusListeners();
   }
 
   Future<void> reconnectWebSocket() async {
     if (_webSocket == null)
       return;
 
-    _webSocket?.sink.close();
+    await _webSocket?.sink.close();
     _webSocket = null;
-    connectWebSocket();
+    await connectWebSocket();
   }
 
   Future<void> _listenToWebSocketStream() async {
@@ -172,6 +176,25 @@ abstract class ServerpodClientShared extends EndpointCaller {
       print('WS read error: $e\n$stackTrace');
       _webSocket = null;
     }
+    _notifyWebSocketConnectionStatusListeners();
+  }
+
+  void addWebSocketConnectionStatusListener(VoidCallback listener) {
+    _websocketConnectionStatusListeners.add(listener);
+  }
+
+  void removeWebSocketConnectionStatusListener(VoidCallback listener) {
+    _websocketConnectionStatusListeners.remove(listener);
+  }
+
+  void _notifyWebSocketConnectionStatusListeners() {
+    for (var listener in _websocketConnectionStatusListeners) {
+      listener();
+    }
+  }
+
+  bool get isWebSocketConnected {
+    return _webSocket != null;
   }
 }
 
