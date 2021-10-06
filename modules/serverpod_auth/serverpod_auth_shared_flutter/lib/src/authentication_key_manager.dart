@@ -9,11 +9,14 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   bool _initialized = false;
   String? _authenticationKey;
 
+  final String runMode;
+  FlutterAuthenticationKeyManager({this.runMode='production'});
+
   @override
   Future<String?> get() async {
     if (!_initialized) {
       var prefs = await SharedPreferences.getInstance();
-      _authenticationKey = prefs.getString(_prefsKey);
+      _authenticationKey = prefs.getString(_prefsKey + '_$runMode');
       _initialized = true;
     }
     return _authenticationKey;
@@ -23,6 +26,6 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   Future<void> put(String key) async {
     _authenticationKey = key;
     var prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsKey, key);
+    await prefs.setString(_prefsKey + '_$runMode', key);
   }
 }

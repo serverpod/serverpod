@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
@@ -21,7 +22,7 @@ class SessionManager with ChangeNotifier {
   Caller caller;
 
   /// The key manager, holding the key's of the user, if signed in.
-  late AuthenticationKeyManager keyManager;
+  late FlutterAuthenticationKeyManager keyManager;
 
   /// Creates a new session manager.
   SessionManager({
@@ -29,7 +30,7 @@ class SessionManager with ChangeNotifier {
   }) {
     _instance = this;
     assert(caller.client.authenticationKeyManager != null, 'The client needs an associated key manager');
-    keyManager = caller.client.authenticationKeyManager!;
+    keyManager = caller.client.authenticationKeyManager! as FlutterAuthenticationKeyManager;
   }
 
   /// Returns a singleton instance of the session manager
@@ -96,7 +97,7 @@ class SessionManager with ChangeNotifier {
   Future<void> _loadSharedPrefs() async {
     var prefs = await SharedPreferences.getInstance();
 
-    var json = prefs.getString(_prefsKey);
+    var json = prefs.getString(_prefsKey + '_' + keyManager.runMode);
     if (json == null)
       return;
 
@@ -108,10 +109,10 @@ class SessionManager with ChangeNotifier {
     var prefs = await SharedPreferences.getInstance();
 
     if (signedInUser == null) {
-      await prefs.remove(_prefsKey);
+      await prefs.remove(_prefsKey + '_' + keyManager.runMode);
     }
     else {
-      await prefs.setString(_prefsKey, jsonEncode(signedInUser!.serialize()));
+      await prefs.setString(_prefsKey + '_' + keyManager.runMode, jsonEncode(signedInUser!.serialize()));
     }
   }
 
