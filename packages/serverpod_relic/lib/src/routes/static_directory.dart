@@ -7,9 +7,10 @@ import '../web_server.dart';
 class RouteStaticDirectory extends Route {
   /// The path to the directory to serve relative to the web/ directory.
   final String serverDirectory;
+  final String? basePath;
 
   /// Creates a static directory with the [serverDirectory] as its root.
-  RouteStaticDirectory({required this.serverDirectory});
+  RouteStaticDirectory({required this.serverDirectory, this.basePath});
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
@@ -30,7 +31,21 @@ class RouteStaticDirectory extends Route {
       }
       base = baseParts.join('@');
 
-      path = dir + '/' + base + extension;
+      if (basePath != null && path.startsWith(basePath!)) {
+        var requestDir = p.dirname(path);
+        var middlePath = requestDir.substring(basePath!.length);
+        print('middlePath: $middlePath');
+
+        if (middlePath.isNotEmpty) {
+          path = dir + '/' + middlePath + '/' + base + extension;
+        }
+        else {
+          path = dir + '/' + base + extension;
+        }
+      }
+      else {
+        path = dir + '/' + base + extension;
+      }
 
       // TODO: Correctly set headers for more types
       extension = extension.toLowerCase();
