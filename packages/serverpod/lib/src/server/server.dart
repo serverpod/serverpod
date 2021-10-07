@@ -207,6 +207,7 @@ class Server {
     }
     else if (uri.path == '/websocket') {
       var webSocket =  await WebSocketTransformer.upgrade(request);
+      webSocket.pingInterval = Duration(minutes: 1);
       unawaited(_handleWebsocket(webSocket, request));
       return;
     }
@@ -324,25 +325,16 @@ class Server {
         webSocket: webSocket,
       );
 
+      for (var endpointConnector in endpoints.connectors.values) {
+        await _callStreamOpened(session, endpointConnector.endpoint);
+      }
+      for (var module in endpoints.modules.values) {
+        for (var endpointConnector in module.connectors.values)
+          await _callStreamOpened(session, endpointConnector.endpoint);
+      }
+
       try {
-        try {
-          // Notify all streaming endpoints that the stream has started.
-          for (var endpointConnector in endpoints.connectors.values) {
-            await endpointConnector.endpoint.streamOpened(session);
-          }
-          for (var module in endpoints.modules.values) {
-            for (var endpointConnector in module.connectors.values)
-              await endpointConnector.endpoint.streamOpened(session);
-          }
-        }
-        catch(e) {
-          print('Failed to setup stream');
-          // TODO: Logging
-        }
-
         await for (String jsonData in webSocket) {
-          print('got jsonData');
-
           var data = jsonDecode(jsonData) as Map;
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map;
@@ -359,31 +351,52 @@ class Server {
           if (authFailed == null)
             await endpointConnector.endpoint.handleStreamMessage(session, message);
         }
+        print('END STREAM');
       }
       catch(e, stackTrace) {
-        print('WS exception: $e');
+        print('END STREAM with exception: $e');
         print('$stackTrace');
       }
 
-      try {
-        // Notify all streaming endpoints that the stream has ended.
-        for (var endpointConnector in endpoints.connectors.values) {
-          await endpointConnector.endpoint.streamClosed(session);
-        }
-        for (var module in endpoints.modules.values) {
-          for (var endpointConnector in module.connectors.values)
-            await endpointConnector.endpoint.streamClosed(session);
-        }
+      // TODO: Possibly keep a list of open streams instead
+      for (var endpointConnector in endpoints.connectors.values) {
+        await _callStreamClosed(session, endpointConnector.endpoint);
       }
-      catch(e) {
-        print('Failed to setup stream');
-        // TODO: Logging
+      for (var module in endpoints.modules.values) {
+        for (var endpointConnector in module.connectors.values)
+          await _callStreamClosed(session, endpointConnector.endpoint);
       }
     }
     catch(e, stackTrace) {
       print('$e');
       print('$stackTrace');
       return;
+    }
+  }
+
+  Future<void> _callStreamOpened(StreamingSession session, Endpoint endpoint) async {
+    try {
+      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      if (authFailed == null)
+        await endpoint.streamOpened(session);
+    }
+    catch (e, stackTrace) {
+      print('Failed to call streamOpened');
+      print('$e');
+      print('$stackTrace');
+    }
+  }
+
+  Future<void> _callStreamClosed(StreamingSession session, Endpoint endpoint) async {
+    try {
+      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      if (authFailed == null)
+        await endpoint.streamClosed(session);
+    }
+    catch (e, stackTrace) {
+      print('Failed to call streamOpened');
+      print('$e');
+      print('$stackTrace');
     }
   }
 

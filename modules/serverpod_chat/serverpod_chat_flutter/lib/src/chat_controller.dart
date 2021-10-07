@@ -147,7 +147,6 @@ class ChatController {
 
     if (messageId > _lastReadMessage) {
       _lastReadMessage = messageId;
-      print('TODO: Update server on last read message: $messageId');
       module.chat.sendStreamMessage(
         ChatReadMessage(
           channel: channel,
@@ -161,10 +160,8 @@ class ChatController {
 
   bool _unreadMessagesLast = false;
   void _updateUnreadMessages() {
-    print('updateUnreadMessages last: $_unreadMessagesLast current: $hasUnreadMessages');
     var hasUnread = hasUnreadMessages;
     if (_unreadMessagesLast != hasUnread) {
-      print(' - notify listeners');
       _unreadMessagesLast = hasUnread;
       _notifyUnreadMessagesListeners();
     }
@@ -241,7 +238,6 @@ class ChatController {
   // Listeners for connection status
 
   void addConnectionStatusListener(VoidCallback listener) {
-    print('addConnectionStatusListener');
     _connectionStatusListeners.add(listener);
   }
 
@@ -251,7 +247,6 @@ class ChatController {
 
   void _notifyConnectionStatusListener() {
     for (var listener in _connectionStatusListeners) {
-      print('notifying connection listener');
       listener();
     }
   }

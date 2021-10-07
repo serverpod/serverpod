@@ -15,7 +15,8 @@ class ChatEndpoint extends Endpoint {
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    print('streamOpened');
+    print('streamOpened (chat) authenticatedUserId: ${await session.auth.authenticatedUserId}');
+
     setUserObject(session, ChatSessionInfo(
       userInfo: await Users.findUserByUserId(session, (await session.auth.authenticatedUserId)!),
     ));
@@ -23,21 +24,17 @@ class ChatEndpoint extends Endpoint {
 
   @override
   Future<void> handleStreamMessage(StreamingSession session, SerializableEntity message) async {
-    print('handleStreamMessage ${message.runtimeType}');
     var chatSession = getUserObject(session) as ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
-      print('Join channel: ${message.channel}');
       // Check if user is allowed to access this channel
       if (!await ChatConfig.current.channelAccessVerification(session, (await session.auth.authenticatedUserId)!, message.channel)) {
-        print(' - Access denied');
         await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'Access denied'));
         return;
       }
 
       // Setup a listener that passes on messages from the subscribed channel
       var messageListener = (SerializableEntity message) {
-        print('passing on message');
         sendStreamMessage(session, message);
       };
       session.messages.addListener(_channelPrefix + message.channel, messageListener);
@@ -65,11 +62,8 @@ class ChatEndpoint extends Endpoint {
     else if (message is ChatMessagePost) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
-        print('Got message, but client is not subscribed to channel: ${message.channel}');
         return;
       }
-
-      print('Got message');
 
       // Write the message to the database, then pass it on to this and other clients.
       var chatMessage = ChatMessage(
@@ -153,7 +147,6 @@ class ChatEndpoint extends Endpoint {
   }
 
   Future<void> _setLastReadMessage(Session session, String channel, int userId, int lastReadMessageId) async {
-    print('setLastReadMessage channel: $channel user: $userId message: $lastReadMessageId');
     var readMessageRow = (await session.db.findSingleRow(
       tChatReadMessage,
       where: tChatReadMessage.channel.equals(channel) & tChatReadMessage.userId.equals(userId),
