@@ -316,7 +316,6 @@ class Server {
   }
 
   Future<void> _handleWebsocket(WebSocket webSocket, HttpRequest request) async {
-    print('_handleWebSocket');
     try {
       var session = StreamingSession(
         server: this,

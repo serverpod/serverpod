@@ -31,7 +31,10 @@ class ChatController {
 
   int _clientMessageId = 0;
 
+  bool _postedMessageChunkRequest = false;
+
   final _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
+  final _receivedMessageChunkListeners = <VoidCallback>{};
   final _messageUpdatedListeners = <VoidCallback>{};
   final _unreadMessagesListeners = <VoidCallback>{};
   final _connectionStatusListeners = <VoidCallback>{};
@@ -88,6 +91,12 @@ class ChatController {
       }
 
       _updateUnreadMessages();
+    }
+    else if (serverMessage is ChatMessageChunk) {
+      _hasOlderMessages = serverMessage.hasOlderMessages;
+      messages.insertAll(0, serverMessage.messages);
+      _postedMessageChunkRequest = false;
+      _notifyReceivedMessageChunkListeners();
     }
     else if (serverMessage is ChatJoinedChannel) {
       messages.addAll(serverMessage.initialMessageChunk.messages);
@@ -187,6 +196,21 @@ class ChatController {
     return lastMessageId != _lastReadMessage;
   }
 
+  void requestNextMessageChunk() {
+    if (!_hasOlderMessages || !sessionManager.isSignedIn || messages.isEmpty || _postedMessageChunkRequest) {
+      return;
+    }
+    _postedMessageChunkRequest = true;
+
+    var messageId = messages[0].id;
+    if (messageId == null) {
+      return;
+    }
+
+    var request = ChatRequestMessageChunk(channel: channel, lastMessageId: messageId);
+    dispatch.postRequestMessageChunk(request);
+  }
+
   // Listeners for received messages
 
   void addMessageReceivedListener(ChatControllerReceivedMessageCallback listener) {
@@ -215,6 +239,22 @@ class ChatController {
 
   void _notifyMessageUpdatedListeners() {
     for (var listener in _messageUpdatedListeners) {
+      listener();
+    }
+  }
+
+  // Listeners for recevied message chunks
+
+  void addReceivedMessageChunkListener(VoidCallback listener) {
+    _receivedMessageChunkListeners.add(listener);
+  }
+
+  void removeReceivedMessageChunkListener(VoidCallback listener) {
+    _receivedMessageChunkListeners.remove(listener);
+  }
+
+  void _notifyReceivedMessageChunkListeners() {
+    for (var listener in _receivedMessageChunkListeners) {
       listener();
     }
   }

@@ -7,16 +7,14 @@ import '../business/config.dart';
 
 class ChatEndpoint extends Endpoint {
   static const _channelPrefix = 'serverpod_chat.';
-  static const _initialMessageChunkSize = 20;
-  static const _messageChunkSize = 100;
+  static const _initialMessageChunkSize = 25;
+  static const _messageChunkSize = 50;
 
   @override
   bool get requireLogin => true;
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    print('streamOpened (chat) authenticatedUserId: ${await session.auth.authenticatedUserId}');
-
     setUserObject(session, ChatSessionInfo(
       userInfo: await Users.findUserByUserId(session, (await session.auth.authenticatedUserId)!),
     ));
@@ -83,6 +81,11 @@ class ChatEndpoint extends Endpoint {
       session.messages.postMessage(_channelPrefix + message.channel, chatMessage);
     }
     else if (message is ChatReadMessage) {
+      // Check that the message is in a channel we're subscribed to
+      if (!chatSession.messageListeners.containsKey(message.channel)) {
+        return;
+      }
+
       // Store last read message.
       await _setLastReadMessage(
         session,
@@ -91,6 +94,15 @@ class ChatEndpoint extends Endpoint {
         message.lastReadMessageId,
       );
     }
+    else if (message is ChatRequestMessageChunk) {
+      // Check that the message is in a channel we're subscribed to
+      if (!chatSession.messageListeners.containsKey(message.channel)) {
+        return;
+      }
+
+      var chunk = await _fetchMessageChunk(session, message.channel, _messageChunkSize, message.lastMessageId);
+      await sendStreamMessage(session, chunk);
+    }
   }
 
   Future<ChatMessageChunk> _fetchMessageChunk(Session session, String channel, int size, [int? lastId]) async {
@@ -98,7 +110,7 @@ class ChatEndpoint extends Endpoint {
     if (lastId != null) {
       messages = (await session.db.find(
         tChatMessage,
-        where: (tChatMessage.channel.equals(channel)) & tChatMessage.id < lastId,
+        where: (tChatMessage.channel.equals(channel)) & (tChatMessage.id < lastId),
         orderBy: tChatMessage.id,
         orderDescending: true,
         limit: size + 1,
@@ -125,6 +137,7 @@ class ChatEndpoint extends Endpoint {
     }
 
     return ChatMessageChunk(
+      channel: channel,
       messages: messages.reversed.toList(),
       hasOlderMessages: hasOlderMessages,
     );

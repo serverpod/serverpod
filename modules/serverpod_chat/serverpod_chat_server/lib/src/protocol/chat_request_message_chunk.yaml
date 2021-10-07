@@ -1,0 +1,4 @@
+class: ChatRequestMessageChunk
+fields:
+  channel: String
+  lastMessageId: int

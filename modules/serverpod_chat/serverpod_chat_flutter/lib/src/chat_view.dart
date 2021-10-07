@@ -4,6 +4,8 @@ import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
 
+const _offsetForRequestingNextChunk = 100.0;
+
 typedef ChatTileBuilder = Widget Function(BuildContext context, ChatMessage message, ChatMessage? previous);
 
 class ChatView extends StatefulWidget {
@@ -38,6 +40,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
 
     widget.controller.addMessageReceivedListener(_handleNewChatMessage);
     widget.controller.addMessageUpdatedListener(_handleUpdatedChatMessage);
+    widget.controller.addReceivedMessageChunkListener(_handleNewMessageChunk);
 
     // Restore scroll
     _scrollController = ScrollController(
@@ -50,6 +53,13 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
       widget.controller.scrollAtBottom = _scrollController.offset == _scrollController.position.maxScrollExtent;
       if (widget.controller.scrollAtBottom) {
         widget.controller.markLastMessageRead();
+      }
+
+      if (_scrollController.offset < _offsetForRequestingNextChunk
+          && widget.controller.hasOlderMessages
+          && !_jumpToBottom
+          && _distanceToBottomBeforeMessageChunk == null) {
+        widget.controller.requestNextMessageChunk();
       }
     });
 
@@ -69,6 +79,7 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   void dispose() {
     widget.controller.removeMessageReceivedListener(_handleNewChatMessage);
     widget.controller.removeMessageUpdatedListener(_handleUpdatedChatMessage);
+    widget.controller.removeReceivedMessageChunkListener(_handleNewMessageChunk);
     _scrollController.dispose();
     _fadeInAnimation.dispose();
     super.dispose();
@@ -85,6 +96,17 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
 
   void _handleUpdatedChatMessage() {
     setState(() {});
+  }
+
+  double? _distanceToBottomBeforeMessageChunk;
+
+  void _handleNewMessageChunk() {
+    _distanceToBottomBeforeMessageChunk = _scrollController.position.maxScrollExtent - _scrollController.offset;
+    setState(() {});
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent - _distanceToBottomBeforeMessageChunk!);
+      _distanceToBottomBeforeMessageChunk = null;
+    });
   }
 
   void _fadeIn() {

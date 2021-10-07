@@ -1,4 +1,5 @@
 class: ChatMessageChunk
 fields:
+  channel: String
   messages: List<ChatMessage>
   hasOlderMessages: bool

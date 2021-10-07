@@ -39,6 +39,9 @@ class ChatDispatch {
       else if (message is ChatJoinChannelFailed) {
         _routeMessageToChannel(message.channel, message);
       }
+      else if (message is ChatMessageChunk) {
+        _routeMessageToChannel(message.channel, message);
+      }
     }
   }
 
@@ -51,5 +54,9 @@ class ChatDispatch {
 
   Future<void> postMessage(ChatMessagePost message) async {
     await caller.chat.sendStreamMessage(message);
+  }
+
+  Future<void> postRequestMessageChunk(ChatRequestMessageChunk chunkRequest) async {
+    await caller.chat.sendStreamMessage(chunkRequest);
   }
 }

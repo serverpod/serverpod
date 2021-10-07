@@ -9,28 +9,25 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class ChatMessageChunk extends SerializableEntity {
+class ChatRequestMessageChunk extends SerializableEntity {
   @override
-  String get className => 'serverpod_chat_server.ChatMessageChunk';
+  String get className => 'serverpod_chat_server.ChatRequestMessageChunk';
 
   int? id;
   late String channel;
-  late List<ChatMessage> messages;
-  late bool hasOlderMessages;
+  late int lastMessageId;
 
-  ChatMessageChunk({
+  ChatRequestMessageChunk({
     this.id,
     required this.channel,
-    required this.messages,
-    required this.hasOlderMessages,
+    required this.lastMessageId,
 });
 
-  ChatMessageChunk.fromSerialization(Map<String, dynamic> serialization) {
+  ChatRequestMessageChunk.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
-    messages = _data['messages']!.map<ChatMessage>((a) => ChatMessage.fromSerialization(a))?.toList();
-    hasOlderMessages = _data['hasOlderMessages']!;
+    lastMessageId = _data['lastMessageId']!;
   }
 
   @override
@@ -38,8 +35,7 @@ class ChatMessageChunk extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'messages': messages.map((ChatMessage a) => a.serialize()).toList(),
-      'hasOlderMessages': hasOlderMessages,
+      'lastMessageId': lastMessageId,
     });
   }
 
@@ -48,8 +44,7 @@ class ChatMessageChunk extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'messages': messages.map((ChatMessage a) => a.serialize()).toList(),
-      'hasOlderMessages': hasOlderMessages,
+      'lastMessageId': lastMessageId,
     });
   }
 }
