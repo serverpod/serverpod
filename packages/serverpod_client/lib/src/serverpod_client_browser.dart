@@ -31,9 +31,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   Future<Null> _initialize() async {
-    if (authenticationKeyManager != null)
-      _authorizationKey = await authenticationKeyManager!.get();
-
     _initialized = true;
   }
 
@@ -44,7 +41,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
     String? data;
     try {
-      var body = formatArgs(args, _authorizationKey, method);
+      var body = formatArgs(args, await authenticationKeyManager?.get(), method);
       var url = Uri.parse('$host$endpoint');
 
       var response = await _httpClient.post(
@@ -63,7 +60,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
     catch(e, stackTrace) {
       if (e is http.ClientException) {
         print('Failed call: $endpoint.$method');
-        var message = data ?? 'Likely internal server error.';
+        var message = data ?? 'Likely internal server error or permission denied.';
         print(message);
         throw(ServerpodClientException(message, 500));
       }

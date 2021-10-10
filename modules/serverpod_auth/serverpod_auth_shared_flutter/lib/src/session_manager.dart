@@ -70,8 +70,9 @@ class SessionManager with ChangeNotifier {
 
     try {
       await caller.status.signOut();
-      caller.client.reconnectWebSocket();
+      await caller.client.reconnectWebSocket();
       signedInUser = null;
+      await keyManager.remove();
       notifyListeners();
       return true;
     }
