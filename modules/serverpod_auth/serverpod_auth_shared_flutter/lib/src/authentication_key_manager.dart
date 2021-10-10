@@ -28,4 +28,11 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsKey + '_$runMode', key);
   }
+
+  @override
+  Future<void> remove() async {
+    _authenticationKey = null;
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefsKey + '_$runMode');
+  }
 }

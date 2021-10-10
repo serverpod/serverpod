@@ -5,4 +5,7 @@ abstract class AuthenticationKeyManager {
 
   /// Saves an authentication key retrieved by the server.
   Future<void> put(String key);
+
+  /// Removes the authentication key.
+  Future<void> remove();
 }
