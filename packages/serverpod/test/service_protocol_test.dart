@@ -209,4 +209,8 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   @override
   Future<Null> put(String key) async {
   }
+
+  @override
+  Future<void> remove() async {;
+  }
 }

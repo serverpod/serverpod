@@ -69,4 +69,9 @@ class TestAuthKeyManager extends AuthenticationKeyManager {
   Future<void> put(String key) async {
     _key = key;
   }
+
+  @override
+  Future<void> remove() async {
+    _key = null;
+  }
 }
