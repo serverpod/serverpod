@@ -70,6 +70,10 @@ class RouteStaticDirectory extends Route {
       else if (extension == '.woff') {
         request.response.headers.contentType = ContentType('application', 'x-font-woff');
       }
+      else if (extension == '.mp3') {
+        print('.mp3');
+        request.response.headers.contentType = ContentType('audio', 'mpeg');
+      }
 
       // Enforce strong cache control
       request.response.headers.set('Cache-Control', 'max-age=31536000');
