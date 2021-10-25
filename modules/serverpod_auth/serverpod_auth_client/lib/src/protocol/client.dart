@@ -34,6 +34,13 @@ class _EndpointEmail extends EndpointRef {
       'password':password,
     });
   }
+
+  Future<bool> changePassword(String oldPassword,String newPassword,) async {
+    return await caller.callServerEndpoint('serverpod_auth.email', 'changePassword', 'bool', {
+      'oldPassword':oldPassword,
+      'newPassword':newPassword,
+    });
+  }
 }
 
 class _EndpointGoogle extends EndpointRef {
@@ -63,6 +70,12 @@ class _EndpointUser extends EndpointRef {
   Future<bool> setUserImage(typed_data.ByteData image,) async {
     return await caller.callServerEndpoint('serverpod_auth.user', 'setUserImage', 'bool', {
       'image':image,
+    });
+  }
+
+  Future<bool> changeUserName(String userName,) async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'changeUserName', 'bool', {
+      'userName':userName,
     });
   }
 }

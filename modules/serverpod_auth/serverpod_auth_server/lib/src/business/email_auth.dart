@@ -40,4 +40,22 @@ class Emails {
     print('returning created user');
     return createdUser;
   }
+
+  static Future<bool> changePassword(Session session, int userId, String oldPassword, String newPassword) async {
+    var auth = session.db.findSingleRow(tEmailAuth, where: tEmailAuth.userId.equals(userId)) as EmailAuth?;
+    if (auth == null) {
+      return false;
+    }
+
+    // Check old password
+    if (auth.hash != generatePasswordHash(oldPassword)) {
+      return false;
+    }
+
+    // Update password
+    auth.hash = generatePasswordHash(newPassword);
+    await session.db.update(auth);
+
+    return true;
+  }
 }

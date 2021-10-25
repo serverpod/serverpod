@@ -2,11 +2,13 @@ apple:
   - authenticate:
 email:
   - authenticate:
+  - changePassword:
 google:
   - authenticate:
 user:
   - removeUserImage:
   - setUserImage:
+  - changeUserName:
 status:
   - isSignedIn:
   - signOut:

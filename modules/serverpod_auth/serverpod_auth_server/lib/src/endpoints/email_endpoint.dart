@@ -54,4 +54,12 @@ class EmailEndpoint extends Endpoint {
       keyId: auth.id,
     );
   }
+
+  Future<bool> changePassword(Session session, String oldPassword, String newPassword) async {
+    var userId = await session.auth.authenticatedUserId;
+    if (userId == null)
+      return false;
+
+    return Emails.changePassword(session, userId, oldPassword, newPassword);
+  }
 }

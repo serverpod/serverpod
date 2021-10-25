@@ -56,4 +56,19 @@ class Users {
 
     return userInfo;
   }
+
+  static Future<UserInfo?> changeUserName(Session session, String userName) async {
+    var userId = await session.auth.authenticatedUserId;
+    if (userId == null)
+      return null;
+
+    var userInfo = await findUserByUserId(session, userId );
+    if (userInfo == null)
+      return null;
+
+    userInfo.userName = userName;
+    await session.db.update(userInfo);
+
+    return userInfo;
+  }
 }

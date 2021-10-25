@@ -56,6 +56,16 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['email'] as EmailEndpoint).authenticate(session,params['email'],params['password'],);
           },
         ),
+        'changePassword': MethodConnector(
+          name: 'changePassword',
+          params: {
+            'oldPassword': ParameterDescription(name: 'oldPassword', type: String, nullable: false),
+            'newPassword': ParameterDescription(name: 'newPassword', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['email'] as EmailEndpoint).changePassword(session,params['oldPassword'],params['newPassword'],);
+          },
+        ),
       },
     );
 
@@ -94,6 +104,15 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['user'] as UserEndpoint).setUserImage(session,params['image'],);
+          },
+        ),
+        'changeUserName': MethodConnector(
+          name: 'changeUserName',
+          params: {
+            'userName': ParameterDescription(name: 'userName', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).changeUserName(session,params['userName'],);
           },
         ),
       },

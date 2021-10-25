@@ -7,6 +7,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_shared_flutter/src/image_uploader.dart';
 
 import 'session_manager.dart';
 import 'circular_user_image.dart';
@@ -104,52 +105,57 @@ class _UserImageButtonState extends State<UserImageButton> {
   }
 
   Future<void> _updateUserImage() async {
-    var imageSize = 256;
-
-    var toolbarColor = Theme.of(context).primaryColor;
-    var toolbarWidgetColor = Theme.of(context).buttonTheme.colorScheme?.onPrimary ?? Colors.white;
-
-    final picker = ImagePicker();
-    // Pick an image
-    var imageFile = await picker.pickImage(source: ImageSource.gallery);
-    if (imageFile == null)
-      return;
-
-    // Crop the image
-    var croppedImageFile = await ImageCropper.cropImage(
-      sourcePath: imageFile.path,
-      maxHeight: imageSize,
-      maxWidth: imageSize,
-      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
-      cropStyle: CropStyle.circle,
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: toolbarColor,
-          toolbarWidgetColor: toolbarWidgetColor,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false),
-      iosUiSettings: IOSUiSettings(
-        minimumAspectRatio: 1.0,
-      ),
+    await ImageUploader.updateUserImage(
+      context: context,
+      sessionManager: widget.sessionManager,
     );
-
-    if (croppedImageFile == null)
-      return;
-
-    // Load and resize
-    var image = img.decodeImage(await croppedImageFile.readAsBytes());
-    if (image == null)
-      return;
-
-    if (image.width != imageSize || image.height != imageSize);
-    image = img.copyResize(image, width: imageSize, height: imageSize);
-
-    // Encode as png
-    var encoded = img.encodePng(image);
-    var bytes = Uint8List.fromList(encoded);
-    var data = ByteData.view(bytes.buffer);
-
-    // Upload the image to the server
-    await widget.sessionManager.uploadUserImage(data);
+    //
+    // var imageSize = 256;
+    //
+    // var toolbarColor = Theme.of(context).primaryColor;
+    // var toolbarWidgetColor = Theme.of(context).buttonTheme.colorScheme?.onPrimary ?? Colors.white;
+    //
+    // final picker = ImagePicker();
+    // // Pick an image
+    // var imageFile = await picker.pickImage(source: ImageSource.gallery);
+    // if (imageFile == null)
+    //   return;
+    //
+    // // Crop the image
+    // var croppedImageFile = await ImageCropper.cropImage(
+    //   sourcePath: imageFile.path,
+    //   maxHeight: imageSize,
+    //   maxWidth: imageSize,
+    //   aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+    //   cropStyle: CropStyle.circle,
+    //   androidUiSettings: AndroidUiSettings(
+    //       toolbarTitle: 'Cropper',
+    //       toolbarColor: toolbarColor,
+    //       toolbarWidgetColor: toolbarWidgetColor,
+    //       initAspectRatio: CropAspectRatioPreset.original,
+    //       lockAspectRatio: false),
+    //   iosUiSettings: IOSUiSettings(
+    //     minimumAspectRatio: 1.0,
+    //   ),
+    // );
+    //
+    // if (croppedImageFile == null)
+    //   return;
+    //
+    // // Load and resize
+    // var image = img.decodeImage(await croppedImageFile.readAsBytes());
+    // if (image == null)
+    //   return;
+    //
+    // if (image.width != imageSize || image.height != imageSize);
+    // image = img.copyResize(image, width: imageSize, height: imageSize);
+    //
+    // // Encode as png
+    // var encoded = img.encodePng(image);
+    // var bytes = Uint8List.fromList(encoded);
+    // var data = ByteData.view(bytes.buffer);
+    //
+    // // Upload the image to the server
+    // await widget.sessionManager.uploadUserImage(data);
   }
 }
