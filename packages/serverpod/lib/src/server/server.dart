@@ -393,7 +393,7 @@ class Server {
         await endpoint.streamClosed(session);
     }
     catch (e, stackTrace) {
-      print('Failed to call streamOpened');
+      print('Failed to call streamClosed');
       print('$e');
       print('$stackTrace');
     }
