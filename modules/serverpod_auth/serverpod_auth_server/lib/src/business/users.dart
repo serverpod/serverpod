@@ -62,12 +62,15 @@ class Users {
     if (userId == null)
       return null;
 
-    var userInfo = await findUserByUserId(session, userId );
+    var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null)
       return null;
 
     userInfo.userName = userName;
     await session.db.update(userInfo);
+
+    if (AuthConfig.current.userInfoUpdateListener != null)
+      await AuthConfig.current.userInfoUpdateListener!(session, userInfo);
 
     return userInfo;
   }

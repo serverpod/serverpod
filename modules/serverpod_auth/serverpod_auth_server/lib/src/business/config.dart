@@ -1,4 +1,5 @@
 import 'package:image/image.dart';
+import 'package:serverpod/server.dart';
 import 'package:serverpod_auth_server/module.dart';
 
 import 'user_images.dart';
@@ -15,6 +16,8 @@ enum UserImageType {
 /// Generates a default user image (avatar) for a user that hasn't uploaded a
 /// user image.
 typedef UserImageGenerator = Future<Image> Function(UserInfo userInfo);
+
+typedef UserInfoUpdateCallback = Future<void> Function(Session session, UserInfo userInfo);
 
 /// Configuration options for the Auth module.
 class AuthConfig {
@@ -64,6 +67,8 @@ class AuthConfig {
 
   final Duration userInfoCacheLifetime;
 
+  final UserInfoUpdateCallback? userInfoUpdateListener;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings.
   AuthConfig({
@@ -79,5 +84,6 @@ class AuthConfig {
     this.userCanSeeUserName = true,
     this.userCanSeeFullName = true,
     this.userInfoCacheLifetime = const Duration(minutes: 1),
+    this.userInfoUpdateListener,
   });
 }

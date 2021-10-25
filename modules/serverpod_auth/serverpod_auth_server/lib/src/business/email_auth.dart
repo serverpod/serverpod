@@ -42,7 +42,7 @@ class Emails {
   }
 
   static Future<bool> changePassword(Session session, int userId, String oldPassword, String newPassword) async {
-    var auth = session.db.findSingleRow(tEmailAuth, where: tEmailAuth.userId.equals(userId)) as EmailAuth?;
+    var auth = (await session.db.findSingleRow(tEmailAuth, where: tEmailAuth.userId.equals(userId))) as EmailAuth?;
     if (auth == null) {
       return false;
     }

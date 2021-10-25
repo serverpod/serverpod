@@ -91,11 +91,15 @@ class UserImages {
     await session.db.insert(imageRef);
 
     // Update the UserInfo with the new image path.
-    var user = await Users.findUserByUserId(session, userId);
-    if (user == null)
+    var userInfo = await Users.findUserByUserId(session, userId, useCache: false);
+    if (userInfo == null)
       return false;
-    user.imageUrl = publicUrl.toString();
-    await session.db.update(user);
+    userInfo.imageUrl = publicUrl.toString();
+    await session.db.update(userInfo);
+
+    if (AuthConfig.current.userInfoUpdateListener != null) {
+      await AuthConfig.current.userInfoUpdateListener!(session, userInfo);
+    }
     
     return true;
   }
