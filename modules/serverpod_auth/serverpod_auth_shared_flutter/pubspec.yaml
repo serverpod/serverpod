@@ -23,7 +23,7 @@ dependencies:
   image_cropper: ^1.4.1
 
   # See https://pub.dev/packages/image_picker for installation instructions.
-  image_picker: ^0.8.2
+  image_picker: ^0.8.4+3
 
 
 dev_dependencies:
