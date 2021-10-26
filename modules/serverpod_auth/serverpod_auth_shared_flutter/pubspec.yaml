@@ -18,6 +18,7 @@ dependencies:
   cached_network_image: ^3.1.0
   pedantic: ^1.11.0
   image: ^3.0.2
+  file_picker: ^4.1.6
 
   # See https://pub.dev/packages/image_cropper for installation instructions.
   image_cropper: ^1.4.1
