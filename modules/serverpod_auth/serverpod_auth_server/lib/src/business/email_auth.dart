@@ -36,6 +36,7 @@ class Emails {
     await session.db.insert(auth);
 
     await UserImages.setDefaultUserImage(session, createdUser.id!);
+    createdUser = await Users.findUserByUserId(session, createdUser.id!, useCache: false);
 
     print('returning created user');
     return createdUser;
