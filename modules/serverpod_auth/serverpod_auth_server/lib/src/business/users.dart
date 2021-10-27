@@ -74,4 +74,9 @@ class Users {
 
     return userInfo;
   }
+
+  static Future<void> invalidateCacheForUser(Session session, int userId) async {
+    final cacheKey = 'serverpod_auth_userinfo_$userId';
+    await session.caches.local.invalidateKey(cacheKey);
+  }
 }
