@@ -33,7 +33,7 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(Session session, String
 
     // Setup scopes
     var scopes = <Scope>{};
-    for (var scopeName in authKey.scopes) {
+    for (var scopeName in authKey.scopeNames) {
       scopes.add(Scope(scopeName));
     }
     return AuthenticationInfo(authKey.userId, scopes);

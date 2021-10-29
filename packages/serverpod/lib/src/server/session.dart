@@ -253,23 +253,23 @@ class UserAuthetication {
   /// before signing them in. Send the AuthKey.id and key to the client and
   /// use that to authenticate in future calls. In most cases, it's more
   /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method, {List<Scope> scopes = const []}) async {
+  Future<AuthKey> signInUser(int userId, String method, {Set<Scope> scopes = const {}}) async {
     var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
     var key = generateRandomString();
     var hash = hashString(signInSalt, key);
 
-    var scopeStrs = <String>[];
+    var scopeNames = <String>[];
     for (var scope in scopes) {
       if (scope.name != null)
-        scopeStrs.add(scope.name!);
+        scopeNames.add(scope.name!);
     }
 
     var authKey = AuthKey(
       userId: userId,
       hash: hash,
       key: key,
-      scopes: scopeStrs,
+      scopeNames: scopeNames,
       method: method,
     );
 

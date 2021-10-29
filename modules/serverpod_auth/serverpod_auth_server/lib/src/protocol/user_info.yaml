@@ -12,7 +12,7 @@ fields:
   email: String?
   created: DateTime
   imageUrl: String?
-  scopes: List<String>
+  scopeNames: List<String>
   active: bool
   blocked: bool
   suspendedUntil: DateTime?

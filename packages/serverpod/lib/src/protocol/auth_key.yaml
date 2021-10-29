@@ -4,7 +4,7 @@ fields:
   userId: int
   hash: String
   key: String?, api
-  scopes: List<String>
+  scopeNames: List<String>
   method: String
 indexes:
   serverpod_auth_key_userId_idx:

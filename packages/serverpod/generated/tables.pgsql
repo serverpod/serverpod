@@ -149,7 +149,7 @@ CREATE TABLE serverpod_auth_key (
   "id" serial,
   "userId" integer NOT NULL,
   "hash" text NOT NULL,
-  "scopes" json NOT NULL,
+  "scopeNames" json NOT NULL,
   "method" text NOT NULL
 );
 

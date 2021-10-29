@@ -76,7 +76,7 @@ class AppleEndpoint extends Endpoint {
         active: true,
         blocked: false,
         created: DateTime.now().toUtc(),
-        scopes: [],
+        scopeNames: [],
       );
       userInfo = await Users.createUser(session, userInfo);
     }

@@ -2,15 +2,12 @@
 // `serverpod generate` to produce the modules server and client code. Refer to
 // the documentation on how to add endpoints to your server.
 
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 
 import '../generated/protocol.dart';
 
-const _configFilePath = 'config/google_client_secret.json';
+// const _configFilePath = 'config/google_client_secret.json';
 
 /// Endpoint for handling Sign in with Google.
 class EmailEndpoint extends Endpoint {
@@ -43,7 +40,11 @@ class EmailEndpoint extends Endpoint {
     print(' - user found');
 
     // Sign in user and return user info
-    var auth = await session.auth.signInUser(entry.userId, 'email');
+    var auth = await session.auth.signInUser(
+      entry.userId,
+      'email',
+      scopes: userInfo.scopes,
+    );
 
     print(' - user signed in');
 

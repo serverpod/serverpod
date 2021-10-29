@@ -31,6 +31,10 @@ class UserEndpoint extends Endpoint {
     if (userName == '')
       return false;
 
-    return (await Users.changeUserName(session, userName)) != null;
+    var userId = await session.auth.authenticatedUserId;
+    if (userId == null)
+      return false;
+
+    return (await Users.changeUserName(session, userId, userName)) != null;
   }
 }

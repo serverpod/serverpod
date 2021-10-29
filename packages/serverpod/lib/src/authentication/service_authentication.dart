@@ -10,7 +10,7 @@ Future<AuthenticationInfo?> serviceAuthenticationHandler(Session session, String
     var secret = parts[1];
 
     if (secret == session.server.serverpod.config.serviceSecret) {
-      return AuthenticationInfo(0, <Scope>{scopeNone});
+      return AuthenticationInfo(0, <Scope>{Scope.none});
     }
   }
   catch(e) {

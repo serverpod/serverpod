@@ -17,7 +17,7 @@ class Emails {
       email: email,
       userName: userName,
       created: DateTime.now(),
-      scopes: [],
+      scopeNames: [],
       active: true,
       blocked: false,
     );

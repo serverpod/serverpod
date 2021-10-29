@@ -17,7 +17,7 @@ class AuthKey extends SerializableEntity {
   late int userId;
   late String hash;
   String? key;
-  late List<String> scopes;
+  late List<String> scopeNames;
   late String method;
 
   AuthKey({
@@ -25,7 +25,7 @@ class AuthKey extends SerializableEntity {
     required this.userId,
     required this.hash,
     this.key,
-    required this.scopes,
+    required this.scopeNames,
     required this.method,
 });
 
@@ -35,7 +35,7 @@ class AuthKey extends SerializableEntity {
     userId = _data['userId']!;
     hash = _data['hash']!;
     key = _data['key'];
-    scopes = _data['scopes']!.cast<String>();
+    scopeNames = _data['scopeNames']!.cast<String>();
     method = _data['method']!;
   }
 
@@ -46,7 +46,7 @@ class AuthKey extends SerializableEntity {
       'userId': userId,
       'hash': hash,
       'key': key,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'method': method,
     });
   }

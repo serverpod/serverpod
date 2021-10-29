@@ -30,7 +30,7 @@ abstract class Endpoint {
 
   /// List of [Scope]s that are required to access this [Endpoint]. Override
   /// this getter to setup custom requirements.
-  List<Scope> get requiredScopes => [];
+  Set<Scope> get requiredScopes => {};
 
   /// States if the [Endpoint] only should accept users that are authenticated.
   /// Default value is false, override to change.

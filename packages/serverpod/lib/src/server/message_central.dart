@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-typedef void MessageCentralListenerCallback(SerializableEntity message);
+typedef MessageCentralListenerCallback = void Function(SerializableEntity message);
 
 class MessageCentral {
   final _channels = <String, Set<MessageCentralListenerCallback>>{};

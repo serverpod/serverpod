@@ -21,7 +21,7 @@ class AuthKey extends TableRow {
   late int userId;
   late String hash;
   String? key;
-  late List<String> scopes;
+  late List<String> scopeNames;
   late String method;
 
   AuthKey({
@@ -29,7 +29,7 @@ class AuthKey extends TableRow {
     required this.userId,
     required this.hash,
     this.key,
-    required this.scopes,
+    required this.scopeNames,
     required this.method,
 });
 
@@ -39,7 +39,7 @@ class AuthKey extends TableRow {
     userId = _data['userId']!;
     hash = _data['hash']!;
     key = _data['key'];
-    scopes = _data['scopes']!.cast<String>();
+    scopeNames = _data['scopeNames']!.cast<String>();
     method = _data['method']!;
   }
 
@@ -50,7 +50,7 @@ class AuthKey extends TableRow {
       'userId': userId,
       'hash': hash,
       'key': key,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'method': method,
     });
   }
@@ -61,7 +61,7 @@ class AuthKey extends TableRow {
       'id': id,
       'userId': userId,
       'hash': hash,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'method': method,
     });
   }
@@ -73,7 +73,7 @@ class AuthKey extends TableRow {
       'userId': userId,
       'hash': hash,
       'key': key,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'method': method,
     });
   }
@@ -87,7 +87,7 @@ class AuthKeyTable extends Table {
   final id = ColumnInt('id');
   final userId = ColumnInt('userId');
   final hash = ColumnString('hash');
-  final scopes = ColumnSerializable('scopes');
+  final scopeNames = ColumnSerializable('scopeNames');
   final method = ColumnString('method');
 
   @override
@@ -95,7 +95,7 @@ class AuthKeyTable extends Table {
     id,
     userId,
     hash,
-    scopes,
+    scopeNames,
     method,
   ];
 }

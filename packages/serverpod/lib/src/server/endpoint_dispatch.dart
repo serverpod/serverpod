@@ -65,7 +65,7 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Endpoint $endpointName is not a valid endpoint name');
 
     // Find correct connector
-    EndpointConnector? connector = getConnectorByName(endpointName);
+    var connector = getConnectorByName(endpointName);
     if (connector == null)
       return ResultInvalidParams('Endpoint $endpointName does not exist');
 
@@ -89,8 +89,10 @@ abstract class EndpointDispatch {
 
     try {
       var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
-      if (authFailed != null)
+      if (authFailed != null) {
+        print('authFailed: ${authFailed.errorDescription}');
         return authFailed;
+      }
 
       var method = connector.methodConnectors[methodName];
       if (method == null) {

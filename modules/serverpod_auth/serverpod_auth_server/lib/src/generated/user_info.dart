@@ -24,7 +24,7 @@ class UserInfo extends TableRow {
   String? email;
   late DateTime created;
   String? imageUrl;
-  late List<String> scopes;
+  late List<String> scopeNames;
   late bool active;
   late bool blocked;
   DateTime? suspendedUntil;
@@ -37,7 +37,7 @@ class UserInfo extends TableRow {
     this.email,
     required this.created,
     this.imageUrl,
-    required this.scopes,
+    required this.scopeNames,
     required this.active,
     required this.blocked,
     this.suspendedUntil,
@@ -52,7 +52,7 @@ class UserInfo extends TableRow {
     email = _data['email'];
     created = DateTime.tryParse(_data['created'])!;
     imageUrl = _data['imageUrl'];
-    scopes = _data['scopes']!.cast<String>();
+    scopeNames = _data['scopeNames']!.cast<String>();
     active = _data['active']!;
     blocked = _data['blocked']!;
     suspendedUntil = _data['suspendedUntil'] != null ? DateTime.tryParse(_data['suspendedUntil']) : null;
@@ -68,7 +68,7 @@ class UserInfo extends TableRow {
       'email': email,
       'created': created.toUtc().toIso8601String(),
       'imageUrl': imageUrl,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
       'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
@@ -85,7 +85,7 @@ class UserInfo extends TableRow {
       'email': email,
       'created': created.toUtc().toIso8601String(),
       'imageUrl': imageUrl,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
       'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
@@ -102,7 +102,7 @@ class UserInfo extends TableRow {
       'email': email,
       'created': created.toUtc().toIso8601String(),
       'imageUrl': imageUrl,
-      'scopes': scopes,
+      'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
       'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
@@ -122,7 +122,7 @@ class UserInfoTable extends Table {
   final email = ColumnString('email');
   final created = ColumnDateTime('created');
   final imageUrl = ColumnString('imageUrl');
-  final scopes = ColumnSerializable('scopes');
+  final scopeNames = ColumnSerializable('scopeNames');
   final active = ColumnBool('active');
   final blocked = ColumnBool('blocked');
   final suspendedUntil = ColumnDateTime('suspendedUntil');
@@ -136,7 +136,7 @@ class UserInfoTable extends Table {
     email,
     created,
     imageUrl,
-    scopes,
+    scopeNames,
     active,
     blocked,
     suspendedUntil,

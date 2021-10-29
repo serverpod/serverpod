@@ -8,6 +8,7 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
+const _prefsVersion = 1;
 
 /// The [SessionManager] keeps track of and manages the signed-in state of the
 /// user. Use the [instance] method to get access to the singleton instance.
@@ -98,6 +99,10 @@ class SessionManager with ChangeNotifier {
   Future<void> _loadSharedPrefs() async {
     var prefs = await SharedPreferences.getInstance();
 
+    var version = prefs.getInt(_prefsKey + '_' + keyManager.runMode + '_version');
+    if (version != _prefsVersion)
+      return;
+
     var json = prefs.getString(_prefsKey + '_' + keyManager.runMode);
     if (json == null)
       return;
@@ -109,6 +114,7 @@ class SessionManager with ChangeNotifier {
   Future<void> _storeSharedPrefs() async {
     var prefs = await SharedPreferences.getInstance();
 
+    await prefs.setInt(_prefsKey + '_' + keyManager.runMode + '_version', _prefsVersion);
     if (signedInUser == null) {
       await prefs.remove(_prefsKey + '_' + keyManager.runMode);
     }

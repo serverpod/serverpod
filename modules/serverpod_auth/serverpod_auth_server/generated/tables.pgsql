@@ -10,7 +10,7 @@ CREATE TABLE serverpod_user_info (
   "email" text,
   "created" timestamp without time zone NOT NULL,
   "imageUrl" text,
-  "scopes" json NOT NULL,
+  "scopeNames" json NOT NULL,
   "active" boolean NOT NULL,
   "blocked" boolean NOT NULL,
   "suspendedUntil" timestamp without time zone
