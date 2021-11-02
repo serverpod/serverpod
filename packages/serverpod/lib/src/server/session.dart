@@ -282,8 +282,8 @@ class UserAuthetication {
 
   /// Signs out a user from the server and deletes all authentication keys.
   /// This means that the user will be signed out from all connected devices.
-  Future<void> signOutUser() async {
-    var userId = await authenticatedUserId;
+  Future<void> signOutUser({int? userId}) async {
+    userId ??= await authenticatedUserId;
     if (userId == null)
       return;
 
