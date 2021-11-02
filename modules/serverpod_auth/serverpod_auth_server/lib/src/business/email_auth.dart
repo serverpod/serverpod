@@ -12,35 +12,45 @@ class Emails {
   }
 
   static Future<UserInfo?> createUser(Session session, String userName, String email, String password) async {
-    var userInfo = UserInfo(
-      userIdentifier: email,
-      email: email,
-      userName: userName,
-      created: DateTime.now(),
-      scopeNames: [],
-      active: true,
-      blocked: false,
-    );
+    var userInfo = await Users.findUserByEmail(session, email);
 
-    print('creating user');
-    var createdUser = await Users.createUser(session, userInfo);
-    if (createdUser == null)
-      return null;
+    if (userInfo == null) {
+      userInfo = UserInfo(
+        userIdentifier: email,
+        email: email,
+        userName: userName,
+        created: DateTime.now(),
+        scopeNames: [],
+        active: true,
+        blocked: false,
+      );
+
+      print('creating user');
+      userInfo = await Users.createUser(session, userInfo);
+      if (userInfo == null)
+        return null;
+    }
+
+    // Check if there is email authentication in place already
+    var oldAuth = await session.db.findSingleRow(tEmailAuth, where: tEmailAuth.userId.equals(userInfo.id!));
+    if (oldAuth != null) {
+      return userInfo;
+    }
 
     print('creating email auth');
     var auth = EmailAuth(
-      userId: createdUser.id!,
+      userId: userInfo.id!,
       email: email,
       hash: generatePasswordHash(password),
     );
     await session.db.insert(auth);
 
-    await UserImages.setDefaultUserImage(session, createdUser.id!);
-    await Users.invalidateCacheForUser(session, createdUser.id!);
-    createdUser = await Users.findUserByUserId(session, createdUser.id!);
+    await UserImages.setDefaultUserImage(session, userInfo.id!);
+    await Users.invalidateCacheForUser(session, userInfo.id!);
+    userInfo = await Users.findUserByUserId(session, userInfo.id!);
 
     print('returning created user');
-    return createdUser;
+    return userInfo;
   }
 
   static Future<bool> changePassword(Session session, int userId, String oldPassword, String newPassword) async {
