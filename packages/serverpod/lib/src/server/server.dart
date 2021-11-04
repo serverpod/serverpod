@@ -183,6 +183,8 @@ class Server {
       return;
     }
 
+    var readBody = true;
+
     if (uri.path == '/') {
       // Perform health checks
       var checks = await performHealthChecks(serverpod);
@@ -211,6 +213,9 @@ class Server {
       unawaited(_handleWebsocket(webSocket, request));
       return;
     }
+    else if (uri.path == '/serverpod_cloud_storage') {
+      readBody = false;
+    }
 
     // TODO: Limit check external calls
 //    bool checkLength = true;
@@ -231,16 +236,22 @@ class Server {
 //    }
 
     String? body;
-    try {
-      body = await _readBody(request);
+    if (readBody) {
+      try {
+        body = await _readBody(request);
+      }
+      catch (e, stackTrace) {
+        stderr.writeln('${DateTime.now()
+            .toUtc()} Internal server error. Failed to read body of request.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+        request.response.statusCode = HttpStatus.badRequest;
+        await request.response.close();
+        return;
+      }
     }
-    catch (e, stackTrace) {
-      stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
+    else {
+      body = '';
     }
 
     var result = await _handleUriCall(uri, body!, request);

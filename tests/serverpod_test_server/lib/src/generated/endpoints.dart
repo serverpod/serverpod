@@ -51,6 +51,14 @@ class Endpoints extends EndpointDispatch {
       name: 'streaming',
       endpoint: endpoints['streaming']!,
       methodConnectors: {
+        'streamOpened': MethodConnector(
+          name: 'streamOpened',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['streaming'] as StreamingEndpoint).streamOpened(session,);
+          },
+        ),
       },
     );
 
@@ -58,6 +66,14 @@ class Endpoints extends EndpointDispatch {
       name: 'cloudStorage',
       endpoint: endpoints['cloudStorage']!,
       methodConnectors: {
+        'reset': MethodConnector(
+          name: 'reset',
+          params: {
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['cloudStorage'] as CloudStorageEndpoint).reset(session,);
+          },
+        ),
         'storePublicFile': MethodConnector(
           name: 'storePublicFile',
           params: {
@@ -102,6 +118,24 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cloudStorage'] as CloudStorageEndpoint).getPublicUrlForFile(session,params['path'],);
+          },
+        ),
+        'getDirectFilePostUrl': MethodConnector(
+          name: 'getDirectFilePostUrl',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['cloudStorage'] as CloudStorageEndpoint).getDirectFilePostUrl(session,params['path'],);
+          },
+        ),
+        'verifyDirectFileUpload': MethodConnector(
+          name: 'verifyDirectFileUpload',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['cloudStorage'] as CloudStorageEndpoint).verifyDirectFileUpload(session,params['path'],);
           },
         ),
       },

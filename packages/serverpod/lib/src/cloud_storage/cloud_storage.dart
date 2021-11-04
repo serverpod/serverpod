@@ -31,6 +31,7 @@ abstract class CloudStorage {
     required String path,
     required ByteData byteData,
     DateTime? expiration,
+    bool verified = true,
   });
 
   /// Retrieves a file from the cloud storage or null if no such file exists.
@@ -57,6 +58,23 @@ abstract class CloudStorage {
   /// Deletes the specified file if it exists. Does nothing if the file doesn't
   /// exist.
   Future<void> deleteFile({
+    required Session session,
+    required String path,
+  });
+
+  /// Creates an URL that a client can post a file to via http post, optionally
+  /// within the specified duration. After the file has been sent, the
+  /// [verifyDirectFileUpload] method should be called. If the file upload
+  /// hasn't been confirmed before the URL expires, the file will be deleted.
+  Future<String?> createDirectFileUploadUrl({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+  });
+
+  /// Call this method once a direct file upload is completed. Failure to call
+  /// this method will cause the uploaded file to be deleted.
+  Future<bool> verifyDirectFileUpload({
     required Session session,
     required String path,
   });

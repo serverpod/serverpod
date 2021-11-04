@@ -1,10 +1,14 @@
 streaming:
+  - streamOpened:
 cloudStorage:
+  - reset:
   - storePublicFile:
   - retrievePublicFile:
   - existsPublicFile:
   - deletePublicFile:
   - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
 basicDatabase:
   - storeTypes:
   - getTypes:

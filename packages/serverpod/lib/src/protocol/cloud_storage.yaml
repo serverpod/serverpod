@@ -6,6 +6,7 @@ fields:
   addedTime: DateTime
   expiration: DateTime?
   byteData: ByteData
+  verified: bool
 indexes:
   serverpod_cloud_storage_path_idx:
     fields: storageId, path

@@ -17,6 +17,11 @@ class _EndpointStreaming extends EndpointRef {
   String get name => 'streaming';
 
   _EndpointStreaming(EndpointCaller caller) : super(caller);
+
+  Future<void> streamOpened() async {
+    return await caller.callServerEndpoint('streaming', 'streamOpened', 'void', {
+    });
+  }
 }
 
 class _EndpointCloudStorage extends EndpointRef {
@@ -24,6 +29,11 @@ class _EndpointCloudStorage extends EndpointRef {
   String get name => 'cloudStorage';
 
   _EndpointCloudStorage(EndpointCaller caller) : super(caller);
+
+  Future<void> reset() async {
+    return await caller.callServerEndpoint('cloudStorage', 'reset', 'void', {
+    });
+  }
 
   Future<void> storePublicFile(String path,typed_data.ByteData byteData,) async {
     return await caller.callServerEndpoint('cloudStorage', 'storePublicFile', 'void', {
@@ -52,6 +62,18 @@ class _EndpointCloudStorage extends EndpointRef {
 
   Future<String?> getPublicUrlForFile(String path,) async {
     return await caller.callServerEndpoint('cloudStorage', 'getPublicUrlForFile', 'String', {
+      'path':path,
+    });
+  }
+
+  Future<String?> getDirectFilePostUrl(String path,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'getDirectFilePostUrl', 'String', {
+      'path':path,
+    });
+  }
+
+  Future<bool> verifyDirectFileUpload(String path,) async {
+    return await caller.callServerEndpoint('cloudStorage', 'verifyDirectFileUpload', 'bool', {
       'path':path,
     });
   }

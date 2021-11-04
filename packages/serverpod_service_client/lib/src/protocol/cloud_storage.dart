@@ -19,6 +19,7 @@ class CloudStorageEntry extends SerializableEntity {
   late DateTime addedTime;
   DateTime? expiration;
   late ByteData byteData;
+  late bool verified;
 
   CloudStorageEntry({
     this.id,
@@ -27,6 +28,7 @@ class CloudStorageEntry extends SerializableEntity {
     required this.addedTime,
     this.expiration,
     required this.byteData,
+    required this.verified,
 });
 
   CloudStorageEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -37,6 +39,7 @@ class CloudStorageEntry extends SerializableEntity {
     addedTime = DateTime.tryParse(_data['addedTime'])!;
     expiration = _data['expiration'] != null ? DateTime.tryParse(_data['expiration']) : null;
     byteData = _data['byteData'] is String ? (_data['byteData'] as String).base64DecodedByteData()! : ByteData.view((_data['byteData'] as Uint8List).buffer);
+    verified = _data['verified']!;
   }
 
   @override
@@ -48,6 +51,7 @@ class CloudStorageEntry extends SerializableEntity {
       'addedTime': addedTime.toUtc().toIso8601String(),
       'expiration': expiration?.toUtc().toIso8601String(),
       'byteData': byteData.base64encodedString(),
+      'verified': verified,
     });
   }
 }

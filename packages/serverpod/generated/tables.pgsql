@@ -62,6 +62,24 @@ CREATE INDEX serverpod_query_log_sessionLogId_idx ON serverpod_query_log USING b
 
 
 --
+-- Class CloudStorageDirectUploadEntry as table serverpod_cloud_storage_direct_upload
+--
+
+CREATE TABLE serverpod_cloud_storage_direct_upload (
+  "id" serial,
+  "storageId" text NOT NULL,
+  "path" text NOT NULL,
+  "expiration" timestamp without time zone NOT NULL,
+  "authKey" text NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_cloud_storage_direct_upload
+  ADD CONSTRAINT serverpod_cloud_storage_direct_upload_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_cloud_storage_direct_upload_storage_path ON serverpod_cloud_storage_direct_upload USING btree ("storageId", "path");
+
+
+--
 -- Class MethodInfo as table serverpod_method
 --
 
@@ -108,7 +126,8 @@ CREATE TABLE serverpod_cloud_storage (
   "path" text NOT NULL,
   "addedTime" timestamp without time zone NOT NULL,
   "expiration" timestamp without time zone,
-  "byteData" bytea NOT NULL
+  "byteData" bytea NOT NULL,
+  "verified" boolean NOT NULL
 );
 
 ALTER TABLE ONLY serverpod_cloud_storage

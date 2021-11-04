@@ -362,6 +362,28 @@ class StorageAccess {
 
     return await storage.getPublicUrl(session: _session, path: path);
   }
+
+  Future<String?> createDirectFileUploadUrl({
+    required String storageId,
+    required String path,
+  }) async {
+    var storage = _session.server.serverpod.storage[storageId];
+    if (storage == null)
+      throw CloudStorageException('Storage $storageId is not registered');
+
+    return await storage.createDirectFileUploadUrl(session: _session, path: path);
+  }
+
+  Future<bool> verifyDirectFileUpload({
+    required String storageId,
+    required String path,
+  }) async {
+    var storage = _session.server.serverpod.storage[storageId];
+    if (storage == null)
+      throw CloudStorageException('Storage $storageId is not registered');
+
+    return await storage.verifyDirectFileUpload(session: _session, path: path);
+  }
 }
 
 class MessageCentralAccess {

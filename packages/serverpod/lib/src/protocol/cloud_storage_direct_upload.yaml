@@ -1,0 +1,11 @@
+class: CloudStorageDirectUploadEntry
+table: serverpod_cloud_storage_direct_upload
+fields:
+  storageId: String
+  path: String
+  expiration: DateTime
+  authKey: String
+indexes:
+  serverpod_cloud_storage_direct_upload_storage_path:
+    fields: storageId, path
+    unique: true

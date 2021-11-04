@@ -12,7 +12,7 @@ class AuthenticationEndpoint extends Endpoint {
           email: email,
           userName: 'Test',
           created: DateTime.now(),
-          scopes: [],
+          scopeNames: [],
           active: true,
           blocked: false,
         );

@@ -131,10 +131,10 @@ class Database {
 
   /// Stores a file in the database, specifically using the
   /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration) async {
+  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration, bool verified) async {
     var conn = await databaseConnection;
 
-    return await conn.storeFile(storageId, path, byteData, expiration, session: session);
+    return await conn.storeFile(storageId, path, byteData, expiration, verified, session: session);
   }
 
   /// Retrieves a file stored in the database or null if it doesn't exist,
@@ -144,6 +144,12 @@ class Database {
     var conn = await databaseConnection;
 
     return await conn.retrieveFile(storageId, path, session: session);
+  }
+
+  Future<bool> verifyFile(String storageId, String path,) async {
+    var conn = await databaseConnection;
+
+    return await conn.verifyFile(storageId, path, session: session);
   }
 
   /// Executes a single SQL query. A [List] of rows represented of another

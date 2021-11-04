@@ -28,6 +28,10 @@ void main() {
   });
 
   group('Database cloud storage', () {
+    test('Clear files', () async {
+      await client.cloudStorage.reset();
+    });
+
     test('Store file 1', () async {
       await client.cloudStorage.storePublicFile('testdir/myfile1.bin', createByteData(256));
     });
@@ -58,7 +62,6 @@ void main() {
     test('Retrieve file 1 URL', () async {
       var urlStr = await client.cloudStorage.getPublicUrlForFile('testdir/myfile1.bin');
       expect(urlStr, isNotNull);
-      print('URL: $urlStr');
     });
 
     test('Retrieve file 2 through fetched URL', () async {
@@ -120,6 +123,49 @@ void main() {
     test('Exists file 1 after deletion', () async {
       var exists = await client.cloudStorage.existsPublicFile('testdir/myfile1.bin');
       expect(exists, false);
+    });
+
+    test('Direct file upload', () async {
+      var urlStr = await client.cloudStorage.getDirectFilePostUrl('testdir/directupload.bin');
+      expect(urlStr, isNotNull);
+      var url = Uri.parse(urlStr!);
+      var byteData = createByteData(1024);
+      var result = await http.post(
+        url,
+        body: byteData.buffer.asUint8List(),
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Accept': '*/*',
+        },
+      );
+      expect(result.statusCode, equals(200));
+      expect(result.body, equals('true'));
+
+      var verified = await client.cloudStorage.verifyDirectFileUpload('testdir/directupload.bin');
+      expect(verified, equals(true));
+    });
+
+    test('Retrieve directly uploaded file', () async {
+      var byteData = await client.cloudStorage.retrievePublicFile('testdir/directupload.bin');
+      expect(byteData!.lengthInBytes, equals(1024));
+      expect(verifyByteData(byteData), equals(true));
+    });
+
+    test('Direct file upload with invalid key', () async {
+      var urlStr = await client.cloudStorage.getDirectFilePostUrl('testdir/directupload.bin');
+      expect(urlStr, isNotNull);
+      var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=upload&storage=public&path=testdir%2Fdirectupload.bin&key=oAXvFnAGsYsaA5Wh');
+      var byteData = createByteData(1024);
+      var result = await http.post(
+        url,
+        body: byteData.buffer.asUint8List(),
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Accept': '*/*',
+        },
+      );
+      expect(result.statusCode, equals(200));
+      expect(result.body, equals('false'));
     });
   });
 }
