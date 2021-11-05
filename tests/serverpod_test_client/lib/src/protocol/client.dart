@@ -11,6 +11,7 @@ import 'protocol.dart';
 
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
 import 'package:serverpod_auth_client/module.dart' as serverpod_auth;
+import 'package:serverpod_s3_client/module.dart' as serverpod_s3;
 
 class _EndpointStreaming extends EndpointRef {
   @override
@@ -257,6 +258,56 @@ class _EndpointModuleSerialization extends EndpointRef {
   }
 }
 
+class _EndpointS3CloudStorage extends EndpointRef {
+  @override
+  String get name => 's3CloudStorage';
+
+  _EndpointS3CloudStorage(EndpointCaller caller) : super(caller);
+
+  Future<void> storePublicFile(String path,typed_data.ByteData byteData,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'storePublicFile', 'void', {
+      'path':path,
+      'byteData':byteData,
+    });
+  }
+
+  Future<typed_data.ByteData?> retrievePublicFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'retrievePublicFile', 'ByteData', {
+      'path':path,
+    });
+  }
+
+  Future<bool?> existsPublicFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'existsPublicFile', 'bool', {
+      'path':path,
+    });
+  }
+
+  Future<void> deletePublicFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'deletePublicFile', 'void', {
+      'path':path,
+    });
+  }
+
+  Future<String?> getPublicUrlForFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'getPublicUrlForFile', 'String', {
+      'path':path,
+    });
+  }
+
+  Future<String?> getDirectFilePostUrl(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'getDirectFilePostUrl', 'String', {
+      'path':path,
+    });
+  }
+
+  Future<bool> verifyDirectFileUpload(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'verifyDirectFileUpload', 'bool', {
+      'path':path,
+    });
+  }
+}
+
 class _EndpointFutureCalls extends EndpointRef {
   @override
   String get name => 'futureCalls';
@@ -389,10 +440,12 @@ class _EndpointLoggingDisabled extends EndpointRef {
 class _Modules {
   late final serverpod_test_module.Caller module;
   late final serverpod_auth.Caller auth;
+  late final serverpod_s3.Caller s3;
 
   _Modules(Client client) {
     module = serverpod_test_module.Caller(client);
     auth = serverpod_auth.Caller(client);
+    s3 = serverpod_s3.Caller(client);
   }
 }
 
@@ -404,6 +457,7 @@ class Client extends ServerpodClient {
   late final _EndpointAuthentication authentication;
   late final _EndpointFailedCalls failedCalls;
   late final _EndpointModuleSerialization moduleSerialization;
+  late final _EndpointS3CloudStorage s3CloudStorage;
   late final _EndpointFutureCalls futureCalls;
   late final _EndpointSimple simple;
   late final _EndpointLogging logging;
@@ -422,6 +476,7 @@ class Client extends ServerpodClient {
     authentication = _EndpointAuthentication(this);
     failedCalls = _EndpointFailedCalls(this);
     moduleSerialization = _EndpointModuleSerialization(this);
+    s3CloudStorage = _EndpointS3CloudStorage(this);
     futureCalls = _EndpointFutureCalls(this);
     simple = _EndpointSimple(this);
     logging = _EndpointLogging(this);
@@ -433,6 +488,7 @@ class Client extends ServerpodClient {
     modules = _Modules(this);
     registerModuleProtocol(serverpod_test_module.Protocol());
     registerModuleProtocol(serverpod_auth.Protocol());
+    registerModuleProtocol(serverpod_s3.Protocol());
   }
 
   @override
@@ -444,6 +500,7 @@ class Client extends ServerpodClient {
     'authentication' : authentication,
     'failedCalls' : failedCalls,
     'moduleSerialization' : moduleSerialization,
+    's3CloudStorage' : s3CloudStorage,
     'futureCalls' : futureCalls,
     'simple' : simple,
     'logging' : logging,
@@ -457,5 +514,6 @@ class Client extends ServerpodClient {
   Map<String, ModuleEndpointCaller> get moduleLookup => {
     'module': modules.module,
     'auth': modules.auth,
+    's3': modules.s3,
   };
 }

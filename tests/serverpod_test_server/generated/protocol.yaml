@@ -38,6 +38,14 @@ failedCalls:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+s3CloudStorage:
+  - storePublicFile:
+  - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
+  - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
 futureCalls:
   - makeFutureCall:
 simple:

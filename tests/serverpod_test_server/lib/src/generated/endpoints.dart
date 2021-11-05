@@ -9,6 +9,7 @@ import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module;
 import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
+import 'package:serverpod_s3_server/module.dart' as serverpod_s3;
 
 import 'protocol.dart';
 
@@ -19,6 +20,7 @@ import '../endpoints/basic_types.dart';
 import '../endpoints/authentication.dart';
 import '../endpoints/failed_calls.dart';
 import '../endpoints/module_serialization.dart';
+import '../endpoints/cloud_storage_s3.dart';
 import '../endpoints/future_calls.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/logging.dart';
@@ -38,6 +40,7 @@ class Endpoints extends EndpointDispatch {
       'authentication': AuthenticationEndpoint()..initialize(server, 'authentication', null),
       'failedCalls': FailedCallsEndpoint()..initialize(server, 'failedCalls', null),
       'moduleSerialization': ModuleSerializationEndpoint()..initialize(server, 'moduleSerialization', null),
+      's3CloudStorage': S3CloudStorageEndpoint()..initialize(server, 's3CloudStorage', null),
       'futureCalls': FutureCallsEndpoint()..initialize(server, 'futureCalls', null),
       'simple': SimpleEndpoint()..initialize(server, 'simple', null),
       'logging': LoggingEndpoint()..initialize(server, 'logging', null),
@@ -391,6 +394,77 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
+    connectors['s3CloudStorage'] = EndpointConnector(
+      name: 's3CloudStorage',
+      endpoint: endpoints['s3CloudStorage']!,
+      methodConnectors: {
+        'storePublicFile': MethodConnector(
+          name: 'storePublicFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+            'byteData': ParameterDescription(name: 'byteData', type: typed_data.ByteData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).storePublicFile(session,params['path'],params['byteData'],);
+          },
+        ),
+        'retrievePublicFile': MethodConnector(
+          name: 'retrievePublicFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).retrievePublicFile(session,params['path'],);
+          },
+        ),
+        'existsPublicFile': MethodConnector(
+          name: 'existsPublicFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).existsPublicFile(session,params['path'],);
+          },
+        ),
+        'deletePublicFile': MethodConnector(
+          name: 'deletePublicFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).deletePublicFile(session,params['path'],);
+          },
+        ),
+        'getPublicUrlForFile': MethodConnector(
+          name: 'getPublicUrlForFile',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).getPublicUrlForFile(session,params['path'],);
+          },
+        ),
+        'getDirectFilePostUrl': MethodConnector(
+          name: 'getDirectFilePostUrl',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).getDirectFilePostUrl(session,params['path'],);
+          },
+        ),
+        'verifyDirectFileUpload': MethodConnector(
+          name: 'verifyDirectFileUpload',
+          params: {
+            'path': ParameterDescription(name: 'path', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint).verifyDirectFileUpload(session,params['path'],);
+          },
+        ),
+      },
+    );
+
     connectors['futureCalls'] = EndpointConnector(
       name: 'futureCalls',
       endpoint: endpoints['futureCalls']!,
@@ -560,12 +634,14 @@ class Endpoints extends EndpointDispatch {
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()..initializeEndpoints(server);
     modules['serverpod_auth'] = serverpod_auth.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_s3'] = serverpod_s3.Endpoints()..initializeEndpoints(server);
   }
 
   @override
   void registerModules(Serverpod pod) {
     pod.registerModule(serverpod_test_module.Protocol(), 'module');
     pod.registerModule(serverpod_auth.Protocol(), 'auth');
+    pod.registerModule(serverpod_s3.Protocol(), 's3');
   }
 }
 

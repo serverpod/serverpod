@@ -1,6 +1,6 @@
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
-import '../../server.dart';
+import '../../serverpod.dart';
 import '../cache/local_cache.dart';
 
 /// Endpoint used by the [DistributedCache]. Typically used internally by the

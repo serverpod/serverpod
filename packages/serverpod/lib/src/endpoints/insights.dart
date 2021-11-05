@@ -1,6 +1,6 @@
 import 'package:serverpod/database.dart';
 
-import '../../server.dart';
+import '../../serverpod.dart';
 import '../generated/protocol.dart';
 import '../cache/cache.dart';
 

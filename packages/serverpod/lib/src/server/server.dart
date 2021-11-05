@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:pedantic/pedantic.dart';
-import 'package:serverpod/server.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/message_central.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 

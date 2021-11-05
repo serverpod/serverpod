@@ -98,6 +98,10 @@ class Serverpod {
     'private': DatabaseCloudStorage('private'),
   };
 
+  void addCloudStorage(CloudStorage cloudStorage) {
+    storage[cloudStorage.storageId] = cloudStorage;
+  }
+
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     try {
       var dbConn = DatabaseConnection(databaseConfig);
@@ -205,7 +209,7 @@ class Serverpod {
     await runZonedGuarded(
       () async {
         // Register cloud store endpoint if we're using the database cloud store
-        if (storage['public'] is DatabaseCloudStorage)
+        if (storage['public'] is DatabaseCloudStorage || storage['private'] is DatabaseCloudStorage)
           CloudStoragePublicEndpoint().register(this);
 
         // Runtime settings

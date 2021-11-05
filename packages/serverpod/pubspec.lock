@@ -246,6 +246,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  serverpod_s3_client:
+    dependency: "direct dev"
+    description:
+      path: "../../modules/serverpod_s3/serverpod_s3_client"
+      relative: true
+    source: path
+    version: "0.0.0"
   serverpod_serialization:
     dependency: "direct main"
     description:

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod/server.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 
 import '../server/endpoint.dart';

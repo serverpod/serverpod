@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:serverpod/server.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
