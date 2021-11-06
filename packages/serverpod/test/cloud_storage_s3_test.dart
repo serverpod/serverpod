@@ -7,16 +7,18 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 ByteData createByteData(int len) {
   var ints = Uint8List(len);
   for (var i = 0; i < len; i++) {
-    ints[i] = i % len;
+    ints[i] = i % 256;
   }
   return ByteData.view(ints.buffer);
 }
 
 bool verifyByteData(ByteData byteData) {
   var ints = byteData.buffer.asUint8List();
-  for (var i in ints) {
-    if (ints[i] != i % byteData.lengthInBytes)
+  for (var i = 0; i < byteData.lengthInBytes; i ++) {
+    if (ints[i] != i % 256) {
+      print('ints[$i] = ${ints[i]} expected: ${i % byteData.lengthInBytes}');
       return false;
+    }
   }
   return true;
 }
@@ -123,6 +125,26 @@ void main() {
     test('Exists file 1 after deletion', () async {
       var exists = await client.s3CloudStorage.existsPublicFile('testdir/myfile1.bin');
       expect(exists, false);
+    });
+
+    test('Direct file upload', () async {
+      var uploadDescription = await client.s3CloudStorage.getDirectFilePostUrl('testdir/directupload.bin');
+      expect(uploadDescription, isNotNull);
+      var byteData = createByteData(1024);
+
+      var uploader = FileUploader(uploadDescription!);
+      var result = await uploader.uploadData(byteData);
+
+      expect(result, equals(true));
+
+      var verified = await client.s3CloudStorage.verifyDirectFileUpload('testdir/directupload.bin');
+      expect(verified, equals(true));
+    });
+
+    test('Retrieve directly uploaded file', () async {
+      var byteData = await client.s3CloudStorage.retrievePublicFile('testdir/directupload.bin');
+      expect(byteData!.lengthInBytes, equals(1024));
+      expect(verifyByteData(byteData), equals(true));
     });
   //
   //   test('Direct file upload', () async {

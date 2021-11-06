@@ -53,6 +53,7 @@ class S3CloudStorage extends CloudStorage {
       region: region,
       data: byteData,
       uploadDst: path,
+      public: public,
     );
   }
 
@@ -95,12 +96,18 @@ class S3CloudStorage extends CloudStorage {
   }
 
   @override
-  Future<String?> createDirectFileUploadUrl({
+  Future<String?> createDirectFileUploadDescription({
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
   }) async {
-
+    return await AwsS3Uploader.getDirectUploadDescription(
+      accessKey: _awsAccessKeyId,
+      secretKey: _awsSecretKey,
+      bucket: bucket,
+      region: region,
+      uploadDst: path,
+    );
   }
 
   @override
@@ -108,6 +115,6 @@ class S3CloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    return false;
+    return fileExists(session: session, path: path);
   }
 }

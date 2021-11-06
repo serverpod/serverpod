@@ -363,7 +363,7 @@ class StorageAccess {
     return await storage.getPublicUrl(session: _session, path: path);
   }
 
-  Future<String?> createDirectFileUploadUrl({
+  Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
   }) async {
@@ -371,7 +371,7 @@ class StorageAccess {
     if (storage == null)
       throw CloudStorageException('Storage $storageId is not registered');
 
-    return await storage.createDirectFileUploadUrl(session: _session, path: path);
+    return await storage.createDirectFileUploadDescription(session: _session, path: path);
   }
 
   Future<bool> verifyDirectFileUpload({

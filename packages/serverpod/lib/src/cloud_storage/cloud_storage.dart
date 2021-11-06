@@ -66,7 +66,7 @@ abstract class CloudStorage {
   /// within the specified duration. After the file has been sent, the
   /// [verifyDirectFileUpload] method should be called. If the file upload
   /// hasn't been confirmed before the URL expires, the file will be deleted.
-  Future<String?> createDirectFileUploadUrl({
+  Future<String?> createDirectFileUploadDescription({
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),

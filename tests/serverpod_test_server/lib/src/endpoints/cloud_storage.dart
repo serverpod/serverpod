@@ -46,7 +46,7 @@ class CloudStorageEndpoint extends Endpoint {
   }
 
   Future<String?> getDirectFilePostUrl(Session session, String path) async {
-    return await session.storage.createDirectFileUploadUrl(storageId: 'public', path: path);
+    return await session.storage.createDirectFileUploadDescription(storageId: 'public', path: path);
   }
 
   Future<bool> verifyDirectFileUpload(Session session, String path) async {

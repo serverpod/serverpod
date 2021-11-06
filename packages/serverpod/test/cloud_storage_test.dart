@@ -126,20 +126,14 @@ void main() {
     });
 
     test('Direct file upload', () async {
-      var urlStr = await client.cloudStorage.getDirectFilePostUrl('testdir/directupload.bin');
-      expect(urlStr, isNotNull);
-      var url = Uri.parse(urlStr!);
+      var uploadDescription = await client.cloudStorage.getDirectFilePostUrl('testdir/directupload.bin');
+      expect(uploadDescription, isNotNull);
       var byteData = createByteData(1024);
-      var result = await http.post(
-        url,
-        body: byteData.buffer.asUint8List(),
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Accept': '*/*',
-        },
-      );
-      expect(result.statusCode, equals(200));
-      expect(result.body, equals('true'));
+
+      var uploader = FileUploader(uploadDescription!);
+      var result = await uploader.uploadData(byteData);
+
+      expect(result, equals(true));
 
       var verified = await client.cloudStorage.verifyDirectFileUpload('testdir/directupload.bin');
       expect(verified, equals(true));
@@ -149,23 +143,6 @@ void main() {
       var byteData = await client.cloudStorage.retrievePublicFile('testdir/directupload.bin');
       expect(byteData!.lengthInBytes, equals(1024));
       expect(verifyByteData(byteData), equals(true));
-    });
-
-    test('Direct file upload with invalid key', () async {
-      var urlStr = await client.cloudStorage.getDirectFilePostUrl('testdir/directupload.bin');
-      expect(urlStr, isNotNull);
-      var url = Uri.parse('http://localhost:8080/serverpod_cloud_storage?method=upload&storage=public&path=testdir%2Fdirectupload.bin&key=oAXvFnAGsYsaA5Wh');
-      var byteData = createByteData(1024);
-      var result = await http.post(
-        url,
-        body: byteData.buffer.asUint8List(),
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Accept': '*/*',
-        },
-      );
-      expect(result.statusCode, equals(200));
-      expect(result.body, equals('false'));
     });
   });
 }

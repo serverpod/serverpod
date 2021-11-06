@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -94,7 +95,7 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<String?> createDirectFileUploadUrl ({
+  Future<String?> createDirectFileUploadDescription ({
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
@@ -126,7 +127,12 @@ class DatabaseCloudStorage extends CloudStorage {
       },
     );
 
-    return uri.toString();
+    var uploadDescriptionData = {
+      'url': uri.toString(),
+      'type': 'binary',
+    };
+
+    return jsonEncode(uploadDescriptionData);
   }
 
   @override
