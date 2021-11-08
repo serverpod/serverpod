@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_s3_server/src/aws_s3_client/client/client.dart';
-import 'package:serverpod_s3_server/src/aws_s3_upload/aws_s3_upload.dart';
+import '../aws_s3_client/client/client.dart';
+import '../aws_s3_upload/aws_s3_upload.dart';
 
 class S3CloudStorage extends CloudStorage {
   final String _awsAccessKeyId;

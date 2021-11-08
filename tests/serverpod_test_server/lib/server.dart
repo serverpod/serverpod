@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_relic/serverpod_relic.dart';
-import 'package:serverpod_s3_server/module.dart' as s3;
+import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart' as s3;
 import 'package:serverpod_test_server/src/web/routes/root.dart';
 import 'src/futureCalls/test_call.dart';
 import 'src/generated/protocol.dart';

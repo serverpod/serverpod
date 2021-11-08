@@ -7,5 +7,3 @@ modules:
     nickname: module
   serverpod_auth:
     nickname: auth
-  serverpod_s3:
-    nickname: s3

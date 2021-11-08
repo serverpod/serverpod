@@ -9,7 +9,6 @@ import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_module_server/module.dart' as serverpod_test_module;
 import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
-import 'package:serverpod_s3_server/module.dart' as serverpod_s3;
 
 import 'protocol.dart';
 
@@ -634,14 +633,12 @@ class Endpoints extends EndpointDispatch {
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()..initializeEndpoints(server);
     modules['serverpod_auth'] = serverpod_auth.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_s3'] = serverpod_s3.Endpoints()..initializeEndpoints(server);
   }
 
   @override
   void registerModules(Serverpod pod) {
     pod.registerModule(serverpod_test_module.Protocol(), 'module');
     pod.registerModule(serverpod_auth.Protocol(), 'auth');
-    pod.registerModule(serverpod_s3.Protocol(), 's3');
   }
 }
 
