@@ -11,7 +11,12 @@ class FileUploader {
     _uploadDescription = _UploadDescription(uploadDescription);
   }
 
-  Future<bool> uploadData(ByteData data) async {
+  Future<bool> uploadByteData(ByteData byteData) async {
+    final stream = http.ByteStream.fromBytes(byteData.buffer.asUint8List());
+    return upload(stream, byteData.lengthInBytes);
+  }
+
+  Future<bool> upload(Stream<List<int>> stream, int length) async {
     if (_attemptedUpload) {
       throw Exception('Data has already been uploaded using this FileUploader.');
     }
@@ -21,7 +26,7 @@ class FileUploader {
       try {
         var result = await http.post(
           _uploadDescription.url,
-          body: data.buffer.asUint8List(),
+          body: await _readStreamData(stream),
           headers: {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
@@ -39,8 +44,8 @@ class FileUploader {
       // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
       // final length = await file.length();
 
-      final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
-      final length = await data.lengthInBytes;
+      // final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
+      // final length = await data.lengthInBytes;
 
       final request = http.MultipartRequest("POST", _uploadDescription.url);
       final multipartFile = http.MultipartFile(_uploadDescription.field!, stream, length, filename: _uploadDescription.fileName);
@@ -75,6 +80,17 @@ class FileUploader {
   //   }
   //   return Utf8Decoder().convert(data);
   // }
+
+  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
+      // TODO: Find more efficient solution?
+      var len = 0;
+      var data = <int>[];
+      await for (var segment in stream) {
+        len += segment.length;
+        data += segment;
+      }
+      return data;
+    }
 }
 
 enum _UploadType {

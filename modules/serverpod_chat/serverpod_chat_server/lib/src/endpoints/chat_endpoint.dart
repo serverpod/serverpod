@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
@@ -66,7 +67,6 @@ class ChatEndpoint extends Endpoint {
       // Write the message to the database, then pass it on to this and other clients.
       var chatMessage = ChatMessage(
         channel: message.channel,
-        type: message.type,
         message: message.message,
         time: DateTime.now(),
         sender: (await session.auth.authenticatedUserId)!,
@@ -74,6 +74,7 @@ class ChatEndpoint extends Endpoint {
         removed: false,
         clientMessageId: message.clientMessageId,
         sent: true,
+        attachments: message.attachments,
       );
 
       await session.db.insert(chatMessage);
@@ -177,6 +178,35 @@ class ChatEndpoint extends Endpoint {
       readMessageRow.lastReadMessageId = lastReadMessageId;
       await session.db.update(readMessageRow);
     }
+  }
+
+  Future<ChatMessageAttachmentUploadDescription?> createAttachmentUploadDescription(Session session, String fileName) async {
+    var userId = (await session.auth.authenticatedUserId)!;
+
+    var filePath = _generateAttachmentFilePath(userId, fileName);
+
+    var uploadDescription = await session.storage.createDirectFileUploadDescription(storageId: 'public', path: filePath);
+    if (uploadDescription == null)
+      return null;
+
+    return ChatMessageAttachmentUploadDescription(filePath: filePath, uploadDescription: uploadDescription);
+  }
+
+  Future<ChatMessageAttachment?> verifyAttachmentUpload(Session session, String fileName, String filePath) async {
+    var success = await session.storage.verifyDirectFileUpload(storageId: 'public', path: filePath);
+    var url = await session.storage.getPublicUrl(storageId: 'public', path: filePath);
+    if (success && url != null) {
+      return ChatMessageAttachment(fileName: fileName, url: url.toString(), contentType: 'application/octet-stream');
+    }
+  }
+
+  String _generateAttachmentFilePath(int userId, String fileName) {
+    const len = 16;
+    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    final rnd = Random();
+    var rndString = String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+
+    return 'serverpod/chat/$userId-$rndString-$fileName';
   }
 }
 

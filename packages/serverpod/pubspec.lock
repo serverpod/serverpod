@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "18.0.0"
+  amazon_cognito_identity_dart_2:
+    dependency: transitive
+    description:
+      name: amazon_cognito_identity_dart_2
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   analyzer:
     dependency: transitive
     description:
@@ -43,6 +50,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  built_collection:
+    dependency: transitive
+    description:
+      name: built_collection
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.1.1"
+  built_value:
+    dependency: transitive
+    description:
+      name: built_value
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "8.1.3"
   charcode:
     dependency: transitive
     description:
@@ -99,6 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.0"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   glob:
     dependency: transitive
     description:
@@ -197,6 +225,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.0"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
   pool:
     dependency: transitive
     description:
@@ -239,6 +274,13 @@ packages:
       relative: true
     source: path
     version: "0.8.10"
+  serverpod_cloud_storage_s3:
+    dependency: "direct dev"
+    description:
+      path: "../../integrations/serverpod_cloud_storage_s3"
+      relative: true
+    source: path
+    version: "1.0.0"
   serverpod_postgres_pool:
     dependency: "direct main"
     description:
@@ -246,13 +288,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
-  serverpod_s3_client:
-    dependency: "direct dev"
-    description:
-      path: "../../modules/serverpod_s3/serverpod_s3_client"
-      relative: true
-    source: path
-    version: "0.0.0"
   serverpod_serialization:
     dependency: "direct main"
     description:
@@ -421,6 +456,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.1.2"
+  xml2json:
+    dependency: transitive
+    description:
+      name: xml2json
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.3.1"
   yaml:
     dependency: "direct main"
     description:
@@ -429,4 +478,4 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.12.0 <3.0.0"
+  dart: ">=2.14.2 <3.0.0"

@@ -2,7 +2,6 @@ class: ChatMessage
 table: serverpod_chat_message
 fields:
   channel: String
-  type: String
   message: String
   time: DateTime
   sender: int
@@ -10,6 +9,7 @@ fields:
   removed: bool
   clientMessageId: int?, api
   sent: bool?, api
+  attachments: List<ChatMessageAttachment>?
 indexes:
   serverpod_chat_message_channel_idx:
     fields: channel

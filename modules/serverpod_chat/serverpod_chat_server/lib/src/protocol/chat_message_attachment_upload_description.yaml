@@ -1,0 +1,4 @@
+class: ChatMessageAttachmentUploadDescription
+fields:
+  filePath: String
+  uploadDescription: String

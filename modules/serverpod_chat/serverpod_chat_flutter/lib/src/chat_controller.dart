@@ -113,27 +113,24 @@ class ChatController {
     }
   }
 
-  void postTextMessage(String message) {
+  void postMessage(String message, [List<ChatMessageAttachment>? attachments]) {
     if (!sessionManager.isSignedIn) {
       return;
     }
-
-    const type = 'text';
 
     // Send to server
     dispatch.postMessage(
       ChatMessagePost(
         channel: channel,
-        type: type,
         message: message,
         clientMessageId: _clientMessageId,
+        attachments: attachments,
       ),
     );
 
     // Post dummy message
     var dummy = ChatMessage(
         channel: channel,
-        type: type,
         message: message,
         time: DateTime.now().toUtc(),
         sent: false,

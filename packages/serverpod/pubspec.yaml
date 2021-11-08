@@ -37,5 +37,5 @@ dev_dependencies:
     path: ../../tests/serverpod_test_module/serverpod_test_module_client
   serverpod_auth_client:
     path: ../../modules/serverpod_auth/serverpod_auth_client
-  serverpod_s3_client:
-    path: ../../modules/serverpod_s3/serverpod_s3_client
+  serverpod_cloud_storage_s3:
+    path: ../../integrations/serverpod_cloud_storage_s3

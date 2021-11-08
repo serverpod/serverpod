@@ -1,0 +1,8 @@
+class: ChatMessageAttachment
+fields:
+  fileName: String
+  url: String
+  contentType: String
+  previewImage: String?
+  previewWidth: int?
+  previewHeight: int?

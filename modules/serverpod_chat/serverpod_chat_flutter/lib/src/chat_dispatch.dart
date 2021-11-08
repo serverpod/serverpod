@@ -4,9 +4,9 @@ typedef ChatMessageListener = void Function(SerializableEntity message);
 
 class ChatDispatch {
   static ChatDispatch? _singleton;
-  static getInstance(Caller caller) {
+  static ChatDispatch getInstance(Caller caller) {
     _singleton ??= ChatDispatch(caller: caller);
-    return _singleton;
+    return _singleton!;
   }
 
   final _listeners = <String, ChatMessageListener>{};

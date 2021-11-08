@@ -22,11 +22,11 @@ CREATE UNIQUE INDEX serverpod_chat_read_message_channel_user_idx ON serverpod_ch
 CREATE TABLE serverpod_chat_message (
   "id" serial,
   "channel" text NOT NULL,
-  "type" text NOT NULL,
   "message" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "sender" integer NOT NULL,
-  "removed" boolean NOT NULL
+  "removed" boolean NOT NULL,
+  "attachments" json
 );
 
 ALTER TABLE ONLY serverpod_chat_message

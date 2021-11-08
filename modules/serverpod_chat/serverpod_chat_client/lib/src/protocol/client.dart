@@ -14,6 +14,19 @@ class _EndpointChat extends EndpointRef {
   String get name => 'serverpod_chat.chat';
 
   _EndpointChat(EndpointCaller caller) : super(caller);
+
+  Future<ChatMessageAttachmentUploadDescription?> createAttachmentUploadDescription(String fileName,) async {
+    return await caller.callServerEndpoint('serverpod_chat.chat', 'createAttachmentUploadDescription', 'ChatMessageAttachmentUploadDescription', {
+      'fileName':fileName,
+    });
+  }
+
+  Future<ChatMessageAttachment?> verifyAttachmentUpload(String fileName,String filePath,) async {
+    return await caller.callServerEndpoint('serverpod_chat.chat', 'verifyAttachmentUpload', 'ChatMessageAttachment', {
+      'fileName':fileName,
+      'filePath':filePath,
+    });
+  }
 }
 
 class Caller extends ModuleEndpointCaller {

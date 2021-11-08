@@ -20,7 +20,6 @@ class ChatMessage extends TableRow {
   @override
   int? id;
   late String channel;
-  late String type;
   late String message;
   late DateTime time;
   late int sender;
@@ -28,11 +27,11 @@ class ChatMessage extends TableRow {
   late bool removed;
   int? clientMessageId;
   bool? sent;
+  List<ChatMessageAttachment>? attachments;
 
   ChatMessage({
     this.id,
     required this.channel,
-    required this.type,
     required this.message,
     required this.time,
     required this.sender,
@@ -40,13 +39,13 @@ class ChatMessage extends TableRow {
     required this.removed,
     this.clientMessageId,
     this.sent,
+    this.attachments,
 });
 
   ChatMessage.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
-    type = _data['type']!;
     message = _data['message']!;
     time = DateTime.tryParse(_data['time'])!;
     sender = _data['sender']!;
@@ -54,6 +53,7 @@ class ChatMessage extends TableRow {
     removed = _data['removed']!;
     clientMessageId = _data['clientMessageId'];
     sent = _data['sent'];
+    attachments = _data['attachments']?.map<ChatMessageAttachment>((a) => ChatMessageAttachment.fromSerialization(a))?.toList();
   }
 
   @override
@@ -61,7 +61,6 @@ class ChatMessage extends TableRow {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'type': type,
       'message': message,
       'time': time.toUtc().toIso8601String(),
       'sender': sender,
@@ -69,6 +68,7 @@ class ChatMessage extends TableRow {
       'removed': removed,
       'clientMessageId': clientMessageId,
       'sent': sent,
+      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
     });
   }
 
@@ -77,11 +77,11 @@ class ChatMessage extends TableRow {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'type': type,
       'message': message,
       'time': time.toUtc().toIso8601String(),
       'sender': sender,
       'removed': removed,
+      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
     });
   }
 
@@ -90,7 +90,6 @@ class ChatMessage extends TableRow {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
-      'type': type,
       'message': message,
       'time': time.toUtc().toIso8601String(),
       'sender': sender,
@@ -98,6 +97,7 @@ class ChatMessage extends TableRow {
       'removed': removed,
       'clientMessageId': clientMessageId,
       'sent': sent,
+      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
     });
   }
 }
@@ -109,21 +109,21 @@ class ChatMessageTable extends Table {
   String tableName = 'serverpod_chat_message';
   final id = ColumnInt('id');
   final channel = ColumnString('channel');
-  final type = ColumnString('type');
   final message = ColumnString('message');
   final time = ColumnDateTime('time');
   final sender = ColumnInt('sender');
   final removed = ColumnBool('removed');
+  final attachments = ColumnSerializable('attachments');
 
   @override
   List<Column> get columns => [
     id,
     channel,
-    type,
     message,
     time,
     sender,
     removed,
+    attachments,
   ];
 }
 
