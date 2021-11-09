@@ -34,7 +34,7 @@ class _ChatInputState extends State<ChatInput> {
 
   bool _uploadingAttachment = false;
   String? _uploadingAttachementFileName;
-  final List<ChatMessageAttachment> _attachments = [];
+  List<ChatMessageAttachment> _attachments = [];
 
   late final _focusNode = FocusNode(
     onKey: (FocusNode node, RawKeyEvent evt) {
@@ -150,7 +150,7 @@ class _ChatInputState extends State<ChatInput> {
 
     _textController.text = '';
     setState(() {
-      _attachments.clear();
+      _attachments = [];
     });
     _focusNode.requestFocus();
   }

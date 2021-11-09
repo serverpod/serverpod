@@ -79,6 +79,8 @@ class ChatController {
             message.sent = true;
             message.id = serverMessage.id;
             updated = true;
+
+            print('updating clientMessageId: ${message.clientMessageId} serverMessage.attachment: ${serverMessage.attachments?.length} old message.attachment: ${message.attachments?.length}');
           }
         }
         if (updated) {
@@ -128,18 +130,23 @@ class ChatController {
       ),
     );
 
+    print('postMessage attachments: ${attachments?.isNotEmpty}');
+
     // Post dummy message
     var dummy = ChatMessage(
-        channel: channel,
-        message: message,
-        time: DateTime.now().toUtc(),
-        sent: false,
-        sender: sessionManager.signedInUser!.id!,
-        senderInfo: sessionManager.signedInUser!,
-        removed: false,
-        clientMessageId: _clientMessageId,
+      channel: channel,
+      message: message,
+      time: DateTime.now().toUtc(),
+      sent: false,
+      sender: sessionManager.signedInUser!.id!,
+      senderInfo: sessionManager.signedInUser!,
+      removed: false,
+      clientMessageId: _clientMessageId,
+      attachments: attachments,
     );
     messages.add(dummy);
+
+    print('dummy clientMessageId: ${dummy.clientMessageId} attachments: ${attachments?.length}');
 
     _notifyMessageListeners(dummy, true);
     _clientMessageId += 1;
