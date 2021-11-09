@@ -205,8 +205,9 @@ class ChatEndpoint extends Endpoint {
     const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     final rnd = Random();
     var rndString = String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    var dateString = DateTime.now().toUtc().toString().substring(0, 10);
 
-    return 'serverpod/chat/$userId-$rndString-$fileName';
+    return 'serverpod/chat/$userId/$dateString/$rndString/$fileName';
   }
 }
 
