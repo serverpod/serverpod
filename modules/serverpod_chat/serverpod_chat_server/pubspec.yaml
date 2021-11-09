@@ -11,6 +11,7 @@ dependencies:
     path: ../../../packages/serverpod
   serverpod_auth_server:
     path: ../../serverpod_auth/serverpod_auth_server
+  image: ^3.0.2
 
 dev_dependencies:
   pedantic: ^1.9.0

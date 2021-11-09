@@ -1,10 +1,16 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import '../generated/protocol.dart';
 import '../business/config.dart';
+
+import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
+import 'dart:math' as math;
 
 class ChatEndpoint extends Endpoint {
   static const _channelPrefix = 'serverpod_chat.';
@@ -195,10 +201,53 @@ class ChatEndpoint extends Endpoint {
   Future<ChatMessageAttachment?> verifyAttachmentUpload(Session session, String fileName, String filePath) async {
     var success = await session.storage.verifyDirectFileUpload(storageId: 'public', path: filePath);
     var url = await session.storage.getPublicUrl(storageId: 'public', path: filePath);
+    var userId = (await session.auth.authenticatedUserId)!;
+
+    // Generate thumbnail
+    Uri? thumbUrl;
+    int? thumbWidth;
+    int? thumbHeight;
+
+    try {
+      const maxImageWidth = 256;
+
+      var ext = path.extension(filePath.toLowerCase());
+      if ({'.jpg', '.jpeg', '.png', '.gif'}.contains(ext)) {
+        var response = await http.get(url!);
+        var bytes = response.bodyBytes;
+        var image = decodeImage(bytes);
+        if (image != null) {
+          if (image.width > maxImageWidth)
+            image = copyResize(image, width: maxImageWidth);
+          var thumbPath = _generateAttachmentFilePath(userId, fileName);
+          var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
+          var byteData = ByteData.view(encodedBytes.buffer);
+          await session.storage.storeFile(storageId: 'public', path: thumbPath, byteData: byteData);
+          thumbUrl = await session.storage.getPublicUrl(storageId: 'public', path: thumbPath);
+          if (thumbUrl != null) {
+            thumbWidth = image.width;
+            thumbHeight = image.height;
+          }
+        }
+      }
+    }
+    catch(e, stackTrace) {
+      print('Failed to create attachment: $e');
+      print('$stackTrace');
+    }
+
     if (success && url != null) {
-      return ChatMessageAttachment(fileName: fileName, url: url.toString(), contentType: 'application/octet-stream');
+      return ChatMessageAttachment(
+        fileName: fileName,
+        url: url.toString(),
+        contentType: 'application/octet-stream',
+        previewWidth: thumbWidth,
+        previewHeight: thumbHeight,
+        previewImage: thumbUrl?.toString(),
+      );
     }
   }
+
 
   String _generateAttachmentFilePath(int userId, String fileName) {
     const len = 16;
