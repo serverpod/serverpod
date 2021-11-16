@@ -15,16 +15,19 @@ class ChatJoinChannel extends SerializableEntity {
 
   int? id;
   late String channel;
+  String? userName;
 
   ChatJoinChannel({
     this.id,
     required this.channel,
+    this.userName,
 });
 
   ChatJoinChannel.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
+    userName = _data['userName'];
   }
 
   @override
@@ -32,6 +35,7 @@ class ChatJoinChannel extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'channel': channel,
+      'userName': userName,
     });
   }
 }

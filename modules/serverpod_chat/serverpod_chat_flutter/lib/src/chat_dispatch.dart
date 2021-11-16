@@ -18,10 +18,15 @@ class ChatDispatch {
     _handleStreamMessages();
   }
 
-  void addListener(String channel, ChatMessageListener listener) {
-    assert(_listeners[channel] == null, 'Only one listener per channel is allowed.');
+  void addListener(String channel, ChatMessageListener listener, {String? unauthenticatedUserName}) {
+    assert(_listeners[channel] == null, 'Only one listener per channel is allowed. channel: $channel');
     _listeners[channel] = listener;
-    caller.chat.sendStreamMessage(ChatJoinChannel(channel: channel));
+    caller.chat.sendStreamMessage(
+      ChatJoinChannel(
+        channel: channel,
+        userName: unauthenticatedUserName,
+      ),
+    );
   }
 
   void removeListener(String channel) {

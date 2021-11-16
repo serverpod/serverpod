@@ -14,17 +14,27 @@ import 'dart:math' as math;
 
 class ChatEndpoint extends Endpoint {
   static const _channelPrefix = 'serverpod_chat.';
+  static const _ephemeralChannelPrefix = 'ephemeral.';
   static const _initialMessageChunkSize = 25;
   static const _messageChunkSize = 50;
 
-  @override
-  bool get requireLogin => true;
+  static int _tempUserId = -1;
+
+  // @override
+  // bool get requireLogin => true;
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    setUserObject(session, ChatSessionInfo(
-      userInfo: await Users.findUserByUserId(session, (await session.auth.authenticatedUserId)!),
-    ));
+    var userId = await session.auth.authenticatedUserId;
+
+    if (userId != null) {
+      setUserObject(session, ChatSessionInfo(
+        userInfo: await Users.findUserByUserId(session, userId),
+      ));
+    }
+    else {
+      setUserObject(session, ChatSessionInfo());
+    }
   }
 
   @override
@@ -32,8 +42,32 @@ class ChatEndpoint extends Endpoint {
     var chatSession = getUserObject(session) as ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
+      // TODO: Check if unauthenticated users is ok
+      if (!ChatConfig.current.allowUnauthenticatedUsers && (await session.auth.authenticatedUserId) == null) {
+        await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'User must be authenticated'));
+      }
+
+      if (message.userName != null && chatSession.userInfo == null) {
+        // Setup a temporary userInfo
+        chatSession.userInfo = UserInfo(
+          id: _tempUserId,
+          userIdentifier: '',
+          userName: message.userName!,
+          created: DateTime.now().toUtc(),
+          scopeNames: [],
+          active: true,
+          blocked: false,
+        );
+        _tempUserId -= 1;
+      }
+
+      if (chatSession.userInfo?.id == null) {
+        await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'User not found'));
+        return;
+      }
+
       // Check if user is allowed to access this channel
-      if (!await ChatConfig.current.channelAccessVerification(session, (await session.auth.authenticatedUserId)!, message.channel)) {
+      if (!await ChatConfig.current.channelAccessVerification(session, chatSession.userInfo!.id!, message.channel)) {
         await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'Access denied'));
         return;
       }
@@ -53,6 +87,7 @@ class ChatEndpoint extends Endpoint {
           channel: message.channel,
           initialMessageChunk: initialMessageChunk,
           lastReadMessageId: await _getLastReadMessage(session, message.channel, chatSession.userInfo!.id!),
+          userInfo: chatSession.userInfo!,
         ),
       );
     }
@@ -75,7 +110,7 @@ class ChatEndpoint extends Endpoint {
         channel: message.channel,
         message: message.message,
         time: DateTime.now(),
-        sender: (await session.auth.authenticatedUserId)!,
+        sender: chatSession.userInfo!.id!,
         senderInfo: chatSession.userInfo,
         removed: false,
         clientMessageId: message.clientMessageId,
@@ -83,7 +118,8 @@ class ChatEndpoint extends Endpoint {
         attachments: message.attachments,
       );
 
-      await session.db.insert(chatMessage);
+      if (!_isEphemeralChannel(message.channel))
+        await session.db.insert(chatMessage);
 
       session.messages.postMessage(_channelPrefix + message.channel, chatMessage);
     }
@@ -97,7 +133,7 @@ class ChatEndpoint extends Endpoint {
       await _setLastReadMessage(
         session,
         message.channel,
-        (await session.auth.authenticatedUserId)!,
+        chatSession.userInfo!.id!,
         message.lastReadMessageId,
       );
     }
@@ -113,6 +149,14 @@ class ChatEndpoint extends Endpoint {
   }
 
   Future<ChatMessageChunk> _fetchMessageChunk(Session session, String channel, int size, [int? lastId]) async {
+    if (_isEphemeralChannel(channel)) {
+      return ChatMessageChunk(
+        channel: channel,
+        messages: [],
+        hasOlderMessages: false,
+      );
+    }
+
     List<ChatMessage> messages;
     if (lastId != null) {
       messages = (await session.db.find(
@@ -187,7 +231,9 @@ class ChatEndpoint extends Endpoint {
   }
 
   Future<ChatMessageAttachmentUploadDescription?> createAttachmentUploadDescription(Session session, String fileName) async {
-    var userId = (await session.auth.authenticatedUserId)!;
+    var userId = (await session.auth.authenticatedUserId);
+    if (userId == null)
+      return null;
 
     var filePath = _generateAttachmentFilePath(userId, fileName);
 
@@ -201,7 +247,10 @@ class ChatEndpoint extends Endpoint {
   Future<ChatMessageAttachment?> verifyAttachmentUpload(Session session, String fileName, String filePath) async {
     var success = await session.storage.verifyDirectFileUpload(storageId: 'public', path: filePath);
     var url = await session.storage.getPublicUrl(storageId: 'public', path: filePath);
-    var userId = (await session.auth.authenticatedUserId)!;
+    var userId = (await session.auth.authenticatedUserId);
+
+    if (userId == null)
+      return null;
 
     // Generate thumbnail
     Uri? thumbUrl;
@@ -258,11 +307,15 @@ class ChatEndpoint extends Endpoint {
 
     return 'serverpod/chat/$userId/$dateString/$rndString/$fileName';
   }
+
+  bool _isEphemeralChannel(String channel) {
+    return channel.startsWith(_ephemeralChannelPrefix);
+  }
 }
 
 class ChatSessionInfo {
   final messageListeners = <String, MessageCentralListenerCallback>{};
-  final UserInfo? userInfo;
+  UserInfo? userInfo;
 
   ChatSessionInfo({
     this.userInfo,

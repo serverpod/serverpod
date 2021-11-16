@@ -14,9 +14,11 @@ class ChatConfig {
   static ChatConfig get current => _config;
 
   late final ChatChannelAccessVerificationCallback channelAccessVerification;
+  final bool allowUnauthenticatedUsers;
 
   ChatConfig({
     ChatChannelAccessVerificationCallback? channelAccessVerification,
+    this.allowUnauthenticatedUsers = false,
   }) {
     this.channelAccessVerification = channelAccessVerification ?? (session, userId, channel) async => true;
   }

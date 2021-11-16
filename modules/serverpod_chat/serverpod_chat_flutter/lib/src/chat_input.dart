@@ -109,7 +109,7 @@ class _ChatInputState extends State<ChatInput> {
                     ),
                   ),
                 ),
-                IconButton(
+                if (widget.controller.sessionManager.isSignedIn) IconButton(
                   icon: Icon(Icons.attach_file_rounded),
                   color: Theme.of(context).textTheme.caption!.color,
                   onPressed: _uploadingAttachment ? null : _attachFile,
@@ -160,7 +160,6 @@ class _ChatInputState extends State<ChatInput> {
       _uploadingAttachment = true;
     });
 
-    print('attachFile');
     ChatMessageAttachment attachment;
     try {
       var result = await await FilePicker.platform.pickFiles(withReadStream: true);

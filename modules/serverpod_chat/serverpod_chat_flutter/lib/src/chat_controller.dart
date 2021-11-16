@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
+import 'package:serverpod_auth_client/module.dart' as auth;
 
 typedef ChatControllerReceivedMessageCallback = void Function(ChatMessage message, bool addedByUser);
 
 class ChatController {
-  final String channel;
+  late final String channel;
   final Caller module;
   final SessionManager sessionManager;
+  final bool ephemeral;
+  final String? unauthenticatedUserName;
 
   late final ChatDispatch dispatch;
 
@@ -44,16 +47,26 @@ class ChatController {
 
   int _lastReadMessage = 0;
 
+  auth.UserInfo? _joinedAsUserInfo;
+
   ChatController({
-    required this.channel,
+    required String channel,
     required this.module,
     required this.sessionManager,
+    this.ephemeral = false,
+    this.unauthenticatedUserName,
   }) {
+    this.channel = ephemeral ? 'ephemeral.$channel' : channel;
+
     // Pick a random number and hope no other client with the same user logged
     // in picks the same. If so, messages may be incorrectly marked as delivered.
     _clientMessageId = Random().nextInt(10000000);
     dispatch = ChatDispatch.getInstance(module);
-    dispatch.addListener(channel, _handleServerMessage);
+    dispatch.addListener(
+      this.channel,
+      _handleServerMessage,
+      unauthenticatedUserName: unauthenticatedUserName,
+    );
   }
 
   void dispose() {
@@ -72,15 +85,13 @@ class ChatController {
       }
 
       var updated = false;
-      if (serverMessage.sender == sessionManager.signedInUser?.id!) {
+      if (serverMessage.sender == _joinedAsUserInfo?.id) {
         // This user is the sender of the message, mark message as sent
         for (var message in messages) {
           if (message.clientMessageId == serverMessage.clientMessageId) {
             message.sent = true;
             message.id = serverMessage.id;
             updated = true;
-
-            print('updating clientMessageId: ${message.clientMessageId} serverMessage.attachment: ${serverMessage.attachments?.length} old message.attachment: ${message.attachments?.length}');
           }
         }
         if (updated) {
@@ -102,6 +113,7 @@ class ChatController {
     }
     else if (serverMessage is ChatJoinedChannel) {
       messages.addAll(serverMessage.initialMessageChunk.messages);
+      _joinedAsUserInfo = serverMessage.userInfo;
       _hasOlderMessages = serverMessage.initialMessageChunk.hasOlderMessages;
       _lastReadMessage = serverMessage.lastReadMessageId;
       _joinedChannel = true;
@@ -116,7 +128,7 @@ class ChatController {
   }
 
   void postMessage(String message, [List<ChatMessageAttachment>? attachments]) {
-    if (!sessionManager.isSignedIn) {
+    if (!sessionManager.isSignedIn && unauthenticatedUserName == null) {
       return;
     }
 
@@ -130,23 +142,19 @@ class ChatController {
       ),
     );
 
-    print('postMessage attachments: ${attachments?.isNotEmpty}');
-
     // Post dummy message
     var dummy = ChatMessage(
       channel: channel,
       message: message,
       time: DateTime.now().toUtc(),
       sent: false,
-      sender: sessionManager.signedInUser!.id!,
-      senderInfo: sessionManager.signedInUser!,
+      sender: _joinedAsUserInfo!.id!,
+      senderInfo: _joinedAsUserInfo,
       removed: false,
       clientMessageId: _clientMessageId,
       attachments: attachments,
     );
     messages.add(dummy);
-
-    print('dummy clientMessageId: ${dummy.clientMessageId} attachments: ${attachments?.length}');
 
     _notifyMessageListeners(dummy, true);
     _clientMessageId += 1;
@@ -181,6 +189,9 @@ class ChatController {
   }
 
   int? _getLastMessageId() {
+    if (ephemeral)
+      return null;
+
     int? lastMessageId;
     for (var i = messages.length - 1; i >= 0; i -= 1) {
       if (messages[i].sender != sessionManager.signedInUser!.id!) {
