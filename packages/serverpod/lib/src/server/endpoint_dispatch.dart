@@ -143,24 +143,24 @@ abstract class EndpointDispatch {
     var auth = session.authenticationKey;
     if (endpoint.requireLogin) {
       if (auth == null) {
-        await session.close();
+        // await session.close();
         return ResultAuthenticationFailed('No authentication provided');
       }
       if (!await session.isUserSignedIn) {
-        await session.close();
+        // await session.close();
         return ResultAuthenticationFailed('Authentication failed');
       }
     }
 
     if (endpoint.requiredScopes.isNotEmpty) {
       if (!await session.isUserSignedIn) {
-        await session.close();
+        // await session.close();
         return ResultAuthenticationFailed('Sign in required to access this endpoint');
       }
 
       for (var requiredScope in endpoint.requiredScopes) {
         if (!(await session.scopes)!.contains(requiredScope)) {
-          await session.close();
+          // await session.close();
           return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
         }
       }

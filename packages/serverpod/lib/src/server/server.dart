@@ -386,6 +386,8 @@ class Server {
 
   Future<void> _callStreamOpened(StreamingSession session, Endpoint endpoint) async {
     try {
+      // TODO: We need to mark stream as accessbile (in endpoint?) and check
+      // future messages that are passed to this endpoint.
       var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
       if (authFailed == null)
         await endpoint.streamOpened(session);
