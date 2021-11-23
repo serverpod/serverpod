@@ -3,6 +3,7 @@ apple:
 email:
   - authenticate:
   - changePassword:
+  - initiatePasswordReset:
 google:
   - authenticate:
 user:
@@ -14,3 +15,5 @@ status:
   - signOut:
   - getUserInfo:
   - getUserSettingsConfig:
+admin:
+  - getUserInfo:

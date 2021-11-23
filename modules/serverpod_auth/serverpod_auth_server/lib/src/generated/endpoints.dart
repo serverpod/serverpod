@@ -14,6 +14,7 @@ import '../endpoints/email_endpoint.dart';
 import '../endpoints/google_endpoint.dart';
 import '../endpoints/user_endpoint.dart';
 import '../endpoints/status_endpoint.dart';
+import '../endpoints/admin_endpoint.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
@@ -24,6 +25,7 @@ class Endpoints extends EndpointDispatch {
       'google': GoogleEndpoint()..initialize(server, 'google', 'serverpod_auth'),
       'user': UserEndpoint()..initialize(server, 'user', 'serverpod_auth'),
       'status': StatusEndpoint()..initialize(server, 'status', 'serverpod_auth'),
+      'admin': AdminEndpoint()..initialize(server, 'admin', 'serverpod_auth'),
     };
 
     connectors['apple'] = EndpointConnector(
@@ -64,6 +66,15 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['email'] as EmailEndpoint).changePassword(session,params['oldPassword'],params['newPassword'],);
+          },
+        ),
+        'initiatePasswordReset': MethodConnector(
+          name: 'initiatePasswordReset',
+          params: {
+            'email': ParameterDescription(name: 'email', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['email'] as EmailEndpoint).initiatePasswordReset(session,params['email'],);
           },
         ),
       },
@@ -152,6 +163,22 @@ class Endpoints extends EndpointDispatch {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['status'] as StatusEndpoint).getUserSettingsConfig(session,);
+          },
+        ),
+      },
+    );
+
+    connectors['admin'] = EndpointConnector(
+      name: 'admin',
+      endpoint: endpoints['admin']!,
+      methodConnectors: {
+        'getUserInfo': MethodConnector(
+          name: 'getUserInfo',
+          params: {
+            'userId': ParameterDescription(name: 'userId', type: int, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['admin'] as AdminEndpoint).getUserInfo(session,params['userId'],);
           },
         ),
       },

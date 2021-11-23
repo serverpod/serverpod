@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 import '../generated/protocol.dart';
 import 'users.dart';
+import '../util/random_string.dart';
 
 class Emails {
   static String generatePasswordHash(String password) {
@@ -69,5 +73,36 @@ class Emails {
     await session.db.update(auth);
 
     return true;
+  }
+
+  static Future<bool> initiatePasswordReset(Session session, String email) async {
+    if (AuthConfig.current.resetPasswordEmail == null) {
+      // TODO: User proper logging instead
+      print('ResetPasswordEmail is not configured, cannot send email.');
+      return false;
+    }
+
+    email = email.trim().toLowerCase();
+
+    var userInfo = await Users.findUserByEmail(session, email);
+    if (userInfo == null)
+      return false;
+
+    var verificationCode = Random().nextString();
+    var emailReset = EmailReset(
+      userId: userInfo.id!,
+      verificationCode: verificationCode,
+      expiration: DateTime.now().add(AuthConfig.current.passwordResetExpirationTime),
+    );
+    await session.db.insert(emailReset);
+
+    var config = session.server.serverpod.config;
+    var resetLink = Uri(
+      scheme: config.publicScheme,
+      host: config.publicHost,
+      path: '/password-reset/$verificationCode',
+    );
+
+    return AuthConfig.current.resetPasswordEmail!(session, userInfo, resetLink.toString());
   }
 }

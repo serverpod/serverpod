@@ -41,6 +41,23 @@ CREATE INDEX serverpod_email_auth_email ON serverpod_email_auth USING btree ("em
 
 
 --
+-- Class EmailReset as table serverpod_email_reset
+--
+
+CREATE TABLE serverpod_email_reset (
+  "id" serial,
+  "userId" integer NOT NULL,
+  "verificationCode" text NOT NULL,
+  "expiration" timestamp without time zone NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_email_reset
+  ADD CONSTRAINT serverpod_email_reset_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_email_reset_verification_idx ON serverpod_email_reset USING btree ("verificationCode");
+
+
+--
 -- Class UserImage as table serverpod_user_image
 --
 

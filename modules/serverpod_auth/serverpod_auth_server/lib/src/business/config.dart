@@ -19,6 +19,8 @@ typedef UserImageGenerator = Future<Image> Function(UserInfo userInfo);
 
 typedef UserInfoUpdateCallback = Future<void> Function(Session session, UserInfo userInfo);
 
+typedef ResetPasswordEmailCallback = Future<bool> Function(Session session, UserInfo userInfo, String resetLink);
+
 /// Configuration options for the Auth module.
 class AuthConfig {
   static AuthConfig _config = AuthConfig();
@@ -69,6 +71,10 @@ class AuthConfig {
 
   final UserInfoUpdateCallback? userInfoUpdateListener;
 
+  final ResetPasswordEmailCallback? resetPasswordEmail;
+
+  final Duration passwordResetExpirationTime;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings.
   AuthConfig({
@@ -85,5 +91,7 @@ class AuthConfig {
     this.userCanSeeFullName = true,
     this.userInfoCacheLifetime = const Duration(minutes: 1),
     this.userInfoUpdateListener,
+    this.resetPasswordEmail,
+    this.passwordResetExpirationTime = const Duration(hours: 24),
   });
 }

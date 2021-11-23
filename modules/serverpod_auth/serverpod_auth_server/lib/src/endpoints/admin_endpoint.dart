@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 
-class UserEndpoint extends Endpoint {
+class AdminEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 

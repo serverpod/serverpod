@@ -41,6 +41,12 @@ class _EndpointEmail extends EndpointRef {
       'newPassword':newPassword,
     });
   }
+
+  Future<bool> initiatePasswordReset(String email,) async {
+    return await caller.callServerEndpoint('serverpod_auth.email', 'initiatePasswordReset', 'bool', {
+      'email':email,
+    });
+  }
 }
 
 class _EndpointGoogle extends EndpointRef {
@@ -107,12 +113,26 @@ class _EndpointStatus extends EndpointRef {
   }
 }
 
+class _EndpointAdmin extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.admin';
+
+  _EndpointAdmin(EndpointCaller caller) : super(caller);
+
+  Future<UserInfo?> getUserInfo(int userId,) async {
+    return await caller.callServerEndpoint('serverpod_auth.admin', 'getUserInfo', 'UserInfo', {
+      'userId':userId,
+    });
+  }
+}
+
 class Caller extends ModuleEndpointCaller {
   late final _EndpointApple apple;
   late final _EndpointEmail email;
   late final _EndpointGoogle google;
   late final _EndpointUser user;
   late final _EndpointStatus status;
+  late final _EndpointAdmin admin;
 
   Caller(ServerpodClientShared client) : super(client) {
     apple = _EndpointApple(this);
@@ -120,6 +140,7 @@ class Caller extends ModuleEndpointCaller {
     google = _EndpointGoogle(this);
     user = _EndpointUser(this);
     status = _EndpointStatus(this);
+    admin = _EndpointAdmin(this);
   }
 
   @override
@@ -129,5 +150,6 @@ class Caller extends ModuleEndpointCaller {
     'serverpod_auth.google' : google,
     'serverpod_auth.user' : user,
     'serverpod_auth.status' : status,
+    'serverpod_auth.admin' : admin,
   };
 }

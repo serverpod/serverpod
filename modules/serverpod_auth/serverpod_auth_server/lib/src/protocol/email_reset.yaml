@@ -1,0 +1,10 @@
+class: EmailReset
+table: serverpod_email_reset
+fields:
+  userId: int
+  verificationCode: String
+  expiration: DateTime
+indexes:
+  serverpod_email_reset_verification_idx:
+    fields: verificationCode
+    unique: true
