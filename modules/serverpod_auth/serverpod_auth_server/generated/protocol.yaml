@@ -4,6 +4,8 @@ email:
   - authenticate:
   - changePassword:
   - initiatePasswordReset:
+  - verifyEmailPasswordReset:
+  - resetPassword:
 google:
   - authenticate:
 user:

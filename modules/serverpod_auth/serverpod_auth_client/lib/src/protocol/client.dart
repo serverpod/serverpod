@@ -47,6 +47,19 @@ class _EndpointEmail extends EndpointRef {
       'email':email,
     });
   }
+
+  Future<EmailPasswordReset?> verifyEmailPasswordReset(String verificationCode,) async {
+    return await caller.callServerEndpoint('serverpod_auth.email', 'verifyEmailPasswordReset', 'EmailPasswordReset', {
+      'verificationCode':verificationCode,
+    });
+  }
+
+  Future<bool> resetPassword(String verificationCode,String password,) async {
+    return await caller.callServerEndpoint('serverpod_auth.email', 'resetPassword', 'bool', {
+      'verificationCode':verificationCode,
+      'password':password,
+    });
+  }
 }
 
 class _EndpointGoogle extends EndpointRef {

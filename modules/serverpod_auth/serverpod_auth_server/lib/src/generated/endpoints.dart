@@ -77,6 +77,25 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['email'] as EmailEndpoint).initiatePasswordReset(session,params['email'],);
           },
         ),
+        'verifyEmailPasswordReset': MethodConnector(
+          name: 'verifyEmailPasswordReset',
+          params: {
+            'verificationCode': ParameterDescription(name: 'verificationCode', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['email'] as EmailEndpoint).verifyEmailPasswordReset(session,params['verificationCode'],);
+          },
+        ),
+        'resetPassword': MethodConnector(
+          name: 'resetPassword',
+          params: {
+            'verificationCode': ParameterDescription(name: 'verificationCode', type: String, nullable: false),
+            'password': ParameterDescription(name: 'password', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['email'] as EmailEndpoint).resetPassword(session,params['verificationCode'],params['password'],);
+          },
+        ),
       },
     );
 

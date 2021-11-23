@@ -76,7 +76,7 @@ class Emails {
   }
 
   static Future<bool> initiatePasswordReset(Session session, String email) async {
-    if (AuthConfig.current.resetPasswordEmail == null) {
+    if (AuthConfig.current.sendPasswordResetEmail == null) {
       // TODO: User proper logging instead
       print('ResetPasswordEmail is not configured, cannot send email.');
       return false;
@@ -103,6 +103,54 @@ class Emails {
       path: '/password-reset/$verificationCode',
     );
 
-    return AuthConfig.current.resetPasswordEmail!(session, userInfo, resetLink.toString());
+    return AuthConfig.current.sendPasswordResetEmail!(session, userInfo, resetLink.toString());
+  }
+
+  static Future<EmailPasswordReset?> verifyEmailPasswordReset(Session session, String verificationCode) async {
+    print('verificationCode: $verificationCode');
+    var passwordReset = (await session.db.findSingleRow(
+      tEmailReset,
+      where: tEmailReset.verificationCode.equals(verificationCode) & (tEmailReset.expiration > DateTime.now().toUtc()),
+    )) as EmailReset?;
+
+    print(' - found reset');
+
+    if (passwordReset == null)
+      return null;
+
+    var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
+    if (userInfo == null)
+      return null;
+
+    if (userInfo.email == null)
+      return null;
+
+    return EmailPasswordReset(
+      userName: userInfo.userName,
+      email: userInfo.email!,
+    );
+  }
+
+  static Future<bool> resetPassword(Session session, String verificationCode, String password) async {
+    var passwordReset = (await session.db.findSingleRow(
+      tEmailReset,
+      where: tEmailReset.verificationCode.equals(verificationCode) & (tEmailReset.expiration > DateTime.now().toUtc()),
+    )) as EmailReset?;
+
+    if (passwordReset == null)
+      return false;
+
+    var emailAuth = (await session.db.findSingleRow(
+      tEmailAuth,
+      where: tEmailAuth.userId.equals(passwordReset.userId),
+    )) as EmailAuth?;
+
+    if (emailAuth == null)
+      return false;
+
+    emailAuth.hash = generatePasswordHash(password);
+    await session.db.update(emailAuth);
+
+    return true;
   }
 }

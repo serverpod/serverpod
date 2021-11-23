@@ -16,6 +16,7 @@ import 'email_reset.dart';
 import 'authentication_response.dart';
 import 'user_image.dart';
 import 'apple_auth_info.dart';
+import 'email_password_reset.dart';
 
 export 'user_settings_config.dart';
 export 'user_info.dart';
@@ -24,6 +25,7 @@ export 'email_reset.dart';
 export 'authentication_response.dart';
 export 'user_image.dart';
 export 'apple_auth_info.dart';
+export 'email_password_reset.dart';
 export 'client.dart';
 
 class Protocol extends SerializationManager {
@@ -44,5 +46,6 @@ class Protocol extends SerializationManager {
     constructors['serverpod_auth_server.AuthenticationResponse'] = (Map<String, dynamic> serialization) => AuthenticationResponse.fromSerialization(serialization);
     constructors['serverpod_auth_server.UserImage'] = (Map<String, dynamic> serialization) => UserImage.fromSerialization(serialization);
     constructors['serverpod_auth_server.AppleAuthInfo'] = (Map<String, dynamic> serialization) => AppleAuthInfo.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailPasswordReset'] = (Map<String, dynamic> serialization) => EmailPasswordReset.fromSerialization(serialization);
   }
 }

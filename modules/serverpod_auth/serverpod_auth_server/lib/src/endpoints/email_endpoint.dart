@@ -64,7 +64,15 @@ class EmailEndpoint extends Endpoint {
     return Emails.changePassword(session, userId, oldPassword, newPassword);
   }
 
-  Future<bool> initiatePasswordReset(Session session, String email) async {
+  Future<bool> initiatePasswordReset(Session session, String email) {
     return Emails.initiatePasswordReset(session, email);
+  }
+
+  Future<EmailPasswordReset?> verifyEmailPasswordReset(Session session, String verificationCode) {
+    return Emails.verifyEmailPasswordReset(session, verificationCode);
+  }
+
+  Future<bool> resetPassword(Session session, String verificationCode, String password) {
+    return Emails.resetPassword(session, verificationCode, password);
   }
 }
