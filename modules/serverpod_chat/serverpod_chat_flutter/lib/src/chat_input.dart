@@ -14,6 +14,8 @@ class ChatInput extends StatefulWidget {
   final EdgeInsets? padding;
   final String? hintText;
   final TextStyle? style;
+  final IconData iconSend;
+  final IconData iconAttach;
 
   const ChatInput({
     Key? key,
@@ -23,6 +25,8 @@ class ChatInput extends StatefulWidget {
     this.padding,
     this.hintText,
     this.style,
+    this.iconSend = Icons.send,
+    this.iconAttach = Icons.attach_file,
   }) : super(key: key);
 
   @override
@@ -110,15 +114,20 @@ class _ChatInputState extends State<ChatInput> {
                   ),
                 ),
                 if (widget.controller.sessionManager.isSignedIn) IconButton(
-                  icon: Icon(Icons.attach_file_rounded),
+                  icon: Icon(widget.iconAttach),
                   color: Theme.of(context).textTheme.caption!.color,
                   onPressed: _uploadingAttachment ? null : _attachFile,
+                  iconSize: 18,
                 ),
                 // SizedBox(width: 8,),
-                IconButton(
-                  icon: Icon(Icons.send_rounded),
-                  color: Theme.of(context).textTheme.caption!.color,
-                  onPressed: _uploadingAttachment ? null : _sendTextMessage,
+                Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: IconButton(
+                    icon: Icon(widget.iconSend),
+                    color: Theme.of(context).textTheme.caption!.color,
+                    onPressed: _uploadingAttachment ? null : _sendTextMessage,
+                    iconSize: 18,
+                  ),
                 ),
               ],
             ),
