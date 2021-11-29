@@ -6,7 +6,6 @@ import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
-import 'package:serverpod/src/server/password_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -171,7 +170,7 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    config = ServerConfig(_runMode, serverId);
+    config = ServerConfig(_runMode, serverId, _passwords);
     if (_passwords['database'] != null)
       config.dbPass = _passwords['database'];
     if (_passwords['serviceSecret'] != null)

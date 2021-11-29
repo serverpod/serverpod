@@ -14,7 +14,7 @@ class ServiceKeyManager extends AuthenticationKeyManager {
 
   @override
   Future<String> get() async {
-    return 'name:${config.serviceSecret}';
+    return '$name:${config.serviceSecret}';
   }
   @override
   Future<Null> put(String key) async {

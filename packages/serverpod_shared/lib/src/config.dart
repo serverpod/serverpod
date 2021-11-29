@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
 
 /// Parser for the server configuration file.
@@ -53,7 +54,7 @@ class ServerConfig {
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
-  ServerConfig(this.runMode, this.serverId) : file = 'config/$runMode.yaml' {
+  ServerConfig(this.runMode, this.serverId, Map<String, String>? passwords) : file = 'config/$runMode.yaml' {
     var data = File(file).readAsStringSync();
     var doc = loadYaml(data);
     
@@ -73,6 +74,9 @@ class ServerConfig {
     port = cluster[serverId]!.port;
     servicePort = cluster[serverId]!.servicePort;
     serviceSecret = doc['serviceSecret'] ?? '';
+    if (passwords != null && passwords['serviceSecret'] != null) {
+      serviceSecret = passwords['serviceSecret'];
+    }
 
     // Get database setup
     if (doc['database'] != null) {
