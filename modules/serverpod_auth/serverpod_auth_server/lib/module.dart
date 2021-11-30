@@ -5,3 +5,4 @@ export 'src/generated/protocol.dart';
 export 'src/business/email_auth.dart';
 export 'src/business/users.dart';
 export 'src/business/config.dart';
+export 'src/util/random_string.dart';
