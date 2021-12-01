@@ -26,10 +26,7 @@ abstract class Session {
   /// The [Serverpod] this session is running on.
   Serverpod get serverpod => server.serverpod;
 
-  int? _id;
-  /// The id of the session used for logging. Only set if logging is enabled
-  /// for this session and an entry has been created in the database.
-  int? get id => _id;
+  late int temporarySessionId;
 
   /// Max lifetime of the session, after it will be forcefully terminated.
   final Duration maxLifeTime;
@@ -82,6 +79,7 @@ abstract class Session {
     String? futureCallName,
   }) {
     _startTime = DateTime.now();
+    temporarySessionId = serverpod.logManager.nextTemporarySessionId();
 
     auth = UserAuthetication._(this);
     storage = StorageAccess._(this);
@@ -126,13 +124,19 @@ abstract class Session {
   /// [stackTrace] if the session ended with an error and it should be written
   /// to the logs.
   Future<void> close({dynamic error, StackTrace? stackTrace}) async {
-    server.messageCentral.removeListenersForSession(this);
-    await server.serverpod.logManager.finalizeSessionLog(
-      this,
-      exception: error,
-      stackTrace: stackTrace,
-      authenticatedUserId: _authenticatedUser,
-    );
+    try {
+      server.messageCentral.removeListenersForSession(this);
+      await server.serverpod.logManager.finalizeSessionLog(
+        this,
+        exception: error,
+        stackTrace: stackTrace,
+        authenticatedUserId: _authenticatedUser,
+      );
+    }
+    catch(e, stackTrace) {
+      stderr.writeln('Failed to close session: $e');
+      stderr.writeln('$stackTrace');
+    }
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
@@ -140,7 +144,7 @@ abstract class Session {
   void log(String message, {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
     sessionLogs.logEntries.add(
       LogEntry(
-        sessionLogId: -1, // FIXME
+        sessionLogId: temporarySessionId,
         serverId: server.serverId,
         logLevel: (level ?? LogLevel.info).index,
         message: message,

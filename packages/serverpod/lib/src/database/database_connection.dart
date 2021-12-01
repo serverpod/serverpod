@@ -528,7 +528,7 @@ class DatabaseConnection {
 
     session.sessionLogs.queries.add(
       QueryLogEntry(
-        sessionLogId: -1,
+        sessionLogId: session.temporarySessionId,
         serverId: session.server.serverId,
         query: query,
         duration: DateTime.now().difference(startTime).inMicroseconds / 1000000.0,

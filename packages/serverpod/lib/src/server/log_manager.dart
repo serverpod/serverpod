@@ -13,6 +13,16 @@ class LogManager {
 
   final List<SessionLogEntryCache> _internalSessionLogs = [];
 
+  int _nextTemporarySessionId = -1;
+
+  /// Returns a new unique temporary session id. The id will be negative, and
+  /// ids are only unique to this running instance.
+  int nextTemporarySessionId() {
+    var id = _nextTemporarySessionId;
+    _nextTemporarySessionId -= 1;
+    return id;
+  }
+
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(this.runtimeSettings) {
     for (var override in runtimeSettings.logSettingsOverrides) {
@@ -129,9 +139,9 @@ class LogManager {
         authenticatedUserId: authenticatedUserId,
       );
 
+      var tempSession = await session.serverpod.createSession();
       try {
         // var dbConn = DatabaseConnection(databaseConfig);
-        var tempSession = await session.serverpod.createSession();
         await tempSession.db.insert(sessionLogEntry);
 
         var sessionLogId = sessionLogEntry.id!;
@@ -151,8 +161,6 @@ class LogManager {
             await tempSession.db.insert(queryInfo);
           }
         }
-        await tempSession.close();
-
       }
       catch(e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
@@ -167,6 +175,7 @@ class LogManager {
         stderr.writeln('Current stacktrace:');
         stderr.writeln('${StackTrace.current}');
       }
+      await tempSession.close();
     }
   }
 }
