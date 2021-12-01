@@ -109,7 +109,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findById(Table table, int id, {Session? session}) async {
+  Future<TableRow?> findById(Table table, int id, {required Session session}) async {
     var result = await find(
       table,
       where: Expression('id = $id'),
@@ -121,7 +121,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true, Session? session}) async {
+  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true, required Session session}) async {
     assert(orderByList == null || orderBy == null);
 
     var startTime = DateTime.now();
@@ -170,7 +170,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true, Session? session}) async {
+  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true, required Session session}) async {
     var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
 
     if (result.isEmpty)
@@ -210,7 +210,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true, Session? session}) async {
+  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true, required Session session}) async {
     var startTime = DateTime.now();
 
     where ??= Expression('TRUE');
@@ -240,7 +240,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> update(TableRow row, {Transaction? transaction, Session? session}) async {
+  Future<bool> update(TableRow row, {Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -280,7 +280,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> insert(TableRow row, {Transaction? transaction, Session? session}) async {
+  Future<bool> insert(TableRow row, {Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -348,7 +348,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete(Table table, {required Expression where, Transaction? transaction, Session? session}) async {
+  Future<int> delete(Table table, {required Expression where, Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     var tableName = table.tableName;
@@ -372,7 +372,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> deleteRow(TableRow row, {Transaction? transaction, Session? session}) async {
+  Future<bool> deleteRow(TableRow row, {Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
@@ -394,7 +394,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration, bool verified, {Session? session}) async {
+  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration, bool verified, {required Session session}) async {
     var startTime = DateTime.now();
     var query = '';
     try {
@@ -423,7 +423,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<ByteData?> retrieveFile(String storageId, String path, {Session? session}) async {
+  Future<ByteData?> retrieveFile(String storageId, String path, {required Session session}) async {
     var startTime = DateTime.now();
     var query = '';
     try {
@@ -451,7 +451,7 @@ class DatabaseConnection {
     }
   }
 
-  Future<bool> verifyFile(String storageId, String path, {Session? session}) async {
+  Future<bool> verifyFile(String storageId, String path, {required Session session}) async {
     // Check so that the file is saved, but not
     var startTime = DateTime.now();
     var query = 'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
@@ -503,7 +503,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<List<dynamic>>> query(String query, {Session? session, int? timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(String query, {required Session session, int? timeoutInSeconds}) async {
     var startTime = DateTime.now();
 
     try {
@@ -518,20 +518,22 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> executeTransaction(Transaction transaction, {Session? session}) async {
+  Future<bool> executeTransaction(Transaction transaction, {required Session session}) async {
     return await transaction._execute(postgresConnection, this, session);
   }
 
-  void _logQuery(Session? session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
+  void _logQuery(Session session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
     if (session == null)
       return;
 
-    session.queries.add(
+    session.sessionLogs.queries.add(
       QueryLogEntry(
+        sessionLogId: -1,
+        serverId: session.server.serverId,
         query: query,
         duration: DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
         numRows: numRowsAffected,
-        exception: exception?.toString(),
+        error: exception?.toString(),
         stackTrace: trace?.toString(),
       ),
     );
@@ -565,7 +567,7 @@ class Order {
 class Transaction {
   final List<String> _queries = [];
 
-  Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn, Session? session) async {
+  Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn, Session session) async {
     // Ignore empty transactions
     if (_queries.isEmpty)
       return true;

@@ -12,7 +12,9 @@ import '../authentication/scope.dart';
 import '../generated/protocol.dart';
 import '../database/database.dart';
 import '../authentication/util.dart';
+import 'log_manager.dart';
 import 'server.dart';
+import 'serverpod.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
@@ -21,6 +23,14 @@ abstract class Session {
   /// The [Server] that created the session.
   final Server server;
 
+  /// The [Serverpod] this session is running on.
+  Serverpod get serverpod => server.serverpod;
+
+  int? _id;
+  /// The id of the session used for logging. Only set if logging is enabled
+  /// for this session and an entry has been created in the database.
+  int? get id => _id;
+
   /// Max lifetime of the session, after it will be forcefully terminated.
   final Duration maxLifeTime;
 
@@ -28,11 +38,9 @@ abstract class Session {
   /// The time the session object was created.
   DateTime get startTime => _startTime;
 
-  /// Queries performed during the session.
-  final List<QueryLogEntry> queries = [];
-
   /// Log messages saved during the session.
-  final List<LogEntry> logs = [];
+  // final List<LogEntry> logs = [];
+  late final SessionLogEntryCache sessionLogs;
 
   int? _authenticatedUser;
   Set<Scope>? _scopes;
@@ -80,6 +88,8 @@ abstract class Session {
     messages = MessageCentralAccess._(this);
 
     db = Database(session: this);
+
+    sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
   }
 
   bool _initialized = false;
@@ -108,15 +118,27 @@ abstract class Session {
   /// Returns the duration this session has been open.
   Duration get duration => DateTime.now().difference(_startTime);
 
-  /// Closes the session.
-  Future<void> close() async {
+  /// Closes the session. This method should only be called if you have
+  /// manually created a the [Session] e.g. by calling [createSession] on
+  /// [Serverpod]. Closing the session finalizes and writes logs to the
+  /// database. After a session has been closed, you should not call any
+  /// more methods on it. Optionally pass in an [error]/exception and
+  /// [stackTrace] if the session ended with an error and it should be written
+  /// to the logs.
+  Future<void> close({dynamic error, StackTrace? stackTrace}) async {
     server.messageCentral.removeListenersForSession(this);
+    await server.serverpod.logManager.finalizeSessionLog(
+      this,
+      exception: error,
+      stackTrace: stackTrace,
+      authenticatedUserId: _authenticatedUser,
+    );
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
   void log(String message, {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
-    logs.add(
+    sessionLogs.logEntries.add(
       LogEntry(
         sessionLogId: -1, // FIXME
         serverId: server.serverId,

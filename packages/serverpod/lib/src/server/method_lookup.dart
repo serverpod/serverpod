@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:serverpod/server.dart';
 import 'package:yaml/yaml.dart';
 import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
@@ -17,9 +18,9 @@ class MethodLookup {
   MethodLookup(this._protocolPath);
 
   /// Loads the lookup from database.
-  Future<void> load(DatabaseConnection dbConn) async {
+  Future<void> load(Session session) async {
     try {
-      await _attemptLoad(dbConn);
+      await _attemptLoad(session);
     }
     catch(e) {
       // It's possible that another server instance is booting up at the same
@@ -27,11 +28,11 @@ class MethodLookup {
       // simultaneously. Make a second attempt to load after waiting a second.
       print('Failed to load method lookup. Making second attempt in 1 second');
       await Future.delayed(Duration(seconds: 1));
-      await _attemptLoad(dbConn);
+      await _attemptLoad(session);
     }
   }
 
-  Future<void> _attemptLoad(DatabaseConnection dbConn) async {
+  Future<void> _attemptLoad(Session session) async {
     // TODO: Use transactions for this.
     var file = File(_protocolPath);
     Map endpoints = loadYaml(file.readAsStringSync());
@@ -45,7 +46,7 @@ class MethodLookup {
         String method = methodDef.keys.first;
 
         // Find in database
-        var methodInfo = await dbConn.findSingleRow(
+        var methodInfo = await session.db.findSingleRow(
           internal.tMethodInfo,
           where: internal.tMethodInfo.endpoint.equals(endpoint) & internal.tMethodInfo.method.equals(method),
         ) as internal.MethodInfo?;
@@ -57,7 +58,7 @@ class MethodLookup {
             method: method,
           );
 
-          if (await dbConn.insert(methodInfo)) {
+          if (await session.db.insert(methodInfo)) {
             // Successfully inserted
             _lookup['$endpoint.$method'] = methodInfo.id!;
           }

@@ -2,12 +2,12 @@ class: QueryLogEntry
 table: serverpod_query_log
 
 fields:
-  serverId: int?
-  sessionLogId: int?
+  serverId: int
+  sessionLogId: int
   query: String
   duration: double
   numRows: int?
-  exception: String?
+  error: String?
   stackTrace: String?
 
 indexes:

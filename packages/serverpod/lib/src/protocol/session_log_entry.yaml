@@ -9,7 +9,7 @@ fields:
   futureCall: String?
   duration: double?
   numQueries: int?
-  slow: bool
+  slow: bool?
   error: String?
   stackTrace: String?
   authenticatedUserId: int?

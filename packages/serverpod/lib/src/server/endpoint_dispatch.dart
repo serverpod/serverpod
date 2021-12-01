@@ -90,7 +90,6 @@ abstract class EndpointDispatch {
     try {
       var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
       if (authFailed != null) {
-        print('authFailed: ${authFailed.errorDescription}');
         return authFailed;
       }
 
@@ -115,8 +114,8 @@ abstract class EndpointDispatch {
 
       // Print session info
       var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
-      if (connector.endpoint.logSessions)
-        unawaited(server.serverpod.logSession(session, authenticatedUserId: authenticatedUserId));
+      // if (connector.endpoint.logSessions)
+      //   unawaited(server.serverpod.logSession(session, authenticatedUserId: authenticatedUserId));
 
       await session.close();
 
@@ -128,8 +127,8 @@ abstract class EndpointDispatch {
     catch (exception, stackTrace) {
       // Something did not work out
       int? sessionLogId = 0;
-      if (connector.endpoint.logSessions)
-        sessionLogId = await server.serverpod.logSession(session, exception: exception.toString(), stackTrace: stackTrace);
+      // if (connector.endpoint.logSessions)
+      //   sessionLogId = await server.serverpod.logSession(session, exception: exception.toString(), stackTrace: stackTrace);
 
       await session.close();
       return ResultInternalServerError(exception.toString(), stackTrace, sessionLogId);

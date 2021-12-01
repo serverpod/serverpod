@@ -39,12 +39,12 @@ CREATE INDEX serverpod_future_call_serverId_idx ON serverpod_future_call USING b
 
 CREATE TABLE serverpod_query_log (
   "id" serial,
-  "serverId" integer,
-  "sessionLogId" integer,
+  "serverId" integer NOT NULL,
+  "sessionLogId" integer NOT NULL,
   "query" text NOT NULL,
   "duration" double precision NOT NULL,
   "numRows" integer,
-  "exception" text,
+  "error" text,
   "stackTrace" text
 );
 
@@ -145,7 +145,7 @@ CREATE TABLE serverpod_session_log (
   "futureCall" text,
   "duration" double precision,
   "numQueries" integer,
-  "slow" boolean NOT NULL,
+  "slow" boolean,
   "error" text,
   "stackTrace" text,
   "authenticatedUserId" integer

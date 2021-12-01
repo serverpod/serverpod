@@ -89,10 +89,12 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
       number: rnd,
     );
 
-    await databaseConnection.insert(entry);
+    var session = await pod.createSession();
+    await databaseConnection.insert(entry, session: session);
 
     // Read entry
-    entry = await databaseConnection.findById(tReadWriteTestEntry, entry.id!) as ReadWriteTestEntry?;
+    entry = await databaseConnection.findById(tReadWriteTestEntry, entry.id!, session: session) as ReadWriteTestEntry?;
+    await session.close();
 
     // Verify random number
     dbHealthy = entry?.number == rnd;

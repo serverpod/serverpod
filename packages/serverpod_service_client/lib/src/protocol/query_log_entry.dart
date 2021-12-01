@@ -14,34 +14,34 @@ class QueryLogEntry extends SerializableEntity {
   String get className => 'QueryLogEntry';
 
   int? id;
-  int? serverId;
-  int? sessionLogId;
+  late int serverId;
+  late int sessionLogId;
   late String query;
   late double duration;
   int? numRows;
-  String? exception;
+  String? error;
   String? stackTrace;
 
   QueryLogEntry({
     this.id,
-    this.serverId,
-    this.sessionLogId,
+    required this.serverId,
+    required this.sessionLogId,
     required this.query,
     required this.duration,
     this.numRows,
-    this.exception,
+    this.error,
     this.stackTrace,
 });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    serverId = _data['serverId'];
-    sessionLogId = _data['sessionLogId'];
+    serverId = _data['serverId']!;
+    sessionLogId = _data['sessionLogId']!;
     query = _data['query']!;
     duration = _data['duration']!;
     numRows = _data['numRows'];
-    exception = _data['exception'];
+    error = _data['error'];
     stackTrace = _data['stackTrace'];
   }
 
@@ -54,7 +54,7 @@ class QueryLogEntry extends SerializableEntity {
       'query': query,
       'duration': duration,
       'numRows': numRows,
-      'exception': exception,
+      'error': error,
       'stackTrace': stackTrace,
     });
   }

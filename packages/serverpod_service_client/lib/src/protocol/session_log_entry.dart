@@ -22,7 +22,7 @@ class SessionLogEntry extends SerializableEntity {
   String? futureCall;
   double? duration;
   int? numQueries;
-  late bool slow;
+  bool? slow;
   String? error;
   String? stackTrace;
   int? authenticatedUserId;
@@ -37,7 +37,7 @@ class SessionLogEntry extends SerializableEntity {
     this.futureCall,
     this.duration,
     this.numQueries,
-    required this.slow,
+    this.slow,
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
@@ -54,7 +54,7 @@ class SessionLogEntry extends SerializableEntity {
     futureCall = _data['futureCall'];
     duration = _data['duration'];
     numQueries = _data['numQueries'];
-    slow = _data['slow']!;
+    slow = _data['slow'];
     error = _data['error'];
     stackTrace = _data['stackTrace'];
     authenticatedUserId = _data['authenticatedUserId'];

@@ -6,6 +6,7 @@ import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/server/log_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -84,8 +85,12 @@ class Serverpod {
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
   set runtimeSettings(internal.RuntimeSettings settings) {
     _runtimeSettings = settings;
+    _logManager = LogManager(settings);
     _storeRuntimeSettings(settings);
   }
+
+  late LogManager _logManager;
+  LogManager get logManager => _logManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// `public` and `private`. The default storages are using the database,
@@ -101,34 +106,56 @@ class Serverpod {
     storage[cloudStorage.storageId] = cloudStorage;
   }
 
-  Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    try {
-      var dbConn = DatabaseConnection(databaseConfig);
+  internal.RuntimeSettings get _defaultRuntimeSettings {
+    return internal.RuntimeSettings(
+      logSettings: internal.LogSettings(
+        logAllSessions: false,
+        logAllQueries: false,
+        logSlowSessions: true,
+        logSlowQueries: true,
+        logFailedSessions: true,
+        logFailedQueries: true,
+        logLevel: internal.LogLevel.warning.index,
+        slowSessionDuration: 1.0,
+        slowQueryDuration: 1.0,
+      ),
+      logMalformedCalls: false,
+      logServiceCalls: false,
+      logSettingsOverrides: [],
+    );
+  }
 
-      var oldRuntimeSettings = await dbConn.findSingleRow(
+  Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
+    var session = await createSession();
+    try {
+
+      var oldRuntimeSettings = await session.db.findSingleRow(
           internal.tRuntimeSettings) as internal.RuntimeSettings?;
       if (oldRuntimeSettings == null) {
         settings.id = null;
-        await dbConn.insert(settings);
+        await session.db.insert(settings);
       }
 
       settings.id = oldRuntimeSettings!.id;
-      await dbConn.update(settings);
+      await session.db.update(settings);
     }
     catch(e) {
       return;
     }
+    await session.close();
   }
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
     try {
-      var dbConn = DatabaseConnection(databaseConfig);
+      var session = await createSession();
 
-      var settings = await dbConn.findSingleRow(
+      var settings = await session.db.findSingleRow(
           internal.tRuntimeSettings) as internal.RuntimeSettings?;
-      if (settings != null)
+      if (settings != null) {
         _runtimeSettings = settings;
+        _logManager = LogManager(settings);
+      }
     }
     catch(e) {
       return;
@@ -212,30 +239,16 @@ class Serverpod {
           CloudStoragePublicEndpoint().register(this);
 
         // Runtime settings
+        _logManager = LogManager(_defaultRuntimeSettings);
+        var session = await createSession();
         try {
-          var dbConn = DatabaseConnection(databaseConfig);
-
-          _runtimeSettings = await dbConn.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;
+          _runtimeSettings = await session.db.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;
           if (_runtimeSettings == null) {
             // Store default settings
-            _runtimeSettings = internal.RuntimeSettings(
-              logSettings: internal.LogSettings(
-                logAllSessions: false,
-                logAllQueries: false,
-                logSlowSessions: true,
-                logSlowQueries: true,
-                logFailedSessions: true,
-                logFailedQueries: true,
-                logLevel: internal.LogLevel.warning.index,
-                slowSessionDuration: 1.0,
-                slowQueryDuration: 1.0,
-              ),
-              logMalformedCalls: false,
-              logServiceCalls: false,
-              logSettingsOverrides: [],
-            );
-            await dbConn.insert(_runtimeSettings!);
+            _runtimeSettings = _defaultRuntimeSettings;
+            await session.db.insert(_runtimeSettings!);
           }
+          _logManager = LogManager(_runtimeSettings!);
         }
         catch(e, stackTrace) {
           stderr.writeln('${DateTime.now().toUtc()} Failed to connect to database.');
@@ -244,13 +257,16 @@ class Serverpod {
         }
 
         try {
-          await methodLookup.load(DatabaseConnection(databaseConfig));
+
+          await methodLookup.load(session);
         }
         catch(e, stackTrace) {
           stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
           stderr.writeln('$e');
           stderr.writeln('$stackTrace');
         }
+
+        await session.close();
 
         await _startServiceServer();
 
@@ -325,132 +341,42 @@ class Serverpod {
     // await _log(entry, null);
   }
 
-  Future<void> _log(internal.LogEntry entry, int sessionLogId) async {
-    var serverLogLevel = (_runtimeSettings?.logSettings.logLevel ?? 0);
-
-    if (entry.logLevel >= serverLogLevel) {
-      entry.sessionLogId = sessionLogId;
-
-      bool success;
-
-      try {
-        var dbConn = DatabaseConnection(databaseConfig);
-        success = await dbConn.insert(entry);
-      }
-      catch(e) {
-        success = false;
-      }
-      if (!success)
-        print('${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
-    }
-
-    if (_runMode == ServerpodRunMode.development) {
-      print('${internal.LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null)
-        print(entry.error);
-      if (entry.stackTrace != null)
-        print(entry.stackTrace);
-    }
-  }
+  // Future<void> _log(internal.LogEntry entry, int sessionLogId) async {
+  //   var serverLogLevel = (_runtimeSettings?.logSettings.logLevel ?? 0);
+  //
+  //   if (entry.logLevel >= serverLogLevel) {
+  //     entry.sessionLogId = sessionLogId;
+  //
+  //     bool success;
+  //
+  //     try {
+  //       var session = await createSession();
+  //       success = await session.db.insert(entry);
+  //       await session.close();
+  //     }
+  //     catch(e) {
+  //       success = false;
+  //     }
+  //     if (!success)
+  //       print('${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
+  //   }
+  //
+  //   if (_runMode == ServerpodRunMode.development) {
+  //     print('${internal.LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+  //     if (entry.error != null)
+  //       print(entry.error);
+  //     if (entry.stackTrace != null)
+  //       print(entry.stackTrace);
+  //   }
+  // }
 
   /// Creates a new [InternalSession]. Used to access the database and do
-  /// logging outside of sessions triggered by external events.
-  InternalSession createSession() {
-    return InternalSession(server: server);
-  }
-
-  /// Logs a [Session] after is has been completed.
-  Future<int?> logSession(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
-    var duration = session.duration;
-
-    if (_runMode == ServerpodRunMode.development) {
-      if (session is MethodCallSession)
-        print('METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
-      else if (session is FutureCallSession)
-        print('FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length}');
-      if (exception != null) {
-        print('$exception');
-        print('$stackTrace');
-      }
-    }
-
-    var isSlow = duration > Duration(microseconds: (runtimeSettings.logSettings.slowSessionDuration * 1000000.0).toInt());
-
-    if (runtimeSettings.logSettings.logAllSessions ||
-        runtimeSettings.logSettings.logSlowSessions && isSlow ||
-        runtimeSettings.logSettings.logFailedSessions && exception != null
-    ) {
-      String? endpointName;
-      String? methodName;
-      String? futureCallName;
-
-      if (session is MethodCallSession) {
-        endpointName = session.endpointName;
-        methodName = session.methodName;
-      }
-      else if (session is StreamingSession) {
-        // TODO: Correctly log streaming sessions.
-        // endpointName = session
-      }
-      else if (session is FutureCallSession) {
-        futureCallName = session.futureCallName;
-      }
-
-      var sessionLogEntry = internal.SessionLogEntry(
-        serverId: serverId,
-        time: DateTime.now(),
-        endpoint: endpointName,
-        method: methodName,
-        futureCall: futureCallName,
-        duration: duration.inMicroseconds / 1000000.0,
-        numQueries: session.queries.length,
-        slow: isSlow,
-        error: exception,
-        stackTrace: stackTrace?.toString(),
-        authenticatedUserId: authenticatedUserId,
-      );
-
-      try {
-        var dbConn = DatabaseConnection(databaseConfig);
-        await dbConn.insert(sessionLogEntry);
-
-        var sessionLogId = sessionLogEntry.id!;
-
-        for (var logInfo in session.logs) {
-          unawaited(_log(logInfo, sessionLogId));
-        }
-
-        for (var queryInfo in session.queries) {
-          if (runtimeSettings.logSettings.logAllQueries ||
-              runtimeSettings.logSettings.logSlowQueries && queryInfo.duration > runtimeSettings.logSettings.slowQueryDuration ||
-              runtimeSettings.logSettings.logFailedQueries && queryInfo.exception != null
-          ) {
-            // Log query
-            queryInfo.sessionLogId = sessionLogId;
-            queryInfo.serverId = serverId;
-            await dbConn.insert(queryInfo);
-          }
-        }
-
-        return sessionLogId;
-      }
-      catch(e, logStackTrace) {
-        stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
-        if (methodName != null)
-          stderr.writeln('CALL: $endpointName.$methodName duration: ${duration.inMilliseconds}ms numQueries: ${session.queries.length} authenticatedUser: $authenticatedUserId');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$logStackTrace');
-
-        stderr.writeln('LOG ERRORS');
-        stderr.writeln('$e');
-        stderr.writeln('$logStackTrace');
-        stderr.writeln('Current stacktrace:');
-        stderr.writeln('${StackTrace.current}');
-
-      }
-    }
-
-    return null;
+  /// logging outside of sessions triggered by external events. If you are
+  /// creating a [Session] you are responsible of calling the [close] method
+  /// when you are done.
+  Future<InternalSession> createSession() async {
+    var session =  InternalSession(server: server);
+    return session;
   }
 
   /// Registers a module with the Serverpod. This is typically done from

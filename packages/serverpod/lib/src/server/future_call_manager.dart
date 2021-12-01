@@ -39,7 +39,10 @@ class FutureCallManager {
     );
 
     var dbConn = DatabaseConnection(_server.databaseConfig);
-    await dbConn.insert(entry);
+    var session = await _server.serverpod.createSession();
+    await dbConn.insert(entry, session: session);
+    await session.close();
+
   }
 
   /// Registers a [FutureCall] with the manager.
@@ -73,11 +76,14 @@ class FutureCallManager {
       // Get calls
       var now = DateTime.now();
 
+      var session = await _server.serverpod.createSession();
       var rows = await dbConn.find(
         tFutureCallEntry,
         where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId
             .equals(_server.serverId),
+        session: session,
       );
+      await session.close();
 
       for (var entry in rows.cast<FutureCallEntry>()) {
         var call = _futureCalls[entry.name];
@@ -90,27 +96,30 @@ class FutureCallManager {
           object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
         }
 
-        var session = FutureCallSession(
+        var futureCallSession = FutureCallSession(
           server: _server,
           futureCallName: entry.name,
         );
 
         try {
-          await call.invoke(session, object);
-          unawaited(_server.serverpod.logSession(session));
+          await call.invoke(futureCallSession, object);
+          unawaited(futureCallSession.close());
         }
         catch(e, stackTrace) {
-          unawaited(_server.serverpod.logSession(session, exception: '$e', stackTrace: stackTrace));
+          unawaited(futureCallSession.close(error: e, stackTrace: stackTrace));
         }
       }
 
       // Remove the invoked calls
       if (rows.isNotEmpty) {
+        var session = await _server.serverpod.createSession();
         await dbConn.delete(
           tFutureCallEntry,
           where: tFutureCallEntry.serverId.equals(
               _server.serverId) & (tFutureCallEntry.time <= now),
+          session: session,
         );
+        await session.close();
       }
     }
     catch(e, stackTrace) {
