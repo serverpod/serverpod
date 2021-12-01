@@ -219,17 +219,20 @@ class Serverpod {
           if (_runtimeSettings == null) {
             // Store default settings
             _runtimeSettings = internal.RuntimeSettings(
-              logAllCalls: false,
-              logAllQueries: false,
-              logSlowCalls: true,
-              logSlowQueries: true,
-              logFailedCalls: true,
-              logFailedQueries: true,
+              logSettings: internal.LogSettings(
+                logAllSessions: false,
+                logAllQueries: false,
+                logSlowSessions: true,
+                logSlowQueries: true,
+                logFailedSessions: true,
+                logFailedQueries: true,
+                logLevel: internal.LogLevel.warning.index,
+                slowSessionDuration: 1.0,
+                slowQueryDuration: 1.0,
+              ),
               logMalformedCalls: false,
-              logLevel: internal.LogLevel.warning.index,
               logServiceCalls: false,
-              slowCallDuration: 1.0,
-              slowQueryDuration: 1.0,
+              logSettingsOverrides: [],
             );
             await dbConn.insert(_runtimeSettings!);
           }
@@ -310,20 +313,20 @@ class Serverpod {
   /// stdout. In [ServerpodRunMode.development] all messages are written to
   /// stdout.
   Future<void> log(String message, {internal.LogLevel? level, dynamic exception, StackTrace? stackTrace}) async {
-    var entry = internal.LogEntry(
-      serverId: server.serverId,
-      logLevel: (level ?? internal.LogLevel.info).index,
-      message: message,
-      time: DateTime.now(),
-      exception: '$exception',
-      stackTrace: '$stackTrace',
-    );
+    // var entry = internal.LogEntry(
+    //   serverId: server.serverId,
+    //   logLevel: (level ?? internal.LogLevel.info).index,
+    //   message: message,
+    //   time: DateTime.now(),
+    //   error: '$exception',
+    //   stackTrace: '$stackTrace',
+    // );
 
-    await _log(entry, null);
+    // await _log(entry, null);
   }
 
-  Future<void> _log(internal.LogEntry entry, int? sessionLogId) async {
-    var serverLogLevel = (_runtimeSettings?.logLevel ?? 0);
+  Future<void> _log(internal.LogEntry entry, int sessionLogId) async {
+    var serverLogLevel = (_runtimeSettings?.logSettings.logLevel ?? 0);
 
     if (entry.logLevel >= serverLogLevel) {
       entry.sessionLogId = sessionLogId;
@@ -343,8 +346,8 @@ class Serverpod {
 
     if (_runMode == ServerpodRunMode.development) {
       print('${internal.LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
-      if (entry.exception != null)
-        print(entry.exception);
+      if (entry.error != null)
+        print(entry.error);
       if (entry.stackTrace != null)
         print(entry.stackTrace);
     }
@@ -371,11 +374,11 @@ class Serverpod {
       }
     }
 
-    var isSlow = duration > Duration(microseconds: (runtimeSettings.slowCallDuration * 1000000.0).toInt());
+    var isSlow = duration > Duration(microseconds: (runtimeSettings.logSettings.slowSessionDuration * 1000000.0).toInt());
 
-    if (runtimeSettings.logAllCalls ||
-        runtimeSettings.logSlowCalls && isSlow ||
-        runtimeSettings.logFailedCalls && exception != null
+    if (runtimeSettings.logSettings.logAllSessions ||
+        runtimeSettings.logSettings.logSlowSessions && isSlow ||
+        runtimeSettings.logSettings.logFailedSessions && exception != null
     ) {
       String? endpointName;
       String? methodName;
@@ -418,9 +421,9 @@ class Serverpod {
         }
 
         for (var queryInfo in session.queries) {
-          if (runtimeSettings.logAllQueries ||
-              runtimeSettings.logSlowQueries && queryInfo.duration > runtimeSettings.slowQueryDuration ||
-              runtimeSettings.logFailedQueries && queryInfo.exception != null
+          if (runtimeSettings.logSettings.logAllQueries ||
+              runtimeSettings.logSettings.logSlowQueries && queryInfo.duration > runtimeSettings.logSettings.slowQueryDuration ||
+              runtimeSettings.logSettings.logFailedQueries && queryInfo.exception != null
           ) {
             // Log query
             queryInfo.sessionLogId = sessionLogId;

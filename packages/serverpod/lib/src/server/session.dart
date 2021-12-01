@@ -118,11 +118,12 @@ abstract class Session {
   void log(String message, {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
     logs.add(
       LogEntry(
+        sessionLogId: -1, // FIXME
         serverId: server.serverId,
         logLevel: (level ?? LogLevel.info).index,
         message: message,
         time: DateTime.now(),
-        exception: exception != null ? '$exception' : null,
+        error: exception != null ? '$exception' : null,
         stackTrace: stackTrace != null ? '$stackTrace' : null,
       ),
     );

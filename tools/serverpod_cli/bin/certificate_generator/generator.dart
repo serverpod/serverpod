@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-Future<void> performGenerateCerts(String configFile, bool verbose) async {
+Future<void> performGenerateCerts(String runMode, bool verbose) async {
   const certConfigFile = '.certconf';
 
   print('Generating certificates');
-
-  var config = ServerConfig(configFile, 0);
+  var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+  var config = ServerConfig(runMode, 0, passwords);
 
   for(var serverId in config.cluster.keys) {
-    var crtFileName = 'certificates/${configFile}_$serverId.crt';
-    var keyFileName = 'certificates/${configFile}_$serverId.key';
+    var crtFileName = 'certificates/${runMode}_$serverId.crt';
+    var keyFileName = 'certificates/${runMode}_$serverId.key';
 
     var serverAddress = config.cluster[serverId]!.address;
 

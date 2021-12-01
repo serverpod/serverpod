@@ -14,48 +14,52 @@ class LogEntry extends SerializableEntity {
   String get className => 'LogEntry';
 
   int? id;
+  late int sessionLogId;
+  String? reference;
   late int serverId;
   late DateTime time;
   late int logLevel;
   late String message;
-  String? exception;
+  String? error;
   String? stackTrace;
-  int? sessionLogId;
 
   LogEntry({
     this.id,
+    required this.sessionLogId,
+    this.reference,
     required this.serverId,
     required this.time,
     required this.logLevel,
     required this.message,
-    this.exception,
+    this.error,
     this.stackTrace,
-    this.sessionLogId,
 });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
+    sessionLogId = _data['sessionLogId']!;
+    reference = _data['reference'];
     serverId = _data['serverId']!;
     time = DateTime.tryParse(_data['time'])!;
     logLevel = _data['logLevel']!;
     message = _data['message']!;
-    exception = _data['exception'];
+    error = _data['error'];
     stackTrace = _data['stackTrace'];
-    sessionLogId = _data['sessionLogId'];
   }
 
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
+      'sessionLogId': sessionLogId,
+      'reference': reference,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
       'logLevel': logLevel,
       'message': message,
-      'exception': exception,
+      'error': error,
       'stackTrace': stackTrace,
-      'sessionLogId': sessionLogId,
     });
   }
 }

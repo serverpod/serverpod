@@ -4,17 +4,10 @@
 
 CREATE TABLE serverpod_runtime_settings (
   "id" serial,
-  "logAllCalls" boolean NOT NULL,
-  "logAllQueries" boolean NOT NULL,
-  "logSlowCalls" boolean NOT NULL,
-  "logSlowQueries" boolean NOT NULL,
-  "logFailedCalls" boolean NOT NULL,
-  "logFailedQueries" boolean NOT NULL,
-  "logMalformedCalls" boolean NOT NULL,
+  "logSettings" json NOT NULL,
+  "logSettingsOverrides" json NOT NULL,
   "logServiceCalls" boolean NOT NULL,
-  "logLevel" integer NOT NULL,
-  "slowQueryDuration" double precision NOT NULL,
-  "slowCallDuration" double precision NOT NULL
+  "logMalformedCalls" boolean NOT NULL
 );
 
 ALTER TABLE ONLY serverpod_runtime_settings
@@ -101,13 +94,14 @@ CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON serverpod_method USI
 
 CREATE TABLE serverpod_log (
   "id" serial,
+  "sessionLogId" integer NOT NULL,
+  "reference" text,
   "serverId" integer NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "logLevel" integer NOT NULL,
   "message" text NOT NULL,
-  "exception" text,
-  "stackTrace" text,
-  "sessionLogId" integer
+  "error" text,
+  "stackTrace" text
 );
 
 ALTER TABLE ONLY serverpod_log
@@ -145,11 +139,12 @@ CREATE TABLE serverpod_session_log (
   "id" serial,
   "serverId" integer NOT NULL,
   "time" timestamp without time zone NOT NULL,
+  "module" text,
   "endpoint" text,
   "method" text,
   "futureCall" text,
-  "duration" double precision NOT NULL,
-  "numQueries" integer NOT NULL,
+  "duration" double precision,
+  "numQueries" integer,
   "slow" boolean NOT NULL,
   "error" text,
   "stackTrace" text,

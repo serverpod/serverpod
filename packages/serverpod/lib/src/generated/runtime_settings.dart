@@ -18,64 +18,36 @@ class RuntimeSettings extends TableRow {
 
   @override
   int? id;
-  late bool logAllCalls;
-  late bool logAllQueries;
-  late bool logSlowCalls;
-  late bool logSlowQueries;
-  late bool logFailedCalls;
-  late bool logFailedQueries;
-  late bool logMalformedCalls;
+  late LogSettings logSettings;
+  late List<LogSettingsOverride> logSettingsOverrides;
   late bool logServiceCalls;
-  late int logLevel;
-  late double slowQueryDuration;
-  late double slowCallDuration;
+  late bool logMalformedCalls;
 
   RuntimeSettings({
     this.id,
-    required this.logAllCalls,
-    required this.logAllQueries,
-    required this.logSlowCalls,
-    required this.logSlowQueries,
-    required this.logFailedCalls,
-    required this.logFailedQueries,
-    required this.logMalformedCalls,
+    required this.logSettings,
+    required this.logSettingsOverrides,
     required this.logServiceCalls,
-    required this.logLevel,
-    required this.slowQueryDuration,
-    required this.slowCallDuration,
+    required this.logMalformedCalls,
 });
 
   RuntimeSettings.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    logAllCalls = _data['logAllCalls']!;
-    logAllQueries = _data['logAllQueries']!;
-    logSlowCalls = _data['logSlowCalls']!;
-    logSlowQueries = _data['logSlowQueries']!;
-    logFailedCalls = _data['logFailedCalls']!;
-    logFailedQueries = _data['logFailedQueries']!;
-    logMalformedCalls = _data['logMalformedCalls']!;
+    logSettings = LogSettings.fromSerialization(_data['logSettings']);
+    logSettingsOverrides = _data['logSettingsOverrides']!.map<LogSettingsOverride>((a) => LogSettingsOverride.fromSerialization(a))?.toList();
     logServiceCalls = _data['logServiceCalls']!;
-    logLevel = _data['logLevel']!;
-    slowQueryDuration = _data['slowQueryDuration']!;
-    slowCallDuration = _data['slowCallDuration']!;
+    logMalformedCalls = _data['logMalformedCalls']!;
   }
 
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'logAllCalls': logAllCalls,
-      'logAllQueries': logAllQueries,
-      'logSlowCalls': logSlowCalls,
-      'logSlowQueries': logSlowQueries,
-      'logFailedCalls': logFailedCalls,
-      'logFailedQueries': logFailedQueries,
-      'logMalformedCalls': logMalformedCalls,
+      'logSettings': logSettings.serialize(),
+      'logSettingsOverrides': logSettingsOverrides.map((LogSettingsOverride a) => a.serialize()).toList(),
       'logServiceCalls': logServiceCalls,
-      'logLevel': logLevel,
-      'slowQueryDuration': slowQueryDuration,
-      'slowCallDuration': slowCallDuration,
+      'logMalformedCalls': logMalformedCalls,
     });
   }
 
@@ -83,17 +55,10 @@ class RuntimeSettings extends TableRow {
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'logAllCalls': logAllCalls,
-      'logAllQueries': logAllQueries,
-      'logSlowCalls': logSlowCalls,
-      'logSlowQueries': logSlowQueries,
-      'logFailedCalls': logFailedCalls,
-      'logFailedQueries': logFailedQueries,
-      'logMalformedCalls': logMalformedCalls,
+      'logSettings': logSettings.serialize(),
+      'logSettingsOverrides': logSettingsOverrides.map((LogSettingsOverride a) => a.serialize()).toList(),
       'logServiceCalls': logServiceCalls,
-      'logLevel': logLevel,
-      'slowQueryDuration': slowQueryDuration,
-      'slowCallDuration': slowCallDuration,
+      'logMalformedCalls': logMalformedCalls,
     });
   }
 
@@ -101,17 +66,10 @@ class RuntimeSettings extends TableRow {
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'logAllCalls': logAllCalls,
-      'logAllQueries': logAllQueries,
-      'logSlowCalls': logSlowCalls,
-      'logSlowQueries': logSlowQueries,
-      'logFailedCalls': logFailedCalls,
-      'logFailedQueries': logFailedQueries,
-      'logMalformedCalls': logMalformedCalls,
+      'logSettings': logSettings.serialize(),
+      'logSettingsOverrides': logSettingsOverrides.map((LogSettingsOverride a) => a.serialize()).toList(),
       'logServiceCalls': logServiceCalls,
-      'logLevel': logLevel,
-      'slowQueryDuration': slowQueryDuration,
-      'slowCallDuration': slowCallDuration,
+      'logMalformedCalls': logMalformedCalls,
     });
   }
 }
@@ -122,32 +80,18 @@ class RuntimeSettingsTable extends Table {
   @override
   String tableName = 'serverpod_runtime_settings';
   final id = ColumnInt('id');
-  final logAllCalls = ColumnBool('logAllCalls');
-  final logAllQueries = ColumnBool('logAllQueries');
-  final logSlowCalls = ColumnBool('logSlowCalls');
-  final logSlowQueries = ColumnBool('logSlowQueries');
-  final logFailedCalls = ColumnBool('logFailedCalls');
-  final logFailedQueries = ColumnBool('logFailedQueries');
-  final logMalformedCalls = ColumnBool('logMalformedCalls');
+  final logSettings = ColumnSerializable('logSettings');
+  final logSettingsOverrides = ColumnSerializable('logSettingsOverrides');
   final logServiceCalls = ColumnBool('logServiceCalls');
-  final logLevel = ColumnInt('logLevel');
-  final slowQueryDuration = ColumnDouble('slowQueryDuration');
-  final slowCallDuration = ColumnDouble('slowCallDuration');
+  final logMalformedCalls = ColumnBool('logMalformedCalls');
 
   @override
   List<Column> get columns => [
     id,
-    logAllCalls,
-    logAllQueries,
-    logSlowCalls,
-    logSlowQueries,
-    logFailedCalls,
-    logFailedQueries,
-    logMalformedCalls,
+    logSettings,
+    logSettingsOverrides,
     logServiceCalls,
-    logLevel,
-    slowQueryDuration,
-    slowCallDuration,
+    logMalformedCalls,
   ];
 }
 

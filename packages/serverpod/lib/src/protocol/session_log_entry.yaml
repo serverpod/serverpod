@@ -3,11 +3,12 @@ table: serverpod_session_log
 fields:
   serverId: int
   time: DateTime
+  module: String?
   endpoint: String?
   method: String?
   futureCall: String?
-  duration: double
-  numQueries: int
+  duration: double?
+  numQueries: int?
   slow: bool
   error: String?
   stackTrace: String?

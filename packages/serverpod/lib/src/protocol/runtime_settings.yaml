@@ -1,14 +1,7 @@
 class: RuntimeSettings
 table: serverpod_runtime_settings
 fields:
-  logAllCalls: bool
-  logAllQueries: bool
-  logSlowCalls: bool
-  logSlowQueries: bool
-  logFailedCalls: bool
-  logFailedQueries: bool
-  logMalformedCalls: bool
+  logSettings: LogSettings
+  logSettingsOverrides: List<LogSettingsOverride>
   logServiceCalls: bool
-  logLevel: int
-  slowQueryDuration: double
-  slowCallDuration: double
+  logMalformedCalls: bool

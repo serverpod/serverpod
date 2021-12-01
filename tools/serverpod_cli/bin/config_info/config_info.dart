@@ -3,8 +3,9 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 class ConfigInfo {
   int? serverId;
   late ServerConfig config;
-  ConfigInfo(String configFile, {this.serverId}) {
-    config = ServerConfig(configFile, serverId ?? 0);
+  ConfigInfo(String runMode, {this.serverId}) {
+    var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+    config = ServerConfig(runMode, serverId ?? 0, passwords);
   }
 
   void printAddress() {

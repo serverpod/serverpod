@@ -1,0 +1,11 @@
+class: LogSettings
+fields:
+  logLevel: int
+  logAllSessions: bool
+  logAllQueries: bool
+  logSlowSessions: bool
+  logSlowQueries: bool
+  logFailedSessions: bool
+  logFailedQueries: bool
+  slowSessionDuration: double
+  slowQueryDuration: double

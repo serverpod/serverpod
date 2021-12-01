@@ -1,13 +1,14 @@
 class: LogEntry
 table: serverpod_log
 fields:
+  sessionLogId: int
+  reference: String?
   serverId: int
   time: DateTime
   logLevel: int
   message: String
-  exception: String?
+  error: String?
   stackTrace: String?
-  sessionLogId: int?
 indexes:
   serverpod_log_sessionLogId_idx:
     fields: sessionLogId

@@ -16,11 +16,12 @@ class SessionLogEntry extends SerializableEntity {
   int? id;
   late int serverId;
   late DateTime time;
+  String? module;
   String? endpoint;
   String? method;
   String? futureCall;
-  late double duration;
-  late int numQueries;
+  double? duration;
+  int? numQueries;
   late bool slow;
   String? error;
   String? stackTrace;
@@ -30,11 +31,12 @@ class SessionLogEntry extends SerializableEntity {
     this.id,
     required this.serverId,
     required this.time,
+    this.module,
     this.endpoint,
     this.method,
     this.futureCall,
-    required this.duration,
-    required this.numQueries,
+    this.duration,
+    this.numQueries,
     required this.slow,
     this.error,
     this.stackTrace,
@@ -46,11 +48,12 @@ class SessionLogEntry extends SerializableEntity {
     id = _data['id'];
     serverId = _data['serverId']!;
     time = DateTime.tryParse(_data['time'])!;
+    module = _data['module'];
     endpoint = _data['endpoint'];
     method = _data['method'];
     futureCall = _data['futureCall'];
-    duration = _data['duration']!;
-    numQueries = _data['numQueries']!;
+    duration = _data['duration'];
+    numQueries = _data['numQueries'];
     slow = _data['slow']!;
     error = _data['error'];
     stackTrace = _data['stackTrace'];
@@ -63,6 +66,7 @@ class SessionLogEntry extends SerializableEntity {
       'id': id,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
+      'module': module,
       'endpoint': endpoint,
       'method': method,
       'futureCall': futureCall,
