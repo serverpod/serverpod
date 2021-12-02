@@ -116,15 +116,6 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['insights'] as InsightsEndpoint).clearAllLogs(session,);
           },
         ),
-        'getLog': MethodConnector(
-          name: 'getLog',
-          params: {
-            'numEntries': ParameterDescription(name: 'numEntries', type: int, nullable: true),
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).getLog(session,params['numEntries'],);
-          },
-        ),
         'getSessionLog': MethodConnector(
           name: 'getSessionLog',
           params: {

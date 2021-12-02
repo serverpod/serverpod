@@ -87,19 +87,19 @@ class LogManager {
 
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
-  Future<void> finalizeSessionLog(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
+  Future<int?> finalizeSessionLog(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     var logSettings = getLogSettingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession)
-        print('METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+        stdout.writeln('METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
       else if (session is FutureCallSession)
-        print('FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+        stdout.writeln('FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
       if (exception != null) {
-        print('$exception');
-        print('$stackTrace');
+        stdout.writeln('$exception');
+        stdout.writeln('$stackTrace');
       }
     }
 
@@ -112,6 +112,8 @@ class LogManager {
       String? endpointName;
       String? methodName;
       String? futureCallName;
+
+      int? sessionLogId;
 
       if (session is MethodCallSession) {
         endpointName = session.endpointName;
@@ -144,11 +146,11 @@ class LogManager {
         // var dbConn = DatabaseConnection(databaseConfig);
         await tempSession.db.insert(sessionLogEntry);
 
-        var sessionLogId = sessionLogEntry.id!;
+        sessionLogId = sessionLogEntry.id!;
 
-        // for (var logInfo in session.logs) {
-        //   unawaited(_log(logInfo, sessionLogId));
-        // }
+        for (var logInfo in cachedEntry.logEntries) {
+          await _log(logInfo, sessionLogId, logSettings, tempSession, session.serverpod.runMode);
+        }
 
         for (var queryInfo in cachedEntry.queries) {
           if (logSettings.logAllQueries ||
@@ -175,7 +177,36 @@ class LogManager {
         stderr.writeln('Current stacktrace:');
         stderr.writeln('${StackTrace.current}');
       }
-      await tempSession.close();
+      await tempSession.close(logSession: false);
+
+      return sessionLogId;
+    }
+  }
+
+  Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings, Session tempSession, String runMode) async {
+    var serverLogLevel = (logSettings.logLevel);
+
+    if (entry.logLevel >= serverLogLevel) {
+      entry.sessionLogId = sessionLogId;
+
+      bool success;
+
+      try {
+        success = await tempSession.db.insert(entry);
+      }
+      catch(e) {
+        success = false;
+      }
+      if (!success)
+        stderr.writeln('${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
+    }
+
+    if (runMode == ServerpodRunMode.development) {
+      stdout.writeln('${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+      if (entry.error != null)
+        stdout.writeln(entry.error);
+      if (entry.stackTrace != null)
+        stdout.writeln(entry.stackTrace);
     }
   }
 }

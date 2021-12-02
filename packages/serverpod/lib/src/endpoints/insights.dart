@@ -48,17 +48,17 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Get the latest [numEntries] from the message log.
-  Future<LogResult> getLog(Session session, int? numEntries) async {
-    var rows = await session.db.find(
-      tLogEntry,
-      limit: numEntries,
-      orderBy: tLogEntry.id,
-      orderDescending: true,
-    );
-    return LogResult(
-      entries: rows.cast<LogEntry>(),
-    );
-  }
+  // Future<LogResult> getLog(Session session, int? numEntries) async {
+  //   var rows = await session.db.find(
+  //     tLogEntry,
+  //     limit: numEntries,
+  //     orderBy: tLogEntry.id,
+  //     orderDescending: true,
+  //   );
+  //   return LogResult(
+  //     entries: rows.cast<LogEntry>(),
+  //   );
+  // }
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {

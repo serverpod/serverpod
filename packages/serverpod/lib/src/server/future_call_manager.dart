@@ -4,7 +4,6 @@ import 'dart:io';
 import 'future_call.dart';
 import 'session.dart';
 import 'server.dart';
-import '../database/database_connection.dart';
 import '../generated/protocol.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:pedantic/pedantic.dart';
@@ -38,11 +37,9 @@ class FutureCallManager {
       serverId: serverId,
     );
 
-    var dbConn = DatabaseConnection(_server.databaseConfig);
     var session = await _server.serverpod.createSession();
-    await dbConn.insert(entry, session: session);
-    await session.close();
-
+    await session.db.insert(entry);
+    await session.close(logSession: false);
   }
 
   /// Registers a [FutureCall] with the manager.
@@ -70,25 +67,22 @@ class FutureCallManager {
   }
 
   Future<void> _checkQueue() async {
-    var dbConn = DatabaseConnection(_server.databaseConfig);
-
     try {
       // Get calls
       var now = DateTime.now();
 
-      var session = await _server.serverpod.createSession();
-      var rows = await dbConn.find(
+      var tempSession = await _server.serverpod.createSession();
+      var rows = await tempSession.db.find(
         tFutureCallEntry,
-        where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId
-            .equals(_server.serverId),
-        session: session,
+        where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId.equals(_server.serverId),
       );
-      await session.close();
+      await tempSession.close(logSession: false);
 
       for (var entry in rows.cast<FutureCallEntry>()) {
         var call = _futureCalls[entry.name];
-        if (call == null)
+        if (call == null) {
           continue;
+        }
 
         SerializableEntity? object;
         if (entry.serializedObject != null) {
@@ -103,23 +97,21 @@ class FutureCallManager {
 
         try {
           await call.invoke(futureCallSession, object);
-          unawaited(futureCallSession.close());
+          await futureCallSession.close();
         }
         catch(e, stackTrace) {
-          unawaited(futureCallSession.close(error: e, stackTrace: stackTrace));
+          await futureCallSession.close(error: e, stackTrace: stackTrace);
         }
       }
 
       // Remove the invoked calls
       if (rows.isNotEmpty) {
-        var session = await _server.serverpod.createSession();
-        await dbConn.delete(
+        var tempSession = await _server.serverpod.createSession();
+        await tempSession.db.delete(
           tFutureCallEntry,
-          where: tFutureCallEntry.serverId.equals(
-              _server.serverId) & (tFutureCallEntry.time <= now),
-          session: session,
+          where: tFutureCallEntry.serverId.equals(tempSession.server.serverId) & (tFutureCallEntry.time <= now),
         );
-        await session.close();
+        await tempSession.close(logSession: false);
       }
     }
     catch(e, stackTrace) {

@@ -16,7 +16,6 @@ bool verifyByteData(ByteData byteData) {
   var ints = byteData.buffer.asUint8List();
   for (var i = 0; i < byteData.lengthInBytes; i ++) {
     if (ints[i] != i % 256) {
-      print('ints[$i] = ${ints[i]} expected: ${i % byteData.lengthInBytes}');
       return false;
     }
   }

@@ -80,12 +80,6 @@ class _EndpointInsights extends EndpointRef {
     });
   }
 
-  Future<LogResult> getLog(int? numEntries,) async {
-    return await caller.callServerEndpoint('insights', 'getLog', 'LogResult', {
-      'numEntries':numEntries,
-    });
-  }
-
   Future<SessionLogResult> getSessionLog(int? numEntries,) async {
     return await caller.callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
       'numEntries':numEntries,

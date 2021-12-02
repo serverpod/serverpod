@@ -6,6 +6,7 @@ import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -91,6 +92,8 @@ class Serverpod {
 
   late LogManager _logManager;
   LogManager get logManager => _logManager;
+
+  late final FutureCallManager _futureCallManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// `public` and `private`. The default storages are using the database,
@@ -227,6 +230,9 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
     endpoints.registerModules(this);
 
+    // Setup future calls
+    _futureCallManager = FutureCallManager(server, serializationManager);
+
     _instance = this;
   }
 
@@ -257,7 +263,6 @@ class Serverpod {
         }
 
         try {
-
           await methodLookup.load(session);
         }
         catch(e, stackTrace) {
@@ -266,19 +271,21 @@ class Serverpod {
           stderr.writeln('$stackTrace');
         }
 
-        await session.close();
+        await session.close(logSession: false);
 
         await _startServiceServer();
 
         await server.start();
+
+        // Start future calls
+        _futureCallManager.start();
       },
       (e, stackTrace) {
         // Last resort error handling
+        // TODO: Log to database?
         stderr.writeln('${DateTime.now().toUtc()} Internal server error. Zoned exception.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
-
-        log('Zoned exception.', exception: e, stackTrace: stackTrace, level: internal.LogLevel.warning);
       }
     );
   }
@@ -313,7 +320,21 @@ class Serverpod {
   /// Registers a [FutureCall] with the [Serverpod] and associates it with
   /// the specified name.
   void registerFutureCall(FutureCall call, String name) {
-    server.registerFutureCall(call, name);
+     _futureCallManager.registerFutureCall(call, name);
+  }
+
+  /// Calls a [FutureCall] by its name after the specified delay, optionally
+  /// passing a [SerializableEntity] object as parameter.
+  void futureCallWithDelay(String callName, SerializableEntity? object, Duration delay) {
+    assert(server.running, 'Server is not running, call start() before using future calls');
+    _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
+  }
+
+  /// Calls a [FutureCall] by its name at the specified time, optionally passing
+  /// a [SerializableEntity] object as parameter.
+  void futureCallAtTime(String callName, SerializableEntity? object, DateTime time) {
+    assert(server.running, 'Server is not running, call start() before using future calls');
+    _futureCallManager.scheduleFutureCall(callName, object, time, serverId);
   }
 
   /// Retrieves a password for the given key. Passwords are loaded from the
@@ -321,54 +342,6 @@ class Serverpod {
   String? getPassword(String key) {
     return _passwords[key];
   }
-
-  /// Logs a message in the database. The message is ignored if the [Serverpod]s
-  /// [internal.LogLevel] is configured to be higher than the
-  /// [internal.LogLevel] used in the log call. Default [internal.LogLevel] is
-  /// [internal.LogLevel.info]. If the logging fails, the message is written to
-  /// stdout. In [ServerpodRunMode.development] all messages are written to
-  /// stdout.
-  Future<void> log(String message, {internal.LogLevel? level, dynamic exception, StackTrace? stackTrace}) async {
-    // var entry = internal.LogEntry(
-    //   serverId: server.serverId,
-    //   logLevel: (level ?? internal.LogLevel.info).index,
-    //   message: message,
-    //   time: DateTime.now(),
-    //   error: '$exception',
-    //   stackTrace: '$stackTrace',
-    // );
-
-    // await _log(entry, null);
-  }
-
-  // Future<void> _log(internal.LogEntry entry, int sessionLogId) async {
-  //   var serverLogLevel = (_runtimeSettings?.logSettings.logLevel ?? 0);
-  //
-  //   if (entry.logLevel >= serverLogLevel) {
-  //     entry.sessionLogId = sessionLogId;
-  //
-  //     bool success;
-  //
-  //     try {
-  //       var session = await createSession();
-  //       success = await session.db.insert(entry);
-  //       await session.close();
-  //     }
-  //     catch(e) {
-  //       success = false;
-  //     }
-  //     if (!success)
-  //       print('${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
-  //   }
-  //
-  //   if (_runMode == ServerpodRunMode.development) {
-  //     print('${internal.LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
-  //     if (entry.error != null)
-  //       print(entry.error);
-  //     if (entry.stackTrace != null)
-  //       print(entry.stackTrace);
-  //   }
-  // }
 
   /// Creates a new [InternalSession]. Used to access the database and do
   /// logging outside of sessions triggered by external events. If you are
@@ -389,5 +362,6 @@ class Serverpod {
   void shutdown() {
     server.shutdown();
     _serviceServer?.shutdown();
+    _futureCallManager.stop();
   }
 }

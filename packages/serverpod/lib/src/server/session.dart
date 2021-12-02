@@ -69,6 +69,8 @@ abstract class Session {
   /// web socket streams and other listeners.
   late MessageCentralAccess messages;
 
+  bool _closed = false;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     required this.server,
@@ -122,16 +124,23 @@ abstract class Session {
   /// database. After a session has been closed, you should not call any
   /// more methods on it. Optionally pass in an [error]/exception and
   /// [stackTrace] if the session ended with an error and it should be written
-  /// to the logs.
-  Future<void> close({dynamic error, StackTrace? stackTrace}) async {
+  /// to the logs. Returns the session id, if the session has been logged to the
+  /// database.
+  Future<int?> close({dynamic error, StackTrace? stackTrace, bool logSession = true,}) async {
+    if (_closed)
+      return null;
+    _closed = true;
+
     try {
       server.messageCentral.removeListenersForSession(this);
-      await server.serverpod.logManager.finalizeSessionLog(
-        this,
-        exception: error,
-        stackTrace: stackTrace,
-        authenticatedUserId: _authenticatedUser,
-      );
+      if (logSession) {
+        return await server.serverpod.logManager.finalizeSessionLog(
+          this,
+          exception: error,
+          stackTrace: stackTrace,
+          authenticatedUserId: _authenticatedUser,
+        );
+      }
     }
     catch(e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -142,6 +151,8 @@ abstract class Session {
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
   void log(String message, {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
+    assert(!_closed, 'Session is closed, and logging can no longer be performed.');
+
     sessionLogs.logEntries.add(
       LogEntry(
         sessionLogId: temporarySessionId,

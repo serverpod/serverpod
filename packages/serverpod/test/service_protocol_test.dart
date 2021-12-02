@@ -19,28 +19,31 @@ void main() {
     test('Set runtime settings', () async {
       // Log everything
       var settings = service.RuntimeSettings(
-        logAllCalls: true,
-        logSlowCalls: true,
-        logFailedCalls: false,
-        logAllQueries: true,
-        logSlowQueries: true,
-        logFailedQueries: true,
+        logSettings: service.LogSettings(
+          logAllSessions: true,
+          logSlowSessions: true,
+          logFailedSessions: false,
+          logAllQueries: true,
+          logSlowQueries: true,
+          logFailedQueries: true,
+          slowSessionDuration: 1.0,
+          slowQueryDuration: 1.0,
+          logLevel: service.LogLevel.debug.index,
+        ),
         logMalformedCalls: true,
         logServiceCalls: false,
-        slowCallDuration: 1.0,
-        slowQueryDuration: 1.0,
-        logLevel: service.LogLevel.debug.index,
+        logSettingsOverrides: [],
       );
 
       await serviceClient.insights.setRuntimeSettings(settings);
 
       settings = await serviceClient.insights.getRuntimeSettings();
-      expect(settings.logFailedCalls, equals(false));
+      expect(settings.logSettings.logFailedSessions, equals(false));
 
-      settings.logFailedCalls = true;
+      settings.logSettings.logFailedSessions = true;
       await serviceClient.insights.setRuntimeSettings(settings);
       settings = await serviceClient.insights.getRuntimeSettings();
-      expect(settings.logFailedCalls, equals(true));
+      expect(settings.logSettings.logFailedSessions, equals(true));
     });
 
     test('Clear logs', () async {
@@ -87,17 +90,20 @@ void main() {
     test('Error log level', () async {
       // Set log level to error
       var settings = service.RuntimeSettings(
-        logAllCalls: true,
-        logSlowCalls: true,
-        logFailedCalls: true,
-        logAllQueries: true,
-        logSlowQueries: true,
-        logFailedQueries: true,
+        logSettings: service.LogSettings(
+          logAllSessions: true,
+          logSlowSessions: true,
+          logFailedSessions: true,
+          logAllQueries: true,
+          logSlowQueries: true,
+          logFailedQueries: true,
+          slowSessionDuration: 1.0,
+          slowQueryDuration: 1.0,
+          logLevel: service.LogLevel.error.index,
+        ),
+        logSettingsOverrides: [],
         logMalformedCalls: true,
         logServiceCalls: false,
-        slowCallDuration: 1.0,
-        slowQueryDuration: 1.0,
-        logLevel: service.LogLevel.error.index,
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
@@ -163,17 +169,20 @@ void main() {
     test('Future call logging', () async {
       // Set log level to info
       var settings = service.RuntimeSettings(
-        logAllCalls: true,
-        logSlowCalls: true,
-        logFailedCalls: true,
-        logAllQueries: true,
-        logSlowQueries: true,
-        logFailedQueries: true,
+        logSettings: service.LogSettings(
+          logAllSessions: true,
+          logSlowSessions: true,
+          logFailedSessions: true,
+          logAllQueries: true,
+          logSlowQueries: true,
+          logFailedQueries: true,
+          slowSessionDuration: 1.0,
+          slowQueryDuration: 1.0,
+          logLevel: service.LogLevel.info.index,
+        ),
         logMalformedCalls: true,
         logServiceCalls: false,
-        slowCallDuration: 1.0,
-        slowQueryDuration: 1.0,
-        logLevel: service.LogLevel.info.index,
+        logSettingsOverrides: [],
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 

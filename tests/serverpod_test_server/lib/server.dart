@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_relic/serverpod_relic.dart';
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart' as s3;
@@ -33,5 +35,5 @@ void run(List<String> args) async {
   // Add relic / webserver
   final webserver = WebServer(serverpod: pod);
   webserver.addRoute(RouteRoot(), '/');
-  webserver.start();
+  await webserver.start();
 }

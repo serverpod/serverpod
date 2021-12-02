@@ -61,8 +61,6 @@ class Server {
   /// The [HttpServer] responsible for handling calls.
   HttpServer get httpServer => _httpServer;
 
-  late final FutureCallManager _futureCallManager;
-
   /// Currently not in use.
   List<String>? whitelistedExternalCalls;
 
@@ -88,30 +86,7 @@ class Server {
     this.whitelistedExternalCalls,
     required this.endpoints,
   }) :
-    name = name ?? 'Server id $serverId'
-  {
-    // Setup future calls
-    _futureCallManager = FutureCallManager(this, serializationManager);
-  }
-
-  /// Registers a future call by its name.
-  void registerFutureCall(FutureCall call, String name) {
-    _futureCallManager.registerFutureCall(call, name);
-  }
-
-  /// Calls a [FutureCall] by its name after the specified delay, optionally
-  /// passing a [SerializableEntity] object as parameter.
-  void futureCallWithDelay(String callName, SerializableEntity? object, Duration delay) {
-    assert(_running, 'Server is not running, call start() before using future calls');
-    _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
-  }
-
-  /// Calls a [FutureCall] by its name at the specified time, optionally passing
-  /// a [SerializableEntity] object as parameter.
-  void futureCallAtTime(String callName, SerializableEntity? object, DateTime time) {
-    assert(_running, 'Server is not running, call start() before using future calls');
-    _futureCallManager.scheduleFutureCall(callName, object, time, serverId);
-  }
+    name = name ?? 'Server id $serverId';
 
   /// Starts the server.
   Future<void> start() async {
@@ -134,11 +109,8 @@ class Server {
       });
     }
 
-    // Start future calls
-    _futureCallManager.start();
-
     _running = true;
-    print('$name listening on port $port');
+    stdout.writeln('$name listening on port $port');
   }
 
   void _runServer(HttpServer httpServer) {
@@ -161,7 +133,7 @@ class Server {
         stderr.writeln('$stackTrace');
       },
     ).onDone(() {
-      print('$name stopped');
+      stdout.writeln('$name stopped');
     });
   }
 
@@ -174,8 +146,7 @@ class Server {
     catch(e) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Specific log for this?
-        unawaited(serverpod.log('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}'));
-        print('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        stderr.writeln('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
       }
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -258,8 +229,8 @@ class Server {
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        unawaited(serverpod.log('Malformed call: $result'));
-        print('Malformed call: $result');
+        // TODO: Log to database?
+        stderr.writeln('Malformed call: $result');
       }
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
@@ -267,8 +238,8 @@ class Server {
     }
     else if (result is ResultAuthenticationFailed) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        unawaited(serverpod.log('Access denied: $result'));
-        print('Access denied: $result');
+        // TODO: Log to database?
+        stderr.writeln('Access denied: $result');
       }
       request.response.statusCode = HttpStatus.forbidden;
       await request.response.close();
@@ -343,6 +314,9 @@ class Server {
           await _callStreamOpened(session, endpointConnector.endpoint);
       }
 
+      dynamic error;
+      StackTrace? stackTrace;
+
       try {
         await for (String jsonData in webSocket) {
           var data = jsonDecode(jsonData) as Map;
@@ -361,11 +335,10 @@ class Server {
           if (authFailed == null)
             await endpointConnector.endpoint.handleStreamMessage(session, message);
         }
-        print('END STREAM');
       }
-      catch(e, stackTrace) {
-        print('END STREAM with exception: $e');
-        print('$stackTrace');
+      catch(e, s) {
+        error = e;
+        stackTrace = s;
       }
 
       // TODO: Possibly keep a list of open streams instead
@@ -376,10 +349,11 @@ class Server {
         for (var endpointConnector in module.connectors.values)
           await _callStreamClosed(session, endpointConnector.endpoint);
       }
+      await session.close(error: error, stackTrace: stackTrace);
     }
     catch(e, stackTrace) {
-      print('$e');
-      print('$stackTrace');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
       return;
     }
   }
@@ -415,7 +389,6 @@ class Server {
   /// Shuts the server down.
   void shutdown() {
     _httpServer.close();
-    _futureCallManager.stop();
     _running = false;
   }
 }
