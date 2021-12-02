@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:pedantic/pedantic.dart';
 
 import 'endpoint.dart';
 import 'server.dart';
@@ -113,7 +112,7 @@ abstract class EndpointDispatch {
       var result = await method.call(session, paramMap);
 
       // Print session info
-      var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
+      // var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
 
       await session.close(logSession: connector.endpoint.logSessions);
 

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:serverpod/server.dart';
 import 'package:yaml/yaml.dart';
-import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
 
 // TODO: Use this for statistics in the future. Also, add support for modules.

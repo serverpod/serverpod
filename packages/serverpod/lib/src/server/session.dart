@@ -252,9 +252,7 @@ class StreamingSession extends Session {
   }) : super(server: server) {
     // Read query parameters
     var queryParameters = <String, String>{};
-    if (uri != null) {
-      queryParameters.addAll(uri.queryParameters);
-    }
+    queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
     // Get the the authentication key, if any

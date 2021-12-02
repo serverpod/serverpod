@@ -498,8 +498,6 @@ class DatabaseConnection {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
-
-    return false;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -523,9 +521,6 @@ class DatabaseConnection {
   }
 
   void _logQuery(Session session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
-    if (session == null)
-      return;
-
     session.sessionLogs.queries.add(
       QueryLogEntry(
         sessionLogId: session.temporarySessionId,

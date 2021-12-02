@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
@@ -16,7 +15,6 @@ import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../database/database_config.dart';
-import '../database/database_connection.dart';
 import '../generated/protocol.dart' as internal;
 import '../generated/endpoints.dart' as internal;
 import 'endpoint_dispatch.dart';
