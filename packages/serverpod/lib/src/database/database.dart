@@ -146,6 +146,7 @@ class Database {
     return await conn.retrieveFile(storageId, path, session: session);
   }
 
+  /// Verifies that a file has been successfully uploaded.
   Future<bool> verifyFile(String storageId, String path,) async {
     var conn = await databaseConnection;
 

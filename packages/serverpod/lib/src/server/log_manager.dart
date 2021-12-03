@@ -6,6 +6,7 @@ import '../generated/protocol.dart';
 /// The [LogManager] handles logging and logging settings. Typically only used
 /// internally by Serverpod.
 class LogManager {
+  /// The [RuntimeSettings] the log manager retrieves its settings from.
   final RuntimeSettings runtimeSettings;
 
   final Map<String, LogSettings> _endpointOverrides = {};

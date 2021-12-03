@@ -25,6 +25,8 @@ abstract class EndpointDispatch {
   /// Registers any modules with the dispatch.
   void registerModules(Serverpod pod);
 
+  /// Finds an [EndpointConnector] by its name. If the connector is in a module,
+  /// a period should separate the module name from the endpoint name.
   EndpointConnector? getConnectorByName(String endpointName) {
     var endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2)

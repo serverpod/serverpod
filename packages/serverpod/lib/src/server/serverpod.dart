@@ -89,6 +89,9 @@ class Serverpod {
   }
 
   late LogManager _logManager;
+  /// The [LogManager] of the Serverpod, its typically only used internally
+  /// by the Serverpod. Instead of using this object directly, call the log
+  /// method on the current [Session].
   LogManager get logManager => _logManager;
 
   late final FutureCallManager _futureCallManager;
@@ -103,6 +106,9 @@ class Serverpod {
     'private': DatabaseCloudStorage('private'),
   };
 
+  /// Adds a [CloudStorage] to the Serverpod. You can use this method to
+  /// override the default [DatabaseCloudStorage] to use S3 or Google Cloud
+  /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
   }

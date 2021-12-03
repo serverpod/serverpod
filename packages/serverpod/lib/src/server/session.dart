@@ -26,6 +26,7 @@ abstract class Session {
   /// The [Serverpod] this session is running on.
   Serverpod get serverpod => server.serverpod;
 
+  /// A temporary session id used internally by the server.
   late int temporarySessionId;
 
   /// Max lifetime of the session, after it will be forcefully terminated.
@@ -260,6 +261,8 @@ class StreamingSession extends Session {
   }
 }
 
+/// Created when a [FutureCall] is being made. It contains all data associated
+/// with the current call and provides easy access to the database.
 class FutureCallSession extends Session {
   /// Name of the [FutureCall].
   final String futureCallName;
@@ -399,6 +402,10 @@ class StorageAccess {
     return await storage.getPublicUrl(session: _session, path: path);
   }
 
+  /// Creates a new file upload description, that can be passed to the client's
+  /// [FileUploader]. After the file has been uploaded, the
+  /// [verifyDirectFileUpload] method should be called, or the file may be
+  /// deleted.
   Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
@@ -410,6 +417,8 @@ class StorageAccess {
     return await storage.createDirectFileUploadDescription(session: _session, path: path);
   }
 
+  /// Call this method after a file has been uploaded. It will return true
+  /// if the file was successfully uploaded.
   Future<bool> verifyDirectFileUpload({
     required String storageId,
     required String path,
@@ -422,19 +431,27 @@ class StorageAccess {
   }
 }
 
+/// Provides access to the Serverpod's [MessageCentral].
 class MessageCentralAccess {
   final Session _session;
 
   MessageCentralAccess._(this._session);
 
+  /// Adds a listener to a named channel. Whenever a message is posted using
+  /// [postMessage], the [listener] will be notified.
   void addListener(String channelName, MessageCentralListenerCallback listener) {
     _session.server.messageCentral.addListener(_session, channelName, listener);
   }
 
+  /// Removes a listener from a named channel.
   void removeListener(String channelName, MessageCentralListenerCallback listener) {
     _session.server.messageCentral.removeListener(_session, channelName, listener);
   }
 
+  /// Posts a [message] to a named channel. Optionally a [destinationServerId]
+  /// can be provided, in which case the message is sent only to that specific
+  /// server within the cluster. If no [destinationServerId] is provided, the
+  /// message is passed on to all servers in the cluster.
   void postMessage(String channelName, SerializableEntity message, {int? destinationServerId}) {
     _session.server.messageCentral.postMessage(channelName, message, destinationServerId: destinationServerId);
   }

@@ -52,6 +52,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
     return file;
   }
 
+  /// Uploads a file to the the public database cloud storage.
   Future<bool> upload(MethodCallSession session, String storageId, String path, String key) async {
     // Confirm that we are allowed to do the upload
     var uploadInfo = (await session.db.findSingleRow(

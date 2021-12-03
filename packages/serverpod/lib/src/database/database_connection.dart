@@ -451,6 +451,8 @@ class DatabaseConnection {
     }
   }
 
+  /// Returns true if the specified file has been successfully uploaded to the
+  /// database cloud storage.
   Future<bool> verifyFile(String storageId, String path, {required Session session}) async {
     // Check so that the file is saved, but not
     var startTime = DateTime.now();

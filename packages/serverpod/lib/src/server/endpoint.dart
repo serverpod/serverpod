@@ -19,6 +19,7 @@ abstract class Endpoint {
   String get name => _name;
 
   String? _moduleName;
+  /// The name of the current module, or null for the main server.
   String? get moduleName => _moduleName;
 
   late Server _server;
