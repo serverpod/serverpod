@@ -13,7 +13,6 @@ import 'auth_key_manager.dart';
 /// (for Flutter web).
 abstract class ServerpodClient extends ServerpodClientShared {
   late http.Client _httpClient;
-  String? _authorizationKey;
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
@@ -79,8 +78,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
   /// Sets the authorization key to manage user sign-ins.
   Future<Null> setAuthorizationKey(String authorizationKey) async {
-    _authorizationKey = authorizationKey;
-
     if (authenticationKeyManager != null)
       await authenticationKeyManager!.put(authorizationKey);
   }

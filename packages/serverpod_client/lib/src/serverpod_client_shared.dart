@@ -9,6 +9,8 @@ import 'serverpod_client_exception.dart';
 
 /// Method called when errors occur in communication with the server.
 typedef ServerpodClientErrorCallback = void Function(dynamic e, StackTrace stackTrace);
+
+/// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
 /// Superclass with shared methods for handling communication with the server.
@@ -153,6 +155,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _notifyWebSocketConnectionStatusListeners();
   }
 
+  /// Closes the current web socket connection (if open), then connects again.
   Future<void> reconnectWebSocket() async {
     if (_webSocket == null)
       return;
@@ -179,10 +182,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _notifyWebSocketConnectionStatusListeners();
   }
 
+  /// Adds a callback for when the [isWebSocketConnected] property is
+  /// changed.
   void addWebSocketConnectionStatusListener(VoidCallback listener) {
     _websocketConnectionStatusListeners.add(listener);
   }
 
+  /// Removes a connection status listener.
   void removeWebSocketConnectionStatusListener(VoidCallback listener) {
     _websocketConnectionStatusListeners.remove(listener);
   }
@@ -193,6 +199,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
   }
 
+  /// Returns true if the web socket is connected.
   bool get isWebSocketConnected {
     return _webSocket != null;
   }
@@ -256,6 +263,8 @@ abstract class EndpointRef {
     return client._sendSerializableObjectToStream(name, message);
   }
 
+  /// Resets web socket stream, so it's possible to re-listen to endpoint
+  /// streams.
   void resetStream() {
     _streamController = StreamController<SerializableEntity>();
   }
