@@ -181,6 +181,9 @@ class Serverpod {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
 
+    // Create a temporary log manager with default settings, until we have loaded settings from the database.
+    _logManager = LogManager(_defaultRuntimeSettings);
+
     // Read command line arguments
     try {
       final argParser = ArgParser()
@@ -249,7 +252,6 @@ class Serverpod {
           CloudStoragePublicEndpoint().register(this);
 
         // Runtime settings
-        _logManager = LogManager(_defaultRuntimeSettings);
         var session = await createSession();
         try {
           _runtimeSettings = await session.db.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;

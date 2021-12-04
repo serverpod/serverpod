@@ -61,9 +61,39 @@ class InsightsEndpoint extends Endpoint {
   // }
 
   /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getSessionLog(Session session, int? numEntries) async {
+  Future<SessionLogResult> getSessionLog(Session session, [int? numEntries, SessionLogFilter? filter]) async {
+    // Filter for errors and slow
+    Expression where;
+    if (filter == null || (!filter.slow && !filter.error)) {
+      where = Constant(true);
+    }
+    else {
+      if (filter.slow && filter.error)
+        where = tSessionLogEntry.slow.equals(true) | tSessionLogEntry.error.notEquals(null);
+      else if (filter.slow)
+        where = tSessionLogEntry.slow.equals(true);
+      else
+        where = tSessionLogEntry.error.notEquals(null);
+    }
+
+    // Filter for endpoint
+    if (filter != null && filter.endpoint != null) {
+      where = where & tSessionLogEntry.endpoint.equals(filter.endpoint);
+    }
+
+    // Filter for method
+    if (filter != null && filter.method != null) {
+      where = where & tSessionLogEntry.method.equals(filter.method);
+    }
+
+    // Filter for starting point
+    if (filter != null && filter.lastSessionLogId != null) {
+      where = where & (tSessionLogEntry.id < filter.lastSessionLogId);
+    }
+
     var rows = (await session.db.find(
       tSessionLogEntry,
+      where: where,
       limit: numEntries,
       orderBy: tSessionLogEntry.id,
       orderDescending: true,

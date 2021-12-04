@@ -1,0 +1,8 @@
+class: SessionLogFilter
+fields:
+  endpoint: String?
+  method: String?
+  futureCall: String?
+  slow: bool
+  error: bool
+  lastSessionLogId: int?
