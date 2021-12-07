@@ -3,8 +3,8 @@ import 'package:serverpod/serverpod.dart';
 int globalInt = 0;
 
 class SimpleEndpoint extends Endpoint {
-  
-  Future<void> setGlobalInt(Session session, int? value, [int? secondValue]) async {
+  Future<void> setGlobalInt(Session session, int? value,
+      [int? secondValue]) async {
     globalInt = value!;
   }
 

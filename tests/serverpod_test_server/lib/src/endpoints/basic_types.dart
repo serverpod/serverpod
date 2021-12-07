@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 
 class BasicTypesEndpoint extends Endpoint {
-
   Future<int?> testInt(Session session, int? value) async {
     return value;
   }

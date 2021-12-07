@@ -6,7 +6,8 @@ class LoggingEndpoint extends Endpoint {
     session.log(message);
   }
 
-  Future<void> logDebugAndInfoAndError(Session session, String debug, String info, String error) async {
+  Future<void> logDebugAndInfoAndError(
+      Session session, String debug, String info, String error) async {
     session.log(debug, level: LogLevel.debug);
     session.log(info);
     session.log(error, level: LogLevel.error);

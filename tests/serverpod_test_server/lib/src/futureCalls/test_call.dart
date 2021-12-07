@@ -7,8 +7,7 @@ class TestCall extends FutureCall {
     if (object != null) {
       var data = object as SimpleData;
       session.log('${data.num}');
-    }
-    else {
+    } else {
       session.log('null');
     }
   }

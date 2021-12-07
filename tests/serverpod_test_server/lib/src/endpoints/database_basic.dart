@@ -23,7 +23,8 @@ class BasicDatabase extends Endpoint {
     }
     var row = result[0];
     if (row.length != tTypes.columns.length) {
-      print('getTypesRawQuery expected row with ${tTypes.columns.length} entries');
+      print(
+          'getTypesRawQuery expected row with ${tTypes.columns.length} entries');
       return null;
     }
     return row[0] as int;
@@ -42,7 +43,9 @@ class BasicDatabase extends Endpoint {
 
   Future<void> createSimpleTestData(Session session, int numRows) async {
     for (var i = 0; i < numRows; i++) {
-      var data = SimpleData(num: i,);
+      var data = SimpleData(
+        num: i,
+      );
       await session.db.insert(data);
     }
   }
@@ -68,7 +71,8 @@ class BasicDatabase extends Endpoint {
     return await session.db.deleteRow(data!);
   }
 
-  Future<SimpleDataList?> findSimpleDataRowsLessThan(Session session, int num, int offset, int limit, bool descending) async {
+  Future<SimpleDataList?> findSimpleDataRowsLessThan(
+      Session session, int num, int offset, int limit, bool descending) async {
     var rows = await session.db.find(
       tSimpleData,
       where: (tSimpleData.num < num),
@@ -83,26 +87,28 @@ class BasicDatabase extends Endpoint {
     );
   }
 
-  Future<bool?> updateSimpleDataRow(Session session, int num, int newNum) async {
+  Future<bool?> updateSimpleDataRow(
+      Session session, int num, int newNum) async {
     var data = await session.db.findSingleRow(
       tSimpleData,
       where: tSimpleData.num.equals(num),
     ) as SimpleData?;
 
-    if (data == null)
-      return false;
+    if (data == null) return false;
 
     data.num = newNum;
     return await session.db.update(data);
   }
 
-  Future<int?> storeObjectWithObject(Session session, ObjectWithObject object) async {
+  Future<int?> storeObjectWithObject(
+      Session session, ObjectWithObject object) async {
     await session.db.insert(object);
     return object.id;
   }
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {
-    var object = await session.db.findById(tObjectWithObject, id) as ObjectWithObject?;
+    var object =
+        await session.db.findById(tObjectWithObject, id) as ObjectWithObject?;
     return object;
   }
 }

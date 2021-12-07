@@ -27,16 +27,21 @@ class Protocol extends SerializationManager {
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
-  final Map<String,String> _tableClassMapping = {};
+  final Map<String, String> _tableClassMapping = {};
   @override
-  Map<String,String> get tableClassMapping => _tableClassMapping;
+  Map<String, String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['Nullability'] = (Map<String, dynamic> serialization) => Nullability.fromSerialization(serialization);
-    constructors['SimpleData'] = (Map<String, dynamic> serialization) => SimpleData.fromSerialization(serialization);
-    constructors['Types'] = (Map<String, dynamic> serialization) => Types.fromSerialization(serialization);
-    constructors['SimpleDataList'] = (Map<String, dynamic> serialization) => SimpleDataList.fromSerialization(serialization);
-    constructors['ObjectWithObject'] = (Map<String, dynamic> serialization) => ObjectWithObject.fromSerialization(serialization);
+    constructors['Nullability'] = (Map<String, dynamic> serialization) =>
+        Nullability.fromSerialization(serialization);
+    constructors['SimpleData'] = (Map<String, dynamic> serialization) =>
+        SimpleData.fromSerialization(serialization);
+    constructors['Types'] = (Map<String, dynamic> serialization) =>
+        Types.fromSerialization(serialization);
+    constructors['SimpleDataList'] = (Map<String, dynamic> serialization) =>
+        SimpleDataList.fromSerialization(serialization);
+    constructors['ObjectWithObject'] = (Map<String, dynamic> serialization) =>
+        ObjectWithObject.fromSerialization(serialization);
 
     tableClassMapping['simple_data'] = 'SimpleData';
     tableClassMapping['types'] = 'Types';

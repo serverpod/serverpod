@@ -12,10 +12,10 @@ class ModuleSerializationEndpoint extends Endpoint {
 
     try {
       var s = pod.serializationManager.serializeEntity(moduleClass)!;
-      var unpacked = pod.serializationManager.createEntityFromSerialization(jsonDecode(s)) as module.ModuleClass;
+      var unpacked = pod.serializationManager
+          .createEntityFromSerialization(jsonDecode(s)) as module.ModuleClass;
       return (unpacked.data == 42 && unpacked.name == 'foo');
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       print('ModuleSerializationEndpoint.serializeModuleObject failed: $e');
       print('$stackTrace');
 
@@ -23,7 +23,8 @@ class ModuleSerializationEndpoint extends Endpoint {
     }
   }
 
-  Future<module.ModuleClass> modifyModuleObject(Session session, module.ModuleClass object) async {
+  Future<module.ModuleClass> modifyModuleObject(
+      Session session, module.ModuleClass object) async {
     object.data = 42;
     return object;
   }

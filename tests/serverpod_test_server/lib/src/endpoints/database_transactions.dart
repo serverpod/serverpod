@@ -14,10 +14,12 @@ class TransactionsDatabaseEndpoint extends Endpoint {
     await session.db.executeTransation(txn);
   }
 
-  Future<bool> updateInsertDelete(Session session, int numUpdate, int numInsert, int numDelete) async {
+  Future<bool> updateInsertDelete(
+      Session session, int numUpdate, int numInsert, int numDelete) async {
     Transaction txn = Transaction();
 
-    var data = await session.db.findSingleRow(tSimpleData, where: tSimpleData.num.equals(numUpdate)) as SimpleData?;
+    var data = await session.db.findSingleRow(tSimpleData,
+        where: tSimpleData.num.equals(numUpdate)) as SimpleData?;
 
     data!.num = 1000;
     await session.db.update(data, transaction: txn);
@@ -27,7 +29,8 @@ class TransactionsDatabaseEndpoint extends Endpoint {
     );
     await session.db.insert(newData, transaction: txn);
 
-    await session.db.delete(tSimpleData, where: tSimpleData.num.equals(numDelete), transaction: txn);
+    await session.db.delete(tSimpleData,
+        where: tSimpleData.num.equals(numDelete), transaction: txn);
 
     return await session.db.executeTransation(txn);
   }
