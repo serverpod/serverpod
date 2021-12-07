@@ -1,7 +1,25 @@
-streaming:
-  - streamOpened:
+asyncTasks:
+  - insertRowToSimpleDataAfterDelay:
+  - throwExceptionAfterDelay:
+authentication:
+  - authenticate:
+basicTypes:
+  - testInt:
+  - testDouble:
+  - testBool:
+  - testDateTime:
+  - testString:
+  - testByteData:
 cloudStorage:
   - reset:
+  - storePublicFile:
+  - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
+  - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
+s3CloudStorage:
   - storePublicFile:
   - retrievePublicFile:
   - existsPublicFile:
@@ -24,45 +42,27 @@ basicDatabase:
   - updateSimpleDataRow:
   - storeObjectWithObject:
   - getObjectWithObject:
-basicTypes:
-  - testInt:
-  - testDouble:
-  - testBool:
-  - testDateTime:
-  - testString:
-  - testByteData:
-authentication:
-  - authenticate:
+transactionsDatabase:
+  - removeRow:
+  - updateInsertDelete:
 failedCalls:
   - failedCall:
-moduleSerialization:
-  - serializeModuleObject:
-  - modifyModuleObject:
-s3CloudStorage:
-  - storePublicFile:
-  - retrievePublicFile:
-  - existsPublicFile:
-  - deletePublicFile:
-  - getPublicUrlForFile:
-  - getDirectFilePostUrl:
-  - verifyDirectFileUpload:
 futureCalls:
   - makeFutureCall:
-simple:
-  - setGlobalInt:
-  - addToGlobalInt:
-  - getGlobalInt:
 logging:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:
-asyncTasks:
-  - insertRowToSimpleDataAfterDelay:
-  - throwExceptionAfterDelay:
-signInRequired:
-  - testMethod:
-transactionsDatabase:
-  - removeRow:
-  - updateInsertDelete:
 loggingDisabled:
   - logInfo:
+moduleSerialization:
+  - serializeModuleObject:
+  - modifyModuleObject:
+signInRequired:
+  - testMethod:
+simple:
+  - setGlobalInt:
+  - addToGlobalInt:
+  - getGlobalInt:
+streaming:
+  - streamOpened:

@@ -12,14 +12,79 @@ import 'protocol.dart';
 import 'package:serverpod_test_module_client/module.dart' as serverpod_test_module;
 import 'package:serverpod_auth_client/module.dart' as serverpod_auth;
 
-class _EndpointStreaming extends EndpointRef {
+class _EndpointAsyncTasks extends EndpointRef {
   @override
-  String get name => 'streaming';
+  String get name => 'asyncTasks';
 
-  _EndpointStreaming(EndpointCaller caller) : super(caller);
+  _EndpointAsyncTasks(EndpointCaller caller) : super(caller);
 
-  Future<void> streamOpened() async {
-    return await caller.callServerEndpoint('streaming', 'streamOpened', 'void', {
+  Future<void> insertRowToSimpleDataAfterDelay(int num,int seconds,) async {
+    return await caller.callServerEndpoint('asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
+      'num':num,
+      'seconds':seconds,
+    });
+  }
+
+  Future<void> throwExceptionAfterDelay(int seconds,) async {
+    return await caller.callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
+      'seconds':seconds,
+    });
+  }
+}
+
+class _EndpointAuthentication extends EndpointRef {
+  @override
+  String get name => 'authentication';
+
+  _EndpointAuthentication(EndpointCaller caller) : super(caller);
+
+  Future<serverpod_auth.AuthenticationResponse> authenticate(String email,String password,) async {
+    return await caller.callServerEndpoint('authentication', 'authenticate', 'AuthenticationResponse', {
+      'email':email,
+      'password':password,
+    });
+  }
+}
+
+class _EndpointBasicTypes extends EndpointRef {
+  @override
+  String get name => 'basicTypes';
+
+  _EndpointBasicTypes(EndpointCaller caller) : super(caller);
+
+  Future<int?> testInt(int? value,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
+      'value':value,
+    });
+  }
+
+  Future<double?> testDouble(double? value,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testDouble', 'double', {
+      'value':value,
+    });
+  }
+
+  Future<bool?> testBool(bool? value,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testBool', 'bool', {
+      'value':value,
+    });
+  }
+
+  Future<DateTime?> testDateTime(DateTime? dateTime,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
+      'dateTime':dateTime,
+    });
+  }
+
+  Future<String?> testString(String? value,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testString', 'String', {
+      'value':value,
+    });
+  }
+
+  Future<typed_data.ByteData?> testByteData(typed_data.ByteData? value,) async {
+    return await caller.callServerEndpoint('basicTypes', 'testByteData', 'ByteData', {
+      'value':value,
     });
   }
 }
@@ -74,6 +139,56 @@ class _EndpointCloudStorage extends EndpointRef {
 
   Future<bool> verifyDirectFileUpload(String path,) async {
     return await caller.callServerEndpoint('cloudStorage', 'verifyDirectFileUpload', 'bool', {
+      'path':path,
+    });
+  }
+}
+
+class _EndpointS3CloudStorage extends EndpointRef {
+  @override
+  String get name => 's3CloudStorage';
+
+  _EndpointS3CloudStorage(EndpointCaller caller) : super(caller);
+
+  Future<void> storePublicFile(String path,typed_data.ByteData byteData,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'storePublicFile', 'void', {
+      'path':path,
+      'byteData':byteData,
+    });
+  }
+
+  Future<typed_data.ByteData?> retrievePublicFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'retrievePublicFile', 'ByteData', {
+      'path':path,
+    });
+  }
+
+  Future<bool?> existsPublicFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'existsPublicFile', 'bool', {
+      'path':path,
+    });
+  }
+
+  Future<void> deletePublicFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'deletePublicFile', 'void', {
+      'path':path,
+    });
+  }
+
+  Future<String?> getPublicUrlForFile(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'getPublicUrlForFile', 'String', {
+      'path':path,
+    });
+  }
+
+  Future<String?> getDirectFilePostUrl(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'getDirectFilePostUrl', 'String', {
+      'path':path,
+    });
+  }
+
+  Future<bool> verifyDirectFileUpload(String path,) async {
+    return await caller.callServerEndpoint('s3CloudStorage', 'verifyDirectFileUpload', 'bool', {
       'path':path,
     });
   }
@@ -170,59 +285,23 @@ class _EndpointBasicDatabase extends EndpointRef {
   }
 }
 
-class _EndpointBasicTypes extends EndpointRef {
+class _EndpointTransactionsDatabase extends EndpointRef {
   @override
-  String get name => 'basicTypes';
+  String get name => 'transactionsDatabase';
 
-  _EndpointBasicTypes(EndpointCaller caller) : super(caller);
+  _EndpointTransactionsDatabase(EndpointCaller caller) : super(caller);
 
-  Future<int?> testInt(int? value,) async {
-    return await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
-      'value':value,
+  Future<void> removeRow(int num,) async {
+    return await caller.callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
+      'num':num,
     });
   }
 
-  Future<double?> testDouble(double? value,) async {
-    return await caller.callServerEndpoint('basicTypes', 'testDouble', 'double', {
-      'value':value,
-    });
-  }
-
-  Future<bool?> testBool(bool? value,) async {
-    return await caller.callServerEndpoint('basicTypes', 'testBool', 'bool', {
-      'value':value,
-    });
-  }
-
-  Future<DateTime?> testDateTime(DateTime? dateTime,) async {
-    return await caller.callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
-      'dateTime':dateTime,
-    });
-  }
-
-  Future<String?> testString(String? value,) async {
-    return await caller.callServerEndpoint('basicTypes', 'testString', 'String', {
-      'value':value,
-    });
-  }
-
-  Future<typed_data.ByteData?> testByteData(typed_data.ByteData? value,) async {
-    return await caller.callServerEndpoint('basicTypes', 'testByteData', 'ByteData', {
-      'value':value,
-    });
-  }
-}
-
-class _EndpointAuthentication extends EndpointRef {
-  @override
-  String get name => 'authentication';
-
-  _EndpointAuthentication(EndpointCaller caller) : super(caller);
-
-  Future<serverpod_auth.AuthenticationResponse> authenticate(String email,String password,) async {
-    return await caller.callServerEndpoint('authentication', 'authenticate', 'AuthenticationResponse', {
-      'email':email,
-      'password':password,
+  Future<bool> updateInsertDelete(int numUpdate,int numInsert,int numDelete,) async {
+    return await caller.callServerEndpoint('transactionsDatabase', 'updateInsertDelete', 'bool', {
+      'numUpdate':numUpdate,
+      'numInsert':numInsert,
+      'numDelete':numDelete,
     });
   }
 }
@@ -239,74 +318,6 @@ class _EndpointFailedCalls extends EndpointRef {
   }
 }
 
-class _EndpointModuleSerialization extends EndpointRef {
-  @override
-  String get name => 'moduleSerialization';
-
-  _EndpointModuleSerialization(EndpointCaller caller) : super(caller);
-
-  Future<bool> serializeModuleObject() async {
-    return await caller.callServerEndpoint('moduleSerialization', 'serializeModuleObject', 'bool', {
-    });
-  }
-
-  Future<serverpod_test_module.ModuleClass> modifyModuleObject(serverpod_test_module.ModuleClass object,) async {
-    return await caller.callServerEndpoint('moduleSerialization', 'modifyModuleObject', 'ModuleClass', {
-      'object':object,
-    });
-  }
-}
-
-class _EndpointS3CloudStorage extends EndpointRef {
-  @override
-  String get name => 's3CloudStorage';
-
-  _EndpointS3CloudStorage(EndpointCaller caller) : super(caller);
-
-  Future<void> storePublicFile(String path,typed_data.ByteData byteData,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'storePublicFile', 'void', {
-      'path':path,
-      'byteData':byteData,
-    });
-  }
-
-  Future<typed_data.ByteData?> retrievePublicFile(String path,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'retrievePublicFile', 'ByteData', {
-      'path':path,
-    });
-  }
-
-  Future<bool?> existsPublicFile(String path,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'existsPublicFile', 'bool', {
-      'path':path,
-    });
-  }
-
-  Future<void> deletePublicFile(String path,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'deletePublicFile', 'void', {
-      'path':path,
-    });
-  }
-
-  Future<String?> getPublicUrlForFile(String path,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'getPublicUrlForFile', 'String', {
-      'path':path,
-    });
-  }
-
-  Future<String?> getDirectFilePostUrl(String path,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'getDirectFilePostUrl', 'String', {
-      'path':path,
-    });
-  }
-
-  Future<bool> verifyDirectFileUpload(String path,) async {
-    return await caller.callServerEndpoint('s3CloudStorage', 'verifyDirectFileUpload', 'bool', {
-      'path':path,
-    });
-  }
-}
-
 class _EndpointFutureCalls extends EndpointRef {
   @override
   String get name => 'futureCalls';
@@ -316,30 +327,6 @@ class _EndpointFutureCalls extends EndpointRef {
   Future<void> makeFutureCall(SimpleData? data,) async {
     return await caller.callServerEndpoint('futureCalls', 'makeFutureCall', 'void', {
       'data':data,
-    });
-  }
-}
-
-class _EndpointSimple extends EndpointRef {
-  @override
-  String get name => 'simple';
-
-  _EndpointSimple(EndpointCaller caller) : super(caller);
-
-  Future<void> setGlobalInt(int? value,[int? secondValue,]) async {
-    return await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
-      'value':value,
-      'secondValue': secondValue,
-    });
-  }
-
-  Future<void> addToGlobalInt() async {
-    return await caller.callServerEndpoint('simple', 'addToGlobalInt', 'void', {
-    });
-  }
-
-  Future<int> getGlobalInt() async {
-    return await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {
     });
   }
 }
@@ -370,22 +357,33 @@ class _EndpointLogging extends EndpointRef {
   }
 }
 
-class _EndpointAsyncTasks extends EndpointRef {
+class _EndpointLoggingDisabled extends EndpointRef {
   @override
-  String get name => 'asyncTasks';
+  String get name => 'loggingDisabled';
 
-  _EndpointAsyncTasks(EndpointCaller caller) : super(caller);
+  _EndpointLoggingDisabled(EndpointCaller caller) : super(caller);
 
-  Future<void> insertRowToSimpleDataAfterDelay(int num,int seconds,) async {
-    return await caller.callServerEndpoint('asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
-      'num':num,
-      'seconds':seconds,
+  Future<void> logInfo(String message,) async {
+    return await caller.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
+      'message':message,
+    });
+  }
+}
+
+class _EndpointModuleSerialization extends EndpointRef {
+  @override
+  String get name => 'moduleSerialization';
+
+  _EndpointModuleSerialization(EndpointCaller caller) : super(caller);
+
+  Future<bool> serializeModuleObject() async {
+    return await caller.callServerEndpoint('moduleSerialization', 'serializeModuleObject', 'bool', {
     });
   }
 
-  Future<void> throwExceptionAfterDelay(int seconds,) async {
-    return await caller.callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
-      'seconds':seconds,
+  Future<serverpod_test_module.ModuleClass> modifyModuleObject(serverpod_test_module.ModuleClass object,) async {
+    return await caller.callServerEndpoint('moduleSerialization', 'modifyModuleObject', 'ModuleClass', {
+      'object':object,
     });
   }
 }
@@ -402,36 +400,38 @@ class _EndpointSignInRequired extends EndpointRef {
   }
 }
 
-class _EndpointTransactionsDatabase extends EndpointRef {
+class _EndpointSimple extends EndpointRef {
   @override
-  String get name => 'transactionsDatabase';
+  String get name => 'simple';
 
-  _EndpointTransactionsDatabase(EndpointCaller caller) : super(caller);
+  _EndpointSimple(EndpointCaller caller) : super(caller);
 
-  Future<void> removeRow(int num,) async {
-    return await caller.callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
-      'num':num,
+  Future<void> setGlobalInt(int? value,[int? secondValue,]) async {
+    return await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
+      'value':value,
+      'secondValue': secondValue,
     });
   }
 
-  Future<bool> updateInsertDelete(int numUpdate,int numInsert,int numDelete,) async {
-    return await caller.callServerEndpoint('transactionsDatabase', 'updateInsertDelete', 'bool', {
-      'numUpdate':numUpdate,
-      'numInsert':numInsert,
-      'numDelete':numDelete,
+  Future<void> addToGlobalInt() async {
+    return await caller.callServerEndpoint('simple', 'addToGlobalInt', 'void', {
+    });
+  }
+
+  Future<int> getGlobalInt() async {
+    return await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {
     });
   }
 }
 
-class _EndpointLoggingDisabled extends EndpointRef {
+class _EndpointStreaming extends EndpointRef {
   @override
-  String get name => 'loggingDisabled';
+  String get name => 'streaming';
 
-  _EndpointLoggingDisabled(EndpointCaller caller) : super(caller);
+  _EndpointStreaming(EndpointCaller caller) : super(caller);
 
-  Future<void> logInfo(String message,) async {
-    return await caller.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
-      'message':message,
+  Future<void> streamOpened() async {
+    return await caller.callServerEndpoint('streaming', 'streamOpened', 'void', {
     });
   }
 }
@@ -447,40 +447,40 @@ class _Modules {
 }
 
 class Client extends ServerpodClient {
-  late final _EndpointStreaming streaming;
-  late final _EndpointCloudStorage cloudStorage;
-  late final _EndpointBasicDatabase basicDatabase;
-  late final _EndpointBasicTypes basicTypes;
-  late final _EndpointAuthentication authentication;
-  late final _EndpointFailedCalls failedCalls;
-  late final _EndpointModuleSerialization moduleSerialization;
-  late final _EndpointS3CloudStorage s3CloudStorage;
-  late final _EndpointFutureCalls futureCalls;
-  late final _EndpointSimple simple;
-  late final _EndpointLogging logging;
   late final _EndpointAsyncTasks asyncTasks;
-  late final _EndpointSignInRequired signInRequired;
+  late final _EndpointAuthentication authentication;
+  late final _EndpointBasicTypes basicTypes;
+  late final _EndpointCloudStorage cloudStorage;
+  late final _EndpointS3CloudStorage s3CloudStorage;
+  late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointTransactionsDatabase transactionsDatabase;
+  late final _EndpointFailedCalls failedCalls;
+  late final _EndpointFutureCalls futureCalls;
+  late final _EndpointLogging logging;
   late final _EndpointLoggingDisabled loggingDisabled;
+  late final _EndpointModuleSerialization moduleSerialization;
+  late final _EndpointSignInRequired signInRequired;
+  late final _EndpointSimple simple;
+  late final _EndpointStreaming streaming;
   late final _Modules modules;
 
 
   Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
-    streaming = _EndpointStreaming(this);
-    cloudStorage = _EndpointCloudStorage(this);
-    basicDatabase = _EndpointBasicDatabase(this);
-    basicTypes = _EndpointBasicTypes(this);
-    authentication = _EndpointAuthentication(this);
-    failedCalls = _EndpointFailedCalls(this);
-    moduleSerialization = _EndpointModuleSerialization(this);
-    s3CloudStorage = _EndpointS3CloudStorage(this);
-    futureCalls = _EndpointFutureCalls(this);
-    simple = _EndpointSimple(this);
-    logging = _EndpointLogging(this);
     asyncTasks = _EndpointAsyncTasks(this);
-    signInRequired = _EndpointSignInRequired(this);
+    authentication = _EndpointAuthentication(this);
+    basicTypes = _EndpointBasicTypes(this);
+    cloudStorage = _EndpointCloudStorage(this);
+    s3CloudStorage = _EndpointS3CloudStorage(this);
+    basicDatabase = _EndpointBasicDatabase(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
+    failedCalls = _EndpointFailedCalls(this);
+    futureCalls = _EndpointFutureCalls(this);
+    logging = _EndpointLogging(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
+    moduleSerialization = _EndpointModuleSerialization(this);
+    signInRequired = _EndpointSignInRequired(this);
+    simple = _EndpointSimple(this);
+    streaming = _EndpointStreaming(this);
 
     modules = _Modules(this);
     registerModuleProtocol(serverpod_test_module.Protocol());
@@ -489,21 +489,21 @@ class Client extends ServerpodClient {
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-    'streaming' : streaming,
-    'cloudStorage' : cloudStorage,
-    'basicDatabase' : basicDatabase,
-    'basicTypes' : basicTypes,
-    'authentication' : authentication,
-    'failedCalls' : failedCalls,
-    'moduleSerialization' : moduleSerialization,
-    's3CloudStorage' : s3CloudStorage,
-    'futureCalls' : futureCalls,
-    'simple' : simple,
-    'logging' : logging,
     'asyncTasks' : asyncTasks,
-    'signInRequired' : signInRequired,
+    'authentication' : authentication,
+    'basicTypes' : basicTypes,
+    'cloudStorage' : cloudStorage,
+    's3CloudStorage' : s3CloudStorage,
+    'basicDatabase' : basicDatabase,
     'transactionsDatabase' : transactionsDatabase,
+    'failedCalls' : failedCalls,
+    'futureCalls' : futureCalls,
+    'logging' : logging,
     'loggingDisabled' : loggingDisabled,
+    'moduleSerialization' : moduleSerialization,
+    'signInRequired' : signInRequired,
+    'simple' : simple,
+    'streaming' : streaming,
   };
 
   @override

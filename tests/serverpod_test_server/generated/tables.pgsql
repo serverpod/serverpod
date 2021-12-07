@@ -1,4 +1,22 @@
 --
+-- Class ObjectWithObject as table object_with_object
+--
+
+CREATE TABLE object_with_object (
+  "id" serial,
+  "data" json NOT NULL,
+  "nullableData" json,
+  "dataList" json NOT NULL,
+  "nullableDataList" json,
+  "listWithNullableData" json NOT NULL,
+  "nullableListWithNullableData" json
+);
+
+ALTER TABLE ONLY object_with_object
+  ADD CONSTRAINT object_with_object_pkey PRIMARY KEY (id);
+
+
+--
 -- Class SimpleData as table simple_data
 --
 
@@ -27,23 +45,5 @@ CREATE TABLE types (
 
 ALTER TABLE ONLY types
   ADD CONSTRAINT types_pkey PRIMARY KEY (id);
-
-
---
--- Class ObjectWithObject as table object_with_object
---
-
-CREATE TABLE object_with_object (
-  "id" serial,
-  "data" json NOT NULL,
-  "nullableData" json,
-  "dataList" json NOT NULL,
-  "nullableDataList" json,
-  "listWithNullableData" json NOT NULL,
-  "nullableListWithNullableData" json
-);
-
-ALTER TABLE ONLY object_with_object
-  ADD CONSTRAINT object_with_object_pkey PRIMARY KEY (id);
 
 

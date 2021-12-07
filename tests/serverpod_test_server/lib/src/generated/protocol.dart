@@ -10,16 +10,16 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 
 import 'nullability.dart';
-import 'simple_data.dart';
-import 'types.dart';
-import 'simple_data_list.dart';
 import 'object_with_object.dart';
+import 'simple_data.dart';
+import 'simple_data_list.dart';
+import 'types.dart';
 
 export 'nullability.dart';
-export 'simple_data.dart';
-export 'types.dart';
-export 'simple_data_list.dart';
 export 'object_with_object.dart';
+export 'simple_data.dart';
+export 'simple_data_list.dart';
+export 'types.dart';
 
 class Protocol extends SerializationManager {
   static final Protocol instance = Protocol();
@@ -27,24 +27,19 @@ class Protocol extends SerializationManager {
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
-  final Map<String, String> _tableClassMapping = {};
+  final Map<String,String> _tableClassMapping = {};
   @override
-  Map<String, String> get tableClassMapping => _tableClassMapping;
+  Map<String,String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['Nullability'] = (Map<String, dynamic> serialization) =>
-        Nullability.fromSerialization(serialization);
-    constructors['SimpleData'] = (Map<String, dynamic> serialization) =>
-        SimpleData.fromSerialization(serialization);
-    constructors['Types'] = (Map<String, dynamic> serialization) =>
-        Types.fromSerialization(serialization);
-    constructors['SimpleDataList'] = (Map<String, dynamic> serialization) =>
-        SimpleDataList.fromSerialization(serialization);
-    constructors['ObjectWithObject'] = (Map<String, dynamic> serialization) =>
-        ObjectWithObject.fromSerialization(serialization);
+    constructors['Nullability'] = (Map<String, dynamic> serialization) => Nullability.fromSerialization(serialization);
+    constructors['ObjectWithObject'] = (Map<String, dynamic> serialization) => ObjectWithObject.fromSerialization(serialization);
+    constructors['SimpleData'] = (Map<String, dynamic> serialization) => SimpleData.fromSerialization(serialization);
+    constructors['SimpleDataList'] = (Map<String, dynamic> serialization) => SimpleDataList.fromSerialization(serialization);
+    constructors['Types'] = (Map<String, dynamic> serialization) => Types.fromSerialization(serialization);
 
+    tableClassMapping['object_with_object'] = 'ObjectWithObject';
     tableClassMapping['simple_data'] = 'SimpleData';
     tableClassMapping['types'] = 'Types';
-    tableClassMapping['object_with_object'] = 'ObjectWithObject';
   }
 }
