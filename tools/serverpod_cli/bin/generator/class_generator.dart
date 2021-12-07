@@ -38,6 +38,7 @@ abstract class ClassGenerator {
     // Generate files for each yaml file
     var dir = Directory(inputPath);
     var list = dir.listSync();
+    list.sort((a, b) => a.path.compareTo(b.path));
     for (var entity in list) {
       if (entity is File && entity.path.endsWith('.yaml')) {
         if (verbose) print('  - processing file: ${entity.path}');
