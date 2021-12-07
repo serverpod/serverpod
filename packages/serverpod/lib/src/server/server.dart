@@ -52,10 +52,12 @@ class Server {
   final EndpointDispatch endpoints;
 
   bool _running = false;
+
   /// True if the server is currently running.
   bool get running => _running;
 
   late final HttpServer _httpServer;
+
   /// The [HttpServer] responsible for handling calls.
   HttpServer get httpServer => _httpServer;
 
@@ -83,25 +85,24 @@ class Server {
     this.securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
-  }) :
-    name = name ?? 'Server id $serverId';
+  }) : name = name ?? 'Server id $serverId';
 
   /// Starts the server.
   Future<void> start() async {
     if (securityContext != null) {
-      await HttpServer.bindSecure(InternetAddress.anyIPv6, port, securityContext!).then(
-      _runServer,
-      onError: (e, StackTrace stackTrace) {
-        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
+      await HttpServer.bindSecure(
+              InternetAddress.anyIPv6, port, securityContext!)
+          .then(_runServer, onError: (e, StackTrace stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       });
-    }
-    else {
-      await HttpServer.bind(InternetAddress.anyIPv6, port).then(
-      _runServer,
-      onError: (e, StackTrace stackTrace) {
-        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
+    } else {
+      await HttpServer.bind(InternetAddress.anyIPv6, port).then(_runServer,
+          onError: (e, StackTrace stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       });
@@ -115,18 +116,19 @@ class Server {
     _httpServer = httpServer;
     httpServer.autoCompress = true;
     httpServer.listen(
-          (HttpRequest request) {
+      (HttpRequest request) {
         try {
           _handleRequest(request);
-        }
-        catch(e, stackTrace) {
-          stderr.writeln('${DateTime.now().toUtc()} Internal server error. _handleRequest failed.');
+        } catch (e, stackTrace) {
+          stderr.writeln(
+              '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.');
           stderr.writeln('$e');
           stderr.writeln('$stackTrace');
         }
       },
       onError: (e, StackTrace stackTrace) {
-        stderr.writeln('${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       },
@@ -140,11 +142,11 @@ class Server {
 
     try {
       uri = request.requestedUri;
-    }
-    catch(e) {
+    } catch (e) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Specific log for this?
-        stderr.writeln('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        stderr.writeln(
+            'Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
       }
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -170,19 +172,16 @@ class Server {
         request.response.writeln('OK ${DateTime.now().toUtc()}');
       else
         request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
-      for (var issue in issues)
-        request.response.writeln(issue);
+      for (var issue in issues) request.response.writeln(issue);
 
       await request.response.close();
       return;
-    }
-    else if (uri.path == '/websocket') {
-      var webSocket =  await WebSocketTransformer.upgrade(request);
+    } else if (uri.path == '/websocket') {
+      var webSocket = await WebSocketTransformer.upgrade(request);
       webSocket.pingInterval = Duration(minutes: 1);
       unawaited(_handleWebsocket(webSocket, request));
       return;
-    }
-    else if (uri.path == '/serverpod_cloud_storage') {
+    } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
     }
 
@@ -208,18 +207,16 @@ class Server {
     if (readBody) {
       try {
         body = await _readBody(request);
-      }
-      catch (e, stackTrace) {
-        stderr.writeln('${DateTime.now()
-            .toUtc()} Internal server error. Failed to read body of request.');
+      } catch (e, stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
         request.response.statusCode = HttpStatus.badRequest;
         await request.response.close();
         return;
       }
-    }
-    else {
+    } else {
       body = '';
     }
 
@@ -233,8 +230,7 @@ class Server {
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
       return;
-    }
-    else if (result is ResultAuthenticationFailed) {
+    } else if (result is ResultAuthenticationFailed) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Access denied: $result');
@@ -242,22 +238,21 @@ class Server {
       request.response.statusCode = HttpStatus.forbidden;
       await request.response.close();
       return;
-    }
-    else if (result is ResultInternalServerError) {
+    } else if (result is ResultInternalServerError) {
       request.response.statusCode = HttpStatus.internalServerError;
-      request.response.writeln('Internal server error. Call log id: ${result.sessionLogId}');
+      request.response.writeln(
+          'Internal server error. Call log id: ${result.sessionLogId}');
       await request.response.close();
       return;
-    }
-    else if (result is ResultStatusCode) {
+    } else if (result is ResultStatusCode) {
       request.response.statusCode = result.statusCode;
       await request.response.close();
       return;
-    }
-    else if (result is ResultSuccess) {
+    } else if (result is ResultSuccess) {
       // Set content type.
       if (!result.sendByteDataAsRaw)
-        request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
+        request.response.headers.contentType =
+            ContentType('application', 'json', charset: 'utf-8');
 
       // Set Access-Control-Allow-Origin, required for Flutter web.
       request.response.headers.add('Access-Control-Allow-Origin', '*');
@@ -267,9 +262,9 @@ class Server {
         var byteData = result.returnValue as ByteData?;
         if (byteData != null)
           request.response.add(byteData.buffer.asUint8List());
-      }
-      else {
-        var serializedEntity = serializationManager.serializeEntity(result.returnValue);
+      } else {
+        var serializedEntity =
+            serializationManager.serializeEntity(result.returnValue);
         request.response.write(serializedEntity);
       }
       await request.response.close();
@@ -283,19 +278,20 @@ class Server {
     var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
-      if (len > serverpod.config.maxRequestSize)
-        return null;
+      if (len > serverpod.config.maxRequestSize) return null;
       data += segment;
     }
     return Utf8Decoder().convert(data);
   }
 
-  Future<Result> _handleUriCall(Uri uri, String body, HttpRequest request) async {
+  Future<Result> _handleUriCall(
+      Uri uri, String body, HttpRequest request) async {
     var endpointName = uri.path.substring(1);
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
   }
 
-  Future<void> _handleWebsocket(WebSocket webSocket, HttpRequest request) async {
+  Future<void> _handleWebsocket(
+      WebSocket webSocket, HttpRequest request) async {
     try {
       var session = StreamingSession(
         server: this,
@@ -320,21 +316,22 @@ class Server {
           var data = jsonDecode(jsonData) as Map;
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map;
-          var message = serializationManager.createEntityFromSerialization(serialization.cast<String,dynamic>());
+          var message = serializationManager.createEntityFromSerialization(
+              serialization.cast<String, dynamic>());
 
-          if (message == null)
-            throw Exception('Streamed message was null');
+          if (message == null) throw Exception('Streamed message was null');
 
           var endpointConnector = endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null)
             throw Exception('Endpoint not found: $endpointName');
 
-          var authFailed = await endpoints.canUserAccessEndpoint(session, endpointConnector.endpoint);
+          var authFailed = await endpoints.canUserAccessEndpoint(
+              session, endpointConnector.endpoint);
           if (authFailed == null)
-            await endpointConnector.endpoint.handleStreamMessage(session, message);
+            await endpointConnector.endpoint
+                .handleStreamMessage(session, message);
         }
-      }
-      catch(e, s) {
+      } catch (e, s) {
         error = e;
         stackTrace = s;
       }
@@ -348,36 +345,33 @@ class Server {
           await _callStreamClosed(session, endpointConnector.endpoint);
       }
       await session.close(error: error, stackTrace: stackTrace);
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       return;
     }
   }
 
-  Future<void> _callStreamOpened(StreamingSession session, Endpoint endpoint) async {
+  Future<void> _callStreamOpened(
+      StreamingSession session, Endpoint endpoint) async {
     try {
       // TODO: We need to mark stream as accessbile (in endpoint?) and check
       // future messages that are passed to this endpoint.
       var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
-      if (authFailed == null)
-        await endpoint.streamOpened(session);
-    }
-    catch (e, stackTrace) {
+      if (authFailed == null) await endpoint.streamOpened(session);
+    } catch (e, stackTrace) {
       print('Failed to call streamOpened');
       print('$e');
       print('$stackTrace');
     }
   }
 
-  Future<void> _callStreamClosed(StreamingSession session, Endpoint endpoint) async {
+  Future<void> _callStreamClosed(
+      StreamingSession session, Endpoint endpoint) async {
     try {
       var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
-      if (authFailed == null)
-        await endpoint.streamClosed(session);
-    }
-    catch (e, stackTrace) {
+      if (authFailed == null) await endpoint.streamClosed(session);
+    } catch (e, stackTrace) {
       print('Failed to call streamClosed');
       print('$e');
       print('$stackTrace');

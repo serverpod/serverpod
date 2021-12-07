@@ -26,7 +26,8 @@ void main() {
     test('Basic types with null values', () {
       var types = Types();
       var s = protocol.serializeEntity(types)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var unpacked =
+          protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
       expect(unpacked.aBool, isNull);
       expect(unpacked.anInt, isNull);
       expect(unpacked.aString, isNull);
@@ -45,7 +46,8 @@ void main() {
         aByteData: createByteData(),
       );
       var s = protocol.serializeEntity(types)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var unpacked =
+          protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
       expect(unpacked.aBool, equals(true));
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aString, equals('42'));
@@ -74,11 +76,11 @@ void main() {
         aByteData: createByteData(),
         aByteDataList: [createByteData(), createByteData()],
         aListWithNullableByteDatas: [createByteData(), null],
-
       );
 
       var s = protocol.serializeEntity(nullability)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var unpacked =
+          protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aBool, equals(true));
@@ -112,7 +114,8 @@ void main() {
       expect(unpacked.aListWithNullableDateTimes[1], isNull);
 
       expect(unpacked.aListWithNullableByteDatas.length, equals(2));
-      expect(unpacked.aListWithNullableByteDatas[0]!.lengthInBytes, equals(256));
+      expect(
+          unpacked.aListWithNullableByteDatas[0]!.lengthInBytes, equals(256));
       expect(unpacked.aListWithNullableByteDatas[1], isNull);
 
       expect(unpacked.aNullableInt, isNull);
@@ -155,12 +158,10 @@ void main() {
         aNullableObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
         aListWithNullableObjects: [SimpleData(num: 10), null],
         aNullableListWithNullableObjects: [SimpleData(num: 10), null],
-
         aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aNullableDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aListWithNullableDateTimes: [DateTime.utc(1976), null],
         aNullableListWithNullableDateTimes: [DateTime.utc(1976), null],
-
         aByteDataList: [createByteData(), createByteData()],
         aNullableByteDataList: [createByteData(), createByteData()],
         aListWithNullableByteDatas: [createByteData(), null],
@@ -168,7 +169,8 @@ void main() {
       );
 
       var s = protocol.serializeEntity(nullability)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var unpacked =
+          protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
       expect(unpacked.aNullableInt, equals(42));
       expect(unpacked.aNullableDouble, equals(42.42));
       expect(unpacked.aNullableBool, equals(true));
@@ -198,7 +200,8 @@ void main() {
       expect(unpacked.aNullableDateTimeList![1].year, equals(1977));
 
       expect(unpacked.aNullableListWithNullableDateTimes!.length, equals(2));
-      expect(unpacked.aNullableListWithNullableDateTimes![0]!.year, equals(1976));
+      expect(
+          unpacked.aNullableListWithNullableDateTimes![0]!.year, equals(1976));
       expect(unpacked.aNullableListWithNullableDateTimes![1], isNull);
 
       expect(unpacked.aNullableByteDataList!.length, equals(2));
@@ -206,7 +209,8 @@ void main() {
       expect(unpacked.aNullableByteDataList![1].lengthInBytes, equals(256));
 
       expect(unpacked.aNullableListWithNullableByteDatas!.length, equals(2));
-      expect(unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes, equals(256));
+      expect(unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes,
+          equals(256));
       expect(unpacked.aNullableListWithNullableByteDatas![1], isNull);
     });
   });

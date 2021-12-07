@@ -27,16 +27,21 @@ class Endpoints extends EndpointDispatch {
         'hello': MethodConnector(
           name: 'hello',
           params: {
-            'name': ParameterDescription(name: 'name', type: String, nullable: false),
+            'name': ParameterDescription(
+                name: 'name', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['example'] as ExampleEndpoint).hello(session,params['name'],);
+            return (endpoints['example'] as ExampleEndpoint).hello(
+              session,
+              params['name'],
+            );
           },
         ),
       },
     );
 
-    modules['serverpod_auth'] = serverpod_auth.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = serverpod_auth.Endpoints()
+      ..initializeEndpoints(server);
   }
 
   @override
@@ -44,4 +49,3 @@ class Endpoints extends EndpointDispatch {
     pod.registerModule(serverpod_auth.Protocol(), 'auth');
   }
 }
-

@@ -41,8 +41,7 @@ class DatabaseConnection {
 
     for (Map row in result) {
       row = row.values.first;
-      if (row['schemaname'] == 'public')
-        tableNames.add(row['tablename']);
+      if (row['schemaname'] == 'public') tableNames.add(row['tablename']);
     }
 
     return tableNames as FutureOr<List<String>>;
@@ -50,7 +49,8 @@ class DatabaseConnection {
 
   /// Returns a description for a table in the database.
   Future<Table?> getTableDescription(String tableName) async {
-    var query = 'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
+    var query =
+        'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
     var result = await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
@@ -67,8 +67,7 @@ class DatabaseConnection {
       int? varcharLength = row['character_maximum_length'];
       var type = _sqlTypeToDartType(sqlType);
 
-      if (columnName == 'id' && type == int)
-        hasID = true;
+      if (columnName == 'id' && type == int) hasID = true;
 
       if (type == null) {
         return null;
@@ -80,8 +79,7 @@ class DatabaseConnection {
         columns.add(ColumnInt(columnName!));
       else if (type == double)
         columns.add(ColumnDouble(columnName!));
-      else if (type == DateTime)
-        columns.add(ColumnDateTime(columnName!));
+      else if (type == DateTime) columns.add(ColumnDateTime(columnName!));
     }
 
     if (!hasID) {
@@ -95,33 +93,37 @@ class DatabaseConnection {
   }
 
   Type? _sqlTypeToDartType(String? type) {
-    if (type == 'character varying' || type == 'text')
-      return String;
-    if (type == 'integer')
-      return int;
-    if (type == 'boolean')
-      return bool;
-    if (type == 'double precision')
-      return double;
+    if (type == 'character varying' || type == 'text') return String;
+    if (type == 'integer') return int;
+    if (type == 'boolean') return bool;
+    if (type == 'double precision') return double;
     if (type == 'timestamp without time zone' || type == 'date')
       return DateTime;
     return null;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findById(Table table, int id, {required Session session}) async {
+  Future<TableRow?> findById(Table table, int id,
+      {required Session session}) async {
     var result = await find(
       table,
       where: Expression('id = $id'),
       session: session,
     );
-    if (result.isEmpty)
-      return null;
+    if (result.isEmpty) return null;
     return result[0];
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true, required Session session}) async {
+  Future<List<TableRow>> find(Table table,
+      {Expression? where,
+      int? limit,
+      int? offset,
+      Column? orderBy,
+      List<Order>? orderByList,
+      bool orderDescending = false,
+      bool useCache = true,
+      required Session session}) async {
     assert(orderByList == null || orderBy == null);
 
     var startTime = DateTime.now();
@@ -131,22 +133,17 @@ class DatabaseConnection {
     var query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
       query += ' ORDER BY $orderBy';
-      if (orderDescending)
-        query += ' DESC';
-    }
-    else if (orderByList != null) {
+      if (orderDescending) query += ' DESC';
+    } else if (orderByList != null) {
       assert(orderByList.isNotEmpty);
 
       var strList = <String>[];
-      for (var order in orderByList)
-        strList.add(order.toString());
+      for (var order in orderByList) strList.add(order.toString());
 
       query += ' ORDER BY ${strList.join(',')}';
     }
-    if (limit != null)
-      query += ' LIMIT $limit';
-    if (offset != null)
-      query += ' OFFSET $offset';
+    if (limit != null) query += ' LIMIT $limit';
+    if (offset != null) query += ' OFFSET $offset';
 
     List<TableRow?> list = <TableRow>[];
     try {
@@ -159,8 +156,7 @@ class DatabaseConnection {
       for (var rawRow in result) {
         list.add(_formatTableRow(tableName, rawRow[tableName]));
       }
-    }
-    catch(e, trace) {
+    } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
       rethrow;
     }
@@ -170,8 +166,21 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true, required Session session}) async {
-    var result = await find(table, where: where, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, limit: 1, offset: offset, session: session);
+  Future<TableRow?> findSingleRow(Table table,
+      {Expression? where,
+      int? offset,
+      Column? orderBy,
+      bool orderDescending = false,
+      bool useCache = true,
+      required Session session}) async {
+    var result = await find(table,
+        where: where,
+        orderBy: orderBy,
+        orderDescending: orderDescending,
+        useCache: useCache,
+        limit: 1,
+        offset: offset,
+        session: session);
 
     if (result.isEmpty)
       return null;
@@ -181,8 +190,7 @@ class DatabaseConnection {
 
   TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
     String? className = config.tableClassMapping[tableName];
-    if (className == null)
-      return null;
+    if (className == null) return null;
 
     var data = <String, dynamic>{};
 
@@ -191,56 +199,57 @@ class DatabaseConnection {
 
       if (value is DateTime) {
         data[columnName] = value.toIso8601String();
-      }
-      else if (value is Uint8List) {
-        throw(UnimplementedError('Binary storage is not yet supported.'));
+      } else if (value is Uint8List) {
+        throw (UnimplementedError('Binary storage is not yet supported.'));
 
         // TODO: It seems like the Postgres driver is returning incorrect data
         // var byteData = ByteData.view(value.buffer);
         // data[columnName] = byteData.base64encodedString();
-      }
-      else {
+      } else {
         data[columnName] = value;
       }
     }
 
-    var serialization = <String, dynamic> {'data': data, 'class': className};
+    var serialization = <String, dynamic>{'data': data, 'class': className};
 
-    return config.serializationManager.createEntityFromSerialization(serialization) as TableRow?;
+    return config.serializationManager
+        .createEntityFromSerialization(serialization) as TableRow?;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true, required Session session}) async {
+  Future<int> count(Table table,
+      {Expression? where,
+      int? limit,
+      bool useCache = true,
+      required Session session}) async {
     var startTime = DateTime.now();
 
     where ??= Expression('TRUE');
 
     var tableName = table.tableName;
     var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
-    if (limit != null)
-      query += ' LIMIT $limit';
+    if (limit != null) query += ' LIMIT $limit';
 
     try {
-      var result = await postgresConnection.query(query, allowReuse: false, substitutionValues: {});
+      var result = await postgresConnection
+          .query(query, allowReuse: false, substitutionValues: {});
 
-      if (result.length != 1)
-        return 0;
+      if (result.length != 1) return 0;
 
       List returnedRow = result[0];
-      if (returnedRow.length != 1)
-        return 0;
+      if (returnedRow.length != 1) return 0;
 
       _logQuery(session, query, startTime, numRowsAffected: 1);
       return returnedRow[0];
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> update(TableRow row, {Transaction? transaction, required Session session}) async {
+  Future<bool> update(TableRow row,
+      {Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -249,9 +258,8 @@ class DatabaseConnection {
 
     var updatesList = <String>[];
 
-    for(var column in data.keys as Iterable<String>) {
-      if (column == 'id')
-        continue;
+    for (var column in data.keys as Iterable<String>) {
+      if (column == 'id') continue;
 
       if (data[column] is Map || data[column] is List)
         data[column] = jsonEncode(data[column]);
@@ -270,7 +278,8 @@ class DatabaseConnection {
     }
 
     try {
-      var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
+      var affectedRows =
+          await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {
@@ -280,7 +289,8 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> insert(TableRow row, {Transaction? transaction, required Session session}) async {
+  Future<bool> insert(TableRow row,
+      {Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -288,9 +298,8 @@ class DatabaseConnection {
     var columnsList = <String>[];
     var valueList = <String>[];
 
-    for(var column in data.keys as Iterable<String>) {
-      if (column == 'id')
-        continue;
+    for (var column in data.keys as Iterable<String>) {
+      if (column == 'id') continue;
 
       if (data[column] is Map || data[column] is List)
         data[column] = jsonEncode(data[column]);
@@ -318,7 +327,8 @@ class DatabaseConnection {
     var columns = columnsList.join(', ');
     var values = valueList.join(', ');
 
-    var query = 'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
+    var query =
+        'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
 
     if (transaction != null) {
       transaction._queries.add(query);
@@ -327,11 +337,10 @@ class DatabaseConnection {
 
     List<List<dynamic>> result;
     try {
-      result = await postgresConnection.query(query, allowReuse: false, substitutionValues: {});
-      if (result.length != 1)
-        return false;
-    }
-    catch (exception, trace) {
+      result = await postgresConnection
+          .query(query, allowReuse: false, substitutionValues: {});
+      if (result.length != 1) return false;
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       return false;
     }
@@ -340,15 +349,17 @@ class DatabaseConnection {
 
     _logQuery(session, query, startTime, numRowsAffected: returnedRow.length);
 
-    if (returnedRow.length != 1)
-      return false;
+    if (returnedRow.length != 1) return false;
 
     row.setColumn('id', returnedRow[0]);
     return true;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete(Table table, {required Expression where, Transaction? transaction, required Session session}) async {
+  Future<int> delete(Table table,
+      {required Expression where,
+      Transaction? transaction,
+      required Session session}) async {
     var startTime = DateTime.now();
 
     var tableName = table.tableName;
@@ -361,18 +372,19 @@ class DatabaseConnection {
     }
 
     try {
-      var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
+      var affectedRows =
+          await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows;
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> deleteRow(TableRow row, {Transaction? transaction, required Session session}) async {
+  Future<bool> deleteRow(TableRow row,
+      {Transaction? transaction, required Session session}) async {
     var startTime = DateTime.now();
 
     var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
@@ -383,24 +395,27 @@ class DatabaseConnection {
     }
 
     try {
-      var affectedRows = await postgresConnection.execute(query, substitutionValues: {});
+      var affectedRows =
+          await postgresConnection.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration, bool verified, {required Session session}) async {
+  Future<void> storeFile(String storageId, String path, ByteData byteData,
+      DateTime? expiration, bool verified,
+      {required Session session}) async {
     var startTime = DateTime.now();
     var query = '';
     try {
       // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
       var encoded = byteData.base64encodedString();
-      query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
+      query =
+          'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
       await postgresConnection.query(
         query,
         allowReuse: false,
@@ -415,20 +430,21 @@ class DatabaseConnection {
         },
       );
       _logQuery(session, query, startTime);
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<ByteData?> retrieveFile(String storageId, String path, {required Session session}) async {
+  Future<ByteData?> retrieveFile(String storageId, String path,
+      {required Session session}) async {
     var startTime = DateTime.now();
     var query = '';
     try {
       // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
-      query = 'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
+      query =
+          'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
       var result = await postgresConnection.query(
         query,
         allowReuse: false,
@@ -444,8 +460,7 @@ class DatabaseConnection {
         return ByteData.view(base64Decode(encoded).buffer);
       }
       return null;
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
@@ -453,10 +468,12 @@ class DatabaseConnection {
 
   /// Returns true if the specified file has been successfully uploaded to the
   /// database cloud storage.
-  Future<bool> verifyFile(String storageId, String path, {required Session session}) async {
+  Future<bool> verifyFile(String storageId, String path,
+      {required Session session}) async {
     // Check so that the file is saved, but not
     var startTime = DateTime.now();
-    var query = 'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
+    var query =
+        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
     try {
       var result = await postgresConnection.query(
         query,
@@ -468,21 +485,19 @@ class DatabaseConnection {
       );
       _logQuery(session, query, startTime);
 
-      if (result.isEmpty)
-        return false;
+      if (result.isEmpty) return false;
 
       var verified = result.first.first as bool;
-      if (verified)
-        return false;
-    }
-    catch (exception, trace) {
+      if (verified) return false;
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
 
     startTime = DateTime.now();
     try {
-      var query = 'UPDATE serverpod_cloud_storage SET "verified"=@verified WHERE "storageId"=@storageId AND "path"=@path';
+      var query =
+          'UPDATE serverpod_cloud_storage SET "verified"=@verified WHERE "storageId"=@storageId AND "path"=@path';
       await postgresConnection.query(
         query,
         allowReuse: false,
@@ -495,40 +510,45 @@ class DatabaseConnection {
       _logQuery(session, query, startTime);
 
       return true;
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<List<dynamic>>> query(String query, {required Session session, int? timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(String query,
+      {required Session session, int? timeoutInSeconds}) async {
     var startTime = DateTime.now();
 
     try {
-      var result = await postgresConnection.query(query, allowReuse: false, timeoutInSeconds: timeoutInSeconds, substitutionValues: {});
+      var result = await postgresConnection.query(query,
+          allowReuse: false,
+          timeoutInSeconds: timeoutInSeconds,
+          substitutionValues: {});
       _logQuery(session, query, startTime);
       return result;
-    }
-    catch (exception, trace) {
+    } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> executeTransaction(Transaction transaction, {required Session session}) async {
+  Future<bool> executeTransaction(Transaction transaction,
+      {required Session session}) async {
     return await transaction._execute(postgresConnection, this, session);
   }
 
-  void _logQuery(Session session, String query, DateTime startTime, {int? numRowsAffected, exception, StackTrace? trace}) {
+  void _logQuery(Session session, String query, DateTime startTime,
+      {int? numRowsAffected, exception, StackTrace? trace}) {
     session.sessionLogs.queries.add(
       QueryLogEntry(
         sessionLogId: session.temporarySessionId,
         serverId: session.server.serverId,
         query: query,
-        duration: DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
+        duration:
+            DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
         numRows: numRowsAffected,
         error: exception?.toString(),
         stackTrace: trace?.toString(),
@@ -547,13 +567,12 @@ class Order {
 
   /// Creates a new [Order] definition for a specific [column] and whether it
   /// should be ordered descending or ascending.
-  Order({required this.column, this.orderDescending=false});
+  Order({required this.column, this.orderDescending = false});
 
   @override
   String toString() {
     var str = '$column';
-    if (orderDescending)
-      str += ' DESC';
+    if (orderDescending) str += ' DESC';
     return str;
   }
 }
@@ -564,10 +583,10 @@ class Order {
 class Transaction {
   final List<String> _queries = [];
 
-  Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn, Session session) async {
+  Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn,
+      Session session) async {
     // Ignore empty transactions
-    if (_queries.isEmpty)
-      return true;
+    if (_queries.isEmpty) return true;
 
     var query = _queries.join('\n');
     query = 'BEGIN;\n$query\nCOMMIT;';
@@ -576,15 +595,14 @@ class Transaction {
 
     try {
       await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
-       for (var query in _queries) {
-         await ctx.query(
-           query,
-           substitutionValues: {},
-         );
-       }
+        for (var query in _queries) {
+          await ctx.query(
+            query,
+            substitutionValues: {},
+          );
+        }
       });
-    }
-    catch (e) {
+    } catch (e) {
       conn._logQuery(session, query, startTime, exception: e);
       return false;
     }

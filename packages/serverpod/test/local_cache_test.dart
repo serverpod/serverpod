@@ -15,7 +15,7 @@ void main() {
 
   test('Put and get object', () async {
     var entry = SimpleData(num: 0);
-    
+
     await cache.put('entry', entry);
     var retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));

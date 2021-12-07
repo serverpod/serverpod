@@ -19,7 +19,8 @@ Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
 }
 
 /// Performs all default health checks on the [Serverpod].
-Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async {
+Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
+    Serverpod pod) async {
   /*
   // Check cpu
   double psUsage = 0.0;
@@ -93,20 +94,21 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(Serverpod pod) async 
     await databaseConnection.insert(entry, session: session);
 
     // Read entry
-    entry = await databaseConnection.findById(tReadWriteTestEntry, entry.id!, session: session) as ReadWriteTestEntry?;
+    entry = await databaseConnection.findById(tReadWriteTestEntry, entry.id!,
+        session: session) as ReadWriteTestEntry?;
     await session.close();
 
     // Verify random number
     dbHealthy = entry?.number == rnd;
 
-    dbResponseTime = DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+    dbResponseTime =
+        DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
   }
   // ignore: empty_catches
-  catch(e) {}
+  catch (e) {}
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
   var connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
-
 
   return <ServerHealthMetric>[
 //    ServerHealthMetric(

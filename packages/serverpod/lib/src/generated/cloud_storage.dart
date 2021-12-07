@@ -33,7 +33,7 @@ class CloudStorageEntry extends TableRow {
     this.expiration,
     required this.byteData,
     required this.verified,
-});
+  });
 
   CloudStorageEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -41,8 +41,12 @@ class CloudStorageEntry extends TableRow {
     storageId = _data['storageId']!;
     path = _data['path']!;
     addedTime = DateTime.tryParse(_data['addedTime'])!;
-    expiration = _data['expiration'] != null ? DateTime.tryParse(_data['expiration']) : null;
-    byteData = _data['byteData'] is String ? (_data['byteData'] as String).base64DecodedByteData()! : ByteData.view((_data['byteData'] as Uint8List).buffer);
+    expiration = _data['expiration'] != null
+        ? DateTime.tryParse(_data['expiration'])
+        : null;
+    byteData = _data['byteData'] is String
+        ? (_data['byteData'] as String).base64DecodedByteData()!
+        : ByteData.view((_data['byteData'] as Uint8List).buffer);
     verified = _data['verified']!;
   }
 
@@ -101,14 +105,14 @@ class CloudStorageEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    storageId,
-    path,
-    addedTime,
-    expiration,
-    byteData,
-    verified,
-  ];
+        id,
+        storageId,
+        path,
+        addedTime,
+        expiration,
+        byteData,
+        verified,
+      ];
 }
 
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();

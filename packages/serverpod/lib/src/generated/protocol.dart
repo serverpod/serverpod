@@ -61,38 +61,64 @@ class Protocol extends SerializationManager {
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
-  final Map<String,String> _tableClassMapping = {};
+  final Map<String, String> _tableClassMapping = {};
   @override
-  Map<String,String> get tableClassMapping => _tableClassMapping;
+  Map<String, String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['CacheInfo'] = (Map<String, dynamic> serialization) => CacheInfo.fromSerialization(serialization);
-    constructors['RuntimeSettings'] = (Map<String, dynamic> serialization) => RuntimeSettings.fromSerialization(serialization);
-    constructors['SessionLogInfo'] = (Map<String, dynamic> serialization) => SessionLogInfo.fromSerialization(serialization);
-    constructors['LogSettingsOverride'] = (Map<String, dynamic> serialization) => LogSettingsOverride.fromSerialization(serialization);
-    constructors['CachesInfo'] = (Map<String, dynamic> serialization) => CachesInfo.fromSerialization(serialization);
-    constructors['FutureCallEntry'] = (Map<String, dynamic> serialization) => FutureCallEntry.fromSerialization(serialization);
-    constructors['QueryLogEntry'] = (Map<String, dynamic> serialization) => QueryLogEntry.fromSerialization(serialization);
-    constructors['LogSettings'] = (Map<String, dynamic> serialization) => LogSettings.fromSerialization(serialization);
-    constructors['ServerHealthMetric'] = (Map<String, dynamic> serialization) => ServerHealthMetric.fromSerialization(serialization);
-    constructors['LogResult'] = (Map<String, dynamic> serialization) => LogResult.fromSerialization(serialization);
-    constructors['DistributedCacheEntry'] = (Map<String, dynamic> serialization) => DistributedCacheEntry.fromSerialization(serialization);
-    constructors['CloudStorageDirectUploadEntry'] = (Map<String, dynamic> serialization) => CloudStorageDirectUploadEntry.fromSerialization(serialization);
-    constructors['MethodInfo'] = (Map<String, dynamic> serialization) => MethodInfo.fromSerialization(serialization);
-    constructors['LogEntry'] = (Map<String, dynamic> serialization) => LogEntry.fromSerialization(serialization);
-    constructors['LogLevel'] = (Map<String, dynamic> serialization) => LogLevel.fromSerialization(serialization);
-    constructors['CloudStorageEntry'] = (Map<String, dynamic> serialization) => CloudStorageEntry.fromSerialization(serialization);
-    constructors['SessionLogEntry'] = (Map<String, dynamic> serialization) => SessionLogEntry.fromSerialization(serialization);
-    constructors['ServerHealthResult'] = (Map<String, dynamic> serialization) => ServerHealthResult.fromSerialization(serialization);
-    constructors['SessionLogResult'] = (Map<String, dynamic> serialization) => SessionLogResult.fromSerialization(serialization);
-    constructors['AuthKey'] = (Map<String, dynamic> serialization) => AuthKey.fromSerialization(serialization);
-    constructors['ReadWriteTestEntry'] = (Map<String, dynamic> serialization) => ReadWriteTestEntry.fromSerialization(serialization);
-    constructors['SessionLogFilter'] = (Map<String, dynamic> serialization) => SessionLogFilter.fromSerialization(serialization);
+    constructors['CacheInfo'] = (Map<String, dynamic> serialization) =>
+        CacheInfo.fromSerialization(serialization);
+    constructors['RuntimeSettings'] = (Map<String, dynamic> serialization) =>
+        RuntimeSettings.fromSerialization(serialization);
+    constructors['SessionLogInfo'] = (Map<String, dynamic> serialization) =>
+        SessionLogInfo.fromSerialization(serialization);
+    constructors['LogSettingsOverride'] =
+        (Map<String, dynamic> serialization) =>
+            LogSettingsOverride.fromSerialization(serialization);
+    constructors['CachesInfo'] = (Map<String, dynamic> serialization) =>
+        CachesInfo.fromSerialization(serialization);
+    constructors['FutureCallEntry'] = (Map<String, dynamic> serialization) =>
+        FutureCallEntry.fromSerialization(serialization);
+    constructors['QueryLogEntry'] = (Map<String, dynamic> serialization) =>
+        QueryLogEntry.fromSerialization(serialization);
+    constructors['LogSettings'] = (Map<String, dynamic> serialization) =>
+        LogSettings.fromSerialization(serialization);
+    constructors['ServerHealthMetric'] = (Map<String, dynamic> serialization) =>
+        ServerHealthMetric.fromSerialization(serialization);
+    constructors['LogResult'] = (Map<String, dynamic> serialization) =>
+        LogResult.fromSerialization(serialization);
+    constructors['DistributedCacheEntry'] =
+        (Map<String, dynamic> serialization) =>
+            DistributedCacheEntry.fromSerialization(serialization);
+    constructors['CloudStorageDirectUploadEntry'] =
+        (Map<String, dynamic> serialization) =>
+            CloudStorageDirectUploadEntry.fromSerialization(serialization);
+    constructors['MethodInfo'] = (Map<String, dynamic> serialization) =>
+        MethodInfo.fromSerialization(serialization);
+    constructors['LogEntry'] = (Map<String, dynamic> serialization) =>
+        LogEntry.fromSerialization(serialization);
+    constructors['LogLevel'] = (Map<String, dynamic> serialization) =>
+        LogLevel.fromSerialization(serialization);
+    constructors['CloudStorageEntry'] = (Map<String, dynamic> serialization) =>
+        CloudStorageEntry.fromSerialization(serialization);
+    constructors['SessionLogEntry'] = (Map<String, dynamic> serialization) =>
+        SessionLogEntry.fromSerialization(serialization);
+    constructors['ServerHealthResult'] = (Map<String, dynamic> serialization) =>
+        ServerHealthResult.fromSerialization(serialization);
+    constructors['SessionLogResult'] = (Map<String, dynamic> serialization) =>
+        SessionLogResult.fromSerialization(serialization);
+    constructors['AuthKey'] = (Map<String, dynamic> serialization) =>
+        AuthKey.fromSerialization(serialization);
+    constructors['ReadWriteTestEntry'] = (Map<String, dynamic> serialization) =>
+        ReadWriteTestEntry.fromSerialization(serialization);
+    constructors['SessionLogFilter'] = (Map<String, dynamic> serialization) =>
+        SessionLogFilter.fromSerialization(serialization);
 
     tableClassMapping['serverpod_runtime_settings'] = 'RuntimeSettings';
     tableClassMapping['serverpod_future_call'] = 'FutureCallEntry';
     tableClassMapping['serverpod_query_log'] = 'QueryLogEntry';
-    tableClassMapping['serverpod_cloud_storage_direct_upload'] = 'CloudStorageDirectUploadEntry';
+    tableClassMapping['serverpod_cloud_storage_direct_upload'] =
+        'CloudStorageDirectUploadEntry';
     tableClassMapping['serverpod_method'] = 'MethodInfo';
     tableClassMapping['serverpod_log'] = 'LogEntry';
     tableClassMapping['serverpod_cloud_storage'] = 'CloudStorageEntry';

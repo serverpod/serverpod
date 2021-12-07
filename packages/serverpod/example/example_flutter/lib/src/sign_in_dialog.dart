@@ -23,13 +23,19 @@ class _SignInDialog extends StatelessWidget {
           children: [
             SignInWithGoogleButton(
               caller: client.modules.auth,
-              onSignedIn: () { _signedIn(context); },
+              onSignedIn: () {
+                _signedIn(context);
+              },
               onFailure: _failedToSignIn,
             ),
-            SizedBox(height: 4,),
+            SizedBox(
+              height: 4,
+            ),
             SignInWithAppleButton(
               caller: client.modules.auth,
-              onSignedIn: () { _signedIn(context); },
+              onSignedIn: () {
+                _signedIn(context);
+              },
               onFailure: _failedToSignIn,
             ),
             TextButton(

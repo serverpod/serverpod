@@ -29,7 +29,7 @@ class FutureCallEntry extends TableRow {
     required this.time,
     this.serializedObject,
     required this.serverId,
-});
+  });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -87,12 +87,12 @@ class FutureCallEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    name,
-    time,
-    serializedObject,
-    serverId,
-  ];
+        id,
+        name,
+        time,
+        serializedObject,
+        serverId,
+      ];
 }
 
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();

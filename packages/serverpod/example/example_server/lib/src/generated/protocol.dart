@@ -19,12 +19,12 @@ class Protocol extends SerializationManager {
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
-  final Map<String,String> _tableClassMapping = {};
+  final Map<String, String> _tableClassMapping = {};
   @override
-  Map<String,String> get tableClassMapping => _tableClassMapping;
+  Map<String, String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['Example'] = (Map<String, dynamic> serialization) => Example.fromSerialization(serialization);
-
+    constructors['Example'] = (Map<String, dynamic> serialization) =>
+        Example.fromSerialization(serialization);
   }
 }

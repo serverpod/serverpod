@@ -110,8 +110,7 @@ class _UserInfoTileState extends State<_UserInfoTile> {
           child: Text('Sign In'),
         ),
       );
-    }
-    else {
+    } else {
       return ListTile(
         title: Text('You are signed in'),
         trailing: OutlinedButton(
@@ -137,5 +136,3 @@ class _UserInfoTileState extends State<_UserInfoTile> {
     );
   }
 }
-
-

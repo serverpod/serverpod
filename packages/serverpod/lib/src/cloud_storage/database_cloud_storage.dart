@@ -17,42 +17,41 @@ class DatabaseCloudStorage extends CloudStorage {
   DatabaseCloudStorage(String storageId) : super(storageId);
 
   @override
-  Future<void> deleteFile({required Session session, required String path}) async {
+  Future<void> deleteFile(
+      {required Session session, required String path}) async {
     try {
       await session.db.delete(
         tCloudStorageEntry,
-        where: tCloudStorageEntry.storageId.equals(
-            storageId) & tCloudStorageEntry.path.equals(path),
+        where: tCloudStorageEntry.storageId.equals(storageId) &
+            tCloudStorageEntry.path.equals(path),
       );
-    }
-    catch(e) {
+    } catch (e) {
       throw CloudStorageException('Failed to delete file. ($e)');
     }
   }
 
   @override
-  Future<bool> fileExists({required Session session, required String path}) async {
+  Future<bool> fileExists(
+      {required Session session, required String path}) async {
     try {
       var numRows = await session.db.count(
         tCloudStorageEntry,
-        where: tCloudStorageEntry.storageId.equals(
-            storageId) & tCloudStorageEntry.path.equals(path),
+        where: tCloudStorageEntry.storageId.equals(storageId) &
+            tCloudStorageEntry.path.equals(path),
       );
       return (numRows > 0);
-    }
-    catch(e) {
+    } catch (e) {
       throw CloudStorageException('Failed to check if file exists. ($e)');
     }
   }
 
   @override
-  Future<Uri?> getPublicUrl({required Session session, required String path}) async {
-    if (storageId != 'public')
-      return null;
+  Future<Uri?> getPublicUrl(
+      {required Session session, required String path}) async {
+    if (storageId != 'public') return null;
 
     var exists = await fileExists(session: session, path: path);
-    if (!exists)
-      return null;
+    if (!exists) return null;
 
     var config = session.server.serverpod.config;
 
@@ -69,11 +68,11 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<ByteData?> retrieveFile({required Session session, required String path}) async {
+  Future<ByteData?> retrieveFile(
+      {required Session session, required String path}) async {
     try {
       return await session.db.retrieveFile(storageId, path);
-    }
-    catch(e) {
+    } catch (e) {
       throw CloudStorageException('Failed to retrieve file. ($e)');
     }
   }
@@ -87,15 +86,15 @@ class DatabaseCloudStorage extends CloudStorage {
     bool verified = true,
   }) async {
     try {
-      await session.db.storeFile(storageId, path, byteData, expiration, verified);
-    }
-    catch(e) {
+      await session.db
+          .storeFile(storageId, path, byteData, expiration, verified);
+    } catch (e) {
       throw CloudStorageException('Failed to store file. ($e)');
     }
   }
 
   @override
-  Future<String?> createDirectFileUploadDescription ({
+  Future<String?> createDirectFileUploadDescription({
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
@@ -111,10 +110,9 @@ class DatabaseCloudStorage extends CloudStorage {
       authKey: _generateAuthKey(),
     );
     await session.db.insert(uploadEntry);
-    if (uploadEntry.id == null)
-      return null;
+    if (uploadEntry.id == null) return null;
 
-    var uri =  Uri(
+    var uri = Uri(
       scheme: config.publicScheme,
       host: config.publicHost,
       port: config.publicPort,
@@ -145,8 +143,10 @@ class DatabaseCloudStorage extends CloudStorage {
 
   static String _generateAuthKey() {
     const len = 16;
-    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    const chars =
+        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     final rnd = Random();
-    return String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    return String.fromCharCodes(Iterable.generate(
+        len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
   }
 }

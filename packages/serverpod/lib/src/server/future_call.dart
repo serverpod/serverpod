@@ -8,10 +8,12 @@ import 'session.dart';
 /// [ServerPod] object before starting the [Server].
 abstract class FutureCall {
   late String _name;
+
   /// The name of the call.
   String get name => _name;
 
   late Server _server;
+
   /// The [Server] where the call is registered.
   Server get server => _server;
 

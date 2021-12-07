@@ -20,8 +20,7 @@ class MethodLookup {
   Future<void> load(Session session) async {
     try {
       await _attemptLoad(session);
-    }
-    catch(e) {
+    } catch (e) {
       // It's possible that another server instance is booting up at the same
       // time, in which case a write can fail if they are happening
       // simultaneously. Make a second attempt to load after waiting a second.
@@ -38,8 +37,7 @@ class MethodLookup {
 
     for (String endpoint in endpoints.keys) {
       List? methods = endpoints[endpoint];
-      if (methods == null)
-        continue;
+      if (methods == null) continue;
 
       for (Map methodDef in methods) {
         String method = methodDef.keys.first;
@@ -47,7 +45,8 @@ class MethodLookup {
         // Find in database
         var methodInfo = await session.db.findSingleRow(
           internal.tMethodInfo,
-          where: internal.tMethodInfo.endpoint.equals(endpoint) & internal.tMethodInfo.method.equals(method),
+          where: internal.tMethodInfo.endpoint.equals(endpoint) &
+              internal.tMethodInfo.method.equals(method),
         ) as internal.MethodInfo?;
 
         if (methodInfo == null) {
@@ -60,12 +59,10 @@ class MethodLookup {
           if (await session.db.insert(methodInfo)) {
             // Successfully inserted
             _lookup['$endpoint.$method'] = methodInfo.id!;
-          }
-          else {
+          } else {
             throw Exception('Failed insert method');
           }
-        }
-        else {
+        } else {
           // We found a method info
           _lookup['$endpoint.$method'] = methodInfo.id!;
         }

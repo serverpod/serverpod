@@ -5,8 +5,7 @@ import 'package:serverpod_test_module_client/module.dart' as module;
 void main() {
   var client = Client('http://localhost:8080/');
 
-  setUp(() {
-  });
+  setUp(() {});
 
   group('Modules', () {
     test('Serialization', () async {
@@ -24,16 +23,18 @@ void main() {
         name: 'foo',
         data: 0,
       );
-      var result = await client.moduleSerialization.modifyModuleObject(moduleClass);
+      var result =
+          await client.moduleSerialization.modifyModuleObject(moduleClass);
       expect(result.data, equals(42));
     });
 
     test('Passing module object to module', () async {
       var moduleClass = module.ModuleClass(
-          name: 'foo',
-          data: 0,
+        name: 'foo',
+        data: 0,
       );
-      var result = await client.modules.module.module.modifyModuleObject(moduleClass);
+      var result =
+          await client.modules.module.module.modifyModuleObject(moduleClass);
       expect(result.data, equals(42));
     });
   });

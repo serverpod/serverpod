@@ -38,20 +38,16 @@ abstract class EndpointDispatch {
     if (endpointComponents.length == 1) {
       // This is a standard server endpoint
       connector = connectors[endpointName];
-      if (connector == null)
-        return null;
-    }
-    else {
+      if (connector == null) return null;
+    } else {
       // Connector is in a module
       var modulePackage = endpointComponents[0];
       endpointName = endpointComponents[1];
       var module = modules[modulePackage];
-      if (module == null)
-        return null;
+      if (module == null) return null;
 
       connector = module.connectors[endpointName];
-      if (connector == null)
-        return null;
+      if (connector == null) return null;
     }
 
     return connector;
@@ -60,10 +56,12 @@ abstract class EndpointDispatch {
   /// Dispatches a call to the [Server] to the correct [Endpoint] method. If
   /// successful, it returns the object from the method. If unsuccessful it will
   /// return a [Result] object.
-  Future<Result> handleUriCall(Server server, String endpointName, Uri uri, String body, HttpRequest request) async {
+  Future<Result> handleUriCall(Server server, String endpointName, Uri uri,
+      String body, HttpRequest request) async {
     var endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2)
-      return ResultInvalidParams('Endpoint $endpointName is not a valid endpoint name');
+      return ResultInvalidParams(
+          'Endpoint $endpointName is not a valid endpoint name');
 
     // Find correct connector
     var connector = getConnectorByName(endpointName);
@@ -80,8 +78,7 @@ abstract class EndpointDispatch {
         endpointName: endpointName,
         httpRequest: request,
       );
-    }
-    catch(e) {
+    } catch (e) {
       return ResultInvalidParams('Malformed call: $uri');
     }
 
@@ -97,7 +94,8 @@ abstract class EndpointDispatch {
       var method = connector.methodConnectors[methodName];
       if (method == null) {
         await session.close();
-        return ResultInvalidParams('Method $methodName not found in call: $uri');
+        return ResultInvalidParams(
+            'Method $methodName not found in call: $uri');
       }
 
       // TODO: Check parameters and check null safety
@@ -105,9 +103,9 @@ abstract class EndpointDispatch {
       var paramMap = <String, dynamic>{};
       for (var paramName in inputParams.keys) {
         var type = method.params[paramName]?.type;
-        if (type == null)
-          continue;
-        var formatted = _formatArg(inputParams[paramName], type, server.serializationManager);
+        if (type == null) continue;
+        var formatted = _formatArg(
+            inputParams[paramName], type, server.serializationManager);
         paramMap[paramName] = formatted;
       }
 
@@ -122,18 +120,19 @@ abstract class EndpointDispatch {
         result,
         sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
       );
-    }
-    catch (e, stackTrace) {
+    } catch (e, stackTrace) {
       // Something did not work out
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(e.toString(), stackTrace, sessionLogId ?? 0);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
     }
   }
 
   /// Checks if a user can access an [Endpoint]. If access is granted null is
   /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
   /// returned.
-  Future<ResultAuthenticationFailed?> canUserAccessEndpoint(Session session, Endpoint endpoint) async {
+  Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
+      Session session, Endpoint endpoint) async {
     var auth = session.authenticationKey;
     if (endpoint.requireLogin) {
       if (auth == null) {
@@ -149,47 +148,42 @@ abstract class EndpointDispatch {
     if (endpoint.requiredScopes.isNotEmpty) {
       if (!await session.isUserSignedIn) {
         // await session.close();
-        return ResultAuthenticationFailed('Sign in required to access this endpoint');
+        return ResultAuthenticationFailed(
+            'Sign in required to access this endpoint');
       }
 
       for (var requiredScope in endpoint.requiredScopes) {
         if (!(await session.scopes)!.contains(requiredScope)) {
           // await session.close();
-          return ResultAuthenticationFailed('User does not have access to scope ${requiredScope.name}');
+          return ResultAuthenticationFailed(
+              'User does not have access to scope ${requiredScope.name}');
         }
       }
     }
     return null;
   }
 
-  Object? _formatArg(String? input, Type type, SerializationManager serializationManager) {
+  Object? _formatArg(
+      String? input, Type type, SerializationManager serializationManager) {
     // Check for basic types
-    if (type == String)
-      return input;
-    if (type == int)
-      return int.tryParse(input!);
-    if (type == double)
-      return double.tryParse(input!);
+    if (type == String) return input;
+    if (type == int) return int.tryParse(input!);
+    if (type == double) return double.tryParse(input!);
     if (type == bool) {
       if (input == 'true')
         return true;
-      else if (input == 'false')
-        return false;
+      else if (input == 'false') return false;
       return null;
     }
-    if (type == DateTime)
-      return DateTime.tryParse(input!);
-    if (type == ByteData)
-      return input?.base64DecodedByteData();
+    if (type == DateTime) return DateTime.tryParse(input!);
+    if (type == ByteData) return input?.base64DecodedByteData();
 
     try {
       var data = jsonDecode(input!);
       return serializationManager.createEntityFromSerialization(data);
-    }
-    catch (error) {
+    } catch (error) {
       return null;
     }
-
   }
 }
 
@@ -206,11 +200,15 @@ class EndpointConnector {
   final Map<String, MethodConnector> methodConnectors;
 
   /// Creates a new [EndpointConnector].
-  EndpointConnector({required this.name, required this.endpoint, required this.methodConnectors});
+  EndpointConnector(
+      {required this.name,
+      required this.endpoint,
+      required this.methodConnectors});
 }
 
 /// Calls a named method referenced in a [MethodConnector].
-typedef MethodCall = Future Function(Session session, Map<String, dynamic> params);
+typedef MethodCall = Future Function(
+    Session session, Map<String, dynamic> params);
 
 /// The [MethodConnector] hooks up a method with its name and the actual call
 /// to the method.
@@ -225,7 +223,8 @@ class MethodConnector {
   final MethodCall call;
 
   /// Creates a new [MethodConnector].
-  MethodConnector({required this.name, required this.params, required this.call});
+  MethodConnector(
+      {required this.name, required this.params, required this.call});
 }
 
 /// Defines a parameter in a [MethodConnector].
@@ -240,7 +239,8 @@ class ParameterDescription {
   final bool nullable;
 
   /// Creates a new [ParameterDescription].
-  ParameterDescription({required this.name, required this.type, required this.nullable});
+  ParameterDescription(
+      {required this.name, required this.type, required this.nullable});
 }
 
 /// The [Result] of an [Endpoint] method call.
@@ -256,7 +256,7 @@ class ResultSuccess extends Result {
   final bool sendByteDataAsRaw;
 
   /// Creates a new successful result with a value.
-  ResultSuccess(this.returnValue, {this.sendByteDataAsRaw=false});
+  ResultSuccess(this.returnValue, {this.sendByteDataAsRaw = false});
 }
 
 /// The result of a failed [Endpoint] method call where the parameters where not

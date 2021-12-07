@@ -21,7 +21,8 @@ class CloudStoragePublicEndpoint extends Endpoint {
     var response = session.httpRequest.response;
 
     // Fetch the file from storage.
-    var file = await session.storage.retrieveFile(storageId: 'public', path: path);
+    var file =
+        await session.storage.retrieveFile(storageId: 'public', path: path);
 
     // Set the response code
     if (file == null) {
@@ -53,30 +54,28 @@ class CloudStoragePublicEndpoint extends Endpoint {
   }
 
   /// Uploads a file to the the public database cloud storage.
-  Future<bool> upload(MethodCallSession session, String storageId, String path, String key) async {
+  Future<bool> upload(MethodCallSession session, String storageId, String path,
+      String key) async {
     // Confirm that we are allowed to do the upload
     var uploadInfo = (await session.db.findSingleRow(
       tCloudStorageDirectUploadEntry,
-      where: tCloudStorageDirectUploadEntry.storageId.equals(storageId) & tCloudStorageDirectUploadEntry.path.equals(path),
+      where: tCloudStorageDirectUploadEntry.storageId.equals(storageId) &
+          tCloudStorageDirectUploadEntry.path.equals(path),
     )) as CloudStorageDirectUploadEntry?;
 
-    if (uploadInfo == null)
-      return false;
+    if (uploadInfo == null) return false;
 
     await session.db.deleteRow(uploadInfo);
 
-    if (uploadInfo.authKey != key)
-      return false;
+    if (uploadInfo.authKey != key) return false;
 
     var body = await _readBinaryBody(session.httpRequest);
-    if (body == null)
-      return false;
+    if (body == null) return false;
 
     var byteData = ByteData.view(Uint8List.fromList(body).buffer);
 
     var storage = server.serverpod.storage[storageId];
-    if (storage == null)
-      return false;
+    if (storage == null) return false;
 
     await storage.storeFile(
       session: session,
@@ -95,8 +94,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     await for (var segment in request) {
       len += segment.length;
-      if (len > server.serverpod.config.maxRequestSize)
-        return null;
+      if (len > server.serverpod.config.maxRequestSize) return null;
       data += segment;
     }
     return data;
@@ -108,12 +106,16 @@ class CloudStoragePublicEndpoint extends Endpoint {
     initialize(serverpod.server, _endpointName, null);
 
     serverpod.endpoints.connectors[_endpointName] = EndpointConnector(
-      name: _endpointName, endpoint: this, methodConnectors: {
+      name: _endpointName,
+      endpoint: this,
+      methodConnectors: {
         'file': MethodConnector(
           name: name,
           params: {
             'path': ParameterDescription(
-              name: 'path', type: String, nullable: false,
+              name: 'path',
+              type: String,
+              nullable: false,
             ),
           },
           call: (Session session, Map<String, dynamic> params) async {
@@ -124,17 +126,24 @@ class CloudStoragePublicEndpoint extends Endpoint {
           name: name,
           params: {
             'storage': ParameterDescription(
-              name: 'storage', type: String, nullable: false,
+              name: 'storage',
+              type: String,
+              nullable: false,
             ),
             'path': ParameterDescription(
-              name: 'path', type: String, nullable: false,
+              name: 'path',
+              type: String,
+              nullable: false,
             ),
             'key': ParameterDescription(
-              name: 'key', type: String, nullable: false,
+              name: 'key',
+              type: String,
+              nullable: false,
             ),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return upload(session as MethodCallSession, params['storage'], params['path'], params['key']);
+            return upload(session as MethodCallSession, params['storage'],
+                params['path'], params['key']);
           },
         ),
       },

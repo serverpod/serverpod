@@ -18,7 +18,8 @@ abstract class Cache {
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
   /// [object]. If a [group] is specified, all entities of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
-  Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group});
+  Future<void> put(String key, SerializableEntity object,
+      {Duration? lifetime, String? group});
 
   /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
   /// matching object can be found, null is returned.

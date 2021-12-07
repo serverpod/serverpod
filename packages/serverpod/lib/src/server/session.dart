@@ -33,6 +33,7 @@ abstract class Session {
   final Duration maxLifeTime;
 
   late DateTime _startTime;
+
   /// The time the session object was created.
   DateTime get startTime => _startTime;
 
@@ -51,6 +52,7 @@ abstract class Session {
   late final Database db;
 
   String? _authenticationKey;
+
   /// The authentication key passed from the client.
   String? get authenticationKey => _authenticationKey;
 
@@ -76,7 +78,7 @@ abstract class Session {
   Session({
     required this.server,
     String? authenticationKey,
-    this.maxLifeTime=const Duration(minutes: 1),
+    this.maxLifeTime = const Duration(minutes: 1),
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     String? futureCallName,
@@ -96,8 +98,9 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
-    if (server.authenticationHandler != null  && _authenticationKey != null) {
-      var authenticationInfo = await server.authenticationHandler!(this, _authenticationKey!);
+    if (server.authenticationHandler != null && _authenticationKey != null) {
+      var authenticationInfo =
+          await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
@@ -106,8 +109,7 @@ abstract class Session {
 
   /// Returns the scopes associated with an authenticated user.
   Future<Set<Scope>?> get scopes async {
-    if (!_initialized)
-      await _initialize();
+    if (!_initialized) await _initialize();
     return _scopes;
   }
 
@@ -127,9 +129,12 @@ abstract class Session {
   /// [stackTrace] if the session ended with an error and it should be written
   /// to the logs. Returns the session id, if the session has been logged to the
   /// database.
-  Future<int?> close({dynamic error, StackTrace? stackTrace, bool logSession = true,}) async {
-    if (_closed)
-      return null;
+  Future<int?> close({
+    dynamic error,
+    StackTrace? stackTrace,
+    bool logSession = true,
+  }) async {
+    if (_closed) return null;
     _closed = true;
 
     try {
@@ -142,8 +147,7 @@ abstract class Session {
           authenticatedUserId: _authenticatedUser,
         );
       }
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
       stderr.writeln('$stackTrace');
     }
@@ -151,8 +155,10 @@ abstract class Session {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
-  void log(String message, {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
-    assert(!_closed, 'Session is closed, and logging can no longer be performed.');
+  void log(String message,
+      {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
+    assert(
+        !_closed, 'Session is closed, and logging can no longer be performed.');
 
     sessionLogs.logEntries.add(
       LogEntry(
@@ -219,8 +225,7 @@ class MethodCallSession extends Session {
     this.queryParameters = queryParameters;
 
     var methodName = queryParameters['method'];
-    if (methodName == null && endpointName == 'webserver')
-      methodName = '';
+    if (methodName == null && endpointName == 'webserver') methodName = '';
     this.methodName = methodName!;
 
     // Get the the authentication key, if any
@@ -283,8 +288,7 @@ class UserAuthetication {
   /// Returns the id of an authenticated user or null if the user isn't signed
   /// in.
   Future<int?> get authenticatedUserId async {
-    if (!_session._initialized)
-      await _session._initialize();
+    if (!_session._initialized) await _session._initialize();
     return _session._authenticatedUser;
   }
 
@@ -292,7 +296,8 @@ class UserAuthetication {
   /// before signing them in. Send the AuthKey.id and key to the client and
   /// use that to authenticate in future calls. In most cases, it's more
   /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method, {Set<Scope> scopes = const {}}) async {
+  Future<AuthKey> signInUser(int userId, String method,
+      {Set<Scope> scopes = const {}}) async {
     var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
     var key = generateRandomString();
@@ -300,8 +305,7 @@ class UserAuthetication {
 
     var scopeNames = <String>[];
     for (var scope in scopes) {
-      if (scope.name != null)
-        scopeNames.add(scope.name!);
+      if (scope.name != null) scopeNames.add(scope.name!);
     }
 
     var authKey = AuthKey(
@@ -323,8 +327,7 @@ class UserAuthetication {
   /// This means that the user will be signed out from all connected devices.
   Future<void> signOutUser({int? userId}) async {
     userId ??= await authenticatedUserId;
-    if (userId == null)
-      return;
+    if (userId == null) return;
 
     await _session.db.delete(tAuthKey, where: tAuthKey.userId.equals(userId));
     _session._authenticatedUser = null;
@@ -341,7 +344,7 @@ class StorageAccess {
   /// 'private'. The public storage can be accessed through a public URL. The
   /// file is stored at the [path] relative to the cloud storage root directory,
   /// if a file already exists it will be replaced.
-  Future<void> storeFile ({
+  Future<void> storeFile({
     required String storageId,
     required String path,
     required ByteData byteData,
@@ -414,7 +417,8 @@ class StorageAccess {
     if (storage == null)
       throw CloudStorageException('Storage $storageId is not registered');
 
-    return await storage.createDirectFileUploadDescription(session: _session, path: path);
+    return await storage.createDirectFileUploadDescription(
+        session: _session, path: path);
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -439,20 +443,25 @@ class MessageCentralAccess {
 
   /// Adds a listener to a named channel. Whenever a message is posted using
   /// [postMessage], the [listener] will be notified.
-  void addListener(String channelName, MessageCentralListenerCallback listener) {
+  void addListener(
+      String channelName, MessageCentralListenerCallback listener) {
     _session.server.messageCentral.addListener(_session, channelName, listener);
   }
 
   /// Removes a listener from a named channel.
-  void removeListener(String channelName, MessageCentralListenerCallback listener) {
-    _session.server.messageCentral.removeListener(_session, channelName, listener);
+  void removeListener(
+      String channelName, MessageCentralListenerCallback listener) {
+    _session.server.messageCentral
+        .removeListener(_session, channelName, listener);
   }
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
   /// can be provided, in which case the message is sent only to that specific
   /// server within the cluster. If no [destinationServerId] is provided, the
   /// message is passed on to all servers in the cluster.
-  void postMessage(String channelName, SerializableEntity message, {int? destinationServerId}) {
-    _session.server.messageCentral.postMessage(channelName, message, destinationServerId: destinationServerId);
+  void postMessage(String channelName, SerializableEntity message,
+      {int? destinationServerId}) {
+    _session.server.messageCentral.postMessage(channelName, message,
+        destinationServerId: destinationServerId);
   }
 }

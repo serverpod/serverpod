@@ -29,7 +29,7 @@ class SessionLogFilter extends SerializableEntity {
     required this.slow,
     required this.error,
     this.lastSessionLogId,
-});
+  });
 
   SessionLogFilter.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -68,4 +68,3 @@ class SessionLogFilter extends SerializableEntity {
     });
   }
 }
-

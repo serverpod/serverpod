@@ -21,7 +21,8 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Update the current [RuntimeSettings] in the running [Server].
-  Future<void> setRuntimeSettings(Session session, RuntimeSettings runtimeSettings) async {
+  Future<void> setRuntimeSettings(
+      Session session, RuntimeSettings runtimeSettings) async {
     server.serverpod.runtimeSettings = runtimeSettings;
   }
 
@@ -61,15 +62,16 @@ class InsightsEndpoint extends Endpoint {
   // }
 
   /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getSessionLog(Session session, [int? numEntries, SessionLogFilter? filter]) async {
+  Future<SessionLogResult> getSessionLog(Session session,
+      [int? numEntries, SessionLogFilter? filter]) async {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error)) {
       where = Constant(true);
-    }
-    else {
+    } else {
       if (filter.slow && filter.error)
-        where = tSessionLogEntry.slow.equals(true) | tSessionLogEntry.error.notEquals(null);
+        where = tSessionLogEntry.slow.equals(true) |
+            tSessionLogEntry.error.notEquals(null);
       else if (filter.slow)
         where = tSessionLogEntry.slow.equals(true);
       else
@@ -97,7 +99,8 @@ class InsightsEndpoint extends Endpoint {
       limit: numEntries,
       orderBy: tSessionLogEntry.id,
       orderDescending: true,
-    )).cast<SessionLogEntry>();
+    ))
+        .cast<SessionLogEntry>();
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {

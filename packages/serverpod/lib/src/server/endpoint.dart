@@ -14,15 +14,18 @@ import '../authentication/scope.dart';
 /// argument of the method is a [Session] parameter.
 abstract class Endpoint {
   late String _name;
+
   /// The name of this [Endpoint]. It will be automatically generated from the
   /// name of the class (excluding any Endpoint suffix).
   String get name => _name;
 
   String? _moduleName;
+
   /// The name of the current module, or null for the main server.
   String? get moduleName => _moduleName;
 
   late Server _server;
+
   /// The [Server] this [Endpoint] is running on.
   Server get server => _server;
 
@@ -77,10 +80,12 @@ abstract class Endpoint {
 
   /// Invoked when a message is sent to this endpoint from the client.
   /// Override this method to create your own custom [StreamingEndpoint].
-  Future<void> handleStreamMessage(StreamingSession session, SerializableEntity message) async {}
+  Future<void> handleStreamMessage(
+      StreamingSession session, SerializableEntity message) async {}
 
   /// Sends an event to the client represented by the [Session] object.
-  Future<void> sendStreamMessage(StreamingSession session, SerializableEntity message) async {
+  Future<void> sendStreamMessage(
+      StreamingSession session, SerializableEntity message) async {
     var prefix = moduleName == null ? '' : '$moduleName.';
 
     var data = {

@@ -20,42 +20,38 @@ class Expression {
   }
 
   /// Database AND operator.
-  Expression operator & (dynamic other) {
+  Expression operator &(dynamic other) {
     assert(other is Expression);
     return Expression('($this AND $other)');
   }
 
   /// Database OR operator.
-  Expression operator | (dynamic other) {
+  Expression operator |(dynamic other) {
     assert(other is Expression);
     return Expression('($this OR $other)');
   }
 
   /// Database greater than operator.
-  Expression operator > (dynamic other) {
-    if (!(other is Expression))
-      other = DatabaseConfig.encoder.convert(other);
+  Expression operator >(dynamic other) {
+    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this > $other)');
   }
 
   /// Database greater or equal than operator.
-  Expression operator >= (dynamic other) {
-    if (!(other is Expression))
-      other = DatabaseConfig.encoder.convert(other);
+  Expression operator >=(dynamic other) {
+    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this >= $other)');
   }
 
   /// Database less than operator.
-  Expression operator < (dynamic other) {
-    if (!(other is Expression))
-      other = DatabaseConfig.encoder.convert(other);
+  Expression operator <(dynamic other) {
+    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this < $other)');
   }
 
   /// Database less or equal than operator.
-  Expression operator <= (dynamic other) {
-    if (!(other is Expression))
-      other = DatabaseConfig.encoder.convert(other);
+  Expression operator <=(dynamic other) {
+    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this <= $other)');
   }
 }
@@ -70,17 +66,19 @@ abstract class Column extends Expression {
   final int? varcharLength;
 
   final String _columnName;
+
   /// Name of the [Column].
   String get columnName => _columnName;
 
   /// Creates a new [Column], this is typically done in generated code only.
-  Column(this._columnName, this.type, {this.varcharLength}) : super('"$_columnName"');
+  Column(this._columnName, this.type, {this.varcharLength})
+      : super('"$_columnName"');
 }
 
 /// A [Column] holding an [int].
 class ColumnInt extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnInt(String name) : super (name, int);
+  ColumnInt(String name) : super(name, int);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -104,7 +102,7 @@ class ColumnInt extends Column {
 /// A [Column] holding an [double].
 class ColumnDouble extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(String name) : super (name, double);
+  ColumnDouble(String name) : super(name, double);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -128,7 +126,8 @@ class ColumnDouble extends Column {
 /// A [Column] holding an [String].
 class ColumnString extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnString(String name, {int? varcharLength}) : super (name, String, varcharLength: varcharLength);
+  ColumnString(String name, {int? varcharLength})
+      : super(name, String, varcharLength: varcharLength);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -136,7 +135,8 @@ class ColumnString extends Column {
     if (value == null)
       return Expression('"$columnName" IS NULL');
     else
-      return Expression('"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
+      return Expression(
+          '"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
@@ -145,27 +145,30 @@ class ColumnString extends Column {
     if (value == null)
       return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
+      return Expression(
+          '"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
   }
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value. See Postgresql docs for more info on the LIKE operator.
   Expression like(String value) {
-    return Expression('"$columnName" LIKE ${DatabaseConfig.encoder.convert(value)}');
+    return Expression(
+        '"$columnName" LIKE ${DatabaseConfig.encoder.convert(value)}');
   }
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value but ignoring case. See Postgresql docs for more info on
   /// the ILIKE operator.
   Expression ilike(String value) {
-    return Expression('"$columnName" ILIKE ${DatabaseConfig.encoder.convert(value)}');
+    return Expression(
+        '"$columnName" ILIKE ${DatabaseConfig.encoder.convert(value)}');
   }
 }
 
 /// A [Column] holding an [bool].
 class ColumnBool extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnBool(String name) : super (name, bool);
+  ColumnBool(String name) : super(name, bool);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -196,7 +199,7 @@ class ColumnBool extends Column {
 /// timestamp without time zone.
 class ColumnDateTime extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDateTime(String name) : super (name, DateTime);
+  ColumnDateTime(String name) : super(name, DateTime);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -204,7 +207,8 @@ class ColumnDateTime extends Column {
     if (value == null)
       return Expression('"$columnName" IS NULL');
     else
-      return Expression('"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
+      return Expression(
+          '"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
@@ -213,7 +217,8 @@ class ColumnDateTime extends Column {
     if (value == null)
       return Expression('"$columnName" IS NOT NULL');
     else
-      return Expression('"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
+      return Expression(
+          '"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
   }
 }
 
@@ -227,8 +232,8 @@ class ColumnByteData extends Column {
 /// database as a json column.
 class ColumnSerializable extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnSerializable(String name) : super (name, String);
-  
+  ColumnSerializable(String name) : super(name, String);
+
   // TODO: Add comparisons and possibly other operations
 }
 
@@ -240,8 +245,7 @@ class Constant extends Expression {
   Constant(dynamic value) : super(_formatValue(value));
 
   static String _formatValue(dynamic value) {
-    if (value == null)
-      return 'NULL';
+    if (value == null) return 'NULL';
     if (value is bool)
       return '$value'.toUpperCase();
     else if (value is String)
@@ -256,6 +260,7 @@ class Table {
   /// Name of the table as used in the database.
   final String tableName;
   late List<Column>? _columns;
+
   /// List of [Column] used by the table.
   List<Column> get columns => _columns!;
 

@@ -21,51 +21,51 @@ class DistributedCache extends Cache {
   final bool _isPrio;
 
   /// Creates a new [DistributedCache].
-  DistributedCache(int maxEntries, SerializationManager serializationManager, ServerConfig config, int serverId, this._isPrio)
+  DistributedCache(int maxEntries, SerializationManager serializationManager,
+      ServerConfig config, int serverId, this._isPrio)
       : _localCache = LocalCache(maxEntries, Protocol()),
-        super(maxEntries, serializationManager)
-  {
+        super(maxEntries, serializationManager) {
     _serverId = serverId;
-    
+
     var serverKeys = config.cluster.keys.toList();
     serverKeys.sort();
-    
+
     for (var key in serverKeys) {
       _cluster.add(config.cluster[key]);
 
       var context = SecurityContext();
       context.setTrustedCertificates(sslCertificatePath(config.runMode, key));
-      _clients.add(Client('https://${config.cluster[key]!.address}:${config.cluster[key]!.servicePort}/', context: context));
+      _clients.add(Client(
+          'https://${config.cluster[key]!.address}:${config.cluster[key]!.servicePort}/',
+          context: context));
     }
   }
-  
+
   Client? _clientFromKey(String key) {
     var serverNum = key.hashCode % _cluster.length;
 
-    if (_cluster[serverNum]!.serverId == _serverId)
-      return null;
+    if (_cluster[serverNum]!.serverId == _serverId) return null;
 
     return _clients[serverNum];
   }
 
   @override
-  Future<void> put(String key, SerializableEntity object, {Duration? lifetime, String? group}) async {
+  Future<void> put(String key, SerializableEntity object,
+      {Duration? lifetime, String? group}) async {
     var client = _clientFromKey(key);
 
     DateTime? expiration;
-    if (lifetime != null)
-      expiration = DateTime.now().add(lifetime);
+    if (lifetime != null) expiration = DateTime.now().add(lifetime);
 
     var data = jsonEncode(object.serializeAll());
 
     if (client == null) {
-      await _localCache.put(key, DistributedCacheEntry(data: data), lifetime: lifetime, group: group);
-    }
-    else {
+      await _localCache.put(key, DistributedCacheEntry(data: data),
+          lifetime: lifetime, group: group);
+    } else {
       try {
         await client.cache.put(_isPrio, key, data, group, expiration);
-      }
-      catch (e) {
+      } catch (e) {
         return;
       }
     }
@@ -77,25 +77,23 @@ class DistributedCache extends Cache {
 
     if (client == null) {
       var entry = await _localCache.get(key) as DistributedCacheEntry?;
-      if (entry == null)
-        return null;
+      if (entry == null) return null;
 
-      Map<String, dynamic>? serialization = jsonDecode(entry.data).cast<String, dynamic>();
+      Map<String, dynamic>? serialization =
+          jsonDecode(entry.data).cast<String, dynamic>();
       return serializationManager.createEntityFromSerialization(serialization);
-    }
-    else {
+    } else {
       String? value;
       try {
         value = await client.cache.get(_isPrio, key);
-      }
-      catch(e) {
+      } catch (e) {
         // Failed to contact cache server
         return null;
       }
-      if (value == null || value == 'null')
-        return null;
+      if (value == null || value == 'null') return null;
 
-      Map<String, dynamic>? serialization = jsonDecode(value).cast<String, dynamic>();
+      Map<String, dynamic>? serialization =
+          jsonDecode(value).cast<String, dynamic>();
       return serializationManager.createEntityFromSerialization(serialization);
     }
   }
@@ -106,12 +104,10 @@ class DistributedCache extends Cache {
 
     if (client == null) {
       await _localCache.invalidateKey(key);
-    }
-    else {
+    } else {
       try {
         await client.cache.invalidateKey(_isPrio, key);
-      }
-      catch (e) {
+      } catch (e) {
         return;
       }
     }
@@ -122,12 +118,10 @@ class DistributedCache extends Cache {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
       if (_cluster[serverNum]!.serverId == _serverId) {
         await _localCache.invalidateGroup(group);
-      }
-      else {
+      } else {
         try {
           await _clients[serverNum].cache.invalidateGroup(_isPrio, group);
-        }
-        catch (e) {
+        } catch (e) {
           continue;
         }
       }
@@ -139,12 +133,10 @@ class DistributedCache extends Cache {
     for (var serverNum = 0; serverNum < _cluster.length; serverNum += 1) {
       if (_cluster[serverNum]!.serverId == _serverId) {
         await _localCache.clear();
-      }
-      else {
+      } else {
         try {
           await _clients[serverNum].cache.clear(_isPrio);
-        }
-        catch (e) {
+        } catch (e) {
           continue;
         }
       }

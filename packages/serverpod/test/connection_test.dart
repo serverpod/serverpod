@@ -18,8 +18,7 @@ ByteData createByteData() {
 void main() {
   var client = Client('http://localhost:8080/');
 
-  setUp(() {
-  });
+  setUp(() {});
 
   group('Basic types', () {
     var dateTime = DateTime(1976, 9, 10, 2, 10);
@@ -208,21 +207,24 @@ void main() {
     test('Find with limit', () async {
       await setupTestData(client);
 
-      var list = await client.basicDatabase.findSimpleDataRowsLessThan(75, 25, 25, true);
+      var list = await client.basicDatabase
+          .findSimpleDataRowsLessThan(75, 25, 25, true);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
       expect(list.rows.length, equals(25));
       expect(list.rows.first.num, equals(49));
       expect(list.rows.last.num, equals(25));
 
-      list = await client.basicDatabase.findSimpleDataRowsLessThan(75, 25, 25, false);
+      list = await client.basicDatabase
+          .findSimpleDataRowsLessThan(75, 25, 25, false);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
       expect(list.rows.length, equals(25));
       expect(list.rows.first.num, equals(25));
       expect(list.rows.last.num, equals(49));
 
-      list = await client.basicDatabase.findSimpleDataRowsLessThan(20, 0, 25, false);
+      list = await client.basicDatabase
+          .findSimpleDataRowsLessThan(20, 0, 25, false);
       expect(list, isNotNull);
       expect(list!.rows, isNotNull);
       expect(list.rows.length, equals(20));
@@ -241,7 +243,8 @@ void main() {
       expect(count, isNotNull);
       expect(count, equals(100));
 
-      var list = await client.basicDatabase.findSimpleDataRowsLessThan(100, 0, 100, true);
+      var list = await client.basicDatabase
+          .findSimpleDataRowsLessThan(100, 0, 100, true);
       expect(list, isNotNull);
       expect(list!.rows.length, equals(99));
     });
@@ -259,11 +262,13 @@ void main() {
     test('Complex transaction', () async {
       await setupTestData(client);
 
-      bool? result = await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
+      bool? result =
+          await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
       expect(result, isNotNull);
       expect(result, equals(true));
 
-      var list = await client.basicDatabase.findSimpleDataRowsLessThan(10000, 0, 200, false);
+      var list = await client.basicDatabase
+          .findSimpleDataRowsLessThan(10000, 0, 200, false);
       expect(list, isNotNull);
       expect(list!.rows.length, equals(100));
 
@@ -328,8 +333,7 @@ void main() {
       ServerpodClientException? clientException;
       try {
         await client.failedCalls.failedCall();
-      }
-      catch(e) {
+      } catch (e) {
         clientException = e as ServerpodClientException?;
       }
 

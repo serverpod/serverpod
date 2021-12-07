@@ -23,10 +23,12 @@ class DatabaseConfig {
   final String password;
 
   late SerializationManager _serializationManager;
+
   /// Access to the serialization manager.
   SerializationManager get serializationManager => _serializationManager;
 
   late PgPool _pgPool;
+
   /// Postgresql connection pool created from configuration.
   PgPool get pool => _pgPool;
 
@@ -39,7 +41,8 @@ class DatabaseConfig {
 
   /// Creates a new [DatabaseConfig]. Typically, this is done automatically
   /// when starting the [Server].
-  DatabaseConfig(SerializationManager serializationManager, this.host, this.port, this.databaseName, this.userName, this.password)
+  DatabaseConfig(SerializationManager serializationManager, this.host,
+      this.port, this.databaseName, this.userName, this.password)
       : tableClassMapping = serializationManager.tableClassMapping {
     _serializationManager = serializationManager;
 
@@ -54,8 +57,7 @@ class DatabaseConfig {
           port: port,
           database: databaseName,
           username: userName,
-          password: password
-      ),
+          password: password),
       settings: poolSettings,
     );
   }

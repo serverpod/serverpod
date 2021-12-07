@@ -25,19 +25,22 @@ import 'session.dart';
 import 'method_lookup.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
-typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(Serverpod pod);
+typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
+    Serverpod pod);
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
 /// [DistributedCache] and other connections through the [InsightsEndpoint].
 class Serverpod {
   static Serverpod? _instance;
+
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
   static Serverpod? get instance => _instance;
 
   late String _runMode;
+
   /// The servers run mode as specified in [ServerpodRunMode].
   String get runMode => _runMode;
 
@@ -66,6 +69,7 @@ class Serverpod {
   late DatabaseConfig databaseConfig;
 
   late Caches _caches;
+
   /// Caches used by the server.
   Caches get caches => _caches;
 
@@ -76,10 +80,12 @@ class Serverpod {
   late Server server;
 
   Server? _serviceServer;
+
   /// The service server managed by this [Serverpod].
   Server get serviceServer => _serviceServer!;
 
   internal.RuntimeSettings? _runtimeSettings;
+
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
   set runtimeSettings(internal.RuntimeSettings settings) {
@@ -89,6 +95,7 @@ class Serverpod {
   }
 
   late LogManager _logManager;
+
   /// The [LogManager] of the Serverpod, its typically only used internally
   /// by the Serverpod. Instead of using this object directly, call the log
   /// method on the current [Session].
@@ -135,9 +142,9 @@ class Serverpod {
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     var session = await createSession();
     try {
-
-      var oldRuntimeSettings = await session.db.findSingleRow(
-          internal.tRuntimeSettings) as internal.RuntimeSettings?;
+      var oldRuntimeSettings =
+          await session.db.findSingleRow(internal.tRuntimeSettings)
+              as internal.RuntimeSettings?;
       if (oldRuntimeSettings == null) {
         settings.id = null;
         await session.db.insert(settings);
@@ -145,8 +152,7 @@ class Serverpod {
 
       settings.id = oldRuntimeSettings!.id;
       await session.db.update(settings);
-    }
-    catch(e) {
+    } catch (e) {
       return;
     }
     await session.close();
@@ -157,14 +163,13 @@ class Serverpod {
     try {
       var session = await createSession();
 
-      var settings = await session.db.findSingleRow(
-          internal.tRuntimeSettings) as internal.RuntimeSettings?;
+      var settings = await session.db.findSingleRow(internal.tRuntimeSettings)
+          as internal.RuntimeSettings?;
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
       }
-    }
-    catch(e) {
+    } catch (e) {
       return;
     }
   }
@@ -177,7 +182,8 @@ class Serverpod {
   List<String>? whitelistedExternalCalls;
 
   /// Creates a new Serverpod.
-  Serverpod(List<String> args, this.serializationManager, this.endpoints, {this.authenticationHandler, this.healthCheckHandler}) {
+  Serverpod(List<String> args, this.serializationManager, this.endpoints,
+      {this.authenticationHandler, this.healthCheckHandler}) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
 
@@ -187,15 +193,19 @@ class Serverpod {
     // Read command line arguments
     try {
       final argParser = ArgParser()
-        ..addOption('mode', abbr: 'm',
-            allowed: [ServerpodRunMode.development, ServerpodRunMode.staging, ServerpodRunMode.production,],
+        ..addOption('mode',
+            abbr: 'm',
+            allowed: [
+              ServerpodRunMode.development,
+              ServerpodRunMode.staging,
+              ServerpodRunMode.production,
+            ],
             defaultsTo: ServerpodRunMode.development)
         ..addOption('server-id', abbr: 'i', defaultsTo: '0');
       var results = argParser.parse(args);
       _runMode = results['mode'];
       serverId = int.tryParse(results['server-id']) ?? 0;
-    }
-    catch(e) {
+    } catch (e) {
       print('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
     }
@@ -208,8 +218,7 @@ class Serverpod {
 
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);
-    if (_passwords['database'] != null)
-      config.dbPass = _passwords['database'];
+    if (_passwords['database'] != null) config.dbPass = _passwords['database'];
     if (_passwords['serviceSecret'] != null)
       config.serviceSecret = _passwords['serviceSecret'];
 
@@ -217,7 +226,8 @@ class Serverpod {
     print(config.toString());
 
     // Setup database
-    databaseConfig = DatabaseConfig(serializationManager, config.dbHost!, config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
+    databaseConfig = DatabaseConfig(serializationManager, config.dbHost!,
+        config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
 
     _caches = Caches(serializationManager, config, serverId);
 
@@ -230,7 +240,8 @@ class Serverpod {
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
-      authenticationHandler: authenticationHandler ?? defaultAuthenticationHandler,
+      authenticationHandler:
+          authenticationHandler ?? defaultAuthenticationHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
     );
@@ -245,59 +256,59 @@ class Serverpod {
 
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
-    await runZonedGuarded(
-      () async {
-        // Register cloud store endpoint if we're using the database cloud store
-        if (storage['public'] is DatabaseCloudStorage || storage['private'] is DatabaseCloudStorage)
-          CloudStoragePublicEndpoint().register(this);
+    await runZonedGuarded(() async {
+      // Register cloud store endpoint if we're using the database cloud store
+      if (storage['public'] is DatabaseCloudStorage ||
+          storage['private'] is DatabaseCloudStorage)
+        CloudStoragePublicEndpoint().register(this);
 
-        // Runtime settings
-        var session = await createSession();
-        try {
-          _runtimeSettings = await session.db.findSingleRow(internal.tRuntimeSettings) as internal.RuntimeSettings?;
-          if (_runtimeSettings == null) {
-            // Store default settings
-            _runtimeSettings = _defaultRuntimeSettings;
-            await session.db.insert(_runtimeSettings!);
-          }
-          _logManager = LogManager(_runtimeSettings!);
+      // Runtime settings
+      var session = await createSession();
+      try {
+        _runtimeSettings =
+            await session.db.findSingleRow(internal.tRuntimeSettings)
+                as internal.RuntimeSettings?;
+        if (_runtimeSettings == null) {
+          // Store default settings
+          _runtimeSettings = _defaultRuntimeSettings;
+          await session.db.insert(_runtimeSettings!);
         }
-        catch(e, stackTrace) {
-          stderr.writeln('${DateTime.now().toUtc()} Failed to connect to database.');
-          stderr.writeln('$e');
-          stderr.writeln('$stackTrace');
-        }
-
-        try {
-          await methodLookup.load(session);
-        }
-        catch(e, stackTrace) {
-          stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
-          stderr.writeln('$e');
-          stderr.writeln('$stackTrace');
-        }
-
-        await session.close(logSession: false);
-
-        await _startServiceServer();
-
-        await server.start();
-
-        // Start future calls
-        _futureCallManager.start();
-      },
-      (e, stackTrace) {
-        // Last resort error handling
-        // TODO: Log to database?
-        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Zoned exception.');
+        _logManager = LogManager(_runtimeSettings!);
+      } catch (e, stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Failed to connect to database.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
       }
-    );
+
+      try {
+        await methodLookup.load(session);
+      } catch (e, stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+      }
+
+      await session.close(logSession: false);
+
+      await _startServiceServer();
+
+      await server.start();
+
+      // Start future calls
+      _futureCallManager.start();
+    }, (e, stackTrace) {
+      // Last resort error handling
+      // TODO: Log to database?
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Zoned exception.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+    });
   }
 
   Future<void> _startServiceServer() async {
-
     var context = SecurityContext();
     context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
@@ -326,20 +337,25 @@ class Serverpod {
   /// Registers a [FutureCall] with the [Serverpod] and associates it with
   /// the specified name.
   void registerFutureCall(FutureCall call, String name) {
-     _futureCallManager.registerFutureCall(call, name);
+    _futureCallManager.registerFutureCall(call, name);
   }
 
   /// Calls a [FutureCall] by its name after the specified delay, optionally
   /// passing a [SerializableEntity] object as parameter.
-  void futureCallWithDelay(String callName, SerializableEntity? object, Duration delay) {
-    assert(server.running, 'Server is not running, call start() before using future calls');
-    _futureCallManager.scheduleFutureCall(callName, object, DateTime.now().add(delay), serverId);
+  void futureCallWithDelay(
+      String callName, SerializableEntity? object, Duration delay) {
+    assert(server.running,
+        'Server is not running, call start() before using future calls');
+    _futureCallManager.scheduleFutureCall(
+        callName, object, DateTime.now().add(delay), serverId);
   }
 
   /// Calls a [FutureCall] by its name at the specified time, optionally passing
   /// a [SerializableEntity] object as parameter.
-  void futureCallAtTime(String callName, SerializableEntity? object, DateTime time) {
-    assert(server.running, 'Server is not running, call start() before using future calls');
+  void futureCallAtTime(
+      String callName, SerializableEntity? object, DateTime time) {
+    assert(server.running,
+        'Server is not running, call start() before using future calls');
     _futureCallManager.scheduleFutureCall(callName, object, time, serverId);
   }
 
@@ -354,7 +370,7 @@ class Serverpod {
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
   Future<InternalSession> createSession() async {
-    var session =  InternalSession(server: server);
+    var session = InternalSession(server: server);
     return session;
   }
 

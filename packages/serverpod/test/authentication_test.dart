@@ -15,12 +15,12 @@ void main() {
       expect(signedIn, equals(false));
     });
 
-    test('Access endpoint with required signin without authentication', () async {
+    test('Access endpoint with required signin without authentication',
+        () async {
       int? statusCode;
       try {
         await client.signInRequired.testMethod();
-      }
-      catch(e) {
+      } catch (e) {
         if (e is ServerpodClientException) {
           statusCode = e.statusCode;
         }
@@ -29,7 +29,8 @@ void main() {
     });
 
     test('Authenticate with incorrect credentials', () async {
-      var response = await client.authentication.authenticate('test@foo.bar', 'incorrect password');
+      var response = await client.authentication
+          .authenticate('test@foo.bar', 'incorrect password');
       expect(response.success, equals(false));
     });
 
@@ -39,9 +40,11 @@ void main() {
     });
 
     test('Authenticate with correct credentials', () async {
-      var response = await client.authentication.authenticate('test@foo.bar', 'password');
+      var response =
+          await client.authentication.authenticate('test@foo.bar', 'password');
       if (response.success) {
-        await client.authenticationKeyManager!.put('${response.keyId}:${response.key}');
+        await client.authenticationKeyManager!
+            .put('${response.keyId}:${response.key}');
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);

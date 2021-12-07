@@ -25,10 +25,10 @@ class FutureCallManager {
   /// Schedules a [FutureCall] by its [name]. A [SerializableEntity] can be
   /// passed as an argument. The `invoke` method of the [FutureCall] will
   /// be called at or after the specified [time].
-  Future<void> scheduleFutureCall(String name, SerializableEntity? object, DateTime time, int serverId) async {
+  Future<void> scheduleFutureCall(String name, SerializableEntity? object,
+      DateTime time, int serverId) async {
     String? serialization;
-    if (object != null)
-      serialization = jsonEncode(object.serializeAll());
+    if (object != null) serialization = jsonEncode(object.serializeAll());
 
     var entry = FutureCallEntry(
       name: name,
@@ -74,7 +74,8 @@ class FutureCallManager {
       var tempSession = await _server.serverpod.createSession();
       var rows = await tempSession.db.find(
         tFutureCallEntry,
-        where: (tFutureCallEntry.time <= now) & tFutureCallEntry.serverId.equals(_server.serverId),
+        where: (tFutureCallEntry.time <= now) &
+            tFutureCallEntry.serverId.equals(_server.serverId),
       );
       await tempSession.close(logSession: false);
 
@@ -87,7 +88,8 @@ class FutureCallManager {
         SerializableEntity? object;
         if (entry.serializedObject != null) {
           Map? data = jsonDecode(entry.serializedObject!);
-          object = _serializationManager.createEntityFromSerialization(data as Map<String, dynamic>?);
+          object = _serializationManager
+              .createEntityFromSerialization(data as Map<String, dynamic>?);
         }
 
         var futureCallSession = FutureCallSession(
@@ -98,8 +100,7 @@ class FutureCallManager {
         try {
           await call.invoke(futureCallSession, object);
           await futureCallSession.close();
-        }
-        catch(e, stackTrace) {
+        } catch (e, stackTrace) {
           await futureCallSession.close(error: e, stackTrace: stackTrace);
         }
       }
@@ -109,14 +110,15 @@ class FutureCallManager {
         var tempSession = await _server.serverpod.createSession();
         await tempSession.db.delete(
           tFutureCallEntry,
-          where: tFutureCallEntry.serverId.equals(tempSession.server.serverId) & (tFutureCallEntry.time <= now),
+          where: tFutureCallEntry.serverId.equals(tempSession.server.serverId) &
+              (tFutureCallEntry.time <= now),
         );
         await tempSession.close(logSession: false);
       }
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       // Most likely we lost connection to the database
-      stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to connect to database in future call manager.');
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to connect to database in future call manager.');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       stderr.writeln('Local stacktrace:');

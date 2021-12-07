@@ -28,23 +28,22 @@ class LogManager {
   LogManager(this.runtimeSettings) {
     for (var override in runtimeSettings.logSettingsOverrides) {
       if (override.method != null && override.endpoint != null) {
-        _methodOverrides['${override.endpoint}.${override.method}'] = override.logSettings;
-      }
-      else if (override.endpoint != null) {
+        _methodOverrides['${override.endpoint}.${override.method}'] =
+            override.logSettings;
+      } else if (override.endpoint != null) {
         _endpointOverrides['${override.endpoint}'] = override.logSettings;
       }
     }
   }
 
   /// Gets the log settings for a [MethodCallSession].
-  LogSettings _getLogSettingsForMethodCallSession(String endpoint, String method) {
+  LogSettings _getLogSettingsForMethodCallSession(
+      String endpoint, String method) {
     var settings = _methodOverrides['$endpoint.$method'];
-    if (settings != null)
-      return settings;
+    if (settings != null) return settings;
 
     settings = _endpointOverrides[endpoint];
-    if (settings != null)
-      return settings;
+    if (settings != null) return settings;
 
     return runtimeSettings.logSettings;
   }
@@ -67,7 +66,8 @@ class LogManager {
   /// Returns the [LogSettings] for a specific session.
   LogSettings getLogSettingsForSession(Session session) {
     if (session is MethodCallSession)
-      return _getLogSettingsForMethodCallSession(session.endpointName, session.methodName);
+      return _getLogSettingsForMethodCallSession(
+          session.endpointName, session.methodName);
     else if (session is StreamingSession)
       return _getLogSettingsForStreamingSession();
     else if (session is InternalSession)
@@ -88,28 +88,35 @@ class LogManager {
 
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
-  Future<int?> finalizeSessionLog(Session session, {int? authenticatedUserId, String? exception, StackTrace? stackTrace}) async {
+  Future<int?> finalizeSessionLog(Session session,
+      {int? authenticatedUserId,
+      String? exception,
+      StackTrace? stackTrace}) async {
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     var logSettings = getLogSettingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession)
-        stdout.writeln('METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+        stdout.writeln(
+            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
       else if (session is FutureCallSession)
-        stdout.writeln('FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+        stdout.writeln(
+            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
       if (exception != null) {
         stdout.writeln('$exception');
         stdout.writeln('$stackTrace');
       }
     }
 
-    var isSlow = duration > Duration(microseconds: (logSettings.slowSessionDuration * 1000000.0).toInt());
+    var isSlow = duration >
+        Duration(
+            microseconds:
+                (logSettings.slowSessionDuration * 1000000.0).toInt());
 
     if (logSettings.logAllSessions ||
         logSettings.logSlowSessions && isSlow ||
-        logSettings.logFailedSessions && exception != null
-    ) {
+        logSettings.logFailedSessions && exception != null) {
       String? endpointName;
       String? methodName;
       String? futureCallName;
@@ -119,12 +126,10 @@ class LogManager {
       if (session is MethodCallSession) {
         endpointName = session.endpointName;
         methodName = session.methodName;
-      }
-      else if (session is StreamingSession) {
+      } else if (session is StreamingSession) {
         // TODO: Correctly log streaming sessions.
         // endpointName = session
-      }
-      else if (session is FutureCallSession) {
+      } else if (session is FutureCallSession) {
         futureCallName = session.futureCallName;
       }
 
@@ -150,25 +155,27 @@ class LogManager {
         sessionLogId = sessionLogEntry.id!;
 
         for (var logInfo in cachedEntry.logEntries) {
-          await _log(logInfo, sessionLogId, logSettings, tempSession, session.serverpod.runMode);
+          await _log(logInfo, sessionLogId, logSettings, tempSession,
+              session.serverpod.runMode);
         }
 
         for (var queryInfo in cachedEntry.queries) {
           if (logSettings.logAllQueries ||
-              logSettings.logSlowQueries && queryInfo.duration > runtimeSettings.logSettings.slowQueryDuration ||
-              logSettings.logFailedQueries && queryInfo.error != null
-          ) {
+              logSettings.logSlowQueries &&
+                  queryInfo.duration >
+                      runtimeSettings.logSettings.slowQueryDuration ||
+              logSettings.logFailedQueries && queryInfo.error != null) {
             // Log query
             queryInfo.sessionLogId = sessionLogId;
             queryInfo.serverId = session.server.serverId;
             await tempSession.db.insert(queryInfo);
           }
         }
-      }
-      catch(e, logStackTrace) {
+      } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         if (methodName != null)
-          stderr.writeln('CALL: $endpointName.$methodName duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+          stderr.writeln(
+              'CALL: $endpointName.$methodName duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
 
@@ -184,7 +191,8 @@ class LogManager {
     }
   }
 
-  Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings, Session tempSession, String runMode) async {
+  Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings,
+      Session tempSession, String runMode) async {
     var serverLogLevel = (logSettings.logLevel);
 
     if (entry.logLevel >= serverLogLevel) {
@@ -194,20 +202,19 @@ class LogManager {
 
       try {
         success = await tempSession.db.insert(entry);
-      }
-      catch(e) {
+      } catch (e) {
         success = false;
       }
       if (!success)
-        stderr.writeln('${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
+        stderr.writeln(
+            '${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
     }
 
     if (runMode == ServerpodRunMode.development) {
-      stdout.writeln('${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null)
-        stdout.writeln(entry.error);
-      if (entry.stackTrace != null)
-        stdout.writeln(entry.stackTrace);
+      stdout.writeln(
+          '${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+      if (entry.error != null) stdout.writeln(entry.error);
+      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
     }
   }
 }

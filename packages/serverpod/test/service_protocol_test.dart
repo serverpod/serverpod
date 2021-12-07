@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart' as service;
+import 'package:serverpod_service_client/serverpod_service_client.dart'
+    as service;
 import 'package:serverpod_client/src/auth_key_manager.dart';
 
 Future<void> setupTestData(Client client) async {
@@ -11,8 +12,8 @@ Future<void> setupTestData(Client client) async {
 void main() {
   var client = Client('http://localhost:8080/');
   var serviceClient = service.Client(
-      'https://localhost:8081/',
-      authenticationKeyManager: ServiceKeyManager('0', 'password'),
+    'https://localhost:8081/',
+    authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 
   group('Logging', () {
@@ -143,7 +144,8 @@ void main() {
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].queries.length, equals(2));
-      expect(logResult.sessionLog[0].queries[1].query.startsWith('BEGIN'), equals(true));
+      expect(logResult.sessionLog[0].queries[1].query.startsWith('BEGIN'),
+          equals(true));
     });
 
     test('Disabled logging', () async {
@@ -152,7 +154,8 @@ void main() {
 
       var logResult = await serviceClient.insights.getSessionLog(1);
       expect(logResult.sessionLog.length, equals(1));
-      expect(logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
+      expect(
+          logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
 
       await client.logging.logInfo('test');
@@ -162,7 +165,8 @@ void main() {
 
       logResult = await serviceClient.insights.getSessionLog(1);
       expect(logResult.sessionLog.length, equals(1));
-      expect(logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
+      expect(
+          logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
     });
 
@@ -198,12 +202,11 @@ void main() {
 
       expect(logResult.sessionLog[0].messageLog.length, equals(1));
       expect(logResult.sessionLog[0].messageLog[0].message, equals('42'));
-      expect(logResult.sessionLog[0].sessionLogEntry.futureCall, equals('testCall'));
+      expect(logResult.sessionLog[0].sessionLogEntry.futureCall,
+          equals('testCall'));
     });
   });
 }
-
-
 
 class ServiceKeyManager extends AuthenticationKeyManager {
   final String name;
@@ -215,11 +218,12 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   Future<String> get() async {
     return 'name:$serviceSecret';
   }
-  @override
-  Future<Null> put(String key) async {
-  }
 
   @override
-  Future<void> remove() async {;
+  Future<Null> put(String key) async {}
+
+  @override
+  Future<void> remove() async {
+    ;
   }
 }

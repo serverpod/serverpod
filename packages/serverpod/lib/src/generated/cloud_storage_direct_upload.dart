@@ -29,9 +29,10 @@ class CloudStorageDirectUploadEntry extends TableRow {
     required this.path,
     required this.expiration,
     required this.authKey,
-});
+  });
 
-  CloudStorageDirectUploadEntry.fromSerialization(Map<String, dynamic> serialization) {
+  CloudStorageDirectUploadEntry.fromSerialization(
+      Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     storageId = _data['storageId']!;
@@ -75,7 +76,8 @@ class CloudStorageDirectUploadEntry extends TableRow {
 }
 
 class CloudStorageDirectUploadEntryTable extends Table {
-  CloudStorageDirectUploadEntryTable() : super(tableName: 'serverpod_cloud_storage_direct_upload');
+  CloudStorageDirectUploadEntryTable()
+      : super(tableName: 'serverpod_cloud_storage_direct_upload');
 
   @override
   String tableName = 'serverpod_cloud_storage_direct_upload';
@@ -87,12 +89,13 @@ class CloudStorageDirectUploadEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    storageId,
-    path,
-    expiration,
-    authKey,
-  ];
+        id,
+        storageId,
+        path,
+        expiration,
+        authKey,
+      ];
 }
 
-CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry = CloudStorageDirectUploadEntryTable();
+CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
+    CloudStorageDirectUploadEntryTable();

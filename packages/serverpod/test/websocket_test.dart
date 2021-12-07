@@ -12,8 +12,7 @@ void main() {
 
   var streamingStream = client.streaming.stream.asBroadcastStream();
 
-  setUp(() {
-  });
+  setUp(() {});
 
   group('Basic websocket', () {
     test('Connect and send SimpleData', () async {
@@ -31,11 +30,9 @@ void main() {
         expect(simpleData.num, nums[i]);
 
         i += 1;
-        if (i == nums.length)
-          break;
+        if (i == nums.length) break;
       }
     });
-
   });
 
   group('Modules', () {
@@ -56,11 +53,9 @@ void main() {
         expect(object.name, names[i]);
 
         i += 1;
-        if (i == nums.length)
-          break;
+        if (i == nums.length) break;
       }
     });
-
   });
 
   group('Authentication', () {
@@ -71,9 +66,11 @@ void main() {
     });
 
     test('Authenticate with correct credentials', () async {
-      var response = await client.authentication.authenticate('test@foo.bar', 'password');
+      var response =
+          await client.authentication.authenticate('test@foo.bar', 'password');
       if (response.success) {
-        await client.authenticationKeyManager!.put('${response.keyId}:${response.key}');
+        await client.authenticationKeyManager!
+            .put('${response.keyId}:${response.key}');
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
@@ -97,10 +94,8 @@ void main() {
         expect(simpleData.num, nums[i]);
 
         i += 1;
-        if (i == nums.length)
-          break;
+        if (i == nums.length) break;
       }
     });
   });
 }
-

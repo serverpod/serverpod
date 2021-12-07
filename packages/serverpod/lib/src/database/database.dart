@@ -15,8 +15,7 @@ class Database {
 
   /// The [DatabaseConnection] currently used to access the database.
   Future<DatabaseConnection> get databaseConnection async {
-    if (_databaseConnection != null)
-      return _databaseConnection!;
+    if (_databaseConnection != null) return _databaseConnection!;
     return DatabaseConnection(session.server.databaseConfig);
   }
 
@@ -37,7 +36,14 @@ class Database {
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
   /// the table will be returned.
-  Future<List<TableRow>> find(Table table, {Expression? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending=false, bool useCache=true}) async {
+  Future<List<TableRow>> find(Table table,
+      {Expression? where,
+      int? limit,
+      int? offset,
+      Column? orderBy,
+      List<Order>? orderByList,
+      bool orderDescending = false,
+      bool useCache = true}) async {
     var conn = await databaseConnection;
 
     return await conn.find(
@@ -56,7 +62,12 @@ class Database {
   /// Find a single [TableRow] from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList].
-  Future<TableRow?> findSingleRow(Table table, {Expression? where, int? offset, Column? orderBy, bool orderDescending=false, bool useCache=true}) async {
+  Future<TableRow?> findSingleRow(Table table,
+      {Expression? where,
+      int? offset,
+      Column? orderBy,
+      bool orderDescending = false,
+      bool useCache = true}) async {
     var conn = await databaseConnection;
 
     return await conn.findSingleRow(
@@ -72,7 +83,8 @@ class Database {
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
-  Future<int> count(Table table, {Expression? where, int? limit, bool useCache=true}) async {
+  Future<int> count(Table table,
+      {Expression? where, int? limit, bool useCache = true}) async {
     var conn = await databaseConnection;
 
     return await conn.count(
@@ -107,7 +119,8 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<int> delete(Table table, {required Expression where, Transaction? transaction}) async {
+  Future<int> delete(Table table,
+      {required Expression where, Transaction? transaction}) async {
     var conn = await databaseConnection;
 
     return await conn.delete(
@@ -131,23 +144,31 @@ class Database {
 
   /// Stores a file in the database, specifically using the
   /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(String storageId, String path, ByteData byteData, DateTime? expiration, bool verified) async {
+  Future<void> storeFile(String storageId, String path, ByteData byteData,
+      DateTime? expiration, bool verified) async {
     var conn = await databaseConnection;
 
-    return await conn.storeFile(storageId, path, byteData, expiration, verified, session: session);
+    return await conn.storeFile(storageId, path, byteData, expiration, verified,
+        session: session);
   }
 
   /// Retrieves a file stored in the database or null if it doesn't exist,
   /// specifically using the serverpod_cloud_storage table. Used by the the
   /// [DatabaseCloudStorage].
-  Future<ByteData?> retrieveFile(String storageId, String path,) async {
+  Future<ByteData?> retrieveFile(
+    String storageId,
+    String path,
+  ) async {
     var conn = await databaseConnection;
 
     return await conn.retrieveFile(storageId, path, session: session);
   }
 
   /// Verifies that a file has been successfully uploaded.
-  Future<bool> verifyFile(String storageId, String path,) async {
+  Future<bool> verifyFile(
+    String storageId,
+    String path,
+  ) async {
     var conn = await databaseConnection;
 
     return await conn.verifyFile(storageId, path, session: session);
@@ -155,7 +176,8 @@ class Database {
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  Future<List<List<dynamic>>> query(String query, {int? timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(String query,
+      {int? timeoutInSeconds}) async {
     var conn = await databaseConnection;
 
     return conn.query(

@@ -7,27 +7,25 @@ import '../server/session.dart';
 
 /// The default [AuthenticationHandler], uses the auth_key table from the
 /// database to authenticate a user.
-Future<AuthenticationInfo?> defaultAuthenticationHandler(Session session, String key) async {
+Future<AuthenticationInfo?> defaultAuthenticationHandler(
+    Session session, String key) async {
   try {
     // Get the secret and user id
     var parts = key.split(':');
     var keyIdStr = parts[0];
     var keyId = int.tryParse(keyIdStr);
-    if (keyId == null)
-      return null;
+    if (keyId == null) return null;
     var secret = parts[1];
 
     // Get the authentication key from the database
     var authKey = (await session.db.findById(tAuthKey, keyId)) as AuthKey?;
-    if (authKey == null)
-      return null;
+    if (authKey == null) return null;
 
     // Hash the key from the user and check that it is what we expect
     var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
     var expectedHash = hashString(signInSalt, secret);
 
-    if (authKey.hash != expectedHash)
-      return null;
+    if (authKey.hash != expectedHash) return null;
 
     // All looking bright, user is signed in
 
@@ -37,8 +35,7 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(Session session, String
       scopes.add(Scope(scopeName));
     }
     return AuthenticationInfo(authKey.userId, scopes);
-  }
-  catch(e, stackTrace) {
+  } catch (e, stackTrace) {
     print('e: $e');
     print('$stackTrace');
     return null;
