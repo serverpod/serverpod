@@ -32,10 +32,8 @@ class Copier {
   void _copyDirectory(Directory dir, String relativePath) {
     for (var entity in dir.listSync()) {
       var entityName = p.basename(entity.path);
-      if (ignoreFileNames.contains(entityName))
-        continue;
-      if (entityName.startsWith('.'))
-        continue;
+      if (ignoreFileNames.contains(entityName)) continue;
+      if (entityName.startsWith('.')) continue;
 
       if (entity is File) {
         _copyFile(entity, relativePath);
@@ -49,8 +47,7 @@ class Copier {
 
   void _copyFile(File srcFile, String relativePath) {
     var fileName = p.basename(srcFile.path);
-    if (fileName.startsWith('.'))
-      return;
+    if (fileName.startsWith('.')) return;
 
     var dstFileName = _replace('$relativePath$fileName', fileNameReplacements);
     print('  ${dstDir.path}$relativePath$fileName');
@@ -70,14 +67,13 @@ class Copier {
     return str;
   }
 
-
   String _filterLines(String str, List<String> prefixes) {
     for (var prefix in prefixes) {
       var lines = str.split('\n');
       var processedLines = <String>[];
       for (var line in lines) {
-        if (line.trim().startsWith(prefix) && !line.trim().startsWith('path: ^'))
-          continue;
+        if (line.trim().startsWith(prefix) &&
+            !line.trim().startsWith('path: ^')) continue;
         processedLines.add(line);
       }
       str = processedLines.join('\n');

@@ -54,43 +54,45 @@ class ProtocolAnalyzer {
             var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
-
               var methodDefs = <MethodDefinition>[];
               var methods = element.methods;
               for (var method in methods) {
                 // Skip private methods
-                if (method.isPrivate)
-                  continue;
+                if (method.isPrivate) continue;
                 // Skip overridden methods from the Endpoint class
-                if (_excludedMethodNameSet.contains(method.name))
-                  continue;
-                
+                if (_excludedMethodNameSet.contains(method.name)) continue;
+
                 var paramDefs = <ParameterDefinition>[];
                 var paramPositionalDefs = <ParameterDefinition>[];
                 var paramNamedDefs = <ParameterDefinition>[];
                 var parameters = method.parameters;
                 for (var param in parameters) {
-                  var package = param.type.element?.librarySource?.uri.pathSegments[0];
+                  var package =
+                      param.type.element?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
-                    type: TypeDefinition(param.type.getDisplayString(withNullability: true), package),
+                    type: TypeDefinition(
+                        param.type.getDisplayString(withNullability: true),
+                        package),
                   );
-                  
+
                   if (param.isRequiredPositional)
                     paramDefs.add(paramDef);
                   else if (param.isOptionalPositional)
                     paramPositionalDefs.add(paramDef);
-                  else if (param.isNamed)
-                    paramNamedDefs.add(paramDef);
+                  else if (param.isNamed) paramNamedDefs.add(paramDef);
                 }
 
-                if (paramDefs.isNotEmpty && paramDefs[0].type.type == 'Session' && method.returnType.isDartAsyncFuture) {
+                if (paramDefs.isNotEmpty &&
+                    paramDefs[0].type.type == 'Session' &&
+                    method.returnType.isDartAsyncFuture) {
                   String? package;
                   var returnType = method.returnType;
                   if (returnType is InterfaceType) {
                     var interfaceType = returnType;
                     if (interfaceType.typeArguments.length == 1) {
-                      package = interfaceType.typeArguments[0].element?.librarySource?.uri.pathSegments[0];
+                      package = interfaceType.typeArguments[0].element
+                          ?.librarySource?.uri.pathSegments[0];
                     }
                   }
 
@@ -99,16 +101,20 @@ class ProtocolAnalyzer {
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
-                    returnType: TypeDefinition(method.returnType.getDisplayString(withNullability: true), package, stripFuture: true),
+                    returnType: TypeDefinition(
+                        method.returnType
+                            .getDisplayString(withNullability: true),
+                        package,
+                        stripFuture: true),
                   );
                   methodDefs.add(methodDef);
                 }
               }
 
               var endpointDef = EndpointDefinition(
-                  name: endpointName,
-                  className: className,
-                  methods: methodDefs,
+                name: endpointName,
+                className: className,
+                methods: methodDefs,
               );
               endpointDefs.add(endpointDef);
             }
@@ -127,7 +133,8 @@ class ProtocolAnalyzer {
 
     var endpointName = '${className[0].toLowerCase()}${className.substring(1)}';
     if (endpointName.endsWith(removeEnding))
-      endpointName = endpointName.substring(0, endpointName.length - removeEnding.length);
+      endpointName =
+          endpointName.substring(0, endpointName.length - removeEnding.length);
 
     return endpointName;
   }

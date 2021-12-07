@@ -2,13 +2,15 @@ import 'dart:io';
 
 import '../create/copier.dart';
 
-void performGeneratePubspecs (String version, String mode) {
+void performGeneratePubspecs(String version, String mode) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
   var dirTemplates = Directory('templates/pubspecs');
   var dirRoot = Directory('.');
 
-  if (!dirPackages.existsSync() || !dirTemplates.existsSync() || !dirRoot.existsSync()) {
+  if (!dirPackages.existsSync() ||
+      !dirTemplates.existsSync() ||
+      !dirRoot.existsSync()) {
     print('Must be run from the serverpod repository root');
     return;
   }
@@ -31,7 +33,8 @@ void performGeneratePubspecs (String version, String mode) {
         ),
         Replacement(
           slotName: '# TEMPLATE',
-          replacement: '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
+          replacement:
+              '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
         ),
         Replacement(
           slotName: 'PRODUCTION_MODE',
@@ -41,8 +44,7 @@ void performGeneratePubspecs (String version, String mode) {
       fileNameReplacements: [],
     );
     copier.copyFiles();
-  }
-  else {
+  } else {
     // Production mode
     var copier = Copier(
       srcDir: dirTemplates,
@@ -58,7 +60,8 @@ void performGeneratePubspecs (String version, String mode) {
         ),
         Replacement(
           slotName: '# TEMPLATE',
-          replacement: '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
+          replacement:
+              '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
         ),
         Replacement(
           slotName: '#^',

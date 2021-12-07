@@ -17,28 +17,25 @@ Future<void> performCreate(String name, bool verbose, String template) async {
 
   print('Creating project $name...');
 
-  if (verbose)
-    print('Creating directory: ${projectDir.path}');
+  if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
   var serverDir = Directory(projectDir.path + '/' + name + '_server');
-  if (verbose)
-    print('Creating directory: ${serverDir.path}');
+  if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
   var clientDir = Directory(projectDir.path + '/' + name + '_client');
-  if (verbose)
-    print('Creating directory: ${clientDir.path}');
+  if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
     var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
-    if (verbose)
-      print('Creating directory: ${flutterDir.path}');
+    if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
     // Copy server files
     var copier = Copier(
-      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
+      srcDir: Directory(
+          '${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -84,7 +81,8 @@ Future<void> performCreate(String name, bool verbose, String template) async {
 
     // Copy client files
     copier = Copier(
-      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
+      srcDir: Directory(
+          '${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -118,7 +116,8 @@ Future<void> performCreate(String name, bool verbose, String template) async {
 
     // Copy Flutter files
     copier = Copier(
-      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
+      srcDir: Directory(
+          '${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
       dstDir: flutterDir,
       replacements: [
         Replacement(
@@ -145,7 +144,14 @@ Future<void> performCreate(String name, bool verbose, String template) async {
         ),
       ],
       removePrefixes: [],
-      ignoreFileNames: ['pubspec.lock', 'ios', 'android', 'web', 'macos', 'build',],
+      ignoreFileNames: [
+        'pubspec.lock',
+        'ios',
+        'android',
+        'web',
+        'macos',
+        'build',
+      ],
       verbose: verbose,
     );
     copier.copyFiles();
@@ -153,11 +159,11 @@ Future<void> performCreate(String name, bool verbose, String template) async {
     await CommandLineTools.dartPubGet(serverDir);
     await CommandLineTools.dartPubGet(clientDir);
     await CommandLineTools.flutterCreate(flutterDir);
-  }
-  else if (template == 'module') {
+  } else if (template == 'module') {
     // Copy server files
     var copier = Copier(
-      srcDir: Directory('${resourceManager.templateDirectory.path}/MODULENAME_server'),
+      srcDir: Directory(
+          '${resourceManager.templateDirectory.path}/MODULENAME_server'),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -191,7 +197,8 @@ Future<void> performCreate(String name, bool verbose, String template) async {
 
     // Copy client files
     copier = Copier(
-      srcDir: Directory('${resourceManager.templateDirectory.path}/MODULENAME_client'),
+      srcDir: Directory(
+          '${resourceManager.templateDirectory.path}/MODULENAME_client'),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -222,8 +229,8 @@ Future<void> performCreate(String name, bool verbose, String template) async {
       verbose: verbose,
     );
     copier.copyFiles();
-  }
-  else {
-    print('Unknown template: $template (valid options are "server" or "module")');
+  } else {
+    print(
+        'Unknown template: $template (valid options are "server" or "module")');
   }
 }

@@ -40,12 +40,10 @@ class PgsqlGenerator {
     out += '  "id" serial';
     for (var field in classInfo.fields) {
       // Skip id field as it is already added
-      if (field.name == 'id')
-        continue;
+      if (field.name == 'id') continue;
 
       // Skip fields that are API only
-      if (field.scope == FieldScope.api)
-        continue;
+      if (field.scope == FieldScope.api) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';
@@ -62,13 +60,13 @@ class PgsqlGenerator {
     if (classInfo.indexes != null) {
       for (var index in classInfo.indexes!) {
         var uniqueStr = index.unique ? ' UNIQUE' : '';
-        out += 'CREATE$uniqueStr INDEX ${index.name} ON ${classInfo.tableName} USING ${index.type} (';
+        out +=
+            'CREATE$uniqueStr INDEX ${index.name} ON ${classInfo.tableName} USING ${index.type} (';
         out += index.fields.map((String str) => '"$str"').join(', ');
         out += ');\n';
       }
       out += '\n';
     }
-
 
     out += '\n';
     return out;

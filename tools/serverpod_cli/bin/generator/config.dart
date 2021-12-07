@@ -29,9 +29,9 @@ class GeneratorConfig {
       var file = File('${dir}pubspec.yaml');
       var yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
-    }
-    catch(_) {
-      print('Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
+    } catch (_) {
+      print(
+          'Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
       return false;
     }
 
@@ -45,9 +45,9 @@ class GeneratorConfig {
       var file = File('${dir}config/generator.yaml');
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
-    }
-    catch(_) {
-      print('Failed to load config/generator.yaml. Is this a Serverpod project?');
+    } catch (_) {
+      print(
+          'Failed to load config/generator.yaml. Is this a Serverpod project?');
       return false;
     }
 
@@ -58,7 +58,8 @@ class GeneratorConfig {
       type = PackageType.server;
 
     if (generatorConfig['client_package_path'] == null)
-      throw FormatException('Option "client_package_path" is required in config/generator.yaml');
+      throw FormatException(
+          'Option "client_package_path" is required in config/generator.yaml');
     clientPackagePath = generatorConfig['client_package_path'];
     generatedClientProtocolPath = '$clientPackagePath/lib/src/protocol';
 
@@ -71,8 +72,7 @@ class GeneratorConfig {
             modules.add(ModuleConfig._withMap(package, modulesData[package]));
           }
         }
-      }
-      catch(e) {
+      } catch (e) {
         throw FormatException('Failed to load module config');
       }
     }
@@ -106,10 +106,10 @@ class ModuleConfig {
   String clientPackage;
   String serverPackage;
 
-  ModuleConfig._withMap(this.name, Map map) :
-    clientPackage = '${name}_client',
-    serverPackage = '${name}_server',
-    nickname=map['nickname']!;
+  ModuleConfig._withMap(this.name, Map map)
+      : clientPackage = '${name}_client',
+        serverPackage = '${name}_server',
+        nickname = map['nickname']!;
 
   @override
   String toString() {

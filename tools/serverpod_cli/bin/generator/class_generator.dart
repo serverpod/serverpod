@@ -7,12 +7,14 @@ import 'pgsql_generator.dart';
 void performGenerateClasses(bool verbose) {
   // Generate server side code
   print('Generating server side code.');
-  var serverGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedServerProtocolPath, verbose, true);
+  var serverGenerator = ClassGeneratorDart(config.protocolSourcePath,
+      config.generatedServerProtocolPath, verbose, true);
   serverGenerator.generate();
 
   // Generate client side code
   print('Generating Dart client side code.');
-  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedClientProtocolPath, verbose, false);
+  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath,
+      config.generatedClientProtocolPath, verbose, false);
   clientGenerator.generate();
 
   print('Done.');
@@ -24,7 +26,11 @@ abstract class ClassGenerator {
   final bool verbose;
   final classInfos = <ClassInfo>{};
 
-  ClassGenerator(this.inputPath, this.outputPath, this.verbose,);
+  ClassGenerator(
+    this.inputPath,
+    this.outputPath,
+    this.verbose,
+  );
 
   String get outputExtension;
 
@@ -34,8 +40,7 @@ abstract class ClassGenerator {
     var list = dir.listSync();
     for (var entity in list) {
       if (entity is File && entity.path.endsWith('.yaml')) {
-        if (verbose)
-          print('  - processing file: ${entity.path}');
+        if (verbose) print('  - processing file: ${entity.path}');
 
         try {
           var outFileName = _transformFileNameWithoutPath(entity.path);
@@ -50,12 +55,10 @@ abstract class ClassGenerator {
           // Save generated file
           outFile.createSync();
           outFile.writeAsStringSync(out ?? '');
-        }
-        catch(e, stackTrace) {
+        } catch (e, stackTrace) {
           print('Failed to generate ${entity.path}');
           print('$e');
-          if (verbose)
-            print('$stackTrace');
+          if (verbose) print('$stackTrace');
         }
       }
     }
@@ -67,17 +70,19 @@ abstract class ClassGenerator {
     outFile.writeAsStringSync(out ?? '');
 
     // Generate SQL statements
-    var pgsqlGenerator = PgsqlGenerator(classInfos: classInfos, outPath: 'generated/tables.pgsql');
+    var pgsqlGenerator = PgsqlGenerator(
+        classInfos: classInfos, outPath: 'generated/tables.pgsql');
     pgsqlGenerator.generate();
   }
 
-  String? generateFile(String input, String outputFileName, Set<ClassInfo> classNames);
+  String? generateFile(
+      String input, String outputFileName, Set<ClassInfo> classNames);
 
   String? generateFactory(Set<ClassInfo> classNames);
 
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split('/');
-    var fileName = pathComponents[pathComponents.length-1];
+    var fileName = pathComponents[pathComponents.length - 1];
     fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
     return fileName;
   }
@@ -96,7 +101,6 @@ class IndexDefinition {
     unique = (doc['unique'] ?? 'false') != 'false';
   }
 }
-
 
 class ClassInfo {
   final String className;

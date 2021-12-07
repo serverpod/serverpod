@@ -35,13 +35,13 @@ void main(List<String> args) async {
   if (!resourceManager.isTemplatesInstalled) {
     try {
       await resourceManager.installTemplates();
-    }
-    catch(e) {
+    } catch (e) {
       print('Failed to download templates.');
     }
 
     if (!resourceManager.isTemplatesInstalled) {
-      print('Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
+      print(
+          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
       return;
     }
   }
@@ -50,69 +50,118 @@ void main(List<String> args) async {
 
   // "create" command
   var createParser = ArgParser();
-  createParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
-  createParser.addOption('template', abbr: 't', defaultsTo: 'server', allowed: <String>['server', 'module'], help: 'Template to use when creating a new project, valid options are "server" or "module"');
+  createParser.addFlag('verbose',
+      abbr: 'v', negatable: false, help: 'Output more detailed information');
+  createParser.addOption('template',
+      abbr: 't',
+      defaultsTo: 'server',
+      allowed: <String>['server', 'module'],
+      help:
+          'Template to use when creating a new project, valid options are "server" or "module"');
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
   var generateParser = ArgParser();
-  generateParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  generateParser.addFlag('verbose',
+      abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerate, generateParser);
 
   // "generate-continuously" command
   var generateContinuouslyParser = ArgParser();
-  generateContinuouslyParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  generateContinuouslyParser.addFlag('verbose',
+      abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerateContinuously, generateContinuouslyParser);
 
   // "generatecerts" command
   var generateCerts = ArgParser();
-  generateCerts.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
-  generateCerts.addFlag('verbose', abbr: 'v', negatable: false, help: 'Output more detailed information');
+  generateCerts.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
+  generateCerts.addFlag('verbose',
+      abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerateCertificates, generateCerts);
 
   // "shutdown" command
   var shutdownParser = ArgParser();
-  shutdownParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
+  shutdownParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdShutdown, shutdownParser);
 
   // "logs" command
   var logsParser = ArgParser();
-  logsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
-  logsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
+  logsParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
+  logsParser.addOption('num-entries',
+      abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdLogs, logsParser);
 
   // "sessionlogs" command
   var sessionLogsParser = ArgParser();
-  sessionLogsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
-  sessionLogsParser.addOption('num-entries', abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
+  sessionLogsParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
+  sessionLogsParser.addOption('num-entries',
+      abbr: 'n', defaultsTo: '100', help: 'Number of log entries to print');
   parser.addCommand(cmdSessionLogs, sessionLogsParser);
 
   // "cacheinfo" command
   var cacheinfoParser = ArgParser();
-  cacheinfoParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
-  cacheinfoParser.addFlag('fetch-keys', abbr: 'k', help: 'Fetch all keys stored in the caches of the specificed server');
+  cacheinfoParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
+  cacheinfoParser.addFlag('fetch-keys',
+      abbr: 'k',
+      help: 'Fetch all keys stored in the caches of the specificed server');
   parser.addCommand(cmdCacheInfo, cacheinfoParser);
 
   // "serveraddress" command
   var serverAddressParser = ArgParser();
-  serverAddressParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
-  serverAddressParser.addOption('id', abbr: 'i', defaultsTo: 'foo', help: 'The id of the server to print the address of');
+  serverAddressParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
+  serverAddressParser.addOption('id',
+      abbr: 'i',
+      defaultsTo: 'foo',
+      help: 'The id of the server to print the address of');
   parser.addCommand(cmdServerAddress, serverAddressParser);
 
   // "serverids" command
   var serverIdsParser = ArgParser();
-  serverIdsParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
+  serverIdsParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdServerIds, serverIdsParser);
 
   // "healthcheck" command
   var healthCheckParser = ArgParser();
-  healthCheckParser.addOption('config', abbr: 'c', defaultsTo: 'development', allowed: runModes, help: 'Specifies config file used to connect to serverpods');
+  healthCheckParser.addOption('config',
+      abbr: 'c',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Specifies config file used to connect to serverpods');
   parser.addCommand(cmdHealthCheck, healthCheckParser);
 
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
-  generatePubspecs.addOption('mode', defaultsTo: 'development', allowed: ['development', 'production']);
+  generatePubspecs.addOption('mode',
+      defaultsTo: 'development', allowed: ['development', 'production']);
   parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
 
   var results = parser.parse(args);
@@ -141,7 +190,8 @@ void main(List<String> args) async {
       return;
     }
     if (results.command!.name == cmdGenerateCertificates) {
-      await performGenerateCerts(results.command!['config'], results.command!['verbose']);
+      await performGenerateCerts(
+          results.command!['config'], results.command!['verbose']);
       return;
     }
     // if (results.command!.name == cmdShutdown) {
@@ -175,7 +225,8 @@ void main(List<String> args) async {
     //   return;
     // }
     if (results.command!.name == cmdServerAddress) {
-      var configInfo = ConfigInfo(results.command!['config'], serverId: int.tryParse(results.command!['id'])!);
+      var configInfo = ConfigInfo(results.command!['config'],
+          serverId: int.tryParse(results.command!['id'])!);
       configInfo.printAddress();
       return;
     }
@@ -189,7 +240,8 @@ void main(List<String> args) async {
         print('--version is not specified');
         return;
       }
-      performGeneratePubspecs(results.command!['version'], results.command!['mode']);
+      performGeneratePubspecs(
+          results.command!['version'], results.command!['mode']);
       return;
     }
   }
@@ -200,23 +252,48 @@ void main(List<String> args) async {
 void _printUsage(ArgParser parser) {
   print(Colorize('SERVERPOD HELP')..bold());
   print('');
-  print('Serverpod is a utility for generating serverpod bindings, testing and deploying serverpods.\n');
+  print(
+      'Serverpod is a utility for generating serverpod bindings, testing and deploying serverpods.\n');
   print('${Colorize('Usage:')..bold()} serverpod <command> [arguments]\n');
   print('');
   print('${Colorize('COMMANDS')..bold()}');
   print('');
 
-  _printCommandUsage(cmdCreate, 'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).', parser.commands[cmdCreate]!);
-  _printCommandUsage(cmdGenerate, 'Generate code from yaml files for server and clients', parser.commands[cmdGenerate]!);
-  _printCommandUsage(cmdGenerateContinuously, 'Continuously generate code from yaml files for server and clients', parser.commands[cmdGenerate]!);
-  _printCommandUsage(cmdGenerateCertificates, 'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory', parser.commands[cmdGenerateCertificates]!);
-  _printCommandUsage(cmdLogs, 'Print logs from a serverpod or a serverpod cluster', parser.commands[cmdLogs]!);
-  _printCommandUsage(cmdSessionLogs, 'Print logs from a serverpod or a serverpod cluster listed by session', parser.commands[cmdSessionLogs]!);
-  _printCommandUsage(cmdCacheInfo, 'Print info about what is stored in a server\'s caches', parser.commands[cmdCacheInfo]!, true);
-  _printCommandUsage(cmdShutdown, 'Shutdown a server cluster', parser.commands[cmdGenerate]!, true);
+  _printCommandUsage(
+      cmdCreate,
+      'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).',
+      parser.commands[cmdCreate]!);
+  _printCommandUsage(
+      cmdGenerate,
+      'Generate code from yaml files for server and clients',
+      parser.commands[cmdGenerate]!);
+  _printCommandUsage(
+      cmdGenerateContinuously,
+      'Continuously generate code from yaml files for server and clients',
+      parser.commands[cmdGenerate]!);
+  _printCommandUsage(
+      cmdGenerateCertificates,
+      'Generate certificates for servers specified in configuration files. Generated files are saved in the certificates directory',
+      parser.commands[cmdGenerateCertificates]!);
+  _printCommandUsage(
+      cmdLogs,
+      'Print logs from a serverpod or a serverpod cluster',
+      parser.commands[cmdLogs]!);
+  _printCommandUsage(
+      cmdSessionLogs,
+      'Print logs from a serverpod or a serverpod cluster listed by session',
+      parser.commands[cmdSessionLogs]!);
+  _printCommandUsage(
+      cmdCacheInfo,
+      'Print info about what is stored in a server\'s caches',
+      parser.commands[cmdCacheInfo]!,
+      true);
+  _printCommandUsage(cmdShutdown, 'Shutdown a server cluster',
+      parser.commands[cmdGenerate]!, true);
 }
 
-void _printCommandUsage(String name, String descr, ArgParser parser, [bool last=false]) {
+void _printCommandUsage(String name, String descr, ArgParser parser,
+    [bool last = false]) {
   print('${Colorize('$name:')..bold()} $descr');
   print('');
   print(parser.usage);

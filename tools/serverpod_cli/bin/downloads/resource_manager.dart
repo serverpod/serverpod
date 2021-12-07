@@ -16,14 +16,15 @@ class ResourceManager {
       return Directory(envVars['HOME']!);
     else if (Platform.isLinux)
       return Directory(envVars['HOME']!);
-    else if (Platform.isWindows)
-      return Directory(envVars['UserProfile']!);
+    else if (Platform.isWindows) return Directory(envVars['UserProfile']!);
 
-    throw(Exception('Unsupported platform.'));
+    throw (Exception('Unsupported platform.'));
   }
 
-  Directory get localCacheDirectory => Directory(homeDirectory.path + '/.serverpod');
-  Directory get versionedDir => Directory(localCacheDirectory.path + '/$templateVersion');
+  Directory get localCacheDirectory =>
+      Directory(homeDirectory.path + '/.serverpod');
+  Directory get versionedDir =>
+      Directory(localCacheDirectory.path + '/$templateVersion');
   Directory get templateDirectory {
     if (productionMode)
       return Directory(versionedDir.path + '/serverpod_template');
@@ -31,19 +32,18 @@ class ResourceManager {
       return Directory(serverpodHome + '/templates/serverpod_templates');
   }
 
-  String get packageDownloadUrl => 'https://storage.googleapis.com/pub-packages/packages/serverpod_templates-$templateVersion.tar.gz';
+  String get packageDownloadUrl =>
+      'https://storage.googleapis.com/pub-packages/packages/serverpod_templates-$templateVersion.tar.gz';
 
   bool get isTemplatesInstalled {
-    if (!versionedDir.existsSync())
-      return false;
+    if (!versionedDir.existsSync()) return false;
 
     return templateDirectory.existsSync();
   }
 
   Future<void> installTemplates() async {
     print('Downloading templates for version $templateVersion');
-    if (!versionedDir.existsSync())
-      versionedDir.createSync(recursive: true);
+    if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
     var response = await http.get(Uri.parse(packageDownloadUrl));
     var data = response.bodyBytes;
@@ -60,8 +60,7 @@ class ResourceManager {
         var outFile = File(outFileName);
         outFile = await outFile.create(recursive: true);
         await outFile.writeAsBytes(file.content);
-      }
-      else {
+      } else {
         await Directory(outFileName).create(recursive: true);
       }
     }
