@@ -19,7 +19,6 @@ class SessionLogEntry extends SerializableEntity {
   String? module;
   String? endpoint;
   String? method;
-  String? futureCall;
   double? duration;
   int? numQueries;
   bool? slow;
@@ -34,7 +33,6 @@ class SessionLogEntry extends SerializableEntity {
     this.module,
     this.endpoint,
     this.method,
-    this.futureCall,
     this.duration,
     this.numQueries,
     this.slow,
@@ -51,7 +49,6 @@ class SessionLogEntry extends SerializableEntity {
     module = _data['module'];
     endpoint = _data['endpoint'];
     method = _data['method'];
-    futureCall = _data['futureCall'];
     duration = _data['duration'];
     numQueries = _data['numQueries'];
     slow = _data['slow'];
@@ -69,7 +66,6 @@ class SessionLogEntry extends SerializableEntity {
       'module': module,
       'endpoint': endpoint,
       'method': method,
-      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,

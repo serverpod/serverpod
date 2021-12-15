@@ -173,7 +173,6 @@ CREATE TABLE serverpod_session_log (
   "module" text,
   "endpoint" text,
   "method" text,
-  "futureCall" text,
   "duration" double precision,
   "numQueries" integer,
   "slow" boolean,

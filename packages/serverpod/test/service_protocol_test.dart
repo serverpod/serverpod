@@ -205,8 +205,8 @@ void main() {
 
       expect(logResult.sessionLog[0].messageLog.length, equals(1));
       expect(logResult.sessionLog[0].messageLog[0].message, equals('42'));
-      expect(logResult.sessionLog[0].sessionLogEntry.futureCall,
-          equals('testCall'));
+      expect(
+          logResult.sessionLog[0].sessionLogEntry.method, equals('testCall'));
     });
   });
 }

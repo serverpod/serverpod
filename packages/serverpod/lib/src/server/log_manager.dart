@@ -240,6 +240,7 @@ class LogManager {
     }
   }
 
+  /// Returns a list of logs for all open sessions.
   List<SessionLogInfo> getOpenSessionLogs(
       int numEntries, SessionLogFilter? filter) {
     final sessionLog = <SessionLogInfo>[];

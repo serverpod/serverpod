@@ -23,7 +23,6 @@ class SessionLogEntry extends TableRow {
   String? module;
   String? endpoint;
   String? method;
-  String? futureCall;
   double? duration;
   int? numQueries;
   bool? slow;
@@ -38,7 +37,6 @@ class SessionLogEntry extends TableRow {
     this.module,
     this.endpoint,
     this.method,
-    this.futureCall,
     this.duration,
     this.numQueries,
     this.slow,
@@ -55,7 +53,6 @@ class SessionLogEntry extends TableRow {
     module = _data['module'];
     endpoint = _data['endpoint'];
     method = _data['method'];
-    futureCall = _data['futureCall'];
     duration = _data['duration'];
     numQueries = _data['numQueries'];
     slow = _data['slow'];
@@ -73,7 +70,6 @@ class SessionLogEntry extends TableRow {
       'module': module,
       'endpoint': endpoint,
       'method': method,
-      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,
@@ -92,7 +88,6 @@ class SessionLogEntry extends TableRow {
       'module': module,
       'endpoint': endpoint,
       'method': method,
-      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,
@@ -111,7 +106,6 @@ class SessionLogEntry extends TableRow {
       'module': module,
       'endpoint': endpoint,
       'method': method,
-      'futureCall': futureCall,
       'duration': duration,
       'numQueries': numQueries,
       'slow': slow,
@@ -133,7 +127,6 @@ class SessionLogEntryTable extends Table {
   final module = ColumnString('module');
   final endpoint = ColumnString('endpoint');
   final method = ColumnString('method');
-  final futureCall = ColumnString('futureCall');
   final duration = ColumnDouble('duration');
   final numQueries = ColumnInt('numQueries');
   final slow = ColumnBool('slow');
@@ -149,7 +142,6 @@ class SessionLogEntryTable extends Table {
     module,
     endpoint,
     method,
-    futureCall,
     duration,
     numQueries,
     slow,
