@@ -47,19 +47,6 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
-  /// Get the latest [numEntries] from the message log.
-  // Future<LogResult> getLog(Session session, int? numEntries) async {
-  //   var rows = await session.db.find(
-  //     tLogEntry,
-  //     limit: numEntries,
-  //     orderBy: tLogEntry.id,
-  //     orderDescending: true,
-  //   );
-  //   return LogResult(
-  //     entries: rows.cast<LogEntry>(),
-  //   );
-  // }
-
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(
       Session session, int? numEntries, SessionLogFilter? filter) async {
@@ -127,6 +114,14 @@ class InsightsEndpoint extends Endpoint {
     }
 
     return SessionLogResult(sessionLog: sessionLogInfo);
+  }
+
+  /// Get the latest [numEntries] from the session log.
+  Future<SessionLogResult> getOpenSessionLogs(
+      Session session, int? numEntries, SessionLogFilter? filter) async {
+    final logs = await session.serverpod.logManager
+        .getOpenSessionLogs(numEntries ?? 100, filter);
+    return SessionLogResult(sessionLog: logs);
   }
 
   /// Retrieve information about the state of the caches on this server.

@@ -126,6 +126,16 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['insights'] as InsightsEndpoint).getSessionLog(session,params['numEntries'],params['filter'],);
           },
         ),
+        'getOpenSessionLogs': MethodConnector(
+          name: 'getOpenSessionLogs',
+          params: {
+            'numEntries': ParameterDescription(name: 'numEntries', type: int, nullable: true),
+            'filter': ParameterDescription(name: 'filter', type: SessionLogFilter, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).getOpenSessionLogs(session,params['numEntries'],params['filter'],);
+          },
+        ),
         'getCachesInfo': MethodConnector(
           name: 'getCachesInfo',
           params: {

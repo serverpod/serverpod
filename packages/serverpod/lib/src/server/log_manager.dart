@@ -12,7 +12,7 @@ class LogManager {
   final Map<String, LogSettings> _endpointOverrides = {};
   final Map<String, LogSettings> _methodOverrides = {};
 
-  final List<SessionLogEntryCache> _internalSessionLogs = [];
+  final List<SessionLogEntryCache> _openSessionLogs = [];
 
   int _nextTemporarySessionId = -1;
 
@@ -82,16 +82,26 @@ class LogManager {
   /// [finalizeSessionLog] call.
   SessionLogEntryCache initializeSessionLog(Session session) {
     var logEntry = SessionLogEntryCache(session);
-    _internalSessionLogs.add(logEntry);
+    _openSessionLogs.add(logEntry);
     return logEntry;
   }
 
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
-  Future<int?> finalizeSessionLog(Session session,
-      {int? authenticatedUserId,
-      String? exception,
-      StackTrace? stackTrace}) async {
+  Future<int?> finalizeSessionLog(
+    Session session, {
+    int? authenticatedUserId,
+    bool logSession = true,
+    String? exception,
+    StackTrace? stackTrace,
+  }) async {
+    // Remove from open sessions
+    _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
+
+    // Check if we should log to database
+    if (!logSession) return null;
+
+    // Log session to database
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     var logSettings = getLogSettingsForSession(session);
@@ -116,39 +126,13 @@ class LogManager {
     if (logSettings.logAllSessions ||
         logSettings.logSlowSessions && isSlow ||
         logSettings.logFailedSessions && exception != null) {
-      String? endpointName;
-      String? methodName;
-      String? futureCallName;
-
       int? sessionLogId;
-
-      if (session is MethodCallSession) {
-        endpointName = session.endpointName;
-        methodName = session.methodName;
-      } else if (session is StreamingSession) {
-        // TODO: Correctly log streaming sessions.
-        // endpointName = session
-      } else if (session is FutureCallSession) {
-        endpointName = 'FutureCallSession';
-        methodName = session.futureCallName;
-
-        futureCallName = session.futureCallName;
-      } else if (session is StreamingSession) {
-        endpointName = 'StreamingSession';
-      } else if (session is InternalSession) {
-        endpointName = 'InternalSession';
-      }
-
-      if (endpointName == null || endpointName == '') {
-        print('Weird session: $session');
-      }
 
       var sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
         time: DateTime.now(),
-        endpoint: endpointName,
-        method: methodName,
-        futureCall: futureCallName,
+        endpoint: _endpointForSession(session),
+        method: _methodForSession(session),
         duration: duration.inMicroseconds / 1000000.0,
         numQueries: cachedEntry.queries.length,
         slow: isSlow,
@@ -183,9 +167,9 @@ class LogManager {
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
-        if (methodName != null)
+        if (_methodForSession(session) != null)
           stderr.writeln(
-              'CALL: $endpointName.$methodName duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+              'CALL: ${_endpointForSession(session)}.${_methodForSession(session)} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
 
@@ -198,6 +182,34 @@ class LogManager {
       await tempSession.close(logSession: false);
 
       return sessionLogId;
+    }
+  }
+
+  String _endpointForSession(Session session) {
+    if (session is MethodCallSession) {
+      // Method calls
+      return session.endpointName;
+    } else if (session is FutureCallSession) {
+      // Future calls
+      return 'FutureCallSession';
+    } else if (session is StreamingSession) {
+      // Streaming session was closed
+      return 'StreamingSession';
+    } else if (session is InternalSession) {
+      // Internal session
+      return 'InternalSession';
+    }
+
+    throw (UnimplementedError('Unknown Session type'));
+  }
+
+  String? _methodForSession(Session session) {
+    if (session is MethodCallSession) {
+      // Method calls
+      return session.methodName;
+    } else if (session is FutureCallSession) {
+      // Future calls
+      return session.futureCallName;
     }
   }
 
@@ -226,6 +238,56 @@ class LogManager {
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
     }
+  }
+
+  List<SessionLogInfo> getOpenSessionLogs(
+      int numEntries, SessionLogFilter? filter) {
+    final sessionLog = <SessionLogInfo>[];
+
+    var numFoundEntries = 0;
+    var i = 0;
+    while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
+      final entry = _openSessionLogs[i];
+      i += 1;
+
+      // Check filter (ignore slow and errors as session is still open)
+      if (filter != null) {
+        var session = entry.session;
+        if (session is MethodCallSession) {
+          if (filter.endpoint != null &&
+              filter.endpoint != '' &&
+              session.endpointName != filter.endpoint) {
+            continue;
+          }
+          if (filter.endpoint != null &&
+              filter.endpoint != '' &&
+              filter.method != null &&
+              filter.method != '' &&
+              session.endpointName != filter.endpoint &&
+              session.methodName != filter.method) {
+            continue;
+          }
+        }
+      }
+
+      // Add to list
+      sessionLog.add(
+        SessionLogInfo(
+          id: entry.session.temporarySessionId,
+          sessionLogEntry: SessionLogEntry(
+            serverId: Serverpod.instance!.serverId,
+            time: entry.session.startTime,
+            endpoint: _endpointForSession(entry.session),
+            method: _methodForSession(entry.session),
+            numQueries: entry.queries.length,
+          ),
+          queries: entry.queries,
+          messageLog: entry.logEntries,
+        ),
+      );
+    }
+
+    return sessionLog;
   }
 }
 
