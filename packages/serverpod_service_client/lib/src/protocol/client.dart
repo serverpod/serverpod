@@ -87,8 +87,8 @@ class _EndpointInsights extends EndpointRef {
     });
   }
 
-  Future<SessionLogResult> getOpenSessionLogs(int? numEntries,SessionLogFilter? filter,) async {
-    return await caller.callServerEndpoint('insights', 'getOpenSessionLogs', 'SessionLogResult', {
+  Future<SessionLogResult> getOpenSessionLog(int? numEntries,SessionLogFilter? filter,) async {
+    return await caller.callServerEndpoint('insights', 'getOpenSessionLog', 'SessionLogResult', {
       'numEntries':numEntries,
       'filter':filter,
     });
