@@ -109,10 +109,9 @@ class LogManager {
       }
     }
 
-    var isSlow = duration >
-        Duration(
-            microseconds:
-                (logSettings.slowSessionDuration * 1000000.0).toInt());
+    final slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+    var isSlow = duration > Duration(microseconds: slowMicros) &&
+        !(session is StreamingSession);
 
     if (logSettings.logAllSessions ||
         logSettings.logSlowSessions && isSlow ||
@@ -130,7 +129,18 @@ class LogManager {
         // TODO: Correctly log streaming sessions.
         // endpointName = session
       } else if (session is FutureCallSession) {
+        endpointName = 'FutureCallSession';
+        methodName = session.futureCallName;
+
         futureCallName = session.futureCallName;
+      } else if (session is StreamingSession) {
+        endpointName = 'StreamingSession';
+      } else if (session is InternalSession) {
+        endpointName = 'InternalSession';
+      }
+
+      if (endpointName == null || endpointName == '') {
+        print('Weird session: $session');
       }
 
       var sessionLogEntry = SessionLogEntry(
