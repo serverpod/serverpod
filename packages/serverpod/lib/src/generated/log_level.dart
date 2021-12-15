@@ -4,7 +4,6 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-
 class LogLevel extends SerializableEntity {
   @override
   String get className => 'LogLevel';
@@ -12,7 +11,7 @@ class LogLevel extends SerializableEntity {
   late final int _index;
   int get index => _index;
 
-  LogLevel._internal(this._index);
+  LogLevel._internal(this._index); 
 
   LogLevel.fromSerialization(Map<String, dynamic> serialization) {
     var data = unwrapSerializationData(serialization);
@@ -25,7 +24,6 @@ class LogLevel extends SerializableEntity {
       'index': _index,
     });
   }
-
   static final debug = LogLevel._internal(0);
   static final info = LogLevel._internal(1);
   static final warning = LogLevel._internal(2);
@@ -35,7 +33,7 @@ class LogLevel extends SerializableEntity {
   @override
   int get hashCode => _index.hashCode;
   @override
-  bool operator ==(other) => other is LogLevel && other._index == _index;
+  bool operator == (other) => other is LogLevel && other._index == _index;
 
   static final values = <LogLevel>[
     debug,

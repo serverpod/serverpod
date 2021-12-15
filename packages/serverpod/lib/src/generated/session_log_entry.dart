@@ -45,7 +45,7 @@ class SessionLogEntry extends TableRow {
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
-  });
+});
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -143,20 +143,20 @@ class SessionLogEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-        id,
-        serverId,
-        time,
-        module,
-        endpoint,
-        method,
-        futureCall,
-        duration,
-        numQueries,
-        slow,
-        error,
-        stackTrace,
-        authenticatedUserId,
-      ];
+    id,
+    serverId,
+    time,
+    module,
+    endpoint,
+    method,
+    futureCall,
+    duration,
+    numQueries,
+    slow,
+    error,
+    stackTrace,
+    authenticatedUserId,
+  ];
 }
 
 SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();

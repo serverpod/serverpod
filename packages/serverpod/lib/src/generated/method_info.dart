@@ -25,7 +25,7 @@ class MethodInfo extends TableRow {
     this.id,
     required this.endpoint,
     required this.method,
-  });
+});
 
   MethodInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -73,10 +73,10 @@ class MethodInfoTable extends Table {
 
   @override
   List<Column> get columns => [
-        id,
-        endpoint,
-        method,
-      ];
+    id,
+    endpoint,
+    method,
+  ];
 }
 
 MethodInfoTable tMethodInfo = MethodInfoTable();

@@ -1,8 +1,8 @@
-import 'package:test/test.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_client/src/auth_key_manager.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
-import 'package:serverpod_client/src/auth_key_manager.dart';
+import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
@@ -48,24 +48,27 @@ void main() {
     });
 
     test('Clear logs', () async {
+      // Start by clearing logs
+      await serviceClient.insights.clearAllLogs();
+
       // Make sure there is at least 10 log entries
       for (var i = 0; i < 10; i += 1) {
         await client.logging.logInfo('Log test $i');
       }
 
-      var logResult = await serviceClient.insights.getSessionLog(10);
+      var logResult = await serviceClient.insights.getSessionLog(10, null);
       expect(logResult.sessionLog.length, equals(10));
 
       await serviceClient.insights.clearAllLogs();
 
-      logResult = await serviceClient.insights.getSessionLog(10);
+      logResult = await serviceClient.insights.getSessionLog(10, null);
       expect(logResult.sessionLog.length, equals(0));
     });
 
     test('Log entry', () async {
       await client.logging.logInfo('test');
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].messageLog.length, equals(1));
@@ -79,7 +82,7 @@ void main() {
       // wait a second to make sure the log has been flushed to the database
       await Future.delayed(Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].messageLog.length, equals(3));
@@ -114,7 +117,7 @@ void main() {
       // wait a second to make sure the log has been flushed to the database
       await Future.delayed(Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       // Debug and info logs should be ignored
@@ -129,7 +132,7 @@ void main() {
       // wait a second to make sure the log has been flushed to the database
       await Future.delayed(Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].queries.length, equals(2));
@@ -140,7 +143,7 @@ void main() {
       await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
       await Future.delayed(Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].queries.length, equals(2));
@@ -152,7 +155,7 @@ void main() {
       await client.logging.logInfo('test');
       await Future.delayed(Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(
           logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
@@ -163,7 +166,7 @@ void main() {
       await client.loggingDisabled.logInfo('test');
       await Future.delayed(Duration(seconds: 1));
 
-      logResult = await serviceClient.insights.getSessionLog(1);
+      logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(
           logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
@@ -197,7 +200,7 @@ void main() {
       // 1 s. Largest possible delay should be 6 s.
       await Future.delayed(Duration(seconds: 6));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].messageLog.length, equals(1));

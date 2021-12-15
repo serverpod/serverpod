@@ -23,7 +23,7 @@ class ServerHealthMetric extends SerializableEntity {
     required this.name,
     required this.isHealthy,
     required this.value,
-  });
+});
 
   ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -53,3 +53,4 @@ class ServerHealthMetric extends SerializableEntity {
     });
   }
 }
+

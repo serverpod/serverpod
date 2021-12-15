@@ -35,7 +35,7 @@ class LogSettings extends SerializableEntity {
     required this.logFailedQueries,
     required this.slowSessionDuration,
     required this.slowQueryDuration,
-  });
+});
 
   LogSettings.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -83,3 +83,4 @@ class LogSettings extends SerializableEntity {
     });
   }
 }
+

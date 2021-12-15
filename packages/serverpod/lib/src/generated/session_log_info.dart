@@ -23,19 +23,14 @@ class SessionLogInfo extends SerializableEntity {
     required this.sessionLogEntry,
     required this.queries,
     required this.messageLog,
-  });
+});
 
   SessionLogInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    sessionLogEntry =
-        SessionLogEntry.fromSerialization(_data['sessionLogEntry']);
-    queries = _data['queries']!
-        .map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))
-        ?.toList();
-    messageLog = _data['messageLog']!
-        .map<LogEntry>((a) => LogEntry.fromSerialization(a))
-        ?.toList();
+    sessionLogEntry = SessionLogEntry.fromSerialization(_data['sessionLogEntry']);
+    queries = _data['queries']!.map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))?.toList();
+    messageLog = _data['messageLog']!.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
   }
 
   @override
@@ -58,3 +53,4 @@ class SessionLogInfo extends SerializableEntity {
     });
   }
 }
+

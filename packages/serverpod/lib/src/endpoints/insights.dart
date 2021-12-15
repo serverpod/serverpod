@@ -1,10 +1,9 @@
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/server/health_check.dart';
 
 import '../../serverpod.dart';
-import '../generated/protocol.dart';
 import '../cache/cache.dart';
-
-import 'package:serverpod/src/server/health_check.dart';
+import '../generated/protocol.dart';
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -62,8 +61,8 @@ class InsightsEndpoint extends Endpoint {
   // }
 
   /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getSessionLog(Session session,
-      [int? numEntries, SessionLogFilter? filter]) async {
+  Future<SessionLogResult> getSessionLog(
+      Session session, int? numEntries, SessionLogFilter? filter) async {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error)) {
@@ -84,7 +83,7 @@ class InsightsEndpoint extends Endpoint {
     }
 
     // Filter for method
-    if (filter != null && filter.method != null) {
+    if (filter != null && filter.method != null && filter.method != '') {
       where = where & tSessionLogEntry.method.equals(filter.method);
     }
 

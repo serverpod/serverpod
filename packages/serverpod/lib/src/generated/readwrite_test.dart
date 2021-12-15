@@ -23,7 +23,7 @@ class ReadWriteTestEntry extends TableRow {
   ReadWriteTestEntry({
     this.id,
     required this.number,
-  });
+});
 
   ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -66,9 +66,9 @@ class ReadWriteTestEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-        id,
-        number,
-      ];
+    id,
+    number,
+  ];
 }
 
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
