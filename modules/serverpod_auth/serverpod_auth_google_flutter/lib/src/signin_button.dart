@@ -24,7 +24,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     required this.caller,
     required this.onSignedIn,
     required this.onFailure,
-    required this.debug,
+    this.debug = false,
     this.style,
   });
 
