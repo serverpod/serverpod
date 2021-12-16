@@ -15,31 +15,29 @@ Future<UserInfo?> signInWithGoogle(Caller caller) async {
   try {
     // Sign in with Google.
     var result = await _googleSignIn.signIn();
-    if (result == null)
-      return null;
+    if (result == null) return null;
 
     // Get the server auth code.
-    var auth = await result.authentication;
-    var serverAuthCode = auth.serverAuthCode;
-    if (serverAuthCode == null)
-      return null;
+    // var auth = await result.authentication;
+
+    var serverAuthCode = result.serverAuthCode;
+    if (serverAuthCode == null) return null;
 
     // Authenticate with the Serverpod server.
     var serverResponse = await caller.google.authenticate(serverAuthCode);
-    if (!serverResponse.success)
-      return null;
+    if (!serverResponse.success) return null;
 
     // Authentication was successful, store the key.
     var sessionManager = await SessionManager.instance;
-    await sessionManager.keyManager.put('${serverResponse.keyId}:${serverResponse.key}');
+    await sessionManager.keyManager
+        .put('${serverResponse.keyId}:${serverResponse.key}');
 
     // Store the user info in the session manager.
     sessionManager.signedInUser = serverResponse.userInfo;
 
     // Return the user info.
     return serverResponse.userInfo;
-  }
-  catch(e, stackTrace) {
+  } catch (e, stackTrace) {
     print('$e');
     print('$stackTrace');
     return null;
