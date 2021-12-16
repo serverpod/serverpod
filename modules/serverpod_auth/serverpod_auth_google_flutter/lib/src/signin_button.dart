@@ -16,11 +16,15 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
+  /// Will output debug prints if set to true.
+  final bool debug;
+
   /// Creates a new Sign in with Google button.
   SignInWithGoogleButton({
     required this.caller,
     required this.onSignedIn,
     required this.onFailure,
+    required this.debug,
     this.style,
   });
 
@@ -47,6 +51,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         // Attempt to sign in the user.
         signInWithGoogle(
           widget.caller,
+          debug: widget.debug,
         ).then((UserInfo? userInfo) {
           // Pop the loading barrier
           Navigator.of(context).pop();
