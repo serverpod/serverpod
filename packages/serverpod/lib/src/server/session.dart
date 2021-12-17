@@ -141,7 +141,7 @@ abstract class Session {
       server.messageCentral.removeListenersForSession(this);
       return await server.serverpod.logManager.finalizeSessionLog(
         this,
-        exception: error,
+        exception: '$error',
         stackTrace: stackTrace,
         authenticatedUserId: _authenticatedUser,
         logSession: logSession,

@@ -19,6 +19,8 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// Will output debug prints if set to true.
   final bool debug;
 
+  final List<String> additionalScopes;
+
   /// Creates a new Sign in with Google button.
   SignInWithGoogleButton({
     required this.caller,
@@ -26,6 +28,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     required this.onFailure,
     this.debug = false,
     this.style,
+    this.additionalScopes = const [],
   });
 
   @override

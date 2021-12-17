@@ -9,24 +9,40 @@ import 'package:serverpod/serverpod.dart';
 
 import 'protocol.dart';
 
+import '../endpoints/admin_endpoint.dart';
 import '../endpoints/apple_endpoint.dart';
 import '../endpoints/email_endpoint.dart';
 import '../endpoints/google_endpoint.dart';
-import '../endpoints/user_endpoint.dart';
 import '../endpoints/status_endpoint.dart';
-import '../endpoints/admin_endpoint.dart';
+import '../endpoints/user_endpoint.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
+      'admin': AdminEndpoint()..initialize(server, 'admin', 'serverpod_auth'),
       'apple': AppleEndpoint()..initialize(server, 'apple', 'serverpod_auth'),
       'email': EmailEndpoint()..initialize(server, 'email', 'serverpod_auth'),
       'google': GoogleEndpoint()..initialize(server, 'google', 'serverpod_auth'),
-      'user': UserEndpoint()..initialize(server, 'user', 'serverpod_auth'),
       'status': StatusEndpoint()..initialize(server, 'status', 'serverpod_auth'),
-      'admin': AdminEndpoint()..initialize(server, 'admin', 'serverpod_auth'),
+      'user': UserEndpoint()..initialize(server, 'user', 'serverpod_auth'),
     };
+
+    connectors['admin'] = EndpointConnector(
+      name: 'admin',
+      endpoint: endpoints['admin']!,
+      methodConnectors: {
+        'getUserInfo': MethodConnector(
+          name: 'getUserInfo',
+          params: {
+            'userId': ParameterDescription(name: 'userId', type: int, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['admin'] as AdminEndpoint).getUserInfo(session,params['userId'],);
+          },
+        ),
+      },
+    );
 
     connectors['apple'] = EndpointConnector(
       name: 'apple',
@@ -103,46 +119,22 @@ class Endpoints extends EndpointDispatch {
       name: 'google',
       endpoint: endpoints['google']!,
       methodConnectors: {
-        'authenticate': MethodConnector(
-          name: 'authenticate',
+        'authenticateWithServerAuthCode': MethodConnector(
+          name: 'authenticateWithServerAuthCode',
           params: {
             'authenticationCode': ParameterDescription(name: 'authenticationCode', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['google'] as GoogleEndpoint).authenticate(session,params['authenticationCode'],);
+            return (endpoints['google'] as GoogleEndpoint).authenticateWithServerAuthCode(session,params['authenticationCode'],);
           },
         ),
-      },
-    );
-
-    connectors['user'] = EndpointConnector(
-      name: 'user',
-      endpoint: endpoints['user']!,
-      methodConnectors: {
-        'removeUserImage': MethodConnector(
-          name: 'removeUserImage',
+        'authenticateWithIdToken': MethodConnector(
+          name: 'authenticateWithIdToken',
           params: {
+            'idToken': ParameterDescription(name: 'idToken', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).removeUserImage(session,);
-          },
-        ),
-        'setUserImage': MethodConnector(
-          name: 'setUserImage',
-          params: {
-            'image': ParameterDescription(name: 'image', type: typed_data.ByteData, nullable: false),
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).setUserImage(session,params['image'],);
-          },
-        ),
-        'changeUserName': MethodConnector(
-          name: 'changeUserName',
-          params: {
-            'userName': ParameterDescription(name: 'userName', type: String, nullable: false),
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).changeUserName(session,params['userName'],);
+            return (endpoints['google'] as GoogleEndpoint).authenticateWithIdToken(session,params['idToken'],);
           },
         ),
       },
@@ -187,17 +179,34 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
-    connectors['admin'] = EndpointConnector(
-      name: 'admin',
-      endpoint: endpoints['admin']!,
+    connectors['user'] = EndpointConnector(
+      name: 'user',
+      endpoint: endpoints['user']!,
       methodConnectors: {
-        'getUserInfo': MethodConnector(
-          name: 'getUserInfo',
+        'removeUserImage': MethodConnector(
+          name: 'removeUserImage',
           params: {
-            'userId': ParameterDescription(name: 'userId', type: int, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['admin'] as AdminEndpoint).getUserInfo(session,params['userId'],);
+            return (endpoints['user'] as UserEndpoint).removeUserImage(session,);
+          },
+        ),
+        'setUserImage': MethodConnector(
+          name: 'setUserImage',
+          params: {
+            'image': ParameterDescription(name: 'image', type: typed_data.ByteData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).setUserImage(session,params['image'],);
+          },
+        ),
+        'changeUserName': MethodConnector(
+          name: 'changeUserName',
+          params: {
+            'userName': ParameterDescription(name: 'userName', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['user'] as UserEndpoint).changeUserName(session,params['userName'],);
           },
         ),
       },

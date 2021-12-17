@@ -7,12 +7,18 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
   bool debug = false,
+  List<String> additionalScopes = const [],
 }) async {
+  var scopes = [
+    'email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+  ];
+  scopes.addAll(additionalScopes);
+
+  if (debug) print('serverpod_auth_google: GoogleSignIn');
+
   var _googleSignIn = GoogleSignIn(
-    scopes: [
-      'email',
-      'https://www.googleapis.com/auth/userinfo.profile',
-    ],
+    scopes: scopes,
   );
 
   try {
@@ -29,14 +35,33 @@ Future<UserInfo?> signInWithGoogle(
     // var auth = await result.authentication;
 
     var serverAuthCode = result.serverAuthCode;
+    String? idToken;
     if (serverAuthCode == null) {
       if (debug)
-        print('serverpod_auth_google: serverAuthCode is null. Aborting.');
+        print(
+            'serverpod_auth_google: serverAuthCode is null. Trying auth.idToken.');
+      var auth = await result.authentication;
+      idToken = auth.idToken;
+    }
+
+    if (serverAuthCode == null && idToken == null) {
+      if (debug)
+        print(
+            'serverpod_auth_google: Failed to get valid serverAuthCode or idToken. Aborting.');
       return null;
     }
 
     // Authenticate with the Serverpod server.
-    var serverResponse = await caller.google.authenticate(serverAuthCode);
+    AuthenticationResponse serverResponse;
+    if (serverAuthCode != null) {
+      // Prefer to authenticate with serverAuthCode
+      serverResponse =
+          await caller.google.authenticateWithServerAuthCode(serverAuthCode);
+    } else {
+      // Fall back on idToken
+      serverResponse = await caller.google.authenticateWithIdToken(idToken!);
+    }
+
     if (!serverResponse.success) {
       if (debug)
         print(
@@ -59,8 +84,8 @@ Future<UserInfo?> signInWithGoogle(
     // Return the user info.
     return serverResponse.userInfo;
   } catch (e, stackTrace) {
-    print('$e');
-    print('$stackTrace');
+    if (debug) print('serverpod_auth_google: $e');
+    if (debug) print('$stackTrace');
     return null;
   }
 }

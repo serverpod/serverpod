@@ -9,6 +9,19 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
+class _EndpointAdmin extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.admin';
+
+  _EndpointAdmin(EndpointCaller caller) : super(caller);
+
+  Future<UserInfo?> getUserInfo(int userId,) async {
+    return await caller.callServerEndpoint('serverpod_auth.admin', 'getUserInfo', 'UserInfo', {
+      'userId':userId,
+    });
+  }
+}
+
 class _EndpointApple extends EndpointRef {
   @override
   String get name => 'serverpod_auth.apple';
@@ -68,33 +81,15 @@ class _EndpointGoogle extends EndpointRef {
 
   _EndpointGoogle(EndpointCaller caller) : super(caller);
 
-  Future<AuthenticationResponse> authenticate(String authenticationCode,) async {
-    return await caller.callServerEndpoint('serverpod_auth.google', 'authenticate', 'AuthenticationResponse', {
+  Future<AuthenticationResponse> authenticateWithServerAuthCode(String authenticationCode,) async {
+    return await caller.callServerEndpoint('serverpod_auth.google', 'authenticateWithServerAuthCode', 'AuthenticationResponse', {
       'authenticationCode':authenticationCode,
     });
   }
-}
 
-class _EndpointUser extends EndpointRef {
-  @override
-  String get name => 'serverpod_auth.user';
-
-  _EndpointUser(EndpointCaller caller) : super(caller);
-
-  Future<bool> removeUserImage() async {
-    return await caller.callServerEndpoint('serverpod_auth.user', 'removeUserImage', 'bool', {
-    });
-  }
-
-  Future<bool> setUserImage(typed_data.ByteData image,) async {
-    return await caller.callServerEndpoint('serverpod_auth.user', 'setUserImage', 'bool', {
-      'image':image,
-    });
-  }
-
-  Future<bool> changeUserName(String userName,) async {
-    return await caller.callServerEndpoint('serverpod_auth.user', 'changeUserName', 'bool', {
-      'userName':userName,
+  Future<AuthenticationResponse> authenticateWithIdToken(String idToken,) async {
+    return await caller.callServerEndpoint('serverpod_auth.google', 'authenticateWithIdToken', 'AuthenticationResponse', {
+      'idToken':idToken,
     });
   }
 }
@@ -126,43 +121,54 @@ class _EndpointStatus extends EndpointRef {
   }
 }
 
-class _EndpointAdmin extends EndpointRef {
+class _EndpointUser extends EndpointRef {
   @override
-  String get name => 'serverpod_auth.admin';
+  String get name => 'serverpod_auth.user';
 
-  _EndpointAdmin(EndpointCaller caller) : super(caller);
+  _EndpointUser(EndpointCaller caller) : super(caller);
 
-  Future<UserInfo?> getUserInfo(int userId,) async {
-    return await caller.callServerEndpoint('serverpod_auth.admin', 'getUserInfo', 'UserInfo', {
-      'userId':userId,
+  Future<bool> removeUserImage() async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'removeUserImage', 'bool', {
+    });
+  }
+
+  Future<bool> setUserImage(typed_data.ByteData image,) async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'setUserImage', 'bool', {
+      'image':image,
+    });
+  }
+
+  Future<bool> changeUserName(String userName,) async {
+    return await caller.callServerEndpoint('serverpod_auth.user', 'changeUserName', 'bool', {
+      'userName':userName,
     });
   }
 }
 
 class Caller extends ModuleEndpointCaller {
+  late final _EndpointAdmin admin;
   late final _EndpointApple apple;
   late final _EndpointEmail email;
   late final _EndpointGoogle google;
-  late final _EndpointUser user;
   late final _EndpointStatus status;
-  late final _EndpointAdmin admin;
+  late final _EndpointUser user;
 
   Caller(ServerpodClientShared client) : super(client) {
+    admin = _EndpointAdmin(this);
     apple = _EndpointApple(this);
     email = _EndpointEmail(this);
     google = _EndpointGoogle(this);
-    user = _EndpointUser(this);
     status = _EndpointStatus(this);
-    admin = _EndpointAdmin(this);
+    user = _EndpointUser(this);
   }
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
+    'serverpod_auth.admin' : admin,
     'serverpod_auth.apple' : apple,
     'serverpod_auth.email' : email,
     'serverpod_auth.google' : google,
-    'serverpod_auth.user' : user,
     'serverpod_auth.status' : status,
-    'serverpod_auth.admin' : admin,
+    'serverpod_auth.user' : user,
   };
 }
