@@ -33,25 +33,25 @@ class Expression {
 
   /// Database greater than operator.
   Expression operator >(dynamic other) {
-    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this > $other)');
   }
 
   /// Database greater or equal than operator.
   Expression operator >=(dynamic other) {
-    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this >= $other)');
   }
 
   /// Database less than operator.
   Expression operator <(dynamic other) {
-    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this < $other)');
   }
 
   /// Database less or equal than operator.
   Expression operator <=(dynamic other) {
-    if (!(other is Expression)) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
     return Expression('($this <= $other)');
   }
 }
@@ -83,19 +83,21 @@ class ColumnInt extends Column {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
   Expression equals(int? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NULL');
-    else
+    } else {
       return Expression('"$columnName" = $value');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
   Expression notEquals(int? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
-    else
+    } else {
       return Expression('"$columnName" != $value');
+    }
   }
 }
 
@@ -107,19 +109,21 @@ class ColumnDouble extends Column {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
   Expression equals(double? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NULL');
-    else
+    } else {
       return Expression('"$columnName" = $value');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
   Expression notEquals(double? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
-    else
+    } else {
       return Expression('"$columnName" != $value');
+    }
   }
 }
 
@@ -132,21 +136,23 @@ class ColumnString extends Column {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
   Expression equals(String? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NULL');
-    else
+    } else {
       return Expression(
           '"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
   Expression notEquals(String? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
-    else
+    } else {
       return Expression(
           '"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -173,19 +179,21 @@ class ColumnBool extends Column {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
   Expression equals(bool? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NULL');
-    else
+    } else {
       return Expression('"$columnName" = $value');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
   Expression notEquals(bool? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
-    else
+    } else {
       return Expression('"$columnName" != $value');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column is distinct
@@ -204,21 +212,23 @@ class ColumnDateTime extends Column {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
   Expression equals(DateTime? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NULL');
-    else
+    } else {
       return Expression(
           '"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
+    }
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
   Expression notEquals(DateTime? value) {
-    if (value == null)
+    if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
-    else
+    } else {
       return Expression(
           '"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
+    }
   }
 }
 
@@ -246,12 +256,13 @@ class Constant extends Expression {
 
   static String _formatValue(dynamic value) {
     if (value == null) return 'NULL';
-    if (value is bool)
+    if (value is bool) {
       return '$value'.toUpperCase();
-    else if (value is String)
+    } else if (value is String) {
       return '\'$value\'';
-    else
-      throw FormatException();
+    } else {
+      throw const FormatException();
+    }
   }
 }
 

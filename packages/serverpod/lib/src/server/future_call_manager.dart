@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'future_call.dart';
-import 'session.dart';
-import 'server.dart';
-import '../generated/protocol.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 import 'package:pedantic/pedantic.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../generated/protocol.dart';
+import 'future_call.dart';
+import 'server.dart';
+import 'session.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -44,8 +46,9 @@ class FutureCallManager {
 
   /// Registers a [FutureCall] with the manager.
   void registerFutureCall(FutureCall call, String name) {
-    if (_futureCalls.containsKey(name))
+    if (_futureCalls.containsKey(name)) {
       throw Exception('Added future call with duplicate name ($name)');
+    }
 
     call.initialize(_server, name);
     _futureCalls[name] = call;
@@ -126,6 +129,6 @@ class FutureCallManager {
     }
 
     // Check the queue again in 5 seconds
-    _timer = Timer(Duration(seconds: 5), _checkQueue);
+    _timer = Timer(const Duration(seconds: 5), _checkQueue);
   }
 }

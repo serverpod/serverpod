@@ -1,6 +1,6 @@
+import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/module.dart';
 import 'package:test/test.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 import 'authentication_test.dart';
 
@@ -62,7 +62,7 @@ void main() {
     test('Access restricted endpoint without authentication', () async {
       // This should be ignored by the server as user isn't authenticated.
       await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
     });
 
     test('Authenticate with correct credentials', () async {
@@ -77,7 +77,7 @@ void main() {
 
       // Restart streams
       client.close();
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       await client.connectWebSocket();
     });
 

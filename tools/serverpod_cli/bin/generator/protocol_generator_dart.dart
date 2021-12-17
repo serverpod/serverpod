@@ -116,10 +116,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     }
 
     // Class definition
-    if (config.type == PackageType.server)
+    if (config.type == PackageType.server) {
       out += 'class Client extends ServerpodClient {\n';
-    else
+    } else {
       out += 'class Caller extends ModuleEndpointCaller {\n';
+    }
 
     for (var endpointDef in protocolDefinition.endpoints) {
       out +=
@@ -132,11 +133,12 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     }
 
     out += '\n';
-    if (config.type == PackageType.server)
+    if (config.type == PackageType.server) {
       out +=
           '  Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {\n';
-    else
+    } else {
       out += '  Caller(ServerpodClientShared client) : super(client) {\n';
+    }
     for (var endpointDef in protocolDefinition.endpoints) {
       out +=
           '    ${endpointDef.name} = ${_endpointClassName(endpointDef.name)}(this);\n';

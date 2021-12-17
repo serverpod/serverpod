@@ -350,8 +350,9 @@ class StorageAccess {
     DateTime? expiration,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     await storage.storeFile(session: _session, path: path, byteData: byteData);
   }
@@ -362,8 +363,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.retrieveFile(session: _session, path: path);
   }
@@ -374,8 +376,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.fileExists(session: _session, path: path);
   }
@@ -386,8 +389,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     await storage.deleteFile(session: _session, path: path);
   }
@@ -398,8 +402,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.getPublicUrl(session: _session, path: path);
   }
@@ -413,8 +418,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.createDirectFileUploadDescription(
         session: _session, path: path);
@@ -427,8 +433,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.verifyDirectFileUpload(session: _session, path: path);
   }

@@ -10,7 +10,6 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  pedantic: ^1.11.0
   args: ^2.0.0
   collection: ^1.15.0
   crypto: ^3.0.1
@@ -34,3 +33,4 @@ dev_dependencies:
     path: ../../tests/serverpod_test_client
   serverpod_test_module_client: #^VERSION
     path: ../../tests/serverpod_test_module/serverpod_test_module_client
+  lints: ^1.0.1

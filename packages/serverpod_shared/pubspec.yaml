@@ -14,3 +14,6 @@ dependencies:
   yaml: ^3.1.0
   serverpod_client: #^0.8.10
     path: ../serverpod_client
+
+dev_dependencies:
+  lints: ^1.0.1

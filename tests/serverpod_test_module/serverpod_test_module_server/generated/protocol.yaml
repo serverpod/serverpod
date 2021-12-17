@@ -1,4 +1,4 @@
-streaming:
 module:
   - hello:
   - modifyModuleObject:
+streaming:

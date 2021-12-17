@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_module_server/module.dart' as module;
-import '../generated/protocol.dart';
 
 class ModuleSerializationEndpoint extends Endpoint {
   Future<bool> serializeModuleObject(Session session) async {
@@ -16,8 +17,9 @@ class ModuleSerializationEndpoint extends Endpoint {
           .createEntityFromSerialization(jsonDecode(s)) as module.ModuleClass;
       return (unpacked.data == 42 && unpacked.name == 'foo');
     } catch (e, stackTrace) {
-      print('ModuleSerializationEndpoint.serializeModuleObject failed: $e');
-      print('$stackTrace');
+      stdout.writeln(
+          'ModuleSerializationEndpoint.serializeModuleObject failed: $e');
+      stdout.writeln('$stackTrace');
 
       return false;
     }

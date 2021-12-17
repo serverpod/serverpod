@@ -65,15 +65,16 @@ class LogManager {
 
   /// Returns the [LogSettings] for a specific session.
   LogSettings getLogSettingsForSession(Session session) {
-    if (session is MethodCallSession)
+    if (session is MethodCallSession) {
       return _getLogSettingsForMethodCallSession(
           session.endpointName, session.methodName);
-    else if (session is StreamingSession)
+    } else if (session is StreamingSession) {
       return _getLogSettingsForStreamingSession();
-    else if (session is InternalSession)
+    } else if (session is InternalSession) {
       return _getLogSettingsForInternalSession();
-    else if (session is FutureCallSession)
+    } else if (session is FutureCallSession) {
       return _getLogSettingsForFutureCallSession(session.futureCallName);
+    }
     throw UnimplementedError('Unknown session type');
   }
 
@@ -107,21 +108,22 @@ class LogManager {
     var logSettings = getLogSettingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
-      if (session is MethodCallSession)
+      if (session is MethodCallSession) {
         stdout.writeln(
             'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
-      else if (session is FutureCallSession)
+      } else if (session is FutureCallSession) {
         stdout.writeln(
             'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+      }
       if (exception != null) {
-        stdout.writeln('$exception');
+        stdout.writeln(exception);
         stdout.writeln('$stackTrace');
       }
     }
 
     final slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
     var isSlow = duration > Duration(microseconds: slowMicros) &&
-        !(session is StreamingSession);
+        session is! StreamingSession;
 
     if (logSettings.logAllSessions ||
         logSettings.logSlowSessions && isSlow ||
@@ -167,9 +169,10 @@ class LogManager {
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
-        if (_methodForSession(session) != null)
+        if (_methodForSession(session) != null) {
           stderr.writeln(
               'CALL: ${_endpointForSession(session)}.${_methodForSession(session)} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+        }
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
 
@@ -227,9 +230,10 @@ class LogManager {
       } catch (e) {
         success = false;
       }
-      if (!success)
+      if (!success) {
         stderr.writeln(
             '${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
+      }
     }
 
     if (runMode == ServerpodRunMode.development) {

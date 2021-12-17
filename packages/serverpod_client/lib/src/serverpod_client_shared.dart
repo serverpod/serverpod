@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'auth_key_manager.dart';
 import 'serverpod_client_exception.dart';
 
 /// Method called when errors occur in communication with the server.
-typedef ServerpodClientErrorCallback = void Function(dynamic e, StackTrace stackTrace);
+typedef ServerpodClientErrorCallback = void Function(
+    dynamic e, StackTrace stackTrace);
 
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
@@ -28,10 +29,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// E.g. "wss://example.com/websocket"
   Future<String> get websocketHost async {
     var uri = Uri.parse(host);
-    if (uri.scheme == 'http')
+    if (uri.scheme == 'http') {
       uri = uri.replace(scheme: 'ws');
-    else if (uri.scheme == 'https')
+    } else if (uri.scheme == 'https') {
       uri = uri.replace(scheme: 'wss');
+    }
     uri = uri.replace(path: '/websocket');
 
     if (authenticationKeyManager != null) {
@@ -67,8 +69,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   Map<String, EndpointRef>? _consolidatedEndpointRefLookupCache;
   Map<String, EndpointRef> get _consolidatedEndpointRefLookup {
-    if (_consolidatedEndpointRefLookupCache != null)
+    if (_consolidatedEndpointRefLookupCache != null) {
       return _consolidatedEndpointRefLookupCache!;
+    }
 
     _consolidatedEndpointRefLookupCache = {};
     _consolidatedEndpointRefLookupCache!.addAll(endpointRefLookup);
@@ -80,14 +83,18 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Creates a new ServerpodClient.
-  ServerpodClientShared(this.host, this.serializationManager, {
+  ServerpodClientShared(
+    this.host,
+    this.serializationManager, {
     dynamic context,
     this.errorHandler,
     this.authenticationKeyManager,
-    this.logFailedCalls=true,
-  }){
-    assert(host.endsWith('/'), 'host must end with a slash, eg: https://example.com/');
-    assert(host.startsWith('http://') || host.startsWith('https://'), 'host must include protocol, eg: https://example.com/');
+    this.logFailedCalls = true,
+  }) {
+    assert(host.endsWith('/'),
+        'host must end with a slash, eg: https://example.com/');
+    assert(host.startsWith('http://') || host.startsWith('https://'),
+        'host must include protocol, eg: https://example.com/');
   }
 
   /// Registers a module with the client. This is typically done from
@@ -102,9 +109,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map data = jsonDecode(message);
     String endpoint = data['endpoint'];
     Map objectData = data['object'];
-    var entity = serializationManager.createEntityFromSerialization(objectData.cast<String, dynamic>());
+    var entity = serializationManager
+        .createEntityFromSerialization(objectData.cast<String, dynamic>());
     if (entity == null) {
-      throw ServerpodClientException('serializable entity is null', 0);
+      throw const ServerpodClientException('serializable entity is null', 0);
     }
 
     var endpointRef = _consolidatedEndpointRefLookup[endpoint];
@@ -117,12 +125,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Sends a message to the servers WebSocket stream. Typically, this method
   /// shouldn't be called directly, instead use [sendToStream].
   Future<void> _sendRawWebSocketMessage(String message) async {
-    if (_webSocket == null)
-      throw ServerpodClientException('WebSocket is not connected', 0);
+    if (_webSocket == null) {
+      throw const ServerpodClientException('WebSocket is not connected', 0);
+    }
     _webSocket!.sink.add(message);
   }
 
-  Future<void> _sendSerializableObjectToStream(String endpoint, SerializableEntity message) async {
+  Future<void> _sendSerializableObjectToStream(
+      String endpoint, SerializableEntity message) async {
     var objectData = message.serialize();
     var data = {
       'endpoint': endpoint,
@@ -141,15 +151,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Open up a web socket connection to the server.
   Future<void> connectWebSocket() async {
-    if (_webSocket != null)
-      return;
+    if (_webSocket != null) return;
 
     try {
       var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       unawaited(_listenToWebSocketStream());
-    }
-    catch(e) {
+    } catch (e) {
       _webSocket = null;
     }
     _notifyWebSocketConnectionStatusListeners();
@@ -157,8 +165,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Closes the current web socket connection (if open), then connects again.
   Future<void> reconnectWebSocket() async {
-    if (_webSocket == null)
-      return;
+    if (_webSocket == null) return;
 
     await _webSocket?.sink.close();
     _webSocket = null;
@@ -166,17 +173,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   Future<void> _listenToWebSocketStream() async {
-    if (_webSocket == null)
-      return;
+    if (_webSocket == null) return;
 
     try {
       await for (String message in _webSocket!.stream) {
         _handleRawWebSocketMessage(message);
       }
       _webSocket = null;
-    }
-    catch(e, stackTrace) {
-      print('WS read error: $e\n$stackTrace');
+    } catch (e) {
       _webSocket = null;
     }
     _notifyWebSocketConnectionStatusListeners();
@@ -215,7 +219,8 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
   ModuleEndpointCaller(this.client);
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) {
+  Future<dynamic> callServerEndpoint(String endpoint, String method,
+      String returnTypeName, Map<String, dynamic> args) {
     return client.callServerEndpoint(endpoint, method, returnTypeName, args);
   }
 }
@@ -228,7 +233,8 @@ abstract class EndpointCaller {
 
   /// Calls a server endpoint method by its name, passing arguments in a map.
   /// Typically, this method is called by generated code.
-  Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args);
+  Future<dynamic> callServerEndpoint(String endpoint, String method,
+      String returnTypeName, Map<String, dynamic> args);
 }
 
 /// This class connects endpoints on the server with the client, it also
@@ -242,10 +248,11 @@ abstract class EndpointRef {
 
   /// Creates a new [EndpointRef].
   EndpointRef(this.caller) {
-    if (caller is ServerpodClientShared)
+    if (caller is ServerpodClientShared) {
       client = caller as ServerpodClientShared;
-    else if (caller is ModuleEndpointCaller)
+    } else if (caller is ModuleEndpointCaller) {
       client = (caller as ModuleEndpointCaller).client;
+    }
   }
 
   /// The name of the endpoint this reference is connected to.

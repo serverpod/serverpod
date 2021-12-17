@@ -45,6 +45,8 @@ class ProtocolAnalyzer {
         }
         filePaths.add(filePath);
 
+        // TODO: Test and fix
+        // ignore: deprecated_member_use
         var library = await context.currentSession.getResolvedLibrary(filePath);
         var element = library.element!;
         var topElements = element.topLevelElements;
@@ -78,11 +80,13 @@ class ProtocolAnalyzer {
                         package),
                   );
 
-                  if (param.isRequiredPositional)
+                  if (param.isRequiredPositional) {
                     paramDefs.add(paramDef);
-                  else if (param.isOptionalPositional)
+                  } else if (param.isOptionalPositional) {
                     paramPositionalDefs.add(paramDef);
-                  else if (param.isNamed) paramNamedDefs.add(paramDef);
+                  } else if (param.isNamed) {
+                    paramNamedDefs.add(paramDef);
+                  }
                 }
 
                 if (paramDefs.isNotEmpty &&
@@ -134,9 +138,10 @@ class ProtocolAnalyzer {
     const removeEnding = 'Endpoint';
 
     var endpointName = '${className[0].toLowerCase()}${className.substring(1)}';
-    if (endpointName.endsWith(removeEnding))
+    if (endpointName.endsWith(removeEnding)) {
       endpointName =
           endpointName.substring(0, endpointName.length - removeEnding.length);
+    }
 
     return endpointName;
   }

@@ -1,8 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: public_member_api_docs
+
 library protocol;
 
+// ignore: unused_import
+import 'dart:typed_data';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'example_class.dart';

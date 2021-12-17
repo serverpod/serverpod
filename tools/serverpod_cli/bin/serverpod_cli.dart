@@ -11,18 +11,18 @@ import 'generator/generator_continuous.dart';
 import 'internal_tools/generate_pubspecs.dart';
 import 'shared/environment.dart';
 
-final cmdCreate = 'create';
-final cmdGenerate = 'generate';
-final cmdGenerateContinuously = 'generate-continuously';
-final cmdGenerateCertificates = 'generate-certs';
-final cmdShutdown = 'shutdown';
-final cmdLogs = 'logs';
-final cmdSessionLogs = 'sessionlog';
-final cmdCacheInfo = 'cacheinfo';
-final cmdServerAddress = 'serveraddress';
-final cmdServerIds = 'serverids';
-final cmdHealthCheck = 'healthcheck';
-final cmdGeneratePubspecs = 'generate-pubspecs';
+const cmdCreate = 'create';
+const cmdGenerate = 'generate';
+const cmdGenerateContinuously = 'generate-continuously';
+const cmdGenerateCertificates = 'generate-certs';
+const cmdShutdown = 'shutdown';
+const cmdLogs = 'logs';
+const cmdSessionLogs = 'sessionlog';
+const cmdCacheInfo = 'cacheinfo';
+const cmdServerAddress = 'serveraddress';
+const cmdServerIds = 'serverids';
+const cmdHealthCheck = 'healthcheck';
+const cmdGeneratePubspecs = 'generate-pubspecs';
 
 final runModes = <String>['development', 'staging', 'production'];
 

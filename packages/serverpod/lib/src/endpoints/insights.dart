@@ -55,13 +55,14 @@ class InsightsEndpoint extends Endpoint {
     if (filter == null || (!filter.slow && !filter.error)) {
       where = Constant(true);
     } else {
-      if (filter.slow && filter.error)
+      if (filter.slow && filter.error) {
         where = tSessionLogEntry.slow.equals(true) |
             tSessionLogEntry.error.notEquals(null);
-      else if (filter.slow)
+      } else if (filter.slow) {
         where = tSessionLogEntry.slow.equals(true);
-      else
+      } else {
         where = tSessionLogEntry.error.notEquals(null);
+      }
     }
 
     // Filter for endpoint

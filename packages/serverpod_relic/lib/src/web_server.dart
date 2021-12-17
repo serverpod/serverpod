@@ -1,20 +1,31 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
-import 'web_widget.dart';
-import 'templates.dart';
 import 'config.dart';
+import 'templates.dart';
+import 'web_widget.dart';
 
+/// The Serverpod webserver.
 class WebServer {
+  /// Reference to the [Serverpod] this webserver is associated with.
   final Serverpod serverpod;
+
+  /// The server id of this server.
   final int serverId;
+
+  /// The port the webserver is running on.
   late final int port;
+
+  /// The hostname of the webserver.
   late final String hostname;
+
+  /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
+  /// Creates a new webserver.
   WebServer({
     required this.serverpod,
   }) : serverId = serverpod.serverId {
@@ -28,16 +39,23 @@ class WebServer {
   }
 
   bool _running = false;
+
+  /// Returns true if the webserver is currently running.
   bool get running => _running;
 
   HttpServer? _httpServer;
+
+  /// Returns the [HttpServer] this webserver is using to handle connections.
   HttpServer get httpServer => _httpServer!;
 
+  /// Adds a [Route] to the server, together with a path that defines how
+  /// calls are routed.
   void addRoute(Route route, String matchPath) {
     route._matchPath = matchPath;
     routes.add(route);
   }
 
+  /// Starts the webserver.
   Future<void> start() async {
     await templates.loadAll();
 
@@ -45,48 +63,45 @@ class WebServer {
       _start,
       (e, stackTrace) {
         // Last resort error handling
-        print('${DateTime.now()} Relic zoned error: $e');
-        print('$stackTrace');
+        stdout.writeln('${DateTime.now()} Relic zoned error: $e');
+        stdout.writeln('$stackTrace');
       },
     );
   }
 
   Future<void> _start() async {
-    await HttpServer.bind(InternetAddress.anyIPv6, port).then((HttpServer httpServer) {
+    await HttpServer.bind(InternetAddress.anyIPv6, port)
+        .then((HttpServer httpServer) {
       _httpServer = httpServer;
       httpServer.autoCompress = true;
-      httpServer.listen(
-              (HttpRequest request) {
-            try {
-              _handleRequest(request);
-            }
-            catch(e, stackTrace) {
-              logError(e, stackTrace: stackTrace);
-            }
-          },
-          onError: (e, StackTrace stackTrace) {
-            logError(e, stackTrace: stackTrace);
-          }
-      ).onDone(() {
-        print('Server stopped.');
+      httpServer.listen((HttpRequest request) {
+        try {
+          _handleRequest(request);
+        } catch (e, stackTrace) {
+          logError(e, stackTrace: stackTrace);
+        }
+      }, onError: (e, StackTrace stackTrace) {
+        logError(e, stackTrace: stackTrace);
+      }).onDone(() {
+        stdout.writeln('Server stopped.');
       });
     });
 
-
-    print('Webserver listening on port $port');
+    stdout.writeln('Webserver listening on port $port');
   }
 
   void _handleRequest(HttpRequest request) async {
     if (serverpod.runMode == 'production') {
-      request.response.headers.add('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+      request.response.headers.add('Strict-Transport-Security',
+          'max-age=63072000; includeSubDomains; preload');
     }
 
     Uri uri;
     try {
       uri = request.requestedUri;
-    }
-    catch(e) {
-      logDebug('Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
+    } catch (e) {
+      logDebug(
+          'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
 
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
@@ -137,13 +152,13 @@ class WebServer {
     await session.close();
   }
 
-  Future<bool> _handleRouteCall(Route route, Session session, HttpRequest request) async {
+  Future<bool> _handleRouteCall(
+      Route route, Session session, HttpRequest request) async {
     route.setHeaders(request.response.headers);
     try {
       var found = await route.handleCall(session, request);
       return found;
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       logError(e, stackTrace: stackTrace);
 
       request.response.statusCode = HttpStatus.internalServerError;
@@ -153,15 +168,18 @@ class WebServer {
     return true;
   }
 
+  /// Logs an error to stderr.
   void logError(var e, {StackTrace? stackTrace}) {
-    print('ERROR: $e');
-    print('$stackTrace');
+    stderr.writeln('ERROR: $e');
+    stderr.writeln('$stackTrace');
   }
 
+  /// Logs a message to stdout.
   void logDebug(String msg) {
-    print(msg);
+    stdout.writeln(msg);
   }
 
+  /// Stops the webserver.
   void stop() {
     if (_httpServer != null) {
       _httpServer!.close();
@@ -170,8 +188,12 @@ class WebServer {
   }
 }
 
+/// Defines HTTP call methods for routes.
 enum RouteMethod {
+  /// HTTP get.
   get,
+
+  /// HTTP post.
   post,
 }
 
@@ -179,7 +201,7 @@ abstract class Route {
   final RouteMethod method;
   String? _matchPath;
 
-  Route({this.method=RouteMethod.get});
+  Route({this.method = RouteMethod.get});
 
   void setHeaders(HttpHeaders headers) {
     headers.contentType = ContentType('text', 'html', charset: 'utf-8');
@@ -194,8 +216,7 @@ abstract class Route {
     if (_matchPath!.endsWith('*')) {
       var start = _matchPath!.substring(0, _matchPath!.length - 1);
       return path.startsWith(start);
-    }
-    else {
+    } else {
       return _matchPath == path;
     }
   }
@@ -234,7 +255,7 @@ abstract class Route {
       }
       data += segment;
     }
-    return Utf8Decoder().convert(data);
+    return const Utf8Decoder().convert(data);
   }
 }
 
@@ -249,8 +270,7 @@ abstract class WidgetRoute extends Route {
 
     if (widget is WidgetJson) {
       request.response.headers.contentType = ContentType('application', 'json');
-    }
-    else if (widget is WidgetRedirect) {
+    } else if (widget is WidgetRedirect) {
       var uri = Uri.parse(widget.url);
       await request.response.redirect(uri);
       return true;

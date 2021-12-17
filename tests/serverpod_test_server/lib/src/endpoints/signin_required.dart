@@ -15,7 +15,7 @@ class SignInRequiredEndpoint extends Endpoint {
   Future<void> handleStreamMessage(
       StreamingSession session, SerializableEntity message) async {
     if (message is SimpleData) {
-      unawaited(Future.delayed(Duration(seconds: 1)).then((value) async {
+      unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
         await sendStreamMessage(session, message);
       }));
     }

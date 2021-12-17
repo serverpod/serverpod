@@ -208,12 +208,12 @@ class Serverpod {
       _runMode = results['mode'];
       serverId = int.tryParse(results['server-id']) ?? 0;
     } catch (e) {
-      print('Unknown run mode, defaulting to development');
+      stdout.writeln('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
     }
 
     // Load config files
-    print('Mode: $_runMode');
+    stdout.writeln('Mode: $_runMode');
 
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
@@ -221,11 +221,12 @@ class Serverpod {
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);
     if (_passwords['database'] != null) config.dbPass = _passwords['database'];
-    if (_passwords['serviceSecret'] != null)
+    if (_passwords['serviceSecret'] != null) {
       config.serviceSecret = _passwords['serviceSecret'];
+    }
 
     // Print config
-    print(config.toString());
+    stdout.writeln(config.toString());
 
     // Setup database
     databaseConfig = DatabaseConfig(serializationManager, config.dbHost!,
@@ -261,8 +262,9 @@ class Serverpod {
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
       if (storage['public'] is DatabaseCloudStorage ||
-          storage['private'] is DatabaseCloudStorage)
+          storage['private'] is DatabaseCloudStorage) {
         CloudStoragePublicEndpoint().register(this);
+      }
 
       // Runtime settings
       var session = await createSession();

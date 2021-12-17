@@ -12,11 +12,15 @@ class ConfigInfo {
     if (serverId != null) {
       print(config.cluster[serverId]!.address);
     } else {
-      for (var id in config.cluster.keys) print(config.cluster[id]!.address);
+      for (var id in config.cluster.keys) {
+        print(config.cluster[id]!.address);
+      }
     }
   }
 
   void printIds() {
-    for (var id in config.cluster.keys) print('$id');
+    for (var id in config.cluster.keys) {
+      print('$id');
+    }
   }
 }

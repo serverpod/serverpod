@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+// ignore: implementation_imports
 import 'package:postgres/src/text_codec.dart';
 
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].

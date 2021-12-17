@@ -1,6 +1,6 @@
-import 'package:test/test.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 const cacheMaxSize = 10;
 
@@ -32,11 +32,12 @@ void main() {
   test('Put and get object with lifetime', () async {
     var entry = SimpleData(num: 0);
 
-    await cache.put('entry', entry, lifetime: Duration(milliseconds: 100));
+    await cache.put('entry', entry,
+        lifetime: const Duration(milliseconds: 100));
     var retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));
 
-    await Future.delayed(Duration(milliseconds: 110));
+    await Future.delayed(const Duration(milliseconds: 110));
     retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved, isNull);
 

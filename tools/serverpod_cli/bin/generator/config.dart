@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:yaml/yaml.dart';
 
 var config = GeneratorConfig();
@@ -35,8 +36,9 @@ class GeneratorConfig {
       return false;
     }
 
-    if (pubspec!['name'] == null)
-      throw FormatException('Package name is missing in pubspec.yaml');
+    if (pubspec!['name'] == null) {
+      throw const FormatException('Package name is missing in pubspec.yaml');
+    }
     serverPackage = pubspec['name'];
     name = stripPackage(serverPackage);
 
@@ -52,14 +54,16 @@ class GeneratorConfig {
     }
 
     var typeStr = generatorConfig!['type'];
-    if (typeStr == 'module')
+    if (typeStr == 'module') {
       type = PackageType.module;
-    else
+    } else {
       type = PackageType.server;
+    }
 
-    if (generatorConfig['client_package_path'] == null)
-      throw FormatException(
+    if (generatorConfig['client_package_path'] == null) {
+      throw const FormatException(
           'Option "client_package_path" is required in config/generator.yaml');
+    }
     clientPackagePath = generatorConfig['client_package_path'];
     generatedClientProtocolPath = '$clientPackagePath/lib/src/protocol';
 
@@ -73,7 +77,7 @@ class GeneratorConfig {
           }
         }
       } catch (e) {
-        throw FormatException('Failed to load module config');
+        throw const FormatException('Failed to load module config');
       }
     }
 
@@ -124,9 +128,11 @@ $config''';
 
 String stripPackage(String package) {
   var strippedPackage = package;
-  if (strippedPackage.endsWith('_server'))
+  if (strippedPackage.endsWith('_server')) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
-  if (strippedPackage.endsWith('_client'))
+  }
+  if (strippedPackage.endsWith('_client')) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
+  }
   return package;
 }

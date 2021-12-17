@@ -1,11 +1,12 @@
 import 'package:serverpod/serverpod.dart';
+
 import '../generated/protocol.dart';
 
 class TransactionsDatabaseEndpoint extends Endpoint {
   Future<void> removeRow(Session session, int num) async {
     Transaction txn = Transaction();
 
-    session.db.delete(
+    await session.db.delete(
       tSimpleData,
       where: tSimpleData.num.equals(num),
       transaction: txn,

@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+
 import '../generated/protocol.dart';
 
 int globalInt = 0;
@@ -18,13 +19,10 @@ class BasicDatabase extends Endpoint {
     var query = 'SELECT * FROM types WHERE id = $id';
     var result = await session.db.query(query);
     if (result.length != 1) {
-      print('getTypesRawQuery expected 1 row');
       return null;
     }
     var row = result[0];
     if (row.length != tTypes.columns.length) {
-      print(
-          'getTypesRawQuery expected row with ${tTypes.columns.length} entries');
       return null;
     }
     return row[0] as int;

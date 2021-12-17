@@ -68,7 +68,8 @@ class TypeDefinition {
 
     if (stripFuture) {
       if (!trimmed.startsWith('Future<') || !trimmed.endsWith('>'))
-        throw (FormatException('Expected type to be future'));
+        // ignore: curly_braces_in_flow_control_structures
+        throw (const FormatException('Expected type to be future'));
       trimmed = trimmed.substring(7, trimmed.length - 1);
     }
 

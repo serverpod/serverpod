@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 Future<void> performGenerateCerts(String runMode, bool verbose) async {
@@ -14,8 +15,8 @@ Future<void> performGenerateCerts(String runMode, bool verbose) async {
 
     var serverAddress = config.cluster[serverId]!.address;
 
-    print('$crtFileName');
-    print('$keyFileName');
+    print(crtFileName);
+    print(keyFileName);
 
     File(certConfigFile).writeAsStringSync(
         '[ req ]\ndistinguished_name = req_distinguished_name\nprompt = no\n\n[ req_distinguished_name ]\nCN = $serverAddress\n');

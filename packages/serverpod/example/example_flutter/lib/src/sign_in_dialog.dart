@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
+import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 import '../main.dart';
 
 class _SignInDialog extends StatelessWidget {
   final VoidCallback onSignedIn;
 
-  _SignInDialog({
+  const _SignInDialog({
     required this.onSignedIn,
   });
 
@@ -16,7 +16,7 @@ class _SignInDialog extends StatelessWidget {
     return Dialog(
       child: Container(
         width: 200,
-        padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -28,7 +28,7 @@ class _SignInDialog extends StatelessWidget {
               },
               onFailure: _failedToSignIn,
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             SignInWithAppleButton(
@@ -42,7 +42,7 @@ class _SignInDialog extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Sign in later'),
+              child: const Text('Sign in later'),
             ),
           ],
         ),

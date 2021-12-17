@@ -9,13 +9,6 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
-class _EndpointStreaming extends EndpointRef {
-  @override
-  String get name => 'serverpod_test_module.streaming';
-
-  _EndpointStreaming(EndpointCaller caller) : super(caller);
-}
-
 class _EndpointModule extends EndpointRef {
   @override
   String get name => 'serverpod_test_module.module';
@@ -35,18 +28,25 @@ class _EndpointModule extends EndpointRef {
   }
 }
 
+class _EndpointStreaming extends EndpointRef {
+  @override
+  String get name => 'serverpod_test_module.streaming';
+
+  _EndpointStreaming(EndpointCaller caller) : super(caller);
+}
+
 class Caller extends ModuleEndpointCaller {
-  late final _EndpointStreaming streaming;
   late final _EndpointModule module;
+  late final _EndpointStreaming streaming;
 
   Caller(ServerpodClientShared client) : super(client) {
-    streaming = _EndpointStreaming(this);
     module = _EndpointModule(this);
+    streaming = _EndpointStreaming(this);
   }
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-    'serverpod_test_module.streaming' : streaming,
     'serverpod_test_module.module' : module,
+    'serverpod_test_module.streaming' : streaming,
   };
 }

@@ -28,7 +28,8 @@ class FileUploader {
   /// Uploads a file from a [Stream], returns true if successful.
   Future<bool> upload(Stream<List<int>> stream, int length) async {
     if (_attemptedUpload) {
-      throw Exception('Data has already been uploaded using this FileUploader.');
+      throw Exception(
+          'Data has already been uploaded using this FileUploader.');
     }
     _attemptedUpload = true;
 
@@ -43,14 +44,10 @@ class FileUploader {
           },
         );
         return result.statusCode == 200;
-      }
-      catch(e, stackTrace) {
-        print('Upload failed: $e');
-        print('$stackTrace');
+      } catch (e) {
         return false;
       }
-    }
-    else if (_uploadDescription.type == _UploadType.multipart) {
+    } else if (_uploadDescription.type == _UploadType.multipart) {
       // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
       // final length = await file.length();
 
@@ -58,7 +55,9 @@ class FileUploader {
       // final length = await data.lengthInBytes;
 
       final request = http.MultipartRequest('POST', _uploadDescription.url);
-      final multipartFile = http.MultipartFile(_uploadDescription.field!, stream, length, filename: _uploadDescription.fileName);
+      final multipartFile = http.MultipartFile(
+          _uploadDescription.field!, stream, length,
+          filename: _uploadDescription.fileName);
 
       request.files.add(multipartFile);
       for (var key in _uploadDescription.requestFields.keys) {
@@ -70,10 +69,7 @@ class FileUploader {
         // var body = await _readBody(result.stream);
         // print('body: $body');
         return result.statusCode == 204;
-      }
-      catch(e, stackTrace) {
-        print('Upload failed: $e');
-        print('$stackTrace');
+      } catch (e) {
         return false;
       }
     }
@@ -92,13 +88,13 @@ class FileUploader {
   // }
 
   Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
-      // TODO: Find more efficient solution?
-      var data = <int>[];
-      await for (var segment in stream) {
-        data += segment;
-      }
-      return data;
+    // TODO: Find more efficient solution?
+    var data = <int>[];
+    await for (var segment in stream) {
+      data += segment;
     }
+    return data;
+  }
 }
 
 enum _UploadType {
@@ -111,16 +107,17 @@ class _UploadDescription {
   late Uri url;
   String? field;
   String? fileName;
-  Map<String,String> requestFields = {};
+  Map<String, String> requestFields = {};
 
   _UploadDescription(String description) {
     var data = jsonDecode(description);
-    if (data['type'] == 'binary')
+    if (data['type'] == 'binary') {
       type = _UploadType.binary;
-    else if (data['type'] == 'multipart')
+    } else if (data['type'] == 'multipart') {
       type = _UploadType.multipart;
-    else
-      throw FormatException('Missing type, can be binary or multipart');
+    } else {
+      throw const FormatException('Missing type, can be binary or multipart');
+    }
 
     url = Uri.parse(data['url']);
 

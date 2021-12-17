@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
+
 import '../generated/protocol.dart';
 
 class AsyncTasksEndpoint extends Endpoint {
   Future<void> insertRowToSimpleDataAfterDelay(
       Session session, int num, int seconds) async {
     // No await, method will return immediately and execute task
-    _insertRowToSimpleDataAfterDelay(session, num, seconds);
+    unawaited(_insertRowToSimpleDataAfterDelay(session, num, seconds));
   }
 
   Future<void> _insertRowToSimpleDataAfterDelay(
@@ -19,7 +22,7 @@ class AsyncTasksEndpoint extends Endpoint {
 
   Future<void> throwExceptionAfterDelay(Session session, int seconds) async {
     // No await, throw exception outside of this context
-    _throwExceptionAfterDelay(seconds);
+    unawaited(_throwExceptionAfterDelay(seconds));
   }
 
   Future<void> _throwExceptionAfterDelay(int seconds) async {

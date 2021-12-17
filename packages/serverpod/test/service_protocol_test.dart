@@ -80,7 +80,7 @@ void main() {
 
       // Writing of logs may still be going on after the call has returned,
       // wait a second to make sure the log has been flushed to the database
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -115,7 +115,7 @@ void main() {
 
       // Writing of logs may still be going on after the call has returned,
       // wait a second to make sure the log has been flushed to the database
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -130,7 +130,7 @@ void main() {
 
       // Writing of logs may still be going on after the call has returned,
       // wait a second to make sure the log has been flushed to the database
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -141,7 +141,7 @@ void main() {
     test('Transaction query log', () async {
       await setupTestData(client);
       await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -153,7 +153,7 @@ void main() {
 
     test('Disabled logging', () async {
       await client.logging.logInfo('test');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -162,9 +162,9 @@ void main() {
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
 
       await client.logging.logInfo('test');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       await client.loggingDisabled.logInfo('test');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -198,7 +198,7 @@ void main() {
       // Make sure that the future call has been executed
       // The check for future calls is made very 5 s and future call is set for
       // 1 s. Largest possible delay should be 6 s.
-      await Future.delayed(Duration(seconds: 6));
+      await Future.delayed(const Duration(seconds: 6));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
@@ -223,10 +223,8 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   }
 
   @override
-  Future<Null> put(String key) async {}
+  Future<void> put(String key) async {}
 
   @override
-  Future<void> remove() async {
-    ;
-  }
+  Future<void> remove() async {}
 }

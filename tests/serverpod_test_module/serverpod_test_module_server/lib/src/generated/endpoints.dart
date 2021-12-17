@@ -9,23 +9,16 @@ import 'package:serverpod/serverpod.dart';
 
 import 'protocol.dart';
 
-import '../endpoints/streaming.dart';
 import '../endpoints/module_endpoint.dart';
+import '../endpoints/streaming.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'streaming': StreamingEndpoint()..initialize(server, 'streaming', 'serverpod_test_module'),
       'module': ModuleEndpoint()..initialize(server, 'module', 'serverpod_test_module'),
+      'streaming': StreamingEndpoint()..initialize(server, 'streaming', 'serverpod_test_module'),
     };
-
-    connectors['streaming'] = EndpointConnector(
-      name: 'streaming',
-      endpoint: endpoints['streaming']!,
-      methodConnectors: {
-      },
-    );
 
     connectors['module'] = EndpointConnector(
       name: 'module',
@@ -49,6 +42,13 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['module'] as ModuleEndpoint).modifyModuleObject(session,params['object'],);
           },
         ),
+      },
+    );
+
+    connectors['streaming'] = EndpointConnector(
+      name: 'streaming',
+      endpoint: endpoints['streaming']!,
+      methodConnectors: {
       },
     );
   }
