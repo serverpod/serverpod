@@ -17,8 +17,8 @@ jobs:
         with:
           sdk: 2.12.0
 
-      - name: Install dependencies
-        run: dart pub get
+      # - name: Install dependencies
+      #   run: dart pub get
 
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
