@@ -27,7 +27,7 @@ class EmailAuth extends TableRow {
     required this.userId,
     required this.email,
     required this.hash,
-});
+  });
 
   EmailAuth.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -80,11 +80,11 @@ class EmailAuthTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    userId,
-    email,
-    hash,
-  ];
+        id,
+        userId,
+        email,
+        hash,
+      ];
 }
 
 EmailAuthTable tEmailAuth = EmailAuthTable();

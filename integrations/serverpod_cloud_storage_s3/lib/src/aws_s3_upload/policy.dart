@@ -12,7 +12,8 @@ class Policy {
   int maxFileSize;
   bool public;
 
-  Policy(this.key, this.bucket, this.datetime, this.expiration, this.credential, this.maxFileSize,
+  Policy(this.key, this.bucket, this.datetime, this.expiration, this.credential,
+      this.maxFileSize,
       {this.region = 'us-east-1', this.public = true});
 
   factory Policy.fromS3PresignedPost(
@@ -25,10 +26,17 @@ class Policy {
     bool public = true,
   }) {
     final datetime = SigV4.generateDatetime();
-    final expiration = (DateTime.now()).add(Duration(minutes: expiryMinutes)).toUtc().toString().split(' ').join('T');
-    final cred = '$accessKeyId/${SigV4.buildCredentialScope(datetime, region, 's3')}';
+    final expiration = (DateTime.now())
+        .add(Duration(minutes: expiryMinutes))
+        .toUtc()
+        .toString()
+        .split(' ')
+        .join('T');
+    final cred =
+        '$accessKeyId/${SigV4.buildCredentialScope(datetime, region, 's3')}';
 
-    return Policy(key, bucket, datetime, expiration, cred, maxFileSize, region: region, public: public);
+    return Policy(key, bucket, datetime, expiration, cred, maxFileSize,
+        region: region, public: public);
   }
 
   String encode() {
@@ -43,7 +51,7 @@ class Policy {
   "conditions": [
     {"bucket": "${this.bucket}"},
     ["starts-with", "\$key", "${this.key}"],
-    {"acl": "${ public ? 'public-read' : 'private' }"},
+    {"acl": "${public ? 'public-read' : 'private'}"},
     ["content-length-range", 1, ${this.maxFileSize}],
     {"x-amz-credential": "${this.credential}"},
     {"x-amz-algorithm": "AWS4-HMAC-SHA256"},

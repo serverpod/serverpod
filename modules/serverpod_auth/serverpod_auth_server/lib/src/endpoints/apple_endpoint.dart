@@ -10,12 +10,13 @@ List<Map<String, dynamic>>? _applePublicKeys;
 
 /// Endpoint for handling Sign in with Apple.
 class AppleEndpoint extends Endpoint {
-
   /// Authenticates a user with Apple.
-  Future<AuthenticationResponse> authenticate(Session session, AppleAuthInfo authInfo) async {
+  Future<AuthenticationResponse> authenticate(
+      Session session, AppleAuthInfo authInfo) async {
     // Load public keys
     if (_applePublicKeys == null) {
-      var result = await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
+      var result =
+          await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
       if (result.statusCode != 200)
         return AuthenticationResponse(success: false);
 
@@ -46,12 +47,10 @@ class AppleEndpoint extends Endpoint {
       var keyStore = JsonWebKeyStore()..addKey(jwk);
 
       // verify the signature
-      if (await jws.verify(keyStore))
-        verified = true;
+      if (await jws.verify(keyStore)) verified = true;
     }
 
-    if (!verified)
-      return AuthenticationResponse(success: false);
+    if (!verified) return AuthenticationResponse(success: false);
 
     if (userIdentifier != payload.jsonContent['sub'])
       return AuthenticationResponse(success: false);
@@ -60,12 +59,10 @@ class AppleEndpoint extends Endpoint {
     if (email != null && email != payload.jsonContent['email'])
       return AuthenticationResponse(success: false);
 
-
     email = email?.toLowerCase();
 
     UserInfo? userInfo;
-    if (email != null)
-      userInfo = await Users.findUserByEmail(session, email);
+    if (email != null) userInfo = await Users.findUserByEmail(session, email);
     userInfo ??= await Users.findUserByIdentifier(session, userIdentifier);
     if (userInfo == null) {
       userInfo = UserInfo(
@@ -81,8 +78,7 @@ class AppleEndpoint extends Endpoint {
       userInfo = await Users.createUser(session, userInfo);
     }
 
-    if (userInfo == null)
-      return AuthenticationResponse(success: false);
+    if (userInfo == null) return AuthenticationResponse(success: false);
 
     var authKey = await session.auth.signInUser(userInfo.id!, 'apple');
 

@@ -11,17 +11,17 @@ import '../generated/protocol.dart';
 
 /// Endpoint for handling Sign in with Google.
 class EmailEndpoint extends Endpoint {
-
-  Future<AuthenticationResponse> authenticate(Session session, String email, String password) async {
+  Future<AuthenticationResponse> authenticate(
+      Session session, String email, String password) async {
     email = email.toLowerCase();
     password = password.trim();
 
     print('authenticate $email / $password');
 
     // Fetch password entry
-    var entry = (await session.db.findSingleRow(tEmailAuth, where: tEmailAuth.email.equals(email))) as EmailAuth?;
-    if (entry == null)
-      return AuthenticationResponse(success: false);
+    var entry = (await session.db.findSingleRow(tEmailAuth,
+        where: tEmailAuth.email.equals(email))) as EmailAuth?;
+    if (entry == null) return AuthenticationResponse(success: false);
 
     print(' - found entry ');
 
@@ -34,8 +34,7 @@ class EmailEndpoint extends Endpoint {
     print(' - password is correct, userId: ${entry.userId})');
 
     var userInfo = await Users.findUserByUserId(session, entry.userId);
-    if (userInfo == null)
-      return AuthenticationResponse(success: false);
+    if (userInfo == null) return AuthenticationResponse(success: false);
 
     print(' - user found');
 
@@ -56,10 +55,10 @@ class EmailEndpoint extends Endpoint {
     );
   }
 
-  Future<bool> changePassword(Session session, String oldPassword, String newPassword) async {
+  Future<bool> changePassword(
+      Session session, String oldPassword, String newPassword) async {
     var userId = await session.auth.authenticatedUserId;
-    if (userId == null)
-      return false;
+    if (userId == null) return false;
 
     return Emails.changePassword(session, userId, oldPassword, newPassword);
   }
@@ -68,11 +67,13 @@ class EmailEndpoint extends Endpoint {
     return Emails.initiatePasswordReset(session, email);
   }
 
-  Future<EmailPasswordReset?> verifyEmailPasswordReset(Session session, String verificationCode) {
+  Future<EmailPasswordReset?> verifyEmailPasswordReset(
+      Session session, String verificationCode) {
     return Emails.verifyEmailPasswordReset(session, verificationCode);
   }
 
-  Future<bool> resetPassword(Session session, String verificationCode, String password) {
+  Future<bool> resetPassword(
+      Session session, String verificationCode, String password) {
     return Emails.resetPassword(session, verificationCode, password);
   }
 }

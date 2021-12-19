@@ -23,8 +23,7 @@ class StatusEndpoint extends Endpoint {
   /// not signed in with the server.
   Future<UserInfo?> getUserInfo(Session session) async {
     var userId = await session.auth.authenticatedUserId;
-    if (userId == null)
-      return null;
+    if (userId == null) return null;
     return (await session.db.findById(tUserInfo, userId)) as UserInfo;
   }
 

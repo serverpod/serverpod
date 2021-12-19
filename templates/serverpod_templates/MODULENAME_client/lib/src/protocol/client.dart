@@ -15,9 +15,12 @@ class _EndpointModule extends EndpointRef {
 
   _EndpointModule(EndpointCaller caller) : super(caller);
 
-  Future<String> hello(String name,) async {
-    return await caller.callServerEndpoint('MODULENAME.module', 'hello', 'String', {
-      'name':name,
+  Future<String> hello(
+    String name,
+  ) async {
+    return await caller
+        .callServerEndpoint('MODULENAME.module', 'hello', 'String', {
+      'name': name,
     });
   }
 }
@@ -31,6 +34,6 @@ class Caller extends ModuleEndpointCaller {
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-    'MODULENAME.module' : module,
-  };
+        'MODULENAME.module': module,
+      };
 }

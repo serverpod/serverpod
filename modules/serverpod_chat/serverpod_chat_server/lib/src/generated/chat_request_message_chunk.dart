@@ -21,9 +21,10 @@ class ChatRequestMessageChunk extends SerializableEntity {
     this.id,
     required this.channel,
     required this.lastMessageId,
-});
+  });
 
-  ChatRequestMessageChunk.fromSerialization(Map<String, dynamic> serialization) {
+  ChatRequestMessageChunk.fromSerialization(
+      Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
@@ -48,4 +49,3 @@ class ChatRequestMessageChunk extends SerializableEntity {
     });
   }
 }
-

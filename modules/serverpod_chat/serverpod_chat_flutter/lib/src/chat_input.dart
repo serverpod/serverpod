@@ -47,8 +47,7 @@ class _ChatInputState extends State<ChatInput> {
           _sendTextMessage();
         }
         return KeyEventResult.handled;
-      }
-      else {
+      } else {
         return KeyEventResult.ignored;
       }
     },
@@ -84,10 +83,11 @@ class _ChatInputState extends State<ChatInput> {
     }
 
     return Container(
-      decoration: widget.boxDecoration ?? BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.all(Radius.circular(6)),
-      ),
+      decoration: widget.boxDecoration ??
+          BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.all(Radius.circular(6)),
+          ),
       child: Material(
         type: MaterialType.transparency,
         child: Column(
@@ -97,7 +97,8 @@ class _ChatInputState extends State<ChatInput> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: widget.padding ??
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: TextField(
                       autofocus: true,
                       style: widget.style,
@@ -105,20 +106,22 @@ class _ChatInputState extends State<ChatInput> {
                       maxLines: 10,
                       controller: _textController,
                       focusNode: _focusNode,
-                      decoration: widget.inputDecoration ?? const InputDecoration(
-                        hintText: 'Send a message...',
-                        isDense: false,
-                        border: InputBorder.none,
-                      ).copyWith(hintText: widget.hintText),
+                      decoration: widget.inputDecoration ??
+                          const InputDecoration(
+                            hintText: 'Send a message...',
+                            isDense: false,
+                            border: InputBorder.none,
+                          ).copyWith(hintText: widget.hintText),
                     ),
                   ),
                 ),
-                if (widget.controller.sessionManager.isSignedIn) IconButton(
-                  icon: Icon(widget.iconAttach),
-                  color: Theme.of(context).textTheme.caption!.color,
-                  onPressed: _uploadingAttachment ? null : _attachFile,
-                  iconSize: 18,
-                ),
+                if (widget.controller.sessionManager.isSignedIn)
+                  IconButton(
+                    icon: Icon(widget.iconAttach),
+                    color: Theme.of(context).textTheme.caption!.color,
+                    onPressed: _uploadingAttachment ? null : _attachFile,
+                    iconSize: 18,
+                  ),
                 // SizedBox(width: 8,),
                 Padding(
                   padding: EdgeInsets.only(right: 8),
@@ -131,16 +134,17 @@ class _ChatInputState extends State<ChatInput> {
                 ),
               ],
             ),
-            if (attachementTiles.isNotEmpty) Padding(
-              padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
-              child: SizedBox(
-                height: 40,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: attachementTiles,
+            if (attachementTiles.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+                child: SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: attachementTiles,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -148,12 +152,10 @@ class _ChatInputState extends State<ChatInput> {
   }
 
   void _sendTextMessage() {
-    if (_uploadingAttachment)
-      return;
+    if (_uploadingAttachment) return;
 
     var text = _textController.text.trim();
-    if (text.isEmpty && _attachments.isEmpty)
-      return;
+    if (text.isEmpty && _attachments.isEmpty) return;
 
     widget.controller.postMessage(text, _attachments);
 
@@ -171,7 +173,8 @@ class _ChatInputState extends State<ChatInput> {
 
     ChatMessageAttachment attachment;
     try {
-      var result = await await FilePicker.platform.pickFiles(withReadStream: true);
+      var result =
+          await await FilePicker.platform.pickFiles(withReadStream: true);
       if (result == null) {
         _uploadCancelled();
         return;
@@ -214,7 +217,7 @@ class _ChatInputState extends State<ChatInput> {
       var uploader = FileUploader(uploadDescription.uploadDescription);
       if (stream != null)
         await uploader.upload(stream, result.files.first.size);
-        // await uploader.upload(stream, await result.length());
+      // await uploader.upload(stream, await result.length());
       else if (bytes != null)
         await uploader.uploadByteData(ByteData.view(bytes.buffer));
       else {
@@ -224,7 +227,8 @@ class _ChatInputState extends State<ChatInput> {
 
       print(' - uploaded file');
 
-      var attachment = await widget.controller.module.chat.verifyAttachmentUpload(fileName, uploadDescription.filePath);
+      var attachment = await widget.controller.module.chat
+          .verifyAttachmentUpload(fileName, uploadDescription.filePath);
       if (attachment == null) {
         _uploadCancelled();
         return;
@@ -236,8 +240,7 @@ class _ChatInputState extends State<ChatInput> {
           _attachments.add(attachment);
         });
       }
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       print('Attachment upload failed: $e');
       print('$stackTrace');
       _uploadCancelled();
@@ -245,16 +248,14 @@ class _ChatInputState extends State<ChatInput> {
 
     _uploadingAttachementFileName = null;
     _uploadingAttachment = false;
-    if (mounted)
-      setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _uploadCancelled() {
     print('uploadCancelled');
     _uploadingAttachementFileName = null;
     _uploadingAttachment = false;
-    if (mounted)
-      setState(() {});
+    if (mounted) setState(() {});
   }
 }
 
@@ -301,22 +302,24 @@ class _AttachmentTile extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
               ),
-              if (loading) SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(),
-              ),
-              if (!loading) SizedBox(
-                width: 24,
-                height: 24,
-                child: IconButton(
-                  iconSize: 18,
-                  padding: EdgeInsets.zero,
-                  onPressed: onDelete,
-                  icon: Icon(Icons.close_rounded),
-                  color: Theme.of(context).textTheme.caption!.color,
+              if (loading)
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(),
                 ),
-              ),
+              if (!loading)
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: IconButton(
+                    iconSize: 18,
+                    padding: EdgeInsets.zero,
+                    onPressed: onDelete,
+                    icon: Icon(Icons.close_rounded),
+                    color: Theme.of(context).textTheme.caption!.color,
+                  ),
+                ),
             ],
           ),
         ),
@@ -334,4 +337,3 @@ class _AttachmentTile extends StatelessWidget {
       return Icons.insert_drive_file_outlined;
   }
 }
-

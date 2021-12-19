@@ -42,8 +42,7 @@ class CircularUserImage extends StatelessWidget {
       child = CachedNetworkImage(
         imageUrl: userInfo!.imageUrl!,
       );
-    }
-    else {
+    } else {
       child = Center(
         child: Icon(
           Icons.account_circle,
@@ -65,8 +64,7 @@ class CircularUserImage extends StatelessWidget {
           child: child,
         ),
       );
-    }
-    else {
+    } else {
       return SizedBox(
         width: size,
         height: size,
@@ -76,17 +74,16 @@ class CircularUserImage extends StatelessWidget {
           color: borderColor,
           clipBehavior: Clip.none,
           child: Center(
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey[500],
-              ),
-              clipBehavior: Clip.antiAlias,
-              width: size - borderWidth * 2,
-              height: size - borderWidth * 2,
-              child: child,
-            )
-          ),
+              child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.grey[500],
+            ),
+            clipBehavior: Clip.antiAlias,
+            width: size - borderWidth * 2,
+            height: size - borderWidth * 2,
+            child: child,
+          )),
         ),
       );
     }

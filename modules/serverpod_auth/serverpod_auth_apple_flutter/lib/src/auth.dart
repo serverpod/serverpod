@@ -8,8 +8,7 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
   // Check that Sign in with Apple is available on this platform.
   try {
     var available = await SignInWithApple.isAvailable();
-    if (!available)
-      return null;
+    if (!available) return null;
 
     // Attempt to sign in.
     final credential = await SignInWithApple.getAppleIDCredential(
@@ -22,12 +21,10 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
     var userIdentifier = credential.userIdentifier!;
     var nickname = credential.givenName ?? 'Unknown';
     var fullName = '$nickname';
-    if (credential.familyName != null)
-      fullName += ' ${credential.familyName}';
+    if (credential.familyName != null) fullName += ' ${credential.familyName}';
     var email = credential.email;
     var identityToken = credential.identityToken!;
     var authorizationCode = credential.authorizationCode;
-
 
     var authInfo = AppleAuthInfo(
       userIdentifier: userIdentifier,
@@ -40,20 +37,19 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
 
     // Authenticate with the Serverpod server.
     var serverResponse = await caller.apple.authenticate(authInfo);
-    if (!serverResponse.success)
-      return null;
+    if (!serverResponse.success) return null;
 
     // Authentication was successful, store the key.
     var sessionManager = await SessionManager.instance;
-    await sessionManager.keyManager.put('${serverResponse.keyId}:${serverResponse.key}');
+    await sessionManager.keyManager
+        .put('${serverResponse.keyId}:${serverResponse.key}');
 
     // Store the user info in the session manager.
     sessionManager.signedInUser = serverResponse.userInfo;
 
     // Return the user info.
     return serverResponse.userInfo;
-  }
-  catch(e, stackTrace) {
+  } catch (e, stackTrace) {
     print('$e');
     print('$stackTrace');
     return null;

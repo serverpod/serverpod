@@ -25,7 +25,7 @@ class AuthenticationResponse extends SerializableEntity {
     this.key,
     this.keyId,
     this.userInfo,
-});
+  });
 
   AuthenticationResponse.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -33,7 +33,9 @@ class AuthenticationResponse extends SerializableEntity {
     success = _data['success']!;
     key = _data['key'];
     keyId = _data['keyId'];
-    userInfo = _data['userInfo'] != null ? UserInfo?.fromSerialization(_data['userInfo']) : null;
+    userInfo = _data['userInfo'] != null
+        ? UserInfo?.fromSerialization(_data['userInfo'])
+        : null;
   }
 
   @override
@@ -58,4 +60,3 @@ class AuthenticationResponse extends SerializableEntity {
     });
   }
 }
-

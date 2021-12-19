@@ -34,18 +34,34 @@ class Protocol extends SerializationManager {
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
-  final Map<String,String> _tableClassMapping = {};
+  final Map<String, String> _tableClassMapping = {};
   @override
-  Map<String,String> get tableClassMapping => _tableClassMapping;
+  Map<String, String> get tableClassMapping => _tableClassMapping;
 
   Protocol() {
-    constructors['serverpod_auth_server.AppleAuthInfo'] = (Map<String, dynamic> serialization) => AppleAuthInfo.fromSerialization(serialization);
-    constructors['serverpod_auth_server.AuthenticationResponse'] = (Map<String, dynamic> serialization) => AuthenticationResponse.fromSerialization(serialization);
-    constructors['serverpod_auth_server.EmailAuth'] = (Map<String, dynamic> serialization) => EmailAuth.fromSerialization(serialization);
-    constructors['serverpod_auth_server.EmailPasswordReset'] = (Map<String, dynamic> serialization) => EmailPasswordReset.fromSerialization(serialization);
-    constructors['serverpod_auth_server.EmailReset'] = (Map<String, dynamic> serialization) => EmailReset.fromSerialization(serialization);
-    constructors['serverpod_auth_server.UserImage'] = (Map<String, dynamic> serialization) => UserImage.fromSerialization(serialization);
-    constructors['serverpod_auth_server.UserInfo'] = (Map<String, dynamic> serialization) => UserInfo.fromSerialization(serialization);
-    constructors['serverpod_auth_server.UserSettingsConfig'] = (Map<String, dynamic> serialization) => UserSettingsConfig.fromSerialization(serialization);
+    constructors['serverpod_auth_server.AppleAuthInfo'] =
+        (Map<String, dynamic> serialization) =>
+            AppleAuthInfo.fromSerialization(serialization);
+    constructors['serverpod_auth_server.AuthenticationResponse'] =
+        (Map<String, dynamic> serialization) =>
+            AuthenticationResponse.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailAuth'] =
+        (Map<String, dynamic> serialization) =>
+            EmailAuth.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailPasswordReset'] =
+        (Map<String, dynamic> serialization) =>
+            EmailPasswordReset.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailReset'] =
+        (Map<String, dynamic> serialization) =>
+            EmailReset.fromSerialization(serialization);
+    constructors['serverpod_auth_server.UserImage'] =
+        (Map<String, dynamic> serialization) =>
+            UserImage.fromSerialization(serialization);
+    constructors['serverpod_auth_server.UserInfo'] =
+        (Map<String, dynamic> serialization) =>
+            UserInfo.fromSerialization(serialization);
+    constructors['serverpod_auth_server.UserSettingsConfig'] =
+        (Map<String, dynamic> serialization) =>
+            UserSettingsConfig.fromSerialization(serialization);
   }
 }

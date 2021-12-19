@@ -27,7 +27,7 @@ class UserSettingsConfig extends SerializableEntity {
     required this.canEditUserName,
     required this.canEditFullName,
     required this.canEditUserImage,
-});
+  });
 
   UserSettingsConfig.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -51,4 +51,3 @@ class UserSettingsConfig extends SerializableEntity {
     });
   }
 }
-

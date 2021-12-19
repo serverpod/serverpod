@@ -6,7 +6,8 @@ import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
 
 const _offsetForRequestingNextChunk = 100.0;
 
-typedef ChatTileBuilder = Widget Function(BuildContext context, ChatMessage message, ChatMessage? previous);
+typedef ChatTileBuilder = Widget Function(
+    BuildContext context, ChatMessage message, ChatMessage? previous);
 
 class ChatView extends StatefulWidget {
   final ChatController controller;
@@ -22,7 +23,8 @@ class ChatView extends StatefulWidget {
   _ChatViewState createState() => _ChatViewState();
 }
 
-class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin {
+class _ChatViewState extends State<ChatView>
+    with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final AnimationController _fadeInAnimation;
 
@@ -50,15 +52,16 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
 
     _scrollController.addListener(() {
       widget.controller.scrollOffset = _scrollController.offset;
-      widget.controller.scrollAtBottom = _scrollController.offset == _scrollController.position.maxScrollExtent;
+      widget.controller.scrollAtBottom = _scrollController.offset ==
+          _scrollController.position.maxScrollExtent;
       if (widget.controller.scrollAtBottom) {
         widget.controller.markLastMessageRead();
       }
 
-      if (_scrollController.offset < _offsetForRequestingNextChunk
-          && widget.controller.hasOlderMessages
-          && !_jumpToBottom
-          && _distanceToBottomBeforeMessageChunk == null) {
+      if (_scrollController.offset < _offsetForRequestingNextChunk &&
+          widget.controller.hasOlderMessages &&
+          !_jumpToBottom &&
+          _distanceToBottomBeforeMessageChunk == null) {
         widget.controller.requestNextMessageChunk();
       }
     });
@@ -79,7 +82,8 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   void dispose() {
     widget.controller.removeMessageReceivedListener(_handleNewChatMessage);
     widget.controller.removeMessageUpdatedListener(_handleUpdatedChatMessage);
-    widget.controller.removeReceivedMessageChunkListener(_handleNewMessageChunk);
+    widget.controller
+        .removeReceivedMessageChunkListener(_handleNewMessageChunk);
     _scrollController.dispose();
     _fadeInAnimation.dispose();
     super.dispose();
@@ -101,25 +105,31 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   double? _distanceToBottomBeforeMessageChunk;
 
   void _handleNewMessageChunk() {
-    _distanceToBottomBeforeMessageChunk = _scrollController.position.maxScrollExtent - _scrollController.offset;
+    _distanceToBottomBeforeMessageChunk =
+        _scrollController.position.maxScrollExtent - _scrollController.offset;
     setState(() {});
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent - _distanceToBottomBeforeMessageChunk!);
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent -
+          _distanceToBottomBeforeMessageChunk!);
       _distanceToBottomBeforeMessageChunk = null;
     });
   }
 
   void _fadeIn() {
-    _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
+    _fadeInAnimation.animateTo(1.0,
+        duration: const Duration(milliseconds: 500));
   }
 
   void _scrollToBottom() {
-    _scrollController.animateTo(
+    _scrollController
+        .animateTo(
       _scrollController.position.maxScrollExtent,
       curve: Curves.linear,
       duration: const Duration(milliseconds: 200),
-    ).then((_) {
-      if (_scrollController.offset != _scrollController.position.maxScrollExtent) {
+    )
+        .then((_) {
+      if (_scrollController.offset !=
+          _scrollController.position.maxScrollExtent) {
         _scrollToBottom();
       }
     });
@@ -139,7 +149,9 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     if (_jumpToBottom) {
       // Check if jump to bottom is complete (we may need multiple attempts as
       // maxScrollExtent is a guesstimate).
-      if (_scrollController.hasClients && _scrollController.offset == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.hasClients &&
+          _scrollController.offset ==
+              _scrollController.position.maxScrollExtent) {
         _jumpToBottom = false;
 
         // Start the fade in when we know we are at the bottom.
@@ -163,9 +175,12 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
           if (_lastHeight != constraints.maxHeight) {
             _lastHeight = constraints.maxHeight;
 
-            if (_scrollController.hasClients && _scrollController.offset == _scrollController.position.maxScrollExtent) {
+            if (_scrollController.hasClients &&
+                _scrollController.offset ==
+                    _scrollController.position.maxScrollExtent) {
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                _scrollController
+                    .jumpTo(_scrollController.position.maxScrollExtent);
               });
             }
           }

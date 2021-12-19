@@ -26,13 +26,14 @@ class ChatJoinedChannel extends SerializableEntity {
     required this.initialMessageChunk,
     required this.lastReadMessageId,
     required this.userInfo,
-});
+  });
 
   ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
-    initialMessageChunk = ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
+    initialMessageChunk =
+        ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
     lastReadMessageId = _data['lastReadMessageId']!;
     userInfo = serverpod_auth.UserInfo.fromSerialization(_data['userInfo']);
   }
@@ -59,4 +60,3 @@ class ChatJoinedChannel extends SerializableEntity {
     });
   }
 }
-

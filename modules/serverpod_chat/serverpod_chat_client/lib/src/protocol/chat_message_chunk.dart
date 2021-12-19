@@ -23,13 +23,15 @@ class ChatMessageChunk extends SerializableEntity {
     required this.channel,
     required this.messages,
     required this.hasOlderMessages,
-});
+  });
 
   ChatMessageChunk.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
-    messages = _data['messages']!.map<ChatMessage>((a) => ChatMessage.fromSerialization(a))?.toList();
+    messages = _data['messages']!
+        .map<ChatMessage>((a) => ChatMessage.fromSerialization(a))
+        ?.toList();
     hasOlderMessages = _data['hasOlderMessages']!;
   }
 
@@ -43,4 +45,3 @@ class ChatMessageChunk extends SerializableEntity {
     });
   }
 }
-

@@ -77,7 +77,9 @@ class AwsS3Client {
   ///needed to do a signed GET request to AWS S3. Does not actually execute a request.
   ///You can use this method to integrate this client with an HTTP client of your choice.
   SignedRequestParams buildSignedParams(
-      {required String key, Map<String, String>? queryParams, String method='GET'}) {
+      {required String key,
+      Map<String, String>? queryParams,
+      String method = 'GET'}) {
     final unencodedPath = "$_bucketId/$key";
     final uri = Uri.https(_host, unencodedPath, queryParams);
     final payload = SigV4.hashCanonicalRequest('');
@@ -139,7 +141,7 @@ $payload''';
     Map<String, String>? queryParams,
   }) async {
     final SignedRequestParams params =
-    buildSignedParams(key: key, queryParams: queryParams, method: 'DELETE');
+        buildSignedParams(key: key, queryParams: queryParams, method: 'DELETE');
     return _client.delete(params.uri, headers: params.headers);
   }
 

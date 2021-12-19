@@ -25,7 +25,7 @@ class ChatMessagePost extends SerializableEntity {
     required this.message,
     required this.clientMessageId,
     this.attachments,
-});
+  });
 
   ChatMessagePost.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -33,7 +33,10 @@ class ChatMessagePost extends SerializableEntity {
     channel = _data['channel']!;
     message = _data['message']!;
     clientMessageId = _data['clientMessageId']!;
-    attachments = _data['attachments']?.map<ChatMessageAttachment>((a) => ChatMessageAttachment.fromSerialization(a))?.toList();
+    attachments = _data['attachments']
+        ?.map<ChatMessageAttachment>(
+            (a) => ChatMessageAttachment.fromSerialization(a))
+        ?.toList();
   }
 
   @override
@@ -43,7 +46,8 @@ class ChatMessagePost extends SerializableEntity {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
+      'attachments':
+          attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
     });
   }
 
@@ -54,8 +58,8 @@ class ChatMessagePost extends SerializableEntity {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
+      'attachments':
+          attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
     });
   }
 }
-

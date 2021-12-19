@@ -15,9 +15,11 @@ class _EndpointExample extends EndpointRef {
 
   _EndpointExample(EndpointCaller caller) : super(caller);
 
-  Future<String> hello(String name,) async {
+  Future<String> hello(
+    String name,
+  ) async {
     return await caller.callServerEndpoint('example', 'hello', 'String', {
-      'name':name,
+      'name': name,
     });
   }
 }
@@ -25,16 +27,22 @@ class _EndpointExample extends EndpointRef {
 class Client extends ServerpodClient {
   late final _EndpointExample example;
 
-  Client(String host, {SecurityContext? context, ServerpodClientErrorCallback? errorHandler, AuthenticationKeyManager? authenticationKeyManager}) : super(host, Protocol.instance, context: context, errorHandler: errorHandler, authenticationKeyManager: authenticationKeyManager) {
+  Client(String host,
+      {SecurityContext? context,
+      ServerpodClientErrorCallback? errorHandler,
+      AuthenticationKeyManager? authenticationKeyManager})
+      : super(host, Protocol.instance,
+            context: context,
+            errorHandler: errorHandler,
+            authenticationKeyManager: authenticationKeyManager) {
     example = _EndpointExample(this);
   }
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-    'example' : example,
-  };
+        'example': example,
+      };
 
   @override
-  Map<String, ModuleEndpointCaller> get moduleLookup => {
-  };
+  Map<String, ModuleEndpointCaller> get moduleLookup => {};
 }

@@ -17,9 +17,11 @@ enum UserImageType {
 /// user image.
 typedef UserImageGenerator = Future<Image> Function(UserInfo userInfo);
 
-typedef UserInfoUpdateCallback = Future<void> Function(Session session, UserInfo userInfo);
+typedef UserInfoUpdateCallback = Future<void> Function(
+    Session session, UserInfo userInfo);
 
-typedef SendPasswordResetEmailCallback = Future<bool> Function(Session session, UserInfo userInfo, String resetLink);
+typedef SendPasswordResetEmailCallback = Future<bool> Function(
+    Session session, UserInfo userInfo, String resetLink);
 
 /// Configuration options for the Auth module.
 class AuthConfig {

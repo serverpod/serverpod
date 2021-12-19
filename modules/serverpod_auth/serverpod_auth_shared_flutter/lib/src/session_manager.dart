@@ -30,13 +30,16 @@ class SessionManager with ChangeNotifier {
     required this.caller,
   }) {
     _instance = this;
-    assert(caller.client.authenticationKeyManager != null, 'The client needs an associated key manager');
-    keyManager = caller.client.authenticationKeyManager! as FlutterAuthenticationKeyManager;
+    assert(caller.client.authenticationKeyManager != null,
+        'The client needs an associated key manager');
+    keyManager = caller.client.authenticationKeyManager!
+        as FlutterAuthenticationKeyManager;
   }
 
   /// Returns a singleton instance of the session manager
   static Future<SessionManager> get instance async {
-    assert(_instance != null, 'You need to create a SessionManager before the instance method can be called');
+    assert(_instance != null,
+        'You need to create a SessionManager before the instance method can be called');
     return _instance!;
   }
 
@@ -59,15 +62,12 @@ class SessionManager with ChangeNotifier {
   /// shared preferences.
   Future<void> initialize() async {
     await _loadSharedPrefs();
-    unawaited(
-      refreshSession()
-    );
+    unawaited(refreshSession());
   }
 
   /// Signs the user out from all connected devices. Returns true if successful.
   Future<bool> signOut() async {
-    if (!isSignedIn)
-      return true;
+    if (!isSignedIn) return true;
 
     try {
       await caller.status.signOut();
@@ -76,8 +76,7 @@ class SessionManager with ChangeNotifier {
       await keyManager.remove();
       notifyListeners();
       return true;
-    }
-    catch(e) {
+    } catch (e) {
       return false;
     }
   }
@@ -90,8 +89,7 @@ class SessionManager with ChangeNotifier {
       await _storeSharedPrefs();
       notifyListeners();
       return true;
-    }
-    catch(e) {
+    } catch (e) {
       return false;
     }
   }
@@ -99,35 +97,35 @@ class SessionManager with ChangeNotifier {
   Future<void> _loadSharedPrefs() async {
     var prefs = await SharedPreferences.getInstance();
 
-    var version = prefs.getInt(_prefsKey + '_' + keyManager.runMode + '_version');
-    if (version != _prefsVersion)
-      return;
+    var version =
+        prefs.getInt(_prefsKey + '_' + keyManager.runMode + '_version');
+    if (version != _prefsVersion) return;
 
     var json = prefs.getString(_prefsKey + '_' + keyManager.runMode);
-    if (json == null)
-      return;
+    if (json == null) return;
 
-    _signedInUser = Protocol.instance.createEntityFromSerialization(jsonDecode(json)) as UserInfo;
+    _signedInUser = Protocol.instance
+        .createEntityFromSerialization(jsonDecode(json)) as UserInfo;
     notifyListeners();
   }
 
   Future<void> _storeSharedPrefs() async {
     var prefs = await SharedPreferences.getInstance();
 
-    await prefs.setInt(_prefsKey + '_' + keyManager.runMode + '_version', _prefsVersion);
+    await prefs.setInt(
+        _prefsKey + '_' + keyManager.runMode + '_version', _prefsVersion);
     if (signedInUser == null) {
       await prefs.remove(_prefsKey + '_' + keyManager.runMode);
-    }
-    else {
-      await prefs.setString(_prefsKey + '_' + keyManager.runMode, jsonEncode(signedInUser!.serialize()));
+    } else {
+      await prefs.setString(_prefsKey + '_' + keyManager.runMode,
+          jsonEncode(signedInUser!.serialize()));
     }
   }
 
   /// Uploads a new user image if the user is signed in. Returns true if upload
   /// was successful.
   Future<bool> uploadUserImage(ByteData image) async {
-    if (_signedInUser == null)
-      return false;
+    if (_signedInUser == null) return false;
 
     try {
       var success = await caller.user.setUserImage(image);
@@ -137,8 +135,7 @@ class SessionManager with ChangeNotifier {
         return true;
       }
       return false;
-    }
-    catch(e) {
+    } catch (e) {
       return false;
     }
   }

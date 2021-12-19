@@ -35,19 +35,22 @@ class _SignInWithAppleButtonState extends State<SignInWithAppleButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      style: widget.style ?? ElevatedButton.styleFrom(
-        primary: Colors.black,
-        onPrimary: Colors.white,
-        alignment: Alignment.centerLeft,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-      ),
+      style: widget.style ??
+          ElevatedButton.styleFrom(
+            primary: Colors.black,
+            onPrimary: Colors.white,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.symmetric(horizontal: 16),
+          ),
       onPressed: () {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
 
         // Attempt to sign in the user.
-        signInWithApple(widget.caller,).then((UserInfo? userInfo) {
+        signInWithApple(
+          widget.caller,
+        ).then((UserInfo? userInfo) {
           // Pop the loading barrier
           Navigator.of(context).pop();
 

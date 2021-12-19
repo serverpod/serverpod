@@ -55,8 +55,7 @@ class _UserSettingsState extends State<UserSettings> {
           userName: _userInfo!.userName,
           fullName: _userInfo!.fullName,
         );
-      }
-      else {
+      } else {
         return _LargeSettings(
           sessionManager: widget.sessionManager,
           userInfo: _userInfo,
@@ -64,15 +63,13 @@ class _UserSettingsState extends State<UserSettings> {
           fullName: _userInfo!.fullName,
         );
       }
-    }
-    else {
+    } else {
       if (widget.compact) {
         return _CompactSettings(
           sessionManager: widget.sessionManager,
           userName: 'Not signed in',
         );
-      }
-      else {
+      } else {
         return _LargeSettings(
           sessionManager: widget.sessionManager,
           userName: 'Not signed in',
@@ -117,17 +114,18 @@ class _CompactSettings extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
-                if (fullName != null) Padding(
-                  padding: EdgeInsets.only(top: 4),
-                  child: Text(
-                    fullName!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                      color: Theme.of(context).textTheme.caption!.color,
+                if (fullName != null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      fullName!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            color: Theme.of(context).textTheme.caption!.color,
+                          ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -172,21 +170,19 @@ class _LargeSettings extends StatelessWidget {
             style: Theme.of(context).textTheme.headline6,
           ),
         ),
-        if (fullName != null) Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: Text(
-            fullName!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyText2!.copyWith(
-              color: Theme.of(context).textTheme.caption!.color,
+        if (fullName != null)
+          Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              fullName!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                    color: Theme.of(context).textTheme.caption!.color,
+                  ),
             ),
           ),
-        ),
       ],
     );
   }
 }
-
-
-

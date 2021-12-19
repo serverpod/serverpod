@@ -37,7 +37,7 @@ class UserInfo extends SerializableEntity {
     required this.active,
     required this.blocked,
     this.suspendedUntil,
-});
+  });
 
   UserInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -51,7 +51,9 @@ class UserInfo extends SerializableEntity {
     scopeNames = _data['scopeNames']!.cast<String>();
     active = _data['active']!;
     blocked = _data['blocked']!;
-    suspendedUntil = _data['suspendedUntil'] != null ? DateTime.tryParse(_data['suspendedUntil']) : null;
+    suspendedUntil = _data['suspendedUntil'] != null
+        ? DateTime.tryParse(_data['suspendedUntil'])
+        : null;
   }
 
   @override
@@ -71,4 +73,3 @@ class UserInfo extends SerializableEntity {
     });
   }
 }
-

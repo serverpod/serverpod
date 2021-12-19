@@ -19,7 +19,7 @@ class ChatLeaveChannel extends SerializableEntity {
   ChatLeaveChannel({
     this.id,
     required this.channel,
-});
+  });
 
   ChatLeaveChannel.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -43,4 +43,3 @@ class ChatLeaveChannel extends SerializableEntity {
     });
   }
 }
-

@@ -11,7 +11,8 @@ import 'protocol.dart';
 
 class ChatMessageAttachmentUploadDescription extends SerializableEntity {
   @override
-  String get className => 'serverpod_chat_server.ChatMessageAttachmentUploadDescription';
+  String get className =>
+      'serverpod_chat_server.ChatMessageAttachmentUploadDescription';
 
   int? id;
   late String filePath;
@@ -21,9 +22,10 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
     this.id,
     required this.filePath,
     required this.uploadDescription,
-});
+  });
 
-  ChatMessageAttachmentUploadDescription.fromSerialization(Map<String, dynamic> serialization) {
+  ChatMessageAttachmentUploadDescription.fromSerialization(
+      Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     filePath = _data['filePath']!;
@@ -39,4 +41,3 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
     });
   }
 }
-

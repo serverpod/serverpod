@@ -41,7 +41,7 @@ class UserInfo extends TableRow {
     required this.active,
     required this.blocked,
     this.suspendedUntil,
-});
+  });
 
   UserInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -55,7 +55,9 @@ class UserInfo extends TableRow {
     scopeNames = _data['scopeNames']!.cast<String>();
     active = _data['active']!;
     blocked = _data['blocked']!;
-    suspendedUntil = _data['suspendedUntil'] != null ? DateTime.tryParse(_data['suspendedUntil']) : null;
+    suspendedUntil = _data['suspendedUntil'] != null
+        ? DateTime.tryParse(_data['suspendedUntil'])
+        : null;
   }
 
   @override
@@ -129,18 +131,18 @@ class UserInfoTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    userIdentifier,
-    userName,
-    fullName,
-    email,
-    created,
-    imageUrl,
-    scopeNames,
-    active,
-    blocked,
-    suspendedUntil,
-  ];
+        id,
+        userIdentifier,
+        userName,
+        fullName,
+        email,
+        created,
+        imageUrl,
+        scopeNames,
+        active,
+        blocked,
+        suspendedUntil,
+      ];
 }
 
 UserInfoTable tUserInfo = UserInfoTable();

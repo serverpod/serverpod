@@ -31,7 +31,6 @@ class AwsS3Uploader {
 
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
-
   }) async {
     final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
 
@@ -40,10 +39,14 @@ class AwsS3Uploader {
 
     final uri = Uri.parse(endpoint);
     final req = http.MultipartRequest("POST", uri);
-    final multipartFile = http.MultipartFile('file', stream, length, filename: path.basename(file.path));
+    final multipartFile = http.MultipartFile('file', stream, length,
+        filename: path.basename(file.path));
 
-    final policy = Policy.fromS3PresignedPost(uploadDst, bucket, accessKey, 15, length, region: region);
-    final key = SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
+    final policy = Policy.fromS3PresignedPost(
+        uploadDst, bucket, accessKey, 15, length,
+        region: region);
+    final key =
+        SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
     final signature = SigV4.calculateSignature(key, policy.encode());
 
     req.files.add(multipartFile);
@@ -88,7 +91,6 @@ class AwsS3Uploader {
 
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
-
     bool public = true,
   }) async {
     final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
@@ -101,10 +103,14 @@ class AwsS3Uploader {
 
     final uri = Uri.parse(endpoint);
     final req = http.MultipartRequest("POST", uri);
-    final multipartFile = http.MultipartFile('file', stream, length, filename: path.basename(uploadDst));
+    final multipartFile = http.MultipartFile('file', stream, length,
+        filename: path.basename(uploadDst));
 
-    final policy = Policy.fromS3PresignedPost(uploadDst, bucket, accessKey, 15, length, region: region, public: public);
-    final key = SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
+    final policy = Policy.fromS3PresignedPost(
+        uploadDst, bucket, accessKey, 15, length,
+        region: region, public: public);
+    final key =
+        SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
     final signature = SigV4.calculateSignature(key, policy.encode());
 
     req.files.add(multipartFile);
@@ -148,7 +154,6 @@ class AwsS3Uploader {
 
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
-
     bool public = true,
   }) async {
     final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
@@ -163,8 +168,11 @@ class AwsS3Uploader {
     // final req = http.MultipartRequest("POST", uri);
     // final multipartFile = http.MultipartFile('file', stream, length, filename: path.basename(uploadDst));
 
-    final policy = Policy.fromS3PresignedPost(uploadDst, bucket, accessKey, 15, 10 * 1024 * 1024, region: region, public: public);
-    final key = SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
+    final policy = Policy.fromS3PresignedPost(
+        uploadDst, bucket, accessKey, 15, 10 * 1024 * 1024,
+        region: region, public: public);
+    final key =
+        SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
     final signature = SigV4.calculateSignature(key, policy.encode());
 
     // req.files.add(multipartFile);

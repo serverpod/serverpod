@@ -25,10 +25,14 @@ class Endpoints extends EndpointDispatch {
         'hello': MethodConnector(
           name: 'hello',
           params: {
-            'name': ParameterDescription(name: 'name', type: String, nullable: false),
+            'name': ParameterDescription(
+                name: 'name', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['module'] as ModuleEndpoint).hello(session,params['name'],);
+            return (endpoints['module'] as ModuleEndpoint).hello(
+              session,
+              params['name'],
+            );
           },
         ),
       },
@@ -36,7 +40,5 @@ class Endpoints extends EndpointDispatch {
   }
 
   @override
-  void registerModules(Serverpod pod) {
-  }
+  void registerModules(Serverpod pod) {}
 }
-

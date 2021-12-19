@@ -14,7 +14,8 @@ import 'config.dart';
 class UserImages {
   /// Sets a user's image from the provided [url]. Image is downloaded, stored
   /// in the cloud and associated with the user.
-  static Future<bool> setUserImageFromUrl(Session session, int userId, Uri url) async {
+  static Future<bool> setUserImageFromUrl(
+      Session session, int userId, Uri url) async {
     var result = await http.get(url);
     var bytes = result.bodyBytes;
     return await setUserImageFromBytes(session, userId, bytes);
@@ -22,10 +23,10 @@ class UserImages {
 
   /// Sets a user's image from image data. The image is resized before being
   /// stored in the cloud and associated with the user.
-  static Future<bool> setUserImageFromBytes(Session session, int userId, Uint8List bytes) async {
+  static Future<bool> setUserImageFromBytes(
+      Session session, int userId, Uint8List bytes) async {
     var image = decodeImage(bytes);
-    if (image == null)
-      return false;
+    if (image == null) return false;
 
     var imageSize = AuthConfig.current.userImageSize;
     if (image.width != imageSize || image.height != imageSize)
@@ -39,8 +40,7 @@ class UserImages {
   /// Sets a user's image to the default image for that user.
   static Future<bool> setDefaultUserImage(Session session, int userId) async {
     var userInfo = await Users.findUserByUserId(session, userId);
-    if (userInfo == null)
-      return false;
+    if (userInfo == null) return false;
 
     var image = await AuthConfig.current.userImageGenerator(userInfo);
     var imageData = _encodeImage(image);
@@ -61,7 +61,8 @@ class UserImages {
     return ByteData.view(encodedBytes.buffer);
   }
 
-  static Future<bool> _setUserImage(Session session, int userId, ByteData imageData) async {
+  static Future<bool> _setUserImage(
+      Session session, int userId, ByteData imageData) async {
     // Find the latest version of the user image if any.
     var oldImageRef = await session.db.findSingleRow(
       tUserImage,
@@ -69,7 +70,7 @@ class UserImages {
       orderDescending: true,
       orderBy: tUserImage.version,
     ) as UserImage?;
-    
+
     // Add one to the version number or create a new version 1.
     var version = (oldImageRef?.version ?? 0) + 1;
 
@@ -78,29 +79,31 @@ class UserImages {
       pathExtension = '.jpg';
     else
       pathExtension = '.png';
-    
+
     // Store the image.
     var path = 'serverpod/user_images/$userId-$version$pathExtension';
-    await session.storage.storeFile(storageId: 'public', path: path, byteData: imageData);
-    var publicUrl = await session.storage.getPublicUrl(storageId: 'public', path: path);
-    if (publicUrl == null)
-      return false;
+    await session.storage
+        .storeFile(storageId: 'public', path: path, byteData: imageData);
+    var publicUrl =
+        await session.storage.getPublicUrl(storageId: 'public', path: path);
+    if (publicUrl == null) return false;
 
     // Store the path to the image.
-    var imageRef = UserImage(userId: userId, version: version, url: publicUrl.toString());
+    var imageRef =
+        UserImage(userId: userId, version: version, url: publicUrl.toString());
     await session.db.insert(imageRef);
 
     // Update the UserInfo with the new image path.
-    var userInfo = await Users.findUserByUserId(session, userId, useCache: false);
-    if (userInfo == null)
-      return false;
+    var userInfo =
+        await Users.findUserByUserId(session, userId, useCache: false);
+    if (userInfo == null) return false;
     userInfo.imageUrl = publicUrl.toString();
     await session.db.update(userInfo);
 
     if (AuthConfig.current.userInfoUpdateListener != null) {
       await AuthConfig.current.userInfoUpdateListener!(session, userInfo);
     }
-    
+
     return true;
   }
 }
@@ -149,9 +152,9 @@ Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
 
   // Get first letter of the user name (or * if not found in bitmap font).
   var name = userInfo.userName;
-  var charCode = (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*').codeUnits[0];
-  if (font.characters[charCode] == null)
-    charCode = '*'.codeUnits[0];
+  var charCode =
+      (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*').codeUnits[0];
+  if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
 
   // Draw the image.
   var chWidth = font.characters[charCode]!.width;
@@ -162,14 +165,15 @@ Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
   var yPos = 128 - chHeight ~/ 2;
 
   // Pick color based on user id from the default colors (from material design).
-  fill(image, _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length]);
+  fill(image,
+      _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length]);
 
   // Draw the character on top of the solid filled image.
-  drawString(image, font, xPos - chOffsetX, yPos - chOffsetY, String.fromCharCode(charCode));
+  drawString(image, font, xPos - chOffsetX, yPos - chOffsetY,
+      String.fromCharCode(charCode));
 
   // Resize image if it's not the preferred size.
-  if (imageSize != 256)
-    image = copyResizeCropSquare(image, imageSize);
+  if (imageSize != 256) image = copyResizeCropSquare(image, imageSize);
 
   return image;
 }

@@ -7,7 +7,8 @@ import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:serverpod_auth_client/module.dart' as auth;
 
-typedef ChatControllerReceivedMessageCallback = void Function(ChatMessage message, bool addedByUser);
+typedef ChatControllerReceivedMessageCallback = void Function(
+    ChatMessage message, bool addedByUser);
 
 class ChatController {
   late final String channel;
@@ -98,20 +99,18 @@ class ChatController {
           _notifyMessageUpdatedListeners();
         }
       }
-      if(!updated) {
+      if (!updated) {
         messages.add(serverMessage);
         _notifyMessageListeners(serverMessage, false);
       }
 
       _updateUnreadMessages();
-    }
-    else if (serverMessage is ChatMessageChunk) {
+    } else if (serverMessage is ChatMessageChunk) {
       _hasOlderMessages = serverMessage.hasOlderMessages;
       messages.insertAll(0, serverMessage.messages);
       _postedMessageChunkRequest = false;
       _notifyReceivedMessageChunkListeners();
-    }
-    else if (serverMessage is ChatJoinedChannel) {
+    } else if (serverMessage is ChatJoinedChannel) {
       messages.addAll(serverMessage.initialMessageChunk.messages);
       _joinedAsUserInfo = serverMessage.userInfo;
       _hasOlderMessages = serverMessage.initialMessageChunk.hasOlderMessages;
@@ -119,8 +118,7 @@ class ChatController {
       _joinedChannel = true;
       _updateUnreadMessages();
       _notifyConnectionStatusListener();
-    }
-    else if (serverMessage is ChatJoinChannelFailed) {
+    } else if (serverMessage is ChatJoinChannelFailed) {
       _joinFailed = true;
       _joinFailedReason = serverMessage.reason;
       _notifyConnectionStatusListener();
@@ -189,8 +187,7 @@ class ChatController {
   }
 
   int? _getLastMessageId() {
-    if (ephemeral)
-      return null;
+    if (ephemeral) return null;
 
     int? lastMessageId;
     for (var i = messages.length - 1; i >= 0; i -= 1) {
@@ -212,7 +209,10 @@ class ChatController {
   }
 
   void requestNextMessageChunk() {
-    if (!_hasOlderMessages || !sessionManager.isSignedIn || messages.isEmpty || _postedMessageChunkRequest) {
+    if (!_hasOlderMessages ||
+        !sessionManager.isSignedIn ||
+        messages.isEmpty ||
+        _postedMessageChunkRequest) {
       return;
     }
     _postedMessageChunkRequest = true;
@@ -222,17 +222,20 @@ class ChatController {
       return;
     }
 
-    var request = ChatRequestMessageChunk(channel: channel, lastMessageId: messageId);
+    var request =
+        ChatRequestMessageChunk(channel: channel, lastMessageId: messageId);
     dispatch.postRequestMessageChunk(request);
   }
 
   // Listeners for received messages
 
-  void addMessageReceivedListener(ChatControllerReceivedMessageCallback listener) {
+  void addMessageReceivedListener(
+      ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.add(listener);
   }
 
-  void removeMessageReceivedListener(ChatControllerReceivedMessageCallback listener) {
+  void removeMessageReceivedListener(
+      ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.remove(listener);
   }
 
@@ -289,7 +292,7 @@ class ChatController {
       listener();
     }
   }
-  
+
   // Listeners for connection status
 
   void addConnectionStatusListener(VoidCallback listener) {
