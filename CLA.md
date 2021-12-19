@@ -18,8 +18,7 @@ foregoing rights through multiple tiers of sublicensees.
 
 
 **Moral Rights.** To the fullest extent permitted under applicable law, you hereby waive, and agree not to
-assert, all of your “moral rights” in or relating to your Contributions for the benefit of Serverpod, its assigns, and
-their respective direct and indirect sublicensees.
+assert, all of your “moral rights” in or relating to your Contributions for the benefit of Serverpod, its assigns, and their respective direct and indirect sublicensees.
 
 
 **Third Party Content/Rights.** If your Contribution includes or is based on any source code, object code, bug
