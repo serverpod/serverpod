@@ -26,13 +26,16 @@ class RuntimeSettings extends SerializableEntity {
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
-});
+  });
 
   RuntimeSettings.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     logSettings = LogSettings.fromSerialization(_data['logSettings']);
-    logSettingsOverrides = _data['logSettingsOverrides']!.map<LogSettingsOverride>((a) => LogSettingsOverride.fromSerialization(a))?.toList();
+    logSettingsOverrides = _data['logSettingsOverrides']!
+        .map<LogSettingsOverride>(
+            (a) => LogSettingsOverride.fromSerialization(a))
+        ?.toList();
     logServiceCalls = _data['logServiceCalls']!;
     logMalformedCalls = _data['logMalformedCalls']!;
   }
@@ -42,10 +45,11 @@ class RuntimeSettings extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'logSettings': logSettings.serialize(),
-      'logSettingsOverrides': logSettingsOverrides.map((LogSettingsOverride a) => a.serialize()).toList(),
+      'logSettingsOverrides': logSettingsOverrides
+          .map((LogSettingsOverride a) => a.serialize())
+          .toList(),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     });
   }
 }
-

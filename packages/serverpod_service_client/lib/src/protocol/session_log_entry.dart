@@ -40,7 +40,7 @@ class SessionLogEntry extends SerializableEntity {
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
-});
+  });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -76,4 +76,3 @@ class SessionLogEntry extends SerializableEntity {
     });
   }
 }
-

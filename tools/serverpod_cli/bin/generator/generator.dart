@@ -1,5 +1,6 @@
-import 'config.dart';
 import 'class_generator.dart';
+import 'config.dart';
+import 'dart_format.dart';
 import 'protocol_generator.dart';
 
 void performGenerate(bool verbose) {
@@ -10,4 +11,7 @@ void performGenerate(bool verbose) {
 
   print('Generating protocol');
   performGenerateProtocol(verbose);
+
+  print('Dart format');
+  performDartFormat(verbose);
 }

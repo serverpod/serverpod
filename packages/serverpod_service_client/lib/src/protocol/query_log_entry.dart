@@ -32,7 +32,7 @@ class QueryLogEntry extends SerializableEntity {
     this.numRows,
     this.error,
     this.stackTrace,
-});
+  });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -60,4 +60,3 @@ class QueryLogEntry extends SerializableEntity {
     });
   }
 }
-

@@ -38,7 +38,7 @@ class LogEntry extends TableRow {
     required this.message,
     this.error,
     this.stackTrace,
-});
+  });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -116,16 +116,16 @@ class LogEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    sessionLogId,
-    reference,
-    serverId,
-    time,
-    logLevel,
-    message,
-    error,
-    stackTrace,
-  ];
+        id,
+        sessionLogId,
+        reference,
+        serverId,
+        time,
+        logLevel,
+        message,
+        error,
+        stackTrace,
+      ];
 }
 
 LogEntryTable tLogEntry = LogEntryTable();

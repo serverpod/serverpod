@@ -22,7 +22,7 @@ class Example extends SerializableEntity {
     this.id,
     required this.name,
     required this.data,
-});
+  });
 
   Example.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -40,4 +40,3 @@ class Example extends SerializableEntity {
     });
   }
 }
-

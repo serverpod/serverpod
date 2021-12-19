@@ -34,7 +34,7 @@ class LogEntry extends SerializableEntity {
     required this.message,
     this.error,
     this.stackTrace,
-});
+  });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -64,4 +64,3 @@ class LogEntry extends SerializableEntity {
     });
   }
 }
-

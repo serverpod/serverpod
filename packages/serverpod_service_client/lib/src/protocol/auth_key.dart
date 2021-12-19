@@ -28,7 +28,7 @@ class AuthKey extends SerializableEntity {
     this.key,
     required this.scopeNames,
     required this.method,
-});
+  });
 
   AuthKey.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -52,4 +52,3 @@ class AuthKey extends SerializableEntity {
     });
   }
 }
-

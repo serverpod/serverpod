@@ -22,7 +22,7 @@ class MethodInfo extends SerializableEntity {
     this.id,
     required this.endpoint,
     required this.method,
-});
+  });
 
   MethodInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -40,4 +40,3 @@ class MethodInfo extends SerializableEntity {
     });
   }
 }
-

@@ -26,7 +26,7 @@ class CachesInfo extends SerializableEntity {
     required this.localPrio,
     required this.distributed,
     required this.distributedPrio,
-});
+  });
 
   CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -48,4 +48,3 @@ class CachesInfo extends SerializableEntity {
     });
   }
 }
-

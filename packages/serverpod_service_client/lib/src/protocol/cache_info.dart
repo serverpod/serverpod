@@ -24,7 +24,7 @@ class CacheInfo extends SerializableEntity {
     required this.numEntries,
     required this.maxEntries,
     this.keys,
-});
+  });
 
   CacheInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -44,4 +44,3 @@ class CacheInfo extends SerializableEntity {
     });
   }
 }
-

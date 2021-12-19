@@ -26,9 +26,10 @@ class CloudStorageDirectUploadEntry extends SerializableEntity {
     required this.path,
     required this.expiration,
     required this.authKey,
-});
+  });
 
-  CloudStorageDirectUploadEntry.fromSerialization(Map<String, dynamic> serialization) {
+  CloudStorageDirectUploadEntry.fromSerialization(
+      Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     storageId = _data['storageId']!;
@@ -48,4 +49,3 @@ class CloudStorageDirectUploadEntry extends SerializableEntity {
     });
   }
 }
-

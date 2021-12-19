@@ -26,7 +26,7 @@ class LogSettingsOverride extends SerializableEntity {
     this.endpoint,
     this.method,
     required this.logSettings,
-});
+  });
 
   LogSettingsOverride.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -59,4 +59,3 @@ class LogSettingsOverride extends SerializableEntity {
     });
   }
 }
-

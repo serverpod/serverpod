@@ -30,7 +30,7 @@ class CloudStorageEntry extends SerializableEntity {
     this.expiration,
     required this.byteData,
     required this.verified,
-});
+  });
 
   CloudStorageEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -38,8 +38,12 @@ class CloudStorageEntry extends SerializableEntity {
     storageId = _data['storageId']!;
     path = _data['path']!;
     addedTime = DateTime.tryParse(_data['addedTime'])!;
-    expiration = _data['expiration'] != null ? DateTime.tryParse(_data['expiration']) : null;
-    byteData = _data['byteData'] is String ? (_data['byteData'] as String).base64DecodedByteData()! : ByteData.view((_data['byteData'] as Uint8List).buffer);
+    expiration = _data['expiration'] != null
+        ? DateTime.tryParse(_data['expiration'])
+        : null;
+    byteData = _data['byteData'] is String
+        ? (_data['byteData'] as String).base64DecodedByteData()!
+        : ByteData.view((_data['byteData'] as Uint8List).buffer);
     verified = _data['verified']!;
   }
 
@@ -56,4 +60,3 @@ class CloudStorageEntry extends SerializableEntity {
     });
   }
 }
-

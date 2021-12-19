@@ -34,17 +34,29 @@ class ObjectWithObject extends TableRow {
     this.nullableDataList,
     required this.listWithNullableData,
     this.nullableListWithNullableData,
-});
+  });
 
   ObjectWithObject.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     data = SimpleData.fromSerialization(_data['data']);
-    nullableData = _data['nullableData'] != null ? SimpleData?.fromSerialization(_data['nullableData']) : null;
-    dataList = _data['dataList']!.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
-    nullableDataList = _data['nullableDataList']?.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
-    listWithNullableData = _data['listWithNullableData']!.map<SimpleData?>((a) => a != null ? SimpleData?.fromSerialization(a) : null)?.toList();
-    nullableListWithNullableData = _data['nullableListWithNullableData']?.map<SimpleData?>((a) => a != null ? SimpleData?.fromSerialization(a) : null)?.toList();
+    nullableData = _data['nullableData'] != null
+        ? SimpleData?.fromSerialization(_data['nullableData'])
+        : null;
+    dataList = _data['dataList']!
+        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.toList();
+    nullableDataList = _data['nullableDataList']
+        ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.toList();
+    listWithNullableData = _data['listWithNullableData']!
+        .map<SimpleData?>(
+            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        ?.toList();
+    nullableListWithNullableData = _data['nullableListWithNullableData']
+        ?.map<SimpleData?>(
+            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        ?.toList();
   }
 
   @override
@@ -54,9 +66,13 @@ class ObjectWithObject extends TableRow {
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),
       'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
-      'nullableDataList': nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
-      'listWithNullableData': listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
-      'nullableListWithNullableData': nullableListWithNullableData?.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableDataList':
+          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
+      'listWithNullableData':
+          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableListWithNullableData': nullableListWithNullableData
+          ?.map((SimpleData? a) => a?.serialize())
+          .toList(),
     });
   }
 
@@ -67,9 +83,13 @@ class ObjectWithObject extends TableRow {
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),
       'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
-      'nullableDataList': nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
-      'listWithNullableData': listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
-      'nullableListWithNullableData': nullableListWithNullableData?.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableDataList':
+          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
+      'listWithNullableData':
+          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableListWithNullableData': nullableListWithNullableData
+          ?.map((SimpleData? a) => a?.serialize())
+          .toList(),
     });
   }
 
@@ -80,9 +100,13 @@ class ObjectWithObject extends TableRow {
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),
       'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
-      'nullableDataList': nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
-      'listWithNullableData': listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
-      'nullableListWithNullableData': nullableListWithNullableData?.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableDataList':
+          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
+      'listWithNullableData':
+          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableListWithNullableData': nullableListWithNullableData
+          ?.map((SimpleData? a) => a?.serialize())
+          .toList(),
     });
   }
 }
@@ -98,18 +122,19 @@ class ObjectWithObjectTable extends Table {
   final dataList = ColumnSerializable('dataList');
   final nullableDataList = ColumnSerializable('nullableDataList');
   final listWithNullableData = ColumnSerializable('listWithNullableData');
-  final nullableListWithNullableData = ColumnSerializable('nullableListWithNullableData');
+  final nullableListWithNullableData =
+      ColumnSerializable('nullableListWithNullableData');
 
   @override
   List<Column> get columns => [
-    id,
-    data,
-    nullableData,
-    dataList,
-    nullableDataList,
-    listWithNullableData,
-    nullableListWithNullableData,
-  ];
+        id,
+        data,
+        nullableData,
+        dataList,
+        nullableDataList,
+        listWithNullableData,
+        nullableListWithNullableData,
+      ];
 }
 
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();

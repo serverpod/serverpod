@@ -26,7 +26,7 @@ class FutureCallEntry extends SerializableEntity {
     required this.time,
     this.serializedObject,
     required this.serverId,
-});
+  });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -48,4 +48,3 @@ class FutureCallEntry extends SerializableEntity {
     });
   }
 }
-

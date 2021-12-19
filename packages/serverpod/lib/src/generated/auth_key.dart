@@ -32,7 +32,7 @@ class AuthKey extends TableRow {
     this.key,
     required this.scopeNames,
     required this.method,
-});
+  });
 
   AuthKey.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -93,12 +93,12 @@ class AuthKeyTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    userId,
-    hash,
-    scopeNames,
-    method,
-  ];
+        id,
+        userId,
+        hash,
+        scopeNames,
+        method,
+      ];
 }
 
 AuthKeyTable tAuthKey = AuthKeyTable();

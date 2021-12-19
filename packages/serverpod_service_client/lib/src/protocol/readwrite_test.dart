@@ -20,7 +20,7 @@ class ReadWriteTestEntry extends SerializableEntity {
   ReadWriteTestEntry({
     this.id,
     required this.number,
-});
+  });
 
   ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -36,4 +36,3 @@ class ReadWriteTestEntry extends SerializableEntity {
     });
   }
 }
-

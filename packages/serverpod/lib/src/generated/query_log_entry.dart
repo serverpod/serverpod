@@ -36,7 +36,7 @@ class QueryLogEntry extends TableRow {
     this.numRows,
     this.error,
     this.stackTrace,
-});
+  });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -109,15 +109,15 @@ class QueryLogEntryTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    serverId,
-    sessionLogId,
-    query,
-    duration,
-    numRows,
-    error,
-    stackTrace,
-  ];
+        id,
+        serverId,
+        sessionLogId,
+        query,
+        duration,
+        numRows,
+        error,
+        stackTrace,
+      ];
 }
 
 QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();

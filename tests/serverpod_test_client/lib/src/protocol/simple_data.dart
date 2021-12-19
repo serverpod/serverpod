@@ -20,7 +20,7 @@ class SimpleData extends SerializableEntity {
   SimpleData({
     this.id,
     required this.num,
-});
+  });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -36,4 +36,3 @@ class SimpleData extends SerializableEntity {
     });
   }
 }
-

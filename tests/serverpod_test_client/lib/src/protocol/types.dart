@@ -30,7 +30,7 @@ class Types extends SerializableEntity {
     this.aDateTime,
     this.aString,
     this.aByteData,
-});
+  });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -38,9 +38,15 @@ class Types extends SerializableEntity {
     anInt = _data['anInt'];
     aBool = _data['aBool'];
     aDouble = _data['aDouble'];
-    aDateTime = _data['aDateTime'] != null ? DateTime.tryParse(_data['aDateTime']) : null;
+    aDateTime = _data['aDateTime'] != null
+        ? DateTime.tryParse(_data['aDateTime'])
+        : null;
     aString = _data['aString'];
-    aByteData = _data['aByteData'] == null ? null : (_data['aByteData'] is String ? (_data['aByteData'] as String).base64DecodedByteData() : ByteData.view((_data['aByteData'] as Uint8List).buffer));
+    aByteData = _data['aByteData'] == null
+        ? null
+        : (_data['aByteData'] is String
+            ? (_data['aByteData'] as String).base64DecodedByteData()
+            : ByteData.view((_data['aByteData'] as Uint8List).buffer));
   }
 
   @override
@@ -56,4 +62,3 @@ class Types extends SerializableEntity {
     });
   }
 }
-
