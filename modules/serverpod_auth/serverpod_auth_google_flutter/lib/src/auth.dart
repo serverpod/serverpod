@@ -77,6 +77,12 @@ Future<UserInfo?> signInWithGoogle(
     // Store the user info in the session manager.
     sessionManager.signedInUser = serverResponse.userInfo;
 
+    // Authentication with server is complete, we can sign out from Google locally
+    if (debug) print('serverpod_auth_google: Signing out from google');
+    await _googleSignIn.signOut();
+
+    if (debug) await _googleSignIn.disconnect();
+
     if (debug)
       print(
           'serverpod_auth_google: Authentication was successful. Saved credentials to SessionManager');
