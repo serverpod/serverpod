@@ -21,6 +21,8 @@ class SignInWithGoogleButton extends StatefulWidget {
 
   final List<String> additionalScopes;
 
+  final Alignment alignment;
+
   /// Creates a new Sign in with Google button.
   SignInWithGoogleButton({
     required this.caller,
@@ -29,6 +31,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.debug = false,
     this.style,
     this.additionalScopes = const [],
+    this.alignment = Alignment.centerLeft,
   });
 
   @override
@@ -43,7 +46,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           ElevatedButton.styleFrom(
             primary: Colors.white,
             onPrimary: Colors.grey[700],
-            alignment: Alignment.centerLeft,
+            alignment: widget.alignment,
             padding: EdgeInsets.symmetric(horizontal: 16),
           ),
       onPressed: () {
