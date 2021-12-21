@@ -60,7 +60,7 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
-    var userInfo = await _setupUserInfo(session, email, fullName, image);
+    var userInfo = await _setupUserInfo(session, email, name, fullName, image);
 
     if (userInfo == null) return AuthenticationResponse(success: false);
 
@@ -104,15 +104,17 @@ class GoogleEndpoint extends Endpoint {
       String? email = data['email'];
       String? fullName = data['name'];
       String? image = data['picture'];
+      String name = data['given_name'];
 
-      if (email == null || fullName == null || image == null) {
+      if (email == null || fullName == null || image == null || name == null) {
         session.log(
-            'Failed to get info, email: $email fullName: $fullName image: $image',
+            'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
             level: LogLevel.debug);
         return AuthenticationResponse(success: false);
       }
 
-      var userInfo = await _setupUserInfo(session, email, fullName, image);
+      var userInfo =
+          await _setupUserInfo(session, email, name, fullName, image);
       if (userInfo == null) {
         session.log('Failed to create UserInfo', level: LogLevel.debug);
         return AuthenticationResponse(success: false);
@@ -139,8 +141,8 @@ class GoogleEndpoint extends Endpoint {
     }
   }
 
-  Future<UserInfo?> _setupUserInfo(
-      Session session, String email, String fullName, String? image) async {
+  Future<UserInfo?> _setupUserInfo(Session session, String email, String name,
+      String fullName, String? image) async {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
