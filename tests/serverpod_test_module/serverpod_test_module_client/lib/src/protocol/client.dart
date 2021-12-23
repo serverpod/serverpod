@@ -15,21 +15,15 @@ class _EndpointModule extends EndpointRef {
 
   _EndpointModule(EndpointCaller caller) : super(caller);
 
-  Future<String> hello(
-    String name,
-  ) async {
-    return await caller
-        .callServerEndpoint('serverpod_test_module.module', 'hello', 'String', {
-      'name': name,
+  Future<String> hello(String name,) async {
+    return await caller.callServerEndpoint('serverpod_test_module.module', 'hello', 'String', {
+      'name':name,
     });
   }
 
-  Future<ModuleClass> modifyModuleObject(
-    ModuleClass object,
-  ) async {
-    return await caller.callServerEndpoint(
-        'serverpod_test_module.module', 'modifyModuleObject', 'ModuleClass', {
-      'object': object,
+  Future<ModuleClass> modifyModuleObject(ModuleClass object,) async {
+    return await caller.callServerEndpoint('serverpod_test_module.module', 'modifyModuleObject', 'ModuleClass', {
+      'object':object,
     });
   }
 }
@@ -52,7 +46,7 @@ class Caller extends ModuleEndpointCaller {
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-        'serverpod_test_module.module': module,
-        'serverpod_test_module.streaming': streaming,
-      };
+    'serverpod_test_module.module' : module,
+    'serverpod_test_module.streaming' : streaming,
+  };
 }

@@ -17,6 +17,8 @@ class RuntimeSettings extends TableRow {
   @override
   String get tableName => 'serverpod_runtime_settings';
 
+  static final t = RuntimeSettingsTable();
+
   @override
   int? id;
   late LogSettings logSettings;
@@ -105,4 +107,5 @@ class RuntimeSettingsTable extends Table {
       ];
 }
 
+@Deprecated('Use RuntimeSettingsTable.t instead.')
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();

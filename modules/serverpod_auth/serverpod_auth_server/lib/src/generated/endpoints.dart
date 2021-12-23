@@ -23,10 +23,8 @@ class Endpoints extends EndpointDispatch {
       'admin': AdminEndpoint()..initialize(server, 'admin', 'serverpod_auth'),
       'apple': AppleEndpoint()..initialize(server, 'apple', 'serverpod_auth'),
       'email': EmailEndpoint()..initialize(server, 'email', 'serverpod_auth'),
-      'google': GoogleEndpoint()
-        ..initialize(server, 'google', 'serverpod_auth'),
-      'status': StatusEndpoint()
-        ..initialize(server, 'status', 'serverpod_auth'),
+      'google': GoogleEndpoint()..initialize(server, 'google', 'serverpod_auth'),
+      'status': StatusEndpoint()..initialize(server, 'status', 'serverpod_auth'),
       'user': UserEndpoint()..initialize(server, 'user', 'serverpod_auth'),
     };
 
@@ -37,14 +35,10 @@ class Endpoints extends EndpointDispatch {
         'getUserInfo': MethodConnector(
           name: 'getUserInfo',
           params: {
-            'userId': ParameterDescription(
-                name: 'userId', type: int, nullable: false),
+            'userId': ParameterDescription(name: 'userId', type: int, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['admin'] as AdminEndpoint).getUserInfo(
-              session,
-              params['userId'],
-            );
+            return (endpoints['admin'] as AdminEndpoint).getUserInfo(session,params['userId'],);
           },
         ),
       },
@@ -57,14 +51,10 @@ class Endpoints extends EndpointDispatch {
         'authenticate': MethodConnector(
           name: 'authenticate',
           params: {
-            'authInfo': ParameterDescription(
-                name: 'authInfo', type: AppleAuthInfo, nullable: false),
+            'authInfo': ParameterDescription(name: 'authInfo', type: AppleAuthInfo, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['apple'] as AppleEndpoint).authenticate(
-              session,
-              params['authInfo'],
-            );
+            return (endpoints['apple'] as AppleEndpoint).authenticate(session,params['authInfo'],);
           },
         ),
       },
@@ -77,76 +67,49 @@ class Endpoints extends EndpointDispatch {
         'authenticate': MethodConnector(
           name: 'authenticate',
           params: {
-            'email': ParameterDescription(
-                name: 'email', type: String, nullable: false),
-            'password': ParameterDescription(
-                name: 'password', type: String, nullable: false),
+            'email': ParameterDescription(name: 'email', type: String, nullable: false),
+            'password': ParameterDescription(name: 'password', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['email'] as EmailEndpoint).authenticate(
-              session,
-              params['email'],
-              params['password'],
-            );
+            return (endpoints['email'] as EmailEndpoint).authenticate(session,params['email'],params['password'],);
           },
         ),
         'changePassword': MethodConnector(
           name: 'changePassword',
           params: {
-            'oldPassword': ParameterDescription(
-                name: 'oldPassword', type: String, nullable: false),
-            'newPassword': ParameterDescription(
-                name: 'newPassword', type: String, nullable: false),
+            'oldPassword': ParameterDescription(name: 'oldPassword', type: String, nullable: false),
+            'newPassword': ParameterDescription(name: 'newPassword', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['email'] as EmailEndpoint).changePassword(
-              session,
-              params['oldPassword'],
-              params['newPassword'],
-            );
+            return (endpoints['email'] as EmailEndpoint).changePassword(session,params['oldPassword'],params['newPassword'],);
           },
         ),
         'initiatePasswordReset': MethodConnector(
           name: 'initiatePasswordReset',
           params: {
-            'email': ParameterDescription(
-                name: 'email', type: String, nullable: false),
+            'email': ParameterDescription(name: 'email', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['email'] as EmailEndpoint).initiatePasswordReset(
-              session,
-              params['email'],
-            );
+            return (endpoints['email'] as EmailEndpoint).initiatePasswordReset(session,params['email'],);
           },
         ),
         'verifyEmailPasswordReset': MethodConnector(
           name: 'verifyEmailPasswordReset',
           params: {
-            'verificationCode': ParameterDescription(
-                name: 'verificationCode', type: String, nullable: false),
+            'verificationCode': ParameterDescription(name: 'verificationCode', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['email'] as EmailEndpoint)
-                .verifyEmailPasswordReset(
-              session,
-              params['verificationCode'],
-            );
+            return (endpoints['email'] as EmailEndpoint).verifyEmailPasswordReset(session,params['verificationCode'],);
           },
         ),
         'resetPassword': MethodConnector(
           name: 'resetPassword',
           params: {
-            'verificationCode': ParameterDescription(
-                name: 'verificationCode', type: String, nullable: false),
-            'password': ParameterDescription(
-                name: 'password', type: String, nullable: false),
+            'verificationCode': ParameterDescription(name: 'verificationCode', type: String, nullable: false),
+            'password': ParameterDescription(name: 'password', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['email'] as EmailEndpoint).resetPassword(
-              session,
-              params['verificationCode'],
-              params['password'],
-            );
+            return (endpoints['email'] as EmailEndpoint).resetPassword(session,params['verificationCode'],params['password'],);
           },
         ),
       },
@@ -159,29 +122,19 @@ class Endpoints extends EndpointDispatch {
         'authenticateWithServerAuthCode': MethodConnector(
           name: 'authenticateWithServerAuthCode',
           params: {
-            'authenticationCode': ParameterDescription(
-                name: 'authenticationCode', type: String, nullable: false),
+            'authenticationCode': ParameterDescription(name: 'authenticationCode', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['google'] as GoogleEndpoint)
-                .authenticateWithServerAuthCode(
-              session,
-              params['authenticationCode'],
-            );
+            return (endpoints['google'] as GoogleEndpoint).authenticateWithServerAuthCode(session,params['authenticationCode'],);
           },
         ),
         'authenticateWithIdToken': MethodConnector(
           name: 'authenticateWithIdToken',
           params: {
-            'idToken': ParameterDescription(
-                name: 'idToken', type: String, nullable: false),
+            'idToken': ParameterDescription(name: 'idToken', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['google'] as GoogleEndpoint)
-                .authenticateWithIdToken(
-              session,
-              params['idToken'],
-            );
+            return (endpoints['google'] as GoogleEndpoint).authenticateWithIdToken(session,params['idToken'],);
           },
         ),
       },
@@ -193,39 +146,34 @@ class Endpoints extends EndpointDispatch {
       methodConnectors: {
         'isSignedIn': MethodConnector(
           name: 'isSignedIn',
-          params: {},
+          params: {
+          },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['status'] as StatusEndpoint).isSignedIn(
-              session,
-            );
+            return (endpoints['status'] as StatusEndpoint).isSignedIn(session,);
           },
         ),
         'signOut': MethodConnector(
           name: 'signOut',
-          params: {},
+          params: {
+          },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['status'] as StatusEndpoint).signOut(
-              session,
-            );
+            return (endpoints['status'] as StatusEndpoint).signOut(session,);
           },
         ),
         'getUserInfo': MethodConnector(
           name: 'getUserInfo',
-          params: {},
+          params: {
+          },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['status'] as StatusEndpoint).getUserInfo(
-              session,
-            );
+            return (endpoints['status'] as StatusEndpoint).getUserInfo(session,);
           },
         ),
         'getUserSettingsConfig': MethodConnector(
           name: 'getUserSettingsConfig',
-          params: {},
+          params: {
+          },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['status'] as StatusEndpoint)
-                .getUserSettingsConfig(
-              session,
-            );
+            return (endpoints['status'] as StatusEndpoint).getUserSettingsConfig(session,);
           },
         ),
       },
@@ -237,37 +185,28 @@ class Endpoints extends EndpointDispatch {
       methodConnectors: {
         'removeUserImage': MethodConnector(
           name: 'removeUserImage',
-          params: {},
+          params: {
+          },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).removeUserImage(
-              session,
-            );
+            return (endpoints['user'] as UserEndpoint).removeUserImage(session,);
           },
         ),
         'setUserImage': MethodConnector(
           name: 'setUserImage',
           params: {
-            'image': ParameterDescription(
-                name: 'image', type: typed_data.ByteData, nullable: false),
+            'image': ParameterDescription(name: 'image', type: typed_data.ByteData, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).setUserImage(
-              session,
-              params['image'],
-            );
+            return (endpoints['user'] as UserEndpoint).setUserImage(session,params['image'],);
           },
         ),
         'changeUserName': MethodConnector(
           name: 'changeUserName',
           params: {
-            'userName': ParameterDescription(
-                name: 'userName', type: String, nullable: false),
+            'userName': ParameterDescription(name: 'userName', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['user'] as UserEndpoint).changeUserName(
-              session,
-              params['userName'],
-            );
+            return (endpoints['user'] as UserEndpoint).changeUserName(session,params['userName'],);
           },
         ),
       },
@@ -275,5 +214,7 @@ class Endpoints extends EndpointDispatch {
   }
 
   @override
-  void registerModules(Serverpod pod) {}
+  void registerModules(Serverpod pod) {
+  }
 }
+

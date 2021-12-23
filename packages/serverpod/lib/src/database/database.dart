@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import '../server/session.dart';
-
 import 'database_connection.dart';
 import 'expressions.dart';
 import 'table.dart';
@@ -27,27 +26,27 @@ class Database {
   /// often useful to cast the object returned.
   ///
   ///     var myRow = session.db.findById(tMyTable, myId) as MyTable;
-  Future<TableRow?> findById(Table table, int id) async {
+  Future<T?> findById<T>(int id) async {
     var conn = await databaseConnection;
-    return await conn.findById(table, id, session: session);
+    return await conn.findById<T>(id, session: session);
   }
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
   /// the table will be returned.
-  Future<List<TableRow>> find(Table table,
-      {Expression? where,
-      int? limit,
-      int? offset,
-      Column? orderBy,
-      List<Order>? orderByList,
-      bool orderDescending = false,
-      bool useCache = true}) async {
+  Future<List<T>> find<T>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.find(
-      table,
+    return await conn.find<T>(
       where: where,
       limit: limit,
       offset: offset,
@@ -62,16 +61,16 @@ class Database {
   /// Find a single [TableRow] from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList].
-  Future<TableRow?> findSingleRow(Table table,
-      {Expression? where,
-      int? offset,
-      Column? orderBy,
-      bool orderDescending = false,
-      bool useCache = true}) async {
+  Future<T?> findSingleRow<T>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.findSingleRow(
-      table,
+    return await conn.findSingleRow<T>(
       where: where,
       offset: offset,
       orderBy: orderBy,
@@ -83,12 +82,14 @@ class Database {
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
-  Future<int> count(Table table,
-      {Expression? where, int? limit, bool useCache = true}) async {
+  Future<int> count<T>({
+    Expression? where,
+    int? limit,
+    bool useCache = true,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.count(
-      table,
+    return await conn.count<T>(
       where: where,
       limit: limit,
       useCache: useCache,
@@ -119,12 +120,13 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<int> delete(Table table,
-      {required Expression where, Transaction? transaction}) async {
+  Future<int> delete<T>({
+    required Expression where,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.delete(
-      table,
+    return await conn.delete<T>(
       where: where,
       transaction: transaction,
       session: session,

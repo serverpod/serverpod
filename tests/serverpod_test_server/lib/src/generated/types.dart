@@ -17,6 +17,8 @@ class Types extends TableRow {
   @override
   String get tableName => 'types';
 
+  static final t = TypesTable();
+
   @override
   int? id;
   int? anInt;
@@ -118,4 +120,5 @@ class TypesTable extends Table {
       ];
 }
 
+@Deprecated('Use TypesTable.t instead.')
 TypesTable tTypes = TypesTable();

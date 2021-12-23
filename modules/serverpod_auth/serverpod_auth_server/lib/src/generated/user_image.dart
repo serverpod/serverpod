@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -15,6 +16,8 @@ class UserImage extends TableRow {
   String get className => 'serverpod_auth_server.UserImage';
   @override
   String get tableName => 'serverpod_user_image';
+
+  static final t = UserImageTable();
 
   @override
   int? id;
@@ -87,4 +90,5 @@ class UserImageTable extends Table {
       ];
 }
 
+@Deprecated('Use UserImageTable.t instead.')
 UserImageTable tUserImage = UserImageTable();

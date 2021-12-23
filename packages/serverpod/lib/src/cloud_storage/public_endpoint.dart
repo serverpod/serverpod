@@ -58,11 +58,11 @@ class CloudStoragePublicEndpoint extends Endpoint {
   Future<bool> upload(MethodCallSession session, String storageId, String path,
       String key) async {
     // Confirm that we are allowed to do the upload
-    var uploadInfo = (await session.db.findSingleRow(
-      tCloudStorageDirectUploadEntry,
-      where: tCloudStorageDirectUploadEntry.storageId.equals(storageId) &
-          tCloudStorageDirectUploadEntry.path.equals(path),
-    )) as CloudStorageDirectUploadEntry?;
+    var uploadInfo =
+        await session.db.findSingleRow<CloudStorageDirectUploadEntry>(
+      where: CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
+          CloudStorageDirectUploadEntry.t.path.equals(path),
+    );
 
     if (uploadInfo == null) return false;
 

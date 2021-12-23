@@ -17,6 +17,8 @@ class CloudStorageDirectUploadEntry extends TableRow {
   @override
   String get tableName => 'serverpod_cloud_storage_direct_upload';
 
+  static final t = CloudStorageDirectUploadEntryTable();
+
   @override
   int? id;
   late String storageId;
@@ -98,5 +100,6 @@ class CloudStorageDirectUploadEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use CloudStorageDirectUploadEntryTable.t instead.')
 CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
     CloudStorageDirectUploadEntryTable();

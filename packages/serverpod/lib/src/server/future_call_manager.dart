@@ -75,10 +75,9 @@ class FutureCallManager {
       var now = DateTime.now();
 
       var tempSession = await _server.serverpod.createSession();
-      var rows = await tempSession.db.find(
-        tFutureCallEntry,
-        where: (tFutureCallEntry.time <= now) &
-            tFutureCallEntry.serverId.equals(_server.serverId),
+      var rows = await tempSession.db.find<FutureCallEntry>(
+        where: (FutureCallEntry.t.time <= now) &
+            FutureCallEntry.t.serverId.equals(_server.serverId),
       );
       await tempSession.close(logSession: false);
 
@@ -111,10 +110,10 @@ class FutureCallManager {
       // Remove the invoked calls
       if (rows.isNotEmpty) {
         var tempSession = await _server.serverpod.createSession();
-        await tempSession.db.delete(
-          tFutureCallEntry,
-          where: tFutureCallEntry.serverId.equals(tempSession.server.serverId) &
-              (tFutureCallEntry.time <= now),
+        await tempSession.db.delete<FutureCallEntry>(
+          where:
+              FutureCallEntry.t.serverId.equals(tempSession.server.serverId) &
+                  (FutureCallEntry.t.time <= now),
         );
         await tempSession.close(logSession: false);
       }

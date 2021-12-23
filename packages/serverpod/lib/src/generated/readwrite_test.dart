@@ -17,6 +17,8 @@ class ReadWriteTestEntry extends TableRow {
   @override
   String get tableName => 'serverpod_readwrite_test';
 
+  static final t = ReadWriteTestEntryTable();
+
   @override
   int? id;
   late int number;
@@ -72,4 +74,5 @@ class ReadWriteTestEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use ReadWriteTestEntryTable.t instead.')
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();

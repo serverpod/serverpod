@@ -17,6 +17,8 @@ class FutureCallEntry extends TableRow {
   @override
   String get tableName => 'serverpod_future_call';
 
+  static final t = FutureCallEntryTable();
+
   @override
   int? id;
   late String name;
@@ -96,4 +98,5 @@ class FutureCallEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use FutureCallEntryTable.t instead.')
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();

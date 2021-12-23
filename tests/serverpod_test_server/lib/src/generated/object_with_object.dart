@@ -17,6 +17,8 @@ class ObjectWithObject extends TableRow {
   @override
   String get tableName => 'object_with_object';
 
+  static final t = ObjectWithObjectTable();
+
   @override
   int? id;
   late SimpleData data;
@@ -137,4 +139,5 @@ class ObjectWithObjectTable extends Table {
       ];
 }
 
+@Deprecated('Use ObjectWithObjectTable.t instead.')
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();

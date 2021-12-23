@@ -17,6 +17,8 @@ class SimpleData extends TableRow {
   @override
   String get tableName => 'simple_data';
 
+  static final t = SimpleDataTable();
+
   @override
   int? id;
   late int num;
@@ -72,4 +74,5 @@ class SimpleDataTable extends Table {
       ];
 }
 
+@Deprecated('Use SimpleDataTable.t instead.')
 SimpleDataTable tSimpleData = SimpleDataTable();

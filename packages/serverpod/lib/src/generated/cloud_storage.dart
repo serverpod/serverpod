@@ -17,6 +17,8 @@ class CloudStorageEntry extends TableRow {
   @override
   String get tableName => 'serverpod_cloud_storage';
 
+  static final t = CloudStorageEntryTable();
+
   @override
   int? id;
   late String storageId;
@@ -116,4 +118,5 @@ class CloudStorageEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use CloudStorageEntryTable.t instead.')
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();

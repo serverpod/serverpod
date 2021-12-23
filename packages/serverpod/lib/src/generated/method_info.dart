@@ -17,6 +17,8 @@ class MethodInfo extends TableRow {
   @override
   String get tableName => 'serverpod_method';
 
+  static final t = MethodInfoTable();
+
   @override
   int? id;
   late String endpoint;
@@ -80,4 +82,5 @@ class MethodInfoTable extends Table {
       ];
 }
 
+@Deprecated('Use MethodInfoTable.t instead.')
 MethodInfoTable tMethodInfo = MethodInfoTable();

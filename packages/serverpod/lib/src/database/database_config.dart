@@ -1,3 +1,4 @@
+import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -40,7 +41,7 @@ class DatabaseConfig {
 
   /// Creates a new [DatabaseConfig]. Typically, this is done automatically
   /// when starting the [Server].
-  DatabaseConfig(SerializationManager serializationManager, this.host,
+  DatabaseConfig(SerializationManagerServer serializationManager, this.host,
       this.port, this.databaseName, this.userName, this.password)
       : tableClassMapping = serializationManager.tableClassMapping {
     _serializationManager = serializationManager;

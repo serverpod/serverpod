@@ -199,6 +199,8 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '  String get className => \'$classPrefix$className\';\n';
         out += '  @override\n';
         out += '  String get tableName => \'$tableName\';\n';
+        out += '\n';
+        out += '  static final t = ${className}Table();\n';
       } else {
         out += 'class $className extends SerializableEntity {\n';
         out += '  @override\n';
@@ -327,6 +329,7 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '\n';
 
         // Create instance of table
+        out += '@Deprecated(\'Use ${className}Table.t instead.\')\n';
         out += '${className}Table t$className = ${className}Table();\n';
       }
     } catch (e) {
@@ -395,18 +398,28 @@ class ClassGeneratorDart extends ClassGenerator {
     out += '\n';
 
     // Fields
-    out += 'class Protocol extends SerializationManager {\n';
+    var extendedClass =
+        serverCode ? 'SerializationManagerServer' : 'SerializationManager';
+
+    out += 'class Protocol extends $extendedClass {\n';
     out += '  static final Protocol instance = Protocol();\n';
     out += '\n';
 
     out += '  final Map<String, constructor> _constructors = {};\n';
     out += '  @override\n';
     out += '  Map<String, constructor> get constructors => _constructors;\n';
-    out += '  final Map<String,String> _tableClassMapping = {};\n';
-    out += '  @override\n';
-    out +=
-        '  Map<String,String> get tableClassMapping => _tableClassMapping;\n';
     out += '\n';
+    if (serverCode) {
+      out += '  final Map<String,String> _tableClassMapping = {};\n';
+      out += '  @override\n';
+      out +=
+          '  Map<String,String> get tableClassMapping => _tableClassMapping;\n';
+      out += '\n';
+      out += '  final Map<Type, Table> _typeTableMapping = {};\n';
+      out += '  @override\n';
+      out += '  Map<Type, Table> get typeTableMapping => _typeTableMapping;\n';
+      out += '\n';
+    }
 
     // Constructor
     out += '  Protocol() {\n';
@@ -422,6 +435,8 @@ class ClassGeneratorDart extends ClassGenerator {
         if (classInfo.tableName == null) continue;
         out +=
             '    tableClassMapping[\'${classInfo.tableName}\'] = \'$classPrefix${classInfo.className}\';\n';
+        out +=
+            '    typeTableMapping[${classInfo.className}] = ${classInfo.className}.t;\n';
       }
     }
 

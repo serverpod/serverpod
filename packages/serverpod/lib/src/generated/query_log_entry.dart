@@ -17,6 +17,8 @@ class QueryLogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_query_log';
 
+  static final t = QueryLogEntryTable();
+
   @override
   int? id;
   late int serverId;
@@ -120,4 +122,5 @@ class QueryLogEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use QueryLogEntryTable.t instead.')
 QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();

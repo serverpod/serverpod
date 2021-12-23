@@ -16,10 +16,8 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'module': ModuleEndpoint()
-        ..initialize(server, 'module', 'serverpod_test_module'),
-      'streaming': StreamingEndpoint()
-        ..initialize(server, 'streaming', 'serverpod_test_module'),
+      'module': ModuleEndpoint()..initialize(server, 'module', 'serverpod_test_module'),
+      'streaming': StreamingEndpoint()..initialize(server, 'streaming', 'serverpod_test_module'),
     };
 
     connectors['module'] = EndpointConnector(
@@ -29,27 +27,19 @@ class Endpoints extends EndpointDispatch {
         'hello': MethodConnector(
           name: 'hello',
           params: {
-            'name': ParameterDescription(
-                name: 'name', type: String, nullable: false),
+            'name': ParameterDescription(name: 'name', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['module'] as ModuleEndpoint).hello(
-              session,
-              params['name'],
-            );
+            return (endpoints['module'] as ModuleEndpoint).hello(session,params['name'],);
           },
         ),
         'modifyModuleObject': MethodConnector(
           name: 'modifyModuleObject',
           params: {
-            'object': ParameterDescription(
-                name: 'object', type: ModuleClass, nullable: false),
+            'object': ParameterDescription(name: 'object', type: ModuleClass, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['module'] as ModuleEndpoint).modifyModuleObject(
-              session,
-              params['object'],
-            );
+            return (endpoints['module'] as ModuleEndpoint).modifyModuleObject(session,params['object'],);
           },
         ),
       },
@@ -58,10 +48,13 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {},
+      methodConnectors: {
+      },
     );
   }
 
   @override
-  void registerModules(Serverpod pod) {}
+  void registerModules(Serverpod pod) {
+  }
 }
+

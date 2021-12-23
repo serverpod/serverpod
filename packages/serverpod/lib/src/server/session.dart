@@ -328,7 +328,7 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.db.delete(tAuthKey, where: tAuthKey.userId.equals(userId));
+    await _session.db.delete<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }
 }

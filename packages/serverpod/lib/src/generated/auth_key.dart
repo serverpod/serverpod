@@ -17,6 +17,8 @@ class AuthKey extends TableRow {
   @override
   String get tableName => 'serverpod_auth_key';
 
+  static final t = AuthKeyTable();
+
   @override
   int? id;
   late int userId;
@@ -101,4 +103,5 @@ class AuthKeyTable extends Table {
       ];
 }
 
+@Deprecated('Use AuthKeyTable.t instead.')
 AuthKeyTable tAuthKey = AuthKeyTable();

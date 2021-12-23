@@ -106,10 +106,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findById(Table table, int id,
-      {required Session session}) async {
-    var result = await find(
-      table,
+  Future<T?> findById<T>(
+    int id, {
+    required Session session,
+  }) async {
+    var result = await find<T>(
       where: Expression('id = $id'),
       session: session,
     );
@@ -118,16 +119,23 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<TableRow>> find(Table table,
-      {Expression? where,
-      int? limit,
-      int? offset,
-      Column? orderBy,
-      List<Order>? orderByList,
-      bool orderDescending = false,
-      bool useCache = true,
-      required Session session}) async {
+  Future<List<T>> find<T>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    required Session session,
+  }) async {
     assert(orderByList == null || orderBy == null);
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.find<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
 
     var startTime = DateTime.now();
     where ??= Expression('TRUE');
@@ -167,25 +175,27 @@ class DatabaseConnection {
     }
 
     _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list as FutureOr<List<TableRow>>;
+    return list.cast<T>();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findSingleRow(Table table,
-      {Expression? where,
-      int? offset,
-      Column? orderBy,
-      bool orderDescending = false,
-      bool useCache = true,
-      required Session session}) async {
-    var result = await find(table,
-        where: where,
-        orderBy: orderBy,
-        orderDescending: orderDescending,
-        useCache: useCache,
-        limit: 1,
-        offset: offset,
-        session: session);
+  Future<T?> findSingleRow<T>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    required Session session,
+  }) async {
+    var result = await find<T>(
+      where: where,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      limit: 1,
+      offset: offset,
+      session: session,
+    );
 
     if (result.isEmpty) {
       return null;
@@ -223,11 +233,19 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count(Table table,
-      {Expression? where,
-      int? limit,
-      bool useCache = true,
-      required Session session}) async {
+  Future<int> count<T>({
+    Expression? where,
+    int? limit,
+    bool useCache = true,
+    required Session session,
+  }) async {
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. numRows = await session.db.count<MyTableClass>();
+Current type was $T''');
+    table = table!;
+
     var startTime = DateTime.now();
 
     where ??= Expression('TRUE');
@@ -254,8 +272,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> update(TableRow row,
-      {Transaction? transaction, required Session session}) async {
+  Future<bool> update(
+    TableRow row, {
+    Transaction? transaction,
+    required Session session,
+  }) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -296,8 +317,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> insert(TableRow row,
-      {Transaction? transaction, required Session session}) async {
+  Future<bool> insert(
+    TableRow row, {
+    Transaction? transaction,
+    required Session session,
+  }) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -364,10 +388,18 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete(Table table,
-      {required Expression where,
-      Transaction? transaction,
-      required Session session}) async {
+  Future<int> delete<T>({
+    required Expression where,
+    Transaction? transaction,
+    required Session session,
+  }) async {
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
+
     var startTime = DateTime.now();
 
     var tableName = table.tableName;

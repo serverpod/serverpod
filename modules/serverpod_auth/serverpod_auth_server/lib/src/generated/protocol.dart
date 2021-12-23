@@ -27,15 +27,20 @@ export 'user_image.dart';
 export 'user_info.dart';
 export 'user_settings_config.dart';
 
-class Protocol extends SerializationManager {
+class Protocol extends SerializationManagerServer {
   static final Protocol instance = Protocol();
 
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
+
   final Map<String, String> _tableClassMapping = {};
   @override
   Map<String, String> get tableClassMapping => _tableClassMapping;
+
+  final Map<Type, Table> _typeTableMapping = {};
+  @override
+  Map<Type, Table> get typeTableMapping => _typeTableMapping;
 
   Protocol() {
     constructors['serverpod_auth_server.AppleAuthInfo'] =
@@ -65,10 +70,14 @@ class Protocol extends SerializationManager {
 
     tableClassMapping['serverpod_email_auth'] =
         'serverpod_auth_server.EmailAuth';
+    typeTableMapping[EmailAuth] = EmailAuth.t;
     tableClassMapping['serverpod_email_reset'] =
         'serverpod_auth_server.EmailReset';
+    typeTableMapping[EmailReset] = EmailReset.t;
     tableClassMapping['serverpod_user_image'] =
         'serverpod_auth_server.UserImage';
+    typeTableMapping[UserImage] = UserImage.t;
     tableClassMapping['serverpod_user_info'] = 'serverpod_auth_server.UserInfo';
+    typeTableMapping[UserInfo] = UserInfo.t;
   }
 }

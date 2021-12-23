@@ -17,6 +17,8 @@ class LogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_log';
 
+  static final t = LogEntryTable();
+
   @override
   int? id;
   late int sessionLogId;
@@ -128,4 +130,5 @@ class LogEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use LogEntryTable.t instead.')
 LogEntryTable tLogEntry = LogEntryTable();

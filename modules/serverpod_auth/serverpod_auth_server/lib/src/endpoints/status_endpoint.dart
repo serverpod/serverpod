@@ -3,8 +3,9 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
-import '../generated/protocol.dart';
+
 import '../business/config.dart';
+import '../generated/protocol.dart';
 
 /// Endpoint for getting status for a signed in user and module configuration.
 class StatusEndpoint extends Endpoint {
@@ -24,7 +25,7 @@ class StatusEndpoint extends Endpoint {
   Future<UserInfo?> getUserInfo(Session session) async {
     var userId = await session.auth.authenticatedUserId;
     if (userId == null) return null;
-    return (await session.db.findById(tUserInfo, userId)) as UserInfo;
+    return await session.db.findById<UserInfo>(userId);
   }
 
   /// Gets the server configuration.
