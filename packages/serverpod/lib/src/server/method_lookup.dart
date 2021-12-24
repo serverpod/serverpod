@@ -56,12 +56,10 @@ class MethodLookup {
             method: method,
           );
 
-          if (await session.db.insert(methodInfo)) {
-            // Successfully inserted
-            _lookup['$endpoint.$method'] = methodInfo.id!;
-          } else {
-            throw Exception('Failed insert method');
-          }
+          await session.db.insert(methodInfo);
+
+          // Successfully inserted
+          _lookup['$endpoint.$method'] = methodInfo.id!;
         } else {
           // We found a method info
           _lookup['$endpoint.$method'] = methodInfo.id!;

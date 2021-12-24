@@ -109,10 +109,10 @@ class Database {
   }
 
   /// Inserts a single [TableRow].
-  Future<bool> insert(TableRow row, {Transaction? transaction}) async {
+  Future<void> insert(TableRow row, {Transaction? transaction}) async {
     var conn = await databaseConnection;
 
-    return await conn.insert(
+    await conn.insert(
       row,
       transaction: transaction,
       session: session,

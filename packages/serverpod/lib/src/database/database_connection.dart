@@ -29,7 +29,7 @@ class DatabaseConnection {
 
   /// Returns a list of names of all tables in the current database.
   Future<List<String>> getTableNames() async {
-    List<String?> tableNames = <String>[];
+    List<String> tableNames = <String>[];
 
     var query = 'SELECT * FROM pg_catalog.pg_tables';
     var result = await postgresConnection.mappedResultsQuery(
@@ -44,7 +44,7 @@ class DatabaseConnection {
       if (row['schemaname'] == 'public') tableNames.add(row['tablename']);
     }
 
-    return tableNames as FutureOr<List<String>>;
+    return tableNames;
   }
 
   /// Returns a description for a table in the database.
@@ -317,7 +317,7 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> insert(
+  Future<void> insert(
     TableRow row, {
     Transaction? transaction,
     required Session session,
@@ -364,27 +364,35 @@ Current type was $T''');
 
     if (transaction != null) {
       transaction._queries.add(query);
-      return false;
+      return;
     }
 
-    List<List<dynamic>> result;
+    int insertedId;
     try {
+      List<List<dynamic>> result;
+
       result = await postgresConnection
           .query(query, allowReuse: false, substitutionValues: {});
-      if (result.length != 1) return false;
+      if (result.length != 1) {
+        throw PostgreSQLException(
+            'Failed to insert row, updated number of rows is ${result.length} != 1');
+      }
+
+      var returnedRow = result[0];
+      if (returnedRow.length != 1) {
+        throw PostgreSQLException(
+            'Failed to insert row, updated number of columns is ${returnedRow.length} != 1');
+      }
+
+      insertedId = returnedRow[0];
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
-      return false;
+      rethrow;
     }
 
-    var returnedRow = result[0];
+    _logQuery(session, query, startTime, numRowsAffected: 1);
 
-    _logQuery(session, query, startTime, numRowsAffected: returnedRow.length);
-
-    if (returnedRow.length != 1) return false;
-
-    row.setColumn('id', returnedRow[0]);
-    return true;
+    row.setColumn('id', insertedId);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
