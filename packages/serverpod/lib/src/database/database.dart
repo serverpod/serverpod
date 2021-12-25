@@ -26,9 +26,16 @@ class Database {
   /// often useful to cast the object returned.
   ///
   ///     var myRow = session.db.findById(tMyTable, myId) as MyTable;
-  Future<T?> findById<T>(int id) async {
+  Future<T?> findById<T>(
+    int id, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
-    return await conn.findById<T>(id, session: session);
+    return await conn.findById<T>(
+      id,
+      session: session,
+      transaction: transaction,
+    );
   }
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
@@ -43,6 +50,7 @@ class Database {
     List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
+    Transaction? transaction,
   }) async {
     var conn = await databaseConnection;
 
@@ -55,6 +63,7 @@ class Database {
       orderDescending: orderDescending,
       useCache: useCache,
       session: session,
+      transaction: transaction,
     );
   }
 
@@ -67,6 +76,7 @@ class Database {
     Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
+    Transaction? transaction,
   }) async {
     var conn = await databaseConnection;
 
@@ -77,6 +87,7 @@ class Database {
       orderDescending: orderDescending,
       useCache: useCache,
       session: session,
+      transaction: transaction,
     );
   }
 
@@ -86,6 +97,7 @@ class Database {
     Expression? where,
     int? limit,
     bool useCache = true,
+    Transaction? transaction,
   }) async {
     var conn = await databaseConnection;
 
@@ -94,28 +106,35 @@ class Database {
       limit: limit,
       useCache: useCache,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Updates a single [TableRow]. The row needs to have its id set.
-  Future<bool> update(TableRow row, {Transaction? transaction}) async {
+  Future<bool> update(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     return await conn.update(
       row,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Inserts a single [TableRow].
-  Future<void> insert(TableRow row, {Transaction? transaction}) async {
+  Future<void> insert(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     await conn.insert(
       row,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
@@ -128,19 +147,22 @@ class Database {
 
     return await conn.delete<T>(
       where: where,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Deletes a single [TableRow].
-  Future<bool> deleteRow(TableRow row, {Transaction? transaction}) async {
+  Future<bool> deleteRow(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     return await conn.deleteRow(
       row,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
@@ -178,24 +200,24 @@ class Database {
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  Future<List<List<dynamic>>> query(String query,
-      {int? timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     return conn.query(
       query,
       session: session,
       timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
     );
   }
 
   /// Executes a [Transaction].
-  Future<bool> executeTransation(Transaction transaction) async {
+  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) async {
     var conn = await databaseConnection;
-
-    return conn.executeTransaction(
-      transaction,
-      session: session,
-    );
+    return await conn.transaction(transactionFunction);
   }
 }
