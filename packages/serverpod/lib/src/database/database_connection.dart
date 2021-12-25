@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:retry/retry.dart';
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -617,12 +618,21 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) {
-    // TODO: Add support for handling errors etc
-    return postgresConnection.runTx<R>((ctx) {
-      final transaction = Transaction._(ctx);
-      return transactionFunction(transaction);
-    });
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    RetryOptions? retryOptions,
+    FutureOr<R> Function()? orElse,
+    FutureOr<bool> Function(Exception exception)? retryIf,
+  }) {
+    return postgresConnection.runTx<R>(
+      (ctx) {
+        final transaction = Transaction._(ctx);
+        return transactionFunction(transaction);
+      },
+      retryOptions: retryOptions,
+      orElse: orElse,
+      retryIf: retryIf,
+    );
   }
 }
 

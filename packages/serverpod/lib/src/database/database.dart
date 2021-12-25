@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:typed_data';
+
+import 'package:retry/retry.dart';
 
 import '../server/session.dart';
 import 'database_connection.dart';
@@ -216,8 +219,18 @@ class Database {
   }
 
   /// Executes a [Transaction].
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) async {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    RetryOptions? retryOptions,
+    FutureOr<R> Function()? orElse,
+    FutureOr<bool> Function(Exception exception)? retryIf,
+  }) async {
     var conn = await databaseConnection;
-    return await conn.transaction(transactionFunction);
+    return await conn.transaction(
+      transactionFunction,
+      retryOptions: retryOptions,
+      orElse: orElse,
+      retryIf: retryIf,
+    );
   }
 }
