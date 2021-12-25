@@ -80,6 +80,29 @@ class AuthKey extends TableRow {
       'method': method,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'hash':
+        hash = value;
+        return;
+      case 'scopeNames':
+        scopeNames = value;
+        return;
+      case 'method':
+        method = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class AuthKeyTable extends Table {

@@ -91,6 +91,35 @@ class CloudStorageEntry extends TableRow {
       'verified': verified,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'storageId':
+        storageId = value;
+        return;
+      case 'path':
+        path = value;
+        return;
+      case 'addedTime':
+        addedTime = value;
+        return;
+      case 'expiration':
+        expiration = value;
+        return;
+      case 'byteData':
+        byteData = value;
+        return;
+      case 'verified':
+        verified = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class CloudStorageEntryTable extends Table {

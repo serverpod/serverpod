@@ -113,6 +113,47 @@ class UserInfo extends TableRow {
       'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userIdentifier':
+        userIdentifier = value;
+        return;
+      case 'userName':
+        userName = value;
+        return;
+      case 'fullName':
+        fullName = value;
+        return;
+      case 'email':
+        email = value;
+        return;
+      case 'created':
+        created = value;
+        return;
+      case 'imageUrl':
+        imageUrl = value;
+        return;
+      case 'scopeNames':
+        scopeNames = value;
+        return;
+      case 'active':
+        active = value;
+        return;
+      case 'blocked':
+        blocked = value;
+        return;
+      case 'suspendedUntil':
+        suspendedUntil = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class UserInfoTable extends Table {

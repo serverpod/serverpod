@@ -76,6 +76,29 @@ class CloudStorageDirectUploadEntry extends TableRow {
       'authKey': authKey,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'storageId':
+        storageId = value;
+        return;
+      case 'path':
+        path = value;
+        return;
+      case 'expiration':
+        expiration = value;
+        return;
+      case 'authKey':
+        authKey = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class CloudStorageDirectUploadEntryTable extends Table {

@@ -84,6 +84,29 @@ class RuntimeSettings extends TableRow {
       'logMalformedCalls': logMalformedCalls,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'logSettings':
+        logSettings = value;
+        return;
+      case 'logSettingsOverrides':
+        logSettingsOverrides = value;
+        return;
+      case 'logServiceCalls':
+        logServiceCalls = value;
+        return;
+      case 'logMalformedCalls':
+        logMalformedCalls = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class RuntimeSettingsTable extends Table {

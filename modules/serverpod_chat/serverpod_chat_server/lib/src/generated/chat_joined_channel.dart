@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_auth_server/module.dart' as serverpod_auth;

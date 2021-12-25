@@ -75,6 +75,29 @@ class FutureCallEntry extends TableRow {
       'serverId': serverId,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'name':
+        name = value;
+        return;
+      case 'time':
+        time = value;
+        return;
+      case 'serializedObject':
+        serializedObject = value;
+        return;
+      case 'serverId':
+        serverId = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class FutureCallEntryTable extends Table {

@@ -69,6 +69,26 @@ class UserImage extends TableRow {
       'url': url,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'version':
+        version = value;
+        return;
+      case 'url':
+        url = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class UserImageTable extends Table {

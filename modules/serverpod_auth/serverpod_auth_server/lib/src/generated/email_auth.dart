@@ -69,6 +69,26 @@ class EmailAuth extends TableRow {
       'hash': hash,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'email':
+        email = value;
+        return;
+      case 'hash':
+        hash = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class EmailAuthTable extends Table {

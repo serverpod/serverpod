@@ -57,6 +57,20 @@ class ReadWriteTestEntry extends TableRow {
       'number': number,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'number':
+        number = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class ReadWriteTestEntryTable extends Table {

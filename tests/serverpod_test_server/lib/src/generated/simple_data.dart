@@ -57,6 +57,20 @@ class SimpleData extends TableRow {
       'num': num,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'num':
+        num = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class SimpleDataTable extends Table {

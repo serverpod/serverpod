@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -16,6 +17,8 @@ class ChatMessage extends TableRow {
   String get className => 'serverpod_chat_server.ChatMessage';
   @override
   String get tableName => 'serverpod_chat_message';
+
+  static final t = ChatMessageTable();
 
   @override
   int? id;
@@ -108,6 +111,35 @@ class ChatMessage extends TableRow {
           attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'channel':
+        channel = value;
+        return;
+      case 'message':
+        message = value;
+        return;
+      case 'time':
+        time = value;
+        return;
+      case 'sender':
+        sender = value;
+        return;
+      case 'removed':
+        removed = value;
+        return;
+      case 'attachments':
+        attachments = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class ChatMessageTable extends Table {
@@ -135,4 +167,5 @@ class ChatMessageTable extends Table {
       ];
 }
 
+@Deprecated('Use ChatMessageTable.t instead.')
 ChatMessageTable tChatMessage = ChatMessageTable();

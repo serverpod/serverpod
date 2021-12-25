@@ -93,6 +93,35 @@ class Types extends TableRow {
       'aByteData': aByteData?.base64encodedString(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'anInt':
+        anInt = value;
+        return;
+      case 'aBool':
+        aBool = value;
+        return;
+      case 'aDouble':
+        aDouble = value;
+        return;
+      case 'aDateTime':
+        aDateTime = value;
+        return;
+      case 'aString':
+        aString = value;
+        return;
+      case 'aByteData':
+        aByteData = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class TypesTable extends Table {

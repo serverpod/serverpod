@@ -93,6 +93,38 @@ class QueryLogEntry extends TableRow {
       'stackTrace': stackTrace,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'serverId':
+        serverId = value;
+        return;
+      case 'sessionLogId':
+        sessionLogId = value;
+        return;
+      case 'query':
+        query = value;
+        return;
+      case 'duration':
+        duration = value;
+        return;
+      case 'numRows':
+        numRows = value;
+        return;
+      case 'error':
+        error = value;
+        return;
+      case 'stackTrace':
+        stackTrace = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class QueryLogEntryTable extends Table {

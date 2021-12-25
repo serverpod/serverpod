@@ -69,6 +69,26 @@ class EmailReset extends TableRow {
       'expiration': expiration.toUtc().toIso8601String(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'verificationCode':
+        verificationCode = value;
+        return;
+      case 'expiration':
+        expiration = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class EmailResetTable extends Table {
