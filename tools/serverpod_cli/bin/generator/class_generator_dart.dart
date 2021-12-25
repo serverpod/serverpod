@@ -287,6 +287,26 @@ class ClassGeneratorDart extends ClassGenerator {
 
         out += '    });\n';
         out += '  }\n';
+
+        if (tableName != null) {
+          out += '\n';
+          out += '  @override\n';
+          out += '  void setColumn(String columnName, value) {\n';
+          out += '    switch (columnName) {\n';
+
+          for (var field in fields) {
+            if (field.shouldSerializeFieldForDatabase(serverCode)) {
+              out += '      case \'${field.name}\':\n';
+              out += '        ${field.name} = value;\n';
+              out += '        return;\n';
+            }
+          }
+
+          out += '      default:\n';
+          out += '        throw UnimplementedError();\n';
+          out += '    }\n';
+          out += '  }\n';
+        }
       }
 
       // End class
