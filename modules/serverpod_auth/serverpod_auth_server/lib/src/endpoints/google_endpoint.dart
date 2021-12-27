@@ -55,14 +55,23 @@ class GoogleEndpoint extends Endpoint {
     var image = person.photos?[0].url;
     var email = person.emailAddresses?[0].value;
 
-    if (fullName == null || name == null || image == null || email == null)
-      return AuthenticationResponse(success: false);
+    if (fullName == null || name == null || image == null || email == null) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
     email = email.toLowerCase();
 
     var userInfo = await _setupUserInfo(session, email, name, fullName, image);
 
-    if (userInfo == null) return AuthenticationResponse(success: false);
+    if (userInfo == null) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.userCreationDenied,
+      );
+    }
 
     var authKey = await session.auth.signInUser(userInfo.id!, 'google');
 
@@ -87,37 +96,52 @@ class GoogleEndpoint extends Endpoint {
 
       if (response.statusCode != 200) {
         session.log('Invalid token received', level: LogLevel.debug);
-        return AuthenticationResponse(success: false);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.invalidCredentials,
+        );
       }
 
       final data = jsonDecode(response.body);
       if (data['iss'] != 'accounts.google.com') {
         session.log('Invalid token received', level: LogLevel.debug);
-        return AuthenticationResponse(success: false);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.invalidCredentials,
+        );
       }
 
       if (data['aud'] != clientId) {
         session.log('Client ID doesn\'t match', level: LogLevel.debug);
-        return AuthenticationResponse(success: false);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.invalidCredentials,
+        );
       }
 
       String? email = data['email'];
       String? fullName = data['name'];
       String? image = data['picture'];
-      String name = data['given_name'];
+      String? name = data['given_name'];
 
       if (email == null || fullName == null || image == null || name == null) {
         session.log(
             'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
             level: LogLevel.debug);
-        return AuthenticationResponse(success: false);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.invalidCredentials,
+        );
       }
 
       var userInfo =
           await _setupUserInfo(session, email, name, fullName, image);
       if (userInfo == null) {
         session.log('Failed to create UserInfo', level: LogLevel.debug);
-        return AuthenticationResponse(success: false);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.userCreationDenied,
+        );
       }
 
       // Authentication looks ok!
@@ -207,7 +231,7 @@ class _GoogleClientSecret {
       var jsonData = file.readAsStringSync();
       json = jsonDecode(jsonData);
     } catch (e) {
-      print(
+      stdout.writeln(
           'serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.');
     }
   }

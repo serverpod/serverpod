@@ -1,5 +1,5 @@
-import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 void main() {
   var client = Client(
@@ -8,6 +8,14 @@ void main() {
   );
 
   setUp(() {});
+
+  group('Setup', () {
+    test('Remove accounts', () async {
+      await client.authentication.removeAllUsers();
+      var userCount = await client.authentication.countUsers();
+      expect(userCount, equals(0));
+    });
+  });
 
   group('Basic authentication', () {
     test('Not authenticated', () async {
@@ -58,6 +66,28 @@ void main() {
     test('Access endpoint with required signin', () async {
       var result = await client.signInRequired.testMethod();
       expect(result, equals(true));
+    });
+  });
+
+  group('User creation', () {
+    test('Create user with ok domain', () async {
+      // Only accounts with emails ending with .bar are allowed
+      var oldUserCount = await client.authentication.countUsers();
+      await client.authentication.createUser('legit@foo.bar', 'password');
+      var newUserCount = await client.authentication.countUsers();
+
+      // We should have added one user
+      expect(newUserCount - oldUserCount, equals(1));
+    });
+
+    test('Create user with invalid domain', () async {
+      // Only accounts with emails ending with .bar are allowed
+      var oldUserCount = await client.authentication.countUsers();
+      await client.authentication.createUser('nonlegit@foo.fail', 'password');
+      var newUserCount = await client.authentication.countUsers();
+
+      // We should not have added any new users
+      expect(newUserCount - oldUserCount, equals(0));
     });
   });
 }

@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/module.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
 import 'package:serverpod_relic/serverpod_relic.dart';
@@ -26,6 +27,13 @@ void run(List<String> args) async {
     public: true,
     region: 'us-west-2',
     bucket: 'serverpod-test-storage',
+  ));
+
+  // Callbacks for auth
+  auth.AuthConfig.set(auth.AuthConfig(
+    onUserWillBeCreated: (session, userInfo) async {
+      return (userInfo.email!.endsWith('.bar'));
+    },
   ));
 
   // Start the server

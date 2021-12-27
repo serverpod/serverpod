@@ -10,6 +10,7 @@ import 'dart:typed_data';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'apple_auth_info.dart';
+import 'authentication_fail_reason.dart';
 import 'authentication_response.dart';
 import 'email_auth.dart';
 import 'email_password_reset.dart';
@@ -19,6 +20,7 @@ import 'user_info.dart';
 import 'user_settings_config.dart';
 
 export 'apple_auth_info.dart';
+export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
 export 'email_auth.dart';
 export 'email_password_reset.dart';
@@ -39,6 +41,9 @@ class Protocol extends SerializationManager {
     constructors['serverpod_auth_server.AppleAuthInfo'] =
         (Map<String, dynamic> serialization) =>
             AppleAuthInfo.fromSerialization(serialization);
+    constructors['serverpod_auth_server.AuthenticationFailReason'] =
+        (Map<String, dynamic> serialization) =>
+            AuthenticationFailReason.fromSerialization(serialization);
     constructors['serverpod_auth_server.AuthenticationResponse'] =
         (Map<String, dynamic> serialization) =>
             AuthenticationResponse.fromSerialization(serialization);

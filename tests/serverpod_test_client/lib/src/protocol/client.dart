@@ -46,6 +46,27 @@ class _EndpointAuthentication extends EndpointRef {
 
   _EndpointAuthentication(EndpointCaller caller) : super(caller);
 
+  Future<void> removeAllUsers() async {
+    return await caller
+        .callServerEndpoint('authentication', 'removeAllUsers', 'void', {});
+  }
+
+  Future<int> countUsers() async {
+    return await caller
+        .callServerEndpoint('authentication', 'countUsers', 'int', {});
+  }
+
+  Future<void> createUser(
+    String email,
+    String password,
+  ) async {
+    return await caller
+        .callServerEndpoint('authentication', 'createUser', 'void', {
+      'email': email,
+      'password': password,
+    });
+  }
+
   Future<serverpod_auth.AuthenticationResponse> authenticate(
     String email,
     String password,

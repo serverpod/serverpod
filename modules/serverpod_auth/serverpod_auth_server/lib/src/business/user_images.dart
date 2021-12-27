@@ -99,8 +99,8 @@ class UserImages {
     userInfo.imageUrl = publicUrl.toString();
     await session.db.update(userInfo);
 
-    if (AuthConfig.current.userInfoUpdateListener != null) {
-      await AuthConfig.current.userInfoUpdateListener!(session, userInfo);
+    if (AuthConfig.current.onUserUpdated != null) {
+      await AuthConfig.current.onUserUpdated!(session, userInfo);
     }
 
     return true;

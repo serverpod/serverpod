@@ -33,20 +33,20 @@ class Emails {
         blocked: false,
       );
 
-      print('creating user');
+      session.log('creating user', level: LogLevel.debug);
       userInfo = await Users.createUser(session, userInfo);
       if (userInfo == null) return null;
     }
 
     // Check if there is email authentication in place already
     var oldAuth = await session.db.findSingleRow<EmailAuth>(
-      where: tEmailAuth.userId.equals(userInfo.id!),
+      where: EmailAuth.t.userId.equals(userInfo.id!),
     );
     if (oldAuth != null) {
       return userInfo;
     }
 
-    print('creating email auth');
+    session.log('creating email auth', level: LogLevel.debug);
     var auth = EmailAuth(
       userId: userInfo.id!,
       email: email,
@@ -58,7 +58,7 @@ class Emails {
     await Users.invalidateCacheForUser(session, userInfo.id!);
     userInfo = await Users.findUserByUserId(session, userInfo.id!);
 
-    print('returning created user');
+    session.log('returning created user', level: LogLevel.debug);
     return userInfo;
   }
 
@@ -87,7 +87,8 @@ class Emails {
       Session session, String email) async {
     if (AuthConfig.current.sendPasswordResetEmail == null) {
       // TODO: User proper logging instead
-      print('ResetPasswordEmail is not configured, cannot send email.');
+      session.log('ResetPasswordEmail is not configured, cannot send email.',
+          level: LogLevel.debug);
       return false;
     }
 
@@ -118,13 +119,11 @@ class Emails {
 
   static Future<EmailPasswordReset?> verifyEmailPasswordReset(
       Session session, String verificationCode) async {
-    print('verificationCode: $verificationCode');
+    session.log('verificationCode: $verificationCode', level: LogLevel.debug);
     var passwordReset = await session.db.findSingleRow<EmailReset>(
       where: EmailReset.t.verificationCode.equals(verificationCode) &
           (EmailReset.t.expiration > DateTime.now().toUtc()),
     );
-
-    print(' - found reset');
 
     if (passwordReset == null) return null;
 

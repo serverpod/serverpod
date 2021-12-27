@@ -1,0 +1,5 @@
+enum: AuthenticationFailReason
+values:
+  - invalidCredentials
+  - userCreationDenied
+  - internalError
