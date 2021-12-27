@@ -13,10 +13,14 @@ class ChatView extends StatefulWidget {
   final ChatController controller;
   final ChatTileBuilder? tileBuilder;
 
+  /// Optional widget to be shown on top of the oldest chat message
+  final Widget? leading;
+
   const ChatView({
     Key? key,
     required this.controller,
     this.tileBuilder,
+    this.leading,
   }) : super(key: key);
 
   @override
@@ -194,7 +198,10 @@ class _ChatViewState extends State<ChatView>
               reverse: false,
               controller: _scrollController,
               itemBuilder: _chatItemBuilder,
-              itemCount: widget.controller.messages.length,
+              itemCount: widget.controller.messages.length +
+                  (widget.leading != null && !widget.controller.hasOlderMessages
+                      ? 1
+                      : 0),
             ),
           );
         },
@@ -203,17 +210,36 @@ class _ChatViewState extends State<ChatView>
   }
 
   Widget _chatItemBuilder(BuildContext context, int item) {
+    final leading = widget.leading;
+    if (leading != null && !widget.controller.hasOlderMessages) {
+      // If we have a leading widget, show that on top
+      if (item == 0) {
+        return leading;
+      }
+
+      // Align `item` so it matches the indices of the messages
+      item--;
+    }
+
     // Revers the list, because the scroll view is reversed
     var message = widget.controller.messages[item];
     ChatMessage? previous;
     if (item > 0) {
       previous = widget.controller.messages[item - 1];
     }
-    var tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
+
+    // Explicit type match, else this gets promoted to a dynamic `Function()`
+    // ignore: omit_local_variable_types
+    final ChatTileBuilder tileBuilder =
+        widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
   }
 
-  Widget _defaultTileBuilder(BuildContext context, ChatMessage message) {
+  Widget _defaultTileBuilder(
+    BuildContext context,
+    ChatMessage message,
+    ChatMessage? previous,
+  ) {
     return ListTile(
       title: Text(message.message),
       subtitle: Text(message.senderInfo?.userName ?? 'Unknown user'),
