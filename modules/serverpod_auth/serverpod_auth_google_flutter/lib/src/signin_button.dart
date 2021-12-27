@@ -8,10 +8,10 @@ class SignInWithGoogleButton extends StatefulWidget {
   final Caller caller;
 
   /// Called if sign in is successful.
-  final VoidCallback onSignedIn;
+  final VoidCallback? onSignedIn;
 
   /// Called if sign in is unsuccessful.
-  final VoidCallback onFailure;
+  final VoidCallback? onFailure;
 
   /// The style of the button.
   final ButtonStyle? style;
@@ -26,8 +26,8 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// Creates a new Sign in with Google button.
   SignInWithGoogleButton({
     required this.caller,
-    required this.onSignedIn,
-    required this.onFailure,
+    this.onSignedIn,
+    this.onFailure,
     this.debug = false,
     this.style,
     this.additionalScopes = const [],
@@ -63,10 +63,15 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           Navigator.of(context).pop();
 
           // Notify the parent.
-          if (userInfo != null)
-            widget.onSignedIn();
-          else
-            widget.onFailure();
+          if (userInfo != null) {
+            if (widget.onSignedIn != null) {
+              widget.onSignedIn!();
+            }
+          } else {
+            if (widget.onFailure != null) {
+              widget.onFailure!();
+            }
+          }
         });
       },
       label: Text('Sign in with Google'),
