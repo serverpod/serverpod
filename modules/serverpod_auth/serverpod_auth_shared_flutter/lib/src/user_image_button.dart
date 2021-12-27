@@ -80,25 +80,27 @@ class _UserImageButtonState extends State<UserImageButton> {
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
           ),
-          if (_userInfo != null) Positioned(
-            right: widget.compact ? 0 : 12,
-            bottom: widget.compact ? 0 : 12,
-            child: Container(
-              width: widget.compact ? 18: 24,
-              height: widget.compact ? 18 : 24,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.all(Radius.circular(widget.compact ? 9 : 12)),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.camera_alt_rounded,
-                  size: widget.compact ? 12 : 18,
-                  color: Theme.of(context).buttonTheme.colorScheme!.onPrimary,
+          if (_userInfo != null)
+            Positioned(
+              right: widget.compact ? 0 : 12,
+              bottom: widget.compact ? 0 : 12,
+              child: Container(
+                width: widget.compact ? 18 : 24,
+                height: widget.compact ? 18 : 24,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(widget.compact ? 9 : 12)),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.camera_alt_rounded,
+                    size: widget.compact ? 12 : 18,
+                    color: Theme.of(context).buttonTheme.colorScheme!.onPrimary,
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

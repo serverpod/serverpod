@@ -23,17 +23,16 @@ class UserEndpoint extends Endpoint {
   /// Sets a new user image for the signed in user.
   Future<bool> setUserImage(Session session, ByteData image) async {
     var userId = await session.auth.authenticatedUserId;
-    return await UserImages.setUserImageFromBytes(session, userId!, image.buffer.asUint8List());
+    return await UserImages.setUserImageFromBytes(
+        session, userId!, image.buffer.asUint8List());
   }
 
   Future<bool> changeUserName(Session session, String userName) async {
     userName = userName.trim();
-    if (userName == '')
-      return false;
+    if (userName == '') return false;
 
     var userId = await session.auth.authenticatedUserId;
-    if (userId == null)
-      return false;
+    if (userId == null) return false;
 
     return (await Users.changeUserName(session, userId, userName)) != null;
   }

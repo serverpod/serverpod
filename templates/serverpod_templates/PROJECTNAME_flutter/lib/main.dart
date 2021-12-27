@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:PROJECTNAME_client/PROJECTNAME_client.dart';
+import 'package:flutter/material.dart';
 
 // Sets up a singleton client object that can be used to talk to the server from
 // anywhere in our app. The client is generated from your server code.
@@ -9,10 +9,12 @@ import 'package:PROJECTNAME_client/PROJECTNAME_client.dart';
 var client = Client('http://localhost:8080/');
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,13 +22,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Serverpod Example'),
+      home: const MyHomePage(title: 'Serverpod Example'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -64,23 +66,23 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.only(bottom: 16.0),
+              padding: const EdgeInsets.only(bottom: 16.0),
               child: TextField(
                 controller: _textEditingController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter your name',
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: 16.0),
+              padding: const EdgeInsets.only(bottom: 16.0),
               child: ElevatedButton(
                 onPressed: _callHello,
-                child: Text('Send to Server'),
+                child: const Text('Send to Server'),
               ),
             ),
             _ResultDisplay(
@@ -99,9 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
 class _ResultDisplay extends StatelessWidget {
   final String? resultMessage;
   final String? errorMessage;
-  
-  _ResultDisplay({this.resultMessage, this.errorMessage,});
-  
+
+  const _ResultDisplay({
+    this.resultMessage,
+    this.errorMessage,
+  });
+
   @override
   Widget build(BuildContext context) {
     String text;
@@ -109,16 +114,14 @@ class _ResultDisplay extends StatelessWidget {
     if (errorMessage != null) {
       backgroundColor = Colors.red[300]!;
       text = errorMessage!;
-    }
-    else if (resultMessage != null) {
+    } else if (resultMessage != null) {
       backgroundColor = Colors.green[300]!;
       text = resultMessage!;
-    }
-    else {
+    } else {
       backgroundColor = Colors.grey[300]!;
       text = 'No server response yet.';
     }
-    
+
     return Container(
       height: 50,
       color: backgroundColor,
@@ -128,4 +131,3 @@ class _ResultDisplay extends StatelessWidget {
     );
   }
 }
-

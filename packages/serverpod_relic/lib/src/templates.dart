@@ -1,12 +1,16 @@
 import 'dart:io';
+
 import 'package:mustache_template/mustache.dart';
 import 'package:path/path.dart';
 
+/// Global access to all templates loaded when starting the webserver.
 final Templates templates = Templates();
 
+/// Loads and caches templates.
 class Templates {
   final Map<String, Template> _templates = {};
 
+  /// Loads all templates from web/templates
   Future<void> loadAll() async {
     var dir = Directory('web/templates');
     for (var entity in await dir.list().toList()) {
@@ -15,17 +19,15 @@ class Templates {
         var name = basenameWithoutExtension(file.path);
         var data = await file.readAsString();
 
-        print('loaded template: $name');
         _templates[name] = Template(
           data,
           name: name,
         );
       }
     }
-    print('Templates loaded');
-    print('');
   }
 
+  /// Retrieves a cached template.
   Template? operator [](String name) {
     return _templates[name];
   }

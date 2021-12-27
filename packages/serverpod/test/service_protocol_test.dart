@@ -1,8 +1,8 @@
-import 'package:test/test.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_client/src/auth_key_manager.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
-import 'package:serverpod_client/src/auth_key_manager.dart';
+import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
@@ -48,24 +48,27 @@ void main() {
     });
 
     test('Clear logs', () async {
+      // Start by clearing logs
+      await serviceClient.insights.clearAllLogs();
+
       // Make sure there is at least 10 log entries
       for (var i = 0; i < 10; i += 1) {
         await client.logging.logInfo('Log test $i');
       }
 
-      var logResult = await serviceClient.insights.getSessionLog(10);
+      var logResult = await serviceClient.insights.getSessionLog(10, null);
       expect(logResult.sessionLog.length, equals(10));
 
       await serviceClient.insights.clearAllLogs();
 
-      logResult = await serviceClient.insights.getSessionLog(10);
+      logResult = await serviceClient.insights.getSessionLog(10, null);
       expect(logResult.sessionLog.length, equals(0));
     });
 
     test('Log entry', () async {
       await client.logging.logInfo('test');
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].messageLog.length, equals(1));
@@ -77,9 +80,9 @@ void main() {
 
       // Writing of logs may still be going on after the call has returned,
       // wait a second to make sure the log has been flushed to the database
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].messageLog.length, equals(3));
@@ -112,9 +115,9 @@ void main() {
 
       // Writing of logs may still be going on after the call has returned,
       // wait a second to make sure the log has been flushed to the database
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       // Debug and info logs should be ignored
@@ -127,9 +130,9 @@ void main() {
 
       // Writing of logs may still be going on after the call has returned,
       // wait a second to make sure the log has been flushed to the database
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].queries.length, equals(2));
@@ -138,9 +141,9 @@ void main() {
     test('Transaction query log', () async {
       await setupTestData(client);
       await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].queries.length, equals(2));
@@ -150,20 +153,20 @@ void main() {
 
     test('Disabled logging', () async {
       await client.logging.logInfo('test');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(
           logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
 
       await client.logging.logInfo('test');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       await client.loggingDisabled.logInfo('test');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
-      logResult = await serviceClient.insights.getSessionLog(1);
+      logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(
           logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
@@ -195,15 +198,15 @@ void main() {
       // Make sure that the future call has been executed
       // The check for future calls is made very 5 s and future call is set for
       // 1 s. Largest possible delay should be 6 s.
-      await Future.delayed(Duration(seconds: 6));
+      await Future.delayed(const Duration(seconds: 6));
 
-      var logResult = await serviceClient.insights.getSessionLog(1);
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
       expect(logResult.sessionLog[0].messageLog.length, equals(1));
       expect(logResult.sessionLog[0].messageLog[0].message, equals('42'));
-      expect(logResult.sessionLog[0].sessionLogEntry.futureCall,
-          equals('testCall'));
+      expect(
+          logResult.sessionLog[0].sessionLogEntry.method, equals('testCall'));
     });
   });
 }
@@ -220,10 +223,8 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   }
 
   @override
-  Future<Null> put(String key) async {}
+  Future<void> put(String key) async {}
 
   @override
-  Future<void> remove() async {
-    ;
-  }
+  Future<void> remove() async {}
 }

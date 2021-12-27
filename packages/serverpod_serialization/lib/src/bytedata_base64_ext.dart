@@ -13,14 +13,10 @@ extension Base64Enc on ByteData {
 extension Base64Dec on String {
   /// Returns [ByteData] from an encoded String.
   ByteData? base64DecodedByteData() {
-    if (this == 'null')
-      return null;
+    if (this == 'null') return null;
     try {
       return ByteData.view(base64Decode(substring(8, length - 12)).buffer);
-    }
-    catch(e) {
-      print('$e');
-      print('data: $this');
+    } catch (e) {
       return null;
     }
   }

@@ -1,9 +1,9 @@
 import 'package:serverpod/src/generated/auth_key.dart';
 
+import '../server/session.dart';
 import 'authentication_info.dart';
 import 'scope.dart';
 import 'util.dart';
-import '../server/session.dart';
 
 /// The default [AuthenticationHandler], uses the auth_key table from the
 /// database to authenticate a user.
@@ -35,9 +35,7 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
       scopes.add(Scope(scopeName));
     }
     return AuthenticationInfo(authKey.userId, scopes);
-  } catch (e, stackTrace) {
-    print('e: $e');
-    print('$stackTrace');
+  } catch (e) {
     return null;
   }
 }

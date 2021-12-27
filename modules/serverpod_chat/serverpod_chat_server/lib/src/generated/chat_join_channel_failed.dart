@@ -21,7 +21,7 @@ class ChatJoinChannelFailed extends SerializableEntity {
     this.id,
     required this.channel,
     required this.reason,
-});
+  });
 
   ChatJoinChannelFailed.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -48,4 +48,3 @@ class ChatJoinChannelFailed extends SerializableEntity {
     });
   }
 }
-

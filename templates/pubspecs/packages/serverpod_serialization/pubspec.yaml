@@ -11,3 +11,6 @@ environment:
 
 dependencies:
   yaml: ^3.1.0
+
+dev_dependencies:
+  lints: ^1.0.1

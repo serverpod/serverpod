@@ -21,7 +21,7 @@ class ModuleClass extends SerializableEntity {
     this.id,
     required this.name,
     required this.data,
-});
+  });
 
   ModuleClass.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -39,4 +39,3 @@ class ModuleClass extends SerializableEntity {
     });
   }
 }
-

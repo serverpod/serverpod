@@ -1,0 +1,34 @@
+name: Dart tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  dart_format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.12.0
+
+      # - name: Install dependencies
+      #   run: dart pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      # Consider passing '--fatal-infos' for slightly stricter analysis.
+      # - name: Analyze project source
+      #  run: dart analyze
+
+      # Your project will need to have tests in test/ and a dependency on
+      # package:test for this step to succeed. Note that Flutter projects will
+      # want to change this to 'flutter test'.
+      # - name: Run tests
+      #  run: dart test

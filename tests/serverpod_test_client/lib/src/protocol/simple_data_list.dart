@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -19,12 +20,14 @@ class SimpleDataList extends SerializableEntity {
   SimpleDataList({
     this.id,
     required this.rows,
-});
+  });
 
   SimpleDataList.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    rows = _data['rows']!.map<SimpleData>((a) => SimpleData.fromSerialization(a))?.toList();
+    rows = _data['rows']!
+        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.toList();
   }
 
   @override
@@ -35,4 +38,3 @@ class SimpleDataList extends SerializableEntity {
     });
   }
 }
-

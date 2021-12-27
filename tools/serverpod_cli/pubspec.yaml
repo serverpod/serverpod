@@ -24,5 +24,8 @@ dependencies:
   serverpod_shared: #^0.8.10
     path: ../../packages/serverpod_shared
 
+dev_dependencies:
+  lints: ^1.0.1
+
 executables:
   serverpod: serverpod_cli

@@ -1,6 +1,7 @@
 import 'package:serverpod/server.dart';
 
-typedef ChatChannelAccessVerificationCallback = Future<bool> Function(Session session, int userId, String channel);
+typedef ChatChannelAccessVerificationCallback = Future<bool> Function(
+    Session session, int userId, String channel);
 
 class ChatConfig {
   static ChatConfig _config = ChatConfig();
@@ -20,6 +21,7 @@ class ChatConfig {
     ChatChannelAccessVerificationCallback? channelAccessVerification,
     this.allowUnauthenticatedUsers = false,
   }) {
-    this.channelAccessVerification = channelAccessVerification ?? (session, userId, channel) async => true;
+    this.channelAccessVerification =
+        channelAccessVerification ?? (session, userId, channel) async => true;
   }
 }

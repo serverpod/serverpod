@@ -3,16 +3,15 @@
 // the documentation on how to add endpoints to your server.
 
 import 'dart:convert';
-import 'dart:io'
-;
-import 'package:http/http.dart' as http;
-import 'package:serverpod/serverpod.dart';
+import 'dart:io';
 
+import 'package:googleapis/people/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:googleapis_auth/googleapis_auth.dart';
-import 'package:googleapis_auth/src/oauth2_flows/auth_code.dart';
 import 'package:googleapis_auth/src/auth_http_utils.dart';
-import 'package:googleapis/people/v1.dart';
+import 'package:googleapis_auth/src/oauth2_flows/auth_code.dart';
+import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
@@ -23,18 +22,22 @@ const _configFilePath = 'config/google_client_secret.json';
 
 /// Endpoint for handling Sign in with Google.
 class GoogleEndpoint extends Endpoint {
-  final _GoogleClientSecret _googleClientSecret = _GoogleClientSecret(_configFilePath);
+  final _GoogleClientSecret _googleClientSecret =
+      _GoogleClientSecret(_configFilePath);
 
-  /// Authenticates a user with Google.
-  Future<AuthenticationResponse> authenticate(Session session, String authenticationCode) async {
+  /// Authenticates a user with Google using the serverAuthCode.
+  Future<AuthenticationResponse> authenticateWithServerAuthCode(
+      Session session, String authenticationCode) async {
     if (_googleClientSecret.json == null) {
-      session.log('Sign in with Google is not initialized', level: LogLevel.warning);
+      session.log('Sign in with Google is not initialized',
+          level: LogLevel.warning);
       return AuthenticationResponse(success: false);
     }
 
     var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
       _googleClientSecret.json!,
-      authenticationCode, [
+      authenticationCode,
+      [
         'https://www.googleapis.com/auth/userinfo.profile',
         'profile',
         'email',
@@ -42,10 +45,10 @@ class GoogleEndpoint extends Endpoint {
     );
 
     var api = PeopleServiceApi(authClient);
-    var person = await api.people.get('people/me', personFields: 'emailAddresses,names,photos');
+    var person = await api.people
+        .get('people/me', personFields: 'emailAddresses,names,photos');
 
-    if (person.names == null)
-      return AuthenticationResponse(success: false);
+    if (person.names == null) return AuthenticationResponse(success: false);
 
     var fullName = person.names?[0].displayName; // TODO: Double check
     var name = person.names?[0].givenName;
@@ -57,6 +60,89 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
+    var userInfo = await _setupUserInfo(session, email, name, fullName, image);
+
+    if (userInfo == null) return AuthenticationResponse(success: false);
+
+    var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+
+    return AuthenticationResponse(
+      success: true,
+      keyId: authKey.id,
+      key: authKey.key,
+      userInfo: userInfo,
+    );
+  }
+
+  Future<AuthenticationResponse> authenticateWithIdToken(
+      Session session, String idToken) async {
+    try {
+      Map web = _googleClientSecret.json!['web'];
+      String clientId = web['client_id'];
+
+      // Verify the token with Google's servers.
+      // TODO: This should probably be done on this server.
+      final response = await http.get(Uri.parse(
+          'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken'));
+
+      if (response.statusCode != 200) {
+        session.log('Invalid token received', level: LogLevel.debug);
+        return AuthenticationResponse(success: false);
+      }
+
+      final data = jsonDecode(response.body);
+      if (data['iss'] != 'accounts.google.com') {
+        session.log('Invalid token received', level: LogLevel.debug);
+        return AuthenticationResponse(success: false);
+      }
+
+      if (data['aud'] != clientId) {
+        session.log('Client ID doesn\'t match', level: LogLevel.debug);
+        return AuthenticationResponse(success: false);
+      }
+
+      String? email = data['email'];
+      String? fullName = data['name'];
+      String? image = data['picture'];
+      String name = data['given_name'];
+
+      if (email == null || fullName == null || image == null || name == null) {
+        session.log(
+            'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
+            level: LogLevel.debug);
+        return AuthenticationResponse(success: false);
+      }
+
+      var userInfo =
+          await _setupUserInfo(session, email, name, fullName, image);
+      if (userInfo == null) {
+        session.log('Failed to create UserInfo', level: LogLevel.debug);
+        return AuthenticationResponse(success: false);
+      }
+
+      // Authentication looks ok!
+
+      var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+
+      return AuthenticationResponse(
+        success: true,
+        keyId: authKey.id,
+        key: authKey.key,
+        userInfo: userInfo,
+      );
+    } catch (e, stackTrace) {
+      session.log(
+        'Failed authenticateWithIdToken',
+        level: LogLevel.debug,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      return AuthenticationResponse(success: false);
+    }
+  }
+
+  Future<UserInfo?> _setupUserInfo(Session session, String email, String name,
+      String fullName, String? image) async {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
@@ -72,35 +158,23 @@ class GoogleEndpoint extends Endpoint {
       userInfo = await Users.createUser(session, userInfo);
 
       // Set the user image.
-      if (userInfo?.id != null && (person.photos?.isNotEmpty ?? false)) {
-        var photo = person.photos![0];
-        var url = photo.url;
-        if (url != null && url.endsWith('s100')) {
-          url = url.substring(0, url.length - 4) + 's${AuthConfig.current.userImageSize}';
+      if (userInfo?.id != null && image != null) {
+        var url = image;
+        if (url.endsWith('s100')) {
+          url = url.substring(0, url.length - 4) +
+              's${AuthConfig.current.userImageSize}';
         }
-
-        if (url != null)
-          await UserImages.setUserImageFromUrl(session, userInfo!.id!, Uri.parse(url));
+        await UserImages.setUserImageFromUrl(
+            session, userInfo!.id!, Uri.parse(url));
       }
     }
-
-    if (userInfo == null)
-      return AuthenticationResponse(success: false);
-
-    var authKey = await session.auth.signInUser(userInfo.id!, 'google');
-
-    return AuthenticationResponse(
-      success: true,
-      keyId: authKey.id,
-      key: authKey.key,
-      userInfo: userInfo,
-    );
+    return userInfo;
   }
 }
 
 class _GoogleUtils {
-  static Future<AutoRefreshingAuthClient> clientViaClientSecretAndCode(Map data,
-      String authenticationCode, List<String> scopes) async {
+  static Future<AutoRefreshingAuthClient> clientViaClientSecretAndCode(
+      Map data, String authenticationCode, List<String> scopes) async {
     Map web = data['web'];
     String identifier = web['client_id'];
     String secret = web['client_secret'];
@@ -108,8 +182,15 @@ class _GoogleUtils {
     String redirectURI = redirectURIs[0];
     var clientId = ClientId(identifier, secret);
     var client = http.Client();
-    var credentials = await obtainAccessCredentialsUsingCode(
-        clientId, authenticationCode, redirectURI, client);
+    // var credentials = await obtainAccessCredentialsUsingCode(
+    //     clientId, authenticationCode, redirectURI, client);
+
+    var credentials = await obtainAccessCredentialsViaCodeExchange(
+      client,
+      clientId,
+      authenticationCode,
+      redirectUrl: redirectURI,
+    );
 
     return AutoRefreshingClient(client, clientId, credentials,
         closeUnderlyingClient: true);
@@ -125,9 +206,9 @@ class _GoogleClientSecret {
       var file = File(path);
       var jsonData = file.readAsStringSync();
       json = jsonDecode(jsonData);
-    }
-    catch(e) {
-      print('serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.');
+    } catch (e) {
+      print(
+          'serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.');
     }
   }
 }

@@ -6,12 +6,12 @@ import 'package:serverpod/src/server/message_central.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../authentication/scope.dart';
+import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../cloud_storage/cloud_storage.dart';
-import '../authentication/scope.dart';
-import '../generated/protocol.dart';
 import '../database/database.dart';
-import '../authentication/util.dart';
+import '../generated/protocol.dart';
 import 'log_manager.dart';
 import 'server.dart';
 import 'serverpod.dart';
@@ -139,14 +139,13 @@ abstract class Session {
 
     try {
       server.messageCentral.removeListenersForSession(this);
-      if (logSession) {
-        return await server.serverpod.logManager.finalizeSessionLog(
-          this,
-          exception: error,
-          stackTrace: stackTrace,
-          authenticatedUserId: _authenticatedUser,
-        );
-      }
+      return await server.serverpod.logManager.finalizeSessionLog(
+        this,
+        exception: '$error',
+        stackTrace: stackTrace,
+        authenticatedUserId: _authenticatedUser,
+        logSession: logSession,
+      );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
       stderr.writeln('$stackTrace');
@@ -351,8 +350,9 @@ class StorageAccess {
     DateTime? expiration,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     await storage.storeFile(session: _session, path: path, byteData: byteData);
   }
@@ -363,8 +363,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.retrieveFile(session: _session, path: path);
   }
@@ -375,8 +376,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.fileExists(session: _session, path: path);
   }
@@ -387,8 +389,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     await storage.deleteFile(session: _session, path: path);
   }
@@ -399,8 +402,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.getPublicUrl(session: _session, path: path);
   }
@@ -414,8 +418,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.createDirectFileUploadDescription(
         session: _session, path: path);
@@ -428,8 +433,9 @@ class StorageAccess {
     required String path,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null)
+    if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
+    }
 
     return await storage.verifyDirectFileUpload(session: _session, path: path);
   }

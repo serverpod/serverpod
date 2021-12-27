@@ -40,11 +40,12 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '// ignore_for_file: public_member_api_docs\n';
         out += '\n';
 
-        if (serverCode)
+        if (serverCode) {
           out +=
               'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-        else
+        } else {
           out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+        }
 
         out += 'class $enumName extends SerializableEntity {\n';
         out += '  @override\n';
@@ -102,7 +103,7 @@ class ClassGeneratorDart extends ClassGenerator {
         for (String value in doc['values']) {
           out += '    if (this == $value) return \'$value\';\n';
         }
-        out += '    throw FormatException();\n';
+        out += '    throw const FormatException();\n';
         out += '  }\n';
 
         out += '}\n';
@@ -163,6 +164,7 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '// ignore_for_file: non_constant_identifier_names\n';
       out += '// ignore_for_file: public_member_api_docs\n';
       out += '// ignore_for_file: unused_import\n';
+      out += '// ignore_for_file: overridden_fields\n';
       out += '\n';
 
       if (serverCode) {
@@ -208,8 +210,9 @@ class ClassGeneratorDart extends ClassGenerator {
       // Fields
       for (var field in fields) {
         if (field.shouldIncludeField(serverCode)) {
-          if (field.name == 'id' && serverCode && tableName != null)
+          if (field.name == 'id' && serverCode && tableName != null) {
             out += '  @override\n';
+          }
           out +=
               '  ${field.type.nullable ? '' : 'late '}${field.type.type} ${field.name};\n';
         }
@@ -219,9 +222,10 @@ class ClassGeneratorDart extends ClassGenerator {
       // Default constructor
       out += '  $className({\n';
       for (var field in fields) {
-        if (field.shouldIncludeField(serverCode))
+        if (field.shouldIncludeField(serverCode)) {
           out +=
               '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
+        }
       }
       out += '});\n';
       out += '\n';
@@ -231,8 +235,9 @@ class ClassGeneratorDart extends ClassGenerator {
           '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
       out += '    var _data = unwrapSerializationData(serialization);\n';
       for (var field in fields) {
-        if (field.shouldIncludeField(serverCode))
+        if (field.shouldIncludeField(serverCode)) {
           out += '    ${field.name} = ${field.deserialization};\n';
+        }
       }
       out += '  }\n';
       out += '\n';
@@ -243,8 +248,9 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '    return wrapSerializationData({\n';
 
       for (var field in fields) {
-        if (field.shouldSerializeField(serverCode))
+        if (field.shouldSerializeField(serverCode)) {
           out += '      \'${field.name}\': ${field.serialization},\n';
+        }
       }
 
       out += '    });\n';
@@ -259,8 +265,9 @@ class ClassGeneratorDart extends ClassGenerator {
           out += '    return wrapSerializationData({\n';
 
           for (var field in fields) {
-            if (field.shouldSerializeFieldForDatabase(serverCode))
+            if (field.shouldSerializeFieldForDatabase(serverCode)) {
               out += '      \'${field.name}\': ${field.serialization},\n';
+            }
           }
 
           out += '    });\n';
@@ -297,9 +304,10 @@ class ClassGeneratorDart extends ClassGenerator {
 
         // Column descriptions
         for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode))
+          if (field.shouldSerializeFieldForDatabase(serverCode)) {
             out +=
                 '  final ${field.name} = ${field.columnType}(\'${field.name}\');\n';
+          }
         }
         out += '\n';
 
@@ -307,8 +315,9 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '  @override\n';
         out += '  List<Column> get columns => [\n';
         for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode))
+          if (field.shouldSerializeFieldForDatabase(serverCode)) {
             out += '    ${field.name},\n';
+          }
         }
         out += '  ];\n';
 
@@ -364,10 +373,11 @@ class ClassGeneratorDart extends ClassGenerator {
 
     out += '// ignore: unused_import\n';
     out += 'import \'dart:typed_data\';\n';
-    if (serverCode)
+    if (serverCode) {
       out += 'import \'package:serverpod/serverpod.dart\';\n';
-    else
+    } else {
       out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+    }
 
     out += '\n';
 
@@ -422,10 +432,11 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   String get classPrefix {
-    if (config.type == PackageType.server)
+    if (config.type == PackageType.server) {
       return '';
-    else
+    } else {
       return '${config.serverPackage}.';
+    }
   }
 
 //  String _endpointClassName(String endpointName) {
@@ -456,7 +467,7 @@ class FieldDefinition {
 
   FieldScope scope = FieldScope.all;
 
-  FieldDefinition(String name, String description) : name = name {
+  FieldDefinition(this.name, String description) {
     var components = description.split(',').map((String s) {
       return s.trim();
     }).toList();
@@ -464,9 +475,11 @@ class FieldDefinition {
 
     if (components.length == 2) {
       var scopeStr = components[1];
-      if (scopeStr == 'database')
+      if (scopeStr == 'database') {
         scope = FieldScope.database;
-      else if (scopeStr == 'api') scope = FieldScope.api;
+      } else if (scopeStr == 'api') {
+        scope = FieldScope.api;
+      }
     }
 
     // TODO: Fix package?
@@ -481,15 +494,17 @@ class FieldDefinition {
           type.listType!.typeNonNullable == 'bool') {
         return name;
       } else if (type.listType!.typeNonNullable == 'DateTime') {
-        if (type.listType!.nullable)
+        if (type.listType!.nullable) {
           return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.toIso8601String()).toList()';
-        else
+        } else {
           return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String()).toList()';
+        }
       } else if (type.listType!.typeNonNullable == 'ByteData') {
-        if (type.listType!.nullable)
+        if (type.listType!.nullable) {
           return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.base64encodedString()).toList()';
-        else
+        } else {
           return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.base64encodedString()).toList()';
+        }
       } else {
         return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
       }
@@ -517,20 +532,23 @@ class FieldDefinition {
           type.listType!.typeNonNullable == 'bool') {
         return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<${type.listType!.type}>()';
       } else if (type.listType!.typeNonNullable == 'DateTime') {
-        if (type.listType!.nullable)
+        if (type.listType!.nullable) {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
-        else
+        } else {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
+        }
       } else if (type.listType!.typeNonNullable == 'ByteData') {
-        if (type.listType!.nullable)
+        if (type.listType!.nullable) {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
-        else
+        } else {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
+        }
       } else {
-        if (type.listType!.nullable)
+        if (type.listType!.nullable) {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
-        else
+        } else {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
+        }
       }
     }
 
@@ -540,22 +558,24 @@ class FieldDefinition {
         type.typeNonNullable == 'bool') {
       return '_data[\'$name\']${type.nullable ? '' : '!'}';
     } else if (type.typeNonNullable == 'DateTime') {
-      if (type.nullable)
+      if (type.nullable) {
         return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
-      else
+      } else {
         return 'DateTime.tryParse(_data[\'$name\'])!';
+      }
     } else if (type.typeNonNullable == 'ByteData') {
-      if (type.nullable)
-        // return '(_data[\'$name\'] as String?)?.base64DecodedByteData()';
+      if (type.nullable) {
         return '_data[\'$name\'] == null ? null : (_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData() : ByteData.view((_data[\'$name\'] as Uint8List).buffer))';
-      else
+      } else {
         return '_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData()! : ByteData.view((_data[\'$name\'] as Uint8List).buffer)';
+      }
       // return '(_data[\'$name\'] as String?)!.base64DecodedByteData()!';
     } else {
-      if (type.nullable)
+      if (type.nullable) {
         return '_data[\'$name\'] != null ? $type.fromSerialization(_data[\'$name\']) : null';
-      else
+      } else {
         return '$type.fromSerialization(_data[\'$name\'])';
+      }
     }
   }
 

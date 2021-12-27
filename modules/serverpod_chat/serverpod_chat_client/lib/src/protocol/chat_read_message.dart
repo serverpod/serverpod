@@ -23,7 +23,7 @@ class ChatReadMessage extends SerializableEntity {
     required this.channel,
     required this.userId,
     required this.lastReadMessageId,
-});
+  });
 
   ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -43,4 +43,3 @@ class ChatReadMessage extends SerializableEntity {
     });
   }
 }
-

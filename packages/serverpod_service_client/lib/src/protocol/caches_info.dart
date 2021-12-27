@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -25,7 +26,7 @@ class CachesInfo extends SerializableEntity {
     required this.localPrio,
     required this.distributed,
     required this.distributedPrio,
-});
+  });
 
   CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -47,4 +48,3 @@ class CachesInfo extends SerializableEntity {
     });
   }
 }
-

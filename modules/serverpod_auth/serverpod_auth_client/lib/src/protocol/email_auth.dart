@@ -23,7 +23,7 @@ class EmailAuth extends SerializableEntity {
     required this.userId,
     required this.email,
     required this.hash,
-});
+  });
 
   EmailAuth.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -43,4 +43,3 @@ class EmailAuth extends SerializableEntity {
     });
   }
 }
-

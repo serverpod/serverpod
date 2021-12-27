@@ -28,23 +28,30 @@ class ChatEndpoint extends Endpoint {
     var userId = await session.auth.authenticatedUserId;
 
     if (userId != null) {
-      setUserObject(session, ChatSessionInfo(
-        userInfo: await Users.findUserByUserId(session, userId),
-      ));
-    }
-    else {
+      setUserObject(
+          session,
+          ChatSessionInfo(
+            userInfo: await Users.findUserByUserId(session, userId),
+          ));
+    } else {
       setUserObject(session, ChatSessionInfo());
     }
   }
 
   @override
-  Future<void> handleStreamMessage(StreamingSession session, SerializableEntity message) async {
+  Future<void> handleStreamMessage(
+      StreamingSession session, SerializableEntity message) async {
     var chatSession = getUserObject(session) as ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
       // TODO: Check if unauthenticated users is ok
-      if (!ChatConfig.current.allowUnauthenticatedUsers && (await session.auth.authenticatedUserId) == null) {
-        await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'User must be authenticated'));
+      if (!ChatConfig.current.allowUnauthenticatedUsers &&
+          (await session.auth.authenticatedUserId) == null) {
+        await sendStreamMessage(
+            session,
+            ChatJoinChannelFailed(
+                channel: message.channel,
+                reason: 'User must be authenticated'));
       }
 
       if (message.userName != null && chatSession.userInfo == null) {
@@ -62,13 +69,20 @@ class ChatEndpoint extends Endpoint {
       }
 
       if (chatSession.userInfo?.id == null) {
-        await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'User not found'));
+        await sendStreamMessage(
+            session,
+            ChatJoinChannelFailed(
+                channel: message.channel, reason: 'User not found'));
         return;
       }
 
       // Check if user is allowed to access this channel
-      if (!await ChatConfig.current.channelAccessVerification(session, chatSession.userInfo!.id!, message.channel)) {
-        await sendStreamMessage(session, ChatJoinChannelFailed(channel: message.channel, reason: 'Access denied'));
+      if (!await ChatConfig.current.channelAccessVerification(
+          session, chatSession.userInfo!.id!, message.channel)) {
+        await sendStreamMessage(
+            session,
+            ChatJoinChannelFailed(
+                channel: message.channel, reason: 'Access denied'));
         return;
       }
 
@@ -76,30 +90,31 @@ class ChatEndpoint extends Endpoint {
       var messageListener = (SerializableEntity message) {
         sendStreamMessage(session, message);
       };
-      session.messages.addListener(_channelPrefix + message.channel, messageListener);
+      session.messages
+          .addListener(_channelPrefix + message.channel, messageListener);
       chatSession.messageListeners[message.channel] = messageListener;
 
-      var initialMessageChunk = await _fetchMessageChunk(session, message.channel, _initialMessageChunkSize);
+      var initialMessageChunk = await _fetchMessageChunk(
+          session, message.channel, _initialMessageChunkSize);
 
       await sendStreamMessage(
         session,
         ChatJoinedChannel(
           channel: message.channel,
           initialMessageChunk: initialMessageChunk,
-          lastReadMessageId: await _getLastReadMessage(session, message.channel, chatSession.userInfo!.id!),
+          lastReadMessageId: await _getLastReadMessage(
+              session, message.channel, chatSession.userInfo!.id!),
           userInfo: chatSession.userInfo!,
         ),
       );
-    }
-    else if (message is ChatLeaveChannel) {
+    } else if (message is ChatLeaveChannel) {
       // Remove listener for a subscribed channel
       var listener = chatSession.messageListeners[message.channel];
       if (listener != null) {
         session.messages.removeListener(message.className, listener);
         chatSession.messageListeners.remove(message.channel);
       }
-    }
-    else if (message is ChatMessagePost) {
+    } else if (message is ChatMessagePost) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
         return;
@@ -121,9 +136,9 @@ class ChatEndpoint extends Endpoint {
       if (!_isEphemeralChannel(message.channel))
         await session.db.insert(chatMessage);
 
-      session.messages.postMessage(_channelPrefix + message.channel, chatMessage);
-    }
-    else if (message is ChatReadMessage) {
+      session.messages
+          .postMessage(_channelPrefix + message.channel, chatMessage);
+    } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
         return;
@@ -136,19 +151,21 @@ class ChatEndpoint extends Endpoint {
         chatSession.userInfo!.id!,
         message.lastReadMessageId,
       );
-    }
-    else if (message is ChatRequestMessageChunk) {
+    } else if (message is ChatRequestMessageChunk) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
         return;
       }
 
-      var chunk = await _fetchMessageChunk(session, message.channel, _messageChunkSize, message.lastMessageId);
+      var chunk = await _fetchMessageChunk(
+          session, message.channel, _messageChunkSize, message.lastMessageId);
       await sendStreamMessage(session, chunk);
     }
   }
 
-  Future<ChatMessageChunk> _fetchMessageChunk(Session session, String channel, int size, [int? lastId]) async {
+  Future<ChatMessageChunk> _fetchMessageChunk(
+      Session session, String channel, int size,
+      [int? lastId]) async {
     if (_isEphemeralChannel(channel)) {
       return ChatMessageChunk(
         channel: channel,
@@ -161,20 +178,22 @@ class ChatEndpoint extends Endpoint {
     if (lastId != null) {
       messages = (await session.db.find(
         tChatMessage,
-        where: (tChatMessage.channel.equals(channel)) & (tChatMessage.id < lastId),
+        where:
+            (tChatMessage.channel.equals(channel)) & (tChatMessage.id < lastId),
         orderBy: tChatMessage.id,
         orderDescending: true,
         limit: size + 1,
-      )).cast<ChatMessage>();
-    }
-    else {
+      ))
+          .cast<ChatMessage>();
+    } else {
       messages = (await session.db.find(
         tChatMessage,
         where: (tChatMessage.channel.equals(channel)),
         orderBy: tChatMessage.id,
         orderDescending: true,
         limit: size + 1,
-      )).cast<ChatMessage>();
+      ))
+          .cast<ChatMessage>();
     }
 
     var hasOlderMessages = false;
@@ -198,10 +217,12 @@ class ChatEndpoint extends Endpoint {
     message.senderInfo = await Users.findUserByUserId(session, message.sender);
   }
 
-  Future<int> _getLastReadMessage(Session session, String channel, int userId) async {
+  Future<int> _getLastReadMessage(
+      Session session, String channel, int userId) async {
     var readMessageRow = (await session.db.findSingleRow(
       tChatReadMessage,
-      where: tChatReadMessage.channel.equals(channel) & tChatReadMessage.userId.equals(userId),
+      where: tChatReadMessage.channel.equals(channel) &
+          tChatReadMessage.userId.equals(userId),
     )) as ChatReadMessage?;
 
     if (readMessageRow == null) {
@@ -210,10 +231,12 @@ class ChatEndpoint extends Endpoint {
     return readMessageRow.lastReadMessageId;
   }
 
-  Future<void> _setLastReadMessage(Session session, String channel, int userId, int lastReadMessageId) async {
+  Future<void> _setLastReadMessage(Session session, String channel, int userId,
+      int lastReadMessageId) async {
     var readMessageRow = (await session.db.findSingleRow(
       tChatReadMessage,
-      where: tChatReadMessage.channel.equals(channel) & tChatReadMessage.userId.equals(userId),
+      where: tChatReadMessage.channel.equals(channel) &
+          tChatReadMessage.userId.equals(userId),
     )) as ChatReadMessage?;
 
     if (readMessageRow == null) {
@@ -223,34 +246,37 @@ class ChatEndpoint extends Endpoint {
         lastReadMessageId: lastReadMessageId,
       );
       await session.db.insert(readMessageRow);
-    }
-    else {
+    } else {
       readMessageRow.lastReadMessageId = lastReadMessageId;
       await session.db.update(readMessageRow);
     }
   }
 
-  Future<ChatMessageAttachmentUploadDescription?> createAttachmentUploadDescription(Session session, String fileName) async {
+  Future<ChatMessageAttachmentUploadDescription?>
+      createAttachmentUploadDescription(
+          Session session, String fileName) async {
     var userId = (await session.auth.authenticatedUserId);
-    if (userId == null)
-      return null;
+    if (userId == null) return null;
 
     var filePath = _generateAttachmentFilePath(userId, fileName);
 
-    var uploadDescription = await session.storage.createDirectFileUploadDescription(storageId: 'public', path: filePath);
-    if (uploadDescription == null)
-      return null;
+    var uploadDescription = await session.storage
+        .createDirectFileUploadDescription(storageId: 'public', path: filePath);
+    if (uploadDescription == null) return null;
 
-    return ChatMessageAttachmentUploadDescription(filePath: filePath, uploadDescription: uploadDescription);
+    return ChatMessageAttachmentUploadDescription(
+        filePath: filePath, uploadDescription: uploadDescription);
   }
 
-  Future<ChatMessageAttachment?> verifyAttachmentUpload(Session session, String fileName, String filePath) async {
-    var success = await session.storage.verifyDirectFileUpload(storageId: 'public', path: filePath);
-    var url = await session.storage.getPublicUrl(storageId: 'public', path: filePath);
+  Future<ChatMessageAttachment?> verifyAttachmentUpload(
+      Session session, String fileName, String filePath) async {
+    var success = await session.storage
+        .verifyDirectFileUpload(storageId: 'public', path: filePath);
+    var url =
+        await session.storage.getPublicUrl(storageId: 'public', path: filePath);
     var userId = (await session.auth.authenticatedUserId);
 
-    if (userId == null)
-      return null;
+    if (userId == null) return null;
 
     // Generate thumbnail
     Uri? thumbUrl;
@@ -271,16 +297,17 @@ class ChatEndpoint extends Endpoint {
           var thumbPath = _generateAttachmentFilePath(userId, fileName);
           var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
           var byteData = ByteData.view(encodedBytes.buffer);
-          await session.storage.storeFile(storageId: 'public', path: thumbPath, byteData: byteData);
-          thumbUrl = await session.storage.getPublicUrl(storageId: 'public', path: thumbPath);
+          await session.storage.storeFile(
+              storageId: 'public', path: thumbPath, byteData: byteData);
+          thumbUrl = await session.storage
+              .getPublicUrl(storageId: 'public', path: thumbPath);
           if (thumbUrl != null) {
             thumbWidth = image.width;
             thumbHeight = image.height;
           }
         }
       }
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       print('Failed to create attachment: $e');
       print('$stackTrace');
     }
@@ -297,12 +324,13 @@ class ChatEndpoint extends Endpoint {
     }
   }
 
-
   String _generateAttachmentFilePath(int userId, String fileName) {
     const len = 16;
-    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    const chars =
+        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     final rnd = Random();
-    var rndString = String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    var rndString = String.fromCharCodes(Iterable.generate(
+        len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
     var dateString = DateTime.now().toUtc().toString().substring(0, 10);
 
     return 'serverpod/chat/$userId/$dateString/$rndString/$fileName';

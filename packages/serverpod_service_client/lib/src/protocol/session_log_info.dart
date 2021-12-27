@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -23,14 +24,19 @@ class SessionLogInfo extends SerializableEntity {
     required this.sessionLogEntry,
     required this.queries,
     required this.messageLog,
-});
+  });
 
   SessionLogInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    sessionLogEntry = SessionLogEntry.fromSerialization(_data['sessionLogEntry']);
-    queries = _data['queries']!.map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))?.toList();
-    messageLog = _data['messageLog']!.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
+    sessionLogEntry =
+        SessionLogEntry.fromSerialization(_data['sessionLogEntry']);
+    queries = _data['queries']!
+        .map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))
+        ?.toList();
+    messageLog = _data['messageLog']!
+        .map<LogEntry>((a) => LogEntry.fromSerialization(a))
+        ?.toList();
   }
 
   @override
@@ -43,4 +49,3 @@ class SessionLogInfo extends SerializableEntity {
     });
   }
 }
-

@@ -1,18 +1,26 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
+
 import 'dart:io';
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
-// ignore: unused_import
 import 'protocol.dart';
 
-class _EndpointModule {
-  EndpointCaller caller;
-  _EndpointModule(this.caller);
+class _EndpointModule extends EndpointRef {
+  @override
+  String get name => 'MODULENAME.module';
 
-  Future<String> hello(String name,) async {
-    return await caller.callServerEndpoint('MODULENAME.module', 'hello', 'String', {
-      'name':name,
+  _EndpointModule(EndpointCaller caller) : super(caller);
+
+  Future<String> hello(
+    String name,
+  ) async {
+    return await caller
+        .callServerEndpoint('MODULENAME.module', 'hello', 'String', {
+      'name': name,
     });
   }
 }
@@ -23,4 +31,9 @@ class Caller extends ModuleEndpointCaller {
   Caller(ServerpodClientShared client) : super(client) {
     module = _EndpointModule(this);
   }
+
+  @override
+  Map<String, EndpointRef> get endpointRefLookup => {
+        'MODULENAME.module': module,
+      };
 }

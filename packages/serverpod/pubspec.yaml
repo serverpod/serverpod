@@ -11,7 +11,6 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  pedantic: ^1.11.0
   args: ^2.0.0
   collection: ^1.15.0
   crypto: ^3.0.1
@@ -35,7 +34,4 @@ dev_dependencies:
     path: ../../tests/serverpod_test_client
   serverpod_test_module_client: #^0.8.10
     path: ../../tests/serverpod_test_module/serverpod_test_module_client
-  serverpod_auth_client:
-    path: ../../modules/serverpod_auth/serverpod_auth_client
-  serverpod_cloud_storage_s3:
-    path: ../../integrations/serverpod_cloud_storage_s3
+  lints: ^1.0.1

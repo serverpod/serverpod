@@ -1,7 +1,7 @@
 import 'package:watcher/watcher.dart';
 
-import 'config.dart';
 import 'class_generator.dart';
+import 'config.dart';
 import 'protocol_generator.dart';
 
 void performGenerateContinuously(bool verbose) {
@@ -36,8 +36,9 @@ Future<void> _performGenereateProtocolContinuously(bool verbose) async {
     switch (event.type) {
       case ChangeType.ADD:
       case ChangeType.MODIFY:
-        if (event.path.endsWith('.dart'))
+        if (event.path.endsWith('.dart')) {
           await performGenerateProtocol(verbose);
+        }
         break;
       case ChangeType.REMOVE:
         // TODO: Remove

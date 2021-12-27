@@ -27,7 +27,7 @@ class EmailReset extends TableRow {
     required this.userId,
     required this.verificationCode,
     required this.expiration,
-});
+  });
 
   EmailReset.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -80,11 +80,11 @@ class EmailResetTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    userId,
-    verificationCode,
-    expiration,
-  ];
+        id,
+        userId,
+        verificationCode,
+        expiration,
+      ];
 }
 
 EmailResetTable tEmailReset = EmailResetTable();

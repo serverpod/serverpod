@@ -10,7 +10,7 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   String? _authenticationKey;
 
   final String runMode;
-  FlutterAuthenticationKeyManager({this.runMode='production'});
+  FlutterAuthenticationKeyManager({this.runMode = 'production'});
 
   @override
   Future<String?> get() async {

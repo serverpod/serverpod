@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart';
-// import '../generated/protocol.dart';
 
 // int globalInt = 0;
 

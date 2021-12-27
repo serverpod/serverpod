@@ -1,18 +1,18 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/message_central.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'endpoint_dispatch.dart';
-import 'serverpod.dart';
 import '../authentication/authentication_info.dart';
 import '../cache/caches.dart';
 import '../database/database_config.dart';
-import 'package:serverpod/src/server/health_check.dart';
+import 'endpoint_dispatch.dart';
+import 'serverpod.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -168,17 +168,20 @@ class Server {
         }
       }
 
-      if (allOk)
+      if (allOk) {
         request.response.writeln('OK ${DateTime.now().toUtc()}');
-      else
+      } else {
         request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
-      for (var issue in issues) request.response.writeln(issue);
+      }
+      for (var issue in issues) {
+        request.response.writeln(issue);
+      }
 
       await request.response.close();
       return;
     } else if (uri.path == '/websocket') {
       var webSocket = await WebSocketTransformer.upgrade(request);
-      webSocket.pingInterval = Duration(minutes: 1);
+      webSocket.pingInterval = const Duration(minutes: 1);
       unawaited(_handleWebsocket(webSocket, request));
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
@@ -250,9 +253,10 @@ class Server {
       return;
     } else if (result is ResultSuccess) {
       // Set content type.
-      if (!result.sendByteDataAsRaw)
+      if (!result.sendByteDataAsRaw) {
         request.response.headers.contentType =
             ContentType('application', 'json', charset: 'utf-8');
+      }
 
       // Set Access-Control-Allow-Origin, required for Flutter web.
       request.response.headers.add('Access-Control-Allow-Origin', '*');
@@ -260,8 +264,9 @@ class Server {
       // Send the response
       if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {
         var byteData = result.returnValue as ByteData?;
-        if (byteData != null)
+        if (byteData != null) {
           request.response.add(byteData.buffer.asUint8List());
+        }
       } else {
         var serializedEntity =
             serializationManager.serializeEntity(result.returnValue);
@@ -281,7 +286,7 @@ class Server {
       if (len > serverpod.config.maxRequestSize) return null;
       data += segment;
     }
-    return Utf8Decoder().convert(data);
+    return const Utf8Decoder().convert(data);
   }
 
   Future<Result> _handleUriCall(
@@ -304,8 +309,9 @@ class Server {
         await _callStreamOpened(session, endpointConnector.endpoint);
       }
       for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values)
+        for (var endpointConnector in module.connectors.values) {
           await _callStreamOpened(session, endpointConnector.endpoint);
+        }
       }
 
       dynamic error;
@@ -322,14 +328,16 @@ class Server {
           if (message == null) throw Exception('Streamed message was null');
 
           var endpointConnector = endpoints.getConnectorByName(endpointName);
-          if (endpointConnector == null)
+          if (endpointConnector == null) {
             throw Exception('Endpoint not found: $endpointName');
+          }
 
           var authFailed = await endpoints.canUserAccessEndpoint(
               session, endpointConnector.endpoint);
-          if (authFailed == null)
+          if (authFailed == null) {
             await endpointConnector.endpoint
                 .handleStreamMessage(session, message);
+          }
         }
       } catch (e, s) {
         error = e;
@@ -341,8 +349,9 @@ class Server {
         await _callStreamClosed(session, endpointConnector.endpoint);
       }
       for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values)
+        for (var endpointConnector in module.connectors.values) {
           await _callStreamClosed(session, endpointConnector.endpoint);
+        }
       }
       await session.close(error: error, stackTrace: stackTrace);
     } catch (e, stackTrace) {
@@ -359,10 +368,8 @@ class Server {
       // future messages that are passed to this endpoint.
       var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
       if (authFailed == null) await endpoint.streamOpened(session);
-    } catch (e, stackTrace) {
-      print('Failed to call streamOpened');
-      print('$e');
-      print('$stackTrace');
+    } catch (e) {
+      return;
     }
   }
 
@@ -371,10 +378,8 @@ class Server {
     try {
       var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
       if (authFailed == null) await endpoint.streamClosed(session);
-    } catch (e, stackTrace) {
-      print('Failed to call streamClosed');
-      print('$e');
-      print('$stackTrace');
+    } catch (e) {
+      return;
     }
   }
 

@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -27,7 +28,7 @@ class AuthKey extends SerializableEntity {
     this.key,
     required this.scopeNames,
     required this.method,
-});
+  });
 
   AuthKey.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -51,4 +52,3 @@ class AuthKey extends SerializableEntity {
     });
   }
 }
-

@@ -6,8 +6,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 
 import '../server/endpoint.dart';
-import '../server/session.dart';
 import '../server/serverpod.dart';
+import '../server/session.dart';
 
 const _endpointName = 'serverpod_cloud_storage';
 
@@ -34,20 +34,21 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     var extension = p.extension(path);
     extension = extension.toLowerCase();
-    if (extension == '.js')
+    if (extension == '.js') {
       response.headers.contentType = ContentType('text', 'javascript');
-    else if (extension == '.css')
+    } else if (extension == '.css') {
       response.headers.contentType = ContentType('text', 'css');
-    else if (extension == '.png')
+    } else if (extension == '.png') {
       response.headers.contentType = ContentType('image', 'png');
-    else if (extension == '.jpg')
+    } else if (extension == '.jpg') {
       response.headers.contentType = ContentType('image', 'jpeg');
-    else if (extension == '.svg')
+    } else if (extension == '.svg') {
       response.headers.contentType = ContentType('image', 'svg+xml');
-    else if (extension == '.ttf')
+    } else if (extension == '.ttf') {
       response.headers.contentType = ContentType('application', 'x-font-ttf');
-    else if (extension == '.woff')
+    } else if (extension == '.woff') {
       response.headers.contentType = ContentType('application', 'x-font-woff');
+    }
 
     // Retrieve the file from storage and return it.
     return file;

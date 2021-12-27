@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 
-import '../shared/environment.dart';
 import '../generated/version.dart';
+import '../shared/environment.dart';
 
 final resourceManager = ResourceManager();
 
@@ -12,11 +12,13 @@ class ResourceManager {
   Directory get homeDirectory {
     var envVars = Platform.environment;
 
-    if (Platform.isMacOS)
+    if (Platform.isMacOS) {
       return Directory(envVars['HOME']!);
-    else if (Platform.isLinux)
+    } else if (Platform.isLinux) {
       return Directory(envVars['HOME']!);
-    else if (Platform.isWindows) return Directory(envVars['UserProfile']!);
+    } else if (Platform.isWindows) {
+      return Directory(envVars['UserProfile']!);
+    }
 
     throw (Exception('Unsupported platform.'));
   }
@@ -26,10 +28,11 @@ class ResourceManager {
   Directory get versionedDir =>
       Directory(localCacheDirectory.path + '/$templateVersion');
   Directory get templateDirectory {
-    if (productionMode)
+    if (productionMode) {
       return Directory(versionedDir.path + '/serverpod_template');
-    else
+    } else {
       return Directory(serverpodHome + '/templates/serverpod_templates');
+    }
   }
 
   String get packageDownloadUrl =>

@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:serverpod/server.dart';
 import 'package:yaml/yaml.dart';
+
 import '../generated/protocol.dart' as internal;
 
 // TODO: Use this for statistics in the future. Also, add support for modules.
@@ -24,8 +26,7 @@ class MethodLookup {
       // It's possible that another server instance is booting up at the same
       // time, in which case a write can fail if they are happening
       // simultaneously. Make a second attempt to load after waiting a second.
-      print('Failed to load method lookup. Making second attempt in 1 second');
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       await _attemptLoad(session);
     }
   }

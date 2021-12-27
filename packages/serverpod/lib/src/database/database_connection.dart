@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
-
-import 'database_config.dart';
-import 'table.dart';
-import 'expressions.dart';
-import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import '../server/session.dart';
+import 'database_config.dart';
+import 'expressions.dart';
+import 'table.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
@@ -73,13 +73,15 @@ class DatabaseConnection {
         return null;
       }
 
-      if (type == String)
+      if (type == String) {
         columns.add(ColumnString(columnName!, varcharLength: varcharLength));
-      else if (type == int)
+      } else if (type == int) {
         columns.add(ColumnInt(columnName!));
-      else if (type == double)
+      } else if (type == double) {
         columns.add(ColumnDouble(columnName!));
-      else if (type == DateTime) columns.add(ColumnDateTime(columnName!));
+      } else if (type == DateTime) {
+        columns.add(ColumnDateTime(columnName!));
+      }
     }
 
     if (!hasID) {
@@ -97,8 +99,9 @@ class DatabaseConnection {
     if (type == 'integer') return int;
     if (type == 'boolean') return bool;
     if (type == 'double precision') return double;
-    if (type == 'timestamp without time zone' || type == 'date')
+    if (type == 'timestamp without time zone' || type == 'date') {
       return DateTime;
+    }
     return null;
   }
 
@@ -138,7 +141,9 @@ class DatabaseConnection {
       assert(orderByList.isNotEmpty);
 
       var strList = <String>[];
-      for (var order in orderByList) strList.add(order.toString());
+      for (var order in orderByList) {
+        strList.add(order.toString());
+      }
 
       query += ' ORDER BY ${strList.join(',')}';
     }
@@ -182,10 +187,11 @@ class DatabaseConnection {
         offset: offset,
         session: session);
 
-    if (result.isEmpty)
+    if (result.isEmpty) {
       return null;
-    else
+    } else {
       return result[0];
+    }
   }
 
   TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
@@ -261,8 +267,9 @@ class DatabaseConnection {
     for (var column in data.keys as Iterable<String>) {
       if (column == 'id') continue;
 
-      if (data[column] is Map || data[column] is List)
+      if (data[column] is Map || data[column] is List) {
         data[column] = jsonEncode(data[column]);
+      }
 
       var value = DatabaseConfig.encoder.convert(data[column]);
 
@@ -301,8 +308,9 @@ class DatabaseConnection {
     for (var column in data.keys as Iterable<String>) {
       if (column == 'id') continue;
 
-      if (data[column] is Map || data[column] is List)
+      if (data[column] is Map || data[column] is List) {
         data[column] = jsonEncode(data[column]);
+      }
 
       String value;
       var unformattedValue = data[column];

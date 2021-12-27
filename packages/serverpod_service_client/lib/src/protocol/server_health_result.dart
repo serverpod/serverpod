@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -21,12 +22,14 @@ class ServerHealthResult extends SerializableEntity {
     this.id,
     required this.metrics,
     required this.serverName,
-});
+  });
 
   ServerHealthResult.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    metrics = _data['metrics']!.map<ServerHealthMetric>((a) => ServerHealthMetric.fromSerialization(a))?.toList();
+    metrics = _data['metrics']!
+        .map<ServerHealthMetric>((a) => ServerHealthMetric.fromSerialization(a))
+        ?.toList();
     serverName = _data['serverName']!;
   }
 
@@ -39,4 +42,3 @@ class ServerHealthResult extends SerializableEntity {
     });
   }
 }
-

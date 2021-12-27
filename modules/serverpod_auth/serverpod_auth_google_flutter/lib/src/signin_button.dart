@@ -16,12 +16,22 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
+  /// Will output debug prints if set to true.
+  final bool debug;
+
+  final List<String> additionalScopes;
+
+  final Alignment alignment;
+
   /// Creates a new Sign in with Google button.
   SignInWithGoogleButton({
     required this.caller,
     required this.onSignedIn,
     required this.onFailure,
+    this.debug = false,
     this.style,
+    this.additionalScopes = const [],
+    this.alignment = Alignment.centerLeft,
   });
 
   @override
@@ -32,19 +42,23 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      style: widget.style ?? ElevatedButton.styleFrom(
-        primary: Colors.white,
-        onPrimary: Colors.grey[700],
-        alignment: Alignment.centerLeft,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-      ),
+      style: widget.style ??
+          ElevatedButton.styleFrom(
+            primary: Colors.white,
+            onPrimary: Colors.grey[700],
+            alignment: widget.alignment,
+            padding: EdgeInsets.symmetric(horizontal: 16),
+          ),
       onPressed: () {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
 
         // Attempt to sign in the user.
-        signInWithGoogle(widget.caller,).then((UserInfo? userInfo) {
+        signInWithGoogle(
+          widget.caller,
+          debug: widget.debug,
+        ).then((UserInfo? userInfo) {
           // Pop the loading barrier
           Navigator.of(context).pop();
 

@@ -15,14 +15,14 @@ import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../database/database_config.dart';
-import '../generated/protocol.dart' as internal;
 import '../generated/endpoints.dart' as internal;
+import '../generated/protocol.dart' as internal;
 import 'endpoint_dispatch.dart';
 import 'future_call.dart';
+import 'method_lookup.dart';
 import 'run_mode.dart';
 import 'server.dart';
 import 'session.dart';
-import 'method_lookup.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -152,24 +152,26 @@ class Serverpod {
 
       settings.id = oldRuntimeSettings!.id;
       await session.db.update(settings);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await session.close(error: e, stackTrace: stackTrace);
       return;
     }
-    await session.close();
+    await session.close(logSession: false);
   }
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
+    var session = await createSession();
     try {
-      var session = await createSession();
-
       var settings = await session.db.findSingleRow(internal.tRuntimeSettings)
           as internal.RuntimeSettings?;
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
       }
-    } catch (e) {
+      await session.close(logSession: false);
+    } catch (e, stackTrace) {
+      await session.close(error: e, stackTrace: stackTrace);
       return;
     }
   }
@@ -206,12 +208,12 @@ class Serverpod {
       _runMode = results['mode'];
       serverId = int.tryParse(results['server-id']) ?? 0;
     } catch (e) {
-      print('Unknown run mode, defaulting to development');
+      stdout.writeln('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
     }
 
     // Load config files
-    print('Mode: $_runMode');
+    stdout.writeln('Mode: $_runMode');
 
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
@@ -219,11 +221,12 @@ class Serverpod {
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);
     if (_passwords['database'] != null) config.dbPass = _passwords['database'];
-    if (_passwords['serviceSecret'] != null)
+    if (_passwords['serviceSecret'] != null) {
       config.serviceSecret = _passwords['serviceSecret'];
+    }
 
     // Print config
-    print(config.toString());
+    stdout.writeln(config.toString());
 
     // Setup database
     databaseConfig = DatabaseConfig(serializationManager, config.dbHost!,
@@ -259,8 +262,9 @@ class Serverpod {
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
       if (storage['public'] is DatabaseCloudStorage ||
-          storage['private'] is DatabaseCloudStorage)
+          storage['private'] is DatabaseCloudStorage) {
         CloudStoragePublicEndpoint().register(this);
+      }
 
       // Runtime settings
       var session = await createSession();

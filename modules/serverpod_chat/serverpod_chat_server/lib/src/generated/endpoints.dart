@@ -25,20 +25,31 @@ class Endpoints extends EndpointDispatch {
         'createAttachmentUploadDescription': MethodConnector(
           name: 'createAttachmentUploadDescription',
           params: {
-            'fileName': ParameterDescription(name: 'fileName', type: String, nullable: false),
+            'fileName': ParameterDescription(
+                name: 'fileName', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['chat'] as ChatEndpoint).createAttachmentUploadDescription(session,params['fileName'],);
+            return (endpoints['chat'] as ChatEndpoint)
+                .createAttachmentUploadDescription(
+              session,
+              params['fileName'],
+            );
           },
         ),
         'verifyAttachmentUpload': MethodConnector(
           name: 'verifyAttachmentUpload',
           params: {
-            'fileName': ParameterDescription(name: 'fileName', type: String, nullable: false),
-            'filePath': ParameterDescription(name: 'filePath', type: String, nullable: false),
+            'fileName': ParameterDescription(
+                name: 'fileName', type: String, nullable: false),
+            'filePath': ParameterDescription(
+                name: 'filePath', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['chat'] as ChatEndpoint).verifyAttachmentUpload(session,params['fileName'],params['filePath'],);
+            return (endpoints['chat'] as ChatEndpoint).verifyAttachmentUpload(
+              session,
+              params['fileName'],
+              params['filePath'],
+            );
           },
         ),
       },
@@ -46,7 +57,5 @@ class Endpoints extends EndpointDispatch {
   }
 
   @override
-  void registerModules(Serverpod pod) {
-  }
+  void registerModules(Serverpod pod) {}
 }
-

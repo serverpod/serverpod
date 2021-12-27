@@ -11,11 +11,13 @@ import '../util/random_string.dart';
 
 class Emails {
   static String generatePasswordHash(String password) {
-    var salt = Serverpod.instance!.getPassword('email_password_salt') ?? 'serverpod password salt';
+    var salt = Serverpod.instance!.getPassword('email_password_salt') ??
+        'serverpod password salt';
     return sha256.convert(utf8.encode(password + salt)).toString();
   }
 
-  static Future<UserInfo?> createUser(Session session, String userName, String email, String password) async {
+  static Future<UserInfo?> createUser(
+      Session session, String userName, String email, String password) async {
     var userInfo = await Users.findUserByEmail(session, email);
 
     if (userInfo == null) {
@@ -31,12 +33,12 @@ class Emails {
 
       print('creating user');
       userInfo = await Users.createUser(session, userInfo);
-      if (userInfo == null)
-        return null;
+      if (userInfo == null) return null;
     }
 
     // Check if there is email authentication in place already
-    var oldAuth = await session.db.findSingleRow(tEmailAuth, where: tEmailAuth.userId.equals(userInfo.id!));
+    var oldAuth = await session.db.findSingleRow(tEmailAuth,
+        where: tEmailAuth.userId.equals(userInfo.id!));
     if (oldAuth != null) {
       return userInfo;
     }
@@ -57,8 +59,10 @@ class Emails {
     return userInfo;
   }
 
-  static Future<bool> changePassword(Session session, int userId, String oldPassword, String newPassword) async {
-    var auth = (await session.db.findSingleRow(tEmailAuth, where: tEmailAuth.userId.equals(userId))) as EmailAuth?;
+  static Future<bool> changePassword(Session session, int userId,
+      String oldPassword, String newPassword) async {
+    var auth = (await session.db.findSingleRow(tEmailAuth,
+        where: tEmailAuth.userId.equals(userId))) as EmailAuth?;
     if (auth == null) {
       return false;
     }
@@ -75,7 +79,8 @@ class Emails {
     return true;
   }
 
-  static Future<bool> initiatePasswordReset(Session session, String email) async {
+  static Future<bool> initiatePasswordReset(
+      Session session, String email) async {
     if (AuthConfig.current.sendPasswordResetEmail == null) {
       // TODO: User proper logging instead
       print('ResetPasswordEmail is not configured, cannot send email.');
@@ -85,14 +90,14 @@ class Emails {
     email = email.trim().toLowerCase();
 
     var userInfo = await Users.findUserByEmail(session, email);
-    if (userInfo == null)
-      return false;
+    if (userInfo == null) return false;
 
     var verificationCode = Random().nextString();
     var emailReset = EmailReset(
       userId: userInfo.id!,
       verificationCode: verificationCode,
-      expiration: DateTime.now().add(AuthConfig.current.passwordResetExpirationTime),
+      expiration:
+          DateTime.now().add(AuthConfig.current.passwordResetExpirationTime),
     );
     await session.db.insert(emailReset);
 
@@ -103,27 +108,27 @@ class Emails {
       path: '/password-reset/$verificationCode',
     );
 
-    return AuthConfig.current.sendPasswordResetEmail!(session, userInfo, resetLink.toString());
+    return AuthConfig.current.sendPasswordResetEmail!(
+        session, userInfo, resetLink.toString());
   }
 
-  static Future<EmailPasswordReset?> verifyEmailPasswordReset(Session session, String verificationCode) async {
+  static Future<EmailPasswordReset?> verifyEmailPasswordReset(
+      Session session, String verificationCode) async {
     print('verificationCode: $verificationCode');
     var passwordReset = (await session.db.findSingleRow(
       tEmailReset,
-      where: tEmailReset.verificationCode.equals(verificationCode) & (tEmailReset.expiration > DateTime.now().toUtc()),
+      where: tEmailReset.verificationCode.equals(verificationCode) &
+          (tEmailReset.expiration > DateTime.now().toUtc()),
     )) as EmailReset?;
 
     print(' - found reset');
 
-    if (passwordReset == null)
-      return null;
+    if (passwordReset == null) return null;
 
     var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
-    if (userInfo == null)
-      return null;
+    if (userInfo == null) return null;
 
-    if (userInfo.email == null)
-      return null;
+    if (userInfo.email == null) return null;
 
     return EmailPasswordReset(
       userName: userInfo.userName,
@@ -131,22 +136,22 @@ class Emails {
     );
   }
 
-  static Future<bool> resetPassword(Session session, String verificationCode, String password) async {
+  static Future<bool> resetPassword(
+      Session session, String verificationCode, String password) async {
     var passwordReset = (await session.db.findSingleRow(
       tEmailReset,
-      where: tEmailReset.verificationCode.equals(verificationCode) & (tEmailReset.expiration > DateTime.now().toUtc()),
+      where: tEmailReset.verificationCode.equals(verificationCode) &
+          (tEmailReset.expiration > DateTime.now().toUtc()),
     )) as EmailReset?;
 
-    if (passwordReset == null)
-      return false;
+    if (passwordReset == null) return false;
 
     var emailAuth = (await session.db.findSingleRow(
       tEmailAuth,
       where: tEmailAuth.userId.equals(passwordReset.userId),
     )) as EmailAuth?;
 
-    if (emailAuth == null)
-      return false;
+    if (emailAuth == null) return false;
 
     emailAuth.hash = generatePasswordHash(password);
     await session.db.update(emailAuth);

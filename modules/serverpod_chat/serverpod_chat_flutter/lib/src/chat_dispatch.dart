@@ -18,8 +18,10 @@ class ChatDispatch {
     _handleStreamMessages();
   }
 
-  void addListener(String channel, ChatMessageListener listener, {String? unauthenticatedUserName}) {
-    assert(_listeners[channel] == null, 'Only one listener per channel is allowed. channel: $channel');
+  void addListener(String channel, ChatMessageListener listener,
+      {String? unauthenticatedUserName}) {
+    assert(_listeners[channel] == null,
+        'Only one listener per channel is allowed. channel: $channel');
     _listeners[channel] = listener;
     caller.chat.sendStreamMessage(
       ChatJoinChannel(
@@ -37,14 +39,11 @@ class ChatDispatch {
     await for (var message in caller.chat.stream) {
       if (message is ChatMessage) {
         _routeMessageToChannel(message.channel, message);
-      }
-      else if (message is ChatJoinedChannel) {
+      } else if (message is ChatJoinedChannel) {
         _routeMessageToChannel(message.channel, message);
-      }
-      else if (message is ChatJoinChannelFailed) {
+      } else if (message is ChatJoinChannelFailed) {
         _routeMessageToChannel(message.channel, message);
-      }
-      else if (message is ChatMessageChunk) {
+      } else if (message is ChatMessageChunk) {
         _routeMessageToChannel(message.channel, message);
       }
     }
@@ -61,7 +60,8 @@ class ChatDispatch {
     await caller.chat.sendStreamMessage(message);
   }
 
-  Future<void> postRequestMessageChunk(ChatRequestMessageChunk chunkRequest) async {
+  Future<void> postRequestMessageChunk(
+      ChatRequestMessageChunk chunkRequest) async {
     await caller.chat.sendStreamMessage(chunkRequest);
   }
 }

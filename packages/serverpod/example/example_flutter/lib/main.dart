@@ -1,6 +1,6 @@
+import 'package:example_client/example_client.dart';
 import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:example_client/example_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 late SessionManager sessionManager;
@@ -28,10 +28,12 @@ void main() async {
   );
   await sessionManager.initialize();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,13 +41,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Serverpod Example'),
+      home: const MyHomePage(title: 'Serverpod Example'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -64,10 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           _UserInfoTile(),
           Padding(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Card(
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: UserSettings(
                   sessionManager: sessionManager,
                 ),
@@ -75,10 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Card(
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: UserSettings(
                   compact: false,
                   sessionManager: sessionManager,
@@ -104,18 +106,18 @@ class _UserInfoTileState extends State<_UserInfoTile> {
 
     if (userInfo == null) {
       return ListTile(
-        title: Text('Not signed in'),
+        title: const Text('Not signed in'),
         trailing: OutlinedButton(
           onPressed: _signIn,
-          child: Text('Sign In'),
+          child: const Text('Sign In'),
         ),
       );
     } else {
       return ListTile(
-        title: Text('You are signed in'),
+        title: const Text('You are signed in'),
         trailing: OutlinedButton(
           onPressed: _signOut,
-          child: Text('Sign Out'),
+          child: const Text('Sign Out'),
         ),
       );
     }

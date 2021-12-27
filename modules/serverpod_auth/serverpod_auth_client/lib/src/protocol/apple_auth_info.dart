@@ -29,7 +29,7 @@ class AppleAuthInfo extends SerializableEntity {
     required this.nickname,
     required this.identityToken,
     required this.authorizationCode,
-});
+  });
 
   AppleAuthInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -55,4 +55,3 @@ class AppleAuthInfo extends SerializableEntity {
     });
   }
 }
-

@@ -23,7 +23,7 @@ class EmailReset extends SerializableEntity {
     required this.userId,
     required this.verificationCode,
     required this.expiration,
-});
+  });
 
   EmailReset.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -43,4 +43,3 @@ class EmailReset extends SerializableEntity {
     });
   }
 }
-

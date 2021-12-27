@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -23,7 +24,7 @@ class SimpleData extends TableRow {
   SimpleData({
     this.id,
     required this.num,
-});
+  });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -66,9 +67,9 @@ class SimpleDataTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    num,
-  ];
+        id,
+        num,
+      ];
 }
 
 SimpleDataTable tSimpleData = SimpleDataTable();

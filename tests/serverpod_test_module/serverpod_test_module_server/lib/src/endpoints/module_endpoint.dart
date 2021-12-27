@@ -6,7 +6,8 @@ class ModuleEndpoint extends Endpoint {
     return 'Hello $name';
   }
 
-  Future<ModuleClass> modifyModuleObject(Session session, ModuleClass object) async {
+  Future<ModuleClass> modifyModuleObject(
+      Session session, ModuleClass object) async {
     object.data = 42;
     return object;
   }

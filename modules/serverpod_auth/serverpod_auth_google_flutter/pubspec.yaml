@@ -1,7 +1,6 @@
 name: serverpod_auth_google_flutter
 description: A new Flutter package project.
 version: 0.0.1
-author:
 publish_to: none
 
 environment:
@@ -15,11 +14,7 @@ dependencies:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter:
     path: ../serverpod_auth_shared_flutter
-  google_sign_in:
-    git:
-      url: https://github.com/serverpod/plugins.git
-      path: packages/google_sign_in/google_sign_in
-      ref: serverpod
+  google_sign_in: ^5.2.1
 
 dev_dependencies:
   flutter_test:

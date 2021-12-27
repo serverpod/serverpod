@@ -1,6 +1,7 @@
 import 'dart:typed_data';
-import 'package:test/test.dart';
+
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
@@ -315,7 +316,7 @@ void main() {
       expect(numRows, isNotNull);
       expect(numRows, equals(100));
 
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
 
       numRows = await client.basicDatabase.countSimpleData();
       expect(numRows, isNotNull);

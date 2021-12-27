@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart';
-// import '../generated/protocol.dart';
 
 class CloudStorageEndpoint extends Endpoint {
   Future<void> reset(Session session) async {

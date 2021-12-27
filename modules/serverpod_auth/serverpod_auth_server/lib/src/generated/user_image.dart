@@ -27,7 +27,7 @@ class UserImage extends TableRow {
     required this.userId,
     required this.version,
     required this.url,
-});
+  });
 
   UserImage.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -80,11 +80,11 @@ class UserImageTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    userId,
-    version,
-    url,
-  ];
+        id,
+        userId,
+        version,
+        url,
+      ];
 }
 
 UserImageTable tUserImage = UserImageTable();

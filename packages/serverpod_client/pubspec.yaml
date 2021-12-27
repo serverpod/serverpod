@@ -13,5 +13,8 @@ environment:
 dependencies:
   serverpod_serialization: #^0.8.10
     path: ../serverpod_serialization
-  http: ^0.13.3
+  http: ^0.13.0
   web_socket_channel: ^2.1.0
+
+dev_dependencies:
+  lints: ^1.0.1

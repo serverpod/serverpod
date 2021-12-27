@@ -20,25 +20,27 @@ class ImageUploader {
         type: FileType.custom,
         allowedExtensions: ['jpg', 'png'],
       );
-      if (result == null)
-        return;
-      if (result.files.first.bytes == null)
-        return;
+      if (result == null) return;
+      if (result.files.first.bytes == null) return;
 
       var image = img.decodeImage(result.files.first.bytes!);
-      if (image == null)
-        return;
+      if (image == null) return;
 
       print('loaded image');
       if (image.width > image.height) {
         var h = imageSize;
         var w = imageSize * image.width / image.height;
-        image = img.copyResize(image, width: w.floor(), height: h, interpolation: img.Interpolation.average);
-      }
-      else {
+        image = img.copyResize(image,
+            width: w.floor(),
+            height: h,
+            interpolation: img.Interpolation.average);
+      } else {
         var w = imageSize;
         var h = imageSize * image.height / image.width;
-        image = img.copyResize(image, width: w, height: h.floor(), interpolation: img.Interpolation.average);
+        image = img.copyResize(image,
+            width: w,
+            height: h.floor(),
+            interpolation: img.Interpolation.average);
       }
 
       image = img.copyResizeCropSquare(image, imageSize);
@@ -52,16 +54,15 @@ class ImageUploader {
 
       // Upload the image to the server
       await sessionManager.uploadUserImage(data);
-    }
-    else {
+    } else {
       var toolbarColor = Theme.of(context).primaryColor;
-      var toolbarWidgetColor = Theme.of(context).buttonTheme.colorScheme?.onPrimary ?? Colors.white;
+      var toolbarWidgetColor =
+          Theme.of(context).buttonTheme.colorScheme?.onPrimary ?? Colors.white;
 
       final picker = ImagePicker();
       // Pick an image
       var imageFile = await picker.pickImage(source: ImageSource.gallery);
-      if (imageFile == null)
-        return;
+      if (imageFile == null) return;
 
       // Crop the image
       var croppedImageFile = await ImageCropper.cropImage(
@@ -81,15 +82,13 @@ class ImageUploader {
         ),
       );
 
-      if (croppedImageFile == null)
-        return;
+      if (croppedImageFile == null) return;
 
       // Load and resize
       var image = img.decodeImage(await croppedImageFile.readAsBytes());
-      if (image == null)
-        return;
+      if (image == null) return;
 
-      if (image.width != imageSize || image.height != imageSize);
+      if (image.width != imageSize || image.height != imageSize) ;
       image = img.copyResize(image, width: imageSize, height: imageSize);
 
       // Encode as png

@@ -1,9 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: unused_import
+
+import 'dart:typed_data' as typed_data;
 import 'package:serverpod/serverpod.dart';
 
-// ignore: unused_import
 import 'protocol.dart';
 
 import '../endpoints/example_endpoint.dart';
@@ -12,7 +15,7 @@ class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'example': ExampleEndpoint()..initialize(server, 'example'),
+      'example': ExampleEndpoint()..initialize(server, 'example', null),
     };
 
     connectors['example'] = EndpointConnector(
@@ -22,10 +25,14 @@ class Endpoints extends EndpointDispatch {
         'hello': MethodConnector(
           name: 'hello',
           params: {
-            'name': ParameterDescription(name: 'name', type: String, nullable: false),
+            'name': ParameterDescription(
+                name: 'name', type: String, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['example'] as ExampleEndpoint).hello(session,params['name'],);
+            return (endpoints['example'] as ExampleEndpoint).hello(
+              session,
+              params['name'],
+            );
           },
         ),
       },
@@ -33,7 +40,5 @@ class Endpoints extends EndpointDispatch {
   }
 
   @override
-  void registerModules(Serverpod pod) {
-  }
+  void registerModules(Serverpod pod) {}
 }
-

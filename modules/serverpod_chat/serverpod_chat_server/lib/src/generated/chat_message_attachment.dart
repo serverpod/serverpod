@@ -29,7 +29,7 @@ class ChatMessageAttachment extends SerializableEntity {
     this.previewImage,
     this.previewWidth,
     this.previewHeight,
-});
+  });
 
   ChatMessageAttachment.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -68,4 +68,3 @@ class ChatMessageAttachment extends SerializableEntity {
     });
   }
 }
-

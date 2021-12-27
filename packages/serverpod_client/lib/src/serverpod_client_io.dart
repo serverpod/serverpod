@@ -1,6 +1,8 @@
-import 'dart:io';
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -18,23 +20,28 @@ abstract class ServerpodClient extends ServerpodClientShared {
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
-  ServerpodClient(String host, SerializationManager serializationManager, {
+  ServerpodClient(
+    String host,
+    SerializationManager serializationManager, {
     dynamic context,
     ServerpodClientErrorCallback? errorHandler,
     AuthenticationKeyManager? authenticationKeyManager,
-    bool logFailedCalls=true,
-  }) : super(host, serializationManager,
-    errorHandler: errorHandler,
-    authenticationKeyManager: authenticationKeyManager,
-    logFailedCalls: logFailedCalls,
-  ) {
+    bool logFailedCalls = true,
+  }) : super(
+          host,
+          serializationManager,
+          errorHandler: errorHandler,
+          authenticationKeyManager: authenticationKeyManager,
+          logFailedCalls: logFailedCalls,
+        ) {
     assert(context == null || context is SecurityContext);
 
     // Setup client
     _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = Duration(seconds: 20);
+    _httpClient.connectionTimeout = const Duration(seconds: 20);
     // TODO: Generate working certificates
-    _httpClient.badCertificateCallback = ((X509Certificate cert, String host, int port) {
+    _httpClient.badCertificateCallback =
+        ((X509Certificate cert, String host, int port) {
 //      print('Failed to verify server certificate');
 //      print('pem: ${cert.pem}');
 //      print('subject: ${cert.subject}');
@@ -48,23 +55,25 @@ abstract class ServerpodClient extends ServerpodClientShared {
     });
   }
 
-  Future<Null> _initialize() async {
+  Future<void> _initialize() async {
     _initialized = true;
   }
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) async {
-    if (!_initialized)
-      await _initialize();
+  Future<dynamic> callServerEndpoint(String endpoint, String method,
+      String returnTypeName, Map<String, dynamic> args) async {
+    if (!_initialized) await _initialize();
 
     String? data;
     try {
-      var body = formatArgs(args, await authenticationKeyManager?.get(), method);
+      var body =
+          formatArgs(args, await authenticationKeyManager?.get(), method);
 
       var url = Uri.parse('$host$endpoint');
 
       var request = await _httpClient.postUrl(url);
-      request.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
+      request.headers.contentType =
+          ContentType('application', 'json', charset: 'utf-8');
       request.contentLength = utf8.encode(body).length;
       request.write(body);
 
@@ -74,28 +83,28 @@ abstract class ServerpodClient extends ServerpodClientShared {
       data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
-        throw(ServerpodClientException(data!, response.statusCode));
+        throw (ServerpodClientException(data!, response.statusCode));
       }
 
       return parseData(data!, returnTypeName, serializationManager);
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
 
-      if (errorHandler != null)
+      if (errorHandler != null) {
         errorHandler!(e, stackTrace);
-      else
+      } else {
         rethrow;
+      }
     }
   }
 
   Future<dynamic> _readResponse(HttpClientResponse response) {
     var completer = Completer();
     var contents = StringBuffer();
-    response.transform(Utf8Decoder()).listen((String data) {
+    response.transform(const Utf8Decoder()).listen((String data) {
       contents.write(data);
     }, onDone: () => completer.complete(contents.toString()));
     return completer.future;

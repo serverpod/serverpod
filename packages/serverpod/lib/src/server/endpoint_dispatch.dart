@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -29,8 +29,9 @@ abstract class EndpointDispatch {
   /// a period should separate the module name from the endpoint name.
   EndpointConnector? getConnectorByName(String endpointName) {
     var endpointComponents = endpointName.split('.');
-    if (endpointComponents.isEmpty || endpointComponents.length > 2)
+    if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return null;
+    }
 
     // Find correct connector
     EndpointConnector? connector;
@@ -59,14 +60,16 @@ abstract class EndpointDispatch {
   Future<Result> handleUriCall(Server server, String endpointName, Uri uri,
       String body, HttpRequest request) async {
     var endpointComponents = endpointName.split('.');
-    if (endpointComponents.isEmpty || endpointComponents.length > 2)
+    if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return ResultInvalidParams(
           'Endpoint $endpointName is not a valid endpoint name');
+    }
 
     // Find correct connector
     var connector = getConnectorByName(endpointName);
-    if (connector == null)
+    if (connector == null) {
       return ResultInvalidParams('Endpoint $endpointName does not exist');
+    }
 
     MethodCallSession session;
 
@@ -170,9 +173,11 @@ abstract class EndpointDispatch {
     if (type == int) return int.tryParse(input!);
     if (type == double) return double.tryParse(input!);
     if (type == bool) {
-      if (input == 'true')
+      if (input == 'true') {
         return true;
-      else if (input == 'false') return false;
+      } else if (input == 'false') {
+        return false;
+      }
       return null;
     }
     if (type == DateTime) return DateTime.tryParse(input!);

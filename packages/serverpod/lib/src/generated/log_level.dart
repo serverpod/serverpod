@@ -51,6 +51,6 @@ class LogLevel extends SerializableEntity {
     if (this == warning) return 'warning';
     if (this == error) return 'error';
     if (this == fatal) return 'fatal';
-    throw FormatException();
+    throw const FormatException();
   }
 }

@@ -13,3 +13,6 @@ environment:
 dependencies:
   serverpod_client: #^0.8.10
     path: ../serverpod_client
+
+dev_dependencies:
+  lints: ^1.0.1

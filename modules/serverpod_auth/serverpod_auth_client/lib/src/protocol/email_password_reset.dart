@@ -21,7 +21,7 @@ class EmailPasswordReset extends SerializableEntity {
     this.id,
     required this.userName,
     required this.email,
-});
+  });
 
   EmailPasswordReset.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -39,4 +39,3 @@ class EmailPasswordReset extends SerializableEntity {
     });
   }
 }
-

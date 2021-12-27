@@ -101,7 +101,9 @@ class LocalCache extends Cache {
     assert(idx != -1);
 
     // Step backwards in case entries have the exact same time
-    while (idx > 0 && _keyList[idx - 1].creationTime == time) idx--;
+    while (idx > 0 && _keyList[idx - 1].creationTime == time) {
+      idx--;
+    }
 
     while (idx < _keyList.length && _keyList[idx].creationTime == time) {
       if (_keyList[idx].key == key) {
@@ -113,7 +115,7 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<Null> invalidateGroup(String group) async {
+  Future<void> invalidateGroup(String group) async {
     var keys = _groups[group];
     if (keys == null) return;
 

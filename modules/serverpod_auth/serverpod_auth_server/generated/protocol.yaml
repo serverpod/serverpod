@@ -1,3 +1,5 @@
+admin:
+  - getUserInfo:
 apple:
   - authenticate:
 email:
@@ -7,15 +9,14 @@ email:
   - verifyEmailPasswordReset:
   - resetPassword:
 google:
-  - authenticate:
-user:
-  - removeUserImage:
-  - setUserImage:
-  - changeUserName:
+  - authenticateWithServerAuthCode:
+  - authenticateWithIdToken:
 status:
   - isSignedIn:
   - signOut:
   - getUserInfo:
   - getUserSettingsConfig:
-admin:
-  - getUserInfo:
+user:
+  - removeUserImage:
+  - setUserImage:
+  - changeUserName:

@@ -27,7 +27,7 @@ class ChatReadMessage extends TableRow {
     required this.channel,
     required this.userId,
     required this.lastReadMessageId,
-});
+  });
 
   ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -80,11 +80,11 @@ class ChatReadMessageTable extends Table {
 
   @override
   List<Column> get columns => [
-    id,
-    channel,
-    userId,
-    lastReadMessageId,
-  ];
+        id,
+        channel,
+        userId,
+        lastReadMessageId,
+      ];
 }
 
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();

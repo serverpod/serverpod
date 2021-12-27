@@ -3,16 +3,18 @@ import 'dart:convert';
 
 import 'templates.dart';
 
-abstract class AbstractWidget {
-}
+abstract class AbstractWidget {}
 
 class Widget extends AbstractWidget {
   final String name;
   late final Template template;
   Map<String, dynamic> values = {};
 
-  Widget({required this.name,}) {
-    assert(templates[name] != null, 'Template $name.html missing for $runtimeType');
+  Widget({
+    required this.name,
+  }) {
+    assert(templates[name] != null,
+        'Template $name.html missing for $runtimeType');
     template = templates[name]!;
   }
 

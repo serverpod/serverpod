@@ -1,10 +1,9 @@
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/server/health_check.dart';
 
 import '../../serverpod.dart';
-import '../generated/protocol.dart';
 import '../cache/cache.dart';
-
-import 'package:serverpod/src/server/health_check.dart';
+import '../generated/protocol.dart';
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -48,34 +47,22 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
-  /// Get the latest [numEntries] from the message log.
-  // Future<LogResult> getLog(Session session, int? numEntries) async {
-  //   var rows = await session.db.find(
-  //     tLogEntry,
-  //     limit: numEntries,
-  //     orderBy: tLogEntry.id,
-  //     orderDescending: true,
-  //   );
-  //   return LogResult(
-  //     entries: rows.cast<LogEntry>(),
-  //   );
-  // }
-
   /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getSessionLog(Session session,
-      [int? numEntries, SessionLogFilter? filter]) async {
+  Future<SessionLogResult> getSessionLog(
+      Session session, int? numEntries, SessionLogFilter? filter) async {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error)) {
       where = Constant(true);
     } else {
-      if (filter.slow && filter.error)
+      if (filter.slow && filter.error) {
         where = tSessionLogEntry.slow.equals(true) |
             tSessionLogEntry.error.notEquals(null);
-      else if (filter.slow)
+      } else if (filter.slow) {
         where = tSessionLogEntry.slow.equals(true);
-      else
+      } else {
         where = tSessionLogEntry.error.notEquals(null);
+      }
     }
 
     // Filter for endpoint
@@ -84,7 +71,7 @@ class InsightsEndpoint extends Endpoint {
     }
 
     // Filter for method
-    if (filter != null && filter.method != null) {
+    if (filter != null && filter.method != null && filter.method != '') {
       where = where & tSessionLogEntry.method.equals(filter.method);
     }
 
@@ -128,6 +115,14 @@ class InsightsEndpoint extends Endpoint {
     }
 
     return SessionLogResult(sessionLog: sessionLogInfo);
+  }
+
+  /// Get the latest [numEntries] from the session log.
+  Future<SessionLogResult> getOpenSessionLog(
+      Session session, int? numEntries, SessionLogFilter? filter) async {
+    final logs = session.serverpod.logManager
+        .getOpenSessionLogs(numEntries ?? 100, filter);
+    return SessionLogResult(sessionLog: logs);
   }
 
   /// Retrieve information about the state of the caches on this server.

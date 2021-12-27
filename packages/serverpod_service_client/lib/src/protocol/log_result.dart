@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -19,12 +20,14 @@ class LogResult extends SerializableEntity {
   LogResult({
     this.id,
     required this.entries,
-});
+  });
 
   LogResult.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    entries = _data['entries']!.map<LogEntry>((a) => LogEntry.fromSerialization(a))?.toList();
+    entries = _data['entries']!
+        .map<LogEntry>((a) => LogEntry.fromSerialization(a))
+        ?.toList();
   }
 
   @override
@@ -35,4 +38,3 @@ class LogResult extends SerializableEntity {
     });
   }
 }
-

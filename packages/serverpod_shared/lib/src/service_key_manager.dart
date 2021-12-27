@@ -1,4 +1,5 @@
-import 'package:serverpod_client/src/auth_key_manager.dart';
+import 'package:serverpod_client/serverpod_client.dart';
+
 import 'config.dart';
 
 /// The key manager used for the service protocol.
@@ -16,10 +17,9 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   Future<String> get() async {
     return '$name:${config.serviceSecret}';
   }
+
   @override
-  Future<Null> put(String key) async {
-  }
+  Future<void> put(String key) async {}
   @override
-  Future<Null> remove() async {
-  }
+  Future<void> remove() async {}
 }

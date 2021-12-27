@@ -23,7 +23,7 @@ class UserImage extends SerializableEntity {
     required this.userId,
     required this.version,
     required this.url,
-});
+  });
 
   UserImage.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
@@ -43,4 +43,3 @@ class UserImage extends SerializableEntity {
     });
   }
 }
-

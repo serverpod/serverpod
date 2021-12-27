@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:serverpod_shared/serverpod_shared.dart';
+
 import 'package:yaml/yaml.dart';
 
 /// Parser for the server configuration file.
@@ -12,13 +12,13 @@ class ServerConfig {
 
   /// Id of the current server.
   final int serverId;
-  
+
   /// Public facing host name.
   late final String publicHost;
-  
+
   /// Public facing port number.
   late final int publicPort;
-  
+
   /// Public facing scheme (typically http or https).
   late final String publicScheme;
 
@@ -54,10 +54,11 @@ class ServerConfig {
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
-  ServerConfig(this.runMode, this.serverId, Map<String, String>? passwords) : file = 'config/$runMode.yaml' {
+  ServerConfig(this.runMode, this.serverId, Map<String, String>? passwords)
+      : file = 'config/$runMode.yaml' {
     var data = File(file).readAsStringSync();
     var doc = loadYaml(data);
-    
+
     publicHost = doc['public_host'];
     publicPort = doc['public_port'];
     publicScheme = doc['public_scheme'];
@@ -90,7 +91,12 @@ class ServerConfig {
   }
 
   /// Returns true if database is fully configured.
-  bool get dbConfigured => dbHost != null && dbPort != null && dbUser != null && dbPass != null && dbName != null;
+  bool get dbConfigured =>
+      dbHost != null &&
+      dbPort != null &&
+      dbUser != null &&
+      dbPass != null &&
+      dbName != null;
 
   @override
   String toString() {
@@ -105,8 +111,7 @@ class ServerConfig {
       str += '\ndatabase name: $dbName';
       str += '\ndatabase user: $dbUser';
       str += '\ndatabase pass: $displayPass';
-    }
-    else {
+    } else {
       str += '\nNo database configured';
     }
 
@@ -129,9 +134,8 @@ class RemoteServerConfig {
   String address;
 
   /// Creates a new [RemoteServerConfig].
-  RemoteServerConfig(this.serverId, Map data) :
-        port = data['port'] ?? 8080,
+  RemoteServerConfig(this.serverId, Map data)
+      : port = data['port'] ?? 8080,
         servicePort = data['servicePort'] ?? 8081,
-        address = data['address'] ?? 'localhost'
-  ;
+        address = data['address'] ?? 'localhost';
 }

@@ -1,11 +1,14 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import 'auth_key_manager.dart';
 import 'serverpod_client_exception.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
-import 'auth_key_manager.dart';
 
 /// Handles communication with the server. Is typically overridden by
 /// generated code to provide implementations of methods for calling the server.
@@ -16,31 +19,36 @@ abstract class ServerpodClient extends ServerpodClientShared {
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
-  ServerpodClient(String host, SerializationManager serializationManager, {
+  ServerpodClient(
+    String host,
+    SerializationManager serializationManager, {
     dynamic context,
     ServerpodClientErrorCallback? errorHandler,
     AuthenticationKeyManager? authenticationKeyManager,
-    bool logFailedCalls=true,
-  }) : super(host, serializationManager,
-    errorHandler: errorHandler,
-    authenticationKeyManager: authenticationKeyManager,
-    logFailedCalls: logFailedCalls,
-  ) {
+    bool logFailedCalls = true,
+  }) : super(
+          host,
+          serializationManager,
+          errorHandler: errorHandler,
+          authenticationKeyManager: authenticationKeyManager,
+          logFailedCalls: logFailedCalls,
+        ) {
     _httpClient = http.Client();
   }
 
-  Future<Null> _initialize() async {
+  Future<void> _initialize() async {
     _initialized = true;
   }
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method, String returnTypeName, Map<String, dynamic> args) async {
-    if (!_initialized)
-      await _initialize();
+  Future<dynamic> callServerEndpoint(String endpoint, String method,
+      String returnTypeName, Map<String, dynamic> args) async {
+    if (!_initialized) await _initialize();
 
     String? data;
     try {
-      var body = formatArgs(args, await authenticationKeyManager?.get(), method);
+      var body =
+          formatArgs(args, await authenticationKeyManager?.get(), method);
       var url = Uri.parse('$host$endpoint');
 
       var response = await _httpClient.post(
@@ -51,17 +59,15 @@ abstract class ServerpodClient extends ServerpodClientShared {
       data = response.body;
 
       if (response.statusCode != 200) {
-        throw(ServerpodClientException(data, response.statusCode));
+        throw (ServerpodClientException(data, response.statusCode));
       }
 
       return parseData(data, returnTypeName, serializationManager);
-    }
-    catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       if (e is http.ClientException) {
-        print('Failed call: $endpoint.$method');
-        var message = data ?? 'Likely internal server error or permission denied.';
-        print(message);
-        throw(ServerpodClientException(message, 500));
+        var message =
+            data ?? 'Likely internal server error or permission denied.';
+        throw (ServerpodClientException(message, 500));
       }
 
       if (logFailedCalls) {
@@ -69,17 +75,19 @@ abstract class ServerpodClient extends ServerpodClientShared {
         print('$e');
       }
 
-      if (errorHandler != null)
+      if (errorHandler != null) {
         errorHandler!(e, stackTrace);
-      else
+      } else {
         rethrow;
+      }
     }
   }
 
   /// Sets the authorization key to manage user sign-ins.
-  Future<Null> setAuthorizationKey(String authorizationKey) async {
-    if (authenticationKeyManager != null)
+  Future<void> setAuthorizationKey(String authorizationKey) async {
+    if (authenticationKeyManager != null) {
       await authenticationKeyManager!.put(authorizationKey);
+    }
   }
 
   /// Closes the connection to the server.

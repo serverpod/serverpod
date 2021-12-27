@@ -1,5 +1,4 @@
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
-
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'database_connection.dart';
@@ -34,7 +33,7 @@ class DatabaseConfig {
 
   /// Maps tables to classes, used internally by the server when communicating
   /// with the database.
-  final tableClassMapping; // = <String, String>{};
+  final Map<String, String> tableClassMapping; // = <String, String>{};
 
   /// The encoder used to encode objects for storing in the database.
   static final ValueEncoder encoder = ValueEncoder();
@@ -48,7 +47,7 @@ class DatabaseConfig {
 
     var poolSettings = PgPoolSettings();
     poolSettings.concurrency = 10;
-    poolSettings.queryTimeout = Duration(minutes: 1);
+    poolSettings.queryTimeout = const Duration(minutes: 1);
 
     // Setup database connection pool
     _pgPool = PgPool(
