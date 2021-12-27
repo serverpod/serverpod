@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -15,6 +16,8 @@ class UserInfo extends TableRow {
   String get className => 'serverpod_auth_server.UserInfo';
   @override
   String get tableName => 'serverpod_user_info';
+
+  static final t = UserInfoTable();
 
   @override
   int? id;
@@ -110,6 +113,47 @@ class UserInfo extends TableRow {
       'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userIdentifier':
+        userIdentifier = value;
+        return;
+      case 'userName':
+        userName = value;
+        return;
+      case 'fullName':
+        fullName = value;
+        return;
+      case 'email':
+        email = value;
+        return;
+      case 'created':
+        created = value;
+        return;
+      case 'imageUrl':
+        imageUrl = value;
+        return;
+      case 'scopeNames':
+        scopeNames = value;
+        return;
+      case 'active':
+        active = value;
+        return;
+      case 'blocked':
+        blocked = value;
+        return;
+      case 'suspendedUntil':
+        suspendedUntil = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class UserInfoTable extends Table {
@@ -145,4 +189,5 @@ class UserInfoTable extends Table {
       ];
 }
 
+@Deprecated('Use UserInfoTable.t instead.')
 UserInfoTable tUserInfo = UserInfoTable();

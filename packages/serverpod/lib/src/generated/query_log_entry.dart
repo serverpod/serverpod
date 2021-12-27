@@ -17,6 +17,8 @@ class QueryLogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_query_log';
 
+  static final t = QueryLogEntryTable();
+
   @override
   int? id;
   late int serverId;
@@ -91,6 +93,38 @@ class QueryLogEntry extends TableRow {
       'stackTrace': stackTrace,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'serverId':
+        serverId = value;
+        return;
+      case 'sessionLogId':
+        sessionLogId = value;
+        return;
+      case 'query':
+        query = value;
+        return;
+      case 'duration':
+        duration = value;
+        return;
+      case 'numRows':
+        numRows = value;
+        return;
+      case 'error':
+        error = value;
+        return;
+      case 'stackTrace':
+        stackTrace = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class QueryLogEntryTable extends Table {
@@ -120,4 +154,5 @@ class QueryLogEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use QueryLogEntryTable.t instead.')
 QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();

@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -15,6 +16,8 @@ class EmailAuth extends TableRow {
   String get className => 'serverpod_auth_server.EmailAuth';
   @override
   String get tableName => 'serverpod_email_auth';
+
+  static final t = EmailAuthTable();
 
   @override
   int? id;
@@ -66,6 +69,26 @@ class EmailAuth extends TableRow {
       'hash': hash,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'email':
+        email = value;
+        return;
+      case 'hash':
+        hash = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class EmailAuthTable extends Table {
@@ -87,4 +110,5 @@ class EmailAuthTable extends Table {
       ];
 }
 
+@Deprecated('Use EmailAuthTable.t instead.')
 EmailAuthTable tEmailAuth = EmailAuthTable();

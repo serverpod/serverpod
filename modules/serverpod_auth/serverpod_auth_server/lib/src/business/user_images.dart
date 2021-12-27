@@ -4,10 +4,10 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
+
 import '../../module.dart';
 import '../business/users.dart';
 import '../util/roboto_138_fnt.dart';
-
 import 'config.dart';
 
 /// Business logic to handle user images.
@@ -64,12 +64,11 @@ class UserImages {
   static Future<bool> _setUserImage(
       Session session, int userId, ByteData imageData) async {
     // Find the latest version of the user image if any.
-    var oldImageRef = await session.db.findSingleRow(
-      tUserImage,
-      where: tUserImage.userId.equals(userId),
+    var oldImageRef = await session.db.findSingleRow<UserImage>(
+      where: UserImage.t.userId.equals(userId),
       orderDescending: true,
-      orderBy: tUserImage.version,
-    ) as UserImage?;
+      orderBy: UserImage.t.version,
+    );
 
     // Add one to the version number or create a new version 1.
     var version = (oldImageRef?.version ?? 0) + 1;

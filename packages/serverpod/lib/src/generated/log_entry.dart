@@ -17,6 +17,8 @@ class LogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_log';
 
+  static final t = LogEntryTable();
+
   @override
   int? id;
   late int sessionLogId;
@@ -97,6 +99,41 @@ class LogEntry extends TableRow {
       'stackTrace': stackTrace,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'sessionLogId':
+        sessionLogId = value;
+        return;
+      case 'reference':
+        reference = value;
+        return;
+      case 'serverId':
+        serverId = value;
+        return;
+      case 'time':
+        time = value;
+        return;
+      case 'logLevel':
+        logLevel = value;
+        return;
+      case 'message':
+        message = value;
+        return;
+      case 'error':
+        error = value;
+        return;
+      case 'stackTrace':
+        stackTrace = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class LogEntryTable extends Table {
@@ -128,4 +165,5 @@ class LogEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use LogEntryTable.t instead.')
 LogEntryTable tLogEntry = LogEntryTable();

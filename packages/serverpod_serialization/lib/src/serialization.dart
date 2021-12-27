@@ -56,9 +56,6 @@ abstract class SerializationManager {
   /// Maps names of classes with constructors.
   Map<String, constructor> get constructors;
 
-  /// Maps database table names to class names.
-  Map<String, String> get tableClassMapping;
-
   /// Creates an object from a serialization.
   SerializableEntity? createEntityFromSerialization(
       Map<String, dynamic>? serialization) {
@@ -96,18 +93,11 @@ abstract class SerializationManager {
   /// only used internally by Serverpod.
   void merge(SerializationManager other) {
     _appendConstructors(other.constructors);
-    _appendTableClassMapping(other.tableClassMapping);
   }
 
   void _appendConstructors(Map<String, constructor> map) {
     for (var className in map.keys) {
       constructors[className] = map[className]!;
-    }
-  }
-
-  void _appendTableClassMapping(Map<String, String> map) {
-    for (var tableName in map.keys) {
-      tableClassMapping[tableName] = map[tableName]!;
     }
   }
 }

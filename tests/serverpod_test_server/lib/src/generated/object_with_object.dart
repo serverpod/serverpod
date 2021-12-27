@@ -17,6 +17,8 @@ class ObjectWithObject extends TableRow {
   @override
   String get tableName => 'object_with_object';
 
+  static final t = ObjectWithObjectTable();
+
   @override
   int? id;
   late SimpleData data;
@@ -109,6 +111,35 @@ class ObjectWithObject extends TableRow {
           .toList(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'data':
+        data = value;
+        return;
+      case 'nullableData':
+        nullableData = value;
+        return;
+      case 'dataList':
+        dataList = value;
+        return;
+      case 'nullableDataList':
+        nullableDataList = value;
+        return;
+      case 'listWithNullableData':
+        listWithNullableData = value;
+        return;
+      case 'nullableListWithNullableData':
+        nullableListWithNullableData = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class ObjectWithObjectTable extends Table {
@@ -137,4 +168,5 @@ class ObjectWithObjectTable extends Table {
       ];
 }
 
+@Deprecated('Use ObjectWithObjectTable.t instead.')
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();

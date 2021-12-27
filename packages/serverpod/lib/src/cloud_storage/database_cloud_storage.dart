@@ -20,10 +20,9 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<void> deleteFile(
       {required Session session, required String path}) async {
     try {
-      await session.db.delete(
-        tCloudStorageEntry,
-        where: tCloudStorageEntry.storageId.equals(storageId) &
-            tCloudStorageEntry.path.equals(path),
+      await session.db.delete<CloudStorageEntry>(
+        where: CloudStorageEntry.t.storageId.equals(storageId) &
+            CloudStorageEntry.t.path.equals(path),
       );
     } catch (e) {
       throw CloudStorageException('Failed to delete file. ($e)');
@@ -34,10 +33,9 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<bool> fileExists(
       {required Session session, required String path}) async {
     try {
-      var numRows = await session.db.count(
-        tCloudStorageEntry,
-        where: tCloudStorageEntry.storageId.equals(storageId) &
-            tCloudStorageEntry.path.equals(path),
+      var numRows = await session.db.count<CloudStorageEntry>(
+        where: CloudStorageEntry.t.storageId.equals(storageId) &
+            CloudStorageEntry.t.path.equals(path),
       );
       return (numRows > 0);
     } catch (e) {

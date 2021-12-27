@@ -17,6 +17,8 @@ class SimpleData extends TableRow {
   @override
   String get tableName => 'simple_data';
 
+  static final t = SimpleDataTable();
+
   @override
   int? id;
   late int num;
@@ -55,6 +57,20 @@ class SimpleData extends TableRow {
       'num': num,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'num':
+        num = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class SimpleDataTable extends Table {
@@ -72,4 +88,5 @@ class SimpleDataTable extends Table {
       ];
 }
 
+@Deprecated('Use SimpleDataTable.t instead.')
 SimpleDataTable tSimpleData = SimpleDataTable();

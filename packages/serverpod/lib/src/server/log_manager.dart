@@ -223,14 +223,9 @@ class LogManager {
     if (entry.logLevel >= serverLogLevel) {
       entry.sessionLogId = sessionLogId;
 
-      bool success;
-
       try {
-        success = await tempSession.db.insert(entry);
+        await tempSession.db.insert(entry);
       } catch (e) {
-        success = false;
-      }
-      if (!success) {
         stderr.writeln(
             '${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
       }

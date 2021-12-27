@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:retry/retry.dart';
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -29,7 +30,7 @@ class DatabaseConnection {
 
   /// Returns a list of names of all tables in the current database.
   Future<List<String>> getTableNames() async {
-    List<String?> tableNames = <String>[];
+    List<String> tableNames = <String>[];
 
     var query = 'SELECT * FROM pg_catalog.pg_tables';
     var result = await postgresConnection.mappedResultsQuery(
@@ -44,7 +45,7 @@ class DatabaseConnection {
       if (row['schemaname'] == 'public') tableNames.add(row['tablename']);
     }
 
-    return tableNames as FutureOr<List<String>>;
+    return tableNames;
   }
 
   /// Returns a description for a table in the database.
@@ -106,28 +107,39 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findById(Table table, int id,
-      {required Session session}) async {
-    var result = await find(
-      table,
+  Future<T?> findById<T>(
+    int id, {
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    var result = await find<T>(
       where: Expression('id = $id'),
       session: session,
+      transaction: transaction,
     );
     if (result.isEmpty) return null;
     return result[0];
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<TableRow>> find(Table table,
-      {Expression? where,
-      int? limit,
-      int? offset,
-      Column? orderBy,
-      List<Order>? orderByList,
-      bool orderDescending = false,
-      bool useCache = true,
-      required Session session}) async {
+  Future<List<T>> find<T>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    required Session session,
+    Transaction? transaction,
+  }) async {
     assert(orderByList == null || orderBy == null);
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.find<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
 
     var startTime = DateTime.now();
     where ??= Expression('TRUE');
@@ -152,7 +164,11 @@ class DatabaseConnection {
 
     List<TableRow?> list = <TableRow>[];
     try {
-      var result = await postgresConnection.mappedResultsQuery(
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var result = await context.mappedResultsQuery(
         query,
         allowReuse: false,
         timeoutInSeconds: 60,
@@ -167,25 +183,29 @@ class DatabaseConnection {
     }
 
     _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list as FutureOr<List<TableRow>>;
+    return list.cast<T>();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<TableRow?> findSingleRow(Table table,
-      {Expression? where,
-      int? offset,
-      Column? orderBy,
-      bool orderDescending = false,
-      bool useCache = true,
-      required Session session}) async {
-    var result = await find(table,
-        where: where,
-        orderBy: orderBy,
-        orderDescending: orderDescending,
-        useCache: useCache,
-        limit: 1,
-        offset: offset,
-        session: session);
+  Future<T?> findSingleRow<T>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    var result = await find<T>(
+      where: where,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      limit: 1,
+      offset: offset,
+      session: session,
+      transaction: transaction,
+    );
 
     if (result.isEmpty) {
       return null;
@@ -223,11 +243,20 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count(Table table,
-      {Expression? where,
-      int? limit,
-      bool useCache = true,
-      required Session session}) async {
+  Future<int> count<T>({
+    Expression? where,
+    int? limit,
+    bool useCache = true,
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. numRows = await session.db.count<MyTableClass>();
+Current type was $T''');
+    table = table!;
+
     var startTime = DateTime.now();
 
     where ??= Expression('TRUE');
@@ -237,8 +266,12 @@ class DatabaseConnection {
     if (limit != null) query += ' LIMIT $limit';
 
     try {
-      var result = await postgresConnection
-          .query(query, allowReuse: false, substitutionValues: {});
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var result =
+          await context.query(query, allowReuse: false, substitutionValues: {});
 
       if (result.length != 1) return 0;
 
@@ -254,8 +287,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> update(TableRow row,
-      {Transaction? transaction, required Session session}) async {
+  Future<bool> update(
+    TableRow row, {
+    required Session session,
+    Transaction? transaction,
+  }) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -279,14 +315,12 @@ class DatabaseConnection {
 
     var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
 
-    if (transaction != null) {
-      transaction._queries.add(query);
-      return false;
-    }
-
     try {
-      var affectedRows =
-          await postgresConnection.execute(query, substitutionValues: {});
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var affectedRows = await context.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {
@@ -296,8 +330,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> insert(TableRow row,
-      {Transaction? transaction, required Session session}) async {
+  Future<void> insert(
+    TableRow row, {
+    required Session session,
+    Transaction? transaction,
+  }) async {
     var startTime = DateTime.now();
 
     Map data = row.serializeForDatabase()['data'];
@@ -338,50 +375,63 @@ class DatabaseConnection {
     var query =
         'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
 
-    if (transaction != null) {
-      transaction._queries.add(query);
-      return false;
-    }
-
-    List<List<dynamic>> result;
+    int insertedId;
     try {
-      result = await postgresConnection
-          .query(query, allowReuse: false, substitutionValues: {});
-      if (result.length != 1) return false;
+      List<List<dynamic>> result;
+
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      result =
+          await context.query(query, allowReuse: false, substitutionValues: {});
+      if (result.length != 1) {
+        throw PostgreSQLException(
+            'Failed to insert row, updated number of rows is ${result.length} != 1');
+      }
+
+      var returnedRow = result[0];
+      if (returnedRow.length != 1) {
+        throw PostgreSQLException(
+            'Failed to insert row, updated number of columns is ${returnedRow.length} != 1');
+      }
+
+      insertedId = returnedRow[0];
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
-      return false;
+      rethrow;
     }
 
-    var returnedRow = result[0];
+    _logQuery(session, query, startTime, numRowsAffected: 1);
 
-    _logQuery(session, query, startTime, numRowsAffected: returnedRow.length);
-
-    if (returnedRow.length != 1) return false;
-
-    row.setColumn('id', returnedRow[0]);
-    return true;
+    row.setColumn('id', insertedId);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete(Table table,
-      {required Expression where,
-      Transaction? transaction,
-      required Session session}) async {
+  Future<int> delete<T>({
+    required Expression where,
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
+
     var startTime = DateTime.now();
 
     var tableName = table.tableName;
 
     var query = 'DELETE FROM $tableName WHERE $where';
 
-    if (transaction != null) {
-      transaction._queries.add(query);
-      return 0;
-    }
-
     try {
-      var affectedRows =
-          await postgresConnection.execute(query, substitutionValues: {});
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var affectedRows = await context.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows;
     } catch (exception, trace) {
@@ -391,20 +441,21 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> deleteRow(TableRow row,
-      {Transaction? transaction, required Session session}) async {
+  Future<bool> deleteRow(
+    TableRow row, {
+    required Session session,
+    Transaction? transaction,
+  }) async {
     var startTime = DateTime.now();
 
     var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
 
-    if (transaction != null) {
-      transaction._queries.add(query);
-      return false;
-    }
-
     try {
-      var affectedRows =
-          await postgresConnection.execute(query, substitutionValues: {});
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var affectedRows = await context.execute(query, substitutionValues: {});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {
@@ -525,12 +576,20 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<List<dynamic>>> query(String query,
-      {required Session session, int? timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(
+    String query, {
+    required Session session,
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
     var startTime = DateTime.now();
 
     try {
-      var result = await postgresConnection.query(query,
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var result = await context.query(query,
           allowReuse: false,
           timeoutInSeconds: timeoutInSeconds,
           substitutionValues: {});
@@ -540,12 +599,6 @@ class DatabaseConnection {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> executeTransaction(Transaction transaction,
-      {required Session session}) async {
-    return await transaction._execute(postgresConnection, this, session);
   }
 
   void _logQuery(Session session, String query, DateTime startTime,
@@ -563,7 +616,28 @@ class DatabaseConnection {
       ),
     );
   }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    RetryOptions? retryOptions,
+    FutureOr<R> Function()? orElse,
+    FutureOr<bool> Function(Exception exception)? retryIf,
+  }) {
+    return postgresConnection.runTx<R>(
+      (ctx) {
+        final transaction = Transaction._(ctx);
+        return transactionFunction(transaction);
+      },
+      retryOptions: retryOptions,
+      orElse: orElse,
+      retryIf: retryIf,
+    );
+  }
 }
+
+/// A function performing a transaction, passed to the transaction method.
+typedef TransactionFunction<R> = Future<R> Function(Transaction transaction);
 
 /// Defines how to order a database [column].
 class Order {
@@ -585,37 +659,9 @@ class Order {
   }
 }
 
-// TODO: Transactions
-
-/// Represents a database transaction.
+/// Holds the state of a running database transaction.
 class Transaction {
-  final List<String> _queries = [];
-
-  Future<bool> _execute(PgPool postgresConnection, DatabaseConnection conn,
-      Session session) async {
-    // Ignore empty transactions
-    if (_queries.isEmpty) return true;
-
-    var query = _queries.join('\n');
-    query = 'BEGIN;\n$query\nCOMMIT;';
-
-    var startTime = DateTime.now();
-
-    try {
-      await postgresConnection.runTx((PostgreSQLExecutionContext ctx) async {
-        for (var query in _queries) {
-          await ctx.query(
-            query,
-            substitutionValues: {},
-          );
-        }
-      });
-    } catch (e) {
-      conn._logQuery(session, query, startTime, exception: e);
-      return false;
-    }
-
-    conn._logQuery(session, query, startTime);
-    return true;
-  }
+  /// The Postgresql execution context associated with a running transaction.
+  final PostgreSQLExecutionContext postgresContext;
+  Transaction._(this.postgresContext);
 }

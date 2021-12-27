@@ -16,8 +16,6 @@ void performGenerateClasses(bool verbose) {
   var clientGenerator = ClassGeneratorDart(config.protocolSourcePath,
       config.generatedClientProtocolPath, verbose, false);
   clientGenerator.generate();
-
-  print('Done.');
 }
 
 abstract class ClassGenerator {

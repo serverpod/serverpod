@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -15,6 +16,8 @@ class ChatReadMessage extends TableRow {
   String get className => 'serverpod_chat_server.ChatReadMessage';
   @override
   String get tableName => 'serverpod_chat_read_message';
+
+  static final t = ChatReadMessageTable();
 
   @override
   int? id;
@@ -66,6 +69,26 @@ class ChatReadMessage extends TableRow {
       'lastReadMessageId': lastReadMessageId,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'channel':
+        channel = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'lastReadMessageId':
+        lastReadMessageId = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class ChatReadMessageTable extends Table {
@@ -87,4 +110,5 @@ class ChatReadMessageTable extends Table {
       ];
 }
 
+@Deprecated('Use ChatReadMessageTable.t instead.')
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();

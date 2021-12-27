@@ -44,11 +44,10 @@ class MethodLookup {
         String method = methodDef.keys.first;
 
         // Find in database
-        var methodInfo = await session.db.findSingleRow(
-          internal.tMethodInfo,
-          where: internal.tMethodInfo.endpoint.equals(endpoint) &
-              internal.tMethodInfo.method.equals(method),
-        ) as internal.MethodInfo?;
+        var methodInfo = await session.db.findSingleRow<internal.MethodInfo>(
+          where: internal.MethodInfo.t.endpoint.equals(endpoint) &
+              internal.MethodInfo.t.method.equals(method),
+        );
 
         if (methodInfo == null) {
           // We don't know about this method, it's new
@@ -57,12 +56,10 @@ class MethodLookup {
             method: method,
           );
 
-          if (await session.db.insert(methodInfo)) {
-            // Successfully inserted
-            _lookup['$endpoint.$method'] = methodInfo.id!;
-          } else {
-            throw Exception('Failed insert method');
-          }
+          await session.db.insert(methodInfo);
+
+          // Successfully inserted
+          _lookup['$endpoint.$method'] = methodInfo.id!;
         } else {
           // We found a method info
           _lookup['$endpoint.$method'] = methodInfo.id!;

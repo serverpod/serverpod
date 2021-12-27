@@ -13,15 +13,20 @@ import 'module_class.dart';
 
 export 'module_class.dart';
 
-class Protocol extends SerializationManager {
+class Protocol extends SerializationManagerServer {
   static final Protocol instance = Protocol();
 
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
+
   final Map<String, String> _tableClassMapping = {};
   @override
   Map<String, String> get tableClassMapping => _tableClassMapping;
+
+  final Map<Type, Table> _typeTableMapping = {};
+  @override
+  Map<Type, Table> get typeTableMapping => _typeTableMapping;
 
   Protocol() {
     constructors['serverpod_test_module_server.ModuleClass'] =

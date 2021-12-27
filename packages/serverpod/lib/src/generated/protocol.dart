@@ -55,15 +55,20 @@ export 'session_log_filter.dart';
 export 'session_log_info.dart';
 export 'session_log_result.dart';
 
-class Protocol extends SerializationManager {
+class Protocol extends SerializationManagerServer {
   static final Protocol instance = Protocol();
 
   final Map<String, constructor> _constructors = {};
   @override
   Map<String, constructor> get constructors => _constructors;
+
   final Map<String, String> _tableClassMapping = {};
   @override
   Map<String, String> get tableClassMapping => _tableClassMapping;
+
+  final Map<Type, Table> _typeTableMapping = {};
+  @override
+  Map<Type, Table> get typeTableMapping => _typeTableMapping;
 
   Protocol() {
     constructors['AuthKey'] = (Map<String, dynamic> serialization) =>
@@ -115,15 +120,26 @@ class Protocol extends SerializationManager {
         SessionLogResult.fromSerialization(serialization);
 
     tableClassMapping['serverpod_auth_key'] = 'AuthKey';
+    typeTableMapping[AuthKey] = AuthKey.t;
     tableClassMapping['serverpod_cloud_storage'] = 'CloudStorageEntry';
+    typeTableMapping[CloudStorageEntry] = CloudStorageEntry.t;
     tableClassMapping['serverpod_cloud_storage_direct_upload'] =
         'CloudStorageDirectUploadEntry';
+    typeTableMapping[CloudStorageDirectUploadEntry] =
+        CloudStorageDirectUploadEntry.t;
     tableClassMapping['serverpod_future_call'] = 'FutureCallEntry';
+    typeTableMapping[FutureCallEntry] = FutureCallEntry.t;
     tableClassMapping['serverpod_log'] = 'LogEntry';
+    typeTableMapping[LogEntry] = LogEntry.t;
     tableClassMapping['serverpod_method'] = 'MethodInfo';
+    typeTableMapping[MethodInfo] = MethodInfo.t;
     tableClassMapping['serverpod_query_log'] = 'QueryLogEntry';
+    typeTableMapping[QueryLogEntry] = QueryLogEntry.t;
     tableClassMapping['serverpod_readwrite_test'] = 'ReadWriteTestEntry';
+    typeTableMapping[ReadWriteTestEntry] = ReadWriteTestEntry.t;
     tableClassMapping['serverpod_runtime_settings'] = 'RuntimeSettings';
+    typeTableMapping[RuntimeSettings] = RuntimeSettings.t;
     tableClassMapping['serverpod_session_log'] = 'SessionLogEntry';
+    typeTableMapping[SessionLogEntry] = SessionLogEntry.t;
   }
 }

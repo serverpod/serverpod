@@ -141,7 +141,7 @@ abstract class Session {
       server.messageCentral.removeListenersForSession(this);
       return await server.serverpod.logManager.finalizeSessionLog(
         this,
-        exception: '$error',
+        exception: error == null ? null : '$error',
         stackTrace: stackTrace,
         authenticatedUserId: _authenticatedUser,
         logSession: logSession,
@@ -328,7 +328,7 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.db.delete(tAuthKey, where: tAuthKey.userId.equals(userId));
+    await _session.db.delete<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }
 }

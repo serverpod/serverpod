@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import '../generated/protocol.dart';
 import '../../serverpod.dart';
+import '../generated/protocol.dart';
 
 /// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
@@ -94,8 +94,8 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
     await databaseConnection.insert(entry, session: session);
 
     // Read entry
-    entry = await databaseConnection.findById(tReadWriteTestEntry, entry.id!,
-        session: session) as ReadWriteTestEntry?;
+    entry = await databaseConnection.findById<ReadWriteTestEntry>(entry.id!,
+        session: session);
     await session.close();
 
     // Verify random number

@@ -1,5 +1,3 @@
-import 'dart:mirrors';
-
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Holds data corresponding to a row in the database. Concrete classes are
@@ -19,8 +17,5 @@ abstract class TableRow extends SerializableEntity {
 
   /// Sets the value of a column by its name. Used in communication with the
   /// database.
-  void setColumn(String columnName, dynamic value) {
-    var instance = reflect(this);
-    instance.setField(Symbol(columnName), value);
-  }
+  void setColumn(String columnName, dynamic value);
 }

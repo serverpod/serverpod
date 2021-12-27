@@ -17,6 +17,8 @@ class RuntimeSettings extends TableRow {
   @override
   String get tableName => 'serverpod_runtime_settings';
 
+  static final t = RuntimeSettingsTable();
+
   @override
   int? id;
   late LogSettings logSettings;
@@ -82,6 +84,29 @@ class RuntimeSettings extends TableRow {
       'logMalformedCalls': logMalformedCalls,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'logSettings':
+        logSettings = value;
+        return;
+      case 'logSettingsOverrides':
+        logSettingsOverrides = value;
+        return;
+      case 'logServiceCalls':
+        logServiceCalls = value;
+        return;
+      case 'logMalformedCalls':
+        logMalformedCalls = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class RuntimeSettingsTable extends Table {
@@ -105,4 +130,5 @@ class RuntimeSettingsTable extends Table {
       ];
 }
 
+@Deprecated('Use RuntimeSettingsTable.t instead.')
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();

@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -15,6 +16,8 @@ class UserImage extends TableRow {
   String get className => 'serverpod_auth_server.UserImage';
   @override
   String get tableName => 'serverpod_user_image';
+
+  static final t = UserImageTable();
 
   @override
   int? id;
@@ -66,6 +69,26 @@ class UserImage extends TableRow {
       'url': url,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'version':
+        version = value;
+        return;
+      case 'url':
+        url = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class UserImageTable extends Table {
@@ -87,4 +110,5 @@ class UserImageTable extends Table {
       ];
 }
 
+@Deprecated('Use UserImageTable.t instead.')
 UserImageTable tUserImage = UserImageTable();

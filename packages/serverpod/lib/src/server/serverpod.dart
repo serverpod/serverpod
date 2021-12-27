@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -59,8 +60,8 @@ class Serverpod {
   /// [SerializationManager] used to serialize [SerializableEntities], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
-  final SerializationManager serializationManager;
-  late SerializationManager _internalSerializationManager;
+  final SerializationManagerServer serializationManager;
+  late SerializationManagerServer _internalSerializationManager;
 
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
@@ -143,8 +144,7 @@ class Serverpod {
     var session = await createSession();
     try {
       var oldRuntimeSettings =
-          await session.db.findSingleRow(internal.tRuntimeSettings)
-              as internal.RuntimeSettings?;
+          await session.db.findSingleRow<internal.RuntimeSettings>();
       if (oldRuntimeSettings == null) {
         settings.id = null;
         await session.db.insert(settings);
@@ -163,8 +163,7 @@ class Serverpod {
   Future<void> reloadRuntimeSettings() async {
     var session = await createSession();
     try {
-      var settings = await session.db.findSingleRow(internal.tRuntimeSettings)
-          as internal.RuntimeSettings?;
+      var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -270,8 +269,7 @@ class Serverpod {
       var session = await createSession();
       try {
         _runtimeSettings =
-            await session.db.findSingleRow(internal.tRuntimeSettings)
-                as internal.RuntimeSettings?;
+            await session.db.findSingleRow<internal.RuntimeSettings>();
         if (_runtimeSettings == null) {
           // Store default settings
           _runtimeSettings = _defaultRuntimeSettings;

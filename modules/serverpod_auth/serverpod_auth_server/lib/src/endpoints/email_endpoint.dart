@@ -19,8 +19,9 @@ class EmailEndpoint extends Endpoint {
     print('authenticate $email / $password');
 
     // Fetch password entry
-    var entry = (await session.db.findSingleRow(tEmailAuth,
-        where: tEmailAuth.email.equals(email))) as EmailAuth?;
+    var entry = await session.db.findSingleRow<EmailAuth>(
+      where: EmailAuth.t.email.equals(email),
+    );
     if (entry == null) return AuthenticationResponse(success: false);
 
     print(' - found entry ');

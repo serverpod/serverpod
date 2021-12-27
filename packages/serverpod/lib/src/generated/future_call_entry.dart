@@ -17,6 +17,8 @@ class FutureCallEntry extends TableRow {
   @override
   String get tableName => 'serverpod_future_call';
 
+  static final t = FutureCallEntryTable();
+
   @override
   int? id;
   late String name;
@@ -73,6 +75,29 @@ class FutureCallEntry extends TableRow {
       'serverId': serverId,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'name':
+        name = value;
+        return;
+      case 'time':
+        time = value;
+        return;
+      case 'serializedObject':
+        serializedObject = value;
+        return;
+      case 'serverId':
+        serverId = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class FutureCallEntryTable extends Table {
@@ -96,4 +121,5 @@ class FutureCallEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use FutureCallEntryTable.t instead.')
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();

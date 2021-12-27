@@ -4,6 +4,7 @@
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: overridden_fields
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -15,6 +16,8 @@ class EmailReset extends TableRow {
   String get className => 'serverpod_auth_server.EmailReset';
   @override
   String get tableName => 'serverpod_email_reset';
+
+  static final t = EmailResetTable();
 
   @override
   int? id;
@@ -66,6 +69,26 @@ class EmailReset extends TableRow {
       'expiration': expiration.toUtc().toIso8601String(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'userId':
+        userId = value;
+        return;
+      case 'verificationCode':
+        verificationCode = value;
+        return;
+      case 'expiration':
+        expiration = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class EmailResetTable extends Table {
@@ -87,4 +110,5 @@ class EmailResetTable extends Table {
       ];
 }
 
+@Deprecated('Use EmailResetTable.t instead.')
 EmailResetTable tEmailReset = EmailResetTable();

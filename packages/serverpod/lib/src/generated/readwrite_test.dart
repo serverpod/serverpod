@@ -17,6 +17,8 @@ class ReadWriteTestEntry extends TableRow {
   @override
   String get tableName => 'serverpod_readwrite_test';
 
+  static final t = ReadWriteTestEntryTable();
+
   @override
   int? id;
   late int number;
@@ -55,6 +57,20 @@ class ReadWriteTestEntry extends TableRow {
       'number': number,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'number':
+        number = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class ReadWriteTestEntryTable extends Table {
@@ -72,4 +88,5 @@ class ReadWriteTestEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use ReadWriteTestEntryTable.t instead.')
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();

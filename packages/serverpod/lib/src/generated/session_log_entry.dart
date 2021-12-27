@@ -17,6 +17,8 @@ class SessionLogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_session_log';
 
+  static final t = SessionLogEntryTable();
+
   @override
   int? id;
   late int serverId;
@@ -115,6 +117,50 @@ class SessionLogEntry extends TableRow {
       'authenticatedUserId': authenticatedUserId,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'serverId':
+        serverId = value;
+        return;
+      case 'time':
+        time = value;
+        return;
+      case 'module':
+        module = value;
+        return;
+      case 'endpoint':
+        endpoint = value;
+        return;
+      case 'method':
+        method = value;
+        return;
+      case 'duration':
+        duration = value;
+        return;
+      case 'numQueries':
+        numQueries = value;
+        return;
+      case 'slow':
+        slow = value;
+        return;
+      case 'error':
+        error = value;
+        return;
+      case 'stackTrace':
+        stackTrace = value;
+        return;
+      case 'authenticatedUserId':
+        authenticatedUserId = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class SessionLogEntryTable extends Table {
@@ -152,4 +198,5 @@ class SessionLogEntryTable extends Table {
       ];
 }
 
+@Deprecated('Use SessionLogEntryTable.t instead.')
 SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();

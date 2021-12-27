@@ -17,6 +17,8 @@ class MethodInfo extends TableRow {
   @override
   String get tableName => 'serverpod_method';
 
+  static final t = MethodInfoTable();
+
   @override
   int? id;
   late String endpoint;
@@ -61,6 +63,23 @@ class MethodInfo extends TableRow {
       'method': method,
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'endpoint':
+        endpoint = value;
+        return;
+      case 'method':
+        method = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class MethodInfoTable extends Table {
@@ -80,4 +99,5 @@ class MethodInfoTable extends Table {
       ];
 }
 
+@Deprecated('Use MethodInfoTable.t instead.')
 MethodInfoTable tMethodInfo = MethodInfoTable();
