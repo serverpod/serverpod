@@ -6,23 +6,29 @@ import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
 
 const _offsetForRequestingNextChunk = 100.0;
 
-typedef ChatTileBuilder = Widget Function(BuildContext context, ChatMessage message, ChatMessage? previous);
+typedef ChatTileBuilder = Widget Function(
+    BuildContext context, ChatMessage message, ChatMessage? previous);
 
 class ChatView extends StatefulWidget {
   final ChatController controller;
   final ChatTileBuilder? tileBuilder;
 
+  /// Optional widget to be shown on top of the oldest chat message
+  final Widget? leading;
+
   const ChatView({
     Key? key,
     required this.controller,
     this.tileBuilder,
+    this.leading,
   }) : super(key: key);
 
   @override
   _ChatViewState createState() => _ChatViewState();
 }
 
-class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin {
+class _ChatViewState extends State<ChatView>
+    with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final AnimationController _fadeInAnimation;
 
@@ -50,15 +56,16 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
 
     _scrollController.addListener(() {
       widget.controller.scrollOffset = _scrollController.offset;
-      widget.controller.scrollAtBottom = _scrollController.offset == _scrollController.position.maxScrollExtent;
+      widget.controller.scrollAtBottom = _scrollController.offset ==
+          _scrollController.position.maxScrollExtent;
       if (widget.controller.scrollAtBottom) {
         widget.controller.markLastMessageRead();
       }
 
-      if (_scrollController.offset < _offsetForRequestingNextChunk
-          && widget.controller.hasOlderMessages
-          && !_jumpToBottom
-          && _distanceToBottomBeforeMessageChunk == null) {
+      if (_scrollController.offset < _offsetForRequestingNextChunk &&
+          widget.controller.hasOlderMessages &&
+          !_jumpToBottom &&
+          _distanceToBottomBeforeMessageChunk == null) {
         widget.controller.requestNextMessageChunk();
       }
     });
@@ -79,7 +86,8 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   void dispose() {
     widget.controller.removeMessageReceivedListener(_handleNewChatMessage);
     widget.controller.removeMessageUpdatedListener(_handleUpdatedChatMessage);
-    widget.controller.removeReceivedMessageChunkListener(_handleNewMessageChunk);
+    widget.controller
+        .removeReceivedMessageChunkListener(_handleNewMessageChunk);
     _scrollController.dispose();
     _fadeInAnimation.dispose();
     super.dispose();
@@ -101,25 +109,31 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   double? _distanceToBottomBeforeMessageChunk;
 
   void _handleNewMessageChunk() {
-    _distanceToBottomBeforeMessageChunk = _scrollController.position.maxScrollExtent - _scrollController.offset;
+    _distanceToBottomBeforeMessageChunk =
+        _scrollController.position.maxScrollExtent - _scrollController.offset;
     setState(() {});
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent - _distanceToBottomBeforeMessageChunk!);
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent -
+          _distanceToBottomBeforeMessageChunk!);
       _distanceToBottomBeforeMessageChunk = null;
     });
   }
 
   void _fadeIn() {
-    _fadeInAnimation.animateTo(1.0, duration: const Duration(milliseconds: 500));
+    _fadeInAnimation.animateTo(1.0,
+        duration: const Duration(milliseconds: 500));
   }
 
   void _scrollToBottom() {
-    _scrollController.animateTo(
+    _scrollController
+        .animateTo(
       _scrollController.position.maxScrollExtent,
       curve: Curves.linear,
       duration: const Duration(milliseconds: 200),
-    ).then((_) {
-      if (_scrollController.offset != _scrollController.position.maxScrollExtent) {
+    )
+        .then((_) {
+      if (_scrollController.offset !=
+          _scrollController.position.maxScrollExtent) {
         _scrollToBottom();
       }
     });
@@ -139,7 +153,9 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
     if (_jumpToBottom) {
       // Check if jump to bottom is complete (we may need multiple attempts as
       // maxScrollExtent is a guesstimate).
-      if (_scrollController.hasClients && _scrollController.offset == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.hasClients &&
+          _scrollController.offset ==
+              _scrollController.position.maxScrollExtent) {
         _jumpToBottom = false;
 
         // Start the fade in when we know we are at the bottom.
@@ -163,9 +179,12 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
           if (_lastHeight != constraints.maxHeight) {
             _lastHeight = constraints.maxHeight;
 
-            if (_scrollController.hasClients && _scrollController.offset == _scrollController.position.maxScrollExtent) {
+            if (_scrollController.hasClients &&
+                _scrollController.offset ==
+                    _scrollController.position.maxScrollExtent) {
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                _scrollController
+                    .jumpTo(_scrollController.position.maxScrollExtent);
               });
             }
           }
@@ -179,7 +198,10 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
               reverse: false,
               controller: _scrollController,
               itemBuilder: _chatItemBuilder,
-              itemCount: widget.controller.messages.length,
+              itemCount: widget.controller.messages.length +
+                  (widget.leading != null && !widget.controller.hasOlderMessages
+                      ? 1
+                      : 0),
             ),
           );
         },
@@ -188,17 +210,36 @@ class _ChatViewState extends State<ChatView> with SingleTickerProviderStateMixin
   }
 
   Widget _chatItemBuilder(BuildContext context, int item) {
+    final leading = widget.leading;
+    if (leading != null && !widget.controller.hasOlderMessages) {
+      // If we have a leading widget, show that on top
+      if (item == 0) {
+        return leading;
+      }
+
+      // Align `item` so it matches the indices of the messages
+      item--;
+    }
+
     // Revers the list, because the scroll view is reversed
     var message = widget.controller.messages[item];
     ChatMessage? previous;
     if (item > 0) {
       previous = widget.controller.messages[item - 1];
     }
-    var tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
+
+    // Explicit type match, else this gets promoted to a dynamic `Function()`
+    // ignore: omit_local_variable_types
+    final ChatTileBuilder tileBuilder =
+        widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
   }
 
-  Widget _defaultTileBuilder(BuildContext context, ChatMessage message) {
+  Widget _defaultTileBuilder(
+    BuildContext context,
+    ChatMessage message,
+    ChatMessage? previous,
+  ) {
     return ListTile(
       title: Text(message.message),
       subtitle: Text(message.senderInfo?.userName ?? 'Unknown user'),
