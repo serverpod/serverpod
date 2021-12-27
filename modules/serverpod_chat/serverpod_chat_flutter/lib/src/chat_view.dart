@@ -13,10 +13,14 @@ class ChatView extends StatefulWidget {
   final ChatController controller;
   final ChatTileBuilder? tileBuilder;
 
+  /// Optional widget to be shown on top of the oldest chat message
+  final Widget? leading;
+
   const ChatView({
     Key? key,
     required this.controller,
     this.tileBuilder,
+    this.leading,
   }) : super(key: key);
 
   @override
@@ -194,7 +198,8 @@ class _ChatViewState extends State<ChatView>
               reverse: false,
               controller: _scrollController,
               itemBuilder: _chatItemBuilder,
-              itemCount: widget.controller.messages.length,
+              itemCount: widget.controller.messages.length +
+                  (widget.leading != null ? 1 : 0),
             ),
           );
         },
@@ -203,6 +208,17 @@ class _ChatViewState extends State<ChatView>
   }
 
   Widget _chatItemBuilder(BuildContext context, int item) {
+    final leading = widget.leading;
+    if (leading != null) {
+      // If we have a leading widget, show that on top
+      if (item == 0) {
+        return leading;
+      }
+
+      // Align `item` so it matches the indices of the messages
+      item--;
+    }
+
     // Revers the list, because the scroll view is reversed
     var message = widget.controller.messages[item];
     ChatMessage? previous;
