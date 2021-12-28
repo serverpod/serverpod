@@ -104,6 +104,43 @@ class Endpoints extends EndpointDispatch {
       name: 'authentication',
       endpoint: endpoints['authentication']!,
       methodConnectors: {
+        'removeAllUsers': MethodConnector(
+          name: 'removeAllUsers',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['authentication'] as AuthenticationEndpoint)
+                .removeAllUsers(
+              session,
+            );
+          },
+        ),
+        'countUsers': MethodConnector(
+          name: 'countUsers',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['authentication'] as AuthenticationEndpoint)
+                .countUsers(
+              session,
+            );
+          },
+        ),
+        'createUser': MethodConnector(
+          name: 'createUser',
+          params: {
+            'email': ParameterDescription(
+                name: 'email', type: String, nullable: false),
+            'password': ParameterDescription(
+                name: 'password', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['authentication'] as AuthenticationEndpoint)
+                .createUser(
+              session,
+              params['email'],
+              params['password'],
+            );
+          },
+        ),
         'authenticate': MethodConnector(
           name: 'authenticate',
           params: {

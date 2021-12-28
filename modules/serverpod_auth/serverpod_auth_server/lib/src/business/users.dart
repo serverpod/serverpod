@@ -10,11 +10,19 @@ class Users {
   /// Creates a new user and stores it in the database.
   static Future<UserInfo?> createUser(
       Session session, UserInfo userInfo) async {
+    if (AuthConfig.current.onUserWillBeCreated != null) {
+      var approved =
+          await AuthConfig.current.onUserWillBeCreated!(session, userInfo);
+      if (!approved) return null;
+    }
+
     await session.db.insert(userInfo);
-    if (userInfo.id != null)
+    if (userInfo.id != null) {
+      if (AuthConfig.current.onUserCreated != null) {
+        await AuthConfig.current.onUserCreated!(session, userInfo);
+      }
       return userInfo;
-    else
-      return null;
+    }
   }
 
   /// Finds a user by its email address. Returns null if no user is found.
@@ -71,8 +79,8 @@ class Users {
     userInfo.userName = newUserName;
     await session.db.update(userInfo);
 
-    if (AuthConfig.current.userInfoUpdateListener != null)
-      await AuthConfig.current.userInfoUpdateListener!(session, userInfo);
+    if (AuthConfig.current.onUserUpdated != null)
+      await AuthConfig.current.onUserUpdated!(session, userInfo);
 
     await invalidateCacheForUser(session, userId);
     return userInfo;
@@ -95,8 +103,8 @@ class Users {
     await session.db.query(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 
-    if (AuthConfig.current.userInfoUpdateListener != null)
-      await AuthConfig.current.userInfoUpdateListener!(session, userInfo);
+    if (AuthConfig.current.onUserUpdated != null)
+      await AuthConfig.current.onUserUpdated!(session, userInfo);
 
     await invalidateCacheForUser(session, userId);
     return userInfo;

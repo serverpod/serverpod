@@ -19,6 +19,7 @@ class AuthenticationResponse extends SerializableEntity {
   String? key;
   int? keyId;
   UserInfo? userInfo;
+  AuthenticationFailReason? failReason;
 
   AuthenticationResponse({
     this.id,
@@ -26,6 +27,7 @@ class AuthenticationResponse extends SerializableEntity {
     this.key,
     this.keyId,
     this.userInfo,
+    this.failReason,
   });
 
   AuthenticationResponse.fromSerialization(Map<String, dynamic> serialization) {
@@ -37,6 +39,9 @@ class AuthenticationResponse extends SerializableEntity {
     userInfo = _data['userInfo'] != null
         ? UserInfo?.fromSerialization(_data['userInfo'])
         : null;
+    failReason = _data['failReason'] != null
+        ? AuthenticationFailReason?.fromSerialization(_data['failReason'])
+        : null;
   }
 
   @override
@@ -47,6 +52,7 @@ class AuthenticationResponse extends SerializableEntity {
       'key': key,
       'keyId': keyId,
       'userInfo': userInfo?.serialize(),
+      'failReason': failReason?.serialize(),
     });
   }
 
@@ -58,6 +64,7 @@ class AuthenticationResponse extends SerializableEntity {
       'key': key,
       'keyId': keyId,
       'userInfo': userInfo?.serialize(),
+      'failReason': failReason?.serialize(),
     });
   }
 }

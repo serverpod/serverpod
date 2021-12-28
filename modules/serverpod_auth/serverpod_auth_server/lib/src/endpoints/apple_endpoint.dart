@@ -1,8 +1,9 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
-
 import 'package:serverpod/serverpod.dart';
+
 import '../business/users.dart';
 import '../generated/protocol.dart';
 
@@ -17,8 +18,12 @@ class AppleEndpoint extends Endpoint {
     if (_applePublicKeys == null) {
       var result =
           await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
-      if (result.statusCode != 200)
-        return AuthenticationResponse(success: false);
+      if (result.statusCode != 200) {
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.internalError,
+        );
+      }
 
       Map data = jsonDecode(result.body);
       List keysData = data['keys'];
@@ -50,14 +55,27 @@ class AppleEndpoint extends Endpoint {
       if (await jws.verify(keyStore)) verified = true;
     }
 
-    if (!verified) return AuthenticationResponse(success: false);
+    if (!verified) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
-    if (userIdentifier != payload.jsonContent['sub'])
-      return AuthenticationResponse(success: false);
+    if (userIdentifier != payload.jsonContent['sub']) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
-    print('checking email');
-    if (email != null && email != payload.jsonContent['email'])
-      return AuthenticationResponse(success: false);
+    session.log('checking email', level: LogLevel.debug);
+    if (email != null && email != payload.jsonContent['email']) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
     email = email?.toLowerCase();
 
@@ -78,7 +96,11 @@ class AppleEndpoint extends Endpoint {
       userInfo = await Users.createUser(session, userInfo);
     }
 
-    if (userInfo == null) return AuthenticationResponse(success: false);
+    if (userInfo == null)
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.userCreationDenied,
+      );
 
     var authKey = await session.auth.signInUser(userInfo.id!, 'apple');
 

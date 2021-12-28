@@ -20,6 +20,9 @@ typedef UserImageGenerator = Future<Image> Function(UserInfo userInfo);
 typedef UserInfoUpdateCallback = Future<void> Function(
     Session session, UserInfo userInfo);
 
+typedef UserInfoCreationCallback = Future<bool> Function(
+    Session session, UserInfo userInfo);
+
 typedef SendPasswordResetEmailCallback = Future<bool> Function(
     Session session, UserInfo userInfo, String resetLink);
 
@@ -71,7 +74,17 @@ class AuthConfig {
 
   final Duration userInfoCacheLifetime;
 
-  final UserInfoUpdateCallback? userInfoUpdateListener;
+  /// Called when a user is about to be created, gives a chance to abort the
+  /// creation by returning false.
+  final UserInfoCreationCallback? onUserWillBeCreated;
+
+  /// Called after a user has been created. Listen to this callback if you need
+  /// to do additional setup.
+  final UserInfoUpdateCallback? onUserCreated;
+
+  /// Called whenever a user has been updated. This can be when the user name
+  /// is changed or if the user uploads a new profile picture.
+  final UserInfoUpdateCallback? onUserUpdated;
 
   final SendPasswordResetEmailCallback? sendPasswordResetEmail;
 
@@ -92,7 +105,9 @@ class AuthConfig {
     this.userCanSeeUserName = true,
     this.userCanSeeFullName = true,
     this.userInfoCacheLifetime = const Duration(minutes: 1),
-    this.userInfoUpdateListener,
+    this.onUserWillBeCreated,
+    this.onUserCreated,
+    this.onUserUpdated,
     this.sendPasswordResetEmail,
     this.passwordResetExpirationTime = const Duration(hours: 24),
   });
