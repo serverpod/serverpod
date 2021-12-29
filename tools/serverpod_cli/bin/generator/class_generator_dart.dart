@@ -169,7 +169,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
       if (serverCode) {
         if (tableName != null) {
-          out += 'import \'package:serverpod/database.dart\';\n';
+          out += 'import \'package:serverpod/serverpod.dart\';\n';
           out +=
               'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
         } else {
@@ -289,6 +289,7 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '  }\n';
 
         if (tableName != null) {
+          // Column setter
           out += '\n';
           out += '  @override\n';
           out += '  void setColumn(String columnName, value) {\n';
@@ -306,6 +307,69 @@ class ClassGeneratorDart extends ClassGenerator {
           out += '        throw UnimplementedError();\n';
           out += '    }\n';
           out += '  }\n';
+
+          // find
+          out += '\n';
+          out +=
+              '  static Future<List<$className>> find(Session session, {${className}ExpressionBuilder? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.find<$className>(where: where != null ? where($className.t) : null, limit: limit, offset: offset, orderBy: orderBy, orderByList: orderByList, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
+          out += '  }\n';
+
+          // find single row
+          out += '\n';
+          out +=
+              '  static Future<$className?> findSingleRow(Session session, {${className}ExpressionBuilder? where, int? offset, Column? orderBy, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.findSingleRow<$className>(where: where != null ? where($className.t) : null, offset: offset, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
+          out += '  }\n';
+
+          // findById
+          out += '\n';
+          out +=
+              '  static Future<$className?> findById(Session session, int id) async {\n';
+          out += '    return session.db.findById<$className>(id);\n';
+          out += '  }\n';
+
+          // delete
+          out += '\n';
+          out +=
+              '  static Future<int> delete(Session session, {required ${className}ExpressionBuilder where, Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.delete<$className>(where: where($className.t), transaction: transaction,);\n';
+          out += '  }\n';
+
+          // deleteRow
+          out += '\n';
+          out +=
+              '  static Future<bool> deleteRow(Session session, $className row, {Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.deleteRow(row, transaction: transaction,);\n';
+          out += '  }\n';
+
+          // update
+          out += '\n';
+          out +=
+              '  static Future<bool> update(Session session, $className row, {Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.update(row, transaction: transaction,);\n';
+          out += '  }\n';
+
+          // insert
+          out += '\n';
+          out +=
+              '  static Future<void> insert(Session session, $className row, {Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.insert(row, transaction: transaction);\n';
+          out += '  }\n';
+
+          // count
+          out += '\n';
+          out +=
+              '  static Future<int> count(Session session, {${className}ExpressionBuilder? where, int? limit, bool useCache = true, Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.count<$className>(where: where != null ? where($className.t) : null, limit: limit, useCache: useCache, transaction: transaction,);\n';
+          out += '  }\n';
         }
       }
 
@@ -314,6 +378,11 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '\n';
 
       if (serverCode && tableName != null) {
+        // Expression builder
+        out +=
+            'typedef ${className}ExpressionBuilder = Expression Function(${className}Table t);\n';
+        out += '\n';
+
         // Table class definition
         out += 'class ${className}Table extends Table {\n';
 
