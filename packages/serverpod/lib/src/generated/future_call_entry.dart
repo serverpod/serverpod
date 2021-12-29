@@ -6,7 +6,7 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -98,7 +98,112 @@ class FutureCallEntry extends TableRow {
         throw UnimplementedError();
     }
   }
+
+  static Future<List<FutureCallEntry>> find(
+    Session session, {
+    FutureCallEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.find<FutureCallEntry>(
+      where: where != null ? where(FutureCallEntry.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<FutureCallEntry?> findSingleRow(
+    Session session, {
+    FutureCallEntryExpressionBuilder? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<FutureCallEntry>(
+      where: where != null ? where(FutureCallEntry.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<FutureCallEntry?> findById(Session session, int id) async {
+    return session.db.findById<FutureCallEntry>(id);
+  }
+
+  static Future<int> delete(
+    Session session, {
+    required FutureCallEntryExpressionBuilder where,
+    Transaction? transaction,
+  }) async {
+    return session.db.delete<FutureCallEntry>(
+      where: where(FutureCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    Session session,
+    FutureCallEntry row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    Session session,
+    FutureCallEntry row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    Session session,
+    FutureCallEntry row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<int> count(
+    Session session, {
+    FutureCallEntryExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.count<FutureCallEntry>(
+      where: where != null ? where(FutureCallEntry.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
 }
+
+typedef FutureCallEntryExpressionBuilder = Expression Function(
+    FutureCallEntryTable t);
 
 class FutureCallEntryTable extends Table {
   FutureCallEntryTable() : super(tableName: 'serverpod_future_call');
