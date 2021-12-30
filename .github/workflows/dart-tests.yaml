@@ -35,7 +35,7 @@ jobs:
       # - name: Run tests
       #  run: dart test
   single_server_tests:
-    runs-on: ubuntu-local_cache_test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
