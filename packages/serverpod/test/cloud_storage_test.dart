@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 ByteData createByteData(int len) {
   var ints = Uint8List(len);
@@ -21,7 +21,7 @@ bool verifyByteData(ByteData byteData) {
 }
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  var client = Client('http://serverpod_test_server:8080/');
 
   setUp(() {});
 
@@ -54,7 +54,7 @@ void main() {
 
     test('Retrieve file 2 through URL', () async {
       var url = Uri.parse(
-          'http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile2.bin');
+          'http://serverpod_test_server:8080/serverpod_cloud_storage?method=file&path=testdir/myfile2.bin');
       var response = await http.get(url);
       expect(response.statusCode, equals(200));
       var bytes = response.bodyBytes;
@@ -94,7 +94,7 @@ void main() {
 
     test('Retrieve non existing file through URL', () async {
       var url = Uri.parse(
-          'http://localhost:8080/serverpod_cloud_storage?method=file&path=testdir/myfile3.bin');
+          'http://serverpod_test_server:8080/serverpod_cloud_storage?method=file&path=testdir/myfile3.bin');
       var response = await http.get(url);
       expect(response.statusCode, equals(404));
       var bytes = response.bodyBytes;
@@ -103,7 +103,7 @@ void main() {
 
     test('Attempt retrieve file through URL with invalid params', () async {
       var url = Uri.parse(
-          'http://localhost:8080/serverpod_cloud_storage?method=file&foo=testdir/myfile2.bin');
+          'http://serverpod_test_server:8080/serverpod_cloud_storage?method=file&foo=testdir/myfile2.bin');
       var response = await http.get(url);
       // TODO: Actual response should probably be 400 (see server todo with verification of parameters).
       expect(response.statusCode, equals(500));
@@ -111,7 +111,7 @@ void main() {
 
     test('Attempt retrieve file through URL with invalid method', () async {
       var url = Uri.parse(
-          'http://localhost:8080/serverpod_cloud_storage?foo=file&path=testdir/myfile2.bin');
+          'http://serverpod_test_server:8080/serverpod_cloud_storage?foo=file&path=testdir/myfile2.bin');
       var response = await http.get(url);
       expect(response.statusCode, equals(400));
     });

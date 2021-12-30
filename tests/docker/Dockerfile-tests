@@ -1,0 +1,15 @@
+# Specify the Dart SDK base image version
+FROM dart:2.14 AS build
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the whole serverpod repo into the container.
+COPY . .
+
+# Install dependencies for serverpod.
+WORKDIR packages/serverpod
+RUN dart pub get
+
+# Setup database tables and start the server.
+CMD ["../../tests/docker/run-tests.sh"]

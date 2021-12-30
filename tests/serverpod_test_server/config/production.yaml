@@ -1,1 +1,15 @@
-port: 80
+public_host: serverpod_test_server
+public_port: 8080
+public_scheme: http
+
+cluster:
+  0:
+    port: 8080
+    servicePort: 8081
+    address: localhost
+
+database:
+  host: postgres
+  port: 5432
+  name: serverpod_test
+  user: postgres

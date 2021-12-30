@@ -10,9 +10,9 @@ Future<void> setupTestData(Client client) async {
 }
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  var client = Client('http://serverpod_test_server:8080/');
   var serviceClient = service.Client(
-    'https://localhost:8081/',
+    'https://serverpod_test_server:8081/',
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 

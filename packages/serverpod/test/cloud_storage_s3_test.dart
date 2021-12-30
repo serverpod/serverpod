@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 ByteData createByteData(int len) {
   var ints = Uint8List(len);
@@ -23,7 +23,7 @@ bool verifyByteData(ByteData byteData) {
 }
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  var client = Client('http://serverpod_test_server:8080/');
 
   setUp(() {});
 
