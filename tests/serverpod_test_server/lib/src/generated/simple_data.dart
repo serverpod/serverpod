@@ -6,7 +6,7 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -71,7 +71,111 @@ class SimpleData extends TableRow {
         throw UnimplementedError();
     }
   }
+
+  static Future<List<SimpleData>> find(
+    Session session, {
+    SimpleDataExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.find<SimpleData>(
+      where: where != null ? where(SimpleData.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<SimpleData?> findSingleRow(
+    Session session, {
+    SimpleDataExpressionBuilder? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<SimpleData>(
+      where: where != null ? where(SimpleData.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<SimpleData?> findById(Session session, int id) async {
+    return session.db.findById<SimpleData>(id);
+  }
+
+  static Future<int> delete(
+    Session session, {
+    required SimpleDataExpressionBuilder where,
+    Transaction? transaction,
+  }) async {
+    return session.db.delete<SimpleData>(
+      where: where(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    Session session,
+    SimpleData row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    Session session,
+    SimpleData row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    Session session,
+    SimpleData row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<int> count(
+    Session session, {
+    SimpleDataExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.count<SimpleData>(
+      where: where != null ? where(SimpleData.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
 }
+
+typedef SimpleDataExpressionBuilder = Expression Function(SimpleDataTable t);
 
 class SimpleDataTable extends Table {
   SimpleDataTable() : super(tableName: 'simple_data');

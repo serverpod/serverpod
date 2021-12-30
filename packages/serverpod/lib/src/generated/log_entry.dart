@@ -6,7 +6,7 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -134,7 +134,111 @@ class LogEntry extends TableRow {
         throw UnimplementedError();
     }
   }
+
+  static Future<List<LogEntry>> find(
+    Session session, {
+    LogEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.find<LogEntry>(
+      where: where != null ? where(LogEntry.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<LogEntry?> findSingleRow(
+    Session session, {
+    LogEntryExpressionBuilder? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<LogEntry>(
+      where: where != null ? where(LogEntry.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<LogEntry?> findById(Session session, int id) async {
+    return session.db.findById<LogEntry>(id);
+  }
+
+  static Future<int> delete(
+    Session session, {
+    required LogEntryExpressionBuilder where,
+    Transaction? transaction,
+  }) async {
+    return session.db.delete<LogEntry>(
+      where: where(LogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    Session session,
+    LogEntry row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    Session session,
+    LogEntry row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    Session session,
+    LogEntry row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<int> count(
+    Session session, {
+    LogEntryExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.count<LogEntry>(
+      where: where != null ? where(LogEntry.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
 }
+
+typedef LogEntryExpressionBuilder = Expression Function(LogEntryTable t);
 
 class LogEntryTable extends Table {
   LogEntryTable() : super(tableName: 'serverpod_log');

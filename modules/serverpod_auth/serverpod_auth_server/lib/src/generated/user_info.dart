@@ -6,7 +6,7 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -154,7 +154,111 @@ class UserInfo extends TableRow {
         throw UnimplementedError();
     }
   }
+
+  static Future<List<UserInfo>> find(
+    Session session, {
+    UserInfoExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.find<UserInfo>(
+      where: where != null ? where(UserInfo.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<UserInfo?> findSingleRow(
+    Session session, {
+    UserInfoExpressionBuilder? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<UserInfo>(
+      where: where != null ? where(UserInfo.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<UserInfo?> findById(Session session, int id) async {
+    return session.db.findById<UserInfo>(id);
+  }
+
+  static Future<int> delete(
+    Session session, {
+    required UserInfoExpressionBuilder where,
+    Transaction? transaction,
+  }) async {
+    return session.db.delete<UserInfo>(
+      where: where(UserInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    Session session,
+    UserInfo row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    Session session,
+    UserInfo row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    Session session,
+    UserInfo row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<int> count(
+    Session session, {
+    UserInfoExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.count<UserInfo>(
+      where: where != null ? where(UserInfo.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
 }
+
+typedef UserInfoExpressionBuilder = Expression Function(UserInfoTable t);
 
 class UserInfoTable extends Table {
   UserInfoTable() : super(tableName: 'serverpod_user_info');

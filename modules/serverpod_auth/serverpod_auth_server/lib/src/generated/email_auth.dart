@@ -6,7 +6,7 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -89,7 +89,111 @@ class EmailAuth extends TableRow {
         throw UnimplementedError();
     }
   }
+
+  static Future<List<EmailAuth>> find(
+    Session session, {
+    EmailAuthExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.find<EmailAuth>(
+      where: where != null ? where(EmailAuth.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<EmailAuth?> findSingleRow(
+    Session session, {
+    EmailAuthExpressionBuilder? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<EmailAuth>(
+      where: where != null ? where(EmailAuth.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<EmailAuth?> findById(Session session, int id) async {
+    return session.db.findById<EmailAuth>(id);
+  }
+
+  static Future<int> delete(
+    Session session, {
+    required EmailAuthExpressionBuilder where,
+    Transaction? transaction,
+  }) async {
+    return session.db.delete<EmailAuth>(
+      where: where(EmailAuth.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    Session session,
+    EmailAuth row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    Session session,
+    EmailAuth row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    Session session,
+    EmailAuth row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<int> count(
+    Session session, {
+    EmailAuthExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.count<EmailAuth>(
+      where: where != null ? where(EmailAuth.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
 }
+
+typedef EmailAuthExpressionBuilder = Expression Function(EmailAuthTable t);
 
 class EmailAuthTable extends Table {
   EmailAuthTable() : super(tableName: 'serverpod_email_auth');
