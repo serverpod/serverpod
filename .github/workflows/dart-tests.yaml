@@ -60,7 +60,7 @@ jobs:
         run: dart pub get
         working-directory: ${{ matrix.package }}
       - name: Analyze
-        run: flutter analyze
+        run: dart analyze
         working-directory: ${{ matrix.package }}
 
   single_server_tests:
