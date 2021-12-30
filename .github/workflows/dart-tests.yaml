@@ -1,11 +1,13 @@
-name: Dart tests
+name: Serverpod CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - tests
   pull_request:
-    branches: [ master ]
-
+    branches:
+      - master
 jobs:
   dart_format:
     runs-on: ubuntu-latest
@@ -32,3 +34,10 @@ jobs:
       # want to change this to 'flutter test'.
       # - name: Run tests
       #  run: dart test
+  single_server_tests:
+    runs-on: ubuntu-local_cache_test
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run single server tests
+        run: util/run_tests
