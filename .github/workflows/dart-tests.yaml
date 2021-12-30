@@ -35,6 +35,7 @@ jobs:
         run: util/run_tests_analyze
 
   single_server_tests:
+    name: Single server tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
