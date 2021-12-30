@@ -13,26 +13,9 @@ echo "### Checking dart format"
 dart format -o none --set-exit-if-changed .
 echo ""
 
-echo "### Running dart analyze"
-dart analyze packages/serverpod
-dart analyze packages/serverpod_client
-dart analyze packages/serverpod_relic
-dart analyze packages/serverpod_serialization
-dart analyze packages/serverpod_service_client
-dart analyze packages/serverpod_shared
+util/pub_get_all
 
-dart analyze tests/serverpod_test_server
-dart analyze tests/serverpod_test_client
-dart analyze tests/serverpod_test_module/serverpod_test_module_server
-dart analyze tests/serverpod_test_module/serverpod_test_module_client
-
-# dart analyze modules/serverpod_auth/serverpod_auth_server
-# dart analyze modules/serverpod_auth/serverpod_auth_client
-# dart analyze modules/serverpod_auth/serverpod_auth_apple_flutter
-# dart analyze modules/serverpod_auth/serverpod_auth_google_flutter
-# dart analyze modules/serverpod_auth/serverpod_auth_shared_flutter
-
-# dart analyze integrations/serverpod_cloud_storage_s3
+util/run_tests_analyze
 
 echo "### Running unit tests"
 util/run_tests_single_server
