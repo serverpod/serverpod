@@ -10,6 +10,7 @@ on:
       - master
 jobs:
   dart_format:
+    name: Format
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +18,7 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: 2.12.0
+          sdk: 2.14.0
 
       # - name: Install dependencies
       #   run: dart pub get
@@ -34,10 +35,38 @@ jobs:
       # want to change this to 'flutter test'.
       # - name: Run tests
       #  run: dart test
+  dart_analyze:
+    name: Analyze ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - packages/serverpod
+          - packages/serverpod_client
+          - packages/serverpod_relic
+          - packages/serverpod_serialization
+          - packages/serverpod_service_client
+          - packages/serverpod_shared
+          - tests/serverpod_test_server
+          - tests/serverpod_test_client
+          - tests/serverpod_test_module/serverpod_test_module_server
+          - tests/serverpod_test_module/serverpod_test_module_client
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.14.0
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: ${{ matrix.package }}
+      - name: Analyze
+        run: flutter analyze
+        working-directory: ${{ matrix.package }}
+
   single_server_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Run single server tests
-        run: util/run_tests
+        run: util/run_tests_single_server
