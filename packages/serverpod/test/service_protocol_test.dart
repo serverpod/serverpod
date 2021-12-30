@@ -10,9 +10,9 @@ Future<void> setupTestData(Client client) async {
 }
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  var client = Client('http://serverpod_test_server:8080/');
   var serviceClient = service.Client(
-    'https://localhost:8081/',
+    'https://serverpod_test_server:8081/',
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 
@@ -146,9 +146,7 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
-      expect(logResult.sessionLog[0].queries.length, equals(2));
-      expect(logResult.sessionLog[0].queries[1].query.startsWith('BEGIN'),
-          equals(true));
+      expect(logResult.sessionLog[0].queries.length, equals(4));
     });
 
     test('Disabled logging', () async {

@@ -17,7 +17,7 @@ ByteData createByteData() {
 }
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  var client = Client('http://serverpod_test_server:8080/');
 
   setUp(() {});
 

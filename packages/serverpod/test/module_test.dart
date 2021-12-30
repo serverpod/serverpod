@@ -1,9 +1,9 @@
-import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/module.dart' as module;
+import 'package:test/test.dart';
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  var client = Client('http://serverpod_test_server:8080/');
 
   setUp(() {});
 

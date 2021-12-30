@@ -6,7 +6,7 @@ import 'authentication_test.dart';
 
 void main() {
   var client = Client(
-    'http://localhost:8080/',
+    'http://serverpod_test_server:8080/',
     authenticationKeyManager: TestAuthKeyManager(),
   );
 
