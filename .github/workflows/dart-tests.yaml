@@ -9,35 +9,36 @@ on:
     branches:
       - master
 jobs:
-  dart_format:
-    runs-on: ubuntu-latest
 
+  dart_format:
+    name: Format
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: 2.12.0
-
-      # - name: Install dependencies
-      #   run: dart pub get
-
+          sdk: 2.14.2
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      # - name: Analyze project source
-      #  run: dart analyze
+  dart_analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "2.5.1"
+      - name: Install dependencies
+        run: util/pub_get_all
+      - name: Analyze
+        run: util/run_tests_analyze
 
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      # - name: Run tests
-      #  run: dart test
   single_server_tests:
+    name: Single server tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Run single server tests
-        run: util/run_tests
+        run: util/run_tests_single_server

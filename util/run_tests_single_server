@@ -9,13 +9,6 @@ fi
 # Makes script exit on first non-zero error code
 set -e
 
-echo "### Checking dart format"
-dart format -o none --set-exit-if-changed .
-echo ""
+cd tests/docker
 
-util/pub_get_all
-
-util/run_tests_analyze
-
-echo "### Running unit tests"
-util/run_tests_single_server
+docker-compose up --abort-on-container-exit --exit-code-from tests --build

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ ! -f tests/docker/docker-compose.yml ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+echo "### Running dart analyze"
+dart analyze packages/serverpod
+dart analyze packages/serverpod_client
+dart analyze packages/serverpod_relic
+dart analyze packages/serverpod_serialization
+dart analyze packages/serverpod_service_client
+dart analyze packages/serverpod_shared
+
+dart analyze tests/serverpod_test_server
+dart analyze tests/serverpod_test_client
+dart analyze tests/serverpod_test_module/serverpod_test_module_server
+dart analyze tests/serverpod_test_module/serverpod_test_module_client
