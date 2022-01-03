@@ -1,9 +1,3 @@
-cache:
-  - put:
-  - get:
-  - invalidateKey:
-  - invalidateGroup:
-  - clear:
 insights:
   - getRuntimeSettings:
   - setRuntimeSettings:

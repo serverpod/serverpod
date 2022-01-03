@@ -1,15 +1,16 @@
-public_host: localhost
-public_port: 8080
-public_scheme: http
+publicHost: localhost
+publicPort: 8080
+publicScheme: http
 
-cluster:
-  0:
-    port: 8080
-    servicePort: 8081
-    address: localhost
+port: 8080
+servicePort: 8081
 
 database:
   host: localhost
   port: 5432
   name: serverpod_test
   user: postgres
+
+redis:
+  host: localhost
+  port: 6379

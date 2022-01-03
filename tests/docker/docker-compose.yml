@@ -7,6 +7,7 @@ services:
       dockerfile: tests/docker/Dockerfile-server
     depends_on:
       - 'postgres'
+      - 'redis'
   tests:
     build:
       context: ../..
@@ -23,3 +24,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test
       POSTGRES_PASSWORD: rotkiv42
+  redis:
+    image: redis:6.2.6
+    command: redis-server --requirepass password
+    environment:
+      - REDIS_REPLICATION_MODE=master

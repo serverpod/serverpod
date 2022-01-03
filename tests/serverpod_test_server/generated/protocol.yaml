@@ -61,6 +61,15 @@ loggingDisabled:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+redis:
+  - setSimpleData:
+  - setSimpleDataWithLifetime:
+  - getSimpleData:
+  - deleteSimpleData:
+  - resetMessageCentralTest:
+  - listenToChannel:
+  - postToChannel:
+  - countSubscribedChannels:
 signInRequired:
   - testMethod:
 simple:

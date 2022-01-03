@@ -3,6 +3,7 @@
 # Wait for database to be up (timeout after 60 seconds)
 echo "### Wait for Postgres"
 /app/tests/docker/wait-for-it.sh postgres:5432 -t 60 -- echo "### Postgres is UP"
+/app/tests/docker/wait-for-it.sh redis:6379 -t 60 -- echo "### Redis is UP"
 echo ""
 
 # Reset the database

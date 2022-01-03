@@ -537,6 +537,81 @@ class _EndpointModuleSerialization extends EndpointRef {
   }
 }
 
+class _EndpointRedis extends EndpointRef {
+  @override
+  String get name => 'redis';
+
+  _EndpointRedis(EndpointCaller caller) : super(caller);
+
+  Future<void> setSimpleData(
+    String key,
+    SimpleData data,
+  ) async {
+    return await caller.callServerEndpoint('redis', 'setSimpleData', 'void', {
+      'key': key,
+      'data': data,
+    });
+  }
+
+  Future<void> setSimpleDataWithLifetime(
+    String key,
+    SimpleData data,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'setSimpleDataWithLifetime', 'void', {
+      'key': key,
+      'data': data,
+    });
+  }
+
+  Future<SimpleData?> getSimpleData(
+    String key,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'getSimpleData', 'SimpleData', {
+      'key': key,
+    });
+  }
+
+  Future<void> deleteSimpleData(
+    String key,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'deleteSimpleData', 'void', {
+      'key': key,
+    });
+  }
+
+  Future<void> resetMessageCentralTest() async {
+    return await caller
+        .callServerEndpoint('redis', 'resetMessageCentralTest', 'void', {});
+  }
+
+  Future<SimpleData?> listenToChannel(
+    String channel,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'listenToChannel', 'SimpleData', {
+      'channel': channel,
+    });
+  }
+
+  Future<void> postToChannel(
+    String channel,
+    SimpleData data,
+  ) async {
+    return await caller.callServerEndpoint('redis', 'postToChannel', 'void', {
+      'channel': channel,
+      'data': data,
+    });
+  }
+
+  Future<int> countSubscribedChannels() async {
+    return await caller
+        .callServerEndpoint('redis', 'countSubscribedChannels', 'int', {});
+  }
+}
+
 class _EndpointSignInRequired extends EndpointRef {
   @override
   String get name => 'signInRequired';
@@ -610,6 +685,7 @@ class Client extends ServerpodClient {
   late final _EndpointLogging logging;
   late final _EndpointLoggingDisabled loggingDisabled;
   late final _EndpointModuleSerialization moduleSerialization;
+  late final _EndpointRedis redis;
   late final _EndpointSignInRequired signInRequired;
   late final _EndpointSimple simple;
   late final _EndpointStreaming streaming;
@@ -635,6 +711,7 @@ class Client extends ServerpodClient {
     logging = _EndpointLogging(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
     moduleSerialization = _EndpointModuleSerialization(this);
+    redis = _EndpointRedis(this);
     signInRequired = _EndpointSignInRequired(this);
     simple = _EndpointSimple(this);
     streaming = _EndpointStreaming(this);
@@ -658,6 +735,7 @@ class Client extends ServerpodClient {
         'logging': logging,
         'loggingDisabled': loggingDisabled,
         'moduleSerialization': moduleSerialization,
+        'redis': redis,
         'signInRequired': signInRequired,
         'simple': simple,
         'streaming': streaming,
