@@ -4,26 +4,30 @@ import 'package:serverpod/src/cache/global_cache.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+/// A [GlobalCache] managed by Redis. The cache is shared by the servers in
+/// a cluster.
 class RedisCache extends GlobalCache {
-  final RedisController redisConnection;
+  /// Holds the Redis controller.
+  final RedisController redisController;
 
+  /// Creates a new RedisCache. The size of the cache and eviction policy needs
+  /// to be setup manually in Redis.
   RedisCache(
-    int maxEntries,
     SerializationManager serializationManager,
-    this.redisConnection,
+    this.redisController,
   ) : super(
-          maxEntries,
+          -1,
           serializationManager,
         );
 
   @override
   Future<void> clear() async {
-    await redisConnection.clear();
+    await redisController.clear();
   }
 
   @override
   Future<SerializableEntity?> get(String key) async {
-    final data = await redisConnection.get(key);
+    final data = await redisController.get(key);
     if (data == null) {
       return null;
     }
@@ -40,7 +44,7 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<void> invalidateKey(String key) async {
-    await redisConnection.del(key);
+    await redisController.del(key);
   }
 
   @override
@@ -60,6 +64,6 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('Groups are not yet supported in RedisCache');
     }
     var data = jsonEncode(object.serializeAll());
-    await redisConnection.set(key, data, lifetime: lifetime);
+    await redisController.set(key, data, lifetime: lifetime);
   }
 }

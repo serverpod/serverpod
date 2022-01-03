@@ -2,13 +2,26 @@ import 'dart:async';
 
 import 'package:redis/redis.dart';
 
+/// Callback when messages are received on a specific channel from Redis.
 typedef RedisSubscriptionCallback = void Function(
     String channel, String message);
 
+/// The [RedisController] maintains an active connection to the Redis server. It
+/// handles caching, publishing, and subscriptions of strings. If the connection
+/// is broken the controller automatically tries to reconnect. Messages sent
+/// across Redis are best effort and not guaranteed to be delivered, if a
+/// message fails to be sent it will not retry.
 class RedisController {
+  /// The host of the Redis server.
   final String host;
+
+  /// The port of the Redis server.
   final int port;
+
+  /// The user name if the Redis server requires it.
   final String? user;
+
+  /// The password of the Redis server. Not required, but recommended.
   final String? password;
 
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
@@ -22,6 +35,7 @@ class RedisController {
 
   bool _running = true;
 
+  /// Creates a new RedisController with the provided connection details.
   RedisController({
     required this.host,
     required this.port,
@@ -29,6 +43,8 @@ class RedisController {
     this.password,
   });
 
+  /// Starts the controller and connects to Redis. Maintains an open connection
+  /// until [stop] is called.
   Future<void> start() async {
     await _connect();
     await _connectPubSub();
@@ -36,6 +52,7 @@ class RedisController {
     unawaited(_keepAlive());
   }
 
+  /// Stops the controller and closes all open connections.
   Future<void> stop() async {
     _running = false;
     await _command?.get_connection().close();
@@ -157,6 +174,7 @@ class RedisController {
     _pubSubCommand = null;
   }
 
+  /// Sets a [String] in the Redis cache, which optionally expires.
   Future<bool> set(String key, String message, {Duration? lifetime}) async {
     await _connect();
     try {
@@ -172,6 +190,8 @@ class RedisController {
     }
   }
 
+  /// Gets a [String] from the Redis cache. If there is no object matching the
+  /// key, null is returned.
   Future<String?> get(String key) async {
     await _connect();
     try {
@@ -186,6 +206,7 @@ class RedisController {
     }
   }
 
+  /// Deletes an entry from the Redis cache. Returns true if successful.
   Future<bool> del(String key) async {
     await _connect();
     try {
@@ -197,6 +218,8 @@ class RedisController {
     }
   }
 
+  /// Removes all objects in the Redis cache, use with caution. Returns true if
+  /// successful.
   Future<bool> clear() async {
     if (!await _connect()) {
       return false;
@@ -210,6 +233,9 @@ class RedisController {
     }
   }
 
+  /// Subscribes to a Redis channel. When a message is published on the channel
+  /// the [listener] callback is called. Only one subscription call should be
+  /// made per channel.
   Future<bool> subscribe(
     String channel,
     RedisSubscriptionCallback listener,
@@ -225,6 +251,7 @@ class RedisController {
     }
   }
 
+  /// Unsubscribes from a Redis channel.
   Future<bool> unsubscribe(
     String channel,
   ) async {
@@ -239,6 +266,8 @@ class RedisController {
     }
   }
 
+  /// Publishes a message to a Redis channel. All subscribed listeners will be
+  /// notified across servers.
   Future<bool> publish(String channel, String message) async {
     try {
       if (!await _connect()) {
@@ -252,5 +281,6 @@ class RedisController {
     }
   }
 
+  /// Returns a list of
   List<String> get subscribedChannels => _subscriptions.keys.toList();
 }

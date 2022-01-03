@@ -72,6 +72,7 @@ class Serverpod {
 
   late Caches _caches;
 
+  /// The Redis controller used by Serverpod.
   late RedisController redisController;
 
   /// Caches used by the server.
