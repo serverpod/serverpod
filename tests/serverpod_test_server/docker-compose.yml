@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  # server:
+  #   build:
+  #     dockerfile: tests/serverpod_test_server/Dockerfile
+  #     context: ../..
+  #   depends_on:
+  #     - 'postgres'
+  #     - 'redis'
+  #
+  #   ports:
+  #     - '8080:8080'
+  #     - '8081:8081'
+  #   volumes:
+  #     - serverpod_test_server:/root
+  #     - ../..:/app
+  #   working_dir: /app/tests/serverpod_test_server
+  postgres:
+    image: postgres:14.1
+    ports:
+      - '8090:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: serverpod_test
+      POSTGRES_PASSWORD: password
+    volumes:
+      - serverpod_test_postgres:/var/lib/postgresql
+  redis:
+    image: redis:6.2.6
+    ports:
+      - '8091:6379'
+    command: redis-server --requirepass password
+    environment:
+      - REDIS_REPLICATION_MODE=master
+volumes:
+  serverpod_test_postgres:
+  serverpod_test_server:

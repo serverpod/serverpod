@@ -23,7 +23,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test
-      POSTGRES_PASSWORD: rotkiv42
+      POSTGRES_PASSWORD: password
   redis:
     image: redis:6.2.6
     command: redis-server --requirepass password
