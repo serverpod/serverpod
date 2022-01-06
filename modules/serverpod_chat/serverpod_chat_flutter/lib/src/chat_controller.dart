@@ -48,6 +48,10 @@ class ChatController {
 
   int _lastReadMessage = 0;
 
+  /// Counter for fake IDs for the ephemeral messages
+  /// (Used in order to keep track of their read state)
+  int _ephemeralMessageId = 0;
+
   auth.UserInfo? _joinedAsUserInfo;
 
   ChatController({
@@ -80,6 +84,10 @@ class ChatController {
 
   void _handleServerMessage(SerializableEntity serverMessage) {
     if (serverMessage is ChatMessage) {
+      if (ephemeral && serverMessage.id == null) {
+        serverMessage.id = ++_ephemeralMessageId;
+      }
+
       // Mark as read if a view is attached and scroll is at bottom.
       if (scrollAtBottom && _receivedMessageListeners.isNotEmpty) {
         markLastMessageRead();
@@ -141,7 +149,7 @@ class ChatController {
     );
 
     // Post dummy message
-    var dummy = ChatMessage(
+    final dummy = ChatMessage(
       channel: channel,
       message: message,
       time: DateTime.now().toUtc(),
@@ -159,27 +167,31 @@ class ChatController {
   }
 
   void markLastMessageRead() {
-    var messageId = _getLastMessageId();
+    final messageId = _getLastMessageId();
     if (messageId == null) {
       return;
     }
 
     if (messageId > _lastReadMessage) {
       _lastReadMessage = messageId;
-      module.chat.sendStreamMessage(
-        ChatReadMessage(
-          channel: channel,
-          userId: sessionManager.signedInUser!.id!,
-          lastReadMessageId: messageId,
-        ),
-      );
+
+      if (!ephemeral) {
+        module.chat.sendStreamMessage(
+          ChatReadMessage(
+            channel: channel,
+            userId: sessionManager.signedInUser!.id!,
+            lastReadMessageId: messageId,
+          ),
+        );
+      }
+
       _updateUnreadMessages();
     }
   }
 
   bool _unreadMessagesLast = false;
   void _updateUnreadMessages() {
-    var hasUnread = hasUnreadMessages;
+    final hasUnread = hasUnreadMessages;
     if (_unreadMessagesLast != hasUnread) {
       _unreadMessagesLast = hasUnread;
       _notifyUnreadMessagesListeners();
@@ -187,21 +199,22 @@ class ChatController {
   }
 
   int? _getLastMessageId() {
-    if (ephemeral) return null;
-
     int? lastMessageId;
-    for (var i = messages.length - 1; i >= 0; i -= 1) {
-      if (messages[i].sender != sessionManager.signedInUser!.id!) {
-        lastMessageId = messages[i].id!;
+
+    for (final message in messages.reversed) {
+      if (message.sender != _joinedAsUserInfo!.id! && message.id != null) {
+        lastMessageId = message.id!;
         break;
       }
     }
+
     return lastMessageId;
   }
 
   bool get hasUnreadMessages {
     // Find last message that user didn't send
     int? lastMessageId = _getLastMessageId();
+
     if (lastMessageId == null) {
       return false;
     }
@@ -240,7 +253,7 @@ class ChatController {
   }
 
   void _notifyMessageListeners(ChatMessage message, bool addedByUser) {
-    for (var listener in _receivedMessageListeners) {
+    for (final listener in _receivedMessageListeners) {
       listener(message, addedByUser);
     }
   }
