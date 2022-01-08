@@ -46,7 +46,7 @@ class ServerConfig {
   /// Database name.
   late final String dbName;
 
-  // Redis host.
+  /// Redis host.
   late final String redisHost;
 
   /// Redis port.
@@ -97,30 +97,16 @@ class ServerConfig {
     redisPassword = passwords['redis'];
   }
 
-  /// Returns true if database is fully configured.
-  bool get dbConfigured =>
-      dbHost != null &&
-      dbPort != null &&
-      dbUser != null &&
-      dbPass != null &&
-      dbName != null;
-
   @override
   String toString() {
     var str = 'Config loaded from: $file';
     str += '\nport: $port';
 
-    if (dbConfigured) {
-      var displayPass = dbPass == null ? null : '********';
-
-      str += '\ndatabase host: $dbHost';
-      str += '\ndatabase port: $dbPort';
-      str += '\ndatabase name: $dbName';
-      str += '\ndatabase user: $dbUser';
-      str += '\ndatabase pass: $displayPass';
-    } else {
-      str += '\nNo database configured';
-    }
+    str += '\ndatabase host: $dbHost';
+    str += '\ndatabase port: $dbPort';
+    str += '\ndatabase name: $dbName';
+    str += '\ndatabase user: $dbUser';
+    str += '\ndatabase pass: ********';
 
     return str;
   }
