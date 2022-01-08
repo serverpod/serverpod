@@ -170,6 +170,12 @@ class _ChatViewState extends State<ChatView>
         // Trigger another build.
         setState(() {});
       });
+    } else if (_scrollController.offset ==
+        _scrollController.position.maxScrollExtent) {
+      // we are already at the bottom, mark messages as read
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        widget.controller.markLastMessageRead();
+      });
     }
 
     return Opacity(
