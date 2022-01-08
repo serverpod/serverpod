@@ -2,15 +2,14 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import '../generated/protocol.dart';
-import '../business/config.dart';
 
-import 'package:path/path.dart' as path;
-import 'package:http/http.dart' as http;
-import 'dart:math' as math;
+import '../business/config.dart';
+import '../generated/protocol.dart';
 
 class ChatEndpoint extends Endpoint {
   static const _channelPrefix = 'serverpod_chat.';
@@ -176,24 +175,21 @@ class ChatEndpoint extends Endpoint {
 
     List<ChatMessage> messages;
     if (lastId != null) {
-      messages = (await session.db.find(
-        tChatMessage,
-        where:
-            (tChatMessage.channel.equals(channel)) & (tChatMessage.id < lastId),
-        orderBy: tChatMessage.id,
+      messages = await ChatMessage.find(
+        session,
+        where: (t) => t.channel.equals(channel) & (t.id < lastId),
+        orderBy: ChatMessage.t.id,
         orderDescending: true,
         limit: size + 1,
-      ))
-          .cast<ChatMessage>();
+      );
     } else {
-      messages = (await session.db.find(
-        tChatMessage,
-        where: (tChatMessage.channel.equals(channel)),
-        orderBy: tChatMessage.id,
+      messages = await ChatMessage.find(
+        session,
+        where: (t) => t.channel.equals(channel),
+        orderBy: ChatMessage.t.id,
         orderDescending: true,
         limit: size + 1,
-      ))
-          .cast<ChatMessage>();
+      );
     }
 
     var hasOlderMessages = false;
@@ -218,12 +214,14 @@ class ChatEndpoint extends Endpoint {
   }
 
   Future<int> _getLastReadMessage(
-      Session session, String channel, int userId) async {
-    var readMessageRow = (await session.db.findSingleRow(
-      tChatReadMessage,
-      where: tChatReadMessage.channel.equals(channel) &
-          tChatReadMessage.userId.equals(userId),
-    )) as ChatReadMessage?;
+    Session session,
+    String channel,
+    int userId,
+  ) async {
+    var readMessageRow = await ChatReadMessage.findSingleRow(
+      session,
+      where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
+    );
 
     if (readMessageRow == null) {
       return 0;
@@ -233,11 +231,10 @@ class ChatEndpoint extends Endpoint {
 
   Future<void> _setLastReadMessage(Session session, String channel, int userId,
       int lastReadMessageId) async {
-    var readMessageRow = (await session.db.findSingleRow(
-      tChatReadMessage,
-      where: tChatReadMessage.channel.equals(channel) &
-          tChatReadMessage.userId.equals(userId),
-    )) as ChatReadMessage?;
+    var readMessageRow = await ChatReadMessage.findSingleRow(
+      session,
+      where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
+    );
 
     if (readMessageRow == null) {
       readMessageRow = ChatReadMessage(
