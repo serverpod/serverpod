@@ -114,7 +114,11 @@ class RedisController {
         if (result != 'OK') return false;
       }
 
-      _pubSub = PubSub(_pubSubCommand!);
+      runZonedGuarded(() {
+        _pubSub = PubSub(_pubSubCommand!);
+      }, (e, stackTrace) {
+        _invalidatePubSub();
+      });
 
       final stream = _pubSub!.getStream();
       unawaited(_listenToSubscriptions(stream));

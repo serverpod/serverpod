@@ -61,7 +61,7 @@ void main() {
       var channelCount = await client.redis.countSubscribedChannels();
       expect(channelCount, equals(1));
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 4));
 
       expect(retrieved, isNotNull);
       expect(retrieved!.num, equals(42));
