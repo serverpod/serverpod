@@ -1,7 +1,0 @@
-#!/bin/sh
-
-set -e
-
-docker-compose up -d --build
-dart pub get
-dart bin/main.dart
