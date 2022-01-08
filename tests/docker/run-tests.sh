@@ -17,6 +17,7 @@ dart test test/cloud_storage_test.dart
 dart test test/connection_test.dart
 dart test test/local_cache_test.dart
 dart test test/module_test.dart
+dart test test/redis_test.dart
 dart test test/serialization_test.dart
 dart test test/service_protocol_test.dart
 dart test test/websocket_test.dart

@@ -25,6 +25,7 @@ import '../endpoints/future_calls.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/logging_disabled.dart';
 import '../endpoints/module_serialization.dart';
+import '../endpoints/redis.dart';
 import '../endpoints/signin_required.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/streaming.dart';
@@ -56,6 +57,7 @@ class Endpoints extends EndpointDispatch {
         ..initialize(server, 'loggingDisabled', null),
       'moduleSerialization': ModuleSerializationEndpoint()
         ..initialize(server, 'moduleSerialization', null),
+      'redis': RedisEndpoint()..initialize(server, 'redis', null),
       'signInRequired': SignInRequiredEndpoint()
         ..initialize(server, 'signInRequired', null),
       'simple': SimpleEndpoint()..initialize(server, 'simple', null),
@@ -843,6 +845,121 @@ class Endpoints extends EndpointDispatch {
                 .modifyModuleObject(
               session,
               params['object'],
+            );
+          },
+        ),
+      },
+    );
+
+    connectors['redis'] = EndpointConnector(
+      name: 'redis',
+      endpoint: endpoints['redis']!,
+      methodConnectors: {
+        'setSimpleData': MethodConnector(
+          name: 'setSimpleData',
+          params: {
+            'key': ParameterDescription(
+                name: 'key', type: String, nullable: false),
+            'data': ParameterDescription(
+                name: 'data', type: SimpleData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint).setSimpleData(
+              session,
+              params['key'],
+              params['data'],
+            );
+          },
+        ),
+        'setSimpleDataWithLifetime': MethodConnector(
+          name: 'setSimpleDataWithLifetime',
+          params: {
+            'key': ParameterDescription(
+                name: 'key', type: String, nullable: false),
+            'data': ParameterDescription(
+                name: 'data', type: SimpleData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint)
+                .setSimpleDataWithLifetime(
+              session,
+              params['key'],
+              params['data'],
+            );
+          },
+        ),
+        'getSimpleData': MethodConnector(
+          name: 'getSimpleData',
+          params: {
+            'key': ParameterDescription(
+                name: 'key', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint).getSimpleData(
+              session,
+              params['key'],
+            );
+          },
+        ),
+        'deleteSimpleData': MethodConnector(
+          name: 'deleteSimpleData',
+          params: {
+            'key': ParameterDescription(
+                name: 'key', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint).deleteSimpleData(
+              session,
+              params['key'],
+            );
+          },
+        ),
+        'resetMessageCentralTest': MethodConnector(
+          name: 'resetMessageCentralTest',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint)
+                .resetMessageCentralTest(
+              session,
+            );
+          },
+        ),
+        'listenToChannel': MethodConnector(
+          name: 'listenToChannel',
+          params: {
+            'channel': ParameterDescription(
+                name: 'channel', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint).listenToChannel(
+              session,
+              params['channel'],
+            );
+          },
+        ),
+        'postToChannel': MethodConnector(
+          name: 'postToChannel',
+          params: {
+            'channel': ParameterDescription(
+                name: 'channel', type: String, nullable: false),
+            'data': ParameterDescription(
+                name: 'data', type: SimpleData, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint).postToChannel(
+              session,
+              params['channel'],
+              params['data'],
+            );
+          },
+        ),
+        'countSubscribedChannels': MethodConnector(
+          name: 'countSubscribedChannels',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['redis'] as RedisEndpoint)
+                .countSubscribedChannels(
+              session,
             );
           },
         ),

@@ -11,4 +11,4 @@ set -e
 
 cd tests/docker
 
-docker-compose up --abort-on-container-exit --exit-code-from tests --build
+docker-compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans

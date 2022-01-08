@@ -23,97 +23,90 @@ class ServerConfig {
   late final String publicScheme;
 
   /// Port the server is running on.
-  int? port;
+  late final int port;
 
   /// Service port of the server.
-  int? servicePort;
+  late final int servicePort;
 
   /// Max limit in bytes of requests to the server.
   late int maxRequestSize;
 
   /// Database host.
-  String? dbHost;
+  late final String dbHost;
 
   /// Database port.
-  int? dbPort;
+  late final int dbPort;
 
   /// Database user name.
-  String? dbUser;
+  late final String dbUser;
 
   /// Database password.
-  String? dbPass;
+  late final String dbPass;
 
   /// Database name.
-  String? dbName;
+  late final String dbName;
+
+  /// Redis host.
+  late final String redisHost;
+
+  /// Redis port.
+  late final int redisPort;
+
+  /// Redis user name (optional).
+  late final String? redisUser;
+
+  /// Redis password (optional, but recommended).
+  late final String? redisPassword;
 
   /// Authentication key for service protocol.
-  String? serviceSecret;
-
-  /// Configuration for other servers in the same cluster.
-  Map<int, RemoteServerConfig> cluster = <int, RemoteServerConfig>{};
+  late final String serviceSecret;
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
-  ServerConfig(this.runMode, this.serverId, Map<String, String>? passwords)
+  ServerConfig(this.runMode, this.serverId, Map<String, String> passwords)
       : file = 'config/$runMode.yaml' {
     var data = File(file).readAsStringSync();
     var doc = loadYaml(data);
 
-    publicHost = doc['public_host'];
-    publicPort = doc['public_port'];
-    publicScheme = doc['public_scheme'];
+    publicHost = doc['publicHost']!;
+    publicPort = doc['publicPort']!;
+    publicScheme = doc['publicScheme']!;
 
     // Get max request size (default to 512kb)
     maxRequestSize = doc['maxRequestSize'] ?? 524288;
 
-    // Get Cluster
-    Map clusterData = doc['cluster'];
-    for (int id in clusterData.keys) {
-      cluster[id] = RemoteServerConfig(id, clusterData[id]);
-    }
-
-    port = cluster[serverId]!.port;
-    servicePort = cluster[serverId]!.servicePort;
-    serviceSecret = doc['serviceSecret'] ?? '';
-    if (passwords != null && passwords['serviceSecret'] != null) {
-      serviceSecret = passwords['serviceSecret'];
-    }
+    port = doc['port']!;
+    servicePort = doc['servicePort']!;
+    serviceSecret = passwords['serviceSecret'] ?? '';
 
     // Get database setup
-    if (doc['database'] != null) {
-      var dbSetup = doc['database'];
-      dbHost = dbSetup['host'];
-      dbPort = dbSetup['port'];
-      dbName = dbSetup['name'];
-      dbUser = dbSetup['user'];
-      dbPass = dbSetup['pass'];
-    }
-  }
+    assert(doc['database'] is Map, 'Database setup is missing in config');
+    Map dbSetup = doc['database'];
+    dbHost = dbSetup['host']!;
+    dbPort = dbSetup['port']!;
+    dbName = dbSetup['name']!;
+    dbUser = dbSetup['user']!;
+    dbPass = passwords['database'] ?? 'Missing database password';
 
-  /// Returns true if database is fully configured.
-  bool get dbConfigured =>
-      dbHost != null &&
-      dbPort != null &&
-      dbUser != null &&
-      dbPass != null &&
-      dbName != null;
+    // Get Redis setup
+    assert(doc['redis'] is Map, 'Redis setup is missing in config');
+    Map redisSetup = doc['redis'];
+    redisHost = redisSetup['host']!;
+    redisPort = redisSetup['port']!;
+    redisUser = redisSetup['user'];
+    redisPassword = passwords['redis'];
+  }
 
   @override
   String toString() {
     var str = 'Config loaded from: $file';
     str += '\nport: $port';
 
-    if (dbConfigured) {
-      var displayPass = dbPass == null ? null : '********';
-
-      str += '\ndatabase host: $dbHost';
-      str += '\ndatabase port: $dbPort';
-      str += '\ndatabase name: $dbName';
-      str += '\ndatabase user: $dbUser';
-      str += '\ndatabase pass: $displayPass';
-    } else {
-      str += '\nNo database configured';
-    }
+    str += '\ndatabase host: $dbHost';
+    str += '\ndatabase port: $dbPort';
+    str += '\ndatabase name: $dbName';
+    str += '\ndatabase user: $dbUser';
+    str += '\ndatabase pass: ********';
 
     return str;
   }

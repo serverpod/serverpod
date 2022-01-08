@@ -124,8 +124,8 @@ class InsightsEndpoint extends Endpoint {
     return CachesInfo(
       local: _getCacheInfo(pod.caches.local, fetchKeys),
       localPrio: _getCacheInfo(pod.caches.localPrio, fetchKeys),
-      distributed: _getCacheInfo(pod.caches.distributed, fetchKeys),
-      distributedPrio: _getCacheInfo(pod.caches.distributedPrio, fetchKeys),
+      distributed: _getCacheInfo(pod.caches.global, fetchKeys),
+      distributedPrio: _getCacheInfo(pod.caches.globalPrio, fetchKeys),
     );
   }
 
@@ -139,7 +139,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Safely shuts down this [ServerPod].
   Future<void> shutdown(Session session) async {
-    server.serverpod.shutdown();
+    await server.serverpod.shutdown();
   }
 
   /// Performs a health check on the running [ServerPod].
