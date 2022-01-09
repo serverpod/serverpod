@@ -135,8 +135,11 @@ class ChatEndpoint extends Endpoint {
       if (!_isEphemeralChannel(message.channel))
         await session.db.insert(chatMessage);
 
-      session.messages
-          .postMessage(_channelPrefix + message.channel, chatMessage);
+      session.messages.postMessage(
+        _channelPrefix + message.channel,
+        chatMessage,
+        local: ChatConfig.current.postMessagesLocallyOnly,
+      );
     } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
