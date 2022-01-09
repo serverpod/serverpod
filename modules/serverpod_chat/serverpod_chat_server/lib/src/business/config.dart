@@ -16,10 +16,12 @@ class ChatConfig {
 
   late final ChatChannelAccessVerificationCallback channelAccessVerification;
   final bool allowUnauthenticatedUsers;
+  final bool postMessagesLocallyOnly;
 
   ChatConfig({
     ChatChannelAccessVerificationCallback? channelAccessVerification,
     this.allowUnauthenticatedUsers = false,
+    this.postMessagesLocallyOnly = false,
   }) {
     this.channelAccessVerification =
         channelAccessVerification ?? (session, userId, channel) async => true;

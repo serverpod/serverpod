@@ -277,10 +277,12 @@ class RedisController {
       if (!await _connect()) {
         return false;
       }
-      final result = await _command!.send_object(['PUBLISH', channel, message]);
+      final result = await _command!.send_object(
+        ['PUBLISH', channel, message],
+      );
       return result == 'OK';
     } catch (e) {
-      _invalidatePubSub();
+      _invalidateCommand();
       return false;
     }
   }
