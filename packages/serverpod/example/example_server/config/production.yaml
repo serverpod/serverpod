@@ -38,3 +38,7 @@ database:
   port: 5432
   name: DATABASE_NAME
   user: DATABASE_USER
+
+redis:
+  host: localhost
+  port: 6379

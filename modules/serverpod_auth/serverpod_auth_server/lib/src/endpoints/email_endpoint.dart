@@ -16,27 +16,44 @@ class EmailEndpoint extends Endpoint {
     email = email.toLowerCase();
     password = password.trim();
 
-    print('authenticate $email / $password');
+    session.log('authenticate $email / $password', level: LogLevel.debug);
 
     // Fetch password entry
-    var entry = (await session.db.findSingleRow(tEmailAuth,
-        where: tEmailAuth.email.equals(email))) as EmailAuth?;
-    if (entry == null) return AuthenticationResponse(success: false);
+    var entry = await session.db.findSingleRow<EmailAuth>(
+      where: EmailAuth.t.email.equals(email),
+    );
+    if (entry == null) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
-    print(' - found entry ');
+    session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
     if (entry.hash != Emails.generatePasswordHash(password)) {
-      print(' - ${Emails.generatePasswordHash(password)} saved: ${entry.hash}');
-      return AuthenticationResponse(success: false);
+      session.log(
+          ' - ${Emails.generatePasswordHash(password)} saved: ${entry.hash}',
+          level: LogLevel.debug);
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
     }
 
-    print(' - password is correct, userId: ${entry.userId})');
+    session.log(' - password is correct, userId: ${entry.userId})',
+        level: LogLevel.debug);
 
     var userInfo = await Users.findUserByUserId(session, entry.userId);
-    if (userInfo == null) return AuthenticationResponse(success: false);
+    if (userInfo == null) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
-    print(' - user found');
+    session.log(' - user found', level: LogLevel.debug);
 
     // Sign in user and return user info
     var auth = await session.auth.signInUser(
@@ -45,7 +62,7 @@ class EmailEndpoint extends Endpoint {
       scopes: userInfo.scopes,
     );
 
-    print(' - user signed in');
+    session.log(' - user signed in', level: LogLevel.debug);
 
     return AuthenticationResponse(
       success: true,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Support for server clusters.
@@ -20,13 +22,23 @@ class MessageCentral {
   /// can be provided, in which case the message is sent only to that specific
   /// server within the cluster. If no [destinationServerId] is provided, the
   /// message is passed on to all servers in the cluster.
-  void postMessage(String channelName, SerializableEntity message,
-      {int? destinationServerId}) {
-    var channel = _channels[channelName];
-    if (channel == null) return;
+  void postMessage(
+    String channelName,
+    SerializableEntity message, {
+    bool local = false,
+  }) {
+    if (local) {
+      // Handle internally in this server instance
+      var channel = _channels[channelName];
+      if (channel == null) return;
 
-    for (var callback in channel) {
-      callback(message);
+      for (var callback in channel) {
+        callback(message);
+      }
+    } else {
+      // Send to Redis
+      var data = jsonEncode(message.serializeAll());
+      Serverpod.instance!.redisController.publish(channelName, data);
     }
   }
 
@@ -42,8 +54,12 @@ class MessageCentral {
 
   /// Adds a listener to a named channel. Whenever a message is posted using
   /// [postMessage], the [listener] will be notified.
-  void addListener(Session session, String channelName,
-      MessageCentralListenerCallback listener) {
+  void addListener(
+    Session session,
+    String channelName,
+    MessageCentralListenerCallback listener, {
+    bool local = false,
+  }) {
     // Find or create channel
     var channel = _getChannel(channelName);
     channel.add(listener);
@@ -61,6 +77,21 @@ class MessageCentral {
       _sessionToCallbacksLookup[session] = callbacks;
     }
     callbacks.add(listener);
+
+    session.serverpod.redisController.subscribe(
+      channelName,
+      _receivedRedisMessage,
+    );
+  }
+
+  void _receivedRedisMessage(String channelName, String message) {
+    final serialization = jsonDecode(message);
+    final messageObj = Serverpod.instance!.serializationManager
+        .createEntityFromSerialization(serialization);
+    if (messageObj == null) {
+      return;
+    }
+    postMessage(channelName, messageObj, local: true);
   }
 
   /// Removes a listener from a named channel.
@@ -71,6 +102,7 @@ class MessageCentral {
       channel.remove(listener);
       if (channel.isEmpty) {
         _channels.remove(channelName);
+        session.serverpod.redisController.unsubscribe(channelName);
       }
     }
 
@@ -102,7 +134,7 @@ class MessageCentral {
 
     for (var channelName in channelNames) {
       for (var listener in listeners) {
-        _removeListener(channelName, listener);
+        _removeListener(session, channelName, listener);
       }
     }
 
@@ -111,11 +143,15 @@ class MessageCentral {
   }
 
   void _removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
+    Session session,
+    String channelName,
+    MessageCentralListenerCallback listener,
+  ) {
     var channel = _getChannel(channelName);
     channel.remove(listener);
     if (channel.isEmpty) {
       _channels.remove(channelName);
+      session.serverpod.redisController.unsubscribe(channelName);
     }
   }
 }

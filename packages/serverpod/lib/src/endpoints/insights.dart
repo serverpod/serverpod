@@ -33,16 +33,13 @@ class InsightsEndpoint extends Endpoint {
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
-    await session.db.delete(
-      tSessionLogEntry,
+    await session.db.delete<SessionLogEntry>(
       where: Constant(true),
     );
-    await session.db.delete(
-      tQueryLogEntry,
+    await session.db.delete<QueryLogEntry>(
       where: Constant(true),
     );
-    await session.db.delete(
-      tLogEntry,
+    await session.db.delete<LogEntry>(
       where: Constant(true),
     );
   }
@@ -56,52 +53,49 @@ class InsightsEndpoint extends Endpoint {
       where = Constant(true);
     } else {
       if (filter.slow && filter.error) {
-        where = tSessionLogEntry.slow.equals(true) |
-            tSessionLogEntry.error.notEquals(null);
+        where = SessionLogEntry.t.slow.equals(true) |
+            SessionLogEntry.t.error.notEquals(null);
       } else if (filter.slow) {
-        where = tSessionLogEntry.slow.equals(true);
+        where = SessionLogEntry.t.slow.equals(true);
       } else {
-        where = tSessionLogEntry.error.notEquals(null);
+        where = SessionLogEntry.t.error.notEquals(null);
       }
     }
 
     // Filter for endpoint
     if (filter != null && filter.endpoint != null) {
-      where = where & tSessionLogEntry.endpoint.equals(filter.endpoint);
+      where = where & SessionLogEntry.t.endpoint.equals(filter.endpoint);
     }
 
     // Filter for method
     if (filter != null && filter.method != null && filter.method != '') {
-      where = where & tSessionLogEntry.method.equals(filter.method);
+      where = where & SessionLogEntry.t.method.equals(filter.method);
     }
 
     // Filter for starting point
     if (filter != null && filter.lastSessionLogId != null) {
-      where = where & (tSessionLogEntry.id < filter.lastSessionLogId);
+      where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.db.find(
-      tSessionLogEntry,
+    var rows = (await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
-      orderBy: tSessionLogEntry.id,
+      orderBy: SessionLogEntry.t.id,
       orderDescending: true,
     ))
         .cast<SessionLogEntry>();
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var messageLogRows = await session.db.find(
-        tLogEntry,
-        where: tLogEntry.sessionLogId.equals(logEntry.id),
-        orderBy: tLogEntry.id,
+      var messageLogRows = await session.db.find<LogEntry>(
+        where: LogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: LogEntry.t.id,
         orderDescending: false,
       );
 
-      var queryLogRows = await session.db.find(
-        tQueryLogEntry,
-        where: tQueryLogEntry.sessionLogId.equals(logEntry.id),
-        orderBy: tQueryLogEntry.id,
+      var queryLogRows = await session.db.find<QueryLogEntry>(
+        where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: QueryLogEntry.t.id,
         orderDescending: false,
       );
 
@@ -130,8 +124,8 @@ class InsightsEndpoint extends Endpoint {
     return CachesInfo(
       local: _getCacheInfo(pod.caches.local, fetchKeys),
       localPrio: _getCacheInfo(pod.caches.localPrio, fetchKeys),
-      distributed: _getCacheInfo(pod.caches.distributed, fetchKeys),
-      distributedPrio: _getCacheInfo(pod.caches.distributedPrio, fetchKeys),
+      distributed: _getCacheInfo(pod.caches.global, fetchKeys),
+      distributedPrio: _getCacheInfo(pod.caches.globalPrio, fetchKeys),
     );
   }
 
@@ -145,7 +139,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Safely shuts down this [ServerPod].
   Future<void> shutdown(Session session) async {
-    server.serverpod.shutdown();
+    await server.serverpod.shutdown();
   }
 
   /// Performs a health check on the running [ServerPod].

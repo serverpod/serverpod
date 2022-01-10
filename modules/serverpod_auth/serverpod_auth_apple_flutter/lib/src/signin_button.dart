@@ -11,10 +11,10 @@ class SignInWithAppleButton extends StatefulWidget {
   final Caller caller;
 
   /// Called if sign in is successful.
-  final VoidCallback onSignedIn;
+  final VoidCallback? onSignedIn;
 
   /// Called if sign in is unsuccessful.
-  final VoidCallback onFailure;
+  final VoidCallback? onFailure;
 
   /// The style of the button.
   final ButtonStyle? style;
@@ -22,8 +22,8 @@ class SignInWithAppleButton extends StatefulWidget {
   /// Creates a new Sign in with Google button.
   SignInWithAppleButton({
     required this.caller,
-    required this.onSignedIn,
-    required this.onFailure,
+    this.onSignedIn,
+    this.onFailure,
     this.style,
   });
 
@@ -55,10 +55,15 @@ class _SignInWithAppleButtonState extends State<SignInWithAppleButton> {
           Navigator.of(context).pop();
 
           // Notify the parent.
-          if (userInfo != null)
-            widget.onSignedIn();
-          else
-            widget.onFailure();
+          if (userInfo != null) {
+            if (widget.onSignedIn != null) {
+              widget.onSignedIn!();
+            }
+          } else {
+            if (widget.onFailure != null) {
+              widget.onFailure!();
+            }
+          }
         });
       },
       label: Text('Sign in with Apple'),

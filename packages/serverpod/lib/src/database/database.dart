@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:typed_data';
 
-import '../server/session.dart';
+import 'package:retry/retry.dart';
 
+import '../server/session.dart';
 import 'database_connection.dart';
 import 'expressions.dart';
 import 'table.dart';
@@ -27,27 +29,35 @@ class Database {
   /// often useful to cast the object returned.
   ///
   ///     var myRow = session.db.findById(tMyTable, myId) as MyTable;
-  Future<TableRow?> findById(Table table, int id) async {
+  Future<T?> findById<T>(
+    int id, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
-    return await conn.findById(table, id, session: session);
+    return await conn.findById<T>(
+      id,
+      session: session,
+      transaction: transaction,
+    );
   }
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
   /// the table will be returned.
-  Future<List<TableRow>> find(Table table,
-      {Expression? where,
-      int? limit,
-      int? offset,
-      Column? orderBy,
-      List<Order>? orderByList,
-      bool orderDescending = false,
-      bool useCache = true}) async {
+  Future<List<T>> find<T>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.find(
-      table,
+    return await conn.find<T>(
       where: where,
       limit: limit,
       offset: offset,
@@ -56,89 +66,106 @@ class Database {
       orderDescending: orderDescending,
       useCache: useCache,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Find a single [TableRow] from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList].
-  Future<TableRow?> findSingleRow(Table table,
-      {Expression? where,
-      int? offset,
-      Column? orderBy,
-      bool orderDescending = false,
-      bool useCache = true}) async {
+  Future<T?> findSingleRow<T>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.findSingleRow(
-      table,
+    return await conn.findSingleRow<T>(
       where: where,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
       useCache: useCache,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
-  Future<int> count(Table table,
-      {Expression? where, int? limit, bool useCache = true}) async {
+  Future<int> count<T>({
+    Expression? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.count(
-      table,
+    return await conn.count<T>(
       where: where,
       limit: limit,
       useCache: useCache,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Updates a single [TableRow]. The row needs to have its id set.
-  Future<bool> update(TableRow row, {Transaction? transaction}) async {
+  Future<bool> update(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     return await conn.update(
       row,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Inserts a single [TableRow].
-  Future<bool> insert(TableRow row, {Transaction? transaction}) async {
+  Future<void> insert(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.insert(
+    await conn.insert(
       row,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<int> delete(Table table,
-      {required Expression where, Transaction? transaction}) async {
+  Future<int> delete<T>({
+    required Expression where,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
-    return await conn.delete(
-      table,
+    return await conn.delete<T>(
       where: where,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
   /// Deletes a single [TableRow].
-  Future<bool> deleteRow(TableRow row, {Transaction? transaction}) async {
+  Future<bool> deleteRow(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     return await conn.deleteRow(
       row,
-      transaction: transaction,
       session: session,
+      transaction: transaction,
     );
   }
 
@@ -176,24 +203,34 @@ class Database {
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  Future<List<List<dynamic>>> query(String query,
-      {int? timeoutInSeconds}) async {
+  Future<List<List<dynamic>>> query(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
     var conn = await databaseConnection;
 
     return conn.query(
       query,
       session: session,
       timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
     );
   }
 
   /// Executes a [Transaction].
-  Future<bool> executeTransation(Transaction transaction) async {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    RetryOptions? retryOptions,
+    FutureOr<R> Function()? orElse,
+    FutureOr<bool> Function(Exception exception)? retryIf,
+  }) async {
     var conn = await databaseConnection;
-
-    return conn.executeTransaction(
-      transaction,
-      session: session,
+    return await conn.transaction(
+      transactionFunction,
+      retryOptions: retryOptions,
+      orElse: orElse,
+      retryIf: retryIf,
     );
   }
 }

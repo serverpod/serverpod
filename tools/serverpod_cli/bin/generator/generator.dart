@@ -3,15 +3,19 @@ import 'config.dart';
 import 'dart_format.dart';
 import 'protocol_generator.dart';
 
-void performGenerate(bool verbose) {
+Future<void> performGenerate(bool verbose, bool format) async {
   if (!config.load()) return;
 
   print('Generating classes');
   performGenerateClasses(verbose);
 
   print('Generating protocol');
-  performGenerateProtocol(verbose);
+  await performGenerateProtocol(verbose);
 
-  print('Dart format');
-  performDartFormat(verbose);
+  if (format) {
+    print('Dart format');
+    performDartFormat(verbose);
+  }
+
+  print('Done.');
 }

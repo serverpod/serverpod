@@ -4,3 +4,4 @@ fields:
   key: String?
   keyId: int?
   userInfo: UserInfo?
+  failReason: AuthenticationFailReason?

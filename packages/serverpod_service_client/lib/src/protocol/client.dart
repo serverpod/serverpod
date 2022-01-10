@@ -9,67 +9,6 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
-class _EndpointCache extends EndpointRef {
-  @override
-  String get name => 'cache';
-
-  _EndpointCache(EndpointCaller caller) : super(caller);
-
-  Future<void> put(
-    bool priority,
-    String key,
-    String data,
-    String? group,
-    DateTime? expiration,
-  ) async {
-    return await caller.callServerEndpoint('cache', 'put', 'void', {
-      'priority': priority,
-      'key': key,
-      'data': data,
-      'group': group,
-      'expiration': expiration,
-    });
-  }
-
-  Future<String?> get(
-    bool priority,
-    String key,
-  ) async {
-    return await caller.callServerEndpoint('cache', 'get', 'String', {
-      'priority': priority,
-      'key': key,
-    });
-  }
-
-  Future<void> invalidateKey(
-    bool priority,
-    String key,
-  ) async {
-    return await caller.callServerEndpoint('cache', 'invalidateKey', 'void', {
-      'priority': priority,
-      'key': key,
-    });
-  }
-
-  Future<void> invalidateGroup(
-    bool priority,
-    String group,
-  ) async {
-    return await caller.callServerEndpoint('cache', 'invalidateGroup', 'void', {
-      'priority': priority,
-      'group': group,
-    });
-  }
-
-  Future<void> clear(
-    bool priority,
-  ) async {
-    return await caller.callServerEndpoint('cache', 'clear', 'void', {
-      'priority': priority,
-    });
-  }
-}
-
 class _EndpointInsights extends EndpointRef {
   @override
   String get name => 'insights';
@@ -142,7 +81,6 @@ class _EndpointInsights extends EndpointRef {
 }
 
 class Client extends ServerpodClient {
-  late final _EndpointCache cache;
   late final _EndpointInsights insights;
 
   Client(String host,
@@ -153,13 +91,11 @@ class Client extends ServerpodClient {
             context: context,
             errorHandler: errorHandler,
             authenticationKeyManager: authenticationKeyManager) {
-    cache = _EndpointCache(this);
     insights = _EndpointInsights(this);
   }
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-        'cache': cache,
         'insights': insights,
       };
 

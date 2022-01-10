@@ -5,6 +5,8 @@ import 'package:args/args.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/redis/controller.dart';
+import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -59,8 +61,8 @@ class Serverpod {
   /// [SerializationManager] used to serialize [SerializableEntities], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
-  final SerializationManager serializationManager;
-  late SerializationManager _internalSerializationManager;
+  final SerializationManagerServer serializationManager;
+  late SerializationManagerServer _internalSerializationManager;
 
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
@@ -69,6 +71,9 @@ class Serverpod {
   late DatabaseConfig databaseConfig;
 
   late Caches _caches;
+
+  /// The Redis controller used by Serverpod.
+  late RedisController redisController;
 
   /// Caches used by the server.
   Caches get caches => _caches;
@@ -143,8 +148,7 @@ class Serverpod {
     var session = await createSession();
     try {
       var oldRuntimeSettings =
-          await session.db.findSingleRow(internal.tRuntimeSettings)
-              as internal.RuntimeSettings?;
+          await session.db.findSingleRow<internal.RuntimeSettings>();
       if (oldRuntimeSettings == null) {
         settings.id = null;
         await session.db.insert(settings);
@@ -163,8 +167,7 @@ class Serverpod {
   Future<void> reloadRuntimeSettings() async {
     var session = await createSession();
     try {
-      var settings = await session.db.findSingleRow(internal.tRuntimeSettings)
-          as internal.RuntimeSettings?;
+      var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -220,24 +223,34 @@ class Serverpod {
 
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);
-    if (_passwords['database'] != null) config.dbPass = _passwords['database'];
-    if (_passwords['serviceSecret'] != null) {
-      config.serviceSecret = _passwords['serviceSecret'];
-    }
 
     // Print config
     stdout.writeln(config.toString());
 
     // Setup database
-    databaseConfig = DatabaseConfig(serializationManager, config.dbHost!,
-        config.dbPort!, config.dbName!, config.dbUser!, config.dbPass!);
+    databaseConfig = DatabaseConfig(
+      serializationManager,
+      config.dbHost,
+      config.dbPort,
+      config.dbName,
+      config.dbUser,
+      config.dbPass,
+    );
 
-    _caches = Caches(serializationManager, config, serverId);
+    // Setup Redis
+    redisController = RedisController(
+      host: config.redisHost,
+      port: config.redisPort,
+      user: config.redisUser,
+      password: config.redisPassword,
+    );
+
+    _caches = Caches(serializationManager, config, serverId, redisController);
 
     server = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.port ?? 8080,
+      port: config.port,
       serializationManager: serializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,
@@ -270,8 +283,7 @@ class Serverpod {
       var session = await createSession();
       try {
         _runtimeSettings =
-            await session.db.findSingleRow(internal.tRuntimeSettings)
-                as internal.RuntimeSettings?;
+            await session.db.findSingleRow<internal.RuntimeSettings>();
         if (_runtimeSettings == null) {
           // Store default settings
           _runtimeSettings = _defaultRuntimeSettings;
@@ -296,6 +308,10 @@ class Serverpod {
 
       await session.close(logSession: false);
 
+      // Connect to Redis
+      await redisController.start();
+
+      // Start servers
       await _startServiceServer();
 
       await server.start();
@@ -322,7 +338,7 @@ class Serverpod {
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.servicePort ?? 8081,
+      port: config.servicePort,
       serializationManager: _internalSerializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,
@@ -385,7 +401,8 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  void shutdown() {
+  Future<void> shutdown() async {
+    await redisController.stop();
     server.shutdown();
     _serviceServer?.shutdown();
     _futureCallManager.stop();

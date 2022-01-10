@@ -4,35 +4,35 @@ import '../generated/protocol.dart';
 
 class TransactionsDatabaseEndpoint extends Endpoint {
   Future<void> removeRow(Session session, int num) async {
-    Transaction txn = Transaction();
-
-    await session.db.delete(
-      tSimpleData,
-      where: tSimpleData.num.equals(num),
-      transaction: txn,
-    );
-
-    await session.db.executeTransation(txn);
+    await session.db.transaction((transaction) async {
+      await session.db.delete<SimpleData>(
+        where: SimpleData.t.num.equals(num),
+        transaction: transaction,
+      );
+    });
   }
 
   Future<bool> updateInsertDelete(
       Session session, int numUpdate, int numInsert, int numDelete) async {
-    Transaction txn = Transaction();
-
-    var data = await session.db.findSingleRow(tSimpleData,
-        where: tSimpleData.num.equals(numUpdate)) as SimpleData?;
-
-    data!.num = 1000;
-    await session.db.update(data, transaction: txn);
-
-    var newData = SimpleData(
-      num: numInsert,
+    var data = await session.db.findSingleRow<SimpleData>(
+      where: SimpleData.t.num.equals(numUpdate),
     );
-    await session.db.insert(newData, transaction: txn);
 
-    await session.db.delete(tSimpleData,
-        where: tSimpleData.num.equals(numDelete), transaction: txn);
+    return await session.db.transaction((transaction) async {
+      data!.num = 1000;
+      await session.db.update(data, transaction: transaction);
 
-    return await session.db.executeTransation(txn);
+      var newData = SimpleData(
+        num: numInsert,
+      );
+      await session.db.insert(newData, transaction: transaction);
+
+      await session.db.delete<SimpleData>(
+        where: SimpleData.t.num.equals(numDelete),
+        transaction: transaction,
+      );
+
+      return true;
+    });
   }
 }

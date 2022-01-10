@@ -6,6 +6,18 @@ echo "serverpod"
 cd $BASE/packages/serverpod
 dart pub get
 
+echo "serverpod/example/example_client"
+cd $BASE/packages/serverpod/example/example_client
+dart pub get
+
+echo "serverpod/example/example_flutter"
+cd $BASE/packages/serverpod/example/example_flutter
+dart pub get
+
+echo "serverpod/example/example_server"
+cd $BASE/packages/serverpod/example/example_server
+dart pub get
+
 echo "\nserverpod_client"
 cd $BASE/packages/serverpod_client
 dart pub get
@@ -41,11 +53,3 @@ dart pub get
 echo "\nserverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
 dart pub get
-
-echo "\nserverpod_cli"
-cd $BASE/tools/serverpod_cli
-dart pub get
-
-# echo "\nserverpod_gui"
-# cd ../serverpod_gui
-# flutter packages get

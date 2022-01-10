@@ -6,7 +6,7 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -16,6 +16,8 @@ class Types extends TableRow {
   String get className => 'Types';
   @override
   String get tableName => 'types';
+
+  static final t = TypesTable();
 
   @override
   int? id;
@@ -91,7 +93,140 @@ class Types extends TableRow {
       'aByteData': aByteData?.base64encodedString(),
     });
   }
+
+  @override
+  void setColumn(String columnName, value) {
+    switch (columnName) {
+      case 'id':
+        id = value;
+        return;
+      case 'anInt':
+        anInt = value;
+        return;
+      case 'aBool':
+        aBool = value;
+        return;
+      case 'aDouble':
+        aDouble = value;
+        return;
+      case 'aDateTime':
+        aDateTime = value;
+        return;
+      case 'aString':
+        aString = value;
+        return;
+      case 'aByteData':
+        aByteData = value;
+        return;
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  static Future<List<Types>> find(
+    Session session, {
+    TypesExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.find<Types>(
+      where: where != null ? where(Types.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<Types?> findSingleRow(
+    Session session, {
+    TypesExpressionBuilder? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<Types>(
+      where: where != null ? where(Types.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<Types?> findById(Session session, int id) async {
+    return session.db.findById<Types>(id);
+  }
+
+  static Future<int> delete(
+    Session session, {
+    required TypesExpressionBuilder where,
+    Transaction? transaction,
+  }) async {
+    return session.db.delete<Types>(
+      where: where(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    Session session,
+    Types row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    Session session,
+    Types row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    Session session,
+    Types row, {
+    Transaction? transaction,
+  }) async {
+    return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<int> count(
+    Session session, {
+    TypesExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.count<Types>(
+      where: where != null ? where(Types.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
 }
+
+typedef TypesExpressionBuilder = Expression Function(TypesTable t);
 
 class TypesTable extends Table {
   TypesTable() : super(tableName: 'types');
@@ -118,4 +253,5 @@ class TypesTable extends Table {
       ];
 }
 
+@Deprecated('Use TypesTable.t instead.')
 TypesTable tTypes = TypesTable();

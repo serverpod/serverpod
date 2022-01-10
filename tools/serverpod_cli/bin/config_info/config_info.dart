@@ -9,18 +9,20 @@ class ConfigInfo {
   }
 
   void printAddress() {
-    if (serverId != null) {
-      print(config.cluster[serverId]!.address);
-    } else {
-      for (var id in config.cluster.keys) {
-        print(config.cluster[id]!.address);
-      }
-    }
+    // TODO: Fix
+    // if (serverId != null) {
+    //   print(config.cluster[serverId]!.address);
+    // } else {
+    //   for (var id in config.cluster.keys) {
+    //     print(config.cluster[id]!.address);
+    //   }
+    // }
   }
 
   void printIds() {
-    for (var id in config.cluster.keys) {
-      print('$id');
-    }
+    // TODO: Fix
+    // for (var id in config.cluster.keys) {
+    //   print('$id');
+    // }
   }
 }

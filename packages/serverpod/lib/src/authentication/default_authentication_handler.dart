@@ -18,7 +18,7 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
     var secret = parts[1];
 
     // Get the authentication key from the database
-    var authKey = (await session.db.findById(tAuthKey, keyId)) as AuthKey?;
+    var authKey = await session.db.findById<AuthKey>(keyId);
     if (authKey == null) return null;
 
     // Hash the key from the user and check that it is what we expect

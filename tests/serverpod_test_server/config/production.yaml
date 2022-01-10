@@ -1,1 +1,16 @@
-port: 80
+publicHost: serverpod_test_server
+publicPort: 8080
+publicScheme: http
+
+port: 8080
+servicePort: 8081
+
+database:
+  host: postgres
+  port: 5432
+  name: serverpod_test
+  user: postgres
+
+redis:
+  host: redis
+  port: 6379
