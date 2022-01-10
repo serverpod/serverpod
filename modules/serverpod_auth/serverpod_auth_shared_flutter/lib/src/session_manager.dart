@@ -71,7 +71,6 @@ class SessionManager with ChangeNotifier {
   /// Signs the user out from all connected devices. Returns true if successful.
   Future<bool> signOut() async {
     if (!isSignedIn) return true;
-    print('signOut');
 
     try {
       await caller.status.signOut();
@@ -108,7 +107,7 @@ class SessionManager with ChangeNotifier {
 
     _signedInUser = Protocol.instance
         .createEntityFromSerialization(jsonDecode(json)) as UserInfo;
-    print('updated user info $signedInUser');
+
     notifyListeners();
   }
 
@@ -132,7 +131,7 @@ class SessionManager with ChangeNotifier {
       final success = await caller.user.setUserImage(image);
       if (success) {
         _signedInUser = await caller.status.getUserInfo();
-        print('updated user info $_signedInUser');
+
         notifyListeners();
         return true;
       }
