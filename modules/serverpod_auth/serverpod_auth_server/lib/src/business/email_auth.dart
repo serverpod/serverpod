@@ -109,7 +109,7 @@ class Emails {
     var config = session.server.serverpod.config;
     var resetLink = Uri(
       scheme: config.publicScheme,
-      host: config.publicHost,
+      host: 'app.joinbuzz.com',
       path: '/password-reset/$verificationCode',
     );
 
