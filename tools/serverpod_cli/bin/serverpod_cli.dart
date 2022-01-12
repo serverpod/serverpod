@@ -3,6 +3,7 @@ import 'package:colorize/colorize.dart';
 
 import 'certificate_generator/generator.dart';
 import 'config_info/config_info.dart';
+import 'create/command_line_tools.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
@@ -27,6 +28,18 @@ const cmdGeneratePubspecs = 'generate-pubspecs';
 final runModes = <String>['development', 'staging', 'production'];
 
 void main(List<String> args) async {
+  // Check that required tools are installed
+  if (!await CommandLineTools.existsCommand('dart')) {
+    print(
+        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+    return;
+  }
+  if (!await CommandLineTools.existsCommand('flutter')) {
+    print(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+    return;
+  }
+
   if (!loadEnvironmentVars()) {
     return;
   }

@@ -14,4 +14,9 @@ class CommandLineTools {
         workingDirectory: dir.path);
     print(result.stdout);
   }
+
+  static Future<bool> existsCommand(String command) async {
+    var result = await Process.run('command', ['-v', command]);
+    return result.exitCode == 0;
+  }
 }
