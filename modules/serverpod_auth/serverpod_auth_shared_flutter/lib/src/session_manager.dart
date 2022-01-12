@@ -25,10 +25,13 @@ class SessionManager with ChangeNotifier {
   /// The key manager, holding the key's of the user, if signed in.
   late FlutterAuthenticationKeyManager keyManager;
 
+  final Storage _storage;
+
   /// Creates a new session manager.
   SessionManager({
     required this.caller,
-  }) {
+    Storage? storage,
+  }) : _storage = storage ?? SharedPreferenceStorage() {
     _instance = this;
     assert(caller.client.authenticationKeyManager != null,
         'The client needs an associated key manager');
@@ -95,29 +98,26 @@ class SessionManager with ChangeNotifier {
   }
 
   Future<void> _loadSharedPrefs() async {
-    var prefs = await SharedPreferences.getInstance();
-
-    var version =
-        prefs.getInt(_prefsKey + '_' + keyManager.runMode + '_version');
+    final version = await _storage
+        .getInt(_prefsKey + '_' + keyManager.runMode + '_version');
     if (version != _prefsVersion) return;
 
-    var json = prefs.getString(_prefsKey + '_' + keyManager.runMode);
+    var json = await _storage.getString(_prefsKey + '_' + keyManager.runMode);
     if (json == null) return;
 
     _signedInUser = Protocol.instance
         .createEntityFromSerialization(jsonDecode(json)) as UserInfo;
+
     notifyListeners();
   }
 
   Future<void> _storeSharedPrefs() async {
-    var prefs = await SharedPreferences.getInstance();
-
-    await prefs.setInt(
+    await _storage.setInt(
         _prefsKey + '_' + keyManager.runMode + '_version', _prefsVersion);
     if (signedInUser == null) {
-      await prefs.remove(_prefsKey + '_' + keyManager.runMode);
+      await _storage.remove(_prefsKey + '_' + keyManager.runMode);
     } else {
-      await prefs.setString(_prefsKey + '_' + keyManager.runMode,
+      await _storage.setString(_prefsKey + '_' + keyManager.runMode,
           jsonEncode(signedInUser!.serialize()));
     }
   }
@@ -128,9 +128,10 @@ class SessionManager with ChangeNotifier {
     if (_signedInUser == null) return false;
 
     try {
-      var success = await caller.user.setUserImage(image);
+      final success = await caller.user.setUserImage(image);
       if (success) {
         _signedInUser = await caller.status.getUserInfo();
+
         notifyListeners();
         return true;
       }
