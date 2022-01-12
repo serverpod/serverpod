@@ -64,8 +64,6 @@ void main(List<String> args) async {
   var generateParser = ArgParser();
   generateParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  generateParser.addFlag('dart-format',
-      abbr: 'f', negatable: false, help: 'Format output with dart format');
   parser.addCommand(cmdGenerate, generateParser);
 
   // "generate-continuously" command
@@ -184,8 +182,7 @@ void main(List<String> args) async {
       }
     }
     if (results.command!.name == cmdGenerate) {
-      await performGenerate(
-          results.command!['verbose'], results.command!['dart-format']);
+      await performGenerate(results.command!['verbose'], true);
       return;
     }
     if (results.command!.name == cmdGenerateContinuously) {
