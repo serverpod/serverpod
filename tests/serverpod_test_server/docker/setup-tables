@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Reset tables
+docker-compose run postgres env PGPASSWORD="password" psql -h postgres -p 5432 -U postgres -d serverpod_test < ../../docker/reset_db.pgsql
+
+# Create tables in database container
+docker-compose run postgres env PGPASSWORD="password" psql -h postgres -p 5432 -U postgres -d serverpod_test < ../../../packages/serverpod/generated/tables.pgsql
+docker-compose run postgres env PGPASSWORD="password" psql -h postgres -p 5432 -U postgres -d serverpod_test < ../../../modules/serverpod_auth/serverpod_auth_server/generated/tables.pgsql
+docker-compose run postgres env PGPASSWORD="password" psql -h postgres -p 5432 -U postgres -d serverpod_test < ../generated/tables.pgsql
+docker-compose run postgres env PGPASSWORD="password" psql -h postgres -p 5432 -U postgres -d serverpod_test < ../../serverpod_test_module/serverpod_test_module_server/generated/tables.pgsql
