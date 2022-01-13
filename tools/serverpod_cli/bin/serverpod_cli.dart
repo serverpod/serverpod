@@ -65,12 +65,21 @@ void main(List<String> args) async {
   var createParser = ArgParser();
   createParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  createParser.addOption('template',
-      abbr: 't',
-      defaultsTo: 'server',
-      allowed: <String>['server', 'module'],
-      help:
-          'Template to use when creating a new project, valid options are "server" or "module"');
+  createParser.addFlag(
+    'force',
+    abbr: 'f',
+    negatable: false,
+    help:
+        'Create the project even if there are issues that prevents if from running out of the box',
+  );
+  createParser.addOption(
+    'template',
+    abbr: 't',
+    defaultsTo: 'server',
+    allowed: <String>['server', 'module'],
+    help:
+        'Template to use when creating a new project, valid options are "server" or "module"',
+  );
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
@@ -184,13 +193,14 @@ void main(List<String> args) async {
       var name = results.arguments.last;
       bool verbose = results.command!['verbose'];
       String template = results.command!['template'];
+      bool force = results.command!['force'];
       if (name == 'server' || name == 'module' || name == 'create') {
         _printUsage(parser);
         return;
       }
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
-        await performCreate(name, verbose, template);
+        await performCreate(name, verbose, template, force);
         return;
       }
     }
