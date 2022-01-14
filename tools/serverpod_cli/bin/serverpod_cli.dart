@@ -3,6 +3,7 @@ import 'package:colorize/colorize.dart';
 
 import 'certificate_generator/generator.dart';
 import 'config_info/config_info.dart';
+import 'create/command_line_tools.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
@@ -27,6 +28,18 @@ const cmdGeneratePubspecs = 'generate-pubspecs';
 final runModes = <String>['development', 'staging', 'production'];
 
 void main(List<String> args) async {
+  // Check that required tools are installed
+  if (!await CommandLineTools.existsCommand('dart')) {
+    print(
+        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+    return;
+  }
+  if (!await CommandLineTools.existsCommand('flutter')) {
+    print(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+    return;
+  }
+
   if (!loadEnvironmentVars()) {
     return;
   }
@@ -52,20 +65,27 @@ void main(List<String> args) async {
   var createParser = ArgParser();
   createParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  createParser.addOption('template',
-      abbr: 't',
-      defaultsTo: 'server',
-      allowed: <String>['server', 'module'],
-      help:
-          'Template to use when creating a new project, valid options are "server" or "module"');
+  createParser.addFlag(
+    'force',
+    abbr: 'f',
+    negatable: false,
+    help:
+        'Create the project even if there are issues that prevents if from running out of the box',
+  );
+  createParser.addOption(
+    'template',
+    abbr: 't',
+    defaultsTo: 'server',
+    allowed: <String>['server', 'module'],
+    help:
+        'Template to use when creating a new project, valid options are "server" or "module"',
+  );
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
   var generateParser = ArgParser();
   generateParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  generateParser.addFlag('dart-format',
-      abbr: 'f', negatable: false, help: 'Format output with dart format');
   parser.addCommand(cmdGenerate, generateParser);
 
   // "generate-continuously" command
@@ -173,19 +193,19 @@ void main(List<String> args) async {
       var name = results.arguments.last;
       bool verbose = results.command!['verbose'];
       String template = results.command!['template'];
+      bool force = results.command!['force'];
       if (name == 'server' || name == 'module' || name == 'create') {
         _printUsage(parser);
         return;
       }
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
-        await performCreate(name, verbose, template);
+        await performCreate(name, verbose, template, force);
         return;
       }
     }
     if (results.command!.name == cmdGenerate) {
-      await performGenerate(
-          results.command!['verbose'], results.command!['dart-format']);
+      await performGenerate(results.command!['verbose'], true);
       return;
     }
     if (results.command!.name == cmdGenerateContinuously) {

@@ -16,6 +16,7 @@ dependencies:
   http: ^0.13.0
   path: ^1.8.0
   postgres: ^2.3.0
+  redis: ^2.2.0
   serverpod_postgres_pool: ^2.1.1
   yaml: ^3.1.0
   serverpod_shared: #^VERSION
