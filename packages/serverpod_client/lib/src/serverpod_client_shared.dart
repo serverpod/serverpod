@@ -262,6 +262,8 @@ abstract class EndpointRef {
   /// from the server endpoint to the client, if it supports streaming.
   var _streamController = StreamController<SerializableEntity>();
 
+  Stream<SerializableEntity>? _stream;
+
   /// Stream of messages sent from an endpoint that supports streaming.
   Stream<SerializableEntity> get stream => _streamController.stream;
 
@@ -273,6 +275,7 @@ abstract class EndpointRef {
   /// Resets web socket stream, so it's possible to re-listen to endpoint
   /// streams.
   void resetStream() {
+    _streamController.close();
     _streamController = StreamController<SerializableEntity>();
   }
 }
