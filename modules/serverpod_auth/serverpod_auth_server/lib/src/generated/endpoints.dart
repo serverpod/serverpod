@@ -149,6 +149,41 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'createAccountRequest': MethodConnector(
+          name: 'createAccountRequest',
+          params: {
+            'userName': ParameterDescription(
+                name: 'userName', type: String, nullable: false),
+            'email': ParameterDescription(
+                name: 'email', type: String, nullable: false),
+            'password': ParameterDescription(
+                name: 'password', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['email'] as EmailEndpoint).createAccountRequest(
+              session,
+              params['userName'],
+              params['email'],
+              params['password'],
+            );
+          },
+        ),
+        'createAccount': MethodConnector(
+          name: 'createAccount',
+          params: {
+            'email': ParameterDescription(
+                name: 'email', type: String, nullable: false),
+            'verificationCode': ParameterDescription(
+                name: 'verificationCode', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['email'] as EmailEndpoint).createAccount(
+              session,
+              params['email'],
+              params['verificationCode'],
+            );
+          },
+        ),
       },
     );
 

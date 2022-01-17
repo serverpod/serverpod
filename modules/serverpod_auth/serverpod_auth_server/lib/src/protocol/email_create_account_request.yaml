@@ -1,0 +1,11 @@
+class: EmailCreateAccountRequest
+table: serverpod_email_create_request
+fields:
+  userName: String
+  email: String
+  hash: String
+  verificationCode: String
+indexes:
+  serverpod_email_auth_email:
+    fields: email
+    unique: true

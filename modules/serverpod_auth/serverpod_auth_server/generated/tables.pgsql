@@ -12,7 +12,25 @@ CREATE TABLE serverpod_email_auth (
 ALTER TABLE ONLY serverpod_email_auth
   ADD CONSTRAINT serverpod_email_auth_pkey PRIMARY KEY (id);
 
-CREATE INDEX serverpod_email_auth_email ON serverpod_email_auth USING btree ("email");
+CREATE UNIQUE INDEX serverpod_email_auth_email ON serverpod_email_auth USING btree ("email");
+
+
+--
+-- Class EmailCreateAccountRequest as table serverpod_email_create_request
+--
+
+CREATE TABLE serverpod_email_create_request (
+  "id" serial,
+  "userName" text NOT NULL,
+  "email" text NOT NULL,
+  "hash" text NOT NULL,
+  "verificationCode" text NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_email_create_request
+  ADD CONSTRAINT serverpod_email_create_request_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_email_auth_email ON serverpod_email_create_request USING btree ("email");
 
 
 --

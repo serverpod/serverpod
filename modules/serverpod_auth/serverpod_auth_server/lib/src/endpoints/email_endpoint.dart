@@ -32,9 +32,9 @@ class EmailEndpoint extends Endpoint {
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
-    if (entry.hash != Emails.generatePasswordHash(password)) {
+    if (entry.hash != Emails.generatePasswordHash(password, email)) {
       session.log(
-          ' - ${Emails.generatePasswordHash(password)} saved: ${entry.hash}',
+          ' - ${Emails.generatePasswordHash(password, email)} saved: ${entry.hash}',
           level: LogLevel.debug);
       return AuthenticationResponse(
         success: false,
@@ -92,5 +92,42 @@ class EmailEndpoint extends Endpoint {
   Future<bool> resetPassword(
       Session session, String verificationCode, String password) {
     return Emails.resetPassword(session, verificationCode, password);
+  }
+
+  Future<bool> createAccountRequest(
+    Session session,
+    String userName,
+    String email,
+    String password,
+  ) async {
+    return await Emails.createAccountRequest(
+      session,
+      userName,
+      email,
+      password,
+    );
+  }
+
+  Future<UserInfo?> createAccount(
+    Session session,
+    String email,
+    String verificationCode,
+  ) async {
+    var request = await Emails.findAccountRequest(session, email);
+    if (request == null) {
+      return null;
+    }
+    if (request.verificationCode != verificationCode) {
+      return null;
+    }
+
+    // Email is verified, create a new user
+    return await Emails.createUser(
+      session,
+      request.userName,
+      email,
+      null,
+      request.hash,
+    );
   }
 }

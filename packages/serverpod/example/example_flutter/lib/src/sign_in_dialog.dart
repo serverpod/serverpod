@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 import '../main.dart';
@@ -29,9 +30,19 @@ class _SignInDialog extends StatelessWidget {
               onFailure: _failedToSignIn,
             ),
             const SizedBox(
-              height: 4,
+              height: 2,
             ),
             SignInWithAppleButton(
+              caller: client.modules.auth,
+              onSignedIn: () {
+                _signedIn(context);
+              },
+              onFailure: _failedToSignIn,
+            ),
+            const SizedBox(
+              height: 2,
+            ),
+            SignInWithEmailButton(
               caller: client.modules.auth,
               onSignedIn: () {
                 _signedIn(context);

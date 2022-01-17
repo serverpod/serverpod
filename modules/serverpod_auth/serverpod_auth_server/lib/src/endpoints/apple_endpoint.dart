@@ -96,11 +96,12 @@ class AppleEndpoint extends Endpoint {
       userInfo = await Users.createUser(session, userInfo);
     }
 
-    if (userInfo == null)
+    if (userInfo == null) {
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
+    }
 
     var authKey = await session.auth.signInUser(userInfo.id!, 'apple');
 

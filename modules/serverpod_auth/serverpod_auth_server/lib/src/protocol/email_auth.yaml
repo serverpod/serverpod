@@ -7,3 +7,4 @@ fields:
 indexes:
   serverpod_email_auth_email:
     fields: email
+    unique: true
