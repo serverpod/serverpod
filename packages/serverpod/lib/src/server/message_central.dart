@@ -69,19 +69,23 @@ class MessageCentral {
       subscribedChannels = {};
       _sessionToChannelNamesLookup[session] = subscribedChannels;
     }
-    subscribedChannels.add(channelName);
 
-    var callbacks = _sessionToCallbacksLookup[session];
-    if (callbacks == null) {
-      callbacks = {};
-      _sessionToCallbacksLookup[session] = callbacks;
+    // Only suscribe if it's not already done
+    if (!subscribedChannels.contains(channelName)) {
+      subscribedChannels.add(channelName);
+
+      var callbacks = _sessionToCallbacksLookup[session];
+      if (callbacks == null) {
+        callbacks = {};
+        _sessionToCallbacksLookup[session] = callbacks;
+      }
+      callbacks.add(listener);
+
+      session.serverpod.redisController.subscribe(
+        channelName,
+        _receivedRedisMessage,
+      );
     }
-    callbacks.add(listener);
-
-    session.serverpod.redisController.subscribe(
-      channelName,
-      _receivedRedisMessage,
-    );
   }
 
   void _receivedRedisMessage(String channelName, String message) {
