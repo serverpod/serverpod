@@ -21,7 +21,7 @@ class FileUploader {
   /// Uploads a file contained by a [ByteData] object, returns true if
   /// successful.
   Future<bool> uploadByteData(ByteData byteData) async {
-    final stream = http.ByteStream.fromBytes(byteData.buffer.asUint8List());
+    var stream = http.ByteStream.fromBytes(byteData.buffer.asUint8List());
     return upload(stream, byteData.lengthInBytes);
   }
 
@@ -54,8 +54,8 @@ class FileUploader {
       // final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
       // final length = await data.lengthInBytes;
 
-      final request = http.MultipartRequest('POST', _uploadDescription.url);
-      final multipartFile = http.MultipartFile(
+      var request = http.MultipartRequest('POST', _uploadDescription.url);
+      var multipartFile = http.MultipartFile(
           _uploadDescription.field!, stream, length,
           filename: _uploadDescription.fileName);
 

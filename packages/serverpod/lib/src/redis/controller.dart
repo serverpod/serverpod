@@ -69,7 +69,7 @@ class RedisController {
     _connecting = true;
 
     try {
-      final connection = RedisConnection();
+      var connection = RedisConnection();
 
       _command = await connection.connect(host, port);
       if (password != null) {
@@ -106,7 +106,7 @@ class RedisController {
     _connectingPubSub = true;
 
     try {
-      final connection = RedisConnection();
+      var connection = RedisConnection();
       _pubSubCommand = await connection.connect(host, port);
       if (password != null) {
         var result = await _pubSubCommand!.send_object(['AUTH', password]);
@@ -120,7 +120,7 @@ class RedisController {
         _invalidatePubSub();
       });
 
-      final stream = _pubSub!.getStream();
+      var stream = _pubSub!.getStream();
       unawaited(_listenToSubscriptions(stream));
 
       if (_subscriptions.keys.isNotEmpty) {
@@ -142,10 +142,10 @@ class RedisController {
         if (message is List && message.length == 3) {
           if (message[0] == 'message') {
             // We got a message (can also be confirmation on publish)
-            final String channel = message[1];
-            final String data = message[2];
+            String channel = message[1];
+            String data = message[2];
 
-            final callback = _subscriptions[channel];
+            var callback = _subscriptions[channel];
             if (callback != null) {
               callback(channel, data);
             }
@@ -182,11 +182,11 @@ class RedisController {
   Future<bool> set(String key, String message, {Duration? lifetime}) async {
     await _connect();
     try {
-      final object = ['SET', key, message];
+      var object = ['SET', key, message];
       if (lifetime != null) {
         object.addAll(['PX', '${lifetime.inMilliseconds}']);
       }
-      final result = await _command?.send_object(object);
+      var result = await _command?.send_object(object);
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();
@@ -199,7 +199,7 @@ class RedisController {
   Future<String?> get(String key) async {
     await _connect();
     try {
-      final result = await _command?.get(key);
+      var result = await _command?.get(key);
       if (result is String) {
         return result;
       }
@@ -214,7 +214,7 @@ class RedisController {
   Future<bool> del(String key) async {
     await _connect();
     try {
-      final result = await _command?.send_object(['DEL', key]);
+      var result = await _command?.send_object(['DEL', key]);
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();
@@ -229,7 +229,7 @@ class RedisController {
       return false;
     }
     try {
-      final result = await _command?.send_object(['FLUSHALL']);
+      var result = await _command?.send_object(['FLUSHALL']);
       return (result == 'OK');
     } catch (e) {
       _invalidateCommand();
@@ -277,7 +277,7 @@ class RedisController {
       if (!await _connect()) {
         return false;
       }
-      final result = await _command!.send_object(
+      var result = await _command!.send_object(
         ['PUBLISH', channel, message],
       );
       return result == 'OK';

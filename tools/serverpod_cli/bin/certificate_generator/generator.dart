@@ -1,5 +1,5 @@
 Future<void> performGenerateCerts(String runMode, bool verbose) async {
-  const certConfigFile = '.certconf';
+  // const certConfigFile = '.certconf';
 
   print('Generating certificates (disabled)');
   // var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};

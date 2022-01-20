@@ -121,7 +121,7 @@ class LogManager {
       }
     }
 
-    final slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+    var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
     var isSlow = duration > Duration(microseconds: slowMicros) &&
         session is! StreamingSession;
 
@@ -242,12 +242,12 @@ class LogManager {
   /// Returns a list of logs for all open sessions.
   List<SessionLogInfo> getOpenSessionLogs(
       int numEntries, SessionLogFilter? filter) {
-    final sessionLog = <SessionLogInfo>[];
+    var sessionLog = <SessionLogInfo>[];
 
     var numFoundEntries = 0;
     var i = 0;
     while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
-      final entry = _openSessionLogs[i];
+      var entry = _openSessionLogs[i];
       i += 1;
 
       // Check filter (ignore slow and errors as session is still open)

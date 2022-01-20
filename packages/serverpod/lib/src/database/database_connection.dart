@@ -626,7 +626,7 @@ Current type was $T''');
   }) {
     return postgresConnection.runTx<R>(
       (ctx) {
-        final transaction = Transaction._(ctx);
+        var transaction = Transaction._(ctx);
         return transactionFunction(transaction);
       },
       retryOptions: retryOptions,

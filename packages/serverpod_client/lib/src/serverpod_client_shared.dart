@@ -154,7 +154,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (_webSocket != null) return;
 
     try {
-      final host = await websocketHost;
+      var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       unawaited(_listenToWebSocketStream());
     } catch (e) {

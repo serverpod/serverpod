@@ -197,7 +197,7 @@ class Serverpod {
 
     // Read command line arguments
     try {
-      final argParser = ArgParser()
+      var argParser = ArgParser()
         ..addOption('mode',
             abbr: 'm',
             allowed: [
