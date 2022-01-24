@@ -10,32 +10,32 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
 import 'package:serverpod_auth_client/module.dart' as serverpod_auth;
+import 'package:serverpod_chat_client/module.dart' as serverpod_chat;
 
-class _EndpointExample extends EndpointRef {
+class _EndpointChannels extends EndpointRef {
   @override
-  String get name => 'example';
+  String get name => 'channels';
 
-  _EndpointExample(EndpointCaller caller) : super(caller);
+  _EndpointChannels(EndpointCaller caller) : super(caller);
 
-  Future<String> hello(
-    String name,
-  ) async {
-    return await caller.callServerEndpoint('example', 'hello', 'String', {
-      'name': name,
-    });
+  Future<ChannelList> getChannels() async {
+    return await caller
+        .callServerEndpoint('channels', 'getChannels', 'ChannelList', {});
   }
 }
 
 class _Modules {
   late final serverpod_auth.Caller auth;
+  late final serverpod_chat.Caller chat;
 
   _Modules(Client client) {
     auth = serverpod_auth.Caller(client);
+    chat = serverpod_chat.Caller(client);
   }
 }
 
 class Client extends ServerpodClient {
-  late final _EndpointExample example;
+  late final _EndpointChannels channels;
   late final _Modules modules;
 
   Client(String host,
@@ -46,19 +46,21 @@ class Client extends ServerpodClient {
             context: context,
             errorHandler: errorHandler,
             authenticationKeyManager: authenticationKeyManager) {
-    example = _EndpointExample(this);
+    channels = _EndpointChannels(this);
 
     modules = _Modules(this);
     registerModuleProtocol(serverpod_auth.Protocol());
+    registerModuleProtocol(serverpod_chat.Protocol());
   }
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-        'example': example,
+        'channels': channels,
       };
 
   @override
   Map<String, ModuleEndpointCaller> get moduleLookup => {
         'auth': modules.auth,
+        'chat': modules.chat,
       };
 }

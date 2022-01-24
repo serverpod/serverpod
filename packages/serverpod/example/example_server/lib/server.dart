@@ -29,6 +29,40 @@ void run(List<String> args) async {
     },
   ));
 
+  // Create an initial set of entries in the database, if they do not exist
+  // already.
+  await _populateDatabase(pod);
+
   // Start the server.
   await pod.start();
+}
+
+Future<void> _populateDatabase(Serverpod pod) async {
+  // Create a session so that we can access the database.
+  var session = await pod.createSession();
+
+  var numChannels = await Channel.count(session);
+  if (numChannels != 0) {
+    // There are already entries in the database, whe shouldn't add them again.
+    await session.close();
+    return;
+  }
+
+  // Insert an initial set of channels.
+  await Channel.insert(
+    session,
+    Channel(name: 'General', channel: 'general'),
+  );
+  await Channel.insert(
+    session,
+    Channel(name: 'Serverpod', channel: 'serverpod'),
+  );
+  await Channel.insert(
+    session,
+    Channel(name: 'Introductions', channel: 'intros'),
+  );
+
+  // Make sure to close the session when we are done, or it will hold up
+  // resources.
+  await session.close();
 }

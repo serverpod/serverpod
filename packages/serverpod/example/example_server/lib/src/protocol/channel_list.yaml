@@ -1,0 +1,3 @@
+class: ChannelList
+fields:
+  channels: List<Channel>

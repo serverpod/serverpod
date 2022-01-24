@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as path;
 
 class ChatInput extends StatefulWidget {
   final ChatController controller;
@@ -16,6 +16,7 @@ class ChatInput extends StatefulWidget {
   final TextStyle? style;
   final IconData iconSend;
   final IconData iconAttach;
+  final bool enableAttachments;
 
   const ChatInput({
     Key? key,
@@ -27,6 +28,7 @@ class ChatInput extends StatefulWidget {
     this.style,
     this.iconSend = Icons.send,
     this.iconAttach = Icons.attach_file,
+    this.enableAttachments = true,
   }) : super(key: key);
 
   @override
@@ -115,7 +117,8 @@ class _ChatInputState extends State<ChatInput> {
                     ),
                   ),
                 ),
-                if (widget.controller.sessionManager.isSignedIn)
+                if (widget.controller.sessionManager.isSignedIn &&
+                    widget.enableAttachments)
                   IconButton(
                     icon: Icon(widget.iconAttach),
                     color: Theme.of(context).textTheme.caption!.color,

@@ -1,4 +1,7 @@
 import 'package:example_client/example_client.dart';
+import 'package:example_flutter/src/disconnected_page.dart';
+import 'package:example_flutter/src/loading_page.dart';
+import 'package:example_flutter/src/main_page.dart';
 import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
@@ -41,100 +44,131 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      home: const _SignInPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+class _SignInPage extends StatefulWidget {
+  const _SignInPage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SignInPageState extends State<_SignInPage> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView(
-        children: [
-          _UserInfoTile(),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: UserSettings(
-                  sessionManager: sessionManager,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: UserSettings(
-                  compact: false,
-                  sessionManager: sessionManager,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  void initState() {
+    super.initState();
+
+    sessionManager.addListener(_changedSessionStatus);
   }
-}
 
-class _UserInfoTile extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _UserInfoTileState();
-}
+  void dispose() {
+    super.dispose();
 
-class _UserInfoTileState extends State<_UserInfoTile> {
+    client.removeWebSocketConnectionStatusListener(_changedSessionStatus);
+  }
+
   @override
   Widget build(BuildContext context) {
-    var userInfo = sessionManager.signedInUser;
-
-    if (userInfo == null) {
-      return ListTile(
-        title: const Text('Not signed in'),
-        trailing: OutlinedButton(
-          onPressed: _signIn,
-          child: const Text('Sign In'),
-        ),
-      );
+    if (sessionManager.isSignedIn) {
+      return _ConnectionPage();
     } else {
-      return ListTile(
-        title: const Text('You are signed in'),
-        trailing: OutlinedButton(
-          onPressed: _signOut,
-          child: const Text('Sign Out'),
+      return Scaffold(
+        body: Container(
+          color: Colors.blueGrey,
+          alignment: Alignment.center,
+          child: SignInDialog(
+            shownAsDialog: false,
+          ),
         ),
       );
     }
   }
 
-  void _signOut() {
-    sessionManager.signOut().then((bool success) {
-      setState(() {});
+  void _changedSessionStatus() {
+    // This method is called whenever the user signs in or out.
+    setState(() {});
+  }
+}
+
+class _ConnectionPage extends StatefulWidget {
+  const _ConnectionPage({Key? key}) : super(key: key);
+
+  @override
+  _ConnectionPageState createState() => _ConnectionPageState();
+}
+
+class _ConnectionPageState extends State<_ConnectionPage> {
+  List<Channel>? _channels;
+  bool _connecting = false;
+  // bool _attemptedFirstConnect = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    client.addWebSocketConnectionStatusListener(_changedConnectionStatus);
+    _connect();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    client.removeWebSocketConnectionStatusListener(_changedConnectionStatus);
+  }
+
+  Future<void> _connect() async {
+    // Reset to initial state.
+    setState(() {
+      _channels = null;
+      _connecting = true;
+    });
+
+    try {
+      // Load list of channels.
+      var channelList = await client.channels.getChannels();
+
+      // Make sure that the web socket is connected.
+      await client.connectWebSocket();
+
+      _channels = channelList.channels;
+    } catch (e) {
+      // We failed to connect.
+    }
+
+    setState(() {
+      _connecting = false;
     });
   }
 
-  void _signIn() {
-    showSignInDialog(
-      context: context,
-      onSignedIn: () {
-        setState(() {});
-      },
-    );
+  void _changedConnectionStatus() {
+    // This method is called whenever the state for the web socket has changed.
+    setState(() {});
+  }
+
+  void _reconnect() {
+    if (client.isWebSocketConnected) {
+      return;
+    }
+    _connect();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_connecting) {
+      return const LoadingPage();
+    } else if (_channels == null || !client.isWebSocketConnected) {
+      return DisconnectedPage(
+        onReconnect: _reconnect,
+      );
+    } else {
+      return MainPage(
+        channels: _channels!,
+      );
+    }
   }
 }

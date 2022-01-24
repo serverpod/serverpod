@@ -31,6 +31,8 @@ dependencies:
     path: ../../../../modules/serverpod_auth/serverpod_auth_apple_flutter
   serverpod_auth_email_flutter:
     path: ../../../../modules/serverpod_auth/serverpod_auth_email_flutter
+  serverpod_chat_flutter:
+    path: ../../../../modules/serverpod_chat/serverpod_chat_flutter
 
 
   # The following adds the Cupertino Icons font to your application.

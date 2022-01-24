@@ -6,29 +6,29 @@
 // ignore_for_file: unused_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class Example extends SerializableEntity {
+class Channel extends SerializableEntity {
   @override
-  String get className => 'Example';
+  String get className => 'Channel';
 
   int? id;
   late String name;
-  late int data;
+  late String channel;
 
-  Example({
+  Channel({
     this.id,
     required this.name,
-    required this.data,
+    required this.channel,
   });
 
-  Example.fromSerialization(Map<String, dynamic> serialization) {
+  Channel.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     name = _data['name']!;
-    data = _data['data']!;
+    channel = _data['channel']!;
   }
 
   @override
@@ -36,16 +36,7 @@ class Example extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'name': name,
-      'data': data,
-    });
-  }
-
-  @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
-      'id': id,
-      'name': name,
-      'data': data,
+      'channel': channel,
     });
   }
 }
