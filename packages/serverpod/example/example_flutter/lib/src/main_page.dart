@@ -1,16 +1,16 @@
 import 'package:example_client/example_client.dart';
 import 'package:example_flutter/main.dart';
-import 'package:example_flutter/src/chat_channel.dart';
+import 'package:example_flutter/src/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
-import 'sign_in_dialog.dart';
-
 class MainPage extends StatefulWidget {
   final List<Channel> channels;
+  final Map<String, ChatController> chatControllers;
 
   const MainPage({
     required this.channels,
+    required this.chatControllers,
     Key? key,
   }) : super(key: key);
 
@@ -19,7 +19,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final Map<String, ChatController> _controllers = {};
   late String _selectedChannel;
 
   @override
@@ -27,30 +26,12 @@ class _MainPageState extends State<MainPage> {
     super.initState();
 
     _selectedChannel = widget.channels[0].channel;
-
-    // Setup chat controllers for each channel.
-    for (var channel in widget.channels) {
-      _controllers[channel.channel] = ChatController(
-        channel: channel.channel,
-        module: client.modules.chat,
-        sessionManager: sessionManager,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    for (var controller in _controllers.values) {
-      controller.dispose();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     // Find current chat controller and channel information
-    var controller = _controllers[_selectedChannel];
+    var controller = widget.chatControllers[_selectedChannel];
 
     Channel? channel;
     for (var c in widget.channels) {
@@ -74,7 +55,10 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       body: controller != null
-          ? ChatChannel(controller: controller)
+          ? ChatPage(
+              key: ValueKey(controller.channel),
+              controller: controller,
+            )
           : const Center(
               child: Text('Select a channel.'),
             ),
@@ -105,10 +89,16 @@ class _ChannelDrawer extends StatelessWidget {
           SizedBox(
             height: mt.padding.top,
           ),
-          _UserInfoTile(),
-          Divider(),
+          ListTile(
+            title: const Text('You are signed in'),
+            trailing: OutlinedButton(
+              onPressed: _signOut,
+              child: const Text('Sign Out'),
+            ),
+          ),
+          const Divider(),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text('Channels', style: Theme.of(context).textTheme.caption),
           ),
           Expanded(
@@ -120,7 +110,7 @@ class _ChannelDrawer extends StatelessWidget {
                       title: Text(
                         e.name,
                         style: e.channel == selectedChannel
-                            ? TextStyle(fontWeight: FontWeight.bold)
+                            ? const TextStyle(fontWeight: FontWeight.bold)
                             : null,
                       ),
                       onTap: () {
@@ -139,61 +129,8 @@ class _ChannelDrawer extends StatelessWidget {
       ),
     );
   }
-}
-
-class _UserInfoTile extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _UserInfoTileState();
-}
-
-class _UserInfoTileState extends State<_UserInfoTile> {
-  @override
-  Widget build(BuildContext context) {
-    var userInfo = sessionManager.signedInUser;
-
-    if (userInfo == null) {
-      return ListTile(
-        title: const Text('Not signed in'),
-        trailing: OutlinedButton(
-          onPressed: _signIn,
-          child: const Text('Sign In'),
-        ),
-      );
-    } else {
-      return ListTile(
-        title: const Text('You are signed in'),
-        trailing: OutlinedButton(
-          onPressed: _signOut,
-          child: const Text('Sign Out'),
-        ),
-      );
-    }
-  }
 
   void _signOut() {
-    // Pop the drawer.
-    Navigator.of(context).pop();
-
-    // Sign out.
-    sessionManager.signOut().then((bool success) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  void _signIn() {
-    // Pop the drawer.
-    Navigator.of(context).pop();
-
-    // Open the sign in dialog.
-    showSignInDialog(
-      context: context,
-      onSignedIn: () {
-        if (mounted) {
-          setState(() {});
-        }
-      },
-    );
+    sessionManager.signOut();
   }
 }

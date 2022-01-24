@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
-class ChatChannel extends StatelessWidget {
-  const ChatChannel({
+class ChatPage extends StatelessWidget {
+  const ChatPage({
     required this.controller,
     Key? key,
   }) : super(key: key);

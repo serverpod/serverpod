@@ -169,8 +169,9 @@ class _ChatViewState extends State<ChatView>
         // Trigger another build.
         setState(() {});
       });
-    } else if (_scrollController.offset ==
-        _scrollController.position.maxScrollExtent) {
+    } else if (_scrollController.hasClients &&
+        _scrollController.offset ==
+            _scrollController.position.maxScrollExtent) {
       // we are already at the bottom, mark messages as read
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         widget.controller.markLastMessageRead();

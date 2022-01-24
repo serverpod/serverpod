@@ -15,12 +15,12 @@ class DisconnectedPage extends StatelessWidget {
           child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Failed to connect.'),
+          const Text('Failed to connect.'),
           Padding(
-            padding: EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.only(top: 16),
             child: ElevatedButton(
               onPressed: onReconnect,
-              child: Text('Try Again'),
+              child: const Text('Try Again'),
             ),
           )
         ],

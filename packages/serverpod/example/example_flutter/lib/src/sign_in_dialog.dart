@@ -12,7 +12,8 @@ class SignInDialog extends StatelessWidget {
   const SignInDialog({
     this.onSignedIn,
     this.shownAsDialog = true,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
