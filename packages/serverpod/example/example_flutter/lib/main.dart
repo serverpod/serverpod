@@ -11,7 +11,8 @@ late SessionManager sessionManager;
 late Client client;
 
 void main() async {
-  // Need to call this as we are using Flutter bindings before runApp is called.
+  // Need to call this as SessionManager is using Flutter bindings before runApp
+  // is called.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Sets up a singleton client object that can be used to talk to the server
@@ -50,6 +51,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// The _SignInPage either displays a dialog for signing in or, if the user is
+// signed in, displays the _ConnectionPage.
 class _SignInPage extends StatefulWidget {
   const _SignInPage({Key? key}) : super(key: key);
 
@@ -61,14 +64,12 @@ class _SignInPageState extends State<_SignInPage> {
   @override
   void initState() {
     super.initState();
-
     sessionManager.addListener(_changedSessionStatus);
   }
 
   @override
   void dispose() {
     super.dispose();
-
     client.removeWebSocketConnectionStatusListener(_changedSessionStatus);
   }
 
@@ -89,12 +90,15 @@ class _SignInPageState extends State<_SignInPage> {
     }
   }
 
+  // This method is called whenever the user signs in or out.
   void _changedSessionStatus() {
-    // This method is called whenever the user signs in or out.
     setState(() {});
   }
 }
 
+// The _ConnectionPage can display three states; a loading spinner, a page
+// if loading fails or if the connection to the server is broken, or the
+// main chat page.
 class _ConnectionPage extends StatefulWidget {
   const _ConnectionPage({Key? key}) : super(key: key);
 
@@ -103,14 +107,21 @@ class _ConnectionPage extends StatefulWidget {
 }
 
 class _ConnectionPageState extends State<_ConnectionPage> {
+  // List of channels as retrieved from the server. Null if the chats hasn't
+  // been successfully loaded.
   List<Channel>? _channels;
+
+  // True if we are currently trying to connect to the server.
   bool _connecting = false;
+
+  // Contains a list of ChatControllers.
   final Map<String, ChatController> _chatControllers = {};
 
   @override
   void initState() {
     super.initState();
 
+    // Starts listening to changes in the websocket connection.
     client.addWebSocketConnectionStatusListener(_changedConnectionStatus);
     _connect();
   }
@@ -119,10 +130,12 @@ class _ConnectionPageState extends State<_ConnectionPage> {
   void dispose() {
     super.dispose();
 
+    // Stops listening to websocket connections.
     client.removeWebSocketConnectionStatusListener(_changedConnectionStatus);
     _disposeChatControllers();
   }
 
+  // Disposes all chat controllers and removes the references to them.
   void _disposeChatControllers() {
     for (var chatController in _chatControllers.values) {
       chatController.dispose();
@@ -130,6 +143,8 @@ class _ConnectionPageState extends State<_ConnectionPage> {
     _chatControllers.clear();
   }
 
+  // Starts connecting to the server. Connection is complete when we have
+  // established a connection to the websocket and to all chat channels.
   Future<void> _connect() async {
     // Reset to initial state.
     setState(() {
@@ -146,7 +161,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
       // Make sure that the web socket is connected.
       await client.connectWebSocket();
 
-      // Load all channels
+      // Setup ChatControllers for all the channels in the list.
       for (var channel in channelList.channels) {
         var controller = ChatController(
           channel: channel.channel,
@@ -155,6 +170,8 @@ class _ConnectionPageState extends State<_ConnectionPage> {
         );
 
         _chatControllers[channel.channel] = controller;
+
+        // Listen to changes in the connection status of the chat channel.
         controller.addConnectionStatusListener(_chatConnectionStatusChanged);
       }
     } catch (e) {
@@ -167,12 +184,15 @@ class _ConnectionPageState extends State<_ConnectionPage> {
     }
   }
 
+  // This method is called whenever the state for the web socket has changed.
   void _changedConnectionStatus() {
-    // This method is called whenever the state for the web socket has changed.
     setState(() {});
   }
 
+  // This method is called whenever we have established a connection to a chat
+  // channel.
   void _chatConnectionStatusChanged() {
+    // Make sure that we have received the list of channels.
     if (_channels == null || _channels!.isEmpty) {
       setState(() {
         _channels = null;
@@ -183,6 +203,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
 
     var numJoinedChannels = 0;
 
+    // Count the number of channels that we have joined.
     for (var chatController in _chatControllers.values) {
       if (chatController.joinedChannel) {
         numJoinedChannels += 1;
@@ -195,6 +216,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
       }
     }
 
+    // If we have joined all the channels loading is complete.
     if (numJoinedChannels == _chatControllers.length) {
       setState(() {
         _connecting = false;
@@ -202,6 +224,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
     }
   }
 
+  // Attempt to reconnect to the server.
   void _reconnect() {
     if (client.isWebSocketConnected) {
       return;

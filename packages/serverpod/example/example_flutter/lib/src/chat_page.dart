@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
+/// Shows the ChatView and ChatInput for a chat controller.
 class ChatPage extends StatelessWidget {
   const ChatPage({
     required this.controller,

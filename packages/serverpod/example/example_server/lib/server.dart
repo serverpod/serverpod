@@ -16,6 +16,8 @@ void run(List<String> args) async {
     Endpoints(),
   );
 
+  // Configures sign in with email to print out the validation codes on the
+  // console.
   auth.AuthConfig.set(auth.AuthConfig(
     sendValidationEmail: (session, email, validationCode) async {
       print('Validation code: $validationCode');

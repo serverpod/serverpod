@@ -1,3 +1,4 @@
+# Represents a chat channel.
 class: Channel
 table: channel
 fields:

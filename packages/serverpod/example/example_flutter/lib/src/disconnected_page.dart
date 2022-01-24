@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Shows a message that the user has been disconnected and offers the option
+/// to attempt to reconnect to the server.
 class DisconnectedPage extends StatelessWidget {
   final VoidCallback onReconnect;
 

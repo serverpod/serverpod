@@ -4,6 +4,8 @@ import 'package:example_flutter/src/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
+/// The MainPage contains a _ChatPage with the currently selected chat, and a
+/// drawer where the user can pick which chat to interact with.
 class MainPage extends StatefulWidget {
   final List<Channel> channels;
   final Map<String, ChatController> chatControllers;
@@ -66,6 +68,7 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
+// The _ChannelDrawer displays a list of chat channels.
 class _ChannelDrawer extends StatelessWidget {
   final List<Channel> channels;
   final String selectedChannel;
