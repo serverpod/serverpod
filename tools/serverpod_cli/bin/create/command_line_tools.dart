@@ -14,4 +14,35 @@ class CommandLineTools {
         workingDirectory: dir.path);
     print(result.stdout);
   }
+
+  static Future<bool> existsCommand(String command) async {
+    var result = await Process.run('command', ['-v', command]);
+    return result.exitCode == 0;
+  }
+
+  static Future<void> createTables(Directory dir, String name) async {
+    var serverPath = '${dir.path}/${name}_server';
+    print('Setting up default database tables in $serverPath');
+
+    await Process.run(
+      'chmod',
+      ['u+x', 'setup-tables'],
+      workingDirectory: serverPath,
+    );
+
+    var result = await Process.run(
+      './setup-tables',
+      [],
+      workingDirectory: serverPath,
+    );
+    print(result.stdout);
+
+    print('Cleaning up');
+    result = await Process.run(
+      'rm',
+      ['setup-tables'],
+      workingDirectory: serverPath,
+    );
+    print(result.stdout);
+  }
 }

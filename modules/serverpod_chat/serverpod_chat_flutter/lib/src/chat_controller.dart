@@ -54,6 +54,9 @@ class ChatController {
 
   auth.UserInfo? _joinedAsUserInfo;
 
+  @visibleForTesting
+  bool get hasUserInfo => _joinedAsUserInfo != null;
+
   ChatController({
     required String channel,
     required this.module,

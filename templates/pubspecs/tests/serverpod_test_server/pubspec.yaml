@@ -17,6 +17,9 @@ dependencies:
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_auth_server: #^VERSION
     path: ../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_cloud_storage_s3: #^VERSION
+    path: ../../integrations/serverpod_cloud_storage_s3
+
 
 dev_dependencies:
   lints: ^1.0.1
