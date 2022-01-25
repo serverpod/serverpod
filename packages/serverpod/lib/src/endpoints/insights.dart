@@ -1,4 +1,3 @@
-import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
 import '../../serverpod.dart';
@@ -114,7 +113,7 @@ class InsightsEndpoint extends Endpoint {
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
       Session session, int? numEntries, SessionLogFilter? filter) async {
-    final logs = session.serverpod.logManager
+    var logs = session.serverpod.logManager
         .getOpenSessionLogs(numEntries ?? 100, filter);
     return SessionLogResult(sessionLog: logs);
   }

@@ -20,12 +20,12 @@ servicePort: 8081
 # the server up and running. Password is defined in the passwords.yaml file.
 database:
   host: localhost
-  port: 5432
-  name: serverpod_example
-  user: my_database_user # <-- UPDATE with your database user name
+  port: 8090
+  name: example
+  user: postgres
 
 # Your Redis setup. Password is defined in the passwords.yaml file.
 redis:
   host: localhost
   # user: username <-- Username is optional in Redis
-  port: 6379
+  port: 8091

@@ -154,7 +154,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (_webSocket != null) return;
 
     try {
-      final host = await websocketHost;
+      var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       unawaited(_listenToWebSocketStream());
     } catch (e) {
@@ -273,6 +273,13 @@ abstract class EndpointRef {
   /// Resets web socket stream, so it's possible to re-listen to endpoint
   /// streams.
   void resetStream() {
+    try {
+      if (!_streamController.isClosed) {
+        _streamController.close();
+      }
+    } catch (e) {
+      // Just in case, an issue happens when closing the stream.
+    }
     _streamController = StreamController<SerializableEntity>();
   }
 }

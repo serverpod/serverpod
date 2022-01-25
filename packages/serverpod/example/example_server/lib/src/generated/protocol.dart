@@ -9,9 +9,11 @@ library protocol;
 import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 
-import 'example_class.dart';
+import 'channel.dart';
+import 'channel_list.dart';
 
-export 'example_class.dart';
+export 'channel.dart';
+export 'channel_list.dart';
 
 class Protocol extends SerializationManagerServer {
   static final Protocol instance = Protocol();
@@ -29,7 +31,12 @@ class Protocol extends SerializationManagerServer {
   Map<Type, Table> get typeTableMapping => _typeTableMapping;
 
   Protocol() {
-    constructors['Example'] = (Map<String, dynamic> serialization) =>
-        Example.fromSerialization(serialization);
+    constructors['Channel'] = (Map<String, dynamic> serialization) =>
+        Channel.fromSerialization(serialization);
+    constructors['ChannelList'] = (Map<String, dynamic> serialization) =>
+        ChannelList.fromSerialization(serialization);
+
+    tableClassMapping['channel'] = 'Channel';
+    typeTableMapping[Channel] = Channel.t;
   }
 }

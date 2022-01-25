@@ -38,6 +38,7 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '/*   To generate run: "serverpod generate"    */\n';
         out += '\n';
         out += '// ignore_for_file: public_member_api_docs\n';
+        out += '// ignore_for_file: unnecessary_import\n';
         out += '\n';
 
         if (serverCode) {
@@ -164,6 +165,7 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '// ignore_for_file: non_constant_identifier_names\n';
       out += '// ignore_for_file: public_member_api_docs\n';
       out += '// ignore_for_file: unused_import\n';
+      out += '// ignore_for_file: unnecessary_import\n';
       out += '// ignore_for_file: overridden_fields\n';
       out += '\n';
 
@@ -458,6 +460,7 @@ class ClassGeneratorDart extends ClassGenerator {
     out += '/*   To generate run: "serverpod generate"    */\n';
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
+    out += '// ignore_for_file: unnecessary_import\n';
     out += '\n';
 
     out += 'library protocol;\n';

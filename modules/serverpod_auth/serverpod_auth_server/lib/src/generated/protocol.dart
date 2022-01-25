@@ -2,6 +2,7 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unnecessary_import
 
 library protocol;
 
@@ -13,6 +14,7 @@ import 'apple_auth_info.dart';
 import 'authentication_fail_reason.dart';
 import 'authentication_response.dart';
 import 'email_auth.dart';
+import 'email_create_account_request.dart';
 import 'email_password_reset.dart';
 import 'email_reset.dart';
 import 'user_image.dart';
@@ -23,6 +25,7 @@ export 'apple_auth_info.dart';
 export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
 export 'email_auth.dart';
+export 'email_create_account_request.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
 export 'user_image.dart';
@@ -57,6 +60,9 @@ class Protocol extends SerializationManagerServer {
     constructors['serverpod_auth_server.EmailAuth'] =
         (Map<String, dynamic> serialization) =>
             EmailAuth.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailCreateAccountRequest'] =
+        (Map<String, dynamic> serialization) =>
+            EmailCreateAccountRequest.fromSerialization(serialization);
     constructors['serverpod_auth_server.EmailPasswordReset'] =
         (Map<String, dynamic> serialization) =>
             EmailPasswordReset.fromSerialization(serialization);
@@ -76,6 +82,9 @@ class Protocol extends SerializationManagerServer {
     tableClassMapping['serverpod_email_auth'] =
         'serverpod_auth_server.EmailAuth';
     typeTableMapping[EmailAuth] = EmailAuth.t;
+    tableClassMapping['serverpod_email_create_request'] =
+        'serverpod_auth_server.EmailCreateAccountRequest';
+    typeTableMapping[EmailCreateAccountRequest] = EmailCreateAccountRequest.t;
     tableClassMapping['serverpod_email_reset'] =
         'serverpod_auth_server.EmailReset';
     typeTableMapping[EmailReset] = EmailReset.t;

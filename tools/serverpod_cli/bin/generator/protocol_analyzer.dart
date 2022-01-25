@@ -36,10 +36,10 @@ class ProtocolAnalyzer {
     var endpointDefs = <EndpointDefinition>[];
     var filePaths = <String>[];
 
-    for (final context in collection.contexts) {
+    for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
-      for (final filePath in analyzedFiles) {
+      for (var filePath in analyzedFiles) {
         if (!filePath.endsWith('.dart')) {
           continue;
         }

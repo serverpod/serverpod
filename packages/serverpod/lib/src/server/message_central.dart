@@ -85,8 +85,8 @@ class MessageCentral {
   }
 
   void _receivedRedisMessage(String channelName, String message) {
-    final serialization = jsonDecode(message);
-    final messageObj = Serverpod.instance!.serializationManager
+    var serialization = jsonDecode(message);
+    var messageObj = Serverpod.instance!.serializationManager
         .createEntityFromSerialization(serialization);
     if (messageObj == null) {
       return;

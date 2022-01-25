@@ -1,8 +1,7 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:serverpod_chat_flutter/src/chat_dispatch.dart';
+import 'package:serverpod_chat_flutter/src/chat_tile.dart';
 
 const _offsetForRequestingNextChunk = 100.0;
 
@@ -170,8 +169,9 @@ class _ChatViewState extends State<ChatView>
         // Trigger another build.
         setState(() {});
       });
-    } else if (_scrollController.offset ==
-        _scrollController.position.maxScrollExtent) {
+    } else if (_scrollController.hasClients &&
+        _scrollController.offset ==
+            _scrollController.position.maxScrollExtent) {
       // we are already at the bottom, mark messages as read
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         widget.controller.markLastMessageRead();
@@ -200,6 +200,7 @@ class _ChatViewState extends State<ChatView>
           return Align(
             alignment: Alignment.bottomCenter,
             child: ListView.builder(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               reverse: false,
               controller: _scrollController,
@@ -246,9 +247,10 @@ class _ChatViewState extends State<ChatView>
     ChatMessage message,
     ChatMessage? previous,
   ) {
-    return ListTile(
-      title: Text(message.message),
-      subtitle: Text(message.senderInfo?.userName ?? 'Unknown user'),
+    return DefaultChatTile(
+      message: message,
+      previous: previous,
+      horizontalPadding: 16,
     );
   }
 }

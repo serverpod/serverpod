@@ -97,6 +97,30 @@ class _EndpointEmail extends EndpointRef {
       'password': password,
     });
   }
+
+  Future<bool> createAccountRequest(
+    String userName,
+    String email,
+    String password,
+  ) async {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.email', 'createAccountRequest', 'bool', {
+      'userName': userName,
+      'email': email,
+      'password': password,
+    });
+  }
+
+  Future<UserInfo?> createAccount(
+    String email,
+    String verificationCode,
+  ) async {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.email', 'createAccount', 'UserInfo', {
+      'email': email,
+      'verificationCode': verificationCode,
+    });
+  }
 }
 
 class _EndpointGoogle extends EndpointRef {

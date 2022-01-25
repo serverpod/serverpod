@@ -15,7 +15,7 @@ Future<void> performCreate(
     String name, bool verbose, String template, bool force) async {
   // Check we are set to create a new project
   var portsAvailable = true;
-  for (final port in _defaultPorts) {
+  for (var port in _defaultPorts) {
     var available = await isNetworkPortAvailable(port);
     if (!available) {
       portsAvailable = false;
@@ -24,7 +24,7 @@ Future<void> performCreate(
   }
 
   // Check that docker is installed
-  final dockerInstalled = await CommandLineTools.existsCommand('docker');
+  var dockerInstalled = await CommandLineTools.existsCommand('docker');
 
   if (!portsAvailable || !dockerInstalled) {
     var strIssue =

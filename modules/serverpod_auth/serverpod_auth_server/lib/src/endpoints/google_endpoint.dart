@@ -91,7 +91,7 @@ class GoogleEndpoint extends Endpoint {
 
       // Verify the token with Google's servers.
       // TODO: This should probably be done on this server.
-      final response = await http.get(Uri.parse(
+      var response = await http.get(Uri.parse(
           'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken'));
 
       if (response.statusCode != 200) {
@@ -102,7 +102,7 @@ class GoogleEndpoint extends Endpoint {
         );
       }
 
-      final data = jsonDecode(response.body);
+      var data = jsonDecode(response.body);
       if (data['iss'] != 'accounts.google.com') {
         session.log('Invalid token received', level: LogLevel.debug);
         return AuthenticationResponse(

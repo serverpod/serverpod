@@ -2,6 +2,7 @@
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: unnecessary_import
 // ignore_for_file: unused_import
 
 import 'dart:typed_data' as typed_data;

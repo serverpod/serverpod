@@ -8,6 +8,8 @@ email:
   - initiatePasswordReset:
   - verifyEmailPasswordReset:
   - resetPassword:
+  - createAccountRequest:
+  - createAccount:
 google:
   - authenticateWithServerAuthCode:
   - authenticateWithIdToken:

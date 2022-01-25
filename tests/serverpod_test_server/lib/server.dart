@@ -11,7 +11,7 @@ import 'src/generated/protocol.dart';
 
 void run(List<String> args) async {
   // Create serverpod
-  final pod = Serverpod(
+  var pod = Serverpod(
     args,
     Protocol(),
     Endpoints(),
@@ -40,7 +40,7 @@ void run(List<String> args) async {
   await pod.start();
 
   // Add relic / webserver
-  final webserver = WebServer(serverpod: pod);
+  var webserver = WebServer(serverpod: pod);
   webserver.addRoute(RouteRoot(), '/');
   await webserver.start();
 }

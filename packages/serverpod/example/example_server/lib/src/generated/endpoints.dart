@@ -8,32 +8,29 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
+import 'package:serverpod_chat_server/module.dart' as serverpod_chat;
 
 import 'protocol.dart';
 
-import '../endpoints/example_endpoint.dart';
+import '../endpoints/channels.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
     var endpoints = <String, Endpoint>{
-      'example': ExampleEndpoint()..initialize(server, 'example', null),
+      'channels': ChannelsEndpoint()..initialize(server, 'channels', null),
     };
 
-    connectors['example'] = EndpointConnector(
-      name: 'example',
-      endpoint: endpoints['example']!,
+    connectors['channels'] = EndpointConnector(
+      name: 'channels',
+      endpoint: endpoints['channels']!,
       methodConnectors: {
-        'hello': MethodConnector(
-          name: 'hello',
-          params: {
-            'name': ParameterDescription(
-                name: 'name', type: String, nullable: false),
-          },
+        'getChannels': MethodConnector(
+          name: 'getChannels',
+          params: {},
           call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['example'] as ExampleEndpoint).hello(
+            return (endpoints['channels'] as ChannelsEndpoint).getChannels(
               session,
-              params['name'],
             );
           },
         ),
@@ -42,10 +39,13 @@ class Endpoints extends EndpointDispatch {
 
     modules['serverpod_auth'] = serverpod_auth.Endpoints()
       ..initializeEndpoints(server);
+    modules['serverpod_chat'] = serverpod_chat.Endpoints()
+      ..initializeEndpoints(server);
   }
 
   @override
   void registerModules(Serverpod pod) {
     pod.registerModule(serverpod_auth.Protocol(), 'auth');
+    pod.registerModule(serverpod_chat.Protocol(), 'chat');
   }
 }

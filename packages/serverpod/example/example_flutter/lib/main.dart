@@ -1,13 +1,18 @@
 import 'package:example_client/example_client.dart';
+import 'package:example_flutter/src/disconnected_page.dart';
+import 'package:example_flutter/src/loading_page.dart';
+import 'package:example_flutter/src/main_page.dart';
 import 'package:example_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
+import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
 late SessionManager sessionManager;
 late Client client;
 
 void main() async {
-  // Need to call this as we are using Flutter bindings before runApp is called.
+  // Need to call this as SessionManager is using Flutter bindings before runApp
+  // is called.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Sets up a singleton client object that can be used to talk to the server
@@ -41,100 +46,205 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      home: const _SignInPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+// The _SignInPage either displays a dialog for signing in or, if the user is
+// signed in, displays the _ConnectionPage.
+class _SignInPage extends StatefulWidget {
+  const _SignInPage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SignInPageState extends State<_SignInPage> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView(
-        children: [
-          _UserInfoTile(),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: UserSettings(
-                  sessionManager: sessionManager,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: UserSettings(
-                  compact: false,
-                  sessionManager: sessionManager,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  void initState() {
+    super.initState();
+    sessionManager.addListener(_changedSessionStatus);
   }
-}
 
-class _UserInfoTile extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _UserInfoTileState();
-}
+  void dispose() {
+    super.dispose();
+    client.removeWebSocketConnectionStatusListener(_changedSessionStatus);
+  }
 
-class _UserInfoTileState extends State<_UserInfoTile> {
   @override
   Widget build(BuildContext context) {
-    var userInfo = sessionManager.signedInUser;
-
-    if (userInfo == null) {
-      return ListTile(
-        title: const Text('Not signed in'),
-        trailing: OutlinedButton(
-          onPressed: _signIn,
-          child: const Text('Sign In'),
-        ),
-      );
+    if (sessionManager.isSignedIn) {
+      return const _ConnectionPage();
     } else {
-      return ListTile(
-        title: const Text('You are signed in'),
-        trailing: OutlinedButton(
-          onPressed: _signOut,
-          child: const Text('Sign Out'),
+      return Scaffold(
+        body: Container(
+          color: Colors.blueGrey,
+          alignment: Alignment.center,
+          child: const SignInDialog(
+            shownAsDialog: false,
+          ),
         ),
       );
     }
   }
 
-  void _signOut() {
-    sessionManager.signOut().then((bool success) {
-      setState(() {});
-    });
+  // This method is called whenever the user signs in or out.
+  void _changedSessionStatus() {
+    setState(() {});
+  }
+}
+
+// The _ConnectionPage can display three states; a loading spinner, a page
+// if loading fails or if the connection to the server is broken, or the
+// main chat page.
+class _ConnectionPage extends StatefulWidget {
+  const _ConnectionPage({Key? key}) : super(key: key);
+
+  @override
+  _ConnectionPageState createState() => _ConnectionPageState();
+}
+
+class _ConnectionPageState extends State<_ConnectionPage> {
+  // List of channels as retrieved from the server. Null if the chats hasn't
+  // been successfully loaded.
+  List<Channel>? _channels;
+
+  // True if we are currently trying to connect to the server.
+  bool _connecting = false;
+
+  // Contains a list of ChatControllers.
+  final Map<String, ChatController> _chatControllers = {};
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Starts listening to changes in the websocket connection.
+    client.addWebSocketConnectionStatusListener(_changedConnectionStatus);
+    _connect();
   }
 
-  void _signIn() {
-    showSignInDialog(
-      context: context,
-      onSignedIn: () {
-        setState(() {});
-      },
-    );
+  @override
+  void dispose() {
+    super.dispose();
+
+    // Stops listening to websocket connections.
+    client.removeWebSocketConnectionStatusListener(_changedConnectionStatus);
+    _disposeChatControllers();
+  }
+
+  // Disposes all chat controllers and removes the references to them.
+  void _disposeChatControllers() {
+    for (var chatController in _chatControllers.values) {
+      chatController.dispose();
+    }
+    _chatControllers.clear();
+  }
+
+  // Starts connecting to the server. Connection is complete when we have
+  // established a connection to the websocket and to all chat channels.
+  Future<void> _connect() async {
+    // Reset to initial state.
+    setState(() {
+      _channels = null;
+      _connecting = true;
+      _disposeChatControllers();
+    });
+
+    try {
+      // Load list of channels.
+      var channelList = await client.channels.getChannels();
+      _channels = channelList.channels;
+
+      // Make sure that the web socket is connected.
+      await client.connectWebSocket();
+
+      // Setup ChatControllers for all the channels in the list.
+      for (var channel in channelList.channels) {
+        var controller = ChatController(
+          channel: channel.channel,
+          module: client.modules.chat,
+          sessionManager: sessionManager,
+        );
+
+        _chatControllers[channel.channel] = controller;
+
+        // Listen to changes in the connection status of the chat channel.
+        controller.addConnectionStatusListener(_chatConnectionStatusChanged);
+      }
+    } catch (e) {
+      // We failed to connect.
+      setState(() {
+        _channels = null;
+        _connecting = false;
+      });
+      return;
+    }
+  }
+
+  // This method is called whenever the state for the web socket has changed.
+  void _changedConnectionStatus() {
+    setState(() {});
+  }
+
+  // This method is called whenever we have established a connection to a chat
+  // channel.
+  void _chatConnectionStatusChanged() {
+    // Make sure that we have received the list of channels.
+    if (_channels == null || _channels!.isEmpty) {
+      setState(() {
+        _channels = null;
+        _connecting = false;
+      });
+      return;
+    }
+
+    var numJoinedChannels = 0;
+
+    // Count the number of channels that we have joined.
+    for (var chatController in _chatControllers.values) {
+      if (chatController.joinedChannel) {
+        numJoinedChannels += 1;
+      } else if (chatController.joinFailed) {
+        setState(() {
+          _channels = null;
+          _connecting = false;
+        });
+        return;
+      }
+    }
+
+    // If we have joined all the channels loading is complete.
+    if (numJoinedChannels == _chatControllers.length) {
+      setState(() {
+        _connecting = false;
+      });
+    }
+  }
+
+  // Attempt to reconnect to the server.
+  void _reconnect() {
+    if (client.isWebSocketConnected) {
+      return;
+    }
+    _connect();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_connecting) {
+      return const LoadingPage();
+    } else if (_channels == null || !client.isWebSocketConnected) {
+      return DisconnectedPage(
+        onReconnect: _reconnect,
+      );
+    } else {
+      return MainPage(
+        channels: _channels!,
+        chatControllers: _chatControllers,
+      );
+    }
   }
 }

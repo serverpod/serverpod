@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 import '../main.dart';
 
-class _SignInDialog extends StatelessWidget {
-  final VoidCallback onSignedIn;
+class SignInDialog extends StatelessWidget {
+  final VoidCallback? onSignedIn;
+  final bool shownAsDialog;
 
-  const _SignInDialog({
-    required this.onSignedIn,
-  });
+  const SignInDialog({
+    this.onSignedIn,
+    this.shownAsDialog = true,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,16 @@ class _SignInDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SignInWithEmailButton(
+              caller: client.modules.auth,
+              onSignedIn: () {
+                _signedIn(context);
+              },
+              onFailure: _failedToSignIn,
+            ),
+            const SizedBox(
+              height: 2,
+            ),
             SignInWithGoogleButton(
               caller: client.modules.auth,
               onSignedIn: () {
@@ -29,7 +43,7 @@ class _SignInDialog extends StatelessWidget {
               onFailure: _failedToSignIn,
             ),
             const SizedBox(
-              height: 4,
+              height: 2,
             ),
             SignInWithAppleButton(
               caller: client.modules.auth,
@@ -38,12 +52,13 @@ class _SignInDialog extends StatelessWidget {
               },
               onFailure: _failedToSignIn,
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Sign in later'),
-            ),
+            if (shownAsDialog)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Sign in later'),
+              ),
           ],
         ),
       ),
@@ -52,8 +67,12 @@ class _SignInDialog extends StatelessWidget {
 
   void _signedIn(BuildContext context) {
     // Notify the caller that we successfully signed in and close the dialog.
-    onSignedIn();
-    Navigator.of(context).pop();
+    if (onSignedIn != null) {
+      onSignedIn!();
+    }
+    if (shownAsDialog) {
+      Navigator.of(context).pop();
+    }
   }
 
   void _failedToSignIn() {
@@ -71,7 +90,7 @@ void showSignInDialog({
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return _SignInDialog(
+      return SignInDialog(
         onSignedIn: onSignedIn,
       );
     },

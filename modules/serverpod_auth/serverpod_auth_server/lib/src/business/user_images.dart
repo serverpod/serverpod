@@ -29,8 +29,9 @@ class UserImages {
     if (image == null) return false;
 
     var imageSize = AuthConfig.current.userImageSize;
-    if (image.width != imageSize || image.height != imageSize)
+    if (image.width != imageSize || image.height != imageSize) {
       image = copyResizeCropSquare(image, imageSize);
+    }
 
     var imageData = _encodeImage(image);
 
@@ -51,10 +52,11 @@ class UserImages {
   static ByteData _encodeImage(Image image) {
     var format = AuthConfig.current.userImageFormat;
     List<int> encoded;
-    if (format == UserImageType.jpg)
+    if (format == UserImageType.jpg) {
       encoded = encodeJpg(image, quality: AuthConfig.current.userImageQuality);
-    else
+    } else {
       encoded = encodePng(image);
+    }
 
     // Reference as ByteData.
     var encodedBytes = Uint8List.fromList(encoded);
@@ -74,10 +76,11 @@ class UserImages {
     var version = (oldImageRef?.version ?? 0) + 1;
 
     String pathExtension;
-    if (AuthConfig.current.userImageFormat == UserImageType.jpg)
+    if (AuthConfig.current.userImageFormat == UserImageType.jpg) {
       pathExtension = '.jpg';
-    else
+    } else {
       pathExtension = '.png';
+    }
 
     // Store the image.
     var path = 'serverpod/user_images/$userId-$version$pathExtension';

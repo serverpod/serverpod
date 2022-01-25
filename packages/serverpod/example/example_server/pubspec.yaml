@@ -11,6 +11,8 @@ dependencies:
     path: ../../../../packages/serverpod
   serverpod_auth_server:
     path: ../../../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_chat_server:
+    path: ../../../../modules/serverpod_chat/serverpod_chat_server
 
 dev_dependencies:
   flutter_lints: ^1.0.4

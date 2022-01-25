@@ -11,6 +11,8 @@ dependencies:
     path: ../../../../packages/serverpod_client
   serverpod_auth_client:
     path: ../../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../../../../modules/serverpod_chat/serverpod_chat_client
 
 dev_dependencies:
   lints: ^1.0.1

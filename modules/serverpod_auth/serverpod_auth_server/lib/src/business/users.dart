@@ -79,8 +79,9 @@ class Users {
     userInfo.userName = newUserName;
     await session.db.update(userInfo);
 
-    if (AuthConfig.current.onUserUpdated != null)
+    if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
 
     await invalidateCacheForUser(session, userId);
     return userInfo;
@@ -103,8 +104,9 @@ class Users {
     await session.db.query(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 
-    if (AuthConfig.current.onUserUpdated != null)
+    if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
 
     await invalidateCacheForUser(session, userId);
     return userInfo;
@@ -112,7 +114,7 @@ class Users {
 
   static Future<void> invalidateCacheForUser(
       Session session, int userId) async {
-    final cacheKey = 'serverpod_auth_userinfo_$userId';
+    var cacheKey = 'serverpod_auth_userinfo_$userId';
     await session.caches.local.invalidateKey(cacheKey);
   }
 }

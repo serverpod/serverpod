@@ -24,7 +24,10 @@ typedef UserInfoCreationCallback = Future<bool> Function(
     Session session, UserInfo userInfo);
 
 typedef SendPasswordResetEmailCallback = Future<bool> Function(
-    Session session, UserInfo userInfo, String resetLink);
+    Session session, UserInfo userInfo, String validationCode);
+
+typedef SendValidationEmailCallback = Future<bool> Function(
+    Session session, String email, String validationCode);
 
 /// Configuration options for the Auth module.
 class AuthConfig {
@@ -88,7 +91,11 @@ class AuthConfig {
 
   final SendPasswordResetEmailCallback? sendPasswordResetEmail;
 
+  final SendValidationEmailCallback? sendValidationEmail;
+
   final Duration passwordResetExpirationTime;
+
+  final bool extraSaltyHash;
 
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings.
@@ -109,6 +116,8 @@ class AuthConfig {
     this.onUserCreated,
     this.onUserUpdated,
     this.sendPasswordResetEmail,
+    this.sendValidationEmail,
     this.passwordResetExpirationTime = const Duration(hours: 24),
+    this.extraSaltyHash = true,
   });
 }

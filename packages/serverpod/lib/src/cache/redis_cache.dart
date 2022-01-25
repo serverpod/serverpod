@@ -27,7 +27,7 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<SerializableEntity?> get(String key) async {
-    final data = await redisController.get(key);
+    var data = await redisController.get(key);
     if (data == null) {
       return null;
     }

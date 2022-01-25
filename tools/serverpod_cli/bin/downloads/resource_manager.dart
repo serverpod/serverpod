@@ -58,7 +58,7 @@ class ResourceManager {
     var archive = TarDecoder().decodeBytes(unzipped);
 
     for (var file in archive) {
-      final outFileName = '${templateDirectory.path}/${file.name}';
+      var outFileName = '${templateDirectory.path}/${file.name}';
       if (file.isFile) {
         var outFile = File(outFileName);
         outFile = await outFile.create(recursive: true);
