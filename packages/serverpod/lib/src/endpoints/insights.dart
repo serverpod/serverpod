@@ -1,4 +1,3 @@
-import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
 import '../../serverpod.dart';

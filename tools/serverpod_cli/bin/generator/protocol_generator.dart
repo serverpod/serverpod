@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import 'config.dart';
-import 'protocol_definition.dart';
 import 'protocol_analyzer.dart';
+import 'protocol_definition.dart';
 import 'protocol_generator_dart.dart';
 
 Future<void> performGenerateProtocol(bool verbose) async {
@@ -60,6 +60,7 @@ abstract class ProtocolGenerator {
     out += '/*   To generate run: "serverpod generate"    */\n';
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
+    out += '// ignore_for_file: unnecessary_import\n';
     out += '// ignore_for_file: unused_import\n';
     out += '\n';
 

@@ -1,4 +1,3 @@
-import 'package:serverpod_client/src/auth_key_manager.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';

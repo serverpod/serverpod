@@ -2,8 +2,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 
-import 'database_config.dart';
-
 /// A database [Expression].
 class Expression {
   /// The [String] representation of the [Expression]. Note that the precedence
