@@ -74,13 +74,17 @@ while read PACKAGE; do
   then
     echo "### PUBLISH PACKAGE: $PCOUNT"
     echo "$PACKAGE"
-    echo "dart pub publish $BASE/$PACKAGE"
+    cd $BASE/$PACKAGE
+    if ! dart pub publish;
+    then
+      break
+    fi
 
     # Give pub.dev a chance to catch up between each package deployment
     echo ""
     sleep 1
   else
-    echo "### SKIPPING PACKAGE"
+    echo "### SKIPPING PACKAGE: $PCOUNT"
     echo "$PACKAGE"
     echo ""
   fi
