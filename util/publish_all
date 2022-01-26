@@ -1,5 +1,14 @@
 #!/bin/sh
 
+if [ ! -f tests/docker/docker-compose.yml ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
 BASE=`pwd`
 
 echo "Base directory $BASE"
@@ -28,35 +37,41 @@ serverpod generate-pubspecs --version $VERSION --mode production
 
 echo "Publish packages"
 
-cd $BASE/packages/serverpod_serialization
-dart pub publish
-
-cd $BASE/packages/serverpod_client
-dart pub publish
-
-cd $BASE/packages/serverpod_service_client
-dart pub publish
-
-cd $BASE/packages/serverpod_shared
-dart pub publish
-
-cd $BASE/tests/serverpod_test_module/serverpod_test_module_client
-dart pub publish
-
-cd $BASE/tests/serverpod_test_client
-dart pub publish
-
-cd $BASE/packages/serverpod
-dart pub publish
-
-cd $BASE/packages/serverpod_relic
-dart pub publish
-
-cd $BASE/templates/serverpod_templates
-dart pub publish
-
-cd $BASE/tools/serverpod_cli
-dart pub publish
+# cd $BASE/packages/serverpod_serialization
+# dart pub publish
+#
+# cd $BASE/packages/serverpod_client
+# dart pub publish
+#
+# cd $BASE/packages/serverpod_service_client
+# dart pub publish
+#
+# cd $BASE/packages/serverpod_shared
+# dart pub publish
+#
+# cd $BASE/tests/serverpod_test_module/serverpod_test_module_client
+# dart pub publish
+#
+# cd $BASE/tests/serverpod_test_client
+# dart pub publish
+#
+# cd $BASE/packages/serverpod
+# dart pub publish
+#
+# cd $BASE/packages/serverpod_relic
+# dart pub publish
+#
+# cd $BASE/templates/serverpod_templates
+# dart pub publish
+#
+# cd $BASE/tools/serverpod_cli
+# dart pub publish
+PCOUNT=0
+while read PACKAGE; do
+  echo "$BASE/$PACKAGE"
+  echo "PCOUNT: $PCOUNT"
+  PCOUNT=$((PCOUNT+1))
+done <PUBLISHABLE_PACKAGES
 
 echo "Restore pubspecs"
 cd $BASE
