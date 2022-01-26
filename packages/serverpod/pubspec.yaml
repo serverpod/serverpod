@@ -31,7 +31,7 @@ dependencies:
 
 dev_dependencies:
   test: ^1.16.8
-  serverpod_test_client:
+  serverpod_test_client: #^0.8.11
     path: ../../tests/serverpod_test_client
   serverpod_test_module_client: #^0.8.11
     path: ../../tests/serverpod_test_module/serverpod_test_module_client
