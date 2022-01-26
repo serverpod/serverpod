@@ -11,7 +11,7 @@ Future<void> setupTestData(Client client) async {
 void main() {
   var client = Client('http://serverpod_test_server:8080/');
   var serviceClient = service.Client(
-    'https://serverpod_test_server:8081/',
+    'http://serverpod_test_server:8081/',
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 
