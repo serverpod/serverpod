@@ -7,7 +7,8 @@ if [ ! -f tests/docker/docker-compose.yml ]; then
 fi
 
 BASE=`pwd`
-PCOUNT_START="${1:=0}"
+PCOUNT_START_DEFAULT=0
+PCOUNT_START="${1:-$PCOUNT_START_DEFAULT}"
 
 echo "### START PUBLISHING"
 
