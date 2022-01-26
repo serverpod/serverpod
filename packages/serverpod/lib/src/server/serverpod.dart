@@ -329,9 +329,10 @@ class Serverpod {
   }
 
   Future<void> _startServiceServer() async {
-    var context = SecurityContext();
-    context.useCertificateChain(sslCertificatePath(_runMode, serverId));
-    context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
+    // TODO: Add support for https on service server.
+    // var context = SecurityContext();
+    // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
+    // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
 
     var endpoints = internal.Endpoints();
 
@@ -346,7 +347,7 @@ class Serverpod {
       name: 'Insights',
       caches: caches,
       authenticationHandler: serviceAuthenticationHandler,
-      securityContext: context,
+      // securityContext: context,
       endpoints: endpoints,
     );
     endpoints.initializeEndpoints(_serviceServer!);
