@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';

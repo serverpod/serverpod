@@ -233,7 +233,7 @@ packages:
     source: hosted
     version: "2.2.0"
   retry:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: retry
       url: "https://pub.dartlang.org"

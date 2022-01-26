@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
