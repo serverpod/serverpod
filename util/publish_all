@@ -75,8 +75,13 @@ while read PACKAGE; do
     echo "### PUBLISH PACKAGE: $PCOUNT"
     echo "$PACKAGE"
     cd $BASE/$PACKAGE
-    if ! dart pub publish;
+    dart pub publish
+
+    if (($? != 0));
     then
+      echo "### PUBLISH FAILED: $PCOUNT"
+      echo "Fix issues, then resume by running"
+      echo "util/publish_all $PCOUNT"
       break
     fi
 
