@@ -70,12 +70,21 @@ echo "Publish packages"
 # dart pub publish
 PCOUNT=0
 while read PACKAGE; do
-  echo "### PUBLISH PACKAGE: $PCOUNT"
-  echo "$BASE/$PACKAGE"
+  if (($PCOUNT <= $PCOUNT_START));
+  then
+    echo "### PUBLISH PACKAGE: $PCOUNT"
+    echo "$PACKAGE"
+    echo "dart pub publish $BASE/$PACKAGE"
 
-  # Give pub.dev a chance to catch up between each package deployment
-  sleep 1
-  PCOUNT=$((PCOUNT+1))
+    # Give pub.dev a chance to catch up between each package deployment
+    echo ""
+    sleep 1
+    PCOUNT=$((PCOUNT+1))
+  else
+    echo "### SKIPPING PACKAGE"
+    echo "$PACKAGE"
+    echo ""
+  
 done <PUBLISHABLE_PACKAGES
 
 echo "Restore pubspecs"
