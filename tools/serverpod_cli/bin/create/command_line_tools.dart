@@ -16,7 +16,7 @@ class CommandLineTools {
   }
 
   static Future<bool> existsCommand(String command) async {
-    var result = await Process.run('command', ['-v', command]);
+    var result = await Process.run('which', [command]);
     return result.exitCode == 0;
   }
 
