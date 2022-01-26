@@ -6,21 +6,21 @@
 
 Serverpod is a next-generation app and web server, explicitly built for the Flutter and Dart ecosystem. It allows you to write your server-side code in Dart, automatically generate your APIs, and hook up your database with minimal effort. Serverpod is open-source, and you can host your server anywhere.
 
-___This is an early release of Serverpod. The API is stable, but there may be minor changes in future updates. A few features are still missing that will be part of the 1.0 release. See the roadmap below for more information on what's in the works.___
+___Please note that Serverpod is still in early-stage development, and things may frequently change over the next few months.___
 
 Every design decision made in Serverpod aims to minimize the amount of code that needs to be written and make it as readable as possible. Apart from being just a server, Serverpod incorporates many common tasks that are otherwise cumbersome to implement or require external services.
 
 - Serverpod will automatically generate the protocol and client-side code by analyzing your server. Calling a remote endpoint is as easy as making a local method call — no more deciphering and parsing REST API responses.
 - Connecting the database has never been easier. Database rows are represented by typed Dart classes and can even be serialized and sent directly to the client.
 - Need to perform a task at a specific time in the future? Serverpod supports future calls that are persistent even if you need to restart the server.
-- Caching and scaling are made simple. Commonly requested objects can be cached locally on a single server or distributed over a cluster of servers using Redis.
+- Caching and scaling are made simple. Commonly requested objects can be cached locally on a single server or distributed over a cluster of servers.
 
 ## Installing Serverpod
-Serverpod is tested on Mac and Linux (Mac recommended), support for Windows is in the works. Before you can install Serverpod, you need to the following tools installed:
-- __Flutter__ and __Dart__. You will need Flutter version 2 or later. https://flutter.dev/docs/get-started/install
-- __Docker__. Docker is used to manage Postgres and Redis. https://docs.docker.com/desktop/mac/install/
+Serverpod is tested on Mac and Linux but may work on other platforms too. Before you can install Serverpod, you need to the following tools installed:
+- __Flutter__ and __Dart__. Serverpod is technically only using Dart, but most use cases include writing a client in Flutter. You will need Dart version 2.12 or later. https://flutter.dev/docs/get-started/install
+- __Postgresql__. Using a Postgresql database with Serverpod is not optional as many of the core features need the database to operate. Postgresql version 13 is recommended. https://www.postgresql.org/download/
 
-Once you have Flutter and Docker installed and configured, open up a terminal and install Serverpod by running:
+Once you have Dart installed and configured, open up a terminal and install Serverpod by running:
 
     dart pub global activate serverpod_cli
 
@@ -31,25 +31,23 @@ Now test the install by running:
 If everything is correctly configured, the help for the serverpod command is now displayed.
 
 ## Creating your first project
-To get your local server up and running, you need to create a new Serverpod project. Create a new project by running `serverpod create`.
+To get your local server up and running, you need to create a new Serverpod project and configure the database. Create a new project by running `serverpod create`.
 
     serverpod create mypod
 
-This command will create a new directory called `mypod`, with three dart packages inside; `mypod_server`, `mypod_client`, and `mypod_flutter`.
+This command will create a new directory called `mypod`, with two dart packages inside; `mypod_server` and `mypod_client`.
 
 - `mypod_server`: This package contains your server-side code. Modify it to add new endpoints or other features your server needs.
 - `mypod_client`: This is the code needed to communicate with the server. Typically, all code in this package is generated automatically, and you should not edit the files in this package.
-- `mypod_flutter`: This is the Flutter app, pre-configured to connect to your local server.
 
-### Starting Postgres and Redis
-The Serverpod server needs access to a Postgres database and Redis to run. When running `serverpod create` the database was configured with a default set of tables. To start Postgres and Redis cd into `mypod_server`, then run.
+### Connect the database
+Now that the project has been created, you need to hook it up with the database. Open the `mypod_server` package in your favorite IDE. Edit the `config/development.yaml` file and replace `DATABASE_NAME` and `DATABASE_USER` with the database name and the user name required to connect to the database. You most likely set this up when you installed your Postgresql database. Open `config/passwords.yaml` and replace the `DATABASE_PASSWORD` with the password for the database.
 
-    docker-compose up -d --build
-
-This will build and start a set of Docker containers and give access to Postgres and Redis. If you need to stop the containers at some point, just run `docker-compose stop`.
+### Create the default set of tables
+Finally, you need to populate the database with some tables that Serverpod uses internally. To do this, connect to your database and run the queries [found here](https://github.com/serverpod/serverpod/blob/master/packages/serverpod/generated/tables.pgsql).
 
 ### Start the server
-Now you should be all set to run your server. Start it by changing into the `mypod_server` directory and type:
+Now you should be all set to run your server. Start it by changing into the mypod_server directory and type:
 
     dart pub get
     dart bin/main.dart
@@ -100,8 +98,6 @@ Here is a simple example of a yaml-file defining a serializable class:
 
 Supported types are `bool`, `int`, `double`, `String`, `DateTime`, and other serializable classes. You can also use lists of objects. Null safety is supported. Once your classes are generated, you can use them as parameters or return types to endpoint methods.
 
-__Note:__ There is not yet support for `Map` or lists of lists. These are planned to be added in a future version.
-
 ### Database mappings
 It's possible to map serializable classes straight to tables in your database. To do this, add the `table` key to your yaml file:
 
@@ -137,6 +133,7 @@ For performance reasons, you may want to add indexes to your database tables. Yo
 The `fields` key holds a comma-separated list of column names. In addition, it's possible to add a type key (default is `btree`), and a `unique` key (default is `false`).
 
 ## Communicating with the database
+___Note that the Serverpod ORM is still under heavy development, and the APIs may change.___
 
 Serverpod makes it easy to communicate with your database using strictly typed objects without a single SQL line. But, if you need to do more complex tasks, you can always do direct SQL calls.
 
@@ -146,30 +143,31 @@ For the communication to work, you need to have generated serializable classes w
 Insert a new row in the database by calling the insert method of the `db` field in your `Session` object.
 
     var myRow = Company(name: 'Serverpod corp.', employees: []);
-    await Company.insert(session, myRow);
+    await session.db.insert(myRow);
 
 After the object has been inserted, it's `id` field is set from its row in the database.
 
 ### Finding a single row
 You can find a single row, either by its `id` or using an expression. You need to pass a reference to the table description in the call. Table descriptions are accessible through global variables with the object's class name preceded by a `t`.
 
-    var myCompany = await Company.findById(session, companyId);
+    var myCompany = await session.db.findById(tCompany, companyId) as Company?;
 
-If no matching row is found, `null` is returned. You can also search for rows using expressions with the `where` parameter. The `where` parameter is a typed expression builder. The builder's parameter, `t`, contains a description of the table which gives access to the table's columns.
+If no matching row is found, `null` is returned. You can also search for rows using expressions with the `where` parameter.
 
-    var myCompany = await Company.findSingleRow(
-      session,
-      where: (t) => t.name.equals('My Company'),
+    var myCompany = await session.db.findSingleRow(
+      tCompany,
+      where: tCompany.name.equals('My Company'),
     );
 
 ### Finding multiple rows
-To find multiple rows, use the same principle as for finding a single row. Returned will be a `List` of `TableRow`s.
+To find multiple rows, use the same principle as for finding a single row. Returned will be a `List` of `TableRow`s. Iterate over the list to access the indivitual rows.
 
-    var companies = await Company.find(
+    var rows = await session.db.find(
       tCompany,
-      where: (t) => t.id < 100,
+      where: tCompany.id < 100,
       limit 50,
     );
+    var companies = rows.cast<Company>();
 
 ### Updating a row
 To update a row, use the `update` method. The object that you update must have its `id` set to a non `null` value.
@@ -182,30 +180,30 @@ To update a row, use the `update` method. The object that you update must have i
 Deleting a single row works similarly to the `update` method, but you can also delete rows using the where parameter.
 
     // Delete a single row
-    await Company.deleteRow(session, myCompany);
+    await session.db.deleteRow(myCompany);
 
     // Delete all rows where the company name ends with 'Ltd'
-    await Company.delete(
-      where: (t) => t.name.like('%Ltd'),
+    await session.db.delete(
+      where: tCompany.name.like('%Ltd'),
     );
 
 ### Creating expressions
-To find or delete specific rows, most often, expressions are needed. Serverpod makes it easy to build expressions that are statically type-checked. Columns are referenced using the global table descriptor objects. The table descriptors, `t` are passed to the expression builder function. The `>`, `>=`, `<`, `<=`, `&`, and `|` operators are overridden to make it easier to work with column values. When using the operators, it's good practice to place them within a set of parentheses as the precedence rules are not always what would be expected. These are some examples of expressions.
+To find or delete specific rows, most often, expressions are needed. Serverpod makes it easy to build expressions that are statically type-checked. Columns are referenced using the global `Table` objects. The table objects are named the same as the generated object classes but prefixed with a `t`. The `>`, `>=`, `<`, `<=`, `&`, and `|` operators are overridden to make it easier to work with column values. When using the operators, it's good practice to place them within a set of parentheses as the precedence rules are not always what would be expected. These are some examples of expressions.
 
     // The name column of the Company table equals 'My company')
-    t.name.equals('My company')
+    tCompany.name.equals('My company')
 
     // Companies founded at or after 2020
-    t.foundedDate >= DateTime.utc(2020)
+    tCompany.foundedDate >= DateTime.utc(2020)
 
     // Companies with number of employees between 10 and 100
-    (t.numEmployees > 10) & (t.numEmployees <= 100)
+    (tCompany.numEmployees > 10) & (tCompany.numEmployees <= 100)
 
     // Companies that has the founded date set
-    t.foundedDate.notEquals(null)
+    tCompany.foundedDate.notEquals(null)
 
-### Transactions
-Docs coming.
+### Transactions and joins
+Transactions and joins are still under development.
 
 ### Executing raw queries
 Sometimes more advanced tasks need to be performed on the database. For those occasions, it's possible to run raw SQL queries on the database. Use the `query` method. A `List<List<dynamic>>` will be returned with rows and columns.
@@ -213,7 +211,7 @@ Sometimes more advanced tasks need to be performed on the database. For those oc
     var result = await session.db.query('SELECT * FROM mytable WHERE ...');
 
 ## Caching
-Accessing the database can sometimes be expensive for complex database queries or if you need to run many different queries for a specific task. Serverpod makes it easy to cache frequently requested objects in RAM. Any serializable object can be cached. If your Serverpod is hosted across multiple servers in a cluster, objects are stored in the Redis cache.
+Accessing the database can sometimes be expensive for complex database queries or if you need to run many different queries for a specific task. Serverpod makes it easy to cache frequently requested objects in RAM. Any serializable object can be cached. If your Serverpod is hosted across multiple servers in a cluster, objects can be stored in the distributed cache. When reading from the distributed cache, Serverpod will automatically figure out where it is stored. This is useful for objects that need to remain the same across servers but still can be cached.
 
 Caches can be accessed through the `Session` object. This is an example of an endpoint method for requesting data about a user:
 
@@ -235,7 +233,7 @@ Caches can be accessed through the `Session` object. This is an example of an en
       return userData;
     }
 
-In total, there are three caches where you can store your objects. Two caches are local to the server handling the current session, and one is distributed across the server cluster through Redis. There are two variants for the local cache, one regular cache, and a priority cache. Place objects that are frequently accessed in the priority cache.
+In total, there are four caches where you can store your objects. Two caches are local to the server handling the current session, and two are distributed across the server cluster. There are two variants for the local and distributed cache, one regular cache, and a priority cache. Place objects that are frequently accessed in the priority cache.
 
 ## Logging
 Serverpod uses the database for storing logs; this makes it easy to search for errors, slow queries, or debug messages. To log custom messages during the execution of a session, use the `log` method of the `session` object. When the session is closed, either from successful execution or by failing from throwing an exception, the messages are written to the log. By default, session log entries are written for every completed session.
@@ -243,8 +241,6 @@ Serverpod uses the database for storing logs; this makes it easy to search for e
     session.log('This is working well');
 
 Log entries are stored in the following tables of the database: `serverpod_log` for text messages, `serverpod_query_log` for queries, and `serverpod_session_log` for completed sessions. Optionally, it's possible to pass a log level with the message to filter out messages depending on the server's runtime settings.
-
-The Serverpod GUI is coming soon, which makes it possible to easily read, search, and configure the logs.
 
 ## Configuration files and deployment
 Serverpod has three main configuration files, depending on which mode the server is running; `development`, `staging`, or `production`. The files are located in the`config/` directory. By default, the server will start in development mode. To use another configuration file, use the `--mode` option when starting the server. If you are running multiple servers in a cluster, use the `--server-id` option to specify the id of each server. By default, the server will run as id 0. For instance, to start the server in production mode with id 2, run the following command:
@@ -254,6 +250,8 @@ Serverpod has three main configuration files, depending on which mode the server
 Depending on how memory intensive the server is and how many requests it is serving at peak times, you may want to increase the maximum heap size Dart can use. You can do this by passing the `--old_gen_heap_size` option to dart. If you set it to `0` it will give Dart unlimited heap space. Serverpod will run on most operating systems where you can run Dart; Flutter is not required.
 
 ### Running a cluster of servers
+To improve scalability and reliability it's possible to run Serverpod over a cluster of servers. The ids of the servers should be in a consecutive sequence from 0 to n-1 where n is the number of servers in your cluster. You can set this up in the `production.yaml` configuration file.
+
 To run a cluster of servers, you need to place your servers behind a load balancer so that they have a common access point to the main API port. If you want to gather runtime information from the servers, the service port needs to be accessible not only between servers in the cluster but also from the outside. By default, communication with the service API is encrypted, while you most likely want to add an HTTPS certificate to your load balancer to make sure all communication with clients is encrypted.
 
 ## Signing in with Google and Apple
