@@ -47,16 +47,17 @@ class _MyHomePageState extends State<MyHomePage> {
   // Calls the `hello` method of the `example` endpoint. Will set either the
   // `_resultMessage` or `_errorMessage` field, depending on if the call
   // is successful.
-  void _callHello() {
-    client.example.hello(_textEditingController.text).then((String result) {
+  void _callHello() async {
+    try {
+      final result = await client.example.hello(_textEditingController.text);
       setState(() {
         _resultMessage = result;
       });
-    }, onError: (e) {
+    } catch (e) {
       setState(() {
-        _errorMessage = e.message;
+        _errorMessage = '$e';
       });
-    });
+    }
   }
 
   @override
