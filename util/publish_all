@@ -84,7 +84,7 @@ while read PACKAGE; do
     echo "### SKIPPING PACKAGE"
     echo "$PACKAGE"
     echo ""
-  
+  fi
 done <PUBLISHABLE_PACKAGES
 
 echo "Restore pubspecs"
