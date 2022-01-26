@@ -1,10 +1,10 @@
-# projectname_flutter
+# PROJECTNAME_flutter
 
-A new Flutter project.
+A new Flutter project with Serverpod.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a starting point for a Flutter application that is using Serverpod
 
 A few resources to get you started if this is your first Flutter project:
 

@@ -14,5 +14,5 @@ dependencies:
     path: ../../packages/serverpod_client
   serverpod_test_module_client: #^VERSION
     path: ../serverpod_test_module/serverpod_test_module_client
-  serverpod_auth_client:
+  serverpod_auth_client: #^VERSION
     path: ../../modules/serverpod_auth/serverpod_auth_client

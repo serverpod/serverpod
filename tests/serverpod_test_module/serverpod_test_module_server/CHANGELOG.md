@@ -1,3 +1,14 @@
+## 0.8.12
+
+- Updates default templates.
+
+## 0.8.11
+
+- Improved ORM.
+- Support for Docker.
+- Chat module.
+- Updated docs.
+
 ## 0.8.10
 
 - Support for static file directories in Relic.
