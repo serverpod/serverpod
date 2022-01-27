@@ -1,3 +1,7 @@
+## 0.9.1
+
+- Fixes broken images in documentation.
+
 ## 0.9.0
 
 - Updates documentation and logos
