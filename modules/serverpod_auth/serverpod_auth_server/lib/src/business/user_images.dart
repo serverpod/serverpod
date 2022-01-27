@@ -6,9 +6,7 @@ import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../module.dart';
-import '../business/users.dart';
 import '../util/roboto_138_fnt.dart';
-import 'config.dart';
 
 /// Business logic to handle user images.
 class UserImages {

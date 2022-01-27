@@ -7,9 +7,8 @@ import 'dart:io';
 
 import 'package:googleapis/people/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:googleapis_auth/googleapis_auth.dart';
+// ignore: implementation_imports
 import 'package:googleapis_auth/src/auth_http_utils.dart';
-import 'package:googleapis_auth/src/oauth2_flows/auth_code.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
@@ -83,6 +82,7 @@ class GoogleEndpoint extends Endpoint {
     );
   }
 
+  /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
       Session session, String idToken) async {
     try {

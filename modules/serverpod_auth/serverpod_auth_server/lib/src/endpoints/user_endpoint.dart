@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
+
 import '../business/user_images.dart';
 
 /// Endpoint with methods for managing the currently signed in user.
@@ -27,6 +28,7 @@ class UserEndpoint extends Endpoint {
         session, userId!, image.buffer.asUint8List());
   }
 
+  /// Changes the name of a user.
   Future<bool> changeUserName(Session session, String userName) async {
     userName = userName.trim();
     if (userName == '') return false;

@@ -17,15 +17,19 @@ enum UserImageType {
 /// user image.
 typedef UserImageGenerator = Future<Image> Function(UserInfo userInfo);
 
+/// Callback for user info being updated.
 typedef UserInfoUpdateCallback = Future<void> Function(
     Session session, UserInfo userInfo);
 
+/// Callback for user creation.
 typedef UserInfoCreationCallback = Future<bool> Function(
     Session session, UserInfo userInfo);
 
+/// Callback for emailing password resets.
 typedef SendPasswordResetEmailCallback = Future<bool> Function(
     Session session, UserInfo userInfo, String validationCode);
 
+/// Callback for emailing validation codes at account setup.
 typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
 
@@ -75,6 +79,8 @@ class AuthConfig {
   /// mimics Google's default avatars is used.
   final UserImageGenerator userImageGenerator;
 
+  /// The duration which user infos are cached locally in the server. Default
+  /// is 1 minute.
   final Duration userInfoCacheLifetime;
 
   /// Called when a user is about to be created, gives a chance to abort the
@@ -89,12 +95,17 @@ class AuthConfig {
   /// is changed or if the user uploads a new profile picture.
   final UserInfoUpdateCallback? onUserUpdated;
 
+  /// Called when a user should be sent a reset code by email.
   final SendPasswordResetEmailCallback? sendPasswordResetEmail;
 
+  /// Called when a user should be sent a validation code on account setup.
   final SendValidationEmailCallback? sendValidationEmail;
 
+  /// The time for password resets to be valid. Default is one day.
   final Duration passwordResetExpirationTime;
 
+  /// True if the server should use the accounts email address as part of the
+  /// salt when storing password hashes (strongly recommended). Default is true.
   final bool extraSaltyHash;
 
   /// Creates a new Auth configuration. Use the [set] method to replace the

@@ -1,12 +1,12 @@
 # Serverpod authentication module
-The Serverpod auth module makes it easy to authenticate users using 3rd parties. Currently supported is Signing in with Google and Apple. Future versions of the authentication module will include more options. Using this module requires some setup with Google and Apple for things to work.
+The Serverpod auth module makes it easy to authenticate users using 3rd parties. Currently supported is Signing in with email, Google, and Apple. Future versions of the authentication module will include more options. Using this module requires some setup with Google and Apple for things to work.
 
-The authentication module will also handle basic user information, such as user names and profile pictures. Currently, only iOS and Android are supported. Other platforms will be added in the future.
+The authentication module also handles basic user information, such as user names and profile pictures.
 
 ![Sign-in with Serverpod](https://github.com/serverpod/serverpod/raw/main/misc/images/sign-in.png)
 
 ## Installing the module
-To install the auth module in your Serverpod server, you need to include it in your server's pubspec.yaml. At this point, the auth module is not yet published on pub.dev, so you will need to clone the serverpod repo and set the path for the serverpod_auth_server package.
+To install the auth module in your Serverpod server, you need to include it in your server's `pubspec.yaml`. At this point, the auth module is not yet published on pub.dev, so you will need to clone the serverpod repo and set the path for the serverpod_auth_server package.
 
     dependencies:
       serverpod_auth_server:
