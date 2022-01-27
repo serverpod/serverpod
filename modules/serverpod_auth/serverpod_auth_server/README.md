@@ -3,7 +3,7 @@ The Serverpod auth module makes it easy to authenticate users using 3rd parties.
 
 The authentication module will also handle basic user information, such as user names and profile pictures. Currently, only iOS and Android are supported. Other platforms will be added in the future.
 
-![Sign-in with Serverpod](https://github.com/serverpod/serverpod/raw/master/misc/images/sign-in.png)
+![Sign-in with Serverpod](https://github.com/serverpod/serverpod/raw/main/misc/images/sign-in.png)
 
 ## Installing the module
 To install the auth module in your Serverpod server, you need to include it in your server's pubspec.yaml. At this point, the auth module is not yet published on pub.dev, so you will need to clone the serverpod repo and set the path for the serverpod_auth_server package.
@@ -86,16 +86,16 @@ Now, you can simply add the sign-in buttons to your code.
     )
 
 
-This is a complete example of a sign-in dialog: [sign_in_dialog.dart](https://github.com/serverpod/serverpod/blob/master/packages/serverpod/example/example_flutter/lib/src/sign_in_dialog.dart).
+This is a complete example of a sign-in dialog: [sign_in_dialog.dart](https://github.com/serverpod/serverpod/blob/main/packages/serverpod/example/example_flutter/lib/src/sign_in_dialog.dart).
 
 ## Displaying or editing user images
 The module has built-in methods for handling a user's basic settings, including uploading new profile pictures.
 
-![UserImageButton](https://github.com/serverpod/serverpod/raw/master/misc/images/user-image-button.png)
+![UserImageButton](https://github.com/serverpod/serverpod/raw/main/misc/images/user-image-button.png)
 
 To display a user's profile picture, use the `CircularUserImage` widget and pass a `UserInfo` retrieved from the `SessionManager`.
 
 To edit a user profile image, use the `UserImageButton` widget. It will automatically fetch the signed-in user's profile picture and communicate with the server.
 
 ## Full example code
-Check out the Serverpod [example](https://github.com/serverpod/serverpod/tree/master/packages/serverpod/example) for a complete example of how to wire everything up.
+Check out the Serverpod [example](https://github.com/serverpod/serverpod/tree/main/packages/serverpod/example) for a complete example of how to wire everything up.
