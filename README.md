@@ -42,7 +42,7 @@ This command will create a new directory called `mypod`, with three dart package
 - `mypod_flutter`: This is the Flutter app, pre-configured to connect to your local server.
 
 ### Starting Postgres and Redis
-The Serverpod server needs access to a Postgres database and Redis to run. When running `serverpod create` the database was configured with a default set of tables. To start Postgres and Redis cd into `mypod_server`, then run.
+The Serverpod server needs access to a Postgres database and Redis to run. When running `serverpod create` the database was configured with a default set of tables. To start Postgres and Redis `cd` into `mypod_server`, then run.
 
     docker-compose up -d --build
 
@@ -51,7 +51,6 @@ This will build and start a set of Docker containers and give access to Postgres
 ### Start the server
 Now you should be all set to run your server. Start it by changing into the `mypod_server` directory and type:
 
-    dart pub get
     dart bin/main.dart
 
 If everything is working you should see something like this on your terminal:

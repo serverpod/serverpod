@@ -1,3 +1,8 @@
+## 0.9.0
+
+- Updates documentation and logos
+- Ready for 0.9 release!
+
 ## 0.8.12
 
 - Updates default templates.
