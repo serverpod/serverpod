@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="126" height="120" src="https://github.com/serverpod/serverpod/raw/master/misc/logo/on-white/logo-vertical.svg">
+  <img width="126" height="120" src="https://github.com/serverpod/serverpod/raw/main/misc/logo/on-white/logo-vertical.svg">
 </p>
 
 # Serverpod
