@@ -4,14 +4,14 @@ publish_to: none
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 0.9.1
+version: 0.9.2
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  serverpod: #^0.9.1
+  serverpod: #^0.9.2
     path: ../../../packages/serverpod
   email_validator: ^2.0.1
   googleapis: ^7.0.0
