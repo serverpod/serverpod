@@ -1,13 +1,10 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
-publish_to: none
+# TEMPLATE
+PUBLISH_TO
 
-name: serverpod_auth_shared_flutter
-description: Shared widgets for Flutter side authentication with Serverpod.
-version: 0.9.1
+name: serverpod_auth_email_flutter
+description: Sign in with email for the Serverpod auth module.
+version: VERSION
 repository: https://github.com/serverpod/serverpod
-homepage: https://serverpod.dev
-issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -16,26 +13,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_client: #^0.9.1
-    path: ../../../packages/serverpod_client
-  serverpod_auth_client: #^0.9.1
+  email_validator: ^2.0.1
+  serverpod_auth_client: #^VERSION
     path: ../serverpod_auth_client
-  shared_preferences: ^2.0.8
-  cached_network_image: ^3.1.0
-  image: ^3.0.2
-  file_picker: ^4.1.6
-
-  # See https://pub.dev/packages/image_cropper for installation instructions.
-  image_cropper: ^1.4.1
-
-  # See https://pub.dev/packages/image_picker for installation instructions.
-  image_picker: ^0.8.4+3
-
+  serverpod_auth_shared_flutter: #^VERSION
+    path: ../serverpod_auth_shared_flutter
 
 dev_dependencies:
-  lints: ^1.0.1
   flutter_test:
     sdk: flutter
+  flutter_lints: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

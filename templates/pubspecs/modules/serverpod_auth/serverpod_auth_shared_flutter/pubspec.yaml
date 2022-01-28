@@ -1,10 +1,9 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
-publish_to: none
+# TEMPLATE
+PUBLISH_TO
 
 name: serverpod_auth_shared_flutter
 description: Shared widgets for Flutter side authentication with Serverpod.
-version: 0.9.1
+version: VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -16,9 +15,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_client: #^0.9.1
+  serverpod_client: #^VERSION
     path: ../../../packages/serverpod_client
-  serverpod_auth_client: #^0.9.1
+  serverpod_auth_client: #^VERSION
     path: ../serverpod_auth_client
   shared_preferences: ^2.0.8
   cached_network_image: ^3.1.0

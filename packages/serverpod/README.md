@@ -57,12 +57,16 @@ If everything is working you should see something like this on your terminal:
 
     Mode: development
     Config loaded from: config/development.yaml
-    port: 8080
-    database host: localhost
-    database port: 5432
-    database name: mydatabase
-    database user: myusername
-    database pass: ********
+    api port: 8080
+    service port: 8081
+    postgres host: localhost
+    postgres port: 8090
+    postgres name: serverpod_test
+    postgres user: postgres
+    postgres pass: ********
+    redis host: localhost
+    redis port: 8091
+    redis pass: ********
     Insights listening on port 8081
     Server id 0 listening on port 8080
 

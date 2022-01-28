@@ -37,5 +37,12 @@ cp README_subpackage.md tests/serverpod_test_server/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_client/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_server/README.md
 
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_server/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_client/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_shared_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_email_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_apple_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_google_flutter/README.md
+
 echo "Copy tables"
 cp packages/serverpod/generated/tables.pgsql templates/serverpod_templates/PROJECTNAME_server/generated/tables-serverpod.pgsql

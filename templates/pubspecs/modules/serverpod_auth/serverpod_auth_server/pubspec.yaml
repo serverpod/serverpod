@@ -1,17 +1,16 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
-publish_to: none
+# TEMPLATE
+PUBLISH_TO
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 0.9.1
+version: VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  serverpod: #^0.9.1
+  serverpod: #^VERSION
     path: ../../../packages/serverpod
   email_validator: ^2.0.1
   googleapis: ^7.0.0
