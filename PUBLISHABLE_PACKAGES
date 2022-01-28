@@ -8,3 +8,9 @@ packages/serverpod
 packages/serverpod_relic
 templates/serverpod_templates
 tools/serverpod_cli
+modules/serverpod_auth/serverpod_auth_server
+modules/serverpod_auth/serverpod_auth_client
+modules/serverpod_auth/serverpod_auth_shared_flutter
+modules/serverpod_auth/serverpod_auth_apple_flutter
+modules/serverpod_auth/serverpod_auth_google_flutter
+modules/serverpod_auth/serverpod_auth_email_flutter

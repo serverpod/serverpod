@@ -21,3 +21,10 @@ dart analyze tests/serverpod_test_server
 dart analyze tests/serverpod_test_client
 dart analyze tests/serverpod_test_module/serverpod_test_module_server
 dart analyze tests/serverpod_test_module/serverpod_test_module_client
+
+dart analyze modules/serverpod_auth/serverpod_auth_server
+dart analyze modules/serverpod_auth/serverpod_auth_client
+dart analyze modules/serverpod_auth/serverpod_auth_shared_flutter
+dart analyze modules/serverpod_auth/serverpod_auth_apple_flutter
+dart analyze modules/serverpod_auth/serverpod_auth_google_flutter
+dart analyze modules/serverpod_auth/serverpod_auth_email_flutter
