@@ -19,12 +19,15 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// Will output debug prints if set to true.
   final bool debug;
 
+  /// Scopes to request when signing in. Default scopes are userinfo.profile
+  /// and email, these should not be included in the [additionalScopes] list.
   final List<String> additionalScopes;
 
+  /// Alignment of text and icon within the button.
   final Alignment alignment;
 
   /// Creates a new Sign in with Google button.
-  SignInWithGoogleButton({
+  const SignInWithGoogleButton({
     required this.caller,
     this.onSignedIn,
     this.onFailure,
@@ -47,7 +50,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
             primary: Colors.white,
             onPrimary: Colors.grey[700],
             alignment: widget.alignment,
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
           ),
       onPressed: () {
         // Open a dialog with just the progress indicator that isn't
@@ -58,6 +61,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         signInWithGoogle(
           widget.caller,
           debug: widget.debug,
+          additionalScopes: widget.additionalScopes,
         ).then((UserInfo? userInfo) {
           // Pop the loading barrier
           Navigator.of(context).pop();
@@ -74,7 +78,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           }
         });
       },
-      label: Text('Sign in with Google'),
+      label: const Text('Sign in with Google'),
       icon: Image.asset(
         'assets/google-icon.png',
         package: 'serverpod_auth_google_flutter',

@@ -100,12 +100,12 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
             });
           },
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         ElevatedButton(
           onPressed: _enabled ? _createAccount : null,
-          child: Text('Create Account'),
+          child: const Text('Create Account'),
         ),
         TextButton(
           onPressed: _enabled
@@ -115,7 +115,7 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: Text('I have an account'),
+          child: const Text('I have an account'),
         ),
       ];
     } else if (_page == _Page.signIn) {
@@ -150,12 +150,12 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
             });
           },
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         ElevatedButton(
           onPressed: _enabled ? _signIn : null,
-          child: Text('Sign In'),
+          child: const Text('Sign In'),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -166,9 +166,9 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   _page = _Page.forgotPassword;
                 });
               },
-              child: Text('Forgot Pass'),
+              child: const Text('Forgot Pass'),
             ),
-            Spacer(),
+            const Spacer(),
             TextButton(
               onPressed: _enabled
                   ? () {
@@ -177,7 +177,7 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                       });
                     }
                   : null,
-              child: Text('Create Account'),
+              child: const Text('Create Account'),
             ),
           ],
         ),
@@ -199,12 +199,12 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
             });
           },
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         ElevatedButton(
           onPressed: _enabled ? _initiatePasswordReset : null,
-          child: Text('Reset Password'),
+          child: const Text('Reset Password'),
         ),
         TextButton(
           onPressed: _enabled
@@ -214,15 +214,15 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: Text('Back'),
+          child: const Text('Back'),
         ),
       ];
     } else if (_page == _Page.confirmEmail) {
       widgets = [
-        Text(
+        const Text(
           'Please check your email. We have sent you a code to verify your address.',
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         TextField(
@@ -240,12 +240,12 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
             });
           },
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         ElevatedButton(
           onPressed: _enabled ? _validateAccount : null,
-          child: Text('Sign In'),
+          child: const Text('Sign In'),
         ),
         TextButton(
           onPressed: _enabled
@@ -255,15 +255,15 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: Text('Back'),
+          child: const Text('Back'),
         ),
       ];
     } else if (_page == _Page.confirmPasswordReset) {
       widgets = [
-        Text(
+        const Text(
           'Please check your email. We have sent you a code to verify your account.',
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         TextField(
@@ -296,12 +296,12 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
             });
           },
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         ElevatedButton(
           onPressed: _enabled ? _resetPassword : null,
-          child: Text('Sign In'),
+          child: const Text('Sign In'),
         ),
         TextButton(
           onPressed: _enabled
@@ -311,7 +311,7 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: Text('Back'),
+          child: const Text('Back'),
         ),
       ];
     } else {

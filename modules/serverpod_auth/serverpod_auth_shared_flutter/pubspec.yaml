@@ -1,7 +1,7 @@
 name: serverpod_auth_shared_flutter
 description: A new Flutter package project.
 version: 0.0.1
-homepage:
+publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -16,7 +16,6 @@ dependencies:
     path: ../serverpod_auth_client
   shared_preferences: ^2.0.8
   cached_network_image: ^3.1.0
-  pedantic: ^1.11.0
   image: ^3.0.2
   file_picker: ^4.1.6
 
@@ -28,6 +27,7 @@ dependencies:
 
 
 dev_dependencies:
+  lints: ^1.0.1
   flutter_test:
     sdk: flutter
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
@@ -15,7 +16,7 @@ Future<UserInfo?> signInWithGoogle(
   ];
   scopes.addAll(additionalScopes);
 
-  if (debug) print('serverpod_auth_google: GoogleSignIn');
+  if (kDebugMode) print('serverpod_auth_google: GoogleSignIn');
 
   var _googleSignIn = GoogleSignIn(
     scopes: scopes,
@@ -25,9 +26,11 @@ Future<UserInfo?> signInWithGoogle(
     // Sign in with Google.
     var result = await _googleSignIn.signIn();
     if (result == null) {
-      if (debug)
+      if (kDebugMode) {
         print(
-            'serverpod_auth_google: GoogleSignIn.signIn() returned null. Aborting.');
+          'serverpod_auth_google: GoogleSignIn.signIn() returned null. Aborting.',
+        );
+      }
       return null;
     }
 
@@ -37,17 +40,21 @@ Future<UserInfo?> signInWithGoogle(
     var serverAuthCode = result.serverAuthCode;
     String? idToken;
     if (serverAuthCode == null) {
-      if (debug)
+      if (kDebugMode) {
         print(
-            'serverpod_auth_google: serverAuthCode is null. Trying auth.idToken.');
+          'serverpod_auth_google: serverAuthCode is null. Trying auth.idToken.',
+        );
+      }
       var auth = await result.authentication;
       idToken = auth.idToken;
     }
 
     if (serverAuthCode == null && idToken == null) {
-      if (debug)
+      if (kDebugMode) {
         print(
-            'serverpod_auth_google: Failed to get valid serverAuthCode or idToken. Aborting.');
+          'serverpod_auth_google: Failed to get valid serverAuthCode or idToken. Aborting.',
+        );
+      }
       return null;
     }
 
@@ -63,9 +70,11 @@ Future<UserInfo?> signInWithGoogle(
     }
 
     if (!serverResponse.success) {
-      if (debug)
+      if (kDebugMode) {
         print(
-            'serverpod_auth_google: Failed to authenticate with Serverpod backend. Aborting.');
+          'serverpod_auth_google: Failed to authenticate with Serverpod backend. Aborting.',
+        );
+      }
       return null;
     }
 
@@ -78,20 +87,22 @@ Future<UserInfo?> signInWithGoogle(
     sessionManager.signedInUser = serverResponse.userInfo;
 
     // Authentication with server is complete, we can sign out from Google locally
-    if (debug) print('serverpod_auth_google: Signing out from google');
+    if (kDebugMode) print('serverpod_auth_google: Signing out from google');
     await _googleSignIn.signOut();
 
-    if (debug) await _googleSignIn.disconnect();
+    if (kDebugMode) await _googleSignIn.disconnect();
 
-    if (debug)
+    if (kDebugMode) {
       print(
-          'serverpod_auth_google: Authentication was successful. Saved credentials to SessionManager');
+        'serverpod_auth_google: Authentication was successful. Saved credentials to SessionManager',
+      );
+    }
 
     // Return the user info.
     return serverResponse.userInfo;
   } catch (e, stackTrace) {
-    if (debug) print('serverpod_auth_google: $e');
-    if (debug) print('$stackTrace');
+    if (kDebugMode) print('serverpod_auth_google: $e');
+    if (kDebugMode) print('$stackTrace');
     return null;
   }
 }

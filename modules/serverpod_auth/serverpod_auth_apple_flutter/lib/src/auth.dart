@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -11,7 +12,7 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
     if (!available) return null;
 
     // Attempt to sign in.
-    final credential = await SignInWithApple.getAppleIDCredential(
+    var credential = await SignInWithApple.getAppleIDCredential(
       scopes: [
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
@@ -20,7 +21,7 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
 
     var userIdentifier = credential.userIdentifier!;
     var nickname = credential.givenName ?? 'Unknown';
-    var fullName = '$nickname';
+    var fullName = nickname;
     if (credential.familyName != null) fullName += ' ${credential.familyName}';
     var email = credential.email;
     var identityToken = credential.identityToken!;
@@ -50,8 +51,10 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
     // Return the user info.
     return serverResponse.userInfo;
   } catch (e, stackTrace) {
-    print('$e');
-    print('$stackTrace');
+    if (kDebugMode) {
+      print('$e');
+      print('$stackTrace');
+    }
     return null;
   }
 }

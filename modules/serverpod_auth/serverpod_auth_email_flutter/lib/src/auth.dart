@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
@@ -20,8 +21,10 @@ class EmailAuthController {
       sessionManager.signedInUser = serverResponse.userInfo;
       return serverResponse.userInfo;
     } catch (e, stackTrace) {
-      print('$e');
-      print('$stackTrace');
+      if (kDebugMode) {
+        print('$e');
+        print('$stackTrace');
+      }
       return null;
     }
   }

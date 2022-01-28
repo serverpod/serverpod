@@ -26,7 +26,7 @@ class CircularUserImage extends StatelessWidget {
   final Color borderColor;
 
   /// Creates a circular image that represents a user.
-  CircularUserImage({
+  const CircularUserImage({
     this.userInfo,
     this.size = 20.0,
     this.elevation = 0,
@@ -58,7 +58,7 @@ class CircularUserImage extends StatelessWidget {
         height: size,
         child: Material(
           elevation: elevation,
-          shape: CircleBorder(),
+          shape: const CircleBorder(),
           color: Colors.grey[500],
           clipBehavior: Clip.antiAlias,
           child: child,
@@ -70,7 +70,7 @@ class CircularUserImage extends StatelessWidget {
         height: size,
         child: Material(
           elevation: elevation,
-          shape: CircleBorder(),
+          shape: const CircleBorder(),
           color: borderColor,
           clipBehavior: Clip.none,
           child: Center(
