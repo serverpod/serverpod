@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 import '../generated/version.dart';
 import '../shared/environment.dart';
@@ -33,6 +34,24 @@ class ResourceManager {
     } else {
       return Directory(serverpodHome + '/templates/serverpod_templates');
     }
+  }
+
+  String get uniqueUserId {
+    const uuidFilePath = '/uuid';
+    try {
+      var userIdFile = File(localCacheDirectory.path + uuidFilePath);
+      var userId = userIdFile.readAsStringSync();
+      return userId;
+    } catch (e) {
+      // Failed to read userId from file, it's probably not created.
+    }
+    var userId = const Uuid().v4();
+    try {
+      var userIdFile = File(localCacheDirectory.path + uuidFilePath);
+      userIdFile.writeAsStringSync(userId);
+    } finally {}
+
+    return userId;
   }
 
   String get packageDownloadUrl =>
