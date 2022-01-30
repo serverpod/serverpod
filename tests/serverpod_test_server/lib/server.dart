@@ -31,7 +31,7 @@ void run(List<String> args) async {
 
   // Callbacks for auth
   auth.AuthConfig.set(auth.AuthConfig(
-    onUserWillBeCreated: (session, userInfo) async {
+    onUserWillBeCreated: (session, userInfo, authMethod) async {
       return (userInfo.email!.endsWith('.bar'));
     },
   ));
