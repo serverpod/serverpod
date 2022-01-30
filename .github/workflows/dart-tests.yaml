@@ -3,11 +3,11 @@ name: Serverpod CI
 on:
   push:
     branches:
-      - master
+      - main
       - tests
   pull_request:
     branches:
-      - master
+      - main
 jobs:
 
   dart_format:
