@@ -8,6 +8,7 @@ import '../business/users.dart';
 import '../generated/protocol.dart';
 
 List<Map<String, dynamic>>? _applePublicKeys;
+const _authMethod = 'apple';
 
 /// Endpoint for handling Sign in with Apple.
 class AppleEndpoint extends Endpoint {
@@ -93,7 +94,7 @@ class AppleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      userInfo = await Users.createUser(session, userInfo);
+      userInfo = await Users.createUser(session, userInfo, _authMethod);
     }
 
     if (userInfo == null) {
@@ -103,7 +104,7 @@ class AppleEndpoint extends Endpoint {
       );
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, 'apple');
+    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
 
     return AuthenticationResponse(
       success: true,

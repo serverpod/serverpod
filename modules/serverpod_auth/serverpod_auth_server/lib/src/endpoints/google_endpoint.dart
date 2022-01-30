@@ -18,6 +18,7 @@ import '../business/users.dart';
 import '../generated/protocol.dart';
 
 const _configFilePath = 'config/google_client_secret.json';
+const _authMethod = 'google';
 
 /// Endpoint for handling Sign in with Google.
 class GoogleEndpoint extends Endpoint {
@@ -72,7 +73,7 @@ class GoogleEndpoint extends Endpoint {
       );
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
 
     return AuthenticationResponse(
       success: true,
@@ -179,7 +180,7 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      userInfo = await Users.createUser(session, userInfo);
+      userInfo = await Users.createUser(session, userInfo, _authMethod);
 
       // Set the user image.
       if (userInfo?.id != null && image != null) {

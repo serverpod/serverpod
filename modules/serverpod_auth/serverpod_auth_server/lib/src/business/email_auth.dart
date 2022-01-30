@@ -45,7 +45,7 @@ class Emails {
       );
 
       session.log('creating user', level: LogLevel.debug);
-      userInfo = await Users.createUser(session, userInfo);
+      userInfo = await Users.createUser(session, userInfo, 'email');
       if (userInfo == null) return null;
     }
 

@@ -23,7 +23,7 @@ typedef UserInfoUpdateCallback = Future<void> Function(
 
 /// Callback for user creation.
 typedef UserInfoCreationCallback = Future<bool> Function(
-    Session session, UserInfo userInfo);
+    Session session, UserInfo userInfo, String? method);
 
 /// Callback for emailing password resets.
 typedef SendPasswordResetEmailCallback = Future<bool> Function(

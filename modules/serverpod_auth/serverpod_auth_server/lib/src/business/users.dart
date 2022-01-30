@@ -9,10 +9,16 @@ import '../generated/protocol.dart';
 class Users {
   /// Creates a new user and stores it in the database.
   static Future<UserInfo?> createUser(
-      Session session, UserInfo userInfo) async {
+    Session session,
+    UserInfo userInfo, [
+    String? authMethod,
+  ]) async {
     if (AuthConfig.current.onUserWillBeCreated != null) {
-      var approved =
-          await AuthConfig.current.onUserWillBeCreated!(session, userInfo);
+      var approved = await AuthConfig.current.onUserWillBeCreated!(
+        session,
+        userInfo,
+        authMethod,
+      );
       if (!approved) return null;
     }
 
