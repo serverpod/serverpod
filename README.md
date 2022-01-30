@@ -1,4 +1,4 @@
-![Serverpod banner](https://github.com/serverpod/serverpod/raw/main/misc/images/github-banner.webp)
+![Serverpod banner](https://github.com/serverpod/serverpod/raw/main/misc/images/github-header.webp)
 
 # Serverpod
 
