@@ -9,10 +9,16 @@ import '../generated/protocol.dart';
 class Users {
   /// Creates a new user and stores it in the database.
   static Future<UserInfo?> createUser(
-      Session session, UserInfo userInfo) async {
+    Session session,
+    UserInfo userInfo, [
+    String? authMethod,
+  ]) async {
     if (AuthConfig.current.onUserWillBeCreated != null) {
-      var approved =
-          await AuthConfig.current.onUserWillBeCreated!(session, userInfo);
+      var approved = await AuthConfig.current.onUserWillBeCreated!(
+        session,
+        userInfo,
+        authMethod,
+      );
       if (!approved) return null;
     }
 
@@ -49,7 +55,7 @@ class Users {
   /// setting [useCache] to false.
   static Future<UserInfo?> findUserByUserId(Session session, int userId,
       {bool useCache = true}) async {
-    final cacheKey = 'serverpod_auth_userinfo_$userId';
+    var cacheKey = 'serverpod_auth_userinfo_$userId';
     UserInfo? userInfo;
 
     if (useCache) {
@@ -87,8 +93,12 @@ class Users {
     return userInfo;
   }
 
+  /// Updates the scopes a user can access.
   static Future<UserInfo?> updateUserScopes(
-      Session session, int userId, Set<Scope> newScopes) async {
+    Session session,
+    int userId,
+    Set<Scope> newScopes,
+  ) async {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
@@ -112,6 +122,8 @@ class Users {
     return userInfo;
   }
 
+  /// Invalidates the cache for a user and makes sure the next time a user info
+  /// is fetched it's fresh from the database.
   static Future<void> invalidateCacheForUser(
       Session session, int userId) async {
     var cacheKey = 'serverpod_auth_userinfo_$userId';

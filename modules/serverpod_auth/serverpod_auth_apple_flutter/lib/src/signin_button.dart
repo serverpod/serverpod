@@ -20,7 +20,7 @@ class SignInWithAppleButton extends StatefulWidget {
   final ButtonStyle? style;
 
   /// Creates a new Sign in with Google button.
-  SignInWithAppleButton({
+  const SignInWithAppleButton({
     required this.caller,
     this.onSignedIn,
     this.onFailure,
@@ -40,7 +40,7 @@ class _SignInWithAppleButtonState extends State<SignInWithAppleButton> {
             primary: Colors.black,
             onPrimary: Colors.white,
             alignment: Alignment.centerLeft,
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
           ),
       onPressed: () {
         // Open a dialog with just the progress indicator that isn't
@@ -66,8 +66,8 @@ class _SignInWithAppleButtonState extends State<SignInWithAppleButton> {
           }
         });
       },
-      label: Text('Sign in with Apple'),
-      icon: Icon(Mdi.apple),
+      label: const Text('Sign in with Apple'),
+      icon: const Icon(Mdi.apple),
     );
   }
 }

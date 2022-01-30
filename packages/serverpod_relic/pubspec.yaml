@@ -3,9 +3,11 @@
 publish_to: none
 
 name: serverpod_relic
-version: 0.9.1
+version: 0.9.2
 description: Web server for Serverpod (still experimental, but working).
 repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -14,7 +16,7 @@ dependencies:
   mustache_template: ^2.0.0
   path: ^1.8.0
   yaml: ^3.1.0
-  serverpod: #^0.9.1
+  serverpod: #^0.9.2
     path: ../serverpod
 
 dev_dependencies:

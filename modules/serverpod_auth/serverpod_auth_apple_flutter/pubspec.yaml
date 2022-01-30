@@ -1,8 +1,13 @@
-name: serverpod_auth_apple_flutter
-description: A new Flutter package project.
-version: 0.0.1
-author:
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
 publish_to: none
+
+name: serverpod_auth_apple_flutter
+description: Sign in with Apple for the Serverpod auth module.
+version: 0.9.2
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -12,15 +17,16 @@ dependencies:
   flutter:
     sdk: flutter
   mdi: 5.0.0-nullsafety.0
-  serverpod_auth_client:
+  serverpod_auth_client: #^0.9.2
     path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter:
+  serverpod_auth_shared_flutter: #^0.9.2
     path: ../serverpod_auth_shared_flutter
   sign_in_with_apple: ^3.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  lints: ^1.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -100,13 +100,21 @@ class ServerConfig {
   @override
   String toString() {
     var str = 'Config loaded from: $file';
-    str += '\nport: $port';
+    str += '\napi port: $port';
+    str += '\nservice port: $servicePort';
 
-    str += '\ndatabase host: $dbHost';
-    str += '\ndatabase port: $dbPort';
-    str += '\ndatabase name: $dbName';
-    str += '\ndatabase user: $dbUser';
-    str += '\ndatabase pass: ********';
+    str += '\npostgres host: $dbHost';
+    str += '\npostgres port: $dbPort';
+    str += '\npostgres name: $dbName';
+    str += '\npostgres user: $dbUser';
+    str += '\npostgres pass: ********';
+
+    str += '\nredis host: $redisHost';
+    str += '\nredis port: $redisPort';
+    if (redisUser != null) {
+      str += '\nredis user: $redisUser';
+    }
+    str += '\nredis pass: ********';
 
     return str;
   }

@@ -17,12 +17,13 @@ class SignInWithEmailButton extends StatefulWidget {
   final ButtonStyle? style;
 
   /// Creates a new Sign in with Google button.
-  SignInWithEmailButton({
+  const SignInWithEmailButton({
     required this.caller,
     this.onSignedIn,
     this.onFailure,
     this.style,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SignInWithEmailButtonState createState() => _SignInWithEmailButtonState();
@@ -37,7 +38,7 @@ class _SignInWithEmailButtonState extends State<SignInWithEmailButton> {
             primary: Colors.lightBlue,
             onPrimary: Colors.white,
             alignment: Alignment.centerLeft,
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
           ),
       onPressed: () {
         showSignInWithEmailDialog(
@@ -50,8 +51,8 @@ class _SignInWithEmailButtonState extends State<SignInWithEmailButton> {
           },
         );
       },
-      label: Text('Sign in with Email'),
-      icon: Icon(Icons.email),
+      label: const Text('Sign in with Email'),
+      icon: const Icon(Icons.email),
     );
   }
 }

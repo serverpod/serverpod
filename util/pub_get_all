@@ -53,3 +53,29 @@ dart pub get
 echo "\nserverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
 dart pub get
+
+# Auth module
+
+echo "\nserverpod_auth_server"
+cd $BASE/modules/serverpod_auth/serverpod_auth_server
+dart pub get
+
+echo "\nserverpod_auth_client"
+cd $BASE/modules/serverpod_auth/serverpod_auth_client
+dart pub get
+
+echo "\nserverpod_auth_shared_flutter"
+cd $BASE/modules/serverpod_auth/serverpod_auth_shared_flutter
+dart pub get
+
+echo "\nserverpod_auth_apple_flutter"
+cd $BASE/modules/serverpod_auth/serverpod_auth_apple_flutter
+dart pub get
+
+echo "\nserverpod_auth_google_flutter"
+cd $BASE/modules/serverpod_auth/serverpod_auth_google_flutter
+dart pub get
+
+echo "\nserverpod_auth_email_flutter"
+cd $BASE/modules/serverpod_auth/serverpod_auth_email_flutter
+dart pub get

@@ -5,14 +5,17 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 
-import '../generated/protocol.dart';
-
 // const _configFilePath = 'config/google_client_secret.json';
 
 /// Endpoint for handling Sign in with Google.
 class EmailEndpoint extends Endpoint {
+  /// Authenticates a user with email and password. Returns an
+  /// [AuthenticationResponse] with the users information.
   Future<AuthenticationResponse> authenticate(
-      Session session, String email, String password) async {
+    Session session,
+    String email,
+    String password,
+  ) async {
     email = email.toLowerCase();
     password = password.trim();
 
@@ -72,6 +75,7 @@ class EmailEndpoint extends Endpoint {
     );
   }
 
+  /// Changes a users password.
   Future<bool> changePassword(
       Session session, String oldPassword, String newPassword) async {
     var userId = await session.auth.authenticatedUserId;
@@ -80,20 +84,29 @@ class EmailEndpoint extends Endpoint {
     return Emails.changePassword(session, userId, oldPassword, newPassword);
   }
 
+  /// Initiates a password reset and sends an email with the reset code to the
+  /// user.
   Future<bool> initiatePasswordReset(Session session, String email) {
     return Emails.initiatePasswordReset(session, email);
   }
 
+  /// Verifies a password reset code, if successful returns an
+  /// [EmailPasswordReset] object, otherwise returns null.
   Future<EmailPasswordReset?> verifyEmailPasswordReset(
-      Session session, String verificationCode) {
+    Session session,
+    String verificationCode,
+  ) {
     return Emails.verifyEmailPasswordReset(session, verificationCode);
   }
 
+  /// Resets a users password using the reset code.
   Future<bool> resetPassword(
       Session session, String verificationCode, String password) {
     return Emails.resetPassword(session, verificationCode, password);
   }
 
+  /// Starts the procedure for creating an account by sending an email with
+  /// a verification code.
   Future<bool> createAccountRequest(
     Session session,
     String userName,
@@ -108,6 +121,7 @@ class EmailEndpoint extends Endpoint {
     );
   }
 
+  /// Creates a new account using a verification code.
   Future<UserInfo?> createAccount(
     Session session,
     String email,

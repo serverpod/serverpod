@@ -5,23 +5,30 @@ import 'package:crypto/crypto.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
-import '../generated/protocol.dart';
-import '../util/random_string.dart';
-import 'users.dart';
-
+/// Collection of utility methods when working with email authentication.
 class Emails {
+  /// Generates a password hash from a users password and email. This value
+  /// can safely be stored in the database without the risk of exposing
+  /// passwords.
   static String generatePasswordHash(String password, String email) {
     var salt = Serverpod.instance!.getPassword('email_password_salt') ??
         'serverpod password salt';
+    if (AuthConfig.current.extraSaltyHash) {
+      salt += ':$email';
+    }
     return sha256.convert(utf8.encode(password + salt)).toString();
   }
 
+  /// Creates a new user. Either password or hash needs to be provided.
   static Future<UserInfo?> createUser(
-      Session session, String userName, String email, String? password,
-      [String? hash]) async {
+    Session session,
+    String userName,
+    String email,
+    String? password, [
+    String? hash,
+  ]) async {
     assert(password != null || hash != null,
         'Either password or hash needs to be provided');
     var userInfo = await Users.findUserByEmail(session, email);
@@ -38,7 +45,7 @@ class Emails {
       );
 
       session.log('creating user', level: LogLevel.debug);
-      userInfo = await Users.createUser(session, userInfo);
+      userInfo = await Users.createUser(session, userInfo, 'email');
       if (userInfo == null) return null;
     }
 
@@ -67,8 +74,13 @@ class Emails {
     return userInfo;
   }
 
-  static Future<bool> changePassword(Session session, int userId,
-      String oldPassword, String newPassword) async {
+  /// Updates the password of a user.
+  static Future<bool> changePassword(
+    Session session,
+    int userId,
+    String oldPassword,
+    String newPassword,
+  ) async {
     var auth = await session.db.findSingleRow<EmailAuth>(
       where: EmailAuth.t.userId.equals(userId),
     );
@@ -88,6 +100,8 @@ class Emails {
     return true;
   }
 
+  /// Initiates the password reset procedure. Will send an email to the provided
+  /// address with a reset code.
   static Future<bool> initiatePasswordReset(
     Session session,
     String email,
@@ -119,8 +133,12 @@ class Emails {
     );
   }
 
+  /// Verifies a password reset code, returns a [EmailPasswordReset] object if
+  /// successful, null otherwise.
   static Future<EmailPasswordReset?> verifyEmailPasswordReset(
-      Session session, String verificationCode) async {
+    Session session,
+    String verificationCode,
+  ) async {
     session.log('verificationCode: $verificationCode', level: LogLevel.debug);
     var passwordReset = await session.db.findSingleRow<EmailReset>(
       where: EmailReset.t.verificationCode.equals(verificationCode) &
@@ -140,8 +158,12 @@ class Emails {
     );
   }
 
+  /// Resets a users password using a password reset verification code.
   static Future<bool> resetPassword(
-      Session session, String verificationCode, String password) async {
+    Session session,
+    String verificationCode,
+    String password,
+  ) async {
     var passwordReset = await session.db.findSingleRow<EmailReset>(
       where: EmailReset.t.verificationCode.equals(verificationCode) &
           (EmailReset.t.expiration > DateTime.now().toUtc()),
@@ -161,6 +183,8 @@ class Emails {
     return true;
   }
 
+  /// Creates a request for creating an account associated with the specified
+  /// email address. An email with a validation code will be sent.
   static Future<bool> createAccountRequest(
     Session session,
     String userName,
@@ -218,6 +242,8 @@ class Emails {
     }
   }
 
+  /// Returns an [EmailCreateAccountRequest] if one exists for the provided
+  /// email, null otherwise.
   static Future<EmailCreateAccountRequest?> findAccountRequest(
     Session session,
     String email,

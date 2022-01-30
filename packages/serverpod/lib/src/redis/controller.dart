@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:redis/redis.dart';
 
@@ -81,8 +82,12 @@ class RedisController {
         _connecting = false;
         return true;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       _connecting = false;
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
       return false;
     }
   }
@@ -118,6 +123,13 @@ class RedisController {
         _pubSub = PubSub(_pubSubCommand!);
       }, (e, stackTrace) {
         _invalidatePubSub();
+
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+        stderr.writeln('Local stacktrace:');
+        stderr.writeln('${StackTrace.current}');
       });
 
       var stream = _pubSub!.getStream();
@@ -129,9 +141,15 @@ class RedisController {
 
       _connectingPubSub = false;
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
       _connectingPubSub = false;
       _invalidatePubSub();
+
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+
       return false;
     }
   }

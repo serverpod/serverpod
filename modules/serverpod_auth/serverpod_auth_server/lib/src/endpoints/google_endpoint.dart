@@ -7,9 +7,8 @@ import 'dart:io';
 
 import 'package:googleapis/people/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:googleapis_auth/googleapis_auth.dart';
+// ignore: implementation_imports
 import 'package:googleapis_auth/src/auth_http_utils.dart';
-import 'package:googleapis_auth/src/oauth2_flows/auth_code.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
@@ -19,6 +18,7 @@ import '../business/users.dart';
 import '../generated/protocol.dart';
 
 const _configFilePath = 'config/google_client_secret.json';
+const _authMethod = 'google';
 
 /// Endpoint for handling Sign in with Google.
 class GoogleEndpoint extends Endpoint {
@@ -73,7 +73,7 @@ class GoogleEndpoint extends Endpoint {
       );
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
 
     return AuthenticationResponse(
       success: true,
@@ -83,6 +83,7 @@ class GoogleEndpoint extends Endpoint {
     );
   }
 
+  /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
       Session session, String idToken) async {
     try {
@@ -179,7 +180,7 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      userInfo = await Users.createUser(session, userInfo);
+      userInfo = await Users.createUser(session, userInfo, _authMethod);
 
       // Set the user image.
       if (userInfo?.id != null && image != null) {

@@ -1,16 +1,9 @@
-import 'dart:typed_data';
-
-import 'package:image/image.dart' as img;
-import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/src/image_uploader.dart';
 
-import 'session_manager.dart';
 import 'circular_user_image.dart';
+import 'session_manager.dart';
 
 /// A circular user image button. When pressed, the user is allowed to upload a
 /// new user image to the server.
@@ -33,7 +26,7 @@ class UserImageButton extends StatefulWidget {
 
   /// Creates a user image button, used to upload a new user image for a signed
   /// in user.
-  UserImageButton({
+  const UserImageButton({
     required this.sessionManager,
     this.compact = true,
     this.elevation = 0,

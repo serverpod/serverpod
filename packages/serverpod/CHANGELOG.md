@@ -1,3 +1,7 @@
+## 0.9.2
+
+- Adds serverpod_auth module for authentication with email, Apple, and Google.
+
 ## 0.9.1
 
 - Fixes broken images in documentation.

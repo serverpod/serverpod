@@ -14,7 +14,7 @@ class UserSettings extends StatefulWidget {
   final bool compact;
 
   /// Creates a new user settings display.
-  UserSettings({
+  const UserSettings({
     required this.sessionManager,
     this.compact = true,
   });
@@ -86,7 +86,7 @@ class _CompactSettings extends StatelessWidget {
   final String? fullName;
   final UserInfo? userInfo;
 
-  _CompactSettings({
+  const _CompactSettings({
     required this.sessionManager,
     this.userInfo,
     required this.userName,
@@ -103,7 +103,7 @@ class _CompactSettings extends StatelessWidget {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.only(left: 16),
+            padding: const EdgeInsets.only(left: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -116,7 +116,7 @@ class _CompactSettings extends StatelessWidget {
                 ),
                 if (fullName != null)
                   Padding(
-                    padding: EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       fullName!,
                       maxLines: 1,
@@ -142,7 +142,7 @@ class _LargeSettings extends StatelessWidget {
   final String? fullName;
   final UserInfo? userInfo;
 
-  _LargeSettings({
+  const _LargeSettings({
     required this.sessionManager,
     this.userInfo,
     required this.userName,
@@ -162,7 +162,7 @@ class _LargeSettings extends StatelessWidget {
           elevation: 2,
         ),
         Padding(
-          padding: EdgeInsets.only(top: 24),
+          padding: const EdgeInsets.only(top: 24),
           child: Text(
             userName,
             maxLines: 1,
@@ -172,7 +172,7 @@ class _LargeSettings extends StatelessWidget {
         ),
         if (fullName != null)
           Padding(
-            padding: EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 8),
             child: Text(
               fullName!,
               maxLines: 1,

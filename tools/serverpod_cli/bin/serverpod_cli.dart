@@ -1,6 +1,7 @@
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
+import 'analytics/analytics.dart';
 import 'certificate_generator/generator.dart';
 import 'config_info/config_info.dart';
 import 'create/command_line_tools.dart';
@@ -26,6 +27,8 @@ const cmdHealthCheck = 'healthcheck';
 const cmdGeneratePubspecs = 'generate-pubspecs';
 
 final runModes = <String>['development', 'staging', 'production'];
+
+final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
   // Check that required tools are installed
@@ -189,6 +192,8 @@ void main(List<String> args) async {
   var results = parser.parse(args);
 
   if (results.command != null) {
+    _analytics.track(event: '${results.command?.name}');
+
     if (results.command!.name == cmdCreate) {
       var name = results.arguments.last;
       bool verbose = results.command!['verbose'];
@@ -196,25 +201,30 @@ void main(List<String> args) async {
       bool force = results.command!['force'];
       if (name == 'server' || name == 'module' || name == 'create') {
         _printUsage(parser);
+        _analytics.cleanUp();
         return;
       }
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
         await performCreate(name, verbose, template, force);
+        _analytics.cleanUp();
         return;
       }
     }
     if (results.command!.name == cmdGenerate) {
       await performGenerate(results.command!['verbose'], true);
+      _analytics.cleanUp();
       return;
     }
     if (results.command!.name == cmdGenerateContinuously) {
       performGenerateContinuously(results.command!['verbose']);
+      _analytics.cleanUp();
       return;
     }
     if (results.command!.name == cmdGenerateCertificates) {
       await performGenerateCerts(
           results.command!['config'], results.command!['verbose']);
+      _analytics.cleanUp();
       return;
     }
     // if (results.command!.name == cmdShutdown) {
@@ -251,20 +261,24 @@ void main(List<String> args) async {
       var configInfo = ConfigInfo(results.command!['config'],
           serverId: int.tryParse(results.command!['id'])!);
       configInfo.printAddress();
+      _analytics.cleanUp();
       return;
     }
     if (results.command!.name == cmdServerIds) {
       var configInfo = ConfigInfo(results.command!['config']);
       configInfo.printIds();
+      _analytics.cleanUp();
       return;
     }
     if (results.command!.name == cmdGeneratePubspecs) {
       if (results.command!['version'] == 'X') {
         print('--version is not specified');
+        _analytics.cleanUp();
         return;
       }
       performGeneratePubspecs(
           results.command!['version'], results.command!['mode']);
+      _analytics.cleanUp();
       return;
     }
   }

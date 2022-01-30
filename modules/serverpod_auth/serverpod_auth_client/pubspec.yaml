@@ -1,10 +1,17 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+publish_to: none
+
 name: serverpod_auth_client
-description: Starting point for a Serverpod module client.
-# version: 1.0.0
-# homepage: https://www.example.com
+description: Serverpod authentication client.
+version: 0.9.2
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 dependencies:
-  serverpod_client:
+  lints: ^1.0.1
+  serverpod_client: #^0.9.2
     path: ../../../packages/serverpod_client

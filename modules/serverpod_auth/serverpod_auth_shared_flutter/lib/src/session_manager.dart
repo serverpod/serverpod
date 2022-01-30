@@ -1,11 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
 const _prefsVersion = 1;
@@ -98,7 +97,7 @@ class SessionManager with ChangeNotifier {
   }
 
   Future<void> _loadSharedPrefs() async {
-    final version = await _storage
+    var version = await _storage
         .getInt(_prefsKey + '_' + keyManager.runMode + '_version');
     if (version != _prefsVersion) return;
 
@@ -128,7 +127,7 @@ class SessionManager with ChangeNotifier {
     if (_signedInUser == null) return false;
 
     try {
-      final success = await caller.user.setUserImage(image);
+      var success = await caller.user.setUserImage(image);
       if (success) {
         _signedInUser = await caller.status.getUserInfo();
 

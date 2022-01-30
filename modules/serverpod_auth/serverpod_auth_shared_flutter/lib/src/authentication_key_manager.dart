@@ -9,10 +9,13 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   bool _initialized = false;
   String? _authenticationKey;
 
+  /// The run mode of the Serverpod.
   final String runMode;
 
   final Storage _storage;
 
+  /// Creates a new authentication key manager. By default it uses the
+  /// shared preferences for storing keys.
   FlutterAuthenticationKeyManager({
     this.runMode = 'production',
     Storage? storage,
@@ -43,50 +46,57 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   }
 }
 
+/// Abstract class for storage used by the key manager.
 abstract class Storage {
+  /// Stores an int value with the specified key.
   Future<void> setInt(String key, int value);
 
+  /// Retrieves an int value with the specified key.
   Future<int?> getInt(String key);
 
+  /// Stores a string value with the specified key.
   Future<void> setString(String key, String value);
 
+  /// Retrieves a string value with the specified key.
   Future<String?> getString(String key);
 
+  /// Removes a value for the specified key.
   Future<void> remove(String key);
 }
 
+/// Concrete implementation of the [Storage] used by the key manager.
 class SharedPreferenceStorage implements Storage {
   @override
   Future<int?> getInt(String key) async {
-    final prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
 
     return prefs.getInt(key);
   }
 
   @override
   Future<String?> getString(String key) async {
-    final prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
 
     return prefs.getString(key);
   }
 
   @override
   Future<void> setInt(String key, int value) async {
-    final prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
 
     await prefs.setInt(key, value);
   }
 
   @override
   Future<void> setString(String key, String value) async {
-    final prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(key, value);
   }
 
   @override
   Future<void> remove(String key) async {
-    final prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
 
     await prefs.remove(key);
   }
