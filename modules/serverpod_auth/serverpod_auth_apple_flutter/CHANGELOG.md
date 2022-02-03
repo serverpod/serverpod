@@ -1,3 +1,7 @@
+## 0.9.3
+
+- Updates to documentation.
+
 ## 0.9.2
 
 - Adds serverpod_auth module for authentication with email, Apple, and Google.
