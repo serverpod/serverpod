@@ -26,6 +26,9 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// Alignment of text and icon within the button.
   final Alignment alignment;
 
+  /// Redirect Uri as setup in Google console.
+  final Uri? redirectUri;
+
   /// Creates a new Sign in with Google button.
   const SignInWithGoogleButton({
     required this.caller,
@@ -35,6 +38,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.style,
     this.additionalScopes = const [],
     this.alignment = Alignment.centerLeft,
+    this.redirectUri,
   });
 
   @override
@@ -62,6 +66,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           widget.caller,
           debug: widget.debug,
           additionalScopes: widget.additionalScopes,
+          redirectUri: widget.redirectUri,
         ).then((UserInfo? userInfo) {
           // Pop the loading barrier
           Navigator.of(context).pop();

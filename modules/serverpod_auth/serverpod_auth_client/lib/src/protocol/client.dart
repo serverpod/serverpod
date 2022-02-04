@@ -131,10 +131,12 @@ class _EndpointGoogle extends EndpointRef {
 
   Future<AuthenticationResponse> authenticateWithServerAuthCode(
     String authenticationCode,
+    String? redirectUri,
   ) async {
     return await caller.callServerEndpoint('serverpod_auth.google',
         'authenticateWithServerAuthCode', 'AuthenticationResponse', {
       'authenticationCode': authenticationCode,
+      'redirectUri': redirectUri,
     });
   }
 
