@@ -51,6 +51,22 @@ CREATE UNIQUE INDEX serverpod_email_reset_verification_idx ON serverpod_email_re
 
 
 --
+-- Class GoogleRefreshToken as table serverpod_google_refresh_token
+--
+
+CREATE TABLE serverpod_google_refresh_token (
+  "id" serial,
+  "userId" integer NOT NULL,
+  "refreshToken" text NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_google_refresh_token
+  ADD CONSTRAINT serverpod_google_refresh_token_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_google_refresh_token_userId_idx ON serverpod_google_refresh_token USING btree ("userId");
+
+
+--
 -- Class UserImage as table serverpod_user_image
 --
 

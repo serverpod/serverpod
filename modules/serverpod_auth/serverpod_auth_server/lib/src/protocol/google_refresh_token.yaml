@@ -1,0 +1,9 @@
+class: GoogleRefreshToken
+table: serverpod_google_refresh_token
+fields:
+  userId: int
+  refreshToken: String
+indexes:
+  serverpod_google_refresh_token_userId_idx:
+    fields: userId
+    unique: true

@@ -197,12 +197,15 @@ class Endpoints extends EndpointDispatch {
           params: {
             'authenticationCode': ParameterDescription(
                 name: 'authenticationCode', type: String, nullable: false),
+            'redirectUri': ParameterDescription(
+                name: 'redirectUri', type: String, nullable: true),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['google'] as GoogleEndpoint)
                 .authenticateWithServerAuthCode(
               session,
               params['authenticationCode'],
+              params['redirectUri'],
             );
           },
         ),

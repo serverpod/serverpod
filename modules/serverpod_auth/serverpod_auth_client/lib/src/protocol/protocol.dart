@@ -17,6 +17,7 @@ import 'email_auth.dart';
 import 'email_create_account_request.dart';
 import 'email_password_reset.dart';
 import 'email_reset.dart';
+import 'google_refresh_token.dart';
 import 'user_image.dart';
 import 'user_info.dart';
 import 'user_settings_config.dart';
@@ -28,6 +29,7 @@ export 'email_auth.dart';
 export 'email_create_account_request.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
+export 'google_refresh_token.dart';
 export 'user_image.dart';
 export 'user_info.dart';
 export 'user_settings_config.dart';
@@ -62,6 +64,9 @@ class Protocol extends SerializationManager {
     constructors['serverpod_auth_server.EmailReset'] =
         (Map<String, dynamic> serialization) =>
             EmailReset.fromSerialization(serialization);
+    constructors['serverpod_auth_server.GoogleRefreshToken'] =
+        (Map<String, dynamic> serialization) =>
+            GoogleRefreshToken.fromSerialization(serialization);
     constructors['serverpod_auth_server.UserImage'] =
         (Map<String, dynamic> serialization) =>
             UserImage.fromSerialization(serialization);

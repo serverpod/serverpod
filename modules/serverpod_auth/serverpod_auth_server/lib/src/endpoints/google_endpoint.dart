@@ -27,7 +27,10 @@ class GoogleEndpoint extends Endpoint {
 
   /// Authenticates a user with Google using the serverAuthCode.
   Future<AuthenticationResponse> authenticateWithServerAuthCode(
-      Session session, String authenticationCode) async {
+    Session session,
+    String authenticationCode,
+    String? redirectUri,
+  ) async {
     if (_googleClientSecret.json == null) {
       session.log('Sign in with Google is not initialized',
           level: LogLevel.warning);
@@ -42,6 +45,7 @@ class GoogleEndpoint extends Endpoint {
         'profile',
         'email',
       ],
+      redirectUri,
     );
 
     var api = PeopleServiceApi(authClient);
@@ -71,6 +75,24 @@ class GoogleEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
+    }
+
+    if (authClient.credentials.refreshToken != null) {
+      // Store refresh token, so that we can access this data at a later time.
+      var token = await GoogleRefreshToken.findSingleRow(
+        session,
+        where: (t) => t.userId.equals(userInfo.id!),
+      );
+      if (token == null) {
+        token = GoogleRefreshToken(
+          userId: userInfo.id!,
+          refreshToken: authClient.credentials.refreshToken!,
+        );
+        await GoogleRefreshToken.insert(session, token);
+      } else {
+        token.refreshToken = authClient.credentials.refreshToken!;
+        await GoogleRefreshToken.update(session, token);
+      }
     }
 
     var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
@@ -199,26 +221,32 @@ class GoogleEndpoint extends Endpoint {
 
 class _GoogleUtils {
   static Future<AutoRefreshingAuthClient> clientViaClientSecretAndCode(
-      Map data, String authenticationCode, List<String> scopes) async {
+    Map data,
+    String authenticationCode,
+    List<String> scopes, [
+    String? redirectUri,
+  ]) async {
     Map web = data['web'];
     String identifier = web['client_id'];
     String secret = web['client_secret'];
-    List redirectURIs = web['redirect_uris'];
-    String redirectURI = redirectURIs[0];
+    List redirectUris = web['redirect_uris'];
+    redirectUri = redirectUri ?? redirectUris[0];
     var clientId = ClientId(identifier, secret);
     var client = http.Client();
-    // var credentials = await obtainAccessCredentialsUsingCode(
-    //     clientId, authenticationCode, redirectURI, client);
 
     var credentials = await obtainAccessCredentialsViaCodeExchange(
       client,
       clientId,
       authenticationCode,
-      redirectUrl: redirectURI,
+      redirectUrl: redirectUri!,
     );
 
-    return AutoRefreshingClient(client, clientId, credentials,
-        closeUnderlyingClient: true);
+    return AutoRefreshingClient(
+      client,
+      clientId,
+      credentials,
+      closeUnderlyingClient: true,
+    );
   }
 }
 

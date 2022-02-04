@@ -9,6 +9,7 @@ Future<UserInfo?> signInWithGoogle(
   Caller caller, {
   bool debug = false,
   List<String> additionalScopes = const [],
+  Uri? redirectUri,
 }) async {
   var scopes = [
     'email',
@@ -62,8 +63,10 @@ Future<UserInfo?> signInWithGoogle(
     AuthenticationResponse serverResponse;
     if (serverAuthCode != null) {
       // Prefer to authenticate with serverAuthCode
-      serverResponse =
-          await caller.google.authenticateWithServerAuthCode(serverAuthCode);
+      serverResponse = await caller.google.authenticateWithServerAuthCode(
+        serverAuthCode,
+        redirectUri.toString(),
+      );
     } else {
       // Fall back on idToken
       serverResponse = await caller.google.authenticateWithIdToken(idToken!);
