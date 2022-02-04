@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_test_module_client
-version: 0.9.2
+version: 0.9.3
 description: Tests for Serverpod modules
 repository: https://github.com/serverpod/serverpod
 
@@ -11,7 +11,7 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
   
 dependencies:
-  serverpod_client: #^0.9.2
+  serverpod_client: #^0.9.3
     path: ../../../packages/serverpod_client
 
 dev_dependencies:

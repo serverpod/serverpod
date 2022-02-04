@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
 import '../downloads/resource_manager.dart';
+import '../generated/version.dart';
 
 const _projectToken = '05e8ab306c393c7482e0f41851a176d8';
 const _endpoint = 'https://api.mixpanel.com/track';
@@ -20,6 +22,9 @@ class Analytics {
       'properties': {
         'distinct_id': ResourceManager().uniqueUserId,
         'token': _projectToken,
+        'platform': _getPlatform(),
+        'dart_version': Platform.version,
+        'version': templateVersion,
       }
     });
 
@@ -31,6 +36,18 @@ class Analytics {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     );
+  }
+
+  String _getPlatform() {
+    if (Platform.isMacOS) {
+      return 'MacOS';
+    } else if (Platform.isWindows) {
+      return 'Windows';
+    } else if (Platform.isLinux) {
+      return 'Linux';
+    } else {
+      return 'Unknown';
+    }
   }
 
   void cleanUp() {

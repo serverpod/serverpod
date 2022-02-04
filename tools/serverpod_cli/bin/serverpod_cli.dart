@@ -283,7 +283,9 @@ void main(List<String> args) async {
     }
   }
 
+  _analytics.track(event: 'help');
   _printUsage(parser);
+  _analytics.cleanUp();
 }
 
 void _printUsage(ArgParser parser) {
