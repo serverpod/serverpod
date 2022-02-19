@@ -108,6 +108,7 @@ It's possible to map serializable classes straight to tables in your database. T
 
     class: Company
     table: company
+    fields:
       name: String
       foundedDate: DateTime?
       employees: List<Employee>
@@ -128,6 +129,7 @@ For performance reasons, you may want to add indexes to your database tables. Yo
 
     class: Company
     table: company
+    fields:
       name: String
       foundedDate: DateTime?
       employees: List<Employee>
