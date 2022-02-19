@@ -29,6 +29,7 @@ class Users {
       }
       return userInfo;
     }
+    return null;
   }
 
   /// Finds a user by its email address. Returns null if no user is found.

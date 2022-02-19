@@ -186,6 +186,7 @@ class LogManager {
 
       return sessionLogId;
     }
+    return null;
   }
 
   String _endpointForSession(Session session) {
@@ -214,6 +215,7 @@ class LogManager {
       // Future calls
       return session.futureCallName;
     }
+    return null;
   }
 
   Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings,

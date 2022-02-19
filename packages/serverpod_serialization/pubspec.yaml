@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_serialization
-version: 0.9.3
+version: 0.9.4
 description: Serialization package for Serverpod.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev

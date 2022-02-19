@@ -26,6 +26,7 @@ class FutureCallEntry extends TableRow {
   late DateTime time;
   String? serializedObject;
   late int serverId;
+  String? identifier;
 
   FutureCallEntry({
     this.id,
@@ -33,6 +34,7 @@ class FutureCallEntry extends TableRow {
     required this.time,
     this.serializedObject,
     required this.serverId,
+    this.identifier,
   });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -42,6 +44,7 @@ class FutureCallEntry extends TableRow {
     time = DateTime.tryParse(_data['time'])!;
     serializedObject = _data['serializedObject'];
     serverId = _data['serverId']!;
+    identifier = _data['identifier'];
   }
 
   @override
@@ -52,6 +55,7 @@ class FutureCallEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
+      'identifier': identifier,
     });
   }
 
@@ -63,6 +67,7 @@ class FutureCallEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
+      'identifier': identifier,
     });
   }
 
@@ -74,6 +79,7 @@ class FutureCallEntry extends TableRow {
       'time': time.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
+      'identifier': identifier,
     });
   }
 
@@ -94,6 +100,9 @@ class FutureCallEntry extends TableRow {
         return;
       case 'serverId':
         serverId = value;
+        return;
+      case 'identifier':
+        identifier = value;
         return;
       default:
         throw UnimplementedError();
@@ -216,6 +225,7 @@ class FutureCallEntryTable extends Table {
   final time = ColumnDateTime('time');
   final serializedObject = ColumnString('serializedObject');
   final serverId = ColumnInt('serverId');
+  final identifier = ColumnString('identifier');
 
   @override
   List<Column> get columns => [
@@ -224,6 +234,7 @@ class FutureCallEntryTable extends Table {
         time,
         serializedObject,
         serverId,
+        identifier,
       ];
 }
 
