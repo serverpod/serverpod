@@ -66,7 +66,7 @@ class ImageUploader {
       if (imageFile == null) return;
 
       // Crop the image
-      var croppedImageFile = await ImageCropper.cropImage(
+      var croppedImageFile = await ImageCropper().cropImage(
         sourcePath: imageFile.path,
         maxHeight: imageSize,
         maxWidth: imageSize,
