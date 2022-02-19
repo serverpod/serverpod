@@ -64,7 +64,8 @@ CREATE TABLE serverpod_future_call (
   "name" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "serializedObject" text,
-  "serverId" integer NOT NULL
+  "serverId" integer NOT NULL,
+  "identifier" text
 );
 
 ALTER TABLE ONLY serverpod_future_call
@@ -72,6 +73,7 @@ ALTER TABLE ONLY serverpod_future_call
 
 CREATE INDEX serverpod_future_call_time_idx ON serverpod_future_call USING btree ("time");
 CREATE INDEX serverpod_future_call_serverId_idx ON serverpod_future_call USING btree ("serverId");
+CREATE INDEX serverpod_future_call_identifier_idx ON serverpod_future_call USING btree ("identifier");
 
 
 --

@@ -20,6 +20,7 @@ class FutureCallEntry extends SerializableEntity {
   late DateTime time;
   String? serializedObject;
   late int serverId;
+  String? identifier;
 
   FutureCallEntry({
     this.id,
@@ -27,6 +28,7 @@ class FutureCallEntry extends SerializableEntity {
     required this.time,
     this.serializedObject,
     required this.serverId,
+    this.identifier,
   });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -36,6 +38,7 @@ class FutureCallEntry extends SerializableEntity {
     time = DateTime.tryParse(_data['time'])!;
     serializedObject = _data['serializedObject'];
     serverId = _data['serverId']!;
+    identifier = _data['identifier'];
   }
 
   @override
@@ -46,6 +49,7 @@ class FutureCallEntry extends SerializableEntity {
       'time': time.toUtc().toIso8601String(),
       'serializedObject': serializedObject,
       'serverId': serverId,
+      'identifier': identifier,
     });
   }
 }

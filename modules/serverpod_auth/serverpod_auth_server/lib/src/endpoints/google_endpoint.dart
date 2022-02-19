@@ -3,7 +3,6 @@
 // the documentation on how to add endpoints to your server.
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:googleapis/people/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
@@ -12,33 +11,27 @@ import 'package:googleapis_auth/src/auth_http_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
+import 'package:serverpod_auth_server/src/business/google_auth.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
 
-const _configFilePath = 'config/google_client_secret.json';
 const _authMethod = 'google';
 
 /// Endpoint for handling Sign in with Google.
 class GoogleEndpoint extends Endpoint {
-  final _GoogleClientSecret _googleClientSecret =
-      _GoogleClientSecret(_configFilePath);
-
   /// Authenticates a user with Google using the serverAuthCode.
   Future<AuthenticationResponse> authenticateWithServerAuthCode(
     Session session,
     String authenticationCode,
     String? redirectUri,
   ) async {
-    if (_googleClientSecret.json == null) {
-      session.log('Sign in with Google is not initialized',
-          level: LogLevel.warning);
-      return AuthenticationResponse(success: false);
-    }
+    assert(
+        GoogleAuth.clientSecret != null, 'Google client secret is not loaded.');
 
     var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
-      _googleClientSecret.json!,
+      GoogleAuth.clientSecret!,
       authenticationCode,
       [
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -49,8 +42,10 @@ class GoogleEndpoint extends Endpoint {
     );
 
     var api = PeopleServiceApi(authClient);
-    var person = await api.people
-        .get('people/me', personFields: 'emailAddresses,names,photos');
+    var person = await api.people.get(
+      'people/me',
+      personFields: 'emailAddresses,names,photos',
+    );
 
     if (person.names == null) return AuthenticationResponse(success: false);
 
@@ -86,16 +81,18 @@ class GoogleEndpoint extends Endpoint {
       if (token == null) {
         token = GoogleRefreshToken(
           userId: userInfo.id!,
-          refreshToken: authClient.credentials.refreshToken!,
+          refreshToken: jsonEncode(authClient.credentials.toJson()),
         );
         await GoogleRefreshToken.insert(session, token);
       } else {
-        token.refreshToken = authClient.credentials.refreshToken!;
+        token.refreshToken = jsonEncode(authClient.credentials.toJson());
         await GoogleRefreshToken.update(session, token);
       }
     }
 
     var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+
+    authClient.close();
 
     return AuthenticationResponse(
       success: true,
@@ -109,8 +106,9 @@ class GoogleEndpoint extends Endpoint {
   Future<AuthenticationResponse> authenticateWithIdToken(
       Session session, String idToken) async {
     try {
-      Map web = _googleClientSecret.json!['web'];
-      String clientId = web['client_id'];
+      assert(GoogleAuth.clientSecret != null,
+          'Google client secret is not loaded');
+      String clientId = GoogleAuth.clientSecret!.clientId;
 
       // Verify the token with Google's servers.
       // TODO: This should probably be done on this server.
@@ -220,25 +218,21 @@ class GoogleEndpoint extends Endpoint {
 }
 
 class _GoogleUtils {
-  static Future<AutoRefreshingAuthClient> clientViaClientSecretAndCode(
-    Map data,
+  static Future<AutoRefreshingClient> clientViaClientSecretAndCode(
+    GoogleClientSecret secret,
     String authenticationCode,
     List<String> scopes, [
     String? redirectUri,
   ]) async {
-    Map web = data['web'];
-    String identifier = web['client_id'];
-    String secret = web['client_secret'];
-    List redirectUris = web['redirect_uris'];
-    redirectUri = redirectUri ?? redirectUris[0];
-    var clientId = ClientId(identifier, secret);
+    redirectUri = redirectUri ?? secret.redirectUris[0];
+    var clientId = ClientId(secret.clientId, secret.clientSecret);
     var client = http.Client();
 
     var credentials = await obtainAccessCredentialsViaCodeExchange(
       client,
       clientId,
       authenticationCode,
-      redirectUrl: redirectUri!,
+      redirectUrl: redirectUri,
     );
 
     return AutoRefreshingClient(
@@ -247,21 +241,5 @@ class _GoogleUtils {
       credentials,
       closeUnderlyingClient: true,
     );
-  }
-}
-
-class _GoogleClientSecret {
-  String path;
-  Map? json;
-
-  _GoogleClientSecret(this.path) {
-    try {
-      var file = File(path);
-      var jsonData = file.readAsStringSync();
-      json = jsonDecode(jsonData);
-    } catch (e) {
-      stdout.writeln(
-          'serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.');
-    }
   }
 }

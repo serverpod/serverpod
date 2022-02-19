@@ -363,21 +363,46 @@ class Serverpod {
 
   /// Calls a [FutureCall] by its name after the specified delay, optionally
   /// passing a [SerializableEntity] object as parameter.
-  void futureCallWithDelay(
-      String callName, SerializableEntity? object, Duration delay) {
+  Future<void> futureCallWithDelay(
+    String callName,
+    SerializableEntity? object,
+    Duration delay, {
+    String? identifier,
+  }) async {
     assert(server.running,
         'Server is not running, call start() before using future calls');
-    _futureCallManager.scheduleFutureCall(
-        callName, object, DateTime.now().add(delay), serverId);
+    await _futureCallManager.scheduleFutureCall(
+      callName,
+      object,
+      DateTime.now().toUtc().add(delay),
+      serverId,
+      identifier,
+    );
   }
 
   /// Calls a [FutureCall] by its name at the specified time, optionally passing
   /// a [SerializableEntity] object as parameter.
-  void futureCallAtTime(
-      String callName, SerializableEntity? object, DateTime time) {
+  Future<void> futureCallAtTime(
+    String callName,
+    SerializableEntity? object,
+    DateTime time, {
+    String? identifier,
+  }) async {
     assert(server.running,
         'Server is not running, call start() before using future calls');
-    _futureCallManager.scheduleFutureCall(callName, object, time, serverId);
+    await _futureCallManager.scheduleFutureCall(
+      callName,
+      object,
+      time,
+      serverId,
+      identifier,
+    );
+  }
+
+  /// Cancels a [FutureCall] with the specified identifier. If no future call
+  /// with the specified identifier is found, this call will have no effect.
+  Future<void> cancelFutureCall(String identifier) async {
+    await _futureCallManager.cancelFutureCall(identifier);
   }
 
   /// Retrieves a password for the given key. Passwords are loaded from the

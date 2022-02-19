@@ -25,21 +25,42 @@ class FutureCallManager {
 
   /// Schedules a [FutureCall] by its [name]. A [SerializableEntity] can be
   /// passed as an argument. The `invoke` method of the [FutureCall] will
-  /// be called at or after the specified [time].
-  Future<void> scheduleFutureCall(String name, SerializableEntity? object,
-      DateTime time, int serverId) async {
+  /// be called at or after the specified [time]. Set the identifier if you need
+  /// to be able to cancel the call.
+  Future<void> scheduleFutureCall(
+    String name,
+    SerializableEntity? object,
+    DateTime time,
+    int serverId,
+    String? identifier,
+  ) async {
     String? serialization;
     if (object != null) serialization = jsonEncode(object.serializeAll());
 
+    print('scheduleFutureCall time: $time');
     var entry = FutureCallEntry(
       name: name,
       serializedObject: serialization,
       time: time,
       serverId: serverId,
+      identifier: identifier,
     );
 
     var session = await _server.serverpod.createSession();
     await session.db.insert(entry);
+    await session.close(logSession: false);
+  }
+
+  /// Cancels a [FutureCall] with the specified identifier. If no future call
+  /// with the specified identifier is found, this call will have no effect.
+  Future<void> cancelFutureCall(String identifier) async {
+    var session = await _server.serverpod.createSession();
+
+    await FutureCallEntry.delete(
+      session,
+      where: (t) => t.identifier.equals(identifier),
+    );
+
     await session.close(logSession: false);
   }
 
@@ -71,7 +92,7 @@ class FutureCallManager {
   Future<void> _checkQueue() async {
     try {
       // Get calls
-      var now = DateTime.now();
+      var now = DateTime.now().toUtc();
 
       var tempSession = await _server.serverpod.createSession();
       var rows = await tempSession.db.find<FutureCallEntry>(

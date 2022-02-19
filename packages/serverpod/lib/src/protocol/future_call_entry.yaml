@@ -6,9 +6,12 @@ fields:
   time: DateTime
   serializedObject: String?
   serverId: int
+  identifier: String?
 
 indexes:
   serverpod_future_call_time_idx:
     fields: time
   serverpod_future_call_serverId_idx:
     fields: serverId
+  serverpod_future_call_identifier_idx:
+    fields: identifier
