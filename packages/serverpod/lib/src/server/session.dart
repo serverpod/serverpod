@@ -150,6 +150,7 @@ abstract class Session {
       stderr.writeln('Failed to close session: $e');
       stderr.writeln('$stackTrace');
     }
+    return null;
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written

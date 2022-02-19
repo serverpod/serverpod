@@ -1,3 +1,10 @@
+## 0.9.4
+
+- Updates to documentation.
+- Makes it possible to cancel future calls.
+- Improves accuracy in future calls.
+- Saves/restores refresh tokens for Google sign in.
+
 ## 0.9.3
 
 - Updates to documentation.

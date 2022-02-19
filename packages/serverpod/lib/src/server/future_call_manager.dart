@@ -37,7 +37,6 @@ class FutureCallManager {
     String? serialization;
     if (object != null) serialization = jsonEncode(object.serializeAll());
 
-    print('scheduleFutureCall time: $time');
     var entry = FutureCallEntry(
       name: name,
       serializedObject: serialization,

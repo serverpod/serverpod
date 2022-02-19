@@ -25,6 +25,7 @@ class GoogleAuth {
         'serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.',
       );
     }
+    return null;
   }
 
   /// Returns an authenticated client for a specific, authenticated user. The
