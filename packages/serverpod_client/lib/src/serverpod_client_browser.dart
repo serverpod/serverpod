@@ -65,9 +65,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
       return parseData(data, returnTypeName, serializationManager);
     } catch (e, stackTrace) {
       if (e is http.ClientException) {
-        var message =
-            data ?? 'Likely internal server error or permission denied.';
-        throw (ServerpodClientException(message, 500));
+        var message = data ?? 'Unknown server response code. ($e)';
+        throw (ServerpodClientException(message, -1));
       }
 
       if (logFailedCalls) {
