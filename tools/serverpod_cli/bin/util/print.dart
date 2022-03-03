@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:super_string/super_string.dart';
 
+/// Print to terminal with word wrap.
 void printww(String string) {
   if (stdout.hasTerminal) {
     var leadingWrap = string.startsWith('\n');

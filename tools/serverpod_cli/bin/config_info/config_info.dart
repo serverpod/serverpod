@@ -1,3 +1,4 @@
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ConfigInfo {
@@ -6,6 +7,15 @@ class ConfigInfo {
   ConfigInfo(String runMode, {this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
     config = ServerConfig(runMode, serverId ?? 0, passwords);
+  }
+
+  Client createServiceClient() {
+    print('serviceSecret: ${config.serviceSecret}');
+    var keyManager = ServiceKeyManager('CLI', config);
+    return Client(
+      '${config.publicScheme}://${config.publicHost}:${config.servicePort}/',
+      authenticationKeyManager: keyManager,
+    );
   }
 
   void printAddress() {

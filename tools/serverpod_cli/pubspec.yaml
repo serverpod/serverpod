@@ -25,6 +25,8 @@ dependencies:
   yaml: ^3.1.0
   serverpod_shared: #^0.9.4
     path: ../../packages/serverpod_shared
+  serverpod_service_client: #^0.9.4
+    path: ../../packages/serverpod_service_client
 
 dev_dependencies:
   lints: ^1.0.1

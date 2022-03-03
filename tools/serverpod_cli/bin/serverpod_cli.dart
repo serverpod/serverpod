@@ -8,14 +8,14 @@ import 'create/command_line_tools.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
-import 'generator/generator_continuous.dart';
 // import 'insights/insights.dart';
 import 'internal_tools/generate_pubspecs.dart';
+import 'run/runner.dart';
 import 'shared/environment.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
-const cmdGenerateContinuously = 'generate-continuously';
+const cmdRun = 'run';
 const cmdGenerateCertificates = 'generate-certs';
 const cmdShutdown = 'shutdown';
 const cmdLogs = 'logs';
@@ -47,7 +47,7 @@ void main(List<String> args) async {
     return;
   }
 
-  // Make sure all neccessary downloads are installed
+  // Make sure all necessary downloads are installed
   if (!resourceManager.isTemplatesInstalled) {
     try {
       await resourceManager.installTemplates();
@@ -91,11 +91,11 @@ void main(List<String> args) async {
       abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerate, generateParser);
 
-  // "generate-continuously" command
-  var generateContinuouslyParser = ArgParser();
-  generateContinuouslyParser.addFlag('verbose',
+  // "run" command
+  var runParser = ArgParser();
+  runParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  parser.addCommand(cmdGenerateContinuously, generateContinuouslyParser);
+  parser.addCommand(cmdRun, runParser);
 
   // "generatecerts" command
   var generateCerts = ArgParser();
@@ -216,8 +216,8 @@ void main(List<String> args) async {
       _analytics.cleanUp();
       return;
     }
-    if (results.command!.name == cmdGenerateContinuously) {
-      performGenerateContinuously(results.command!['verbose']);
+    if (results.command!.name == cmdRun) {
+      performRun(results.command!['verbose'], true);
       _analytics.cleanUp();
       return;
     }
@@ -307,8 +307,8 @@ void _printUsage(ArgParser parser) {
       'Generate code from yaml files for server and clients',
       parser.commands[cmdGenerate]!);
   _printCommandUsage(
-      cmdGenerateContinuously,
-      'Continuously generate code from yaml files for server and clients',
+      cmdRun,
+      'Run server in development mode. Code is generated continuously and server is hot reloaded when source files are edited.',
       parser.commands[cmdGenerate]!);
   _printCommandUsage(
       cmdGenerateCertificates,

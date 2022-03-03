@@ -26,7 +26,7 @@ dependencies:
   file_picker: ^4.1.6
 
   # See https://pub.dev/packages/image_cropper for installation instructions.
-  image_cropper: ^1.5.0
+  image_cropper: ^1.4.1
 
   # See https://pub.dev/packages/image_picker for installation instructions.
   image_picker: ^0.8.4+3

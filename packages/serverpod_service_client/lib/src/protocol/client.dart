@@ -78,6 +78,10 @@ class _EndpointInsights extends EndpointRef {
     return await caller.callServerEndpoint(
         'insights', 'checkHealth', 'ServerHealthResult', {});
   }
+
+  Future<void> hotReload() async {
+    return await caller.callServerEndpoint('insights', 'hotReload', 'void', {});
+  }
 }
 
 class Client extends ServerpodClient {

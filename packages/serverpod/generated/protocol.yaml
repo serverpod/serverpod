@@ -8,3 +8,4 @@ insights:
   - getCachesInfo:
   - shutdown:
   - checkHealth:
+  - hotReload:

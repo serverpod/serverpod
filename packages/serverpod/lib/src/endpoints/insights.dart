@@ -145,4 +145,10 @@ class InsightsEndpoint extends Endpoint {
   Future<ServerHealthResult> checkHealth(Session session) async {
     return await performHealthChecks(pod);
   }
+
+  /// Performs a hot reload of the server.
+  Future<void> hotReload(Session session) async {
+    // TODO: Actually reload
+    print('hotReload called');
+  }
 }

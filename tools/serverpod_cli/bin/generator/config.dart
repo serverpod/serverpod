@@ -15,6 +15,7 @@ class GeneratorConfig {
 
   late String serverPackage;
 
+  final String libSourcePath = 'lib';
   final String protocolSourcePath = 'lib/src/protocol';
   final String endpointsSourcePath = 'lib/src/endpoints';
 

@@ -133,6 +133,15 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'hotReload': MethodConnector(
+          name: 'hotReload',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).hotReload(
+              session,
+            );
+          },
+        ),
       },
     );
   }
