@@ -90,11 +90,13 @@ void main() async {
 
 Now, you can simply add the sign-in buttons to your code.
 
-    SignInWithGoogleButton(
-      caller: client.modules.auth,
-      onSignedIn: () { ... handle sign in here ... },
-      onFailure: () { ... handle fail to sign in here ... },
-    )
+```dart
+SignInWithGoogleButton(
+  caller: client.modules.auth,
+  onSignedIn: () { ... handle sign in here ... },
+  onFailure: () { ... handle fail to sign in here ... },
+)
+```
 
 
 This is a complete example of a sign-in dialog: [sign_in_dialog.dart](https://github.com/serverpod/serverpod/blob/main/packages/serverpod/example/example_flutter/lib/src/sign_in_dialog.dart).
