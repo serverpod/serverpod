@@ -14,7 +14,6 @@ import 'generator/generator.dart';
 import 'internal_tools/generate_pubspecs.dart';
 import 'run/runner.dart';
 import 'shared/environment.dart';
-import 'util/print.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
@@ -45,7 +44,7 @@ void main(List<String> args) async {
   // Check that docker is running
   if (Process.runSync('docker', ['ps']).exitCode != 0) {
     print(
-      'Failed to run serverpod. Docker is not running',
+      'Failed to run serverpod. Docker must be running',
     );
     return;
   }
