@@ -11,8 +11,7 @@ import 'port_checker.dart';
 
 const _defaultPorts = <int>[8080, 8081, 8090, 8091];
 
-Future<void> performCreate(
-    String name, bool verbose, String template, bool force) async {
+Future<void> performCreate(String name, bool verbose, String template, bool force) async {
   // Check we are set to create a new project
   var portsAvailable = true;
   for (var port in _defaultPorts) {
@@ -27,8 +26,7 @@ Future<void> performCreate(
   var dockerInstalled = await CommandLineTools.existsCommand('docker');
 
   if (!portsAvailable || !dockerInstalled) {
-    var strIssue =
-        'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create".';
+    var strIssue = 'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create".';
     var strIssuePorts =
         'By default your server will run on port 8080 and 8081 and Postgres and Redis will run on 8090 and 8091. One or more of these ports are currently in use. The most likely reason is that you have another Serverpod project running, but it can also be another service. You can either stop the other service and run this command again, or you can create the project with the -f flag added and manually configure the ports in the config/development.yaml and docker-compose.yaml files.';
     var strIssueDocker =
@@ -49,7 +47,8 @@ Future<void> performCreate(
     }
   }
 
-  var projectDir = Directory(Directory.current.path + '/' + name);
+  var pathSeparator = Platform.pathSeparator;
+  var projectDir = Directory(Directory.current.path + pathSeparator + name);
   if (projectDir.existsSync()) {
     print('Project $name already exists.');
     return;
@@ -60,22 +59,21 @@ Future<void> performCreate(
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
-  var serverDir = Directory(projectDir.path + '/' + name + '_server');
+  var serverDir = Directory(projectDir.path + pathSeparator + name + '_server');
   if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
-  var clientDir = Directory(projectDir.path + '/' + name + '_client');
+  var clientDir = Directory(projectDir.path + pathSeparator + name + '_client');
   if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
-    var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
+    var flutterDir = Directory(projectDir.path + pathSeparator + name + '_flutter');
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
     // Copy server files
     var copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -129,8 +127,7 @@ Future<void> performCreate(
 
     // Copy client files
     copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -164,8 +161,7 @@ Future<void> performCreate(
 
     // Copy Flutter files
     copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
       dstDir: flutterDir,
       replacements: [
         Replacement(
@@ -210,8 +206,7 @@ Future<void> performCreate(
   } else if (template == 'module') {
     // Copy server files
     var copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/MODULENAME_server'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/MODULENAME_server'),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -245,8 +240,7 @@ Future<void> performCreate(
 
     // Copy client files
     copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/MODULENAME_client'),
+      srcDir: Directory('${resourceManager.templateDirectory.path}/MODULENAME_client'),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -278,8 +272,7 @@ Future<void> performCreate(
     );
     copier.copyFiles();
   } else {
-    print(
-        'Unknown template: $template (valid options are "server" or "module")');
+    print('Unknown template: $template (valid options are "server" or "module")');
   }
 
   if (dockerInstalled) {

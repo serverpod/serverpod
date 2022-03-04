@@ -7,14 +7,12 @@ import 'pgsql_generator.dart';
 void performGenerateClasses(bool verbose) {
   // Generate server side code
   print('Generating server side code.');
-  var serverGenerator = ClassGeneratorDart(config.protocolSourcePath,
-      config.generatedServerProtocolPath, verbose, true);
+  var serverGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedServerProtocolPath, verbose, true);
   serverGenerator.generate();
 
   // Generate client side code
   print('Generating Dart client side code.');
-  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath,
-      config.generatedClientProtocolPath, verbose, false);
+  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath, config.generatedClientProtocolPath, verbose, false);
   clientGenerator.generate();
 }
 
@@ -69,18 +67,16 @@ abstract class ClassGenerator {
     outFile.writeAsStringSync(out ?? '');
 
     // Generate SQL statements
-    var pgsqlGenerator = PgsqlGenerator(
-        classInfos: classInfos, outPath: 'generated/tables.pgsql');
+    var pgsqlGenerator = PgsqlGenerator(classInfos: classInfos, outPath: 'generated/tables.pgsql');
     pgsqlGenerator.generate();
   }
 
-  String? generateFile(
-      String input, String outputFileName, Set<ClassInfo> classNames);
+  String? generateFile(String input, String outputFileName, Set<ClassInfo> classNames);
 
   String? generateFactory(Set<ClassInfo> classNames);
 
   String _transformFileNameWithoutPath(String path) {
-    var pathComponents = path.split('/');
+    var pathComponents = path.split(Platform.pathSeparator);
     var fileName = pathComponents[pathComponents.length - 1];
     fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
     return fileName;
