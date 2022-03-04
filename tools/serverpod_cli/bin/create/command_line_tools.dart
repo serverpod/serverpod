@@ -1,17 +1,35 @@
 import 'dart:io';
 
 class CommandLineTools {
+  static late String flutterCommand;
+
   static Future<void> dartPubGet(Directory dir) async {
     print('Running `dart pub get` in ${dir.path}');
-    var result =
-        await Process.run('dart', ['pub', 'get'], workingDirectory: dir.path);
+    var result = await Process.run(
+      'dart',
+      ['pub', 'get'],
+      workingDirectory: dir.path,
+    );
     print(result.stdout);
   }
 
   static Future<void> flutterCreate(Directory dir) async {
-    print('Running `flutter create` in ${dir.path}');
-    var result = await Process.run('flutter', ['create', '.'],
-        workingDirectory: dir.path);
+    print('Running `$flutterCommand create` in ${dir.path}');
+
+    if (!dir.existsSync()) {
+      print('Directory ${dir.path} doesn\'t exists');
+      exit(1);
+    }
+
+    var result = await Process.run(
+      flutterCommand,
+      [
+        if (flutterCommand == 'fvm') 'flutter',
+        'create',
+        '.',
+      ],
+      workingDirectory: dir.path,
+    );
     print(result.stdout);
   }
 
