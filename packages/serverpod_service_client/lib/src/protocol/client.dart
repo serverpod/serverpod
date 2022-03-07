@@ -79,8 +79,8 @@ class _EndpointInsights extends EndpointRef {
         'insights', 'checkHealth', 'ServerHealthResult', {});
   }
 
-  Future<void> hotReload() async {
-    return await caller.callServerEndpoint('insights', 'hotReload', 'void', {});
+  Future<bool> hotReload() async {
+    return await caller.callServerEndpoint('insights', 'hotReload', 'bool', {});
   }
 }
 

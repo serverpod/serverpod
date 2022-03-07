@@ -36,11 +36,13 @@ void performRun(bool verbose, bool runDocker) async {
       while (libIsDirty) {
         Timer(const Duration(milliseconds: 500), () async {
           if (libIsDirty && !generatingAndReloading) {
+            var protocolWasDirty = protocolIsDirty;
+
             generatingAndReloading = true;
             protocolIsDirty = false;
             libIsDirty = false;
 
-            await _generateAndReload(verbose, protocolIsDirty, configInfo);
+            await _generateAndReload(verbose, protocolWasDirty, configInfo);
 
             generatingAndReloading = false;
           }
@@ -109,7 +111,7 @@ Future<void> _generateAndReload(
   // TODO: Hot reload server
   var client = configInfo.createServiceClient();
   try {
-    await client.insights.hotReload();
+    var success = await client.insights.hotReload();
   } catch (e) {
     print('Failed hot reload: $e');
   }
