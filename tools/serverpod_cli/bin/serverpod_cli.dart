@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
@@ -32,16 +34,41 @@ final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
   // Check that required tools are installed
+  if (!await CommandLineTools.existsCommand('docker')) {
+    print(
+      'Failed to run serverpod. You need to have docker installed',
+    );
+    return;
+  }
+
+  // Check that docker is running
+  if (Process.runSync('docker', ['ps']).exitCode != 0) {
+    print(
+      'Failed to run serverpod. Docker must be running',
+    );
+    return;
+  }
+
   if (!await CommandLineTools.existsCommand('dart')) {
     print(
-        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+      'Failed to run serverpod. You need to have dart installed and in your \$PATH',
+    );
     return;
   }
-  if (!await CommandLineTools.existsCommand('flutter')) {
+
+  var commands = await Future.wait([
+    CommandLineTools.existsCommand('flutter'),
+    CommandLineTools.existsCommand('fvm')
+  ]);
+
+  if (commands.every((exists) => !exists)) {
     print(
-        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+      'Failed to run serverpod. You need to have flutter or fvm installed and in your \$PATH',
+    );
     return;
   }
+
+  CommandLineTools.flutterCommand = commands[0] ? 'flutter' : 'fvm';
 
   if (!loadEnvironmentVars()) {
     return;
