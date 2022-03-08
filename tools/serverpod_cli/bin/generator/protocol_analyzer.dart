@@ -4,6 +4,7 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 
 import 'config.dart';
@@ -22,6 +23,11 @@ Future<ProtocolDefinition> performAnalysis(bool verbose) async {
   return await _analyzer!.analyze(verbose);
 }
 
+Future<List<String>> performAnalysisGetSevereErrors() async {
+  _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
+  return await _analyzer!.getErrors();
+}
+
 class ProtocolAnalyzer {
   final Directory endpointDirectory;
   late AnalysisContextCollection collection;
@@ -31,6 +37,28 @@ class ProtocolAnalyzer {
       includedPaths: [endpointDirectory.absolute.path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
+  }
+
+  Future<List<String>> getErrors() async {
+    var errorMessages = <String>[];
+
+    for (var context in collection.contexts) {
+      var analyzedFiles = context.contextRoot.analyzedFiles();
+      for (var filePath in analyzedFiles) {
+        var errors = await context.currentSession.getErrors(filePath);
+        if (errors is ErrorsResult) {
+          for (var error in errors.errors) {
+            if (error.severity == Severity.error) {
+              // TODO: Figure out how to include line number
+              errorMessages.add(
+                '${error.problemMessage.filePath} Error: ${error.message}',
+              );
+            }
+          }
+        }
+      }
+    }
+    return errorMessages;
   }
 
   Future<ProtocolDefinition> analyze(bool verbose) async {

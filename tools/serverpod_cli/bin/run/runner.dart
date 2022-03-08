@@ -5,6 +5,7 @@ import '../config_info/config_info.dart';
 import '../generator/class_generator.dart';
 import '../generator/config.dart';
 import '../generator/dart_format.dart';
+import '../generator/protocol_analyzer.dart';
 import '../generator/protocol_generator.dart';
 import '../port_scanner/port_scanner.dart';
 import '../util/process_killer_extension.dart';
@@ -22,6 +23,16 @@ void performRun(bool verbose, bool runDocker) async {
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);
+
+  // Analyze the code
+  print('Running analyzer.');
+  var errors = await performAnalysisGetSevereErrors();
+  if (errors.isNotEmpty) {
+    for (var error in errors) {
+      print(error);
+    }
+    return;
+  }
 
   // Generate continuously and hot reload.
   if (verbose) print('Starting up continuous generator');
@@ -111,6 +122,8 @@ Future<void> _generateAndReload(
   ConfigInfo configInfo,
   _ServerRunner runner,
 ) async {
+  print('');
+  print('Attempting to generate code and restart server. Hang on.');
   if (generate) {
     try {
       performGenerateClasses(verbose);
@@ -136,15 +149,24 @@ Future<void> _generateAndReload(
 
   try {
     // TODO: Implement real hot reload
-    // TODO: Check if server code is valid before restarting.
+    // Check if server code is valid before restarting.
+    var errors = await performAnalysisGetSevereErrors();
 
-    print('Stopping the server.');
-    await runner.stop();
-    await Future.delayed(const Duration(milliseconds: 500));
+    if (errors.isNotEmpty) {
+      print('Server restart failed.');
+      for (var error in errors) {
+        print(error);
+      }
+    } else {
+      print('Stopping the server.');
+      await runner.stop();
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    // Start a new instance of the server
-    print('Restarting the server.');
-    await runner.start();
+      // Start a new instance of the server
+      print('Restarting the server.');
+      print('');
+      await runner.start();
+    }
   } catch (e) {
     print('Failed hot reload: $e');
   }
