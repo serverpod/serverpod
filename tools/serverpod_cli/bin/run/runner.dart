@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import '../config_info/config_info.dart';
+import '../create/command_line_tools.dart';
+import '../create/port_checker.dart';
 import '../generator/class_generator.dart';
 import '../generator/config.dart';
 import '../generator/dart_format.dart';
 import '../generator/protocol_analyzer.dart';
 import '../generator/protocol_generator.dart';
 import '../port_scanner/port_scanner.dart';
+import '../util/print.dart';
 import '../util/process_killer_extension.dart';
 import 'file_watcher.dart';
 
@@ -16,7 +19,42 @@ void performRun(bool verbose, bool runDocker) async {
 
   var configInfo = ConfigInfo('development');
 
-  // TODO: Check if all required ports are available.
+  // Check if all required ports are available and Docker is running.
+  var dockerConfigured = (await CommandLineTools.existsCommand('docker') &&
+          await CommandLineTools.isDockerRunning()) ||
+      !runDocker;
+
+  var mainPortAvailable =
+      await isNetworkPortAvailable(configInfo.config.publicPort);
+  var servicePortAvailable =
+      await await isNetworkPortAvailable(configInfo.config.servicePort);
+
+  if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
+    var strIssue =
+        'There are some issues with your setup that will prevent your Serverpod project from launching.';
+    var strIssueDocker =
+        'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the --no-run-docker flag added.';
+    var strIssueMainPort =
+        'The public api port (${configInfo.config.publicPort}) is occupied by another application or you are running another instance of Serverpod.';
+    var strIssueServicePort =
+        'The service insights port (${configInfo.config.servicePort}) is occupied by another application or you are running another instance of Serverpod.';
+
+    printww(strIssue);
+
+    if (!dockerConfigured) {
+      printww('');
+      printww(strIssueDocker);
+    }
+    if (!mainPortAvailable) {
+      printww('');
+      printww(strIssueMainPort);
+    }
+    if (!servicePortAvailable) {
+      printww('');
+      printww(strIssueServicePort);
+    }
+    return;
+  }
 
   // Do an initial serverpod generate.
   print('Spinning up serverpod generate.');

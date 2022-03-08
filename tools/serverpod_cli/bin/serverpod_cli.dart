@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
@@ -31,6 +33,12 @@ final runModes = <String>['development', 'staging', 'production'];
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
+  if (Platform.isWindows) {
+    print(
+        'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
+    print('');
+  }
+
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart')) {
     print(
@@ -95,6 +103,7 @@ void main(List<String> args) async {
   var runParser = ArgParser();
   runParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
+  runParser.addFlag('run-docker', negatable: true, defaultsTo: true);
   parser.addCommand(cmdRun, runParser);
 
   // "generatecerts" command
@@ -217,7 +226,7 @@ void main(List<String> args) async {
       return;
     }
     if (results.command!.name == cmdRun) {
-      performRun(results.command!['verbose'], true);
+      performRun(results.command!['verbose'], results.command!['run-docker']);
       _analytics.cleanUp();
       return;
     }
