@@ -25,7 +25,7 @@ extension ProcessKillerExtension on Process {
   }
 
   static bool isProcessAlive(int pid) {
-    final res = Process.runSync('kill', ['-0', '$pid']);
+    var res = Process.runSync('kill', ['-0', '$pid']);
     return res.exitCode == 0;
   }
 }
