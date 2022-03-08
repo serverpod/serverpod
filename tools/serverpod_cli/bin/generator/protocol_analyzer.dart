@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -48,7 +49,8 @@ class ProtocolAnalyzer {
         // TODO: Test and fix
         // ignore: deprecated_member_use
         var library = await context.currentSession.getResolvedLibrary(filePath);
-        var element = library.element!;
+        library as ResolvedLibraryResult;
+        var element = library.element;
         var topElements = element.topLevelElements;
 
         for (var element in topElements) {
