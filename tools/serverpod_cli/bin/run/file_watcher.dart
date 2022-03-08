@@ -14,11 +14,12 @@ class SourceFileWatcher {
   Future<void> watch(bool verbose) async {
     var watcherClasses = DirectoryWatcher(config.libSourcePath);
     await for (WatchEvent event in watcherClasses.events) {
-      print('File changed: $event');
+      if (event.path.startsWith(config.generatedServerProtocolPath)) {
+        continue;
+      }
       switch (event.type) {
         case ChangeType.ADD:
         case ChangeType.MODIFY:
-          print('ADD/MODIFY path: ${event.path}');
           await onChangedSourceFile(event.path, _isPathInProtocol(event.path));
           break;
         case ChangeType.REMOVE:

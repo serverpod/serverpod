@@ -17,7 +17,7 @@ const _excludedMethodNameSet = {
 ProtocolAnalyzer? _analyzer;
 
 Future<ProtocolDefinition> performAnalysis(bool verbose) async {
-  _analyzer ??= ProtocolAnalyzer(config.endpointsSourcePath);
+  _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
   return await _analyzer!.analyze(verbose);
 }
 

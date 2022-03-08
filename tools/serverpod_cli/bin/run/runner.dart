@@ -4,8 +4,10 @@ import 'dart:io';
 import '../config_info/config_info.dart';
 import '../generator/class_generator.dart';
 import '../generator/config.dart';
+import '../generator/dart_format.dart';
 import '../generator/protocol_generator.dart';
 import '../port_scanner/port_scanner.dart';
+import '../util/process_killer_extension.dart';
 import 'file_watcher.dart';
 
 void performRun(bool verbose, bool runDocker) async {
@@ -13,12 +15,15 @@ void performRun(bool verbose, bool runDocker) async {
 
   var configInfo = ConfigInfo('development');
 
-  // Do an initial serverpod generate
-  if (verbose) print('Running serverpod generate');
+  // TODO: Check if all required ports are available.
+
+  // Do an initial serverpod generate.
+  print('Running serverpod generate.');
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
+  performDartFormat(verbose);
 
-  // Generate continuously and hot reload
+  // Generate continuously and hot reload.
   if (verbose) print('Starting up continuous generator');
   var serverRunner = _ServerRunner();
   var dockerRunner = _DockerRunner();
@@ -34,6 +39,8 @@ void performRun(bool verbose, bool runDocker) async {
 
       // Batch process changes made within 500 ms.
       while (libIsDirty) {
+        // The timer is used to group together changes if many files are saved
+        // at the same time.
         Timer(const Duration(milliseconds: 500), () async {
           if (libIsDirty && !generatingAndReloading) {
             var protocolWasDirty = protocolIsDirty;
@@ -42,30 +49,33 @@ void performRun(bool verbose, bool runDocker) async {
             protocolIsDirty = false;
             libIsDirty = false;
 
-            await _generateAndReload(verbose, protocolWasDirty, configInfo);
+            await _generateAndReload(
+              verbose,
+              protocolWasDirty,
+              configInfo,
+              serverRunner,
+            );
 
             generatingAndReloading = false;
           }
         });
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(seconds: 1));
       }
-
-      // TODO: Hot reload server
     },
     onRemovedProtocolFile: (removedPath) async {
       // TODO: remove corresponding file
     },
   );
 
-  unawaited(watcher.watch(verbose));
-
   // Start Docker.
   if (runDocker) {
-    if (verbose) print('Starting Docker');
+    print('Starting Docker (for Postgres and Redis).');
     await dockerRunner.start(verbose);
   }
 
   // Verify that Postgres & Redis is up and running.
+  print(
+      'Waiting for Postgres on ${configInfo.config.dbHost}:${configInfo.config.dbPort}.');
   if (!await PortScanner.waitForPort(
     configInfo.config.dbHost,
     configInfo.config.dbPort,
@@ -75,6 +85,8 @@ void performRun(bool verbose, bool runDocker) async {
     return;
   }
 
+  print(
+      'Waiting for Redis on ${configInfo.config.redisHost}:${configInfo.config.redisPort}.');
   if (!await PortScanner.waitForPort(
     configInfo.config.redisHost,
     configInfo.config.redisPort,
@@ -84,49 +96,84 @@ void performRun(bool verbose, bool runDocker) async {
     return;
   }
 
-  // Run the server
-  if (verbose) print('Starting the server');
-  unawaited(serverRunner.start());
+  // Start the server.
+  print('Setup complete. Starting the server.');
+  print('');
+  await serverRunner.start();
+
+  // Start watching the source directories.
+  unawaited(watcher.watch(verbose));
 }
 
 Future<void> _generateAndReload(
-    bool verbose, bool generate, ConfigInfo configInfo) async {
+  bool verbose,
+  bool generate,
+  ConfigInfo configInfo,
+  _ServerRunner runner,
+) async {
   if (generate) {
     try {
       performGenerateClasses(verbose);
     } catch (e, stackTrace) {
-      print('Failed to generate classes');
+      print('Failed to generate classes: $e');
       print(stackTrace);
     }
+
     try {
       await performGenerateProtocol(verbose);
     } catch (e, stackTrace) {
-      print('Failed to generate protocol');
+      print('Failed to generate protocol: $e');
       print(stackTrace);
     }
 
-    // TODO: Dart format generated code
+    try {
+      performDartFormat(verbose);
+    } catch (e, stackTrace) {
+      print('Failed to dart format: $e');
+      print(stackTrace);
+    }
   }
 
-  // TODO: Hot reload server
-  var client = configInfo.createServiceClient();
   try {
-    var success = await client.insights.hotReload();
+    // TODO: Implement real hot reload
+    // TODO: Check if server code is valid before restarting.
+
+    print('Stopping the server.');
+    await runner.stop();
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Start a new instance of the server
+    print('Restarting the server.');
+    await runner.start();
   } catch (e) {
     print('Failed hot reload: $e');
   }
-  client.close();
 }
 
 class _ServerRunner {
-  Future<void> start() async {
-    var process = await Process.start(
-      'dart',
-      ['--enable-vm-service', 'bin/main.dart'],
-    );
+  Process? _process;
 
-    unawaited(stdout.addStream(process.stdout));
-    unawaited(stderr.addStream(process.stderr));
+  Future<void> start() async {
+    assert(_process == null);
+    _process = await Process.start(
+      'dart',
+      ['bin/main.dart'],
+      mode: ProcessStartMode.inheritStdio,
+      runInShell: true,
+    );
+  }
+
+  Future<void> stop() async {
+    // TODO: First attempt to use the shutdown command (needs to be fixed).
+
+    assert(_process != null);
+    await _process!.killAll();
+    await _process!.exitCode;
+    _process = null;
+  }
+
+  Future<int> exitCode() async {
+    return _process!.exitCode;
   }
 }
 

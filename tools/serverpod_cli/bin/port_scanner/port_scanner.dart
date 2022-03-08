@@ -22,17 +22,12 @@ class PortScanner {
     bool printProgress = false,
   }) async {
     var endTime = DateTime.now().add(timeout);
-    stdout.write('Waiting for port $port');
     while (DateTime.now().compareTo(endTime) < 0) {
-      stdout.write('.');
       if (await isPortOpen(host, port)) {
-        stdout.writeln();
         return true;
       }
       await Future.delayed(const Duration(seconds: 1));
     }
-    stdout.writeln('');
-    stdout.writeln('Timed out.');
     return false;
   }
 }
