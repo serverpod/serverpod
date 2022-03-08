@@ -33,7 +33,12 @@ void main() {
           statusCode = e.statusCode;
         }
       }
-      expect(statusCode, equals(403));
+
+      // Only perform the check for dart:io. On web -1 will be returned as
+      // failing status codes cannot be detected.
+      if (!identical(0, 0.0)) {
+        expect(statusCode, equals(403));
+      }
     });
 
     test('Authenticate with incorrect credentials', () async {

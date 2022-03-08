@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
@@ -187,8 +188,13 @@ class Serverpod {
   List<String>? whitelistedExternalCalls;
 
   /// Creates a new Serverpod.
-  Serverpod(List<String> args, this.serializationManager, this.endpoints,
-      {this.authenticationHandler, this.healthCheckHandler}) {
+  Serverpod(
+    List<String> args,
+    this.serializationManager,
+    this.endpoints, {
+    this.authenticationHandler,
+    this.healthCheckHandler,
+  }) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
 
@@ -215,17 +221,11 @@ class Serverpod {
       _runMode = ServerpodRunMode.development;
     }
 
-    // Load config files
-    stdout.writeln('Mode: $_runMode');
-
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);
-
-    // Print config
-    stdout.writeln(config.toString());
 
     // Setup database
     databaseConfig = DatabaseConfig(
@@ -268,6 +268,9 @@ class Serverpod {
     _futureCallManager = FutureCallManager(server, serializationManager);
 
     _instance = this;
+
+    // TODO: Print version
+    stdout.writeln('SERVERPOD version: $serverpodVersion mode: $_runMode');
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.

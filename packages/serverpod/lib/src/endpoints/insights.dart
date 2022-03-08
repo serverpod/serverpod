@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
 import '../../serverpod.dart';
@@ -144,5 +147,16 @@ class InsightsEndpoint extends Endpoint {
   /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth(Session session) async {
     return await performHealthChecks(pod);
+  }
+
+  /// Performs a hot reload of the server.
+  Future<bool> hotReload(Session session) async {
+    if (!await HotReloader.isHotReloadAvailable()) {
+      stderr.writeln(
+        'Hot reload is not available. You need to run dart with --enable-vm-service.',
+      );
+      return false;
+    }
+    return await HotReloader.hotReload();
   }
 }

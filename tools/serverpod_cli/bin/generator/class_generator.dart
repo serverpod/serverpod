@@ -6,13 +6,13 @@ import 'pgsql_generator.dart';
 
 void performGenerateClasses(bool verbose) {
   // Generate server side code
-  print('Generating server side code.');
+  if (verbose) print('Generating server side code.');
   var serverGenerator = ClassGeneratorDart(config.protocolSourcePath,
       config.generatedServerProtocolPath, verbose, true);
   serverGenerator.generate();
 
   // Generate client side code
-  print('Generating Dart client side code.');
+  if (verbose) print('Generating Dart client side code.');
   var clientGenerator = ClassGeneratorDart(config.protocolSourcePath,
       config.generatedClientProtocolPath, verbose, false);
   clientGenerator.generate();

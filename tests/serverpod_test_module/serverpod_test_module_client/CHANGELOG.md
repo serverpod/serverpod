@@ -1,3 +1,9 @@
+## 0.9.5
+
+- Adds `serverpod run` command and improves `serverpod create`.
+- Continuous generation through `severpod run`.
+- Automatic restarts through `serverpod run`.
+
 ## 0.9.4
 
 - Updates to documentation.
