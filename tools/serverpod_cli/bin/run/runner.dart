@@ -19,13 +19,12 @@ void performRun(bool verbose, bool runDocker) async {
   // TODO: Check if all required ports are available.
 
   // Do an initial serverpod generate.
-  print('Running serverpod generate.');
+  print('Spinning up serverpod generate.');
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);
 
   // Analyze the code
-  print('Running analyzer.');
   var errors = await performAnalysisGetSevereErrors();
   if (errors.isNotEmpty) {
     for (var error in errors) {
@@ -35,7 +34,6 @@ void performRun(bool verbose, bool runDocker) async {
   }
 
   // Generate continuously and hot reload.
-  if (verbose) print('Starting up continuous generator');
   var serverRunner = _ServerRunner();
   var dockerRunner = _DockerRunner();
   var generatingAndReloading = false;
@@ -123,7 +121,8 @@ Future<void> _generateAndReload(
   _ServerRunner runner,
 ) async {
   print('');
-  print('Attempting to generate code and restart server. Hang on.');
+  print('Attempting to generate code and restart server. Hang tight.');
+
   if (generate) {
     try {
       performGenerateClasses(verbose);

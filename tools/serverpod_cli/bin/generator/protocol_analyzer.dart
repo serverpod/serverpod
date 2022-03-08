@@ -18,8 +18,14 @@ const _excludedMethodNameSet = {
 
 ProtocolAnalyzer? _analyzer;
 
-Future<ProtocolDefinition> performAnalysis(bool verbose) async {
-  _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
+Future<ProtocolDefinition> performAnalysis(
+  bool verbose, {
+  bool requestNewAnalyzer = true,
+}) async {
+  if (requestNewAnalyzer) {
+    _analyzer = null;
+  }
+  _analyzer ??= ProtocolAnalyzer(config.endpointsSourcePath);
   return await _analyzer!.analyze(verbose);
 }
 
@@ -74,8 +80,6 @@ class ProtocolAnalyzer {
         }
         filePaths.add(filePath);
 
-        // TODO: Test and fix
-        // ignore: deprecated_member_use
         var library = await context.currentSession.getResolvedLibrary(filePath);
         library as ResolvedLibraryResult;
         var element = library.element;
