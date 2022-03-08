@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
@@ -269,7 +270,7 @@ class Serverpod {
     _instance = this;
 
     // TODO: Print version
-    stdout.writeln('SERVERPOD mode: $_runMode');
+    stdout.writeln('SERVERPOD version: $serverpodVersion mode: $_runMode');
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
