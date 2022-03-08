@@ -23,6 +23,11 @@ class CommandLineTools {
     return result.exitCode == 0;
   }
 
+  static Future<bool> isDockerRunning() async {
+    var result = await Process.run('docker', ['info']);
+    return result.exitCode == 0;
+  }
+
   static Future<void> createTables(Directory dir, String name) async {
     var serverPath = '${dir.path}/${name}_server';
     printww('Setting up Docker and default database tables in $serverPath');
