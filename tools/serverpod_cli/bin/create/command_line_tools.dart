@@ -19,6 +19,11 @@ class CommandLineTools {
   }
 
   static Future<bool> existsCommand(String command) async {
+    if (Platform.isWindows) {
+      // TODO: Perform check on Windows too.
+      print('WARNING! skipping check to see if "$command" exists.');
+      return true;
+    }
     var result = await Process.run('which', [command]);
     return result.exitCode == 0;
   }
