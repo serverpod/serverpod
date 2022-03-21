@@ -80,7 +80,7 @@ abstract class ClassGenerator {
   String? generateFactory(Set<ClassInfo> classNames);
 
   String _transformFileNameWithoutPath(String path) {
-    var pathComponents = path.split('/');
+    var pathComponents = path.split(Platform.pathSeparator);
     var fileName = pathComponents[pathComponents.length - 1];
     fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
     return fileName;
