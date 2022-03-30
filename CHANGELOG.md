@@ -1,3 +1,7 @@
+## 0.9.6
+- Improved, but still experimental support for Windows.
+- Fixes issue with error being thrown when internet connection is missing in CLI.
+
 ## 0.9.5
 
 - Adds `serverpod run` command and improves `serverpod create`.
