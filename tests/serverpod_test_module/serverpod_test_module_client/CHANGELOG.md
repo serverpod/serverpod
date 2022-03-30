@@ -1,3 +1,8 @@
+## 0.9.6
+- Improved, but still experimental support for Windows.
+- Fixes issue with error being thrown when internet connection is missing in CLI.
+- Correctly ignores overridden methods of Endpoints in code generation.
+
 ## 0.9.5
 
 - Adds `serverpod run` command and improves `serverpod create`.
