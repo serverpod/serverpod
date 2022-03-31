@@ -36,7 +36,7 @@ Pass serialized objects through authenticated sockets. Push messages from your s
 ### Task scheduling
 Serverpod's future calls replace complicated cron jobs. Call a method anytime in the future or after a specified delay. The calls persist even if the server is restarted.
 
-## Health checks
+### Health checks
 Monitor the database and external services that you are using. Write custom health checks and get notified when something goes wrong. _This feature is coming soon in the visual interface._
 
 ### Easy deployment

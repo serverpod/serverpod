@@ -2,6 +2,8 @@
 - Improved, but still experimental support for Windows.
 - Fixes issue with error being thrown when internet connection is missing in CLI.
 - Correctly ignores overridden methods of Endpoints in code generation.
+- Makes using Redis optional.
+- Much improved [documentation](https://docs.serverpod.dev).
 
 ## 0.9.5
 
