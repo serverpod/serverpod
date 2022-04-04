@@ -7,6 +7,7 @@ description: Serverpod is an open-source, scalable app server, written in Dart f
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
+documentation: https://docs.serverpod.dev
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

@@ -56,8 +56,16 @@ void performRun(bool verbose, bool runDocker) async {
     return;
   }
 
+  // It looks like we are ready to go.
+  print('Starting Serverpod.');
+  print(' • Automatic generate and reload are enabled.');
+  if (runDocker) {
+    print(' • Running Postgres and Redis in Docker container.');
+  }
+  print('');
+
   // Do an initial serverpod generate.
-  print('Spinning up serverpod generate.');
+  print('Spinning up serverpod generate (this can take a few seconds).');
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);

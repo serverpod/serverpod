@@ -50,7 +50,8 @@ Future<void> performCreate(
     }
   }
 
-  var projectDir = Directory(Directory.current.path + '/' + name);
+  var pathSeparator = Platform.pathSeparator;
+  var projectDir = Directory(Directory.current.path + pathSeparator + name);
   if (projectDir.existsSync()) {
     print('Project $name already exists.');
     return;
@@ -61,15 +62,16 @@ Future<void> performCreate(
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
-  var serverDir = Directory(projectDir.path + '/' + name + '_server');
+  var serverDir = Directory(projectDir.path + pathSeparator + name + '_server');
   if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
-  var clientDir = Directory(projectDir.path + '/' + name + '_client');
+  var clientDir = Directory(projectDir.path + pathSeparator + name + '_client');
   if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
-    var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
+    var flutterDir =
+        Directory(projectDir.path + pathSeparator + name + '_flutter');
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 

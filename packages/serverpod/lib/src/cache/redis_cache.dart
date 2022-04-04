@@ -8,7 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// a cluster.
 class RedisCache extends GlobalCache {
   /// Holds the Redis controller.
-  final RedisController redisController;
+  final RedisController? redisController;
 
   /// Creates a new RedisCache. The size of the cache and eviction policy needs
   /// to be setup manually in Redis.
@@ -22,12 +22,20 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<void> clear() async {
-    await redisController.clear();
+    assert(
+      redisController != null,
+      'Redis needs to be enabled to use this method',
+    );
+    await redisController!.clear();
   }
 
   @override
   Future<SerializableEntity?> get(String key) async {
-    var data = await redisController.get(key);
+    assert(
+      redisController != null,
+      'Redis needs to be enabled to use this method',
+    );
+    var data = await redisController!.get(key);
     if (data == null) {
       return null;
     }
@@ -44,7 +52,11 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<void> invalidateKey(String key) async {
-    await redisController.del(key);
+    assert(
+      redisController != null,
+      'Redis needs to be enabled to use this method',
+    );
+    await redisController!.del(key);
   }
 
   @override
@@ -63,7 +75,13 @@ class RedisCache extends GlobalCache {
     if (group != null) {
       throw UnimplementedError('Groups are not yet supported in RedisCache');
     }
+
+    assert(
+      redisController != null,
+      'Redis needs to be enabled to use this method',
+    );
+
     var data = jsonEncode(object.serializeAll());
-    await redisController.set(key, data, lifetime: lifetime);
+    await redisController!.set(key, data, lifetime: lifetime);
   }
 }

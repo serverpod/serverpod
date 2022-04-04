@@ -71,10 +71,15 @@ class Serverpod {
   /// The database configuration.
   late DatabaseConfig databaseConfig;
 
+  /// Runs Serverpod with Redis enabled, true by default. If you disable Redis
+  /// inter-server communication will be disabled, including messaging and
+  /// global caching.
+  final bool enableRedis;
+
   late Caches _caches;
 
   /// The Redis controller used by Serverpod.
-  late RedisController redisController;
+  RedisController? redisController;
 
   /// Caches used by the server.
   Caches get caches => _caches;
@@ -194,6 +199,7 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
+    this.enableRedis = true,
   }) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
@@ -238,12 +244,14 @@ class Serverpod {
     );
 
     // Setup Redis
-    redisController = RedisController(
-      host: config.redisHost,
-      port: config.redisPort,
-      user: config.redisUser,
-      password: config.redisPassword,
-    );
+    if (enableRedis) {
+      redisController = RedisController(
+        host: config.redisHost,
+        port: config.redisPort,
+        user: config.redisUser,
+        password: config.redisPassword,
+      );
+    }
 
     _caches = Caches(serializationManager, config, serverId, redisController);
 
@@ -312,7 +320,9 @@ class Serverpod {
       await session.close(logSession: false);
 
       // Connect to Redis
-      await redisController.start();
+      if (redisController != null) {
+        await redisController!.start();
+      }
 
       // Start servers
       await _startServiceServer();
@@ -431,9 +441,12 @@ class Serverpod {
 
   /// Shuts down the Serverpod and all associated servers.
   Future<void> shutdown() async {
-    await redisController.stop();
+    if (redisController != null) {
+      await redisController!.stop();
+    }
     server.shutdown();
     _serviceServer?.shutdown();
     _futureCallManager.stop();
+    exit(0);
   }
 }
