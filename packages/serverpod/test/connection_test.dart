@@ -339,7 +339,12 @@ void main() {
       }
 
       expect(clientException, isNotNull);
-      expect(clientException!.statusCode, equals(500));
+      if (identical(0, 0.0)) {
+        // Cannot always detect status code in web
+        expect(clientException!.statusCode, equals(-1));
+      } else {
+        expect(clientException!.statusCode, equals(500));
+      }
     });
   });
 }
