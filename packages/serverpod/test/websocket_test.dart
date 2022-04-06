@@ -105,8 +105,12 @@ void main() {
       await client.connectWebSocket();
       expect(client.isWebSocketConnected, true);
 
+      // We should still be connected after 3 seconds.
+      await Future.delayed(const Duration(seconds: 3));
+      expect(client.isWebSocketConnected, true);
+
       // We should time out after 6 seconds if no messages are passed.
-      await Future.delayed(const Duration(seconds: 6));
+      await Future.delayed(const Duration(seconds: 3));
       expect(client.isWebSocketConnected, false);
     });
   });
