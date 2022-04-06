@@ -98,4 +98,16 @@ void main() {
       }
     });
   });
+
+  group('Timeout', () {
+    test('5 second default timeout', () async {
+      client.close();
+      await client.connectWebSocket();
+      expect(client.isWebSocketConnected, true);
+
+      // We should time out after 6 seconds if no messages are passed.
+      await Future.delayed(const Duration(seconds: 6));
+      expect(client.isWebSocketConnected, false);
+    });
+  });
 }
