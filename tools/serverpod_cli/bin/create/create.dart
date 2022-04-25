@@ -4,8 +4,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
+import '../util/command_line_tools.dart';
 import '../util/print.dart';
-import 'command_line_tools.dart';
 import 'copier.dart';
 import 'port_checker.dart';
 
@@ -49,6 +49,8 @@ Future<void> performCreate(
       return;
     }
   }
+
+  var dbPassword = generateRandomString();
 
   var pathSeparator = Platform.pathSeparator;
   var projectDir = Directory(Directory.current.path + pathSeparator + name);
@@ -107,7 +109,7 @@ Future<void> performCreate(
         ),
         Replacement(
           slotName: 'DB_PASSWORD',
-          replacement: generateRandomString(),
+          replacement: dbPassword,
         ),
         Replacement(
           slotName: 'REDIS_PASSWORD',
@@ -207,6 +209,8 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
+    print('');
+
     await CommandLineTools.dartPubGet(serverDir);
     await CommandLineTools.dartPubGet(clientDir);
     await CommandLineTools.flutterCreate(flutterDir);
@@ -285,7 +289,7 @@ Future<void> performCreate(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 
-  if (dockerConfigured) {
+  if (dockerConfigured && !Platform.isWindows) {
     await CommandLineTools.createTables(projectDir, name);
 
     printww('');
@@ -300,6 +304,25 @@ Future<void> performCreate(
     stdout.writeln('    cd $name/${name}_server');
     stdout.writeln('    docker-compose up --build --detach');
     stdout.writeln('    dart bin/main.dart');
+    printww('');
+  }
+
+  if (Platform.isWindows) {
+    printww('');
+    printww('');
+    printww('You are almost ready to rock!');
+    printww('To get going, you need to start Docker by running:');
+    stdout.writeln('    cd .\\$name\\${name}_server');
+    stdout.writeln('    docker-compose up --build --detach');
+    printww('');
+    printww(
+        'When your docker container is up and running you need to install the default Serverpod postgres tables. (You only need to to this once.)');
+    stdout.writeln(
+        '    Get-Content .\\generated\\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="$dbPassword" psql -h postgres -U postgres -d $name');
+    printww('');
+    printww(
+        'Unfortunately `serverpod run` is not yet supported on Windows, but you should be able to start Serverpod by running:');
+    stdout.writeln('    dart .\\bin\\main.dart');
     printww('');
   }
 }

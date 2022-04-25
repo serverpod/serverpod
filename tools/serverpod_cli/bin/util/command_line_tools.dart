@@ -1,31 +1,44 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../util/print.dart';
+import 'print.dart';
+import 'windows.dart';
 
 class CommandLineTools {
   static Future<void> dartPubGet(Directory dir) async {
     print('Running `dart pub get` in ${dir.path}');
-    var result =
-        await Process.run('dart', ['pub', 'get'], workingDirectory: dir.path);
-    print(result.stdout);
+    var cf = _CommandFormatter('dart', ['pub', 'get']);
+    var result = await Process.run(
+      cf.command,
+      cf.args,
+      workingDirectory: dir.path,
+    );
+    if (!Platform.isWindows) {
+      print(result.stdout);
+    }
   }
 
   static Future<void> flutterCreate(Directory dir) async {
-    print('Running `flutter create` in ${dir.path}');
-    var result = await Process.run('flutter', ['create', '.'],
-        workingDirectory: dir.path);
-    print(result.stdout);
+    print('Running `flutter create .` in ${dir.path}');
+    var cf = _CommandFormatter('flutter', ['create', '.']);
+    var result = await Process.run(
+      cf.command,
+      cf.args,
+      workingDirectory: dir.path,
+    );
+    if (!Platform.isWindows) {
+      print(result.stdout);
+    }
   }
 
   static Future<bool> existsCommand(String command) async {
     if (Platform.isWindows) {
-      // TODO: Perform check on Windows too.
-      print('WARNING! skipping check to see if "$command" exists.');
-      return true;
+      var commandPath = WindowsUtil.commandPath(command);
+      return commandPath != null;
+    } else {
+      var result = await Process.run('which', [command]);
+      return result.exitCode == 0;
     }
-    var result = await Process.run('which', [command]);
-    return result.exitCode == 0;
   }
 
   static Future<bool> isDockerRunning() async {
@@ -65,5 +78,26 @@ class CommandLineTools {
       workingDirectory: serverPath,
     );
     print(result.stdout);
+  }
+}
+
+class _CommandFormatter {
+  late final String command;
+  late final List<String> args;
+
+  _CommandFormatter(String command, List<String> args) {
+    if (Platform.isWindows) {
+      this.command = 'powershell';
+      var commandPath = WindowsUtil.commandPath(command);
+      this.args = [commandPath!, ...args];
+    } else {
+      this.command = command;
+      this.args = args;
+    }
+  }
+
+  @override
+  String toString() {
+    return 'CMD: $command ${args.join(' ')}';
   }
 }
