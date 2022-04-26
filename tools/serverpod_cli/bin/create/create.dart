@@ -211,9 +211,9 @@ Future<void> performCreate(
 
     print('');
 
-    await CommandLineTools.dartPubGet(serverDir);
-    await CommandLineTools.dartPubGet(clientDir);
-    await CommandLineTools.flutterCreate(flutterDir);
+    CommandLineTools.dartPubGet(serverDir);
+    CommandLineTools.dartPubGet(clientDir);
+    CommandLineTools.flutterCreate(flutterDir);
   } else if (template == 'module') {
     // Copy server files
     var copier = Copier(
@@ -294,35 +294,44 @@ Future<void> performCreate(
 
     printww('');
     printww('');
+    printww('=== SERVERPOD CREATED ===');
+    printww('');
     printww('All setup. You are ready to rock!');
     printww('');
     printww('Start your Serverpod server by running:');
-    stdout.writeln('    cd $name/${name}_server');
-    stdout.writeln('    serverpod run');
+    printww('');
+    stdout.writeln('  \$ cd $name/${name}_server');
+    stdout.writeln('  \$ serverpod run');
     printww('');
     printww('You can also start Serverpod manually by running:');
-    stdout.writeln('    cd $name/${name}_server');
-    stdout.writeln('    docker-compose up --build --detach');
-    stdout.writeln('    dart bin/main.dart');
+    printww('');
+    stdout.writeln('  \$ cd $name/${name}_server');
+    stdout.writeln('  \$ docker-compose up --build --detach');
+    stdout.writeln('  \$ dart bin/main.dart');
     printww('');
   }
 
   if (Platform.isWindows) {
     printww('');
     printww('');
+    printww('=== SERVERPOD CREATED ===');
+    printww('');
     printww('You are almost ready to rock!');
     printww('To get going, you need to start Docker by running:');
-    stdout.writeln('    cd .\\$name\\${name}_server');
-    stdout.writeln('    docker-compose up --build --detach');
+    printww('');
+    stdout.writeln('  \$ cd .\\$name\\${name}_server');
+    stdout.writeln('  \$ docker-compose up --build --detach');
     printww('');
     printww(
         'When your docker container is up and running you need to install the default Serverpod postgres tables. (You only need to to this once.)');
+    printww('');
     stdout.writeln(
-        '    Get-Content .\\generated\\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="$dbPassword" psql -h postgres -U postgres -d $name');
+        '  \$ Get-Content .\\generated\\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="$dbPassword" psql -h postgres -U postgres -d $name');
     printww('');
     printww(
         'Unfortunately `serverpod run` is not yet supported on Windows, but you should be able to start Serverpod by running:');
-    stdout.writeln('    dart .\\bin\\main.dart');
+    printww('');
+    stdout.writeln('  \$ dart .\\bin\\main.dart');
     printww('');
   }
 }

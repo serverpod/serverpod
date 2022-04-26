@@ -5,30 +5,26 @@ import 'print.dart';
 import 'windows.dart';
 
 class CommandLineTools {
-  static Future<void> dartPubGet(Directory dir) async {
+  static void dartPubGet(Directory dir) {
     print('Running `dart pub get` in ${dir.path}');
     var cf = _CommandFormatter('dart', ['pub', 'get']);
-    var result = await Process.run(
+    var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    if (!Platform.isWindows) {
-      print(result.stdout);
-    }
+    print(result.stdout);
   }
 
-  static Future<void> flutterCreate(Directory dir) async {
+  static void flutterCreate(Directory dir) {
     print('Running `flutter create .` in ${dir.path}');
     var cf = _CommandFormatter('flutter', ['create', '.']);
-    var result = await Process.run(
+    var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    if (!Platform.isWindows) {
-      print(result.stdout);
-    }
+    print(result.stdout);
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -85,15 +81,8 @@ class _CommandFormatter {
   late final String command;
   late final List<String> args;
 
-  _CommandFormatter(String command, List<String> args) {
-    if (Platform.isWindows) {
-      this.command = 'powershell';
-      var commandPath = WindowsUtil.commandPath(command);
-      this.args = [commandPath!, ...args];
-    } else {
-      this.command = command;
-      this.args = args;
-    }
+  _CommandFormatter(String command, this.args) {
+    this.command = Platform.isWindows ? '$command.bat' : command;
   }
 
   @override
