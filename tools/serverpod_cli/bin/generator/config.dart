@@ -16,12 +16,15 @@ class GeneratorConfig {
   late String serverPackage;
 
   final String libSourcePath = 'lib';
-  final String protocolSourcePath = 'lib/src/protocol';
-  final String endpointsSourcePath = 'lib/src/endpoints';
+  final String protocolSourcePath =
+      'lib${Platform.pathSeparator}src${Platform.pathSeparator}protocol';
+  final String endpointsSourcePath =
+      'lib${Platform.pathSeparator}src${Platform.pathSeparator}endpoints';
 
   late String clientPackagePath;
   late String generatedClientProtocolPath;
-  final String generatedServerProtocolPath = 'lib/src/generated';
+  final String generatedServerProtocolPath =
+      'lib${Platform.pathSeparator}src${Platform.pathSeparator}generated';
 
   List<ModuleConfig> modules = [];
 
@@ -45,7 +48,7 @@ class GeneratorConfig {
 
     Map? generatorConfig;
     try {
-      var file = File('${dir}config/generator.yaml');
+      var file = File('${dir}config${Platform.pathSeparator}generator.yaml');
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {
@@ -66,7 +69,8 @@ class GeneratorConfig {
           'Option "client_package_path" is required in config/generator.yaml');
     }
     clientPackagePath = generatorConfig['client_package_path'];
-    generatedClientProtocolPath = '$clientPackagePath/lib/src/protocol';
+    generatedClientProtocolPath =
+        '$clientPackagePath${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}protocol';
 
     // Load module settings
     if (type == PackageType.server) {
