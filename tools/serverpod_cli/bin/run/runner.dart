@@ -27,7 +27,7 @@ void performRun(bool verbose, bool runDocker) async {
   var mainPortAvailable =
       await isNetworkPortAvailable(configInfo.config.publicPort);
   var servicePortAvailable =
-      await await isNetworkPortAvailable(configInfo.config.servicePort);
+      await isNetworkPortAvailable(configInfo.config.servicePort);
 
   if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
     var strIssue =

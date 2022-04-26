@@ -40,7 +40,7 @@ class Copier {
       }
       if (entity is Directory) {
         var dirName = p.basename(entity.path);
-        _copyDirectory(entity, '$relativePath$dirName/');
+        _copyDirectory(entity, p.join(relativePath, dirName));
       }
     }
   }
@@ -49,10 +49,12 @@ class Copier {
     var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
 
-    var dstFileName = _replace('$relativePath$fileName', fileNameReplacements);
-    print('  ${dstDir.path}$relativePath$fileName');
+    var dstFileName =
+        _replace(p.join(relativePath, fileName), fileNameReplacements);
+    print(p.join(dstDir.path,
+        relativePath.replaceAll('/', Platform.pathSeparator), fileName));
 
-    var dstFile = File('${dstDir.path}/$dstFileName');
+    var dstFile = File(p.join(dstDir.path, dstFileName));
     var contents = srcFile.readAsStringSync();
     contents = _replace(contents, replacements);
     contents = _filterLines(contents, removePrefixes);

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
-
+import 'package:path/path.dart' as p;
 import '../generated/version.dart';
 import '../shared/environment.dart';
 
@@ -25,21 +25,21 @@ class ResourceManager {
   }
 
   Directory get localCacheDirectory =>
-      Directory(homeDirectory.path + '/.serverpod');
+      Directory(p.join(homeDirectory.path, '.serverpod'));
   Directory get versionedDir =>
-      Directory(localCacheDirectory.path + '/$templateVersion');
+      Directory(p.join(localCacheDirectory.path, templateVersion));
   Directory get templateDirectory {
     if (productionMode) {
-      return Directory(versionedDir.path + '/serverpod_template');
+      return Directory(p.join(versionedDir.path, 'serverpod_template'));
     } else {
-      return Directory(serverpodHome + '/templates/serverpod_templates');
+      return Directory(p.join(serverpodHome, 'templates','serverpod_templates'));
     }
   }
 
   String get uniqueUserId {
-    const uuidFilePath = '/uuid';
+    const uuidFilePath = 'uuid';
     try {
-      var userIdFile = File(localCacheDirectory.path + uuidFilePath);
+      var userIdFile = File(p.join(localCacheDirectory.path, uuidFilePath));
       var userId = userIdFile.readAsStringSync();
       return userId;
     } catch (e) {
@@ -47,7 +47,7 @@ class ResourceManager {
     }
     var userId = const Uuid().v4();
     try {
-      var userIdFile = File(localCacheDirectory.path + uuidFilePath);
+      var userIdFile = File(p.join(localCacheDirectory.path, uuidFilePath));
       userIdFile.writeAsStringSync(userId);
     } finally {}
 
@@ -70,14 +70,14 @@ class ResourceManager {
     var response = await http.get(Uri.parse(packageDownloadUrl));
     var data = response.bodyBytes;
 
-    // var outFile = File(versionedDir.path + '/serverpod_templates.tar.gz');
+    // var outFile = File(p.join(versionedDir.path, 'serverpod_templates.tar.gz'));
     // outFile.writeAsBytesSync(data);
 
     var unzipped = GZipDecoder().decodeBytes(data);
     var archive = TarDecoder().decodeBytes(unzipped);
 
     for (var file in archive) {
-      var outFileName = '${templateDirectory.path}/${file.name}';
+      var outFileName = p.join(templateDirectory.path, file.name);
       if (file.isFile) {
         var outFile = File(outFileName);
         outFile = await outFile.create(recursive: true);
