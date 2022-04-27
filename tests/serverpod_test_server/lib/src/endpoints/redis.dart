@@ -47,6 +47,6 @@ class RedisEndpoint extends Endpoint {
   }
 
   Future<int> countSubscribedChannels(Session session) async {
-    return session.serverpod.redisController!.subscribedChannels.length;
+    return session.serverpod.redisController.subscribedChannels.length;
   }
 }

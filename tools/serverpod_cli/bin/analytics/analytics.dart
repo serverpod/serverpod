@@ -10,9 +10,13 @@ const _projectToken = '05e8ab306c393c7482e0f41851a176d8';
 const _endpoint = 'https://api.mixpanel.com/track';
 
 class Analytics {
+  Future<http.Response>? _futureResponse;
+
   void track({
     required String event,
   }) {
+    assert(_futureResponse == null, 'Only one event can be tracked');
+
     var payload = jsonEncode({
       'event': event,
       'properties': {
@@ -24,22 +28,14 @@ class Analytics {
       }
     });
 
-    _quietPost(payload);
-  }
-
-  Future<void> _quietPost(String payload) async {
-    try {
-      await http.post(
-        Uri.parse(_endpoint),
-        body: 'data=$payload',
-        headers: {
-          'Accept': 'text/plain',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      ).timeout(const Duration(seconds: 2));
-    } catch (e) {
-      return;
-    }
+    _futureResponse = http.post(
+      Uri.parse(_endpoint),
+      body: 'data=$payload',
+      headers: {
+        'Accept': 'text/plain',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    );
   }
 
   String _getPlatform() {
@@ -54,5 +50,10 @@ class Analytics {
     }
   }
 
-  void cleanUp() {}
+  void cleanUp() {
+    _futureResponse?.timeout(
+      const Duration(seconds: 1),
+      onTimeout: () => http.Response('Timed out', 408),
+    );
+  }
 }

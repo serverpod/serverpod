@@ -24,7 +24,7 @@ Future<void> performGenerateProtocol(
   var protocol = generator.generateClientEndpointCalls();
   if (verbose) print(protocol);
 
-  var filePath = p.join(config.generatedClientProtocolPath, 'client.dart');
+  var filePath = config.generatedClientProtocolPath + '/client.dart';
   if (verbose) print('Writing: $filePath');
   var outFile = File(filePath);
   outFile.createSync();
@@ -36,7 +36,7 @@ Future<void> performGenerateProtocol(
   if (verbose) print(endpointDispatch);
 
   var endpointsFilePath =
-      p.join(config.generatedServerProtocolPath,'endpoints.dart');
+      config.generatedServerProtocolPath + '/endpoints.dart';
   if (verbose) print('Writing: $endpointsFilePath');
   var endpointsFile = File(endpointsFilePath);
   endpointsFile.createSync();
@@ -44,7 +44,7 @@ Future<void> performGenerateProtocol(
 
   // Write endpoint definition
   var endpointDef = generator.generateEndpointDefinition();
-  var endpointDefPath = p.join('generated','protocol.yaml');
+  var endpointDefPath = 'generated/protocol.yaml';
   if (verbose) print('Writing: $endpointDefPath');
   var endpointsDefFile = File(endpointDefPath);
   endpointsDefFile.createSync();

@@ -37,13 +37,8 @@ class MessageCentral {
       }
     } else {
       // Send to Redis
-      assert(
-        Serverpod.instance!.redisController != null,
-        'Redis needs to be enabled to use this method',
-      );
-
       var data = jsonEncode(message.serializeAll());
-      Serverpod.instance!.redisController!.publish(channelName, data);
+      Serverpod.instance!.redisController.publish(channelName, data);
     }
   }
 
@@ -83,12 +78,10 @@ class MessageCentral {
     }
     callbacks.add(listener);
 
-    if (session.serverpod.redisController != null) {
-      session.serverpod.redisController!.subscribe(
-        channelName,
-        _receivedRedisMessage,
-      );
-    }
+    session.serverpod.redisController.subscribe(
+      channelName,
+      _receivedRedisMessage,
+    );
   }
 
   void _receivedRedisMessage(String channelName, String message) {
@@ -109,9 +102,7 @@ class MessageCentral {
       channel.remove(listener);
       if (channel.isEmpty) {
         _channels.remove(channelName);
-        if (session.serverpod.redisController != null) {
-          session.serverpod.redisController!.unsubscribe(channelName);
-        }
+        session.serverpod.redisController.unsubscribe(channelName);
       }
     }
 
@@ -160,9 +151,7 @@ class MessageCentral {
     channel.remove(listener);
     if (channel.isEmpty) {
       _channels.remove(channelName);
-      if (session.serverpod.redisController != null) {
-        session.serverpod.redisController!.unsubscribe(channelName);
-      }
+      session.serverpod.redisController.unsubscribe(channelName);
     }
   }
 }

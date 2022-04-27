@@ -27,7 +27,7 @@ void performRun(bool verbose, bool runDocker) async {
   var mainPortAvailable =
       await isNetworkPortAvailable(configInfo.config.publicPort);
   var servicePortAvailable =
-      await isNetworkPortAvailable(configInfo.config.servicePort);
+      await await isNetworkPortAvailable(configInfo.config.servicePort);
 
   if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
     var strIssue =
@@ -56,16 +56,8 @@ void performRun(bool verbose, bool runDocker) async {
     return;
   }
 
-  // It looks like we are ready to go.
-  print('Starting Serverpod.');
-  print(' • Automatic generate and reload are enabled.');
-  if (runDocker) {
-    print(' • Running Postgres and Redis in Docker container.');
-  }
-  print('');
-
   // Do an initial serverpod generate.
-  print('Spinning up serverpod generate (this can take a few seconds).');
+  print('Spinning up serverpod generate.');
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);

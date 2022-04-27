@@ -2,4 +2,5 @@ class: CachesInfo
 fields:
   local: CacheInfo
   localPrio: CacheInfo
-  global: CacheInfo
+  distributed: CacheInfo
+  distributedPrio: CacheInfo
