@@ -59,7 +59,7 @@ abstract class Endpoint {
   }
 
   /// Associate a custom object with this [Endpoint] and [Session].
-  dynamic setUserObject(Session session, dynamic userObject) {
+  void setUserObject(Session session, dynamic userObject) {
     _userObjects[session] = userObject;
   }
 

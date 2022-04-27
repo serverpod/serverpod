@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:path/path.dart' as p;
 import '../util/print.dart';
 
 class CommandLineTools {
@@ -13,9 +13,25 @@ class CommandLineTools {
 
   static Future<void> flutterCreate(Directory dir) async {
     print('Running `flutter create` in ${dir.path}');
-    var result = await Process.run('flutter', ['create', '.'],
-        workingDirectory: dir.path);
-    print(result.stdout);
+    try {
+      /// For some reason flutter is not recognized by the Process.
+      /// So we need to fetch the flutter path dynamically and use it to run flutter in windows.
+      var _flutterPath = await Process.run('which', ['flutter']);
+      var flutterPath = _flutterPath.stdout.toString().trim();
+      var flutterPathList = flutterPath.split('/');
+      if (Platform.isWindows) {
+        flutterPathList.removeWhere((element) => element.isEmpty);
+        flutterPathList.first = flutterPathList.first.toUpperCase() + ':';
+        flutterPathList.last = flutterPathList.last + '.bat';
+      }
+      flutterPath =
+          Platform.isWindows ? p.joinAll(flutterPathList) : flutterPath;
+      var result = await Process.run(flutterPath, ['create', dir.path]);
+      print(result.stdout);
+    } on ProcessException catch (e) {
+      stderr.write(e.message);
+      return;
+    }
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -29,36 +45,38 @@ class CommandLineTools {
   }
 
   static Future<void> createTables(Directory dir, String name) async {
-    var serverPath = '${dir.path}/${name}_server';
+    var serverPath = p.join(dir.path, name + '_server');
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
 
-    var result = await Process.run(
-      'chmod',
-      ['u+x', 'setup-tables'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
+    if (!Platform.isWindows) {
+      var result = await Process.run(
+        'chmod',
+        ['u+x', 'setup-tables'],
+        workingDirectory: serverPath,
+      );
+      print(result.stdout);
 
-    var process = await Process.start(
-      './setup-tables',
-      [],
-      workingDirectory: serverPath,
-    );
+      var process = await Process.start(
+        './setup-tables',
+        [],
+        workingDirectory: serverPath,
+      );
 
-    unawaited(stdout.addStream(process.stdout));
-    unawaited(stderr.addStream(process.stderr));
+      unawaited(stdout.addStream(process.stdout));
+      unawaited(stderr.addStream(process.stderr));
 
-    var exitCode = await process.exitCode;
-    print('Completed table setup exit code: $exitCode');
+      var exitCode = await process.exitCode;
+      print('Completed table setup exit code: $exitCode');
 
-    print('Cleaning up');
-    result = await Process.run(
-      'rm',
-      ['setup-tables'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
+      print('Cleaning up');
+      result = await Process.run(
+        'rm',
+        ['setup-tables'],
+        workingDirectory: serverPath,
+      );
+      print(result.stdout);
+    }
   }
 }

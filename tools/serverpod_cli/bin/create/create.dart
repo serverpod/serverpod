@@ -8,6 +8,7 @@ import '../util/print.dart';
 import 'command_line_tools.dart';
 import 'copier.dart';
 import 'port_checker.dart';
+import 'package:path/path.dart' as p;
 
 const _defaultPorts = <int>[8080, 8081, 8090, 8091];
 
@@ -50,7 +51,7 @@ Future<void> performCreate(
     }
   }
 
-  var projectDir = Directory(Directory.current.path + '/' + name);
+  var projectDir = Directory(p.join(Directory.current.path, name));
   if (projectDir.existsSync()) {
     print('Project $name already exists.');
     return;
@@ -61,22 +62,22 @@ Future<void> performCreate(
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
-  var serverDir = Directory(projectDir.path + '/' + name + '_server');
+  var serverDir = Directory(p.join(projectDir.path, name + '_server'));
   if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
-  var clientDir = Directory(projectDir.path + '/' + name + '_client');
+  var clientDir = Directory(p.join(projectDir.path, name + '_client'));
   if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
-    var flutterDir = Directory(projectDir.path + '/' + name + '_flutter');
+    var flutterDir = Directory(p.join(projectDir.path, name + '_flutter'));
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
+          p.join(resourceManager.templateDirectory.path, 'PROJECTNAME_server')),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -131,7 +132,7 @@ Future<void> performCreate(
     // Copy client files
     copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
+          p.join(resourceManager.templateDirectory.path, 'PROJECTNAME_client')),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -165,8 +166,8 @@ Future<void> performCreate(
 
     // Copy Flutter files
     copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
+      srcDir: Directory(p.join(
+          resourceManager.templateDirectory.path, 'PROJECTNAME_flutter')),
       dstDir: flutterDir,
       replacements: [
         Replacement(
@@ -212,7 +213,7 @@ Future<void> performCreate(
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/MODULENAME_server'),
+          p.join(resourceManager.templateDirectory.path, 'MODULENAME_server')),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -247,7 +248,7 @@ Future<void> performCreate(
     // Copy client files
     copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/MODULENAME_client'),
+          p.join(resourceManager.templateDirectory.path, 'MODULENAME_client')),
       dstDir: clientDir,
       replacements: [
         Replacement(

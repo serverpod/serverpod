@@ -126,8 +126,7 @@ class InsightsEndpoint extends Endpoint {
     return CachesInfo(
       local: _getCacheInfo(pod.caches.local, fetchKeys),
       localPrio: _getCacheInfo(pod.caches.localPrio, fetchKeys),
-      distributed: _getCacheInfo(pod.caches.global, fetchKeys),
-      distributedPrio: _getCacheInfo(pod.caches.globalPrio, fetchKeys),
+      global: _getCacheInfo(pod.caches.global, fetchKeys),
     );
   }
 

@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import '../create/copier.dart';
+import 'package:path/path.dart' as p;
 
 void performGeneratePubspecs(String version, String mode) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
-  var dirTemplates = Directory('templates/pubspecs');
+  var dirTemplates = Directory(p.join('templates', 'pubspecs'));
   var dirRoot = Directory('.');
 
   if (!dirPackages.existsSync() ||

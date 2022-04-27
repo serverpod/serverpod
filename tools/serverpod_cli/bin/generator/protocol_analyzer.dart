@@ -11,9 +11,12 @@ import 'config.dart';
 import 'protocol_definition.dart';
 
 const _excludedMethodNameSet = {
-  'setupStream',
+  'streamOpened',
+  'streamClosed',
   'handleStreamMessage',
   'sendStreamMessage',
+  'setUserObject',
+  'getUserObject',
 };
 
 ProtocolAnalyzer? _analyzer;
@@ -40,7 +43,7 @@ class ProtocolAnalyzer {
 
   ProtocolAnalyzer(String filePath) : endpointDirectory = Directory(filePath) {
     collection = AnalysisContextCollection(
-      includedPaths: [endpointDirectory.absolute.path],
+      includedPaths: [],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
   }
