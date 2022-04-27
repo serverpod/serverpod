@@ -18,13 +18,15 @@ class CachesInfo extends SerializableEntity {
   int? id;
   late CacheInfo local;
   late CacheInfo localPrio;
-  late CacheInfo global;
+  late CacheInfo distributed;
+  late CacheInfo distributedPrio;
 
   CachesInfo({
     this.id,
     required this.local,
     required this.localPrio,
-    required this.global,
+    required this.distributed,
+    required this.distributedPrio,
   });
 
   CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
@@ -32,7 +34,8 @@ class CachesInfo extends SerializableEntity {
     id = _data['id'];
     local = CacheInfo.fromSerialization(_data['local']);
     localPrio = CacheInfo.fromSerialization(_data['localPrio']);
-    global = CacheInfo.fromSerialization(_data['global']);
+    distributed = CacheInfo.fromSerialization(_data['distributed']);
+    distributedPrio = CacheInfo.fromSerialization(_data['distributedPrio']);
   }
 
   @override
@@ -41,7 +44,8 @@ class CachesInfo extends SerializableEntity {
       'id': id,
       'local': local.serialize(),
       'localPrio': localPrio.serialize(),
-      'global': global.serialize(),
+      'distributed': distributed.serialize(),
+      'distributedPrio': distributedPrio.serialize(),
     });
   }
 }

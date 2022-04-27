@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as p;
 
 var config = GeneratorConfig();
 
@@ -17,19 +16,19 @@ class GeneratorConfig {
   late String serverPackage;
 
   final String libSourcePath = 'lib';
-  final String protocolSourcePath = p.join('lib', 'src', 'protocol');
-  final String endpointsSourcePath = p.join('lib', 'src', 'endpoints');
+  final String protocolSourcePath = 'lib/src/protocol';
+  final String endpointsSourcePath = 'lib/src/endpoints';
 
   late String clientPackagePath;
   late String generatedClientProtocolPath;
-  final String generatedServerProtocolPath = p.join('lib', 'src', 'generated');
+  final String generatedServerProtocolPath = 'lib/src/generated';
 
   List<ModuleConfig> modules = [];
 
   bool load([String dir = '']) {
     Map? pubspec;
     try {
-      var file = File(p.join(dir, 'pubspec.yaml'));
+      var file = File('${dir}pubspec.yaml');
       var yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
     } catch (_) {
@@ -46,7 +45,7 @@ class GeneratorConfig {
 
     Map? generatorConfig;
     try {
-      var file = File(p.join(dir, 'config', 'generator.yaml'));
+      var file = File('${dir}config/generator.yaml');
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {

@@ -17,11 +17,15 @@ class Caches {
     this._serializationManager,
     ServerConfig config,
     int serverId,
-    RedisController? redisController,
+    RedisController redisController,
   ) {
     _local = LocalCache(10000, _serializationManager);
     _localPrio = LocalCache(10000, _serializationManager);
     _global = RedisCache(
+      _serializationManager,
+      redisController,
+    );
+    _globalPrio = RedisCache(
       _serializationManager,
       redisController,
     );
@@ -48,6 +52,13 @@ class Caches {
   /// consistent across servers. Provides slower access than the local cache,
   /// but objects are guaranteed to be the same across servers.
   GlobalCache get global => _global;
+
+  late GlobalCache _globalPrio;
+
+  /// Used to cache objects that are of high priority, and need to stay
+  /// consistent across servers. Provides slower access than the local cache,
+  /// but objects are guaranteed to be the same across servers.
+  GlobalCache get globalPrio => _globalPrio;
 
   late LocalCache _query;
 
