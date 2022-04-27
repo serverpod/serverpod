@@ -45,7 +45,7 @@ class ProtocolAnalyzer {
     print('endpointDirectory: ${endpointDirectory.path}');
     print('endpointDirectory.absolute: ${endpointDirectory.absolute.path}');
     collection = AnalysisContextCollection(
-      includedPaths: [endpointDirectory.absolute.path],
+      includedPaths: [],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
   }
