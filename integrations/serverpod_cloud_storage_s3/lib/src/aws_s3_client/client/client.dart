@@ -71,7 +71,7 @@ class AwsS3Client {
   }
 
   String keytoPath(String key) =>
-      "${'/$key'.split('/').map(Uri.encodeQueryComponent).join('/')}";
+      '/$key'.split('/').map(Uri.encodeQueryComponent).join('/');
 
   ///Returns a [SignedRequestParams] object containing the uri and the HTTP headers
   ///needed to do a signed GET request to AWS S3. Does not actually execute a request.

@@ -18,3 +18,8 @@ void printww(String string) {
   }
   stdout.writeln(string);
 }
+
+void printwwln(String string) {
+  printww(string);
+  printww('');
+}

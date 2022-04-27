@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
-
+import 'package:path/path.dart' as p;
 import '../../module.dart';
 import '../util/roboto_138_fnt.dart';
 
@@ -81,7 +81,7 @@ class UserImages {
     }
 
     // Store the image.
-    var path = 'serverpod/user_images/$userId-$version$pathExtension';
+    var path = p.join('serverpod','user_images','$userId-$version$pathExtension');
     await session.storage
         .storeFile(storageId: 'public', path: path, byteData: imageData);
     var publicUrl =

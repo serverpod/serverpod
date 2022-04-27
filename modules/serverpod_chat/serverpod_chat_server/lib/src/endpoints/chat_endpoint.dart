@@ -333,7 +333,7 @@ class ChatEndpoint extends Endpoint {
         len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
     var dateString = DateTime.now().toUtc().toString().substring(0, 10);
 
-    return 'serverpod/chat/$userId/$dateString/$rndString/$fileName';
+    return path.join('serverpod','chat',userId,dateString,rndString,fileName);
   }
 
   bool _isEphemeralChannel(String channel) {
