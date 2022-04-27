@@ -43,7 +43,7 @@ class ProtocolAnalyzer {
 
   ProtocolAnalyzer(String filePath) : endpointDirectory = Directory(filePath) {
     collection = AnalysisContextCollection(
-      includedPaths: [endpointDirectory.absolute.path],
+      includedPaths: [],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
   }
