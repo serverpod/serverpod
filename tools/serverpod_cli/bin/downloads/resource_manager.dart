@@ -18,9 +18,8 @@ class ResourceManager {
       return Directory(envVars['UserProfile']!);
     } else if (!Platform.isWindows) {
       return Directory(envVars['HOME']!);
-    } else {
-      throw (Exception('Unsupported platform.'));
     }
+    throw (Exception('Unsupported platform.'));
   }
 
   Directory get localCacheDirectory =>
