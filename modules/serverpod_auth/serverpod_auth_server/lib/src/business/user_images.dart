@@ -81,7 +81,8 @@ class UserImages {
     }
 
     // Store the image.
-    var path = p.join('serverpod','user_images','$userId-$version$pathExtension');
+    var path =
+        p.join('serverpod', 'user_images', '$userId-$version$pathExtension');
     await session.storage
         .storeFile(storageId: 'public', path: path, byteData: imageData);
     var publicUrl =
