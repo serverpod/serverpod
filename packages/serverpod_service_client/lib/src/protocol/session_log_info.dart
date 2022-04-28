@@ -33,10 +33,12 @@ class SessionLogInfo extends SerializableEntity {
     sessionLogEntry =
         SessionLogEntry.fromSerialization(_data['sessionLogEntry']);
     queries = _data['queries']!
-        .map<QueryLogEntry>((Map<String, dynamic> a) => QueryLogEntry.fromSerialization(a))
+        .map<QueryLogEntry>(
+            (Map<String, dynamic> a) => QueryLogEntry.fromSerialization(a))
         ?.toList();
     messageLog = _data['messageLog']!
-        .map<LogEntry>((Map<String, dynamic> a) => LogEntry.fromSerialization(a))
+        .map<LogEntry>(
+            (Map<String, dynamic> a) => LogEntry.fromSerialization(a))
         ?.toList();
   }
 

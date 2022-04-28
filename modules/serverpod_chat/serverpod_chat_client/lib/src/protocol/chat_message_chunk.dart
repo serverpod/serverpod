@@ -32,7 +32,8 @@ class ChatMessageChunk extends SerializableEntity {
     id = _data['id'];
     channel = _data['channel']!;
     messages = _data['messages']!
-        .map<ChatMessage>((Map<String, dynamic> a) => ChatMessage.fromSerialization(a))
+        .map<ChatMessage>(
+            (Map<String, dynamic> a) => ChatMessage.fromSerialization(a))
         ?.toList();
     hasOlderMessages = _data['hasOlderMessages']!;
   }

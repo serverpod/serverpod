@@ -27,7 +27,8 @@ class SessionLogResult extends SerializableEntity {
     Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     sessionLog = _data['sessionLog']!
-        .map<SessionLogInfo>((Map<String, dynamic> a) => SessionLogInfo.fromSerialization(a))
+        .map<SessionLogInfo>(
+            (Map<String, dynamic> a) => SessionLogInfo.fromSerialization(a))
         ?.toList();
   }
 

@@ -18,7 +18,8 @@ class EmailCreateAccountRequest extends TableRow {
   @override
   String get tableName => 'serverpod_email_create_request';
 
-  static final EmailCreateAccountRequestTable t = EmailCreateAccountRequestTable();
+  static final EmailCreateAccountRequestTable t =
+      EmailCreateAccountRequestTable();
 
   @override
   int? id;

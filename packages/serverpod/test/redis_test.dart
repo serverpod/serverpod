@@ -21,7 +21,8 @@ void main() {
     });
 
     test('Get non-existing', () async {
-      SimpleData? retrievedData = await client.redis.getSimpleData('test-nonexistant');
+      SimpleData? retrievedData =
+          await client.redis.getSimpleData('test-nonexistant');
       expect(retrievedData, isNull);
     });
 

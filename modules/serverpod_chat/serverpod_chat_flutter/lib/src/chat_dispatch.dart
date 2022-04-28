@@ -9,7 +9,8 @@ class ChatDispatch {
     return _singleton!;
   }
 
-  final Map<String, ChatMessageListener> _listeners = <String, ChatMessageListener>{};
+  final Map<String, ChatMessageListener> _listeners =
+      <String, ChatMessageListener>{};
 
   final Caller caller;
   ChatDispatch({

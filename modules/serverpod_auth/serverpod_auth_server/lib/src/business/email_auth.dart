@@ -147,7 +147,8 @@ class Emails {
 
     if (passwordReset == null) return null;
 
-    UserInfo? userInfo = await Users.findUserByUserId(session, passwordReset.userId);
+    UserInfo? userInfo =
+        await Users.findUserByUserId(session, passwordReset.userId);
     if (userInfo == null) return null;
 
     if (userInfo.email == null) return null;
@@ -217,7 +218,8 @@ class Emails {
         return false;
       }
 
-      EmailCreateAccountRequest? accountRequest = await findAccountRequest(session, email);
+      EmailCreateAccountRequest? accountRequest =
+          await findAccountRequest(session, email);
       if (accountRequest == null) {
         accountRequest = EmailCreateAccountRequest(
           userName: userName,

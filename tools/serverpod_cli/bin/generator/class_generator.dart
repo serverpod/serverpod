@@ -7,14 +7,20 @@ import 'pgsql_generator.dart';
 void performGenerateClasses(bool verbose) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
-  ClassGeneratorDart serverGenerator = ClassGeneratorDart(config.protocolSourcePath,
-      config.generatedServerProtocolPath, verbose, true);
+  ClassGeneratorDart serverGenerator = ClassGeneratorDart(
+      config.protocolSourcePath,
+      config.generatedServerProtocolPath,
+      verbose,
+      true);
   serverGenerator.generate();
 
   // Generate client side code
   if (verbose) print('Generating Dart client side code.');
-  ClassGeneratorDart clientGenerator = ClassGeneratorDart(config.protocolSourcePath,
-      config.generatedClientProtocolPath, verbose, false);
+  ClassGeneratorDart clientGenerator = ClassGeneratorDart(
+      config.protocolSourcePath,
+      config.generatedClientProtocolPath,
+      verbose,
+      false);
   clientGenerator.generate();
 }
 
@@ -36,7 +42,8 @@ abstract class ClassGenerator {
     // Generate files for each yaml file
     Directory dir = Directory(inputPath);
     List<FileSystemEntity> list = dir.listSync();
-    list.sort((FileSystemEntity a, FileSystemEntity b) => a.path.compareTo(b.path));
+    list.sort(
+        (FileSystemEntity a, FileSystemEntity b) => a.path.compareTo(b.path));
     for (FileSystemEntity entity in list) {
       if (entity is File && entity.path.endsWith('.yaml')) {
         if (verbose) print('  - processing file: ${entity.path}');

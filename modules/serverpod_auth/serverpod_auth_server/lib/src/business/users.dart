@@ -80,7 +80,8 @@ class Users {
   /// Updates a users name, returns null if unsuccessful.
   static Future<UserInfo?> changeUserName(
       Session session, int userId, String newUserName) async {
-    UserInfo? userInfo = await findUserByUserId(session, userId, useCache: false);
+    UserInfo? userInfo =
+        await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
     userInfo.userName = newUserName;
@@ -100,7 +101,8 @@ class Users {
     int userId,
     Set<Scope> newScopes,
   ) async {
-    UserInfo? userInfo = await findUserByUserId(session, userId, useCache: false);
+    UserInfo? userInfo =
+        await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
     List<String> scopeStrs = <String>[];
@@ -146,7 +148,8 @@ extension UserInfoMethods on UserInfo {
   Future<bool> changeUserName(Session session, String newUserName) async {
     if (id == null) return false;
 
-    UserInfo? updatedUser = await Users.changeUserName(session, id!, newUserName);
+    UserInfo? updatedUser =
+        await Users.changeUserName(session, id!, newUserName);
     if (updatedUser == null) return false;
 
     userName = newUserName;
@@ -166,7 +169,8 @@ extension UserInfoMethods on UserInfo {
   Future<bool> updateScopes(Session session, Set<Scope> newScopes) async {
     if (id == null) return false;
 
-    UserInfo? updatedUser = await Users.updateUserScopes(session, id!, newScopes);
+    UserInfo? updatedUser =
+        await Users.updateUserScopes(session, id!, newScopes);
     if (updatedUser == null) return false;
 
     scopeNames = updatedUser.scopeNames;

@@ -13,9 +13,12 @@ typedef MessageCentralListenerCallback = void Function(
 /// endpoints. The message central can pass on any serializable to a channel.
 /// The channel can be listened to by from any place in the server.
 class MessageCentral {
-  final Map<String, Set<MessageCentralListenerCallback>> _channels = <String, Set<MessageCentralListenerCallback>>{};
-  final Map<Session, Set<String>> _sessionToChannelNamesLookup = <Session, Set<String>>{};
-  final Map<Session, Set<MessageCentralListenerCallback>> _sessionToCallbacksLookup =
+  final Map<String, Set<MessageCentralListenerCallback>> _channels =
+      <String, Set<MessageCentralListenerCallback>>{};
+  final Map<Session, Set<String>> _sessionToChannelNamesLookup =
+      <Session, Set<String>>{};
+  final Map<Session, Set<MessageCentralListenerCallback>>
+      _sessionToCallbacksLookup =
       <Session, Set<MessageCentralListenerCallback>>{};
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
@@ -76,7 +79,8 @@ class MessageCentral {
     }
     subscribedChannels.add(channelName);
 
-    Set<MessageCentralListenerCallback>? callbacks = _sessionToCallbacksLookup[session];
+    Set<MessageCentralListenerCallback>? callbacks =
+        _sessionToCallbacksLookup[session];
     if (callbacks == null) {
       callbacks = <void Function(SerializableEntity)>{};
       _sessionToCallbacksLookup[session] = callbacks;
@@ -123,7 +127,8 @@ class MessageCentral {
       }
     }
 
-    Set<MessageCentralListenerCallback>? callbacks = _sessionToCallbacksLookup[session];
+    Set<MessageCentralListenerCallback>? callbacks =
+        _sessionToCallbacksLookup[session];
     if (callbacks != null) {
       callbacks.remove(listener);
       if (callbacks.isEmpty) {
@@ -138,7 +143,8 @@ class MessageCentral {
     // Get subscribed channels
     Set<String>? channelNames = _sessionToChannelNamesLookup[session];
     if (channelNames == null) return;
-    Set<MessageCentralListenerCallback>? listeners = _sessionToCallbacksLookup[session];
+    Set<MessageCentralListenerCallback>? listeners =
+        _sessionToCallbacksLookup[session];
     if (listeners == null) return;
 
     for (String channelName in channelNames) {

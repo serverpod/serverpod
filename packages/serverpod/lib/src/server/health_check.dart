@@ -84,7 +84,8 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
     DateTime startTime = DateTime.now();
     int rnd = Random().nextInt(1000000);
 
-    DatabaseConnection databaseConnection = pod.databaseConfig.createConnection();
+    DatabaseConnection databaseConnection =
+        pod.databaseConfig.createConnection();
 
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(
@@ -109,7 +110,8 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
   catch (e) {}
 
   HttpConnectionsInfo connectionsInfo = pod.server.httpServer.connectionsInfo();
-  HttpConnectionsInfo connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
+  HttpConnectionsInfo connectionsInfoService =
+      pod.serviceServer.httpServer.connectionsInfo();
 
   return <ServerHealthMetric>[
 //    ServerHealthMetric(

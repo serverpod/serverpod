@@ -23,7 +23,7 @@ class ChatConfig {
     this.allowUnauthenticatedUsers = false,
     this.postMessagesLocallyOnly = false,
   }) {
-    this.channelAccessVerification =
-        channelAccessVerification ?? (Session session, int userId, String channel) async => true;
+    this.channelAccessVerification = channelAccessVerification ??
+        (Session session, int userId, String channel) async => true;
   }
 }

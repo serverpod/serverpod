@@ -27,7 +27,8 @@ class LogResult extends SerializableEntity {
     Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     entries = _data['entries']!
-        .map<LogEntry>((Map<String, dynamic>a) => LogEntry.fromSerialization(a))
+        .map<LogEntry>(
+            (Map<String, dynamic> a) => LogEntry.fromSerialization(a))
         ?.toList();
   }
 

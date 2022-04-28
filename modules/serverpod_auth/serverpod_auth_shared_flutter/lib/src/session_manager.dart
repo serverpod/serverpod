@@ -101,7 +101,8 @@ class SessionManager with ChangeNotifier {
         .getInt(_prefsKey + '_' + keyManager.runMode + '_version');
     if (version != _prefsVersion) return;
 
-    String? json = await _storage.getString(_prefsKey + '_' + keyManager.runMode);
+    String? json =
+        await _storage.getString(_prefsKey + '_' + keyManager.runMode);
     if (json == null) return;
 
     _signedInUser = Protocol.instance

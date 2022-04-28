@@ -18,7 +18,8 @@ class CommandLineTools {
 
   static void flutterCreate(Directory dir) {
     print('Running `flutter create .` in ${dir.path}');
-    _CommandFormatter cf = _CommandFormatter('flutter', <String>['create', '.']);
+    _CommandFormatter cf =
+        _CommandFormatter('flutter', <String>['create', '.']);
     ProcessResult result = Process.runSync(
       cf.command,
       cf.args,

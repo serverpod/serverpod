@@ -41,7 +41,8 @@ class _TextWithLinksState extends State<TextWithLinks> {
 
   void _disposeRecognizers() {
     if (_recognizers.isEmpty) return;
-    List<GestureRecognizer> localRecognizers = List<GestureRecognizer>.from(_recognizers);
+    List<GestureRecognizer> localRecognizers =
+        List<GestureRecognizer>.from(_recognizers);
     _recognizers.clear();
     for (GestureRecognizer recognizer in localRecognizers) {
       recognizer.dispose();

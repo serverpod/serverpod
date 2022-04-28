@@ -50,7 +50,8 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<void> deleteAllSimpleTestData(Session session) async {
-    await SimpleData.delete(session, where: (SimpleDataTable t) => Constant(true));
+    await SimpleData.delete(session,
+        where: (SimpleDataTable t) => Constant(true));
   }
 
   Future<void> deleteSimpleTestDataLessThan(Session session, int num) async {

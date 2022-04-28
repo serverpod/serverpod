@@ -60,8 +60,8 @@ class ChatMessage extends TableRow {
     clientMessageId = _data['clientMessageId'];
     sent = _data['sent'];
     attachments = _data['attachments']
-        ?.map<ChatMessageAttachment>(
-            (Map<String, dynamic> a) => ChatMessageAttachment.fromSerialization(a))
+        ?.map<ChatMessageAttachment>((Map<String, dynamic> a) =>
+            ChatMessageAttachment.fromSerialization(a))
         ?.toList();
   }
 

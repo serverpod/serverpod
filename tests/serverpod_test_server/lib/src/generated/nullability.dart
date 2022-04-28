@@ -136,13 +136,12 @@ class Nullability extends SerializableEntity {
         ?.map<DateTime>((String a) => DateTime.tryParse(a)!)
         .toList();
     aListWithNullableDateTimes = _data['aListWithNullableDateTimes']!
-        .map<DateTime?>(
-            (String? a) => a != null ? DateTime.tryParse(a) : null)
+        .map<DateTime?>((String? a) => a != null ? DateTime.tryParse(a) : null)
         .toList();
     aNullableListWithNullableDateTimes =
         _data['aNullableListWithNullableDateTimes']
-            ?.map<DateTime?>((String? a) =>
-                a != null ? DateTime.tryParse(a) : null)
+            ?.map<DateTime?>(
+                (String? a) => a != null ? DateTime.tryParse(a) : null)
             .toList();
     aByteDataList = _data['aByteDataList']!
         .map<ByteData>(

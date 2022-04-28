@@ -47,7 +47,8 @@ class AwsS3Client {
 
   Future<ListBucketResult?> listObjects(
       {String? prefix, String? delimiter, int? maxKeys}) async {
-    final response = await _doSignedGetRequest(key: '', queryParams: <String, String>{
+    final response =
+        await _doSignedGetRequest(key: '', queryParams: <String, String>{
       "list-type": "2",
       if (prefix != null) "prefix": prefix,
       if (delimiter != null) "delimiter": delimiter,

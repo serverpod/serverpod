@@ -29,7 +29,8 @@ class ServerHealthResult extends SerializableEntity {
     Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     metrics = _data['metrics']!
-        .map<ServerHealthMetric>((Map<String, dynamic> a) => ServerHealthMetric.fromSerialization(a))
+        .map<ServerHealthMetric>(
+            (Map<String, dynamic> a) => ServerHealthMetric.fromSerialization(a))
         ?.toList();
     serverName = _data['serverName']!;
   }

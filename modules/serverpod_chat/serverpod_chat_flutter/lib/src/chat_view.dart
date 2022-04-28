@@ -188,7 +188,8 @@ class _ChatViewState extends State<ChatView>
             if (_scrollController.hasClients &&
                 _scrollController.offset ==
                     _scrollController.position.maxScrollExtent) {
-              WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) {
+              WidgetsBinding.instance!
+                  .addPostFrameCallback((Duration timeStamp) {
                 _scrollController
                     .jumpTo(_scrollController.position.maxScrollExtent);
               });
@@ -237,8 +238,7 @@ class _ChatViewState extends State<ChatView>
 
     // Explicit type match, else this gets promoted to a dynamic `Function()`
     // ignore: omit_local_variable_types
-    ChatTileBuilder tileBuilder =
-        widget.tileBuilder ?? _defaultTileBuilder;
+    ChatTileBuilder tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
   }
 

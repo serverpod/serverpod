@@ -17,7 +17,8 @@ Future<void> performGenerateProtocol(
     verbose,
     requestNewAnalyzer: requestNewAnalyzer,
   );
-  ProtocolGeneratorDart generator = ProtocolGeneratorDart(protocolDefinition: definition);
+  ProtocolGeneratorDart generator =
+      ProtocolGeneratorDart(protocolDefinition: definition);
 
   // Generate code for the client
   if (verbose) print('Generating client endpoints');

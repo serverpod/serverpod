@@ -28,9 +28,12 @@ class AuthenticationFailReason extends SerializableEntity {
     });
   }
 
-  static final AuthenticationFailReason invalidCredentials = AuthenticationFailReason._internal(0);
-  static final AuthenticationFailReason userCreationDenied = AuthenticationFailReason._internal(1);
-  static final AuthenticationFailReason internalError = AuthenticationFailReason._internal(2);
+  static final AuthenticationFailReason invalidCredentials =
+      AuthenticationFailReason._internal(0);
+  static final AuthenticationFailReason userCreationDenied =
+      AuthenticationFailReason._internal(1);
+  static final AuthenticationFailReason internalError =
+      AuthenticationFailReason._internal(2);
 
   @override
   int get hashCode => _index.hashCode;
@@ -38,7 +41,8 @@ class AuthenticationFailReason extends SerializableEntity {
   bool operator ==(Object other) =>
       other is AuthenticationFailReason && other._index == _index;
 
-  static final List<AuthenticationFailReason> values = <AuthenticationFailReason>[
+  static final List<AuthenticationFailReason> values =
+      <AuthenticationFailReason>[
     invalidCredentials,
     userCreationDenied,
     internalError,

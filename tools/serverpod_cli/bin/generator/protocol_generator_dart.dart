@@ -53,7 +53,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       // Add methods
       for (MethodDefinition methodDef in endpointDef.methods) {
         List<ParameterDefinition> requiredParams = methodDef.parameters;
-        List<ParameterDefinition> optionalParams = methodDef.parametersPositional;
+        List<ParameterDefinition> optionalParams =
+            methodDef.parametersPositional;
         TypeDefinition returnType = methodDef.returnType;
 
         // Method definition

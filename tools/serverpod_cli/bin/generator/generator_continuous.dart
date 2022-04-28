@@ -30,7 +30,8 @@ Future<void> _performGenerateClassesContinuously(bool verbose) async {
 }
 
 Future<void> _performGenereateProtocolContinuously(bool verbose) async {
-  DirectoryWatcher watcherEndpoints = DirectoryWatcher(config.endpointsSourcePath);
+  DirectoryWatcher watcherEndpoints =
+      DirectoryWatcher(config.endpointsSourcePath);
   await for (WatchEvent event in watcherEndpoints.events) {
     print('File changed: $event');
     switch (event.type) {

@@ -10,7 +10,8 @@ extension ProcessKillerExtension on Process {
 
     killPid ??= this.pid;
 
-    ProcessResult pgrepResult = Process.runSync('pgrep', <String>['-P', '$killPid']);
+    ProcessResult pgrepResult =
+        Process.runSync('pgrep', <String>['-P', '$killPid']);
 
     String childPidsString = (pgrepResult.stdout as String).trim();
     if (childPidsString.isNotEmpty) {

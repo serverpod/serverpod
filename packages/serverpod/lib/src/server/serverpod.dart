@@ -229,7 +229,8 @@ class Serverpod {
     }
 
     // Load passwords
-    _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? <String, String>{};
+    _passwords =
+        PasswordManager(runMode: runMode).loadPasswords() ?? <String, String>{};
 
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);

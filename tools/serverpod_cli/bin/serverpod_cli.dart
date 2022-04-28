@@ -196,7 +196,8 @@ void main(List<String> args) async {
   ArgParser generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
   generatePubspecs.addOption('mode',
-      defaultsTo: 'development', allowed: <String>['development', 'production']);
+      defaultsTo: 'development',
+      allowed: <String>['development', 'production']);
   parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
 
   ArgResults results = parser.parse(args);

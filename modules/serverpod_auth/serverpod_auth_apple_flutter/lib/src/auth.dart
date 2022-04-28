@@ -12,7 +12,8 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
     if (!available) return null;
 
     // Attempt to sign in.
-    AuthorizationCredentialAppleID credential = await SignInWithApple.getAppleIDCredential(
+    AuthorizationCredentialAppleID credential =
+        await SignInWithApple.getAppleIDCredential(
       scopes: <AppleIDAuthorizationScopes>[
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
@@ -37,7 +38,8 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
     );
 
     // Authenticate with the Serverpod server.
-    AuthenticationResponse serverResponse = await caller.apple.authenticate(authInfo);
+    AuthenticationResponse serverResponse =
+        await caller.apple.authenticate(authInfo);
     if (!serverResponse.success) return null;
 
     // Authentication was successful, store the key.

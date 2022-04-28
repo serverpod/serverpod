@@ -36,8 +36,8 @@ class ChatMessagePost extends SerializableEntity {
     message = _data['message']!;
     clientMessageId = _data['clientMessageId']!;
     attachments = _data['attachments']
-        ?.map<ChatMessageAttachment>(
-            (Map<String, dynamic> a) => ChatMessageAttachment.fromSerialization(a))
+        ?.map<ChatMessageAttachment>((Map<String, dynamic> a) =>
+            ChatMessageAttachment.fromSerialization(a))
         ?.toList();
   }
 

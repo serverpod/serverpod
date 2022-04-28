@@ -40,8 +40,8 @@ class RuntimeSettings extends TableRow {
     id = _data['id'];
     logSettings = LogSettings.fromSerialization(_data['logSettings']);
     logSettingsOverrides = _data['logSettingsOverrides']!
-        .map<LogSettingsOverride>(
-            (Map<String, dynamic> a) => LogSettingsOverride.fromSerialization(a))
+        .map<LogSettingsOverride>((Map<String, dynamic> a) =>
+            LogSettingsOverride.fromSerialization(a))
         ?.toList();
     logServiceCalls = _data['logServiceCalls']!;
     logMalformedCalls = _data['logMalformedCalls']!;

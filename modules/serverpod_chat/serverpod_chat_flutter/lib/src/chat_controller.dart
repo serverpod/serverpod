@@ -37,7 +37,8 @@ class ChatController {
 
   bool _postedMessageChunkRequest = false;
 
-  final Set<ChatControllerReceivedMessageCallback> _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
+  final Set<ChatControllerReceivedMessageCallback> _receivedMessageListeners =
+      <ChatControllerReceivedMessageCallback>{};
   final Set<VoidCallback> _receivedMessageChunkListeners = <VoidCallback>{};
   final Set<VoidCallback> _messageUpdatedListeners = <VoidCallback>{};
   final Set<VoidCallback> _unreadMessagesListeners = <VoidCallback>{};
@@ -256,7 +257,8 @@ class ChatController {
   }
 
   void _notifyMessageListeners(ChatMessage message, bool addedByUser) {
-    for (ChatControllerReceivedMessageCallback listener in _receivedMessageListeners) {
+    for (ChatControllerReceivedMessageCallback listener
+        in _receivedMessageListeners) {
       listener(message, addedByUser);
     }
   }

@@ -49,7 +49,8 @@ class Copier {
     String fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
 
-    String dstFileName = _replace('$relativePath$fileName', fileNameReplacements);
+    String dstFileName =
+        _replace('$relativePath$fileName', fileNameReplacements);
     print('  ${dstDir.path}$relativePath$fileName');
 
     File dstFile = File('${dstDir.path}/$dstFileName');

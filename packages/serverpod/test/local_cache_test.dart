@@ -70,7 +70,8 @@ void main() {
     SimpleData? first = await cache.get('entry:0') as SimpleData?;
     expect(first, isNull);
 
-    SimpleData? last = await cache.get('entry:${numEntries - 1}') as SimpleData?;
+    SimpleData? last =
+        await cache.get('entry:${numEntries - 1}') as SimpleData?;
     expect(last!.num, equals(numEntries - 1));
   });
 
