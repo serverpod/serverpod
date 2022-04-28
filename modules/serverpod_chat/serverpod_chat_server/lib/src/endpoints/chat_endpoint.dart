@@ -328,7 +328,7 @@ class ChatEndpoint extends Endpoint {
     const len = 16;
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    Random rnd = Random();
+    var rnd = Random();
     var rndString = String.fromCharCodes(Iterable.generate(
         len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
     var dateString = DateTime.now().toUtc().toString().substring(0, 10);
