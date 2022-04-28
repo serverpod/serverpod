@@ -48,35 +48,32 @@ class CommandLineTools {
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
+    var result = await Process.run(
+      'chmod',
+      ['u+x', 'setup-tables'],
+      workingDirectory: serverPath,
+    );
+    print(result.stdout);
 
-    if (!Platform.isWindows) {
-      var result = await Process.run(
-        'chmod',
-        ['u+x', 'setup-tables'],
-        workingDirectory: serverPath,
-      );
-      print(result.stdout);
+    var process = await Process.start(
+      './setup-tables',
+      [],
+      workingDirectory: serverPath,
+    );
 
-      var process = await Process.start(
-        './setup-tables',
-        [],
-        workingDirectory: serverPath,
-      );
+    unawaited(stdout.addStream(process.stdout));
+    unawaited(stderr.addStream(process.stderr));
 
-      unawaited(stdout.addStream(process.stdout));
-      unawaited(stderr.addStream(process.stderr));
+    var exitCode = await process.exitCode;
+    print('Completed table setup exit code: $exitCode');
 
-      var exitCode = await process.exitCode;
-      print('Completed table setup exit code: $exitCode');
-
-      print('Cleaning up');
-      result = await Process.run(
-        'rm',
-        ['setup-tables'],
-        workingDirectory: serverPath,
-      );
-      print(result.stdout);
-    }
+    print('Cleaning up');
+    result = await Process.run(
+      'rm',
+      ['setup-tables'],
+      workingDirectory: serverPath,
+    );
+    print(result.stdout);
   }
 }
 

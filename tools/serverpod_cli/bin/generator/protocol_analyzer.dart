@@ -42,8 +42,6 @@ class ProtocolAnalyzer {
   late AnalysisContextCollection collection;
 
   ProtocolAnalyzer(String filePath) : endpointDirectory = Directory(filePath) {
-    print('endpointDirectory: ${endpointDirectory.path}');
-    print('endpointDirectory.absolute: ${endpointDirectory.absolute.path}');
     collection = AnalysisContextCollection(
       includedPaths: [],
       resourceProvider: PhysicalResourceProvider.INSTANCE,

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as p;
+import 'package:uuid/uuid.dart';
 
 import '../generated/version.dart';
 import '../shared/environment.dart';
@@ -16,11 +16,10 @@ class ResourceManager {
 
     if (Platform.isWindows) {
       return Directory(envVars['UserProfile']!);
-    } else if (!Platform.isWindows) {
+    } else if (Platform.isLinux || Platform.isMacOS) {
       return Directory(envVars['HOME']!);
-    } else {
-      throw (Exception('Unsupported platform.'));
     }
+    throw (Exception('Unsupported platform.'));
   }
 
   Directory get localCacheDirectory =>
