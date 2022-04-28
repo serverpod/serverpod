@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
 
 List<Map<String, dynamic>>? _applePublicKeys;
-const _authMethod = 'apple';
+const String _authMethod = 'apple';
 
 /// Endpoint for handling Sign in with Apple.
 class AppleEndpoint extends Endpoint {
@@ -17,7 +18,7 @@ class AppleEndpoint extends Endpoint {
       Session session, AppleAuthInfo authInfo) async {
     // Load public keys
     if (_applePublicKeys == null) {
-      var result =
+      http.Response result =
           await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
       if (result.statusCode != 200) {
         return AuthenticationResponse(
@@ -26,31 +27,32 @@ class AppleEndpoint extends Endpoint {
         );
       }
 
-      Map data = jsonDecode(result.body);
-      List keysData = data['keys'];
-      var keys = <Map<String, dynamic>>[];
-      for (Map keyData in keysData) {
+      Map<String, dynamic> data = jsonDecode(result.body);
+      List<Map<String, dynamic>> keysData = data['keys'];
+      List<Map<String, dynamic>> keys = <Map<String, dynamic>>[];
+      for (Map<String, dynamic> keyData in keysData) {
         keys.add(keyData.cast<String, dynamic>());
       }
       _applePublicKeys = keys;
     }
 
-    var userIdentifier = authInfo.userIdentifier;
-    var fullName = authInfo.fullName;
-    var name = authInfo.nickname;
-    var email = authInfo.email;
+    String userIdentifier = authInfo.userIdentifier;
+    String fullName = authInfo.fullName;
+    String name = authInfo.nickname;
+    String? email = authInfo.email;
 
     // create a JsonWebSignature from the encoded string
-    var jws = JsonWebSignature.fromCompactSerialization(authInfo.identityToken);
+    JsonWebSignature jws =
+        JsonWebSignature.fromCompactSerialization(authInfo.identityToken);
 
     // extract the payload
-    var payload = jws.unverifiedPayload;
+    JosePayload payload = jws.unverifiedPayload;
 
-    var verified = false;
-    for (var applePublicKey in _applePublicKeys!) {
-      var jwk = JsonWebKey.fromJson(applePublicKey);
+    bool verified = false;
+    for (Map<String, dynamic> applePublicKey in _applePublicKeys!) {
+      JsonWebKey jwk = JsonWebKey.fromJson(applePublicKey);
 
-      var keyStore = JsonWebKeyStore()..addKey(jwk);
+      JsonWebKeyStore keyStore = JsonWebKeyStore()..addKey(jwk);
 
       // verify the signature
       if (await jws.verify(keyStore)) verified = true;
@@ -92,7 +94,7 @@ class AppleEndpoint extends Endpoint {
         active: true,
         blocked: false,
         created: DateTime.now().toUtc(),
-        scopeNames: [],
+        scopeNames: <String>[],
       );
       userInfo = await Users.createUser(session, userInfo, _authMethod);
     }
@@ -104,7 +106,7 @@ class AppleEndpoint extends Endpoint {
       );
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+    AuthKey authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
 
     return AuthenticationResponse(
       success: true,

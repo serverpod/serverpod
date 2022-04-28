@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_chat_client/module.dart';
-import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
+import '../serverpod_chat_flutter.dart';
 
 class ChatInput extends StatefulWidget {
   final ChatController controller;
@@ -36,13 +36,13 @@ class ChatInput extends StatefulWidget {
 }
 
 class _ChatInputState extends State<ChatInput> {
-  final _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
 
   bool _uploadingAttachment = false;
   String? _uploadingAttachementFileName;
-  List<ChatMessageAttachment> _attachments = [];
+  List<ChatMessageAttachment> _attachments = <ChatMessageAttachment>[];
 
-  late final _focusNode = FocusNode(
+  late final FocusNode _focusNode = FocusNode(
     onKey: (FocusNode node, RawKeyEvent evt) {
       if (!evt.isShiftPressed && evt.logicalKey.keyLabel == 'Enter') {
         if (evt is RawKeyDownEvent) {
@@ -57,9 +57,9 @@ class _ChatInputState extends State<ChatInput> {
 
   @override
   Widget build(BuildContext context) {
-    var attachementTiles = <Widget>[];
+    List<Widget> attachementTiles = <Widget>[];
     if (_uploadingAttachementFileName != null || _attachments.isNotEmpty) {
-      for (var attachment in _attachments) {
+      for (ChatMessageAttachment attachment in _attachments) {
         attachementTiles.add(
           _AttachmentTile(
             fileName: attachment.fileName,
@@ -94,9 +94,9 @@ class _ChatInputState extends State<ChatInput> {
         type: MaterialType.transparency,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Padding(
                     padding: widget.padding ??
@@ -127,7 +127,7 @@ class _ChatInputState extends State<ChatInput> {
                   ),
                 // SizedBox(width: 8,),
                 Padding(
-                  padding: EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.only(right: 8),
                   child: IconButton(
                     icon: Icon(widget.iconSend),
                     color: Theme.of(context).textTheme.caption!.color,
@@ -139,7 +139,7 @@ class _ChatInputState extends State<ChatInput> {
             ),
             if (attachementTiles.isNotEmpty)
               Padding(
-                padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+                padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
                 child: SizedBox(
                   height: 40,
                   child: ListView(
@@ -157,14 +157,14 @@ class _ChatInputState extends State<ChatInput> {
   void _sendTextMessage() {
     if (_uploadingAttachment) return;
 
-    var text = _textController.text.trim();
+    String text = _textController.text.trim();
     if (text.isEmpty && _attachments.isEmpty) return;
 
     widget.controller.postMessage(text, _attachments);
 
     _textController.text = '';
     setState(() {
-      _attachments = [];
+      _attachments = <ChatMessageAttachment>[];
     });
     _focusNode.requestFocus();
   }
@@ -174,18 +174,17 @@ class _ChatInputState extends State<ChatInput> {
       _uploadingAttachment = true;
     });
 
-    ChatMessageAttachment attachment;
     try {
-      var result =
-          await await FilePicker.platform.pickFiles(withReadStream: true);
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(withReadStream: true);
       if (result == null) {
         _uploadCancelled();
         return;
       }
 
-      var fileName = result.files.first.name;
+      String fileName = result.files.first.name;
       // var fileName = result.name;
-      print(' - picked file: $fileName');
+      debugPrint(' - picked file: $fileName');
 
       if (mounted) {
         setState(() {
@@ -193,50 +192,50 @@ class _ChatInputState extends State<ChatInput> {
         });
       }
 
-      var stream = result.files.first.readStream;
+      Stream<List<int>>? stream = result.files.first.readStream;
       // var stream = result.openRead();
       Uint8List? bytes;
       if (stream == null) {
-        print(' - stream is null');
+        debugPrint(' - stream is null');
         bytes = result.files.first.bytes;
         // bytes = await result.readAsBytes();
       }
 
       if (stream == null && bytes == null) {
-        print(' - bytes is null');
+        debugPrint(' - bytes is null');
         _uploadCancelled();
         return;
       }
-      print(' - stream or bytes is not null');
+      debugPrint(' - stream or bytes is not null');
 
-      var uploadDescription = await widget.controller.module.chat
+      ChatMessageAttachmentUploadDescription? uploadDescription = await widget
+          .controller.module.chat
           .createAttachmentUploadDescription(fileName);
       if (uploadDescription == null) {
         _uploadCancelled();
         return;
       }
-      print(' - got upload description');
+      debugPrint(' - got upload description');
 
-      var uploader = FileUploader(uploadDescription.uploadDescription);
-      if (stream != null)
+      FileUploader uploader = FileUploader(uploadDescription.uploadDescription);
+      if (stream != null) {
         await uploader.upload(stream, result.files.first.size);
-      // await uploader.upload(stream, await result.length());
-      else if (bytes != null)
+      } else if (bytes != null) {
         await uploader.uploadByteData(ByteData.view(bytes.buffer));
-      else {
+      } else {
         _uploadCancelled();
         return;
       }
 
-      print(' - uploaded file');
+      debugPrint(' - uploaded file');
 
-      var attachment = await widget.controller.module.chat
+      ChatMessageAttachment? attachment = await widget.controller.module.chat
           .verifyAttachmentUpload(fileName, uploadDescription.filePath);
       if (attachment == null) {
         _uploadCancelled();
         return;
       }
-      print(' - got attachment');
+      debugPrint(' - got attachment');
 
       if (mounted) {
         setState(() {
@@ -244,8 +243,8 @@ class _ChatInputState extends State<ChatInput> {
         });
       }
     } catch (e, stackTrace) {
-      print('Attachment upload failed: $e');
-      print('$stackTrace');
+      debugPrint('Attachment upload failed: $e');
+      debugPrint('$stackTrace');
       _uploadCancelled();
     }
 
@@ -255,7 +254,7 @@ class _ChatInputState extends State<ChatInput> {
   }
 
   void _uploadCancelled() {
-    print('uploadCancelled');
+    debugPrint('uploadCancelled');
     _uploadingAttachementFileName = null;
     _uploadingAttachment = false;
     if (mounted) setState(() {});
@@ -280,18 +279,18 @@ class _AttachmentTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         border: Border.all(color: Theme.of(context).dividerColor),
-        borderRadius: BorderRadius.all(Radius.circular(4)),
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
       ),
-      margin: EdgeInsets.only(left: 8),
+      margin: const EdgeInsets.only(left: 8),
       width: 180,
       child: Material(
         type: MaterialType.transparency,
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Row(
-            children: [
+            children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 8),
                 child: Icon(
                   _iconForName(fileName),
                   color: Theme.of(context).textTheme.bodyText2!.color,
@@ -306,7 +305,7 @@ class _AttachmentTile extends StatelessWidget {
                 ),
               ),
               if (loading)
-                SizedBox(
+                const SizedBox(
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(),
@@ -319,7 +318,7 @@ class _AttachmentTile extends StatelessWidget {
                     iconSize: 18,
                     padding: EdgeInsets.zero,
                     onPressed: onDelete,
-                    icon: Icon(Icons.close_rounded),
+                    icon: const Icon(Icons.close_rounded),
                     color: Theme.of(context).textTheme.caption!.color,
                   ),
                 ),
@@ -331,12 +330,13 @@ class _AttachmentTile extends StatelessWidget {
   }
 
   IconData _iconForName(String name) {
-    var ext = path.extension(name.toLowerCase());
-    if ({'.png', '.jpg', '.jpeg', '.gif'}.contains(ext))
+    String ext = path.extension(name.toLowerCase());
+    if (<String>{'.png', '.jpg', '.jpeg', '.gif'}.contains(ext)) {
       return Icons.image_outlined;
-    else if ({'.pdf'}.contains(ext))
+    } else if (<String>{'.pdf'}.contains(ext)) {
       return Icons.insert_drive_file_outlined;
-    else
+    } else {
       return Icons.insert_drive_file_outlined;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:serverpod/src/serialization/serialization_manager.dart';
+import '../serialization/serialization_manager.dart';
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -46,7 +46,7 @@ class DatabaseConfig {
       : tableClassMapping = serializationManager.tableClassMapping {
     _serializationManager = serializationManager;
 
-    var poolSettings = PgPoolSettings();
+    PgPoolSettings poolSettings = PgPoolSettings();
     poolSettings.concurrency = 10;
     poolSettings.queryTimeout = const Duration(minutes: 1);
 

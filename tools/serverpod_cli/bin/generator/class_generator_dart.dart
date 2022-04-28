@@ -18,8 +18,8 @@ class ClassGeneratorDart extends ClassGenerator {
   @override
   String? generateFile(
       String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
-    var doc = loadYaml(yamlStr);
-    var out = '';
+    YamlMap doc = loadYaml(yamlStr);
+    String out = '';
 
     // Handle enums
     try {
@@ -30,7 +30,7 @@ class ClassGeneratorDart extends ClassGenerator {
         classInfos.add(ClassInfo(
           className: enumName,
           fileName: outFileName,
-          fields: [],
+          fields: <FieldDefinition>[],
         ));
 
         // Header
@@ -70,13 +70,13 @@ class ClassGeneratorDart extends ClassGenerator {
 
         out += '  @override\n';
         out += '  Map<String, dynamic> serialize() {\n';
-        out += '    return wrapSerializationData({\n';
+        out += '    return wrapSerializationData(<String, dynamic>{\n';
         out += '      \'index\': _index,\n';
         out += '    });\n';
         out += '  }\n';
 
         // Values
-        var i = 0;
+        int i = 0;
         for (String value in doc['values']) {
           out += '  static final $value = $enumName._internal($i);\n';
           i += 1;
@@ -118,21 +118,21 @@ class ClassGeneratorDart extends ClassGenerator {
     // Handle ordinary classes
     try {
       String? tableName = doc['table'];
-      var className = _expectString(doc, 'class');
-      var docFields = _expectMap(doc, 'fields');
-      var fields = <FieldDefinition>[];
+      String className = _expectString(doc, 'class');
+      Map<dynamic, dynamic> docFields = _expectMap(doc, 'fields');
+      List<FieldDefinition> fields = <FieldDefinition>[];
 
       fields.add(FieldDefinition('id', 'int?'));
-      for (var docFieldName in docFields.keys) {
+      for (String docFieldName in docFields.keys) {
         fields.add(FieldDefinition(docFieldName, docFields[docFieldName]));
       }
 
       List<IndexDefinition>? indexes;
 
       if (doc['indexes'] != null) {
-        indexes = [];
-        var docIndexes = _expectMap(doc, 'indexes');
-        for (var indexName in docIndexes.keys) {
+        indexes = <IndexDefinition>[];
+        Map<String, dynamic> docIndexes = _expectMap(doc, 'indexes');
+        for (String indexName in docIndexes.keys) {
           indexes.add(IndexDefinition(indexName, docIndexes[indexName]));
         }
       }
@@ -147,11 +147,11 @@ class ClassGeneratorDart extends ClassGenerator {
       ));
 
       // Find dependencies on other modules
-      var moduleDependencies = <String>{};
-      for (var field in fields) {
+      Set<String> moduleDependencies = <String>{};
+      for (FieldDefinition field in fields) {
         if (field.type.type.contains('.')) {
-          var nameComponents = field.type.type.split('.');
-          var moduleName = nameComponents[0];
+          List<String> nameComponents = field.type.type.split('.');
+          String moduleName = nameComponents[0];
           moduleDependencies.add(moduleName);
         }
       }
@@ -178,13 +178,13 @@ class ClassGeneratorDart extends ClassGenerator {
           out +=
               'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
         }
-        for (var dependencyName in moduleDependencies) {
+        for (String dependencyName in moduleDependencies) {
           out +=
               'import \'package:${dependencyName}_server/module.dart\' as $dependencyName;\n';
         }
       } else {
         out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-        for (var dependencyName in moduleDependencies) {
+        for (String dependencyName in moduleDependencies) {
           out +=
               'import \'package:${dependencyName}_client/module.dart\' as $dependencyName;\n';
         }
@@ -212,7 +212,7 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '\n';
 
       // Fields
-      for (var field in fields) {
+      for (FieldDefinition field in fields) {
         if (field.shouldIncludeField(serverCode)) {
           if (field.name == 'id' && serverCode && tableName != null) {
             out += '  @override\n';
@@ -225,7 +225,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
       // Default constructor
       out += '  $className({\n';
-      for (var field in fields) {
+      for (FieldDefinition field in fields) {
         if (field.shouldIncludeField(serverCode)) {
           out +=
               '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
@@ -238,7 +238,7 @@ class ClassGeneratorDart extends ClassGenerator {
       out +=
           '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
       out += '    var _data = unwrapSerializationData(serialization);\n';
-      for (var field in fields) {
+      for (FieldDefinition field in fields) {
         if (field.shouldIncludeField(serverCode)) {
           out += '    ${field.name} = ${field.deserialization};\n';
         }
@@ -249,9 +249,9 @@ class ClassGeneratorDart extends ClassGenerator {
       // Serialization
       out += '  @override\n';
       out += '  Map<String, dynamic> serialize() {\n';
-      out += '    return wrapSerializationData({\n';
+      out += '    return wrapSerializationData(<String, dynamic>{\n';
 
-      for (var field in fields) {
+      for (FieldDefinition field in fields) {
         if (field.shouldSerializeField(serverCode)) {
           out += '      \'${field.name}\': ${field.serialization},\n';
         }
@@ -266,9 +266,9 @@ class ClassGeneratorDart extends ClassGenerator {
           out += '\n';
           out += '  @override\n';
           out += '  Map<String, dynamic> serializeForDatabase() {\n';
-          out += '    return wrapSerializationData({\n';
+          out += '    return wrapSerializationData(<String, dynamic>{\n';
 
-          for (var field in fields) {
+          for (FieldDefinition field in fields) {
             if (field.shouldSerializeFieldForDatabase(serverCode)) {
               out += '      \'${field.name}\': ${field.serialization},\n';
             }
@@ -281,9 +281,9 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '\n';
         out += '  @override\n';
         out += '  Map<String, dynamic> serializeAll() {\n';
-        out += '    return wrapSerializationData({\n';
+        out += '    return wrapSerializationData(<String, dynamic>{\n';
 
-        for (var field in fields) {
+        for (FieldDefinition field in fields) {
           out += '      \'${field.name}\': ${field.serialization},\n';
         }
 
@@ -294,10 +294,10 @@ class ClassGeneratorDart extends ClassGenerator {
           // Column setter
           out += '\n';
           out += '  @override\n';
-          out += '  void setColumn(String columnName, value) {\n';
+          out += '  void setColumn(String columnName, dynamic value) {\n';
           out += '    switch (columnName) {\n';
 
-          for (var field in fields) {
+          for (FieldDefinition field in fields) {
             if (field.shouldSerializeFieldForDatabase(serverCode)) {
               out += '      case \'${field.name}\':\n';
               out += '        ${field.name} = value;\n';
@@ -396,7 +396,7 @@ class ClassGeneratorDart extends ClassGenerator {
         out += '  String tableName = \'$tableName\';\n';
 
         // Column descriptions
-        for (var field in fields) {
+        for (FieldDefinition field in fields) {
           if (field.shouldSerializeFieldForDatabase(serverCode)) {
             out +=
                 '  final ${field.name} = ${field.columnType}(\'${field.name}\');\n';
@@ -406,8 +406,8 @@ class ClassGeneratorDart extends ClassGenerator {
 
         // List of column values
         out += '  @override\n';
-        out += '  List<Column> get columns => [\n';
-        for (var field in fields) {
+        out += '  List<Column> get columns => <Column>[\n';
+        for (FieldDefinition field in fields) {
           if (field.shouldSerializeFieldForDatabase(serverCode)) {
             out += '    ${field.name},\n';
           }
@@ -441,8 +441,8 @@ class ClassGeneratorDart extends ClassGenerator {
     }
   }
 
-  Map _expectMap(dynamic doc, String field) {
-    Map? map = doc[field];
+  Map<String, dynamic> _expectMap(dynamic doc, String field) {
+    Map<String, dynamic>? map = doc[field];
     if (map != null) {
       return map;
     } else {
@@ -453,7 +453,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
   @override
   String generateFactory(Set<ClassInfo> classInfos) {
-    var out = '';
+    String out = '';
 
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
@@ -477,20 +477,20 @@ class ClassGeneratorDart extends ClassGenerator {
     out += '\n';
 
     // Import generated files
-    for (var classInfo in classInfos) {
+    for (ClassInfo classInfo in classInfos) {
       out += 'import \'${classInfo.fileName}\';\n';
     }
     out += '\n';
 
     // Export generated files
-    for (var classInfo in classInfos) {
+    for (ClassInfo classInfo in classInfos) {
       out += 'export \'${classInfo.fileName}\';\n';
     }
     if (!serverCode) out += 'export \'client.dart\';\n';
     out += '\n';
 
     // Fields
-    var extendedClass =
+    String extendedClass =
         serverCode ? 'SerializationManagerServer' : 'SerializationManager';
 
     out += 'class Protocol extends $extendedClass {\n';
@@ -516,14 +516,14 @@ class ClassGeneratorDart extends ClassGenerator {
     // Constructor
     out += '  Protocol() {\n';
 
-    for (var classInfo in classInfos) {
+    for (ClassInfo classInfo in classInfos) {
       out +=
           '    constructors[\'$classPrefix${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
     }
 
     if (serverCode) {
       out += '\n';
-      for (var classInfo in classInfos) {
+      for (ClassInfo classInfo in classInfos) {
         if (classInfo.tableName == null) continue;
         out +=
             '    tableClassMapping[\'${classInfo.tableName}\'] = \'$classPrefix${classInfo.className}\';\n';
@@ -575,13 +575,13 @@ class FieldDefinition {
   FieldScope scope = FieldScope.all;
 
   FieldDefinition(this.name, String description) {
-    var components = description.split(',').map((String s) {
+    List<String> components = description.split(',').map((String s) {
       return s.trim();
     }).toList();
-    var typeStr = components[0];
+    String typeStr = components[0];
 
     if (components.length == 2) {
-      var scopeStr = components[1];
+      String scopeStr = components[1];
       if (scopeStr == 'database') {
         scope = FieldScope.database;
       } else if (scopeStr == 'api') {
@@ -602,15 +602,15 @@ class FieldDefinition {
         return name;
       } else if (type.listType!.typeNonNullable == 'DateTime') {
         if (type.listType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.toIso8601String()).toList()';
+          return '$name${type.nullable ? '?' : ''}.map<String?>((Map<String, dynamic> a) => a?.toIso8601String()).toList()';
         } else {
-          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String()).toList()';
+          return '$name${type.nullable ? '?' : ''}.map<String>((Map<String, dynamic> a) => a.toIso8601String()).toList()';
         }
       } else if (type.listType!.typeNonNullable == 'ByteData') {
         if (type.listType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.base64encodedString()).toList()';
+          return '$name${type.nullable ? '?' : ''}.map<String?>((Map<String, dynamic> a) => a?.base64encodedString()).toList()';
         } else {
-          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.base64encodedString()).toList()';
+          return '$name${type.nullable ? '?' : ''}.map<String>((Map<String, dynamic> a) => a.base64encodedString()).toList()';
         }
       } else {
         return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
@@ -640,21 +640,21 @@ class FieldDefinition {
         return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<${type.listType!.type}>()';
       } else if (type.listType!.typeNonNullable == 'DateTime') {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((Map<String, dynamic> a) => a != null ? DateTime.tryParse(a) : null).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((Map<String, dynamic> a) => DateTime.tryParse(a)!).toList()';
         }
       } else if (type.listType!.typeNonNullable == 'ByteData') {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((Map<String, dynamic> a) => (a as String?)?.base64DecodedByteData()).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((Map<String, dynamic> a) => (a as String).base64DecodedByteData()!).toList()';
         }
       } else {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((Map<String, dynamic> a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((Map<String, dynamic> a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
         }
       }
     }

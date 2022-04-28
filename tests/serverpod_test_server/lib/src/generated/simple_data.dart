@@ -18,7 +18,7 @@ class SimpleData extends TableRow {
   @override
   String get tableName => 'simple_data';
 
-  static final t = SimpleDataTable();
+  static final SimpleDataTable t = SimpleDataTable();
 
   @override
   int? id;
@@ -30,14 +30,14 @@ class SimpleData extends TableRow {
   });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     num = _data['num']!;
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'num': num,
     });
@@ -45,7 +45,7 @@ class SimpleData extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'num': num,
     });
@@ -53,14 +53,14 @@ class SimpleData extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'num': num,
     });
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -183,11 +183,11 @@ class SimpleDataTable extends Table {
 
   @override
   String tableName = 'simple_data';
-  final id = ColumnInt('id');
-  final num = ColumnInt('num');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt num = ColumnInt('num');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         num,
       ];

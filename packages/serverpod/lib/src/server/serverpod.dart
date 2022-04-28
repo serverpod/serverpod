@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
-import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
-import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
-import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/redis/controller.dart';
-import 'package:serverpod/src/serialization/serialization_manager.dart';
-import 'package:serverpod/src/server/future_call_manager.dart';
-import 'package:serverpod/src/server/log_manager.dart';
+import '../cloud_storage/cloud_storage.dart';
+import '../cloud_storage/database_cloud_storage.dart';
+import '../cloud_storage/public_endpoint.dart';
+import '../config/version.dart';
+import '../redis/controller.dart';
+import '../serialization/serialization_manager.dart';
+import 'future_call_manager.dart';
+import 'log_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -119,7 +119,7 @@ class Serverpod {
   /// which may not be ideal for larger scale applications. Consider replacing
   /// the storages with another service such as Google Cloud or Amazon S3,
   /// especially in production environments.
-  final storage = <String, CloudStorage>{
+  final Map<String, CloudStorage> storage = <String, CloudStorage>{
     'public': DatabaseCloudStorage('public'),
     'private': DatabaseCloudStorage('private'),
   };
@@ -146,14 +146,14 @@ class Serverpod {
       ),
       logMalformedCalls: false,
       logServiceCalls: false,
-      logSettingsOverrides: [],
+      logSettingsOverrides: <internal.LogSettingsOverride>[],
     );
   }
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    var session = await createSession();
+    InternalSession session = await createSession();
     try {
-      var oldRuntimeSettings =
+      internal.RuntimeSettings? oldRuntimeSettings =
           await session.db.findSingleRow<internal.RuntimeSettings>();
       if (oldRuntimeSettings == null) {
         settings.id = null;
@@ -171,9 +171,10 @@ class Serverpod {
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
-    var session = await createSession();
+    InternalSession session = await createSession();
     try {
-      var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
+      internal.RuntimeSettings? settings =
+          await session.db.findSingleRow<internal.RuntimeSettings>();
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -209,17 +210,17 @@ class Serverpod {
 
     // Read command line arguments
     try {
-      var argParser = ArgParser()
+      ArgParser argParser = ArgParser()
         ..addOption('mode',
             abbr: 'm',
-            allowed: [
+            allowed: <String>[
               ServerpodRunMode.development,
               ServerpodRunMode.staging,
               ServerpodRunMode.production,
             ],
             defaultsTo: ServerpodRunMode.development)
         ..addOption('server-id', abbr: 'i', defaultsTo: '0');
-      var results = argParser.parse(args);
+      ArgResults results = argParser.parse(args);
       _runMode = results['mode'];
       serverId = int.tryParse(results['server-id']) ?? 0;
     } catch (e) {
@@ -228,7 +229,7 @@ class Serverpod {
     }
 
     // Load passwords
-    _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+    _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? <String, String>{};
 
     // Load config
     config = ServerConfig(_runMode, serverId, _passwords);
@@ -291,7 +292,7 @@ class Serverpod {
       }
 
       // Runtime settings
-      var session = await createSession();
+      InternalSession session = await createSession();
       try {
         _runtimeSettings =
             await session.db.findSingleRow<internal.RuntimeSettings>();
@@ -331,7 +332,7 @@ class Serverpod {
 
       // Start future calls
       _futureCallManager.start();
-    }, (e, stackTrace) {
+    }, (Object e, StackTrace stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
       stderr.writeln(
@@ -347,7 +348,7 @@ class Serverpod {
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
 
-    var endpoints = internal.Endpoints();
+    internal.Endpoints endpoints = internal.Endpoints();
 
     _serviceServer = Server(
       serverpod: this,
@@ -429,7 +430,7 @@ class Serverpod {
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
   Future<InternalSession> createSession() async {
-    var session = InternalSession(server: server);
+    InternalSession session = InternalSession(server: server);
     return session;
   }
 

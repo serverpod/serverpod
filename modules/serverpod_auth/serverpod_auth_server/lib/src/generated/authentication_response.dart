@@ -32,7 +32,7 @@ class AuthenticationResponse extends SerializableEntity {
   });
 
   AuthenticationResponse.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     success = _data['success']!;
     key = _data['key'];
@@ -47,7 +47,7 @@ class AuthenticationResponse extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'success': success,
       'key': key,
@@ -59,7 +59,7 @@ class AuthenticationResponse extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'success': success,
       'key': key,

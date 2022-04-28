@@ -25,12 +25,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   Timer? _connectionTimer;
 
-  final List<VoidCallback> _websocketConnectionStatusListeners = [];
+  final List<VoidCallback> _websocketConnectionStatusListeners =
+      <VoidCallback>[];
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
   Future<String> get websocketHost async {
-    var uri = Uri.parse(host);
+    Uri uri = Uri.parse(host);
     if (uri.scheme == 'http') {
       uri = uri.replace(scheme: 'ws');
     } else if (uri.scheme == 'https') {
@@ -39,10 +40,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
     uri = uri.replace(path: '/websocket');
 
     if (authenticationKeyManager != null) {
-      var auth = await authenticationKeyManager!.get();
+      String? auth = await authenticationKeyManager!.get();
       if (auth != null) {
         uri = uri.replace(
-          queryParameters: {
+          queryParameters: <String, dynamic>{
             'auth': auth,
           },
         );
@@ -75,9 +76,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
       return _consolidatedEndpointRefLookupCache!;
     }
 
-    _consolidatedEndpointRefLookupCache = {};
+    _consolidatedEndpointRefLookupCache = <String, EndpointRef>{};
     _consolidatedEndpointRefLookupCache!.addAll(endpointRefLookup);
-    for (var module in moduleLookup.values) {
+    for (ModuleEndpointCaller module in moduleLookup.values) {
       _consolidatedEndpointRefLookupCache!.addAll(module.endpointRefLookup);
     }
 
@@ -115,16 +116,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Handles a message received from the WebSocket stream. Typically, this
   /// method shouldn't be called directly.
   void _handleRawWebSocketMessage(String message) {
-    Map data = jsonDecode(message);
+    Map<String, dynamic> data = jsonDecode(message);
     String endpoint = data['endpoint'];
-    Map objectData = data['object'];
-    var entity = serializationManager
+    Map<String, dynamic> objectData = data['object'];
+    SerializableEntity? entity = serializationManager
         .createEntityFromSerialization(objectData.cast<String, dynamic>());
     if (entity == null) {
       throw const ServerpodClientException('serializable entity is null', 0);
     }
 
-    var endpointRef = _consolidatedEndpointRefLookup[endpoint];
+    EndpointRef? endpointRef = _consolidatedEndpointRefLookup[endpoint];
     if (endpointRef == null) {
       throw ServerpodClientException('Endpoint $endpoint was not found', 0);
     }
@@ -142,18 +143,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   Future<void> _sendSerializableObjectToStream(
       String endpoint, SerializableEntity message) async {
-    var objectData = message.serialize();
-    var data = {
+    Map<String, dynamic> objectData = message.serialize();
+    Map<String, Object> data = <String, Object>{
       'endpoint': endpoint,
       'object': objectData,
     };
 
-    var serialization = jsonEncode(data);
+    String serialization = jsonEncode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
   /// Closes all open connections to the server.
-  @override
   void close() {
     _webSocket?.sink.close();
     _webSocket = null;
@@ -171,7 +171,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     try {
       _firstMessageReceived = false;
-      var host = await websocketHost;
+      String host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       unawaited(_listenToWebSocketStream());
 
@@ -230,7 +230,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   void _notifyWebSocketConnectionStatusListeners() {
-    for (var listener in _websocketConnectionStatusListeners) {
+    for (VoidCallback listener in _websocketConnectionStatusListeners) {
       listener();
     }
   }
@@ -292,7 +292,8 @@ abstract class EndpointRef {
 
   /// The stream controller handles the stream of [SerializableEntity] sent
   /// from the server endpoint to the client, if it supports streaming.
-  var _streamController = StreamController<SerializableEntity>();
+  StreamController<SerializableEntity> _streamController =
+      StreamController<SerializableEntity>();
 
   /// Stream of messages sent from an endpoint that supports streaming.
   Stream<SerializableEntity> get stream => _streamController.stream;

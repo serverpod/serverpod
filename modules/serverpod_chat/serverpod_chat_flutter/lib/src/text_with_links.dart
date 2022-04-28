@@ -23,11 +23,12 @@ class TextWithLinks extends StatefulWidget {
 class _TextWithLinksState extends State<TextWithLinks> {
   @override
   Widget build(BuildContext context) {
-    var textSpan = _buildTextSpanForText(widget.text, widget.style);
-    if (widget.selectable)
+    TextSpan textSpan = _buildTextSpanForText(widget.text, widget.style);
+    if (widget.selectable) {
       return SelectableText.rich(textSpan);
-    else
+    } else {
       return RichText(text: textSpan);
+    }
   }
 
   final List<GestureRecognizer> _recognizers = <GestureRecognizer>[];
@@ -40,16 +41,18 @@ class _TextWithLinksState extends State<TextWithLinks> {
 
   void _disposeRecognizers() {
     if (_recognizers.isEmpty) return;
-    final localRecognizers = List<GestureRecognizer>.from(_recognizers);
+    List<GestureRecognizer> localRecognizers = List<GestureRecognizer>.from(_recognizers);
     _recognizers.clear();
-    for (var recognizer in localRecognizers) recognizer.dispose();
+    for (GestureRecognizer recognizer in localRecognizers) {
+      recognizer.dispose();
+    }
   }
 
   TextSpan _buildTextSpanForText(String text, TextStyle style) {
     // Dispose any old recognizers
     _disposeRecognizers();
 
-    var exp = RegExp('(https?://[^\\s]+)');
+    RegExp exp = RegExp('(https?://[^\\s]+)');
     Iterable<Match> matches = exp.allMatches(text);
 
     if (matches.isEmpty) {
@@ -59,20 +62,20 @@ class _TextWithLinksState extends State<TextWithLinks> {
       );
     }
 
-    var segments = <TextSpan>[];
-    var lastPos = 0;
+    List<TextSpan> segments = <TextSpan>[];
+    int lastPos = 0;
 
-    for (var m in matches) {
+    for (Match m in matches) {
       // Add non link
       segments.add(TextSpan(text: text.substring(lastPos, m.start)));
 
       // Add link
-      var href = text.substring(m.start, m.end);
+      String href = text.substring(m.start, m.end);
 
-      final recognizer = TapGestureRecognizer()
+      TapGestureRecognizer recognizer = TapGestureRecognizer()
         ..onTap = () {
-          print('Tapped: $href');
-          launch(href);
+          debugPrint('Tapped: $href');
+          launchUrl(Uri.parse(href));
         };
       _recognizers.add(recognizer);
 

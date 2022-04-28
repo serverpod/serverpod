@@ -22,7 +22,7 @@ class _EndpointChat extends EndpointRef {
     return await caller.callServerEndpoint(
         'serverpod_chat.chat',
         'createAttachmentUploadDescription',
-        'ChatMessageAttachmentUploadDescription', {
+        'ChatMessageAttachmentUploadDescription', <String, dynamic>{
       'fileName': fileName,
     });
   }
@@ -32,7 +32,7 @@ class _EndpointChat extends EndpointRef {
     String filePath,
   ) async {
     return await caller.callServerEndpoint('serverpod_chat.chat',
-        'verifyAttachmentUpload', 'ChatMessageAttachment', {
+        'verifyAttachmentUpload', 'ChatMessageAttachment', <String, dynamic>{
       'fileName': fileName,
       'filePath': filePath,
     });
@@ -47,7 +47,7 @@ class Caller extends ModuleEndpointCaller {
   }
 
   @override
-  Map<String, EndpointRef> get endpointRefLookup => {
+  Map<String, EndpointRef> get endpointRefLookup => <String, EndpointRef>{
         'serverpod_chat.chat': chat,
       };
 }

@@ -3,37 +3,37 @@ import 'package:serverpod_test_module_client/module.dart' as module;
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client('http://serverpod_test_server:8080/');
+  Client client = Client('http://serverpod_test_server:8080/');
 
   setUp(() {});
 
   group('Modules', () {
     test('Serialization', () async {
-      var success = await client.moduleSerialization.serializeModuleObject();
+      bool success = await client.moduleSerialization.serializeModuleObject();
       expect(success, equals(true));
     });
 
     test('Module call', () async {
-      var result = await client.modules.module.module.hello('World');
+      String result = await client.modules.module.module.hello('World');
       expect(result, equals('Hello World'));
     });
 
     test('Passing module object', () async {
-      var moduleClass = module.ModuleClass(
+      module.ModuleClass moduleClass = module.ModuleClass(
         name: 'foo',
         data: 0,
       );
-      var result =
+      module.ModuleClass result =
           await client.moduleSerialization.modifyModuleObject(moduleClass);
       expect(result.data, equals(42));
     });
 
     test('Passing module object to module', () async {
-      var moduleClass = module.ModuleClass(
+      module.ModuleClass moduleClass = module.ModuleClass(
         name: 'foo',
         data: 0,
       );
-      var result =
+      module.ModuleClass result =
           await client.modules.module.module.modifyModuleObject(moduleClass);
       expect(result.data, equals(42));
     });

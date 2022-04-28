@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:serverpod/src/generated/cloud_storage.dart';
-import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
-import 'package:serverpod/src/server/session.dart';
+import '../generated/cloud_storage.dart';
+import '../generated/cloud_storage_direct_upload.dart';
+import '../server/session.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'cloud_storage.dart';
 
@@ -33,7 +34,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<bool> fileExists(
       {required Session session, required String path}) async {
     try {
-      var numRows = await session.db.count<CloudStorageEntry>(
+      int numRows = await session.db.count<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -48,17 +49,17 @@ class DatabaseCloudStorage extends CloudStorage {
       {required Session session, required String path}) async {
     if (storageId != 'public') return null;
 
-    var exists = await fileExists(session: session, path: path);
+    bool exists = await fileExists(session: session, path: path);
     if (!exists) return null;
 
-    var config = session.server.serverpod.config;
+    ServerConfig config = session.server.serverpod.config;
 
     return Uri(
       scheme: config.publicScheme,
       host: config.publicHost,
       port: config.publicPort,
       path: '/serverpod_cloud_storage',
-      queryParameters: {
+      queryParameters: <String, dynamic>{
         'method': 'file',
         'path': path,
       },
@@ -97,11 +98,11 @@ class DatabaseCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
   }) async {
-    var config = session.server.serverpod.config;
+    ServerConfig config = session.server.serverpod.config;
 
-    var expiration = DateTime.now().add(expirationDuration);
+    DateTime expiration = DateTime.now().add(expirationDuration);
 
-    var uploadEntry = CloudStorageDirectUploadEntry(
+    CloudStorageDirectUploadEntry uploadEntry = CloudStorageDirectUploadEntry(
       storageId: storageId,
       path: path,
       expiration: expiration,
@@ -110,12 +111,12 @@ class DatabaseCloudStorage extends CloudStorage {
     await session.db.insert(uploadEntry);
     if (uploadEntry.id == null) return null;
 
-    var uri = Uri(
+    Uri uri = Uri(
       scheme: config.publicScheme,
       host: config.publicHost,
       port: config.publicPort,
       path: '/serverpod_cloud_storage',
-      queryParameters: {
+      queryParameters: <String, dynamic>{
         'method': 'upload',
         'storage': storageId,
         'path': path,
@@ -123,7 +124,7 @@ class DatabaseCloudStorage extends CloudStorage {
       },
     );
 
-    var uploadDescriptionData = {
+    Map<String, String> uploadDescriptionData = <String, String>{
       'url': uri.toString(),
       'type': 'binary',
     };
@@ -140,11 +141,11 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   static String _generateAuthKey() {
-    const len = 16;
-    const chars =
+    const int len = 16;
+    const String chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    var rnd = Random();
-    return String.fromCharCodes(Iterable.generate(
+    Random rnd = Random();
+    return String.fromCharCodes(Iterable<int>.generate(
         len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
   }
 }

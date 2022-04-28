@@ -18,7 +18,7 @@ class ChatReadMessage extends TableRow {
   @override
   String get tableName => 'serverpod_chat_read_message';
 
-  static final t = ChatReadMessageTable();
+  static final ChatReadMessageTable t = ChatReadMessageTable();
 
   @override
   int? id;
@@ -34,7 +34,7 @@ class ChatReadMessage extends TableRow {
   });
 
   ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
     userId = _data['userId']!;
@@ -43,7 +43,7 @@ class ChatReadMessage extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'userId': userId,
@@ -53,7 +53,7 @@ class ChatReadMessage extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'userId': userId,
@@ -63,7 +63,7 @@ class ChatReadMessage extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'userId': userId,
@@ -72,7 +72,7 @@ class ChatReadMessage extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -202,13 +202,13 @@ class ChatReadMessageTable extends Table {
 
   @override
   String tableName = 'serverpod_chat_read_message';
-  final id = ColumnInt('id');
-  final channel = ColumnString('channel');
-  final userId = ColumnInt('userId');
-  final lastReadMessageId = ColumnInt('lastReadMessageId');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString channel = ColumnString('channel');
+  final ColumnInt userId = ColumnInt('userId');
+  final ColumnInt lastReadMessageId = ColumnInt('lastReadMessageId');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         channel,
         userId,

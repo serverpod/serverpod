@@ -4,7 +4,7 @@ class TextWidget extends Widget {
   TextWidget({
     required String text,
   }) : super(name: 'text') {
-    values = {
+    values = <String, dynamic>{
       'text': text,
     };
   }

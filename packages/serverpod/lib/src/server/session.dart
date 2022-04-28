@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/src/server/message_central.dart';
+import 'message_central.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../authentication/authentication_info.dart';
 import '../authentication/scope.dart';
 import '../authentication/util.dart';
 import '../cache/caches.dart';
@@ -99,7 +100,7 @@ abstract class Session {
 
   Future<void> _initialize() async {
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
+      AuthenticationInfo? authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
@@ -215,7 +216,7 @@ class MethodCallSession extends Session {
     String? authenticationKey,
   }) : super(server: server) {
     // Read query parameters
-    var queryParameters = <String, String>{};
+    Map<String, String> queryParameters = <String, String>{};
     if (body != '' && body != 'null') {
       queryParameters = jsonDecode(body).cast<String, String>();
     }
@@ -224,7 +225,7 @@ class MethodCallSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    var methodName = queryParameters['method'];
+    String? methodName = queryParameters['method'];
     if (methodName == null && endpointName == 'webserver') methodName = '';
     this.methodName = methodName!;
 
@@ -257,7 +258,7 @@ class StreamingSession extends Session {
     required this.webSocket,
   }) : super(server: server) {
     // Read query parameters
-    var queryParameters = <String, String>{};
+    Map<String, String> queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
@@ -297,18 +298,18 @@ class UserAuthetication {
   /// use that to authenticate in future calls. In most cases, it's more
   /// convenient to use the serverpod_auth module for authentication.
   Future<AuthKey> signInUser(int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+      {Set<Scope> scopes = const <Scope>{}}) async {
+    String signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
-    var key = generateRandomString();
-    var hash = hashString(signInSalt, key);
+    String key = generateRandomString();
+    String hash = hashString(signInSalt, key);
 
-    var scopeNames = <String>[];
-    for (var scope in scopes) {
+    List<String> scopeNames = <String>[];
+    for (Scope scope in scopes) {
       if (scope.name != null) scopeNames.add(scope.name!);
     }
 
-    var authKey = AuthKey(
+    AuthKey authKey = AuthKey(
       userId: userId,
       hash: hash,
       key: key,
@@ -350,7 +351,7 @@ class StorageAccess {
     required ByteData byteData,
     DateTime? expiration,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -363,7 +364,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -376,7 +377,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -389,7 +390,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -402,7 +403,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -418,7 +419,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -433,7 +434,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    CloudStorage? storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }

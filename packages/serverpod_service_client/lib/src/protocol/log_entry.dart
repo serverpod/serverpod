@@ -38,7 +38,7 @@ class LogEntry extends SerializableEntity {
   });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     sessionLogId = _data['sessionLogId']!;
     reference = _data['reference'];
@@ -52,7 +52,7 @@ class LogEntry extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'sessionLogId': sessionLogId,
       'reference': reference,

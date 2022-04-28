@@ -15,17 +15,17 @@ import '../endpoints/chat_endpoint.dart';
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
+    Map<String, Endpoint> endpoints = <String, Endpoint>{
       'chat': ChatEndpoint()..initialize(server, 'chat', 'serverpod_chat'),
     };
 
     connectors['chat'] = EndpointConnector(
       name: 'chat',
       endpoint: endpoints['chat']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'createAttachmentUploadDescription': MethodConnector(
           name: 'createAttachmentUploadDescription',
-          params: {
+          params: <String, ParameterDescription>{
             'fileName': ParameterDescription(
                 name: 'fileName', type: String, nullable: false),
           },
@@ -39,7 +39,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'verifyAttachmentUpload': MethodConnector(
           name: 'verifyAttachmentUpload',
-          params: {
+          params: <String, ParameterDescription>{
             'fileName': ParameterDescription(
                 name: 'fileName', type: String, nullable: false),
             'filePath': ParameterDescription(

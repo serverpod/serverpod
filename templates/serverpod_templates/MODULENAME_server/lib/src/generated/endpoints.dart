@@ -25,7 +25,7 @@ class Endpoints extends EndpointDispatch {
       methodConnectors: {
         'hello': MethodConnector(
           name: 'hello',
-          params: {
+          params: <String, ParameterDescription>{
             'name': ParameterDescription(
                 name: 'name', type: String, nullable: false),
           },

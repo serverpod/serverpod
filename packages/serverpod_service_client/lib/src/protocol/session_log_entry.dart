@@ -44,7 +44,7 @@ class SessionLogEntry extends SerializableEntity {
   });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     serverId = _data['serverId']!;
     time = DateTime.tryParse(_data['time'])!;
@@ -61,7 +61,7 @@ class SessionLogEntry extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),

@@ -17,15 +17,15 @@ export 'module_class.dart';
 class Protocol extends SerializationManagerServer {
   static final Protocol instance = Protocol();
 
-  final Map<String, constructor> _constructors = {};
+  final Map<String, constructor> _constructors = <String, constructor>{};
   @override
   Map<String, constructor> get constructors => _constructors;
 
-  final Map<String, String> _tableClassMapping = {};
+  final Map<String, String> _tableClassMapping = <String, String>{};
   @override
   Map<String, String> get tableClassMapping => _tableClassMapping;
 
-  final Map<Type, Table> _typeTableMapping = {};
+  final Map<Type, Table> _typeTableMapping = <Type, Table>{};
   @override
   Map<Type, Table> get typeTableMapping => _typeTableMapping;
 

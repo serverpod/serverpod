@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/src/generated/protocol.dart';
+import '../generated/protocol.dart';
 
 class LoggingEndpoint extends Endpoint {
   Future<void> logInfo(Session session, String message) async {
@@ -14,7 +14,7 @@ class LoggingEndpoint extends Endpoint {
   }
 
   Future<void> twoQueries(Session session) async {
-    var data = SimpleData(num: 42);
+    SimpleData data = SimpleData(num: 42);
     await session.db.insert(data);
     data = (await session.db.findSingleRow<SimpleData>())!;
   }

@@ -10,7 +10,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
   @override
   String generateClientEndpointCalls() {
-    var out = '';
+    String out = '';
 
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
@@ -26,22 +26,22 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += 'import \'protocol.dart\';\n';
     out += '\n';
 
-    var hasModules =
+    bool hasModules =
         config.modules.isNotEmpty && config.type == PackageType.server;
     if (hasModules) {
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out +=
             'import \'package:${module.clientPackage}/module.dart\' as ${module.name};\n';
       }
       out += '\n';
     }
 
-    var modulePrefix =
+    String modulePrefix =
         config.type == PackageType.server ? '' : '${config.name}.';
 
     // Endpoints
-    for (var endpointDef in protocolDefinition.endpoints) {
-      var endpointClassName = _endpointClassName(endpointDef.name);
+    for (EndpointDefinition endpointDef in protocolDefinition.endpoints) {
+      String endpointClassName = _endpointClassName(endpointDef.name);
 
       out += 'class $endpointClassName extends EndpointRef {\n';
       out += '  @override\n';
@@ -51,17 +51,17 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += '  $endpointClassName(EndpointCaller caller) : super(caller);\n';
 
       // Add methods
-      for (var methodDef in endpointDef.methods) {
-        var requiredParams = methodDef.parameters;
-        var optionalParams = methodDef.parametersPositional;
-        var returnType = methodDef.returnType;
+      for (MethodDefinition methodDef in endpointDef.methods) {
+        List<ParameterDefinition> requiredParams = methodDef.parameters;
+        List<ParameterDefinition> optionalParams = methodDef.parametersPositional;
+        TypeDefinition returnType = methodDef.returnType;
 
         // Method definition
         out += '\n';
         out +=
             '  Future<${returnType.typePrefix}${returnType.type}> ${methodDef.name}(';
 
-        for (var paramDef in requiredParams) {
+        for (ParameterDefinition paramDef in requiredParams) {
           out +=
               '${paramDef.type.typePrefix}${paramDef.type} ${paramDef.name},';
         }
@@ -69,7 +69,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         if (optionalParams.isNotEmpty) {
           out += '[';
 
-          for (var paramDef in optionalParams) {
+          for (ParameterDefinition paramDef in optionalParams) {
             out += '${paramDef.type.type} ${paramDef.name},';
           }
 
@@ -82,11 +82,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out +=
             '    return await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
 
-        for (var paramDef in requiredParams) {
+        for (ParameterDefinition paramDef in requiredParams) {
           out += '      \'${paramDef.name}\':${paramDef.name},\n';
         }
 
-        for (var paramDef in optionalParams) {
+        for (ParameterDefinition paramDef in optionalParams) {
           out += '      \'${paramDef.name}\': ${paramDef.name},\n';
         }
 
@@ -100,13 +100,13 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
     if (hasModules) {
       out += 'class _Modules {\n';
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out += '  late final ${module.name}.Caller ${module.nickname};\n';
       }
       out += '\n';
 
       out += '  _Modules(Client client) {\n';
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out += '    ${module.nickname} = ${module.name}.Caller(client);\n';
       }
 
@@ -122,7 +122,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += 'class Caller extends ModuleEndpointCaller {\n';
     }
 
-    for (var endpointDef in protocolDefinition.endpoints) {
+    for (EndpointDefinition endpointDef in protocolDefinition.endpoints) {
       out +=
           '  late final ${_endpointClassName(endpointDef.name)} ${endpointDef.name};\n';
     }
@@ -139,7 +139,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     } else {
       out += '  Caller(ServerpodClientShared client) : super(client) {\n';
     }
-    for (var endpointDef in protocolDefinition.endpoints) {
+    for (EndpointDefinition endpointDef in protocolDefinition.endpoints) {
       out +=
           '    ${endpointDef.name} = ${_endpointClassName(endpointDef.name)}(this);\n';
     }
@@ -147,7 +147,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     if (hasModules) {
       out += '\n';
       out += '    modules = _Modules(this);\n';
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out += '    registerModuleProtocol(${module.name}.Protocol());\n';
       }
     }
@@ -157,7 +157,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += '\n';
     out += '  @override\n';
     out += '  Map<String, EndpointRef> get endpointRefLookup => {\n';
-    for (var endpointDef in protocolDefinition.endpoints) {
+    for (EndpointDefinition endpointDef in protocolDefinition.endpoints) {
       out +=
           '    \'$modulePrefix${endpointDef.name}\' : ${endpointDef.name},\n';
     }
@@ -167,7 +167,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       out += '\n';
       out += '  @override\n';
       out += '  Map<String, ModuleEndpointCaller> get moduleLookup => {\n';
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out += '    \'${module.nickname}\': modules.${module.nickname},\n';
       }
       out += '  };\n';

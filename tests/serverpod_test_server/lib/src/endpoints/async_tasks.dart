@@ -13,8 +13,8 @@ class AsyncTasksEndpoint extends Endpoint {
 
   Future<void> _insertRowToSimpleDataAfterDelay(
       Session session, int num, int seconds) async {
-    await Future.delayed(Duration(seconds: seconds));
-    var data = SimpleData(
+    await Future<void>.delayed(Duration(seconds: seconds));
+    SimpleData data = SimpleData(
       num: num,
     );
     await session.db.insert(data);
@@ -26,7 +26,7 @@ class AsyncTasksEndpoint extends Endpoint {
   }
 
   Future<void> _throwExceptionAfterDelay(int seconds) async {
-    await Future.delayed(Duration(seconds: seconds));
+    await Future<void>.delayed(Duration(seconds: seconds));
     throw Exception('Test exception');
   }
 }

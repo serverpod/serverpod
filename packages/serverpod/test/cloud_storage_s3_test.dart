@@ -5,16 +5,16 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
 ByteData createByteData(int len) {
-  var ints = Uint8List(len);
-  for (var i = 0; i < len; i++) {
+  Uint8List ints = Uint8List(len);
+  for (int i = 0; i < len; i++) {
     ints[i] = i % 256;
   }
   return ByteData.view(ints.buffer);
 }
 
 bool verifyByteData(ByteData byteData) {
-  var ints = byteData.buffer.asUint8List();
-  for (var i = 0; i < byteData.lengthInBytes; i++) {
+  Uint8List ints = byteData.buffer.asUint8List();
+  for (int i = 0; i < byteData.lengthInBytes; i++) {
     if (ints[i] != i % 256) {
       return false;
     }
@@ -23,7 +23,7 @@ bool verifyByteData(ByteData byteData) {
 }
 
 void main() {
-  var client = Client('http://serverpod_test_server:8080/');
+  Client client = Client('http://serverpod_test_server:8080/');
 
   setUp(() {});
 
@@ -48,7 +48,7 @@ void main() {
     });
 
     test('Retrieve file 1', () async {
-      var byteData =
+      ByteData? byteData =
           await client.s3CloudStorage.retrievePublicFile('testdir/myfile1.bin');
       expect(byteData!.lengthInBytes, equals(128));
       expect(verifyByteData(byteData), equals(true));
@@ -64,31 +64,31 @@ void main() {
     //   });
     //
     test('Retrieve file 1 URL', () async {
-      var urlStr = await client.s3CloudStorage
+      String? urlStr = await client.s3CloudStorage
           .getPublicUrlForFile('testdir/myfile1.bin');
       expect(urlStr, isNotNull);
     });
 
     test('Retrieve file 2 through fetched URL', () async {
-      var urlStr = await client.s3CloudStorage
+      String? urlStr = await client.s3CloudStorage
           .getPublicUrlForFile('testdir/myfile2.bin');
-      var url = Uri.parse(urlStr!);
-      var response = await http.get(url);
+      Uri url = Uri.parse(urlStr!);
+      http.Response response = await http.get(url);
       expect(response.statusCode, equals(200));
-      var bytes = response.bodyBytes;
+      Uint8List bytes = response.bodyBytes;
       expect(bytes.length, equals(256));
       verifyByteData(ByteData.view(bytes.buffer));
     });
 
     test('Retrieve file 2', () async {
-      var byteData =
+      ByteData? byteData =
           await client.s3CloudStorage.retrievePublicFile('testdir/myfile2.bin');
       expect(byteData!.lengthInBytes, equals(256));
       expect(verifyByteData(byteData), equals(true));
     });
 
     test('Retrieve non existing file', () async {
-      var byteData =
+      ByteData? byteData =
           await client.s3CloudStorage.retrievePublicFile('testdir/myfile3.bin');
       expect(byteData, isNull);
     });
@@ -115,13 +115,13 @@ void main() {
     //   });
     //
     test('Exists file 1', () async {
-      var exists =
+      bool? exists =
           await client.s3CloudStorage.existsPublicFile('testdir/myfile1.bin');
       expect(exists, true);
     });
 
     test('Exists non existing file', () async {
-      var exists =
+      bool? exists =
           await client.s3CloudStorage.existsPublicFile('testdir/myfile3.bin');
       expect(exists, false);
     });
@@ -131,29 +131,29 @@ void main() {
     });
 
     test('Exists file 1 after deletion', () async {
-      var exists =
+      bool? exists =
           await client.s3CloudStorage.existsPublicFile('testdir/myfile1.bin');
       expect(exists, false);
     });
 
     test('Direct file upload', () async {
-      var uploadDescription = await client.s3CloudStorage
+      String? uploadDescription = await client.s3CloudStorage
           .getDirectFilePostUrl('testdir/directupload.bin');
       expect(uploadDescription, isNotNull);
-      var byteData = createByteData(1024);
+      ByteData byteData = createByteData(1024);
 
-      var uploader = FileUploader(uploadDescription!);
-      var result = await uploader.uploadByteData(byteData);
+      FileUploader uploader = FileUploader(uploadDescription!);
+      bool result = await uploader.uploadByteData(byteData);
 
       expect(result, equals(true));
 
-      var verified = await client.s3CloudStorage
+      bool verified = await client.s3CloudStorage
           .verifyDirectFileUpload('testdir/directupload.bin');
       expect(verified, equals(true));
     });
 
     test('Retrieve directly uploaded file', () async {
-      var byteData = await client.s3CloudStorage
+      ByteData? byteData = await client.s3CloudStorage
           .retrievePublicFile('testdir/directupload.bin');
       expect(byteData!.lengthInBytes, equals(1024));
       expect(verifyByteData(byteData), equals(true));

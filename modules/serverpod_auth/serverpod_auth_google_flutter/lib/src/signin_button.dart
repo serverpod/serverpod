@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
-import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
+import '../serverpod_auth_google_flutter.dart';
 
 /// Sign in with Google button. When pressed, attempts to sign in with Google.
 class SignInWithGoogleButton extends StatefulWidget {
@@ -36,7 +36,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.onFailure,
     this.debug = false,
     this.style,
-    this.additionalScopes = const [],
+    this.additionalScopes = const <String>[],
     this.alignment = Alignment.centerLeft,
     this.redirectUri,
   });

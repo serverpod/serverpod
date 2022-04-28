@@ -34,7 +34,7 @@ class ChatMessageAttachment extends SerializableEntity {
   });
 
   ChatMessageAttachment.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     fileName = _data['fileName']!;
     url = _data['url']!;
@@ -46,7 +46,7 @@ class ChatMessageAttachment extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'fileName': fileName,
       'url': url,
@@ -59,7 +59,7 @@ class ChatMessageAttachment extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'fileName': fileName,
       'url': url,

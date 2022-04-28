@@ -16,7 +16,7 @@ import 'session.dart';
 class FutureCallManager {
   final Server _server;
   final SerializationManager _serializationManager;
-  final _futureCalls = <String, FutureCall>{};
+  final Map<String, FutureCall> _futureCalls = <String, FutureCall>{};
   Timer? _timer;
 
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
@@ -37,7 +37,7 @@ class FutureCallManager {
     String? serialization;
     if (object != null) serialization = jsonEncode(object.serializeAll());
 
-    var entry = FutureCallEntry(
+    FutureCallEntry entry = FutureCallEntry(
       name: name,
       serializedObject: serialization,
       time: time,
@@ -45,7 +45,7 @@ class FutureCallManager {
       identifier: identifier,
     );
 
-    var session = await _server.serverpod.createSession();
+    InternalSession session = await _server.serverpod.createSession();
     await session.db.insert(entry);
     await session.close(logSession: false);
   }
@@ -53,11 +53,11 @@ class FutureCallManager {
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = await _server.serverpod.createSession();
+    InternalSession session = await _server.serverpod.createSession();
 
     await FutureCallEntry.delete(
       session,
-      where: (t) => t.identifier.equals(identifier),
+      where: (FutureCallEntryTable t) => t.identifier.equals(identifier),
     );
 
     await session.close(logSession: false);
@@ -91,29 +91,28 @@ class FutureCallManager {
   Future<void> _checkQueue() async {
     try {
       // Get calls
-      var now = DateTime.now().toUtc();
+      DateTime now = DateTime.now().toUtc();
 
-      var tempSession = await _server.serverpod.createSession();
-      var rows = await tempSession.db.find<FutureCallEntry>(
+      InternalSession tempSession = await _server.serverpod.createSession();
+      List<FutureCallEntry> rows = await tempSession.db.find<FutureCallEntry>(
         where: (FutureCallEntry.t.time <= now) &
             FutureCallEntry.t.serverId.equals(_server.serverId),
       );
       await tempSession.close(logSession: false);
 
-      for (var entry in rows.cast<FutureCallEntry>()) {
-        var call = _futureCalls[entry.name];
+      for (FutureCallEntry entry in rows.cast<FutureCallEntry>()) {
+        FutureCall? call = _futureCalls[entry.name];
         if (call == null) {
           continue;
         }
 
         SerializableEntity? object;
         if (entry.serializedObject != null) {
-          Map? data = jsonDecode(entry.serializedObject!);
-          object = _serializationManager
-              .createEntityFromSerialization(data as Map<String, dynamic>?);
+          Map<String, dynamic>? data = jsonDecode(entry.serializedObject!);
+          object = _serializationManager.createEntityFromSerialization(data);
         }
 
-        var futureCallSession = FutureCallSession(
+        FutureCallSession futureCallSession = FutureCallSession(
           server: _server,
           futureCallName: entry.name,
         );
@@ -128,7 +127,7 @@ class FutureCallManager {
 
       // Remove the invoked calls
       if (rows.isNotEmpty) {
-        var tempSession = await _server.serverpod.createSession();
+        InternalSession tempSession = await _server.serverpod.createSession();
         await tempSession.db.delete<FutureCallEntry>(
           where:
               FutureCallEntry.t.serverId.equals(tempSession.server.serverId) &

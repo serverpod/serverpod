@@ -1,7 +1,7 @@
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _prefsKey = 'serverpod_authentication_key';
+const String _prefsKey = 'serverpod_authentication_key';
 
 /// Implementation of a Serverpod [AuthenticationKeyManager] specifically for
 /// Flutter. Authentication key is stored in the [SharedPreferences].
@@ -68,35 +68,35 @@ abstract class Storage {
 class SharedPreferenceStorage implements Storage {
   @override
   Future<int?> getInt(String key) async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return prefs.getInt(key);
   }
 
   @override
   Future<String?> getString(String key) async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return prefs.getString(key);
   }
 
   @override
   Future<void> setInt(String key, int value) async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setInt(key, value);
   }
 
   @override
   Future<void> setString(String key, String value) async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(key, value);
   }
 
   @override
   Future<void> remove(String key) async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.remove(key);
   }

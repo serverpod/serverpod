@@ -34,7 +34,7 @@ class AppleAuthInfo extends SerializableEntity {
   });
 
   AppleAuthInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userIdentifier = _data['userIdentifier']!;
     email = _data['email'];
@@ -46,7 +46,7 @@ class AppleAuthInfo extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userIdentifier': userIdentifier,
       'email': email,
@@ -59,7 +59,7 @@ class AppleAuthInfo extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userIdentifier': userIdentifier,
       'email': email,

@@ -17,26 +17,26 @@ class _EndpointInsights extends EndpointRef {
 
   Future<RuntimeSettings> getRuntimeSettings() async {
     return await caller.callServerEndpoint(
-        'insights', 'getRuntimeSettings', 'RuntimeSettings', {});
+        'insights', 'getRuntimeSettings', 'RuntimeSettings', <String, dynamic>{});
   }
 
   Future<void> setRuntimeSettings(
     RuntimeSettings runtimeSettings,
   ) async {
     return await caller
-        .callServerEndpoint('insights', 'setRuntimeSettings', 'void', {
+        .callServerEndpoint('insights', 'setRuntimeSettings', 'void', <String, dynamic>{
       'runtimeSettings': runtimeSettings,
     });
   }
 
   Future<void> reloadRuntimeSettings() async {
     return await caller
-        .callServerEndpoint('insights', 'reloadRuntimeSettings', 'void', {});
+        .callServerEndpoint('insights', 'reloadRuntimeSettings', 'void', <String, dynamic>{});
   }
 
   Future<void> clearAllLogs() async {
     return await caller
-        .callServerEndpoint('insights', 'clearAllLogs', 'void', {});
+        .callServerEndpoint('insights', 'clearAllLogs', 'void', <String, dynamic>{});
   }
 
   Future<SessionLogResult> getSessionLog(
@@ -44,7 +44,7 @@ class _EndpointInsights extends EndpointRef {
     SessionLogFilter? filter,
   ) async {
     return await caller
-        .callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
+        .callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', <String, dynamic>{
       'numEntries': numEntries,
       'filter': filter,
     });
@@ -55,7 +55,7 @@ class _EndpointInsights extends EndpointRef {
     SessionLogFilter? filter,
   ) async {
     return await caller.callServerEndpoint(
-        'insights', 'getOpenSessionLog', 'SessionLogResult', {
+        'insights', 'getOpenSessionLog', 'SessionLogResult', <String, dynamic>{
       'numEntries': numEntries,
       'filter': filter,
     });
@@ -65,22 +65,22 @@ class _EndpointInsights extends EndpointRef {
     bool fetchKeys,
   ) async {
     return await caller
-        .callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
+        .callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', <String, dynamic>{
       'fetchKeys': fetchKeys,
     });
   }
 
   Future<void> shutdown() async {
-    return await caller.callServerEndpoint('insights', 'shutdown', 'void', {});
+    return await caller.callServerEndpoint('insights', 'shutdown', 'void', <String, dynamic>{});
   }
 
   Future<ServerHealthResult> checkHealth() async {
     return await caller.callServerEndpoint(
-        'insights', 'checkHealth', 'ServerHealthResult', {});
+        'insights', 'checkHealth', 'ServerHealthResult', <String, dynamic>{});
   }
 
   Future<bool> hotReload() async {
-    return await caller.callServerEndpoint('insights', 'hotReload', 'bool', {});
+    return await caller.callServerEndpoint('insights', 'hotReload', 'bool', <String, dynamic>{});
   }
 }
 
@@ -99,10 +99,10 @@ class Client extends ServerpodClient {
   }
 
   @override
-  Map<String, EndpointRef> get endpointRefLookup => {
+  Map<String, EndpointRef> get endpointRefLookup => <String, EndpointRef>{
         'insights': insights,
       };
 
   @override
-  Map<String, ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, ModuleEndpointCaller> get moduleLookup => <String, ModuleEndpointCaller>{};
 }

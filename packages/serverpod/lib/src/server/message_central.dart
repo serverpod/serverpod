@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 
 // TODO: Support for server clusters.
 
@@ -13,9 +13,9 @@ typedef MessageCentralListenerCallback = void Function(
 /// endpoints. The message central can pass on any serializable to a channel.
 /// The channel can be listened to by from any place in the server.
 class MessageCentral {
-  final _channels = <String, Set<MessageCentralListenerCallback>>{};
-  final _sessionToChannelNamesLookup = <Session, Set<String>>{};
-  final _sessionToCallbacksLookup =
+  final Map<String, Set<MessageCentralListenerCallback>> _channels = <String, Set<MessageCentralListenerCallback>>{};
+  final Map<Session, Set<String>> _sessionToChannelNamesLookup = <Session, Set<String>>{};
+  final Map<Session, Set<MessageCentralListenerCallback>> _sessionToCallbacksLookup =
       <Session, Set<MessageCentralListenerCallback>>{};
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
@@ -29,10 +29,10 @@ class MessageCentral {
   }) {
     if (local) {
       // Handle internally in this server instance
-      var channel = _channels[channelName];
+      Set<MessageCentralListenerCallback>? channel = _channels[channelName];
       if (channel == null) return;
 
-      for (var callback in channel) {
+      for (MessageCentralListenerCallback callback in channel) {
         callback(message);
       }
     } else {
@@ -42,14 +42,14 @@ class MessageCentral {
         'Redis needs to be enabled to use this method',
       );
 
-      var data = jsonEncode(message.serializeAll());
+      String data = jsonEncode(message.serializeAll());
       Serverpod.instance!.redisController!.publish(channelName, data);
     }
   }
 
   Set<MessageCentralListenerCallback> _getChannel(String channelName) {
     // Find or create channel
-    var channel = _channels[channelName];
+    Set<MessageCentralListenerCallback>? channel = _channels[channelName];
     if (channel == null) {
       channel = <MessageCentralListenerCallback>{};
       _channels[channelName] = channel;
@@ -66,19 +66,19 @@ class MessageCentral {
     bool local = false,
   }) {
     // Find or create channel
-    var channel = _getChannel(channelName);
+    Set<MessageCentralListenerCallback> channel = _getChannel(channelName);
     channel.add(listener);
 
-    var subscribedChannels = _sessionToChannelNamesLookup[session];
+    Set<String>? subscribedChannels = _sessionToChannelNamesLookup[session];
     if (subscribedChannels == null) {
-      subscribedChannels = {};
+      subscribedChannels = <String>{};
       _sessionToChannelNamesLookup[session] = subscribedChannels;
     }
     subscribedChannels.add(channelName);
 
-    var callbacks = _sessionToCallbacksLookup[session];
+    Set<MessageCentralListenerCallback>? callbacks = _sessionToCallbacksLookup[session];
     if (callbacks == null) {
-      callbacks = {};
+      callbacks = <void Function(SerializableEntity)>{};
       _sessionToCallbacksLookup[session] = callbacks;
     }
     callbacks.add(listener);
@@ -92,8 +92,8 @@ class MessageCentral {
   }
 
   void _receivedRedisMessage(String channelName, String message) {
-    var serialization = jsonDecode(message);
-    var messageObj = Serverpod.instance!.serializationManager
+    Map<String, dynamic> serialization = jsonDecode(message);
+    SerializableEntity? messageObj = Serverpod.instance!.serializationManager
         .createEntityFromSerialization(serialization);
     if (messageObj == null) {
       return;
@@ -104,7 +104,7 @@ class MessageCentral {
   /// Removes a listener from a named channel.
   void removeListener(Session session, String channelName,
       MessageCentralListenerCallback listener) {
-    var channel = _channels[channelName];
+    Set<MessageCentralListenerCallback>? channel = _channels[channelName];
     if (channel != null) {
       channel.remove(listener);
       if (channel.isEmpty) {
@@ -115,7 +115,7 @@ class MessageCentral {
       }
     }
 
-    var subscribedChannels = _sessionToChannelNamesLookup[session];
+    Set<String>? subscribedChannels = _sessionToChannelNamesLookup[session];
     if (subscribedChannels != null) {
       subscribedChannels.remove(channelName);
       if (subscribedChannels.isEmpty) {
@@ -123,7 +123,7 @@ class MessageCentral {
       }
     }
 
-    var callbacks = _sessionToCallbacksLookup[session];
+    Set<MessageCentralListenerCallback>? callbacks = _sessionToCallbacksLookup[session];
     if (callbacks != null) {
       callbacks.remove(listener);
       if (callbacks.isEmpty) {
@@ -136,13 +136,13 @@ class MessageCentral {
   /// automatically called when [StreamingSession] is closed.
   void removeListenersForSession(Session session) {
     // Get subscribed channels
-    var channelNames = _sessionToChannelNamesLookup[session];
+    Set<String>? channelNames = _sessionToChannelNamesLookup[session];
     if (channelNames == null) return;
-    var listeners = _sessionToCallbacksLookup[session];
+    Set<MessageCentralListenerCallback>? listeners = _sessionToCallbacksLookup[session];
     if (listeners == null) return;
 
-    for (var channelName in channelNames) {
-      for (var listener in listeners) {
+    for (String channelName in channelNames) {
+      for (MessageCentralListenerCallback listener in listeners) {
         _removeListener(session, channelName, listener);
       }
     }
@@ -156,7 +156,7 @@ class MessageCentral {
     String channelName,
     MessageCentralListenerCallback listener,
   ) {
-    var channel = _getChannel(channelName);
+    Set<MessageCentralListenerCallback> channel = _getChannel(channelName);
     channel.remove(listener);
     if (channel.isEmpty) {
       _channels.remove(channelName);

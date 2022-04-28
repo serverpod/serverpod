@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 
 /// A database [Expression].
 class Expression {
@@ -280,8 +280,8 @@ class Table {
 
   @override
   String toString() {
-    var str = '$tableName\n';
-    for (var col in columns) {
+    String str = '$tableName\n';
+    for (Column col in columns) {
       str += '  ${col.columnName} (${col.type})\n';
     }
     return str;

@@ -7,7 +7,7 @@ class S3Exception implements Exception {
 
   @override
   String toString() {
-    return '''$devDebugHint: ${this.runtimeType.toString()}{
+    return '''$devDebugHint: ${runtimeType.toString()}{
     statusCode: ${response.statusCode},
     body: ${response.body},
     headers: ${response.headers}
@@ -20,6 +20,7 @@ class S3Exception implements Exception {
 class NoPermissionsException extends S3Exception {
   NoPermissionsException(Response response) : super(response);
 
+  @override
   String get devDebugHint =>
       "S3 returned a 403 status code. Please make sure you have the right permissons for this request";
 }

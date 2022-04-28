@@ -33,7 +33,7 @@ class Channel extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'channel': channel,

@@ -18,7 +18,7 @@ class EmailAuth extends TableRow {
   @override
   String get tableName => 'serverpod_email_auth';
 
-  static final t = EmailAuthTable();
+  static final EmailAuthTable t = EmailAuthTable();
 
   @override
   int? id;
@@ -34,7 +34,7 @@ class EmailAuth extends TableRow {
   });
 
   EmailAuth.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     email = _data['email']!;
@@ -43,7 +43,7 @@ class EmailAuth extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'email': email,
@@ -53,7 +53,7 @@ class EmailAuth extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'email': email,
@@ -63,7 +63,7 @@ class EmailAuth extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'email': email,
@@ -72,7 +72,7 @@ class EmailAuth extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -201,13 +201,13 @@ class EmailAuthTable extends Table {
 
   @override
   String tableName = 'serverpod_email_auth';
-  final id = ColumnInt('id');
-  final userId = ColumnInt('userId');
-  final email = ColumnString('email');
-  final hash = ColumnString('hash');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt userId = ColumnInt('userId');
+  final ColumnString email = ColumnString('email');
+  final ColumnString hash = ColumnString('hash');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userId,
         email,

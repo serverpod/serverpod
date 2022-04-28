@@ -7,8 +7,8 @@ import 'windows.dart';
 class CommandLineTools {
   static void dartPubGet(Directory dir) {
     print('Running `dart pub get` in ${dir.path}');
-    var cf = _CommandFormatter('dart', ['pub', 'get']);
-    var result = Process.runSync(
+    _CommandFormatter cf = _CommandFormatter('dart', <String>['pub', 'get']);
+    ProcessResult result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
@@ -18,8 +18,8 @@ class CommandLineTools {
 
   static void flutterCreate(Directory dir) {
     print('Running `flutter create .` in ${dir.path}');
-    var cf = _CommandFormatter('flutter', ['create', '.']);
-    var result = Process.runSync(
+    _CommandFormatter cf = _CommandFormatter('flutter', <String>['create', '.']);
+    ProcessResult result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
@@ -29,48 +29,48 @@ class CommandLineTools {
 
   static Future<bool> existsCommand(String command) async {
     if (Platform.isWindows) {
-      var commandPath = WindowsUtil.commandPath(command);
+      String? commandPath = WindowsUtil.commandPath(command);
       return commandPath != null;
     } else {
-      var result = await Process.run('which', [command]);
+      ProcessResult result = await Process.run('which', <String>[command]);
       return result.exitCode == 0;
     }
   }
 
   static Future<bool> isDockerRunning() async {
-    var result = await Process.run('docker', ['info']);
+    ProcessResult result = await Process.run('docker', <String>['info']);
     return result.exitCode == 0;
   }
 
   static Future<void> createTables(Directory dir, String name) async {
-    var serverPath = '${dir.path}/${name}_server';
+    String serverPath = '${dir.path}/${name}_server';
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
 
-    var result = await Process.run(
+    ProcessResult result = await Process.run(
       'chmod',
-      ['u+x', 'setup-tables'],
+      <String>['u+x', 'setup-tables'],
       workingDirectory: serverPath,
     );
     print(result.stdout);
 
-    var process = await Process.start(
+    Process process = await Process.start(
       './setup-tables',
-      [],
+      <String>[],
       workingDirectory: serverPath,
     );
 
     unawaited(stdout.addStream(process.stdout));
     unawaited(stderr.addStream(process.stderr));
 
-    var exitCode = await process.exitCode;
+    int exitCode = await process.exitCode;
     print('Completed table setup exit code: $exitCode');
 
     print('Cleaning up');
     result = await Process.run(
       'rm',
-      ['setup-tables'],
+      <String>['setup-tables'],
       workingDirectory: serverPath,
     );
     print(result.stdout);

@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class ReadWriteTestEntry extends TableRow {
   @override
   String get tableName => 'serverpod_readwrite_test';
 
-  static final t = ReadWriteTestEntryTable();
+  static final ReadWriteTestEntryTable t = ReadWriteTestEntryTable();
 
   @override
   int? id;
@@ -30,14 +30,14 @@ class ReadWriteTestEntry extends TableRow {
   });
 
   ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     number = _data['number']!;
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'number': number,
     });
@@ -45,7 +45,7 @@ class ReadWriteTestEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'number': number,
     });
@@ -53,14 +53,14 @@ class ReadWriteTestEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'number': number,
     });
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -184,11 +184,11 @@ class ReadWriteTestEntryTable extends Table {
 
   @override
   String tableName = 'serverpod_readwrite_test';
-  final id = ColumnInt('id');
-  final number = ColumnInt('number');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt number = ColumnInt('number');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         number,
       ];

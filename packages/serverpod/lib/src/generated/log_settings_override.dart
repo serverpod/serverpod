@@ -30,7 +30,7 @@ class LogSettingsOverride extends SerializableEntity {
   });
 
   LogSettingsOverride.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     module = _data['module'];
     endpoint = _data['endpoint'];
@@ -40,7 +40,7 @@ class LogSettingsOverride extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'module': module,
       'endpoint': endpoint,
@@ -51,7 +51,7 @@ class LogSettingsOverride extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'module': module,
       'endpoint': endpoint,

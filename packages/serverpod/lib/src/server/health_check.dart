@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import '../../serverpod.dart';
@@ -5,7 +6,7 @@ import '../generated/protocol.dart';
 
 /// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
-  var metrics = <ServerHealthMetric>[];
+  List<ServerHealthMetric> metrics = <ServerHealthMetric>[];
   if (pod.healthCheckHandler != null) {
     metrics.addAll(await pod.healthCheckHandler!(pod));
   }
@@ -76,21 +77,21 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
   */
 
   // Check database response time
-  var dbResponseTime = 0.0;
-  var dbHealthy = false;
+  double dbResponseTime = 0.0;
+  bool dbHealthy = false;
 
   try {
-    var startTime = DateTime.now();
-    var rnd = Random().nextInt(1000000);
+    DateTime startTime = DateTime.now();
+    int rnd = Random().nextInt(1000000);
 
-    var databaseConnection = pod.databaseConfig.createConnection();
+    DatabaseConnection databaseConnection = pod.databaseConfig.createConnection();
 
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(
       number: rnd,
     );
 
-    var session = await pod.createSession();
+    InternalSession session = await pod.createSession();
     await databaseConnection.insert(entry, session: session);
 
     // Read entry
@@ -107,8 +108,8 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
   // ignore: empty_catches
   catch (e) {}
 
-  var connectionsInfo = pod.server.httpServer.connectionsInfo();
-  var connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
+  HttpConnectionsInfo connectionsInfo = pod.server.httpServer.connectionsInfo();
+  HttpConnectionsInfo connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
 
   return <ServerHealthMetric>[
 //    ServerHealthMetric(

@@ -22,7 +22,7 @@ class LocalCache extends Cache {
     }
 
     // Create entry
-    var entry = _CacheEntry(
+    _CacheEntry entry = _CacheEntry(
       key: key,
       group: group,
       serializedObject: object.serializeAll(),
@@ -37,7 +37,7 @@ class LocalCache extends Cache {
     _entries[key] = entry;
 
     if (group != null) {
-      var groupKeys = _groups[group];
+      Set<String>? groupKeys = _groups[group];
       if (groupKeys == null) {
         _groups[group] = <String>{key};
       } else {
@@ -51,22 +51,22 @@ class LocalCache extends Cache {
 
   void _removeOldestEntry() {
     // Remove oldest key
-    var oldKey = _keyList.removeLast();
-    var entry = _entries.remove(oldKey.key)!;
+    _KeyListKey oldKey = _keyList.removeLast();
+    _CacheEntry entry = _entries.remove(oldKey.key)!;
 
     // Remove from group
     if (entry.group != null) _removeKeyFromGroup(oldKey.key, entry.group!);
   }
 
   void _removeKeyFromGroup(String key, String group) {
-    var groupKeys = _groups[group]!;
+    Set<String> groupKeys = _groups[group]!;
     groupKeys.remove(key);
     if (groupKeys.isEmpty) _groups.remove(group);
   }
 
   @override
   Future<SerializableEntity?> get(String key) async {
-    var entry = _entries[key];
+    _CacheEntry? entry = _entries[key];
     if (entry == null) return null;
 
     if (entry.expirationTime != null &&
@@ -82,7 +82,7 @@ class LocalCache extends Cache {
   @override
   Future<void> invalidateKey(String key) async {
     // Remove from entries
-    var entry = _entries.remove(key);
+    _CacheEntry? entry = _entries.remove(key);
     if (entry == null) return;
 
     // Remove from group
@@ -93,7 +93,7 @@ class LocalCache extends Cache {
   }
 
   void _removeKeyFromKeyList(String key, DateTime time) {
-    var idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time),
+    int idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time),
         compare: (_KeyListKey a, _KeyListKey b) {
       return b.creationTime.compareTo(a.creationTime);
     });
@@ -116,12 +116,12 @@ class LocalCache extends Cache {
 
   @override
   Future<void> invalidateGroup(String group) async {
-    var keys = _groups[group];
+    Set<String>? keys = _groups[group];
     if (keys == null) return;
 
     // Make a copy of the set before starting to delete keys
-    var keyList = keys.toList();
-    for (var key in keyList) {
+    List<String> keyList = keys.toList();
+    for (String key in keyList) {
       await invalidateKey(key);
     }
   }

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:serverpod/server.dart';
+import '../../server.dart';
 import 'package:yaml/yaml.dart';
 
 import '../generated/protocol.dart' as internal;
@@ -13,7 +13,7 @@ import '../generated/protocol.dart' as internal;
 /// server statistics.
 class MethodLookup {
   final String _protocolPath;
-  final Map<String, int> _lookup = {};
+  final Map<String, int> _lookup = <String, int>{};
 
   /// Creates a new lookup class using the generated protocol file.
   MethodLookup(this._protocolPath);
@@ -26,25 +26,26 @@ class MethodLookup {
       // It's possible that another server instance is booting up at the same
       // time, in which case a write can fail if they are happening
       // simultaneously. Make a second attempt to load after waiting a second.
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       await _attemptLoad(session);
     }
   }
 
   Future<void> _attemptLoad(Session session) async {
     // TODO: Use transactions for this.
-    var file = File(_protocolPath);
-    Map endpoints = loadYaml(file.readAsStringSync());
+    File file = File(_protocolPath);
+    YamlMap endpoints = loadYaml(file.readAsStringSync());
 
     for (String endpoint in endpoints.keys) {
-      List? methods = endpoints[endpoint];
+      List<dynamic>? methods = endpoints[endpoint];
       if (methods == null) continue;
 
-      for (Map methodDef in methods) {
+      for (Map<String, dynamic> methodDef in methods) {
         String method = methodDef.keys.first;
 
         // Find in database
-        var methodInfo = await session.db.findSingleRow<internal.MethodInfo>(
+        internal.MethodInfo? methodInfo =
+            await session.db.findSingleRow<internal.MethodInfo>(
           where: internal.MethodInfo.t.endpoint.equals(endpoint) &
               internal.MethodInfo.t.method.equals(method),
         );

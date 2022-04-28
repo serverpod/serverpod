@@ -27,7 +27,7 @@ class ChatRequestMessageChunk extends SerializableEntity {
 
   ChatRequestMessageChunk.fromSerialization(
       Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
     lastMessageId = _data['lastMessageId']!;
@@ -35,7 +35,7 @@ class ChatRequestMessageChunk extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'lastMessageId': lastMessageId,
@@ -44,7 +44,7 @@ class ChatRequestMessageChunk extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'lastMessageId': lastMessageId,

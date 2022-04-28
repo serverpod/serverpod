@@ -3,7 +3,8 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod/protocol.dart';
+import '../../module.dart';
 
 // const _configFilePath = 'config/google_client_secret.json';
 
@@ -22,7 +23,7 @@ class EmailEndpoint extends Endpoint {
     session.log('authenticate $email / $password', level: LogLevel.debug);
 
     // Fetch password entry
-    var entry = await session.db.findSingleRow<EmailAuth>(
+    EmailAuth? entry = await session.db.findSingleRow<EmailAuth>(
       where: EmailAuth.t.email.equals(email),
     );
     if (entry == null) {
@@ -48,7 +49,7 @@ class EmailEndpoint extends Endpoint {
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
 
-    var userInfo = await Users.findUserByUserId(session, entry.userId);
+    UserInfo? userInfo = await Users.findUserByUserId(session, entry.userId);
     if (userInfo == null) {
       return AuthenticationResponse(
         success: false,
@@ -59,7 +60,7 @@ class EmailEndpoint extends Endpoint {
     session.log(' - user found', level: LogLevel.debug);
 
     // Sign in user and return user info
-    var auth = await session.auth.signInUser(
+    AuthKey auth = await session.auth.signInUser(
       entry.userId,
       'email',
       scopes: userInfo.scopes,
@@ -78,7 +79,7 @@ class EmailEndpoint extends Endpoint {
   /// Changes a users password.
   Future<bool> changePassword(
       Session session, String oldPassword, String newPassword) async {
-    var userId = await session.auth.authenticatedUserId;
+    int? userId = await session.auth.authenticatedUserId;
     if (userId == null) return false;
 
     return Emails.changePassword(session, userId, oldPassword, newPassword);
@@ -127,7 +128,8 @@ class EmailEndpoint extends Endpoint {
     String email,
     String verificationCode,
   ) async {
-    var request = await Emails.findAccountRequest(session, email);
+    EmailCreateAccountRequest? request =
+        await Emails.findAccountRequest(session, email);
     if (request == null) {
       return null;
     }

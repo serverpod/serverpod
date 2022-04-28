@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
-import 'package:serverpod_auth_shared_flutter/src/image_uploader.dart';
+import 'image_uploader.dart';
 
 import 'circular_user_image.dart';
 import 'session_manager.dart';
@@ -65,7 +65,7 @@ class _UserImageButtonState extends State<UserImageButton> {
     return GestureDetector(
       onTap: _userInfo != null ? _updateUserImage : null,
       child: Stack(
-        children: [
+        children: <Widget>[
           CircularUserImage(
             userInfo: _userInfo,
             size: widget.compact ? 56 : 168,

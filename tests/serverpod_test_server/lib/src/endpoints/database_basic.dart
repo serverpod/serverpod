@@ -11,17 +11,17 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<Types?> getTypes(Session session, int id) async {
-    var types = await Types.findById(session, id);
+    Types? types = await Types.findById(session, id);
     return types;
   }
 
   Future<int?> getTypesRawQuery(Session session, int id) async {
-    var query = 'SELECT * FROM types WHERE id = $id';
-    var result = await session.db.query(query);
+    String query = 'SELECT * FROM types WHERE id = $id';
+    List<List<dynamic>> result = await session.db.query(query);
     if (result.length != 1) {
       return null;
     }
-    var row = result[0];
+    List<dynamic> row = result[0];
     if (row.length != Types.t.columns.length) {
       return null;
     }
@@ -33,12 +33,12 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<int?> deleteAllInTypes(Session session) async {
-    return await Types.delete(session, where: (t) => Constant(true));
+    return await Types.delete(session, where: (TypesTable t) => Constant(true));
   }
 
   Future<void> createSimpleTestData(Session session, int numRows) async {
-    for (var i = 0; i < numRows; i++) {
-      var data = SimpleData(
+    for (int i = 0; i < numRows; i++) {
+      SimpleData data = SimpleData(
         num: i,
       );
       await SimpleData.insert(session, data);
@@ -50,18 +50,18 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<void> deleteAllSimpleTestData(Session session) async {
-    await SimpleData.delete(session, where: (t) => Constant(true));
+    await SimpleData.delete(session, where: (SimpleDataTable t) => Constant(true));
   }
 
   Future<void> deleteSimpleTestDataLessThan(Session session, int num) async {
-    await SimpleData.delete(session, where: (t) => t.num < num);
+    await SimpleData.delete(session, where: (SimpleDataTable t) => t.num < num);
     await session.db.delete<SimpleData>(where: (SimpleData.t.num < num));
   }
 
   Future<bool?> findAndDeleteSimpleTestData(Session session, int num) async {
-    var data = await SimpleData.findSingleRow(
+    SimpleData? data = await SimpleData.findSingleRow(
       session,
-      where: (t) => t.num.equals(num),
+      where: (SimpleDataTable t) => t.num.equals(num),
     );
 
     return await session.db.deleteRow(data!);
@@ -74,9 +74,9 @@ class BasicDatabase extends Endpoint {
     int limit,
     bool descending,
   ) async {
-    var rows = await SimpleData.find(
+    List<SimpleData> rows = await SimpleData.find(
       session,
-      where: (t) => t.num < num,
+      where: (SimpleDataTable t) => t.num < num,
       offset: offset,
       limit: limit,
       orderBy: SimpleData.t.num,
@@ -93,9 +93,9 @@ class BasicDatabase extends Endpoint {
     int num,
     int newNum,
   ) async {
-    var data = await SimpleData.findSingleRow(
+    SimpleData? data = await SimpleData.findSingleRow(
       session,
-      where: (t) => t.num.equals(num),
+      where: (SimpleDataTable t) => t.num.equals(num),
     );
 
     if (data == null) return false;

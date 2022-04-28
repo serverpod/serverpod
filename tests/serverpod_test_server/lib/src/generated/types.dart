@@ -18,7 +18,7 @@ class Types extends TableRow {
   @override
   String get tableName => 'types';
 
-  static final t = TypesTable();
+  static final TypesTable t = TypesTable();
 
   @override
   int? id;
@@ -40,7 +40,7 @@ class Types extends TableRow {
   });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     anInt = _data['anInt'];
     aBool = _data['aBool'];
@@ -58,7 +58,7 @@ class Types extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
@@ -71,7 +71,7 @@ class Types extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
@@ -84,7 +84,7 @@ class Types extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
@@ -96,7 +96,7 @@ class Types extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -234,16 +234,16 @@ class TypesTable extends Table {
 
   @override
   String tableName = 'types';
-  final id = ColumnInt('id');
-  final anInt = ColumnInt('anInt');
-  final aBool = ColumnBool('aBool');
-  final aDouble = ColumnDouble('aDouble');
-  final aDateTime = ColumnDateTime('aDateTime');
-  final aString = ColumnString('aString');
-  final aByteData = ColumnByteData('aByteData');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt anInt = ColumnInt('anInt');
+  final ColumnBool aBool = ColumnBool('aBool');
+  final ColumnDouble aDouble = ColumnDouble('aDouble');
+  final ColumnDateTime aDateTime = ColumnDateTime('aDateTime');
+  final ColumnString aString = ColumnString('aString');
+  final ColumnByteData aByteData = ColumnByteData('aByteData');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         anInt,
         aBool,

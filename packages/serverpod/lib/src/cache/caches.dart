@@ -1,7 +1,7 @@
-import 'package:serverpod/server.dart';
-import 'package:serverpod/src/cache/global_cache.dart';
-import 'package:serverpod/src/cache/redis_cache.dart';
-import 'package:serverpod/src/redis/controller.dart';
+import '../../server.dart';
+import 'global_cache.dart';
+import 'redis_cache.dart';
+import '../redis/controller.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 

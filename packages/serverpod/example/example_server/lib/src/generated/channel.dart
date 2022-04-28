@@ -39,7 +39,7 @@ class Channel extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'channel': channel,
@@ -48,7 +48,7 @@ class Channel extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'channel': channel,
@@ -57,7 +57,7 @@ class Channel extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'channel': channel,
@@ -65,7 +65,7 @@ class Channel extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -196,7 +196,7 @@ class ChannelTable extends Table {
   final channel = ColumnString('channel');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         name,
         channel,

@@ -25,7 +25,8 @@ class RedisController {
   /// The password of the Redis server. Not required, but recommended.
   final String? password;
 
-  final Map<String, RedisSubscriptionCallback> _subscriptions = {};
+  final Map<String, RedisSubscriptionCallback> _subscriptions =
+      <String, RedisSubscriptionCallback>{};
 
   Command? _command;
   bool _connecting = false;
@@ -70,12 +71,13 @@ class RedisController {
     _connecting = true;
 
     try {
-      var connection = RedisConnection();
+      RedisConnection connection = RedisConnection();
 
       _command = await connection.connect(host, port);
       if (password != null) {
         // TODO: Username
-        var result = await _command!.send_object(['AUTH', password]);
+        dynamic result =
+            await _command!.send_object(<String?>['AUTH', password]);
         _connecting = false;
         return (result == 'OK');
       } else {
@@ -97,7 +99,7 @@ class RedisController {
       if (_pubSubCommand == null) {
         await _connectPubSub();
       }
-      await Future.delayed(const Duration(seconds: 5));
+      await Future<void>.delayed(const Duration(seconds: 5));
     }
   }
 
@@ -111,17 +113,18 @@ class RedisController {
     _connectingPubSub = true;
 
     try {
-      var connection = RedisConnection();
+      RedisConnection connection = RedisConnection();
       _pubSubCommand = await connection.connect(host, port);
       if (password != null) {
-        var result = await _pubSubCommand!.send_object(['AUTH', password]);
+        dynamic result =
+            await _pubSubCommand!.send_object(<String?>['AUTH', password]);
         _connecting = false;
         if (result != 'OK') return false;
       }
 
       runZonedGuarded(() {
         _pubSub = PubSub(_pubSubCommand!);
-      }, (e, stackTrace) {
+      }, (Object e, StackTrace stackTrace) {
         _invalidatePubSub();
 
         stderr.writeln(
@@ -132,7 +135,7 @@ class RedisController {
         stderr.writeln('${StackTrace.current}');
       });
 
-      var stream = _pubSub!.getStream();
+      Stream<List<dynamic>> stream = _pubSub!.getStream();
       unawaited(_listenToSubscriptions(stream));
 
       if (_subscriptions.keys.isNotEmpty) {
@@ -154,16 +157,16 @@ class RedisController {
     }
   }
 
-  Future<void> _listenToSubscriptions(Stream stream) async {
+  Future<void> _listenToSubscriptions(Stream<List<dynamic>> stream) async {
     try {
-      await for (var message in stream) {
-        if (message is List && message.length == 3) {
+      await for (List<dynamic> message in stream) {
+        if (message.length == 3) {
           if (message[0] == 'message') {
             // We got a message (can also be confirmation on publish)
             String channel = message[1];
             String data = message[2];
 
-            var callback = _subscriptions[channel];
+            RedisSubscriptionCallback? callback = _subscriptions[channel];
             if (callback != null) {
               callback(channel, data);
             }
@@ -200,11 +203,11 @@ class RedisController {
   Future<bool> set(String key, String message, {Duration? lifetime}) async {
     await _connect();
     try {
-      var object = ['SET', key, message];
+      List<String> object = <String>['SET', key, message];
       if (lifetime != null) {
-        object.addAll(['PX', '${lifetime.inMilliseconds}']);
+        object.addAll(<String>['PX', '${lifetime.inMilliseconds}']);
       }
-      var result = await _command?.send_object(object);
+      dynamic result = await _command?.send_object(object);
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();
@@ -217,7 +220,7 @@ class RedisController {
   Future<String?> get(String key) async {
     await _connect();
     try {
-      var result = await _command?.get(key);
+      dynamic result = await _command?.get(key);
       if (result is String) {
         return result;
       }
@@ -232,7 +235,7 @@ class RedisController {
   Future<bool> del(String key) async {
     await _connect();
     try {
-      var result = await _command?.send_object(['DEL', key]);
+      dynamic result = await _command?.send_object(<String?>['DEL', key]);
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();
@@ -247,7 +250,7 @@ class RedisController {
       return false;
     }
     try {
-      var result = await _command?.send_object(['FLUSHALL']);
+      dynamic result = await _command?.send_object(<String?>['FLUSHALL']);
       return (result == 'OK');
     } catch (e) {
       _invalidateCommand();
@@ -264,7 +267,7 @@ class RedisController {
   ) async {
     try {
       await _connectPubSub();
-      _pubSub!.subscribe([channel]);
+      _pubSub!.subscribe(<String>[channel]);
       _subscriptions[channel] = listener;
       return true;
     } catch (e) {
@@ -279,7 +282,7 @@ class RedisController {
   ) async {
     try {
       await _connectPubSub();
-      _pubSub!.unsubscribe([channel]);
+      _pubSub!.unsubscribe(<String>[channel]);
       _subscriptions.remove(channel);
       return true;
     } catch (e) {
@@ -295,8 +298,8 @@ class RedisController {
       if (!await _connect()) {
         return false;
       }
-      var result = await _command!.send_object(
-        ['PUBLISH', channel, message],
+      dynamic result = await _command!.send_object(
+        <String?>['PUBLISH', channel, message],
       );
       return result == 'OK';
     } catch (e) {

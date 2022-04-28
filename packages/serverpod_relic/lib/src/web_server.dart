@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 
@@ -29,7 +30,7 @@ class WebServer {
   WebServer({
     required this.serverpod,
   }) : serverId = serverpod.serverId {
-    var config = WebserverConfig(
+    WebserverConfig config = WebserverConfig(
       serverId: serverId,
       runMode: serverpod.runMode,
     );
@@ -61,7 +62,7 @@ class WebServer {
 
     await runZonedGuarded(
       _start,
-      (e, stackTrace) {
+      (Object e, StackTrace stackTrace) {
         // Last resort error handling
         stdout.writeln('${DateTime.now()} Relic zoned error: $e');
         stdout.writeln('$stackTrace');
@@ -80,7 +81,7 @@ class WebServer {
         } catch (e, stackTrace) {
           logError(e, stackTrace: stackTrace);
         }
-      }, onError: (e, StackTrace stackTrace) {
+      }, onError: (Object e, StackTrace stackTrace) {
         logError(e, stackTrace: stackTrace);
       }).onDone(() {
         stdout.writeln('Server stopped.');
@@ -109,7 +110,7 @@ class WebServer {
     }
 
     if (uri.host != hostname) {
-      var redirect = uri.replace(host: hostname);
+      Uri redirect = uri.replace(host: hostname);
       request.response.headers.add('Location', redirect.toString());
       request.response.statusCode = HttpStatus.movedPermanently;
       await request.response.close();
@@ -117,14 +118,14 @@ class WebServer {
     }
 
     String? authenticationKey;
-    for (var cookie in request.cookies) {
+    for (Cookie cookie in request.cookies) {
       if (cookie.name == 'auth') {
         authenticationKey = cookie.value;
       }
     }
 
     // TODO: Fix body
-    var session = MethodCallSession(
+    MethodCallSession session = MethodCallSession(
       server: serverpod.server,
       uri: uri,
       endpointName: 'webserver',
@@ -136,9 +137,9 @@ class WebServer {
 //    print('Getting path: ${uri.path}');
 
     // Check routes
-    for (var route in routes) {
+    for (Route route in routes) {
       if (route._isMatch(uri.path)) {
-        var found = await _handleRouteCall(route, session, request);
+        bool found = await _handleRouteCall(route, session, request);
         if (found) {
           await request.response.close();
           await session.close();
@@ -156,7 +157,7 @@ class WebServer {
       Route route, Session session, HttpRequest request) async {
     route.setHeaders(request.response.headers);
     try {
-      var found = await route.handleCall(session, request);
+      bool found = await route.handleCall(session, request);
       return found;
     } catch (e, stackTrace) {
       logError(e, stackTrace: stackTrace);
@@ -169,7 +170,7 @@ class WebServer {
   }
 
   /// Logs an error to stderr.
-  void logError(var e, {StackTrace? stackTrace}) {
+  void logError(Object e, {StackTrace? stackTrace}) {
     stderr.writeln('ERROR: $e');
     stderr.writeln('$stackTrace');
   }
@@ -214,7 +215,7 @@ abstract class Route {
       return false;
     }
     if (_matchPath!.endsWith('*')) {
-      var start = _matchPath!.substring(0, _matchPath!.length - 1);
+      String start = _matchPath!.substring(0, _matchPath!.length - 1);
       return path.startsWith(start);
     } else {
       return _matchPath == path;
@@ -222,20 +223,20 @@ abstract class Route {
   }
 
   Future<Map<String, String>> getBody(HttpRequest request) async {
-    var body = await _readBody(request);
+    String? body = await _readBody(request);
 
-    var params = <String, String>{};
+    Map<String, String> params = <String, String>{};
 
     if (body != null) {
-      var encodedParams = body.split('&');
-      for (var encodedParam in encodedParams) {
-        var comps = encodedParam.split('=');
+      List<String> encodedParams = body.split('&');
+      for (String encodedParam in encodedParams) {
+        List<String> comps = encodedParam.split('=');
         if (comps.length != 2) {
           continue;
         }
 
-        var name = Uri.decodeQueryComponent(comps[0]);
-        var value = Uri.decodeQueryComponent(comps[1]);
+        String name = Uri.decodeQueryComponent(comps[0]);
+        String value = Uri.decodeQueryComponent(comps[1]);
 
         params[name] = value;
       }
@@ -246,9 +247,9 @@ abstract class Route {
 
   Future<String?> _readBody(HttpRequest request) async {
     // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
+    int len = 0;
+    List<int> data = <int>[];
+    await for (Uint8List segment in request) {
       len += segment.length;
       if (len > 10240) {
         return null;
@@ -264,14 +265,14 @@ abstract class WidgetRoute extends Route {
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
-    var widget = await build(session, request);
+    AbstractWidget widget = await build(session, request);
     // if (widget == null)
     //   return false;
 
     if (widget is WidgetJson) {
       request.response.headers.contentType = ContentType('application', 'json');
     } else if (widget is WidgetRedirect) {
-      var uri = Uri.parse(widget.url);
+      Uri uri = Uri.parse(widget.url);
       await request.response.redirect(uri);
       return true;
     }

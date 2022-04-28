@@ -22,11 +22,11 @@ class WebserverConfig {
   /// Loads a webserver configuration.
   WebserverConfig({required this.runMode, required this.serverId})
       : file = 'config/${runMode}_web.yaml' {
-    var data = File(file).readAsStringSync();
-    var doc = loadYaml(data);
+    String data = File(file).readAsStringSync();
+    YamlMap doc = loadYaml(data);
 
-    Map clusterData = doc['cluster'];
-    Map serverData = clusterData[serverId];
+    Map<String, dynamic> clusterData = doc['cluster'];
+    Map<String, dynamic> serverData = clusterData[serverId];
 
     port = serverData['port'];
     hostname = serverData['hostname'];

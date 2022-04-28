@@ -19,7 +19,7 @@ class ChatMessage extends TableRow {
   @override
   String get tableName => 'serverpod_chat_message';
 
-  static final t = ChatMessageTable();
+  static final ChatMessageTable t = ChatMessageTable();
 
   @override
   int? id;
@@ -47,7 +47,7 @@ class ChatMessage extends TableRow {
   });
 
   ChatMessage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
     message = _data['message']!;
@@ -61,13 +61,13 @@ class ChatMessage extends TableRow {
     sent = _data['sent'];
     attachments = _data['attachments']
         ?.map<ChatMessageAttachment>(
-            (a) => ChatMessageAttachment.fromSerialization(a))
+            (Map<String, dynamic> a) => ChatMessageAttachment.fromSerialization(a))
         ?.toList();
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'message': message,
@@ -84,7 +84,7 @@ class ChatMessage extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'message': message,
@@ -98,7 +98,7 @@ class ChatMessage extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'message': message,
@@ -114,7 +114,7 @@ class ChatMessage extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -252,16 +252,16 @@ class ChatMessageTable extends Table {
 
   @override
   String tableName = 'serverpod_chat_message';
-  final id = ColumnInt('id');
-  final channel = ColumnString('channel');
-  final message = ColumnString('message');
-  final time = ColumnDateTime('time');
-  final sender = ColumnInt('sender');
-  final removed = ColumnBool('removed');
-  final attachments = ColumnSerializable('attachments');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString channel = ColumnString('channel');
+  final ColumnString message = ColumnString('message');
+  final ColumnDateTime time = ColumnDateTime('time');
+  final ColumnInt sender = ColumnInt('sender');
+  final ColumnBool removed = ColumnBool('removed');
+  final ColumnSerializable attachments = ColumnSerializable('attachments');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         channel,
         message,

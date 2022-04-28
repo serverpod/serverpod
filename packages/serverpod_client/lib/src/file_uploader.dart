@@ -21,7 +21,8 @@ class FileUploader {
   /// Uploads a file contained by a [ByteData] object, returns true if
   /// successful.
   Future<bool> uploadByteData(ByteData byteData) async {
-    var stream = http.ByteStream.fromBytes(byteData.buffer.asUint8List());
+    http.ByteStream stream =
+        http.ByteStream.fromBytes(byteData.buffer.asUint8List());
     return upload(stream, byteData.lengthInBytes);
   }
 
@@ -35,10 +36,10 @@ class FileUploader {
 
     if (_uploadDescription.type == _UploadType.binary) {
       try {
-        var result = await http.post(
+        http.Response result = await http.post(
           _uploadDescription.url,
           body: await _readStreamData(stream),
-          headers: {
+          headers: <String, String>{
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
           },
@@ -54,18 +55,19 @@ class FileUploader {
       // final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
       // final length = await data.lengthInBytes;
 
-      var request = http.MultipartRequest('POST', _uploadDescription.url);
-      var multipartFile = http.MultipartFile(
+      http.MultipartRequest request =
+          http.MultipartRequest('POST', _uploadDescription.url);
+      http.MultipartFile multipartFile = http.MultipartFile(
           _uploadDescription.field!, stream, length,
           filename: _uploadDescription.fileName);
 
       request.files.add(multipartFile);
-      for (var key in _uploadDescription.requestFields.keys) {
+      for (String key in _uploadDescription.requestFields.keys) {
         request.fields[key] = _uploadDescription.requestFields[key]!;
       }
 
       try {
-        var result = await request.send();
+        http.StreamedResponse result = await request.send();
         // var body = await _readBody(result.stream);
         // print('body: $body');
         return result.statusCode == 204;
@@ -89,8 +91,8 @@ class FileUploader {
 
   Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
     // TODO: Find more efficient solution?
-    var data = <int>[];
-    await for (var segment in stream) {
+    List<int> data = <int>[];
+    await for (List<int> segment in stream) {
       data += segment;
     }
     return data;
@@ -107,10 +109,10 @@ class _UploadDescription {
   late Uri url;
   String? field;
   String? fileName;
-  Map<String, String> requestFields = {};
+  Map<String, String> requestFields = <String, String>{};
 
   _UploadDescription(String description) {
-    var data = jsonDecode(description);
+    Map<String, dynamic> data = jsonDecode(description);
     if (data['type'] == 'binary') {
       type = _UploadType.binary;
     } else if (data['type'] == 'multipart') {
@@ -124,7 +126,8 @@ class _UploadDescription {
     if (type == _UploadType.multipart) {
       field = data['field'];
       fileName = data['file-name'];
-      requestFields = (data['request-fields'] as Map).cast<String, String>();
+      requestFields = (data['request-fields'] as Map<String, String>)
+          .cast<String, String>();
     }
   }
 }

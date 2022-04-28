@@ -52,7 +52,7 @@ class Types extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'anInt': anInt,
       'aBool': aBool,

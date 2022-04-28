@@ -28,7 +28,7 @@ class ChatReadMessage extends SerializableEntity {
   });
 
   ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
     userId = _data['userId']!;
@@ -37,7 +37,7 @@ class ChatReadMessage extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'userId': userId,

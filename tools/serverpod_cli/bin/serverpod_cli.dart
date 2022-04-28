@@ -16,20 +16,20 @@ import 'shared/environment.dart';
 import 'util/command_line_tools.dart';
 import 'util/print.dart';
 
-const cmdCreate = 'create';
-const cmdGenerate = 'generate';
-const cmdRun = 'run';
-const cmdGenerateCertificates = 'generate-certs';
-const cmdShutdown = 'shutdown';
-const cmdLogs = 'logs';
-const cmdSessionLogs = 'sessionlog';
-const cmdCacheInfo = 'cacheinfo';
-const cmdServerAddress = 'serveraddress';
-const cmdServerIds = 'serverids';
-const cmdHealthCheck = 'healthcheck';
-const cmdGeneratePubspecs = 'generate-pubspecs';
+const String cmdCreate = 'create';
+const String cmdGenerate = 'generate';
+const String cmdRun = 'run';
+const String cmdGenerateCertificates = 'generate-certs';
+const String cmdShutdown = 'shutdown';
+const String cmdLogs = 'logs';
+const String cmdSessionLogs = 'sessionlog';
+const String cmdCacheInfo = 'cacheinfo';
+const String cmdServerAddress = 'serveraddress';
+const String cmdServerIds = 'serverids';
+const String cmdHealthCheck = 'healthcheck';
+const String cmdGeneratePubspecs = 'generate-pubspecs';
 
-final runModes = <String>['development', 'staging', 'production'];
+final List<String> runModes = <String>['development', 'staging', 'production'];
 
 final Analytics _analytics = Analytics();
 
@@ -71,10 +71,10 @@ void main(List<String> args) async {
     }
   }
 
-  var parser = ArgParser();
+  ArgParser parser = ArgParser();
 
   // "create" command
-  var createParser = ArgParser();
+  ArgParser createParser = ArgParser();
   createParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
   createParser.addFlag(
@@ -95,20 +95,20 @@ void main(List<String> args) async {
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
-  var generateParser = ArgParser();
+  ArgParser generateParser = ArgParser();
   generateParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
   parser.addCommand(cmdGenerate, generateParser);
 
   // "run" command
-  var runParser = ArgParser();
+  ArgParser runParser = ArgParser();
   runParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
   runParser.addFlag('run-docker', negatable: true, defaultsTo: true);
   parser.addCommand(cmdRun, runParser);
 
   // "generatecerts" command
-  var generateCerts = ArgParser();
+  ArgParser generateCerts = ArgParser();
   generateCerts.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -119,7 +119,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdGenerateCertificates, generateCerts);
 
   // "shutdown" command
-  var shutdownParser = ArgParser();
+  ArgParser shutdownParser = ArgParser();
   shutdownParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -128,7 +128,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdShutdown, shutdownParser);
 
   // "logs" command
-  var logsParser = ArgParser();
+  ArgParser logsParser = ArgParser();
   logsParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -139,7 +139,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdLogs, logsParser);
 
   // "sessionlogs" command
-  var sessionLogsParser = ArgParser();
+  ArgParser sessionLogsParser = ArgParser();
   sessionLogsParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -150,7 +150,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdSessionLogs, sessionLogsParser);
 
   // "cacheinfo" command
-  var cacheinfoParser = ArgParser();
+  ArgParser cacheinfoParser = ArgParser();
   cacheinfoParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -162,7 +162,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdCacheInfo, cacheinfoParser);
 
   // "serveraddress" command
-  var serverAddressParser = ArgParser();
+  ArgParser serverAddressParser = ArgParser();
   serverAddressParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -175,7 +175,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdServerAddress, serverAddressParser);
 
   // "serverids" command
-  var serverIdsParser = ArgParser();
+  ArgParser serverIdsParser = ArgParser();
   serverIdsParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -184,7 +184,7 @@ void main(List<String> args) async {
   parser.addCommand(cmdServerIds, serverIdsParser);
 
   // "healthcheck" command
-  var healthCheckParser = ArgParser();
+  ArgParser healthCheckParser = ArgParser();
   healthCheckParser.addOption('config',
       abbr: 'c',
       defaultsTo: 'development',
@@ -193,19 +193,19 @@ void main(List<String> args) async {
   parser.addCommand(cmdHealthCheck, healthCheckParser);
 
   // "generate-pubspecs"
-  var generatePubspecs = ArgParser();
+  ArgParser generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
   generatePubspecs.addOption('mode',
-      defaultsTo: 'development', allowed: ['development', 'production']);
+      defaultsTo: 'development', allowed: <String>['development', 'production']);
   parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
 
-  var results = parser.parse(args);
+  ArgResults results = parser.parse(args);
 
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
 
     if (results.command!.name == cmdCreate) {
-      var name = results.arguments.last;
+      String name = results.arguments.last;
       bool verbose = results.command!['verbose'];
       String template = results.command!['template'];
       bool force = results.command!['force'];
@@ -214,7 +214,7 @@ void main(List<String> args) async {
         _analytics.cleanUp();
         return;
       }
-      var re = RegExp(r'^[a-z0-9_]+$');
+      RegExp re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
         await performCreate(name, verbose, template, force);
         _analytics.cleanUp();
@@ -277,14 +277,14 @@ void main(List<String> args) async {
     //   return;
     // }
     if (results.command!.name == cmdServerAddress) {
-      var configInfo = ConfigInfo(results.command!['config'],
+      ConfigInfo configInfo = ConfigInfo(results.command!['config'],
           serverId: int.tryParse(results.command!['id'])!);
       configInfo.printAddress();
       _analytics.cleanUp();
       return;
     }
     if (results.command!.name == cmdServerIds) {
-      var configInfo = ConfigInfo(results.command!['config']);
+      ConfigInfo configInfo = ConfigInfo(results.command!['config']);
       configInfo.printIds();
       _analytics.cleanUp();
       return;

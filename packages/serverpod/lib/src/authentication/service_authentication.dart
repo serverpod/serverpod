@@ -6,9 +6,9 @@ import '../server/session.dart';
 Future<AuthenticationInfo?> serviceAuthenticationHandler(
     Session session, String key) async {
   try {
-    var parts = key.split(':');
+    List<String> parts = key.split(':');
     // var name = parts[0];
-    var secret = parts[1];
+    String secret = parts[1];
 
     if (secret == session.server.serverpod.config.serviceSecret) {
       return AuthenticationInfo(0, <Scope>{Scope.none});

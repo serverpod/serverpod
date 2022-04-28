@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class FutureCallEntry extends TableRow {
   @override
   String get tableName => 'serverpod_future_call';
 
-  static final t = FutureCallEntryTable();
+  static final FutureCallEntryTable t = FutureCallEntryTable();
 
   @override
   int? id;
@@ -38,7 +38,7 @@ class FutureCallEntry extends TableRow {
   });
 
   FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     name = _data['name']!;
     time = DateTime.tryParse(_data['time'])!;
@@ -49,7 +49,7 @@ class FutureCallEntry extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'time': time.toUtc().toIso8601String(),
@@ -61,7 +61,7 @@ class FutureCallEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'time': time.toUtc().toIso8601String(),
@@ -73,7 +73,7 @@ class FutureCallEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'time': time.toUtc().toIso8601String(),
@@ -84,7 +84,7 @@ class FutureCallEntry extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -220,15 +220,15 @@ class FutureCallEntryTable extends Table {
 
   @override
   String tableName = 'serverpod_future_call';
-  final id = ColumnInt('id');
-  final name = ColumnString('name');
-  final time = ColumnDateTime('time');
-  final serializedObject = ColumnString('serializedObject');
-  final serverId = ColumnInt('serverId');
-  final identifier = ColumnString('identifier');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString name = ColumnString('name');
+  final ColumnDateTime time = ColumnDateTime('time');
+  final ColumnString serializedObject = ColumnString('serializedObject');
+  final ColumnInt serverId = ColumnInt('serverId');
+  final ColumnString identifier = ColumnString('identifier');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         name,
         time,

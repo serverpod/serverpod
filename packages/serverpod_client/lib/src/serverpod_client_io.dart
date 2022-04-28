@@ -66,12 +66,12 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
     String? data;
     try {
-      var body =
+      String body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
 
-      var url = Uri.parse('$host$endpoint');
+      Uri url = Uri.parse('$host$endpoint');
 
-      var request = await _httpClient.postUrl(url);
+      HttpClientRequest request = await _httpClient.postUrl(url);
       request.headers.contentType =
           ContentType('application', 'json', charset: 'utf-8');
       request.contentLength = utf8.encode(body).length;
@@ -79,14 +79,15 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       await request.flush();
 
-      var response = await request.close(); // done instead of close() ?
+      HttpClientResponse response =
+          await request.close(); // done instead of close() ?
       data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
-        throw (ServerpodClientException(data!, response.statusCode));
+        throw (ServerpodClientException(data, response.statusCode));
       }
 
-      return parseData(data!, returnTypeName, serializationManager);
+      return parseData(data, returnTypeName, serializationManager);
     } catch (e, stackTrace) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
@@ -101,9 +102,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
     }
   }
 
-  Future<dynamic> _readResponse(HttpClientResponse response) {
-    var completer = Completer();
-    var contents = StringBuffer();
+  Future<String> _readResponse(HttpClientResponse response) {
+    Completer<String> completer = Completer<String>();
+    StringBuffer contents = StringBuffer();
     response.transform(const Utf8Decoder()).listen((String data) {
       contents.write(data);
     }, onDone: () => completer.complete(contents.toString()));

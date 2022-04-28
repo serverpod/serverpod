@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class RuntimeSettings extends TableRow {
   @override
   String get tableName => 'serverpod_runtime_settings';
 
-  static final t = RuntimeSettingsTable();
+  static final RuntimeSettingsTable t = RuntimeSettingsTable();
 
   @override
   int? id;
@@ -36,12 +36,12 @@ class RuntimeSettings extends TableRow {
   });
 
   RuntimeSettings.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     logSettings = LogSettings.fromSerialization(_data['logSettings']);
     logSettingsOverrides = _data['logSettingsOverrides']!
         .map<LogSettingsOverride>(
-            (a) => LogSettingsOverride.fromSerialization(a))
+            (Map<String, dynamic> a) => LogSettingsOverride.fromSerialization(a))
         ?.toList();
     logServiceCalls = _data['logServiceCalls']!;
     logMalformedCalls = _data['logMalformedCalls']!;
@@ -49,7 +49,7 @@ class RuntimeSettings extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'logSettings': logSettings.serialize(),
       'logSettingsOverrides': logSettingsOverrides
@@ -62,7 +62,7 @@ class RuntimeSettings extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'logSettings': logSettings.serialize(),
       'logSettingsOverrides': logSettingsOverrides
@@ -75,7 +75,7 @@ class RuntimeSettings extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'logSettings': logSettings.serialize(),
       'logSettingsOverrides': logSettingsOverrides
@@ -87,7 +87,7 @@ class RuntimeSettings extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -220,14 +220,15 @@ class RuntimeSettingsTable extends Table {
 
   @override
   String tableName = 'serverpod_runtime_settings';
-  final id = ColumnInt('id');
-  final logSettings = ColumnSerializable('logSettings');
-  final logSettingsOverrides = ColumnSerializable('logSettingsOverrides');
-  final logServiceCalls = ColumnBool('logServiceCalls');
-  final logMalformedCalls = ColumnBool('logMalformedCalls');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnSerializable logSettings = ColumnSerializable('logSettings');
+  final ColumnSerializable logSettingsOverrides =
+      ColumnSerializable('logSettingsOverrides');
+  final ColumnBool logServiceCalls = ColumnBool('logServiceCalls');
+  final ColumnBool logMalformedCalls = ColumnBool('logMalformedCalls');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         logSettings,
         logSettingsOverrides,

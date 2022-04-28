@@ -1,4 +1,4 @@
-import 'package:serverpod/src/generated/auth_key.dart';
+import '../generated/auth_key.dart';
 
 import '../server/session.dart';
 import 'authentication_info.dart';
@@ -11,27 +11,27 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
     Session session, String key) async {
   try {
     // Get the secret and user id
-    var parts = key.split(':');
-    var keyIdStr = parts[0];
-    var keyId = int.tryParse(keyIdStr);
+    List<String> parts = key.split(':');
+    String keyIdStr = parts[0];
+    int? keyId = int.tryParse(keyIdStr);
     if (keyId == null) return null;
-    var secret = parts[1];
+    String secret = parts[1];
 
     // Get the authentication key from the database
-    var authKey = await session.db.findById<AuthKey>(keyId);
+    AuthKey? authKey = await session.db.findById<AuthKey>(keyId);
     if (authKey == null) return null;
 
     // Hash the key from the user and check that it is what we expect
-    var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-    var expectedHash = hashString(signInSalt, secret);
+    String signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+    String expectedHash = hashString(signInSalt, secret);
 
     if (authKey.hash != expectedHash) return null;
 
     // All looking bright, user is signed in
 
     // Setup scopes
-    var scopes = <Scope>{};
-    for (var scopeName in authKey.scopeNames) {
+    Set<Scope> scopes = <Scope>{};
+    for (String scopeName in authKey.scopeNames) {
       scopes.add(Scope(scopeName));
     }
     return AuthenticationInfo(authKey.userId, scopes);

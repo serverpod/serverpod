@@ -18,7 +18,7 @@ class UserInfo extends TableRow {
   @override
   String get tableName => 'serverpod_user_info';
 
-  static final t = UserInfoTable();
+  static final UserInfoTable t = UserInfoTable();
 
   @override
   int? id;
@@ -48,7 +48,7 @@ class UserInfo extends TableRow {
   });
 
   UserInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userIdentifier = _data['userIdentifier']!;
     userName = _data['userName']!;
@@ -66,7 +66,7 @@ class UserInfo extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
@@ -83,7 +83,7 @@ class UserInfo extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
@@ -100,7 +100,7 @@ class UserInfo extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
@@ -116,7 +116,7 @@ class UserInfo extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -266,20 +266,20 @@ class UserInfoTable extends Table {
 
   @override
   String tableName = 'serverpod_user_info';
-  final id = ColumnInt('id');
-  final userIdentifier = ColumnString('userIdentifier');
-  final userName = ColumnString('userName');
-  final fullName = ColumnString('fullName');
-  final email = ColumnString('email');
-  final created = ColumnDateTime('created');
-  final imageUrl = ColumnString('imageUrl');
-  final scopeNames = ColumnSerializable('scopeNames');
-  final active = ColumnBool('active');
-  final blocked = ColumnBool('blocked');
-  final suspendedUntil = ColumnDateTime('suspendedUntil');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString userIdentifier = ColumnString('userIdentifier');
+  final ColumnString userName = ColumnString('userName');
+  final ColumnString fullName = ColumnString('fullName');
+  final ColumnString email = ColumnString('email');
+  final ColumnDateTime created = ColumnDateTime('created');
+  final ColumnString imageUrl = ColumnString('imageUrl');
+  final ColumnSerializable scopeNames = ColumnSerializable('scopeNames');
+  final ColumnBool active = ColumnBool('active');
+  final ColumnBool blocked = ColumnBool('blocked');
+  final ColumnDateTime suspendedUntil = ColumnDateTime('suspendedUntil');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userIdentifier,
         userName,

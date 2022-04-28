@@ -67,6 +67,7 @@ class AwsS3Uploader {
       print(e);
       return null;
     }
+    return null;
   }
 
   /// Upload a file, returning the file's public URL on success.
@@ -126,6 +127,7 @@ class AwsS3Uploader {
       final res = await req.send();
 
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
+      return null;
     } catch (e) {
       print('Failed to upload to AWS, with exception:');
       print(e);

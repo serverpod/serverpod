@@ -4,7 +4,7 @@ import '../generated/protocol.dart';
 
 class TransactionsDatabaseEndpoint extends Endpoint {
   Future<void> removeRow(Session session, int num) async {
-    await session.db.transaction((transaction) async {
+    await session.db.transaction((Transaction transaction) async {
       await session.db.delete<SimpleData>(
         where: SimpleData.t.num.equals(num),
         transaction: transaction,
@@ -14,15 +14,15 @@ class TransactionsDatabaseEndpoint extends Endpoint {
 
   Future<bool> updateInsertDelete(
       Session session, int numUpdate, int numInsert, int numDelete) async {
-    var data = await session.db.findSingleRow<SimpleData>(
+    SimpleData? data = await session.db.findSingleRow<SimpleData>(
       where: SimpleData.t.num.equals(numUpdate),
     );
 
-    return await session.db.transaction((transaction) async {
+    return await session.db.transaction((Transaction transaction) async {
       data!.num = 1000;
       await session.db.update(data, transaction: transaction);
 
-      var newData = SimpleData(
+      SimpleData newData = SimpleData(
         num: numInsert,
       );
       await session.db.insert(newData, transaction: transaction);

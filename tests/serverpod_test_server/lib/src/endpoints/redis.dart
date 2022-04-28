@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/src/generated/protocol.dart';
+import '../generated/protocol.dart';
 
 class RedisEndpoint extends Endpoint {
   Future<void> setSimpleData(
@@ -34,10 +34,10 @@ class RedisEndpoint extends Endpoint {
 
   Future<SimpleData?> listenToChannel(Session session, String channel) async {
     SimpleData? data;
-    session.messages.addListener(channel, (message) {
+    session.messages.addListener(channel, (SerializableEntity message) {
       data = message as SimpleData?;
     });
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
     return data;
   }
 

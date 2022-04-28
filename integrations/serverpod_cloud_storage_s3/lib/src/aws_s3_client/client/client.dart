@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:built_value/serializer.dart';
@@ -48,7 +47,7 @@ class AwsS3Client {
 
   Future<ListBucketResult?> listObjects(
       {String? prefix, String? delimiter, int? maxKeys}) async {
-    final response = await _doSignedGetRequest(key: '', queryParams: {
+    final response = await _doSignedGetRequest(key: '', queryParams: <String, String>{
       "list-type": "2",
       if (prefix != null) "prefix": prefix,
       if (delimiter != null) "delimiter": delimiter,
@@ -71,7 +70,7 @@ class AwsS3Client {
   }
 
   String keytoPath(String key) =>
-      "${'/$key'.split('/').map(Uri.encodeQueryComponent).join('/')}";
+      '/$key'.split('/').map(Uri.encodeQueryComponent).join('/');
 
   ///Returns a [SignedRequestParams] object containing the uri and the HTTP headers
   ///needed to do a signed GET request to AWS S3. Does not actually execute a request.

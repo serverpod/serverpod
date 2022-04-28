@@ -18,7 +18,7 @@ class EmailCreateAccountRequest extends TableRow {
   @override
   String get tableName => 'serverpod_email_create_request';
 
-  static final t = EmailCreateAccountRequestTable();
+  static final EmailCreateAccountRequestTable t = EmailCreateAccountRequestTable();
 
   @override
   int? id;
@@ -37,7 +37,7 @@ class EmailCreateAccountRequest extends TableRow {
 
   EmailCreateAccountRequest.fromSerialization(
       Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userName = _data['userName']!;
     email = _data['email']!;
@@ -47,7 +47,7 @@ class EmailCreateAccountRequest extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userName': userName,
       'email': email,
@@ -58,7 +58,7 @@ class EmailCreateAccountRequest extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userName': userName,
       'email': email,
@@ -69,7 +69,7 @@ class EmailCreateAccountRequest extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userName': userName,
       'email': email,
@@ -79,7 +79,7 @@ class EmailCreateAccountRequest extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -214,14 +214,14 @@ class EmailCreateAccountRequestTable extends Table {
 
   @override
   String tableName = 'serverpod_email_create_request';
-  final id = ColumnInt('id');
-  final userName = ColumnString('userName');
-  final email = ColumnString('email');
-  final hash = ColumnString('hash');
-  final verificationCode = ColumnString('verificationCode');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString userName = ColumnString('userName');
+  final ColumnString email = ColumnString('email');
+  final ColumnString hash = ColumnString('hash');
+  final ColumnString verificationCode = ColumnString('verificationCode');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userName,
         email,

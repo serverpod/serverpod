@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/health_check.dart';
+import '../../serverpod.dart';
+import 'health_check.dart';
 
 import '../cache/caches.dart';
+import '../generated/server_health_result.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -86,7 +87,7 @@ class Server {
     if (securityContext != null) {
       await HttpServer.bindSecure(
               InternetAddress.anyIPv6, port, securityContext!)
-          .then(_runServer, onError: (e, StackTrace stackTrace) {
+          .then(_runServer, onError: (Object e, StackTrace stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
         stderr.writeln('$e');
@@ -94,7 +95,7 @@ class Server {
       });
     } else {
       await HttpServer.bind(InternetAddress.anyIPv6, port).then(_runServer,
-          onError: (e, StackTrace stackTrace) {
+          onError: (Object e, StackTrace stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
@@ -120,7 +121,7 @@ class Server {
           stderr.writeln('$stackTrace');
         }
       },
-      onError: (e, StackTrace stackTrace) {
+      onError: (Object e, StackTrace stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
         stderr.writeln('$e');
@@ -148,14 +149,14 @@ class Server {
       return;
     }
 
-    var readBody = true;
+    bool readBody = true;
 
     if (uri.path == '/') {
       // Perform health checks
-      var checks = await performHealthChecks(serverpod);
-      var issues = <String>[];
-      var allOk = true;
-      for (var metric in checks.metrics) {
+      ServerHealthResult checks = await performHealthChecks(serverpod);
+      List<String> issues = <String>[];
+      bool allOk = true;
+      for (ServerHealthMetric metric in checks.metrics) {
         if (!metric.isHealthy) {
           allOk = false;
           issues.add('${metric.name}: ${metric.value}');
@@ -167,14 +168,14 @@ class Server {
       } else {
         request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
       }
-      for (var issue in issues) {
+      for (String issue in issues) {
         request.response.writeln(issue);
       }
 
       await request.response.close();
       return;
     } else if (uri.path == '/websocket') {
-      var webSocket = await WebSocketTransformer.upgrade(request);
+      WebSocket webSocket = await WebSocketTransformer.upgrade(request);
       webSocket.pingInterval = const Duration(minutes: 1);
       unawaited(_handleWebsocket(webSocket, request));
       return;
@@ -217,7 +218,7 @@ class Server {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body!, request);
+    Result result = await _handleUriCall(uri, body!, request);
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
@@ -257,12 +258,12 @@ class Server {
 
       // Send the response
       if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {
-        var byteData = result.returnValue as ByteData?;
+        ByteData? byteData = result.returnValue as ByteData?;
         if (byteData != null) {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedEntity =
+        String? serializedEntity =
             serializationManager.serializeEntity(result.returnValue);
         request.response.write(serializedEntity);
       }
@@ -273,9 +274,9 @@ class Server {
 
   Future<String?> _readBody(HttpRequest request) async {
     // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
+    int len = 0;
+    List<int> data = <int>[];
+    await for (Uint8List segment in request) {
       len += segment.length;
       if (len > serverpod.config.maxRequestSize) return null;
       data += segment;
@@ -285,25 +286,25 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var endpointName = uri.path.substring(1);
+    String endpointName = uri.path.substring(1);
     return endpoints.handleUriCall(this, endpointName, uri, body, request);
   }
 
   Future<void> _handleWebsocket(
       WebSocket webSocket, HttpRequest request) async {
     try {
-      var session = StreamingSession(
+      StreamingSession session = StreamingSession(
         server: this,
         uri: request.uri,
         httpRequest: request,
         webSocket: webSocket,
       );
 
-      for (var endpointConnector in endpoints.connectors.values) {
+      for (EndpointConnector endpointConnector in endpoints.connectors.values) {
         await _callStreamOpened(session, endpointConnector.endpoint);
       }
-      for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
+      for (EndpointDispatch module in endpoints.modules.values) {
+        for (EndpointConnector endpointConnector in module.connectors.values) {
           await _callStreamOpened(session, endpointConnector.endpoint);
         }
       }
@@ -313,21 +314,23 @@ class Server {
 
       try {
         await for (String jsonData in webSocket) {
-          var data = jsonDecode(jsonData) as Map;
-          var endpointName = data['endpoint'] as String;
-          var serialization = data['object'] as Map;
-          var message = serializationManager.createEntityFromSerialization(
-              serialization.cast<String, dynamic>());
+          Map<String, dynamic> data = jsonDecode(jsonData);
+          String endpointName = data['endpoint'] as String;
+          Map<String, dynamic> serialization = data['object'];
+          SerializableEntity? message =
+              serializationManager.createEntityFromSerialization(
+                  serialization.cast<String, dynamic>());
 
           if (message == null) throw Exception('Streamed message was null');
 
-          var endpointConnector = endpoints.getConnectorByName(endpointName);
+          EndpointConnector? endpointConnector =
+              endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null) {
             throw Exception('Endpoint not found: $endpointName');
           }
 
-          var authFailed = await endpoints.canUserAccessEndpoint(
-              session, endpointConnector.endpoint);
+          ResultAuthenticationFailed? authFailed = await endpoints
+              .canUserAccessEndpoint(session, endpointConnector.endpoint);
           if (authFailed == null) {
             await endpointConnector.endpoint
                 .handleStreamMessage(session, message);
@@ -339,11 +342,11 @@ class Server {
       }
 
       // TODO: Possibly keep a list of open streams instead
-      for (var endpointConnector in endpoints.connectors.values) {
+      for (EndpointConnector endpointConnector in endpoints.connectors.values) {
         await _callStreamClosed(session, endpointConnector.endpoint);
       }
-      for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
+      for (EndpointDispatch module in endpoints.modules.values) {
+        for (EndpointConnector endpointConnector in module.connectors.values) {
           await _callStreamClosed(session, endpointConnector.endpoint);
         }
       }
@@ -360,7 +363,8 @@ class Server {
     try {
       // TODO: We need to mark stream as accessbile (in endpoint?) and check
       // future messages that are passed to this endpoint.
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      ResultAuthenticationFailed? authFailed =
+          await endpoints.canUserAccessEndpoint(session, endpoint);
       if (authFailed == null) await endpoint.streamOpened(session);
     } catch (e) {
       return;
@@ -370,7 +374,8 @@ class Server {
   Future<void> _callStreamClosed(
       StreamingSession session, Endpoint endpoint) async {
     try {
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      ResultAuthenticationFailed? authFailed =
+          await endpoints.canUserAccessEndpoint(session, endpoint);
       if (authFailed == null) await endpoint.streamClosed(session);
     } catch (e) {
       return;

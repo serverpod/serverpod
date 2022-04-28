@@ -10,14 +10,15 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:googleapis_auth/src/auth_http_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/src/business/config.dart';
-import 'package:serverpod_auth_server/src/business/google_auth.dart';
-import 'package:serverpod_auth_server/src/business/user_images.dart';
+import 'package:serverpod/protocol.dart';
+import '../business/config.dart';
+import '../business/google_auth.dart';
+import '../business/user_images.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
 
-const _authMethod = 'google';
+const String _authMethod = 'google';
 
 /// Endpoint for handling Sign in with Google.
 class GoogleEndpoint extends Endpoint {
@@ -30,10 +31,11 @@ class GoogleEndpoint extends Endpoint {
     assert(
         GoogleAuth.clientSecret != null, 'Google client secret is not loaded.');
 
-    var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
+    AutoRefreshingClient authClient =
+        await _GoogleUtils.clientViaClientSecretAndCode(
       GoogleAuth.clientSecret!,
       authenticationCode,
-      [
+      <String>[
         'https://www.googleapis.com/auth/userinfo.profile',
         'profile',
         'email',
@@ -41,18 +43,18 @@ class GoogleEndpoint extends Endpoint {
       redirectUri,
     );
 
-    var api = PeopleServiceApi(authClient);
-    var person = await api.people.get(
+    PeopleServiceApi api = PeopleServiceApi(authClient);
+    Person person = await api.people.get(
       'people/me',
       personFields: 'emailAddresses,names,photos',
     );
 
     if (person.names == null) return AuthenticationResponse(success: false);
 
-    var fullName = person.names?[0].displayName; // TODO: Double check
-    var name = person.names?[0].givenName;
-    var image = person.photos?[0].url;
-    var email = person.emailAddresses?[0].value;
+    String? fullName = person.names?[0].displayName; // TODO: Double check
+    String? name = person.names?[0].givenName;
+    String? image = person.photos?[0].url;
+    String? email = person.emailAddresses?[0].value;
 
     if (fullName == null || name == null || image == null || email == null) {
       return AuthenticationResponse(
@@ -63,7 +65,8 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
-    var userInfo = await _setupUserInfo(session, email, name, fullName, image);
+    UserInfo? userInfo =
+        await _setupUserInfo(session, email, name, fullName, image);
 
     if (userInfo == null) {
       return AuthenticationResponse(
@@ -74,9 +77,9 @@ class GoogleEndpoint extends Endpoint {
 
     if (authClient.credentials.refreshToken != null) {
       // Store refresh token, so that we can access this data at a later time.
-      var token = await GoogleRefreshToken.findSingleRow(
+      GoogleRefreshToken? token = await GoogleRefreshToken.findSingleRow(
         session,
-        where: (t) => t.userId.equals(userInfo.id!),
+        where: (GoogleRefreshTokenTable t) => t.userId.equals(userInfo.id!),
       );
       if (token == null) {
         token = GoogleRefreshToken(
@@ -90,7 +93,7 @@ class GoogleEndpoint extends Endpoint {
       }
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+    AuthKey authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
 
     authClient.close();
 
@@ -112,7 +115,7 @@ class GoogleEndpoint extends Endpoint {
 
       // Verify the token with Google's servers.
       // TODO: This should probably be done on this server.
-      var response = await http.get(Uri.parse(
+      http.Response response = await http.get(Uri.parse(
           'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken'));
 
       if (response.statusCode != 200) {
@@ -123,7 +126,7 @@ class GoogleEndpoint extends Endpoint {
         );
       }
 
-      var data = jsonDecode(response.body);
+      Map<String, dynamic> data = jsonDecode(response.body);
       if (data['iss'] != 'accounts.google.com') {
         session.log('Invalid token received', level: LogLevel.debug);
         return AuthenticationResponse(
@@ -155,7 +158,7 @@ class GoogleEndpoint extends Endpoint {
         );
       }
 
-      var userInfo =
+      UserInfo? userInfo =
           await _setupUserInfo(session, email, name, fullName, image);
       if (userInfo == null) {
         session.log('Failed to create UserInfo', level: LogLevel.debug);
@@ -167,7 +170,7 @@ class GoogleEndpoint extends Endpoint {
 
       // Authentication looks ok!
 
-      var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+      AuthKey authKey = await session.auth.signInUser(userInfo.id!, 'google');
 
       return AuthenticationResponse(
         success: true,
@@ -188,7 +191,7 @@ class GoogleEndpoint extends Endpoint {
 
   Future<UserInfo?> _setupUserInfo(Session session, String email, String name,
       String fullName, String? image) async {
-    var userInfo = await Users.findUserByEmail(session, email);
+    UserInfo? userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
         userIdentifier: email,
@@ -198,13 +201,13 @@ class GoogleEndpoint extends Endpoint {
         active: true,
         blocked: false,
         created: DateTime.now().toUtc(),
-        scopeNames: [],
+        scopeNames: <String>[],
       );
       userInfo = await Users.createUser(session, userInfo, _authMethod);
 
       // Set the user image.
       if (userInfo?.id != null && image != null) {
-        var url = image;
+        String url = image;
         if (url.endsWith('s100')) {
           url = url.substring(0, url.length - 4) +
               's${AuthConfig.current.userImageSize}';
@@ -225,10 +228,11 @@ class _GoogleUtils {
     String? redirectUri,
   ]) async {
     redirectUri = redirectUri ?? secret.redirectUris[0];
-    var clientId = ClientId(secret.clientId, secret.clientSecret);
-    var client = http.Client();
+    ClientId clientId = ClientId(secret.clientId, secret.clientSecret);
+    http.Client client = http.Client();
 
-    var credentials = await obtainAccessCredentialsViaCodeExchange(
+    AccessCredentials credentials =
+        await obtainAccessCredentialsViaCodeExchange(
       client,
       clientId,
       authenticationCode,

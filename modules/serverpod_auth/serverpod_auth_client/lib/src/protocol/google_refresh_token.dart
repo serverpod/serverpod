@@ -26,7 +26,7 @@ class GoogleRefreshToken extends SerializableEntity {
   });
 
   GoogleRefreshToken.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     refreshToken = _data['refreshToken']!;
@@ -34,7 +34,7 @@ class GoogleRefreshToken extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'refreshToken': refreshToken,

@@ -9,7 +9,7 @@ class ChatDispatch {
     return _singleton!;
   }
 
-  final _listeners = <String, ChatMessageListener>{};
+  final Map<String, ChatMessageListener> _listeners = <String, ChatMessageListener>{};
 
   final Caller caller;
   ChatDispatch({
@@ -36,7 +36,7 @@ class ChatDispatch {
   }
 
   Future<void> _handleStreamMessages() async {
-    await for (var message in caller.chat.stream) {
+    await for (SerializableEntity message in caller.chat.stream) {
       if (message is ChatMessage) {
         _routeMessageToChannel(message.channel, message);
       } else if (message is ChatJoinedChannel) {
@@ -50,7 +50,7 @@ class ChatDispatch {
   }
 
   void _routeMessageToChannel(String channel, SerializableEntity message) {
-    var listener = _listeners[channel];
+    ChatMessageListener? listener = _listeners[channel];
     if (listener != null) {
       listener(message);
     }

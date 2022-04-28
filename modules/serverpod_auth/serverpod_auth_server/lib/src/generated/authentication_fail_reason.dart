@@ -17,28 +17,28 @@ class AuthenticationFailReason extends SerializableEntity {
 
   AuthenticationFailReason.fromSerialization(
       Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
+    Map<String, dynamic> data = unwrapSerializationData(serialization);
     _index = data['index'];
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'index': _index,
     });
   }
 
-  static final invalidCredentials = AuthenticationFailReason._internal(0);
-  static final userCreationDenied = AuthenticationFailReason._internal(1);
-  static final internalError = AuthenticationFailReason._internal(2);
+  static final AuthenticationFailReason invalidCredentials = AuthenticationFailReason._internal(0);
+  static final AuthenticationFailReason userCreationDenied = AuthenticationFailReason._internal(1);
+  static final AuthenticationFailReason internalError = AuthenticationFailReason._internal(2);
 
   @override
   int get hashCode => _index.hashCode;
   @override
-  bool operator ==(other) =>
+  bool operator ==(Object other) =>
       other is AuthenticationFailReason && other._index == _index;
 
-  static final values = <AuthenticationFailReason>[
+  static final List<AuthenticationFailReason> values = <AuthenticationFailReason>[
     invalidCredentials,
     userCreationDenied,
     internalError,

@@ -53,7 +53,7 @@ class TypeDefinition {
   final String? package;
 
   String get typePrefix {
-    var prefix = '';
+    String prefix = '';
     if (package != null &&
         package != 'core' &&
         package != config.serverPackage) {
@@ -64,7 +64,7 @@ class TypeDefinition {
 
   TypeDefinition(String type, this.package, {bool stripFuture = false}) {
     // Remove all spaces
-    var trimmed = type.replaceAll(' ', '');
+    String trimmed = type.replaceAll(' ', '');
 
     if (stripFuture) {
       if (!trimmed.startsWith('Future<') || !trimmed.endsWith('>'))
@@ -75,14 +75,14 @@ class TypeDefinition {
 
     // Check if it's a nullable type
     nullable = trimmed.endsWith('?');
-    var withoutQuestion =
+    String withoutQuestion =
         nullable ? trimmed.substring(0, trimmed.length - 1) : trimmed;
 
     // Check if it's a list
     isTypedList =
         withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
     if (isTypedList) {
-      var listTypeStr =
+      String listTypeStr =
           withoutQuestion.substring(5, withoutQuestion.length - 1);
       listType = TypeDefinition(listTypeStr, package);
     }

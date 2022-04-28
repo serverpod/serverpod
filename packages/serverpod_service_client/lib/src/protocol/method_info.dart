@@ -26,7 +26,7 @@ class MethodInfo extends SerializableEntity {
   });
 
   MethodInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     endpoint = _data['endpoint']!;
     method = _data['method']!;
@@ -34,7 +34,7 @@ class MethodInfo extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'endpoint': endpoint,
       'method': method,

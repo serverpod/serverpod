@@ -33,7 +33,7 @@ class Database {
     int id, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
     return await conn.findById<T>(
       id,
       session: session,
@@ -55,7 +55,7 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.find<T>(
       where: where,
@@ -81,7 +81,7 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.findSingleRow<T>(
       where: where,
@@ -102,7 +102,7 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.count<T>(
       where: where,
@@ -118,7 +118,7 @@ class Database {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.update(
       row,
@@ -132,7 +132,7 @@ class Database {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     await conn.insert(
       row,
@@ -146,7 +146,7 @@ class Database {
     required Expression where,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.delete<T>(
       where: where,
@@ -160,7 +160,7 @@ class Database {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.deleteRow(
       row,
@@ -173,7 +173,7 @@ class Database {
   /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
   Future<void> storeFile(String storageId, String path, ByteData byteData,
       DateTime? expiration, bool verified) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.storeFile(storageId, path, byteData, expiration, verified,
         session: session);
@@ -186,7 +186,7 @@ class Database {
     String storageId,
     String path,
   ) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.retrieveFile(storageId, path, session: session);
   }
@@ -196,7 +196,7 @@ class Database {
     String storageId,
     String path,
   ) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return await conn.verifyFile(storageId, path, session: session);
   }
@@ -208,7 +208,7 @@ class Database {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
 
     return conn.query(
       query,
@@ -225,7 +225,7 @@ class Database {
     FutureOr<R> Function()? orElse,
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) async {
-    var conn = await databaseConnection;
+    DatabaseConnection conn = await databaseConnection;
     return await conn.transaction(
       transactionFunction,
       retryOptions: retryOptions,

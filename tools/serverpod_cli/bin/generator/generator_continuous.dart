@@ -14,7 +14,7 @@ void performGenerateContinuously(bool verbose) {
 }
 
 Future<void> _performGenerateClassesContinuously(bool verbose) async {
-  var watcherClasses = DirectoryWatcher(config.protocolSourcePath);
+  DirectoryWatcher watcherClasses = DirectoryWatcher(config.protocolSourcePath);
   await for (WatchEvent event in watcherClasses.events) {
     print('File changed: $event');
     switch (event.type) {
@@ -30,7 +30,7 @@ Future<void> _performGenerateClassesContinuously(bool verbose) async {
 }
 
 Future<void> _performGenereateProtocolContinuously(bool verbose) async {
-  var watcherEndpoints = DirectoryWatcher(config.endpointsSourcePath);
+  DirectoryWatcher watcherEndpoints = DirectoryWatcher(config.endpointsSourcePath);
   await for (WatchEvent event in watcherEndpoints.events) {
     print('File changed: $event');
     switch (event.type) {

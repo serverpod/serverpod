@@ -9,24 +9,24 @@ class LogManager {
   /// The [RuntimeSettings] the log manager retrieves its settings from.
   final RuntimeSettings runtimeSettings;
 
-  final Map<String, LogSettings> _endpointOverrides = {};
-  final Map<String, LogSettings> _methodOverrides = {};
+  final Map<String, LogSettings> _endpointOverrides = <String, LogSettings>{};
+  final Map<String, LogSettings> _methodOverrides = <String, LogSettings>{};
 
-  final List<SessionLogEntryCache> _openSessionLogs = [];
+  final List<SessionLogEntryCache> _openSessionLogs = <SessionLogEntryCache>[];
 
   int _nextTemporarySessionId = -1;
 
   /// Returns a new unique temporary session id. The id will be negative, and
   /// ids are only unique to this running instance.
   int nextTemporarySessionId() {
-    var id = _nextTemporarySessionId;
+    int id = _nextTemporarySessionId;
     _nextTemporarySessionId -= 1;
     return id;
   }
 
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(this.runtimeSettings) {
-    for (var override in runtimeSettings.logSettingsOverrides) {
+    for (LogSettingsOverride override in runtimeSettings.logSettingsOverrides) {
       if (override.method != null && override.endpoint != null) {
         _methodOverrides['${override.endpoint}.${override.method}'] =
             override.logSettings;
@@ -39,7 +39,7 @@ class LogManager {
   /// Gets the log settings for a [MethodCallSession].
   LogSettings _getLogSettingsForMethodCallSession(
       String endpoint, String method) {
-    var settings = _methodOverrides['$endpoint.$method'];
+    LogSettings? settings = _methodOverrides['$endpoint.$method'];
     if (settings != null) return settings;
 
     settings = _endpointOverrides[endpoint];
@@ -82,7 +82,7 @@ class LogManager {
   /// is created. Each call to this method should have a corresponding
   /// [finalizeSessionLog] call.
   SessionLogEntryCache initializeSessionLog(Session session) {
-    var logEntry = SessionLogEntryCache(session);
+    SessionLogEntryCache logEntry = SessionLogEntryCache(session);
     _openSessionLogs.add(logEntry);
     return logEntry;
   }
@@ -97,15 +97,16 @@ class LogManager {
     StackTrace? stackTrace,
   }) async {
     // Remove from open sessions
-    _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
+    _openSessionLogs.removeWhere(
+        (SessionLogEntryCache logEntry) => logEntry.session == session);
 
     // Check if we should log to database
     if (!logSession) return null;
 
     // Log session to database
-    var duration = session.duration;
-    var cachedEntry = session.sessionLogs;
-    var logSettings = getLogSettingsForSession(session);
+    Duration duration = session.duration;
+    SessionLogEntryCache cachedEntry = session.sessionLogs;
+    LogSettings logSettings = getLogSettingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
@@ -121,8 +122,8 @@ class LogManager {
       }
     }
 
-    var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
-    var isSlow = duration > Duration(microseconds: slowMicros) &&
+    int slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+    bool isSlow = duration > Duration(microseconds: slowMicros) &&
         session is! StreamingSession;
 
     if (logSettings.logAllSessions ||
@@ -130,7 +131,7 @@ class LogManager {
         logSettings.logFailedSessions && exception != null) {
       int? sessionLogId;
 
-      var sessionLogEntry = SessionLogEntry(
+      SessionLogEntry sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
         time: DateTime.now(),
         endpoint: _endpointForSession(session),
@@ -143,19 +144,19 @@ class LogManager {
         authenticatedUserId: authenticatedUserId,
       );
 
-      var tempSession = await session.serverpod.createSession();
+      InternalSession tempSession = await session.serverpod.createSession();
       try {
         // var dbConn = DatabaseConnection(databaseConfig);
         await tempSession.db.insert(sessionLogEntry);
 
         sessionLogId = sessionLogEntry.id!;
 
-        for (var logInfo in cachedEntry.logEntries) {
+        for (LogEntry logInfo in cachedEntry.logEntries) {
           await _log(logInfo, sessionLogId, logSettings, tempSession,
               session.serverpod.runMode);
         }
 
-        for (var queryInfo in cachedEntry.queries) {
+        for (QueryLogEntry queryInfo in cachedEntry.queries) {
           if (logSettings.logAllQueries ||
               logSettings.logSlowQueries &&
                   queryInfo.duration >
@@ -220,7 +221,7 @@ class LogManager {
 
   Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings,
       Session tempSession, String runMode) async {
-    var serverLogLevel = (logSettings.logLevel);
+    int serverLogLevel = (logSettings.logLevel);
 
     if (entry.logLevel >= serverLogLevel) {
       entry.sessionLogId = sessionLogId;
@@ -244,17 +245,17 @@ class LogManager {
   /// Returns a list of logs for all open sessions.
   List<SessionLogInfo> getOpenSessionLogs(
       int numEntries, SessionLogFilter? filter) {
-    var sessionLog = <SessionLogInfo>[];
+    List<SessionLogInfo> sessionLog = <SessionLogInfo>[];
 
-    var numFoundEntries = 0;
-    var i = 0;
+    int numFoundEntries = 0;
+    int i = 0;
     while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
-      var entry = _openSessionLogs[i];
+      SessionLogEntryCache entry = _openSessionLogs[i];
       i += 1;
 
       // Check filter (ignore slow and errors as session is still open)
       if (filter != null) {
-        var session = entry.session;
+        Session session = entry.session;
         if (session is MethodCallSession) {
           if (filter.endpoint != null &&
               filter.endpoint != '' &&
@@ -300,10 +301,10 @@ class SessionLogEntryCache {
   final Session session;
 
   /// Queries made during the session.
-  final List<QueryLogEntry> queries = [];
+  final List<QueryLogEntry> queries = <QueryLogEntry>[];
 
   /// Log entries made during the session.
-  final List<LogEntry> logEntries = [];
+  final List<LogEntry> logEntries = <LogEntry>[];
 
   /// Creates a new [SessionLogEntryCache].
   SessionLogEntryCache(this.session);

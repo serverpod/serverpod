@@ -12,7 +12,7 @@ class SourceFileWatcher {
   });
 
   Future<void> watch(bool verbose) async {
-    var watcherClasses = DirectoryWatcher(config.libSourcePath);
+    DirectoryWatcher watcherClasses = DirectoryWatcher(config.libSourcePath);
     await for (WatchEvent event in watcherClasses.events) {
       if (event.path.startsWith(config.generatedServerProtocolPath)) {
         continue;

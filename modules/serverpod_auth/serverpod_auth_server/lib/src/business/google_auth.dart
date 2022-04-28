@@ -6,16 +6,16 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:googleapis_auth/src/auth_http_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import '../../module.dart';
 
-const _configFilePath = 'config/google_client_secret.json';
+const String _configFilePath = 'config/google_client_secret.json';
 
 /// Convenience methods for handling authentication with Google and accessing
 /// Google's APIs.
 class GoogleAuth {
   /// The client secret loaded from `config/google_client_secret.json`, null
   /// if the client secrets failed to load.
-  static final clientSecret = _loadClientSecret();
+  static final GoogleClientSecret? clientSecret = _loadClientSecret();
 
   static GoogleClientSecret? _loadClientSecret() {
     try {
@@ -41,21 +41,23 @@ class GoogleAuth {
       'Google client secret from $_configFilePath is not loaded',
     );
 
-    var refreshTokenData = await GoogleRefreshToken.findSingleRow(
+    GoogleRefreshToken? refreshTokenData =
+        await GoogleRefreshToken.findSingleRow(
       session,
-      where: (t) => t.userId.equals(userId),
+      where: (GoogleRefreshTokenTable t) => t.userId.equals(userId),
     );
     if (refreshTokenData == null) {
       return null;
     }
 
-    var credentials = AccessCredentials.fromJson(
+    AccessCredentials credentials = AccessCredentials.fromJson(
       jsonDecode(refreshTokenData.refreshToken),
     );
 
-    var client = http.Client();
+    http.Client client = http.Client();
 
-    var clientId = ClientId(clientSecret!.clientId, clientSecret!.clientSecret);
+    ClientId clientId =
+        ClientId(clientSecret!.clientId, clientSecret!.clientSecret);
 
     return AutoRefreshingClient(
       client,
@@ -84,13 +86,13 @@ class GoogleClientSecret {
 
   /// Loads the google client secrets from the provided path.
   GoogleClientSecret._(this._path) {
-    var file = File(_path);
-    var jsonData = file.readAsStringSync();
-    var data = jsonDecode(jsonData);
+    File file = File(_path);
+    String jsonData = file.readAsStringSync();
+    Map<String, dynamic> data = jsonDecode(jsonData);
 
-    Map web = data['web'];
+    Map<String, dynamic> web = data['web'];
     clientId = web['client_id'];
     clientSecret = web['client_secret'];
-    redirectUris = (web['redirect_uris'] as List).cast<String>();
+    redirectUris = (web['redirect_uris'] as List<String>).cast<String>();
   }
 }

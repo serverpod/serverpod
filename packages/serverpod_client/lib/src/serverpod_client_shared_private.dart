@@ -6,10 +6,10 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// Encodes arguments for serialization.
 String formatArgs(
     Map<String, dynamic> args, String? authorizationKey, String method) {
-  var formattedArgs = <String, String?>{};
+  Map<String, String?> formattedArgs = <String, String?>{};
 
-  for (var argName in args.keys) {
-    var value = args[argName];
+  for (String argName in args.keys) {
+    dynamic value = args[argName];
     if (value != null) {
       if (value is ByteData) {
         formattedArgs[argName] = value.base64encodedString();

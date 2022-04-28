@@ -10,13 +10,13 @@ extension ProcessKillerExtension on Process {
 
     killPid ??= this.pid;
 
-    var pgrepResult = Process.runSync('pgrep', ['-P', '$killPid']);
+    ProcessResult pgrepResult = Process.runSync('pgrep', <String>['-P', '$killPid']);
 
-    var childPidsString = (pgrepResult.stdout as String).trim();
+    String childPidsString = (pgrepResult.stdout as String).trim();
     if (childPidsString.isNotEmpty) {
-      var childPids = childPidsString.split('\n');
-      for (var i = childPids.length - 1; i >= 0; i--) {
-        var childPid = int.parse(childPids[i]);
+      List<String> childPids = childPidsString.split('\n');
+      for (int i = childPids.length - 1; i >= 0; i--) {
+        int childPid = int.parse(childPids[i]);
         await killAll(childPid);
       }
     }
@@ -25,7 +25,7 @@ extension ProcessKillerExtension on Process {
   }
 
   static bool isProcessAlive(int pid) {
-    var res = Process.runSync('kill', ['-0', '$pid']);
+    ProcessResult res = Process.runSync('kill', <String>['-0', '$pid']);
     return res.exitCode == 0;
   }
 }

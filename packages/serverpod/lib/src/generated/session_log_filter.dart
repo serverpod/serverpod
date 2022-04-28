@@ -34,7 +34,7 @@ class SessionLogFilter extends SerializableEntity {
   });
 
   SessionLogFilter.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     endpoint = _data['endpoint'];
     method = _data['method'];
@@ -46,7 +46,7 @@ class SessionLogFilter extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'endpoint': endpoint,
       'method': method,
@@ -59,7 +59,7 @@ class SessionLogFilter extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'endpoint': endpoint,
       'method': method,

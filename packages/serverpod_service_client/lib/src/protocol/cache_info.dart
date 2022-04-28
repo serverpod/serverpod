@@ -28,7 +28,7 @@ class CacheInfo extends SerializableEntity {
   });
 
   CacheInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     numEntries = _data['numEntries']!;
     maxEntries = _data['maxEntries']!;
@@ -37,7 +37,7 @@ class CacheInfo extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'numEntries': numEntries,
       'maxEntries': maxEntries,

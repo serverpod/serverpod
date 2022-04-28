@@ -13,40 +13,40 @@ Future<void> performGenerateProtocol(
 }) async {
   // Analyze the endpoint classes
   if (verbose) print('Analyzing protocol');
-  var definition = await performAnalysis(
+  ProtocolDefinition definition = await performAnalysis(
     verbose,
     requestNewAnalyzer: requestNewAnalyzer,
   );
-  var generator = ProtocolGeneratorDart(protocolDefinition: definition);
+  ProtocolGeneratorDart generator = ProtocolGeneratorDart(protocolDefinition: definition);
 
   // Generate code for the client
   if (verbose) print('Generating client endpoints');
-  var protocol = generator.generateClientEndpointCalls();
+  String protocol = generator.generateClientEndpointCalls();
   if (verbose) print(protocol);
 
-  var filePath = config.generatedClientProtocolPath + '/client.dart';
+  String filePath = config.generatedClientProtocolPath + '/client.dart';
   if (verbose) print('Writing: $filePath');
-  var outFile = File(filePath);
+  File outFile = File(filePath);
   outFile.createSync();
   outFile.writeAsStringSync(protocol);
 
   // Generate server mappings with endpoint connectors
   if (verbose) print('Generating server endpoint dispatch');
-  var endpointDispatch = generator.generateServerEndpointDispatch();
+  String endpointDispatch = generator.generateServerEndpointDispatch();
   if (verbose) print(endpointDispatch);
 
-  var endpointsFilePath =
+  String endpointsFilePath =
       config.generatedServerProtocolPath + '/endpoints.dart';
   if (verbose) print('Writing: $endpointsFilePath');
-  var endpointsFile = File(endpointsFilePath);
+  File endpointsFile = File(endpointsFilePath);
   endpointsFile.createSync();
   endpointsFile.writeAsStringSync(endpointDispatch);
 
   // Write endpoint definition
-  var endpointDef = generator.generateEndpointDefinition();
-  var endpointDefPath = 'generated/protocol.yaml';
+  String endpointDef = generator.generateEndpointDefinition();
+  String endpointDefPath = 'generated/protocol.yaml';
   if (verbose) print('Writing: $endpointDefPath');
-  var endpointsDefFile = File(endpointDefPath);
+  File endpointsDefFile = File(endpointDefPath);
   endpointsDefFile.createSync();
   endpointsDefFile.writeAsStringSync(endpointDef);
 }
@@ -57,9 +57,9 @@ abstract class ProtocolGenerator {
   ProtocolGenerator({required this.protocolDefinition});
 
   String generateServerEndpointDispatch() {
-    var hasModules = config.modules.isNotEmpty;
+    bool hasModules = config.modules.isNotEmpty;
 
-    var out = '';
+    String out = '';
 
     // Header
     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
@@ -75,7 +75,7 @@ abstract class ProtocolGenerator {
     out += 'import \'package:serverpod/serverpod.dart\';\n';
     out += '\n';
     if (hasModules) {
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out +=
             'import \'package:${module.serverPackage}/module.dart\' as ${module.name};\n';
       }
@@ -83,8 +83,8 @@ abstract class ProtocolGenerator {
     }
     out += 'import \'protocol.dart\';\n';
     out += '\n';
-    for (var importPath in protocolDefinition.filePaths) {
-      var fileName = '../endpoints/' + p.basename(importPath);
+    for (String importPath in protocolDefinition.filePaths) {
+      String fileName = '../endpoints/' + p.basename(importPath);
       out += 'import \'$fileName\';\n';
     }
     out += '\n';
@@ -97,27 +97,27 @@ abstract class ProtocolGenerator {
     out += '  void initializeEndpoints(Server server) {\n';
 
     // Endpoints lookup map
-    var moduleName =
+    String moduleName =
         config.type == PackageType.server ? 'null' : '\'${config.name}\'';
     out += '    var endpoints = <String, Endpoint>{\n';
-    for (var endpoint in protocolDefinition.endpoints) {
+    for (EndpointDefinition endpoint in protocolDefinition.endpoints) {
       out +=
           '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\', $moduleName),\n';
     }
     out += '    };\n';
 
     // Connectors
-    for (var endpoint in protocolDefinition.endpoints) {
+    for (EndpointDefinition endpoint in protocolDefinition.endpoints) {
       out += '\n';
       out += '    connectors[\'${endpoint.name}\'] = EndpointConnector(\n';
       out += '      name: \'${endpoint.name}\',\n';
       out += '      endpoint: endpoints[\'${endpoint.name}\']!,\n';
       out += '      methodConnectors: {\n';
-      for (var method in endpoint.methods) {
+      for (MethodDefinition method in endpoint.methods) {
         out += '        \'${method.name}\': MethodConnector(\n';
         out += '          name: \'${method.name}\',\n';
-        out += '          params: {\n';
-        for (var param in method.parameters) {
+        out += '          params: <String, ParameterDescription>{\n';
+        for (ParameterDefinition param in method.parameters) {
           out +=
               '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typePrefix}${param.type.typeNonNullable}, nullable: ${param.type.nullable}),\n';
         }
@@ -126,10 +126,10 @@ abstract class ProtocolGenerator {
             '          call: (Session session, Map<String, dynamic> params) async {\n';
         out +=
             '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
-        for (var param in method.parameters) {
+        for (ParameterDefinition param in method.parameters) {
           out += 'params[\'${param.name}\'],';
         }
-        for (var param in method.parametersPositional) {
+        for (ParameterDefinition param in method.parametersPositional) {
           out += 'params[\'${param.name}\'],';
         }
         out += ');\n';
@@ -143,7 +143,7 @@ abstract class ProtocolGenerator {
     // Hook up modules
     if (hasModules) {
       out += '\n';
-      for (var module in config.modules) {
+      for (ModuleConfig module in config.modules) {
         out +=
             '    modules[\'${module.name}\'] = ${module.name}.Endpoints()..initializeEndpoints(server);\n';
       }
@@ -156,7 +156,7 @@ abstract class ProtocolGenerator {
     out += '\n';
     out += '  @override\n';
     out += '  void registerModules(Serverpod pod) {\n';
-    for (var module in config.modules) {
+    for (ModuleConfig module in config.modules) {
       out +=
           '    pod.registerModule(${module.name}.Protocol(), \'${module.nickname}\');\n';
     }
@@ -175,10 +175,10 @@ abstract class ProtocolGenerator {
   String generateEndpointDefinition() {
     // TODO: Also output parameter and return type data
 
-    var out = '';
-    for (var endpoint in protocolDefinition.endpoints) {
+    String out = '';
+    for (EndpointDefinition endpoint in protocolDefinition.endpoints) {
       out += '${endpoint.name}:\n';
-      for (var method in endpoint.methods) {
+      for (MethodDefinition method in endpoint.methods) {
         out += '  - ${method.name}:\n';
       }
     }

@@ -9,14 +9,14 @@ import '../util/print.dart';
 import 'copier.dart';
 import 'port_checker.dart';
 
-const _defaultPorts = <int>[8080, 8081, 8090, 8091];
+const List<int> _defaultPorts = <int>[8080, 8081, 8090, 8091];
 
 Future<void> performCreate(
     String name, bool verbose, String template, bool force) async {
   // Check we are set to create a new project
-  var portsAvailable = true;
-  for (var port in _defaultPorts) {
-    var available = await isNetworkPortAvailable(port);
+  bool portsAvailable = true;
+  for (int port in _defaultPorts) {
+    bool available = await isNetworkPortAvailable(port);
     if (!available) {
       portsAvailable = false;
       break;
@@ -24,15 +24,15 @@ Future<void> performCreate(
   }
 
   // Check that docker is installed
-  var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
+  bool dockerConfigured = await CommandLineTools.existsCommand('docker') &&
       await CommandLineTools.isDockerRunning();
 
   if (!portsAvailable || !dockerConfigured) {
-    var strIssue =
+    String strIssue =
         'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create".';
-    var strIssuePorts =
+    String strIssuePorts =
         'By default your server will run on port 8080 and 8081 and Postgres and Redis will run on 8090 and 8091. One or more of these ports are currently in use. The most likely reason is that you have another Serverpod project running, but it can also be another service. You can either stop the other service and run this command again, or you can create the project with the -f flag added and manually configure the ports in the config/development.yaml and docker-compose.yaml files.';
-    var strIssueDocker =
+    String strIssueDocker =
         'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the -f flag added.';
 
     printww(strIssue);
@@ -50,10 +50,11 @@ Future<void> performCreate(
     }
   }
 
-  var dbPassword = generateRandomString();
+  String dbPassword = generateRandomString();
 
-  var pathSeparator = Platform.pathSeparator;
-  var projectDir = Directory(Directory.current.path + pathSeparator + name);
+  String pathSeparator = Platform.pathSeparator;
+  Directory projectDir =
+      Directory(Directory.current.path + pathSeparator + name);
   if (projectDir.existsSync()) {
     print('Project $name already exists.');
     return;
@@ -64,25 +65,27 @@ Future<void> performCreate(
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
-  var serverDir = Directory(projectDir.path + pathSeparator + name + '_server');
+  Directory serverDir =
+      Directory(projectDir.path + pathSeparator + name + '_server');
   if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
-  var clientDir = Directory(projectDir.path + pathSeparator + name + '_client');
+  Directory clientDir =
+      Directory(projectDir.path + pathSeparator + name + '_client');
   if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
-    var flutterDir =
+    Directory flutterDir =
         Directory(projectDir.path + pathSeparator + name + '_flutter');
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
     // Copy server files
-    var copier = Copier(
+    Copier copier = Copier(
       srcDir: Directory(
           '${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
       dstDir: serverDir,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'PROJECTNAME',
           replacement: name,
@@ -116,7 +119,7 @@ Future<void> performCreate(
           replacement: generateRandomString(),
         ),
       ],
-      fileNameReplacements: [
+      fileNameReplacements: <Replacement>[
         Replacement(
           slotName: 'PROJECTNAME',
           replacement: name,
@@ -126,8 +129,8 @@ Future<void> performCreate(
           replacement: '.gitignore',
         ),
       ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
+      removePrefixes: <String>['path'],
+      ignoreFileNames: <String>['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();
@@ -137,7 +140,7 @@ Future<void> performCreate(
       srcDir: Directory(
           '${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
       dstDir: clientDir,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'PROJECTNAME',
           replacement: name,
@@ -151,7 +154,7 @@ Future<void> performCreate(
           replacement: templateVersion,
         ),
       ],
-      fileNameReplacements: [
+      fileNameReplacements: <Replacement>[
         Replacement(
           slotName: 'PROJECTNAME',
           replacement: name,
@@ -161,8 +164,8 @@ Future<void> performCreate(
           replacement: '.gitignore',
         ),
       ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
+      removePrefixes: <String>['path'],
+      ignoreFileNames: <String>['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();
@@ -172,7 +175,7 @@ Future<void> performCreate(
       srcDir: Directory(
           '${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
       dstDir: flutterDir,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'PROJECTNAME',
           replacement: name,
@@ -186,7 +189,7 @@ Future<void> performCreate(
           replacement: templateVersion,
         ),
       ],
-      fileNameReplacements: [
+      fileNameReplacements: <Replacement>[
         Replacement(
           slotName: 'PROJECTNAME',
           replacement: name,
@@ -196,8 +199,8 @@ Future<void> performCreate(
           replacement: '.gitignore',
         ),
       ],
-      removePrefixes: [],
-      ignoreFileNames: [
+      removePrefixes: <String>[],
+      ignoreFileNames: <String>[
         'pubspec.lock',
         'ios',
         'android',
@@ -216,11 +219,11 @@ Future<void> performCreate(
     CommandLineTools.flutterCreate(flutterDir);
   } else if (template == 'module') {
     // Copy server files
-    var copier = Copier(
+    Copier copier = Copier(
       srcDir: Directory(
           '${resourceManager.templateDirectory.path}/MODULENAME_server'),
       dstDir: serverDir,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'MODULENAME',
           replacement: name,
@@ -234,7 +237,7 @@ Future<void> performCreate(
           replacement: templateVersion,
         ),
       ],
-      fileNameReplacements: [
+      fileNameReplacements: <Replacement>[
         Replacement(
           slotName: 'MODULENAME',
           replacement: name,
@@ -244,8 +247,8 @@ Future<void> performCreate(
           replacement: '.gitignore',
         ),
       ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
+      removePrefixes: <String>['path'],
+      ignoreFileNames: <String>['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();
@@ -255,7 +258,7 @@ Future<void> performCreate(
       srcDir: Directory(
           '${resourceManager.templateDirectory.path}/MODULENAME_client'),
       dstDir: clientDir,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'MODULENAME',
           replacement: name,
@@ -269,7 +272,7 @@ Future<void> performCreate(
           replacement: templateVersion,
         ),
       ],
-      fileNameReplacements: [
+      fileNameReplacements: <Replacement>[
         Replacement(
           slotName: 'MODULENAME',
           replacement: name,
@@ -279,8 +282,8 @@ Future<void> performCreate(
           replacement: '.gitignore',
         ),
       ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
+      removePrefixes: <String>['path'],
+      ignoreFileNames: <String>['pubspec.lock'],
       verbose: verbose,
     );
     copier.copyFiles();

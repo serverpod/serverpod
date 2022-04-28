@@ -26,7 +26,7 @@ class ChatJoinChannel extends SerializableEntity {
   });
 
   ChatJoinChannel.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
     userName = _data['userName'];
@@ -34,7 +34,7 @@ class ChatJoinChannel extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'userName': userName,
@@ -43,7 +43,7 @@ class ChatJoinChannel extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'userName': userName,

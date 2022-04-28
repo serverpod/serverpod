@@ -8,7 +8,7 @@ abstract class AbstractWidget {}
 class Widget extends AbstractWidget {
   final String name;
   late final Template template;
-  Map<String, dynamic> values = {};
+  Map<String, dynamic> values = <String, dynamic>{};
 
   Widget({
     required this.name,
@@ -31,8 +31,8 @@ class WidgetList extends AbstractWidget {
 
   @override
   String toString() {
-    var rendered = <String>[];
-    for (var widget in widgets) {
+    List<String> rendered = <String>[];
+    for (AbstractWidget widget in widgets) {
       rendered.add(widget.toString());
     }
     return rendered.join('\n');

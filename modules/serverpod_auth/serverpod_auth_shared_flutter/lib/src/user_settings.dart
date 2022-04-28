@@ -97,7 +97,7 @@ class _CompactSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         UserImageButton(
           sessionManager: sessionManager,
         ),
@@ -107,7 +107,7 @@ class _CompactSettings extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 Text(
                   userName,
                   maxLines: 1,
@@ -154,7 +154,7 @@ class _LargeSettings extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         UserImageButton(
           sessionManager: sessionManager,
           compact: false,

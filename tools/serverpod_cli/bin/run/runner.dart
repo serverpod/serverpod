@@ -17,26 +17,26 @@ import 'file_watcher.dart';
 void performRun(bool verbose, bool runDocker) async {
   if (!config.load()) return;
 
-  var configInfo = ConfigInfo('development');
+  ConfigInfo configInfo = ConfigInfo('development');
 
   // Check if all required ports are available and Docker is running.
-  var dockerConfigured = (await CommandLineTools.existsCommand('docker') &&
+  bool dockerConfigured = (await CommandLineTools.existsCommand('docker') &&
           await CommandLineTools.isDockerRunning()) ||
       !runDocker;
 
-  var mainPortAvailable =
+  bool mainPortAvailable =
       await isNetworkPortAvailable(configInfo.config.publicPort);
-  var servicePortAvailable =
-      await await isNetworkPortAvailable(configInfo.config.servicePort);
+  bool servicePortAvailable =
+      await isNetworkPortAvailable(configInfo.config.servicePort);
 
   if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
-    var strIssue =
+    String strIssue =
         'There are some issues with your setup that will prevent your Serverpod project from launching.';
-    var strIssueDocker =
+    String strIssueDocker =
         'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the --no-run-docker flag added.';
-    var strIssueMainPort =
+    String strIssueMainPort =
         'The public api port (${configInfo.config.publicPort}) is occupied by another application or you are running another instance of Serverpod.';
-    var strIssueServicePort =
+    String strIssueServicePort =
         'The service insights port (${configInfo.config.servicePort}) is occupied by another application or you are running another instance of Serverpod.';
 
     printww(strIssue);
@@ -71,24 +71,24 @@ void performRun(bool verbose, bool runDocker) async {
   performDartFormat(verbose);
 
   // Analyze the code
-  var errors = await performAnalysisGetSevereErrors();
+  List<String> errors = await performAnalysisGetSevereErrors();
   if (errors.isNotEmpty) {
-    for (var error in errors) {
+    for (String error in errors) {
       print(error);
     }
     return;
   }
 
   // Generate continuously and hot reload.
-  var serverRunner = _ServerRunner();
-  var dockerRunner = _DockerRunner();
-  var generatingAndReloading = false;
+  _ServerRunner serverRunner = _ServerRunner();
+  _DockerRunner dockerRunner = _DockerRunner();
+  bool generatingAndReloading = false;
 
   bool protocolIsDirty = false;
   bool libIsDirty = false;
 
-  var watcher = SourceFileWatcher(
-    onChangedSourceFile: (changedPath, isProtocol) async {
+  SourceFileWatcher watcher = SourceFileWatcher(
+    onChangedSourceFile: (String changedPath, bool isProtocol) async {
       protocolIsDirty = protocolIsDirty || isProtocol;
       libIsDirty = true;
 
@@ -98,7 +98,7 @@ void performRun(bool verbose, bool runDocker) async {
         // at the same time.
         Timer(const Duration(milliseconds: 500), () async {
           if (libIsDirty && !generatingAndReloading) {
-            var protocolWasDirty = protocolIsDirty;
+            bool protocolWasDirty = protocolIsDirty;
 
             generatingAndReloading = true;
             protocolIsDirty = false;
@@ -114,10 +114,10 @@ void performRun(bool verbose, bool runDocker) async {
             generatingAndReloading = false;
           }
         });
-        await Future.delayed(const Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(seconds: 1));
       }
     },
-    onRemovedProtocolFile: (removedPath) async {
+    onRemovedProtocolFile: (String removedPath) async {
       // TODO: remove corresponding file
     },
   );
@@ -195,17 +195,17 @@ Future<void> _generateAndReload(
   try {
     // TODO: Implement real hot reload
     // Check if server code is valid before restarting.
-    var errors = await performAnalysisGetSevereErrors();
+    List<String> errors = await performAnalysisGetSevereErrors();
 
     if (errors.isNotEmpty) {
       print('Server restart failed.');
-      for (var error in errors) {
+      for (String error in errors) {
         print(error);
       }
     } else {
       print('Stopping the server.');
       await runner.stop();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(const Duration(milliseconds: 500));
 
       // Start a new instance of the server
       print('Restarting the server.');
@@ -224,7 +224,7 @@ class _ServerRunner {
     assert(_process == null);
     _process = await Process.start(
       'dart',
-      ['bin/main.dart'],
+      <String>['bin/main.dart'],
       mode: ProcessStartMode.inheritStdio,
       runInShell: true,
     );
@@ -248,7 +248,7 @@ class _DockerRunner {
   Future<void> start(bool verbose) async {
     await Process.start(
       'docker-compose',
-      ['up', '--build'],
+      <String>['up', '--build'],
     );
 
     // TODO: Check if it is possible to also pipe docker output to stdout.

@@ -1,4 +1,4 @@
-import 'package:serverpod/src/cache/local_cache.dart';
+import 'local_cache.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Abstract super class for the [LocalCache] and [DistributedCache] classes.

@@ -28,7 +28,7 @@ class CachesInfo extends SerializableEntity {
   });
 
   CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     local = CacheInfo.fromSerialization(_data['local']);
     localPrio = CacheInfo.fromSerialization(_data['localPrio']);
@@ -37,7 +37,7 @@ class CachesInfo extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'local': local.serialize(),
       'localPrio': localPrio.serialize(),
@@ -47,7 +47,7 @@ class CachesInfo extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'local': local.serialize(),
       'localPrio': localPrio.serialize(),

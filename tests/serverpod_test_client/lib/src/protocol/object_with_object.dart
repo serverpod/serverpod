@@ -41,24 +41,26 @@ class ObjectWithObject extends SerializableEntity {
         ? SimpleData?.fromSerialization(_data['nullableData'])
         : null;
     dataList = _data['dataList']!
-        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        .map<SimpleData>(
+            (Map<String, dynamic> a) => SimpleData.fromSerialization(a))
         ?.toList();
     nullableDataList = _data['nullableDataList']
-        ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.map<SimpleData>(
+            (Map<String, dynamic> a) => SimpleData.fromSerialization(a))
         ?.toList();
     listWithNullableData = _data['listWithNullableData']!
-        .map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        .map<SimpleData?>((Map<String, dynamic>? a) =>
+            a != null ? SimpleData?.fromSerialization(a) : null)
         ?.toList();
     nullableListWithNullableData = _data['nullableListWithNullableData']
-        ?.map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        ?.map<SimpleData?>((Map<String, dynamic>? a) =>
+            a != null ? SimpleData?.fromSerialization(a) : null)
         ?.toList();
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),

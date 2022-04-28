@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
@@ -20,23 +21,23 @@ class RouteStaticDirectory extends Route {
   Future<bool> handleCall(Session session, HttpRequest request) async {
     session as MethodCallSession;
 
-    var path = Uri.decodeFull(session.uri.path);
+    String path = Uri.decodeFull(session.uri.path);
 
     try {
       // Remove version control string
-      var dir = serverDirectory;
-      var base = p.basenameWithoutExtension(path);
-      var extension = p.extension(path);
+      String dir = serverDirectory;
+      String base = p.basenameWithoutExtension(path);
+      String extension = p.extension(path);
 
-      var baseParts = base.split('@');
+      List<String> baseParts = base.split('@');
       if (baseParts.last.startsWith('v')) {
         baseParts.removeLast();
       }
       base = baseParts.join('@');
 
       if (basePath != null && path.startsWith(basePath!)) {
-        var requestDir = p.dirname(path);
-        var middlePath = requestDir.substring(basePath!.length);
+        String requestDir = p.dirname(path);
+        String middlePath = requestDir.substring(basePath!.length);
 
         if (middlePath.isNotEmpty) {
           path = dir + '/' + middlePath + '/' + base + extension;
@@ -73,10 +74,10 @@ class RouteStaticDirectory extends Route {
       // Enforce strong cache control
       request.response.headers.set('Cache-Control', 'max-age=31536000');
 
-      var filePath = path.startsWith('/') ? path.substring(1) : path;
+      String filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
 
-      var fileContents = await File(filePath).readAsBytes();
+      Uint8List fileContents = await File(filePath).readAsBytes();
       request.response.add(fileContents);
       return true;
     } catch (e) {

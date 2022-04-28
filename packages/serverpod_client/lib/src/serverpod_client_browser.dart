@@ -47,11 +47,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
     String? data;
     try {
-      var body =
+      String body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
-      var url = Uri.parse('$host$endpoint');
+      Uri url = Uri.parse('$host$endpoint');
 
-      var response = await _httpClient.post(
+      http.Response response = await _httpClient.post(
         url,
         body: body,
       );
@@ -65,7 +65,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       return parseData(data, returnTypeName, serializationManager);
     } catch (e, stackTrace) {
       if (e is http.ClientException) {
-        var message = data ?? 'Unknown server response code. ($e)';
+        String message = data ?? 'Unknown server response code. ($e)';
         throw (ServerpodClientException(message, -1));
       }
 

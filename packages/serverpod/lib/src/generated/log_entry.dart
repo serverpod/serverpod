@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class LogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_log';
 
-  static final t = LogEntryTable();
+  static final LogEntryTable t = LogEntryTable();
 
   @override
   int? id;
@@ -44,7 +44,7 @@ class LogEntry extends TableRow {
   });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     sessionLogId = _data['sessionLogId']!;
     reference = _data['reference'];
@@ -58,7 +58,7 @@ class LogEntry extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'sessionLogId': sessionLogId,
       'reference': reference,
@@ -73,7 +73,7 @@ class LogEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'sessionLogId': sessionLogId,
       'reference': reference,
@@ -88,7 +88,7 @@ class LogEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'sessionLogId': sessionLogId,
       'reference': reference,
@@ -102,7 +102,7 @@ class LogEntry extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -246,18 +246,18 @@ class LogEntryTable extends Table {
 
   @override
   String tableName = 'serverpod_log';
-  final id = ColumnInt('id');
-  final sessionLogId = ColumnInt('sessionLogId');
-  final reference = ColumnString('reference');
-  final serverId = ColumnInt('serverId');
-  final time = ColumnDateTime('time');
-  final logLevel = ColumnInt('logLevel');
-  final message = ColumnString('message');
-  final error = ColumnString('error');
-  final stackTrace = ColumnString('stackTrace');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt sessionLogId = ColumnInt('sessionLogId');
+  final ColumnString reference = ColumnString('reference');
+  final ColumnInt serverId = ColumnInt('serverId');
+  final ColumnDateTime time = ColumnDateTime('time');
+  final ColumnInt logLevel = ColumnInt('logLevel');
+  final ColumnString message = ColumnString('message');
+  final ColumnString error = ColumnString('error');
+  final ColumnString stackTrace = ColumnString('stackTrace');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         sessionLogId,
         reference,

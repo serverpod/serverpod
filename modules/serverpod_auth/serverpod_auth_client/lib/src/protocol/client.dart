@@ -18,8 +18,8 @@ class _EndpointAdmin extends EndpointRef {
   Future<UserInfo?> getUserInfo(
     int userId,
   ) async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.admin', 'getUserInfo', 'UserInfo', {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.admin', 'getUserInfo', 'UserInfo', <String, dynamic>{
       'userId': userId,
     });
   }
@@ -34,8 +34,8 @@ class _EndpointApple extends EndpointRef {
   Future<AuthenticationResponse> authenticate(
     AppleAuthInfo authInfo,
   ) async {
-    return await caller.callServerEndpoint(
-        'serverpod_auth.apple', 'authenticate', 'AuthenticationResponse', {
+    return await caller.callServerEndpoint('serverpod_auth.apple',
+        'authenticate', 'AuthenticationResponse', <String, dynamic>{
       'authInfo': authInfo,
     });
   }
@@ -51,8 +51,8 @@ class _EndpointEmail extends EndpointRef {
     String email,
     String password,
   ) async {
-    return await caller.callServerEndpoint(
-        'serverpod_auth.email', 'authenticate', 'AuthenticationResponse', {
+    return await caller.callServerEndpoint('serverpod_auth.email',
+        'authenticate', 'AuthenticationResponse', <String, dynamic>{
       'email': email,
       'password': password,
     });
@@ -62,8 +62,8 @@ class _EndpointEmail extends EndpointRef {
     String oldPassword,
     String newPassword,
   ) async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.email', 'changePassword', 'bool', {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.email', 'changePassword', 'bool', <String, dynamic>{
       'oldPassword': oldPassword,
       'newPassword': newPassword,
     });
@@ -72,8 +72,8 @@ class _EndpointEmail extends EndpointRef {
   Future<bool> initiatePasswordReset(
     String email,
   ) async {
-    return await caller.callServerEndpoint(
-        'serverpod_auth.email', 'initiatePasswordReset', 'bool', {
+    return await caller.callServerEndpoint('serverpod_auth.email',
+        'initiatePasswordReset', 'bool', <String, dynamic>{
       'email': email,
     });
   }
@@ -82,7 +82,7 @@ class _EndpointEmail extends EndpointRef {
     String verificationCode,
   ) async {
     return await caller.callServerEndpoint('serverpod_auth.email',
-        'verifyEmailPasswordReset', 'EmailPasswordReset', {
+        'verifyEmailPasswordReset', 'EmailPasswordReset', <String, dynamic>{
       'verificationCode': verificationCode,
     });
   }
@@ -91,8 +91,8 @@ class _EndpointEmail extends EndpointRef {
     String verificationCode,
     String password,
   ) async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.email', 'resetPassword', 'bool', {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.email', 'resetPassword', 'bool', <String, dynamic>{
       'verificationCode': verificationCode,
       'password': password,
     });
@@ -103,8 +103,8 @@ class _EndpointEmail extends EndpointRef {
     String email,
     String password,
   ) async {
-    return await caller.callServerEndpoint(
-        'serverpod_auth.email', 'createAccountRequest', 'bool', {
+    return await caller.callServerEndpoint('serverpod_auth.email',
+        'createAccountRequest', 'bool', <String, dynamic>{
       'userName': userName,
       'email': email,
       'password': password,
@@ -116,7 +116,7 @@ class _EndpointEmail extends EndpointRef {
     String verificationCode,
   ) async {
     return await caller.callServerEndpoint(
-        'serverpod_auth.email', 'createAccount', 'UserInfo', {
+        'serverpod_auth.email', 'createAccount', 'UserInfo', <String, dynamic>{
       'email': email,
       'verificationCode': verificationCode,
     });
@@ -133,8 +133,10 @@ class _EndpointGoogle extends EndpointRef {
     String authenticationCode,
     String? redirectUri,
   ) async {
-    return await caller.callServerEndpoint('serverpod_auth.google',
-        'authenticateWithServerAuthCode', 'AuthenticationResponse', {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.google',
+        'authenticateWithServerAuthCode',
+        'AuthenticationResponse', <String, dynamic>{
       'authenticationCode': authenticationCode,
       'redirectUri': redirectUri,
     });
@@ -144,7 +146,7 @@ class _EndpointGoogle extends EndpointRef {
     String idToken,
   ) async {
     return await caller.callServerEndpoint('serverpod_auth.google',
-        'authenticateWithIdToken', 'AuthenticationResponse', {
+        'authenticateWithIdToken', 'AuthenticationResponse', <String, dynamic>{
       'idToken': idToken,
     });
   }
@@ -157,23 +159,23 @@ class _EndpointStatus extends EndpointRef {
   _EndpointStatus(EndpointCaller caller) : super(caller);
 
   Future<bool> isSignedIn() async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.status', 'isSignedIn', 'bool', {});
+    return await caller.callServerEndpoint(
+        'serverpod_auth.status', 'isSignedIn', 'bool', <String, dynamic>{});
   }
 
   Future<void> signOut() async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.status', 'signOut', 'void', {});
+    return await caller.callServerEndpoint(
+        'serverpod_auth.status', 'signOut', 'void', <String, dynamic>{});
   }
 
   Future<UserInfo?> getUserInfo() async {
-    return await caller.callServerEndpoint(
-        'serverpod_auth.status', 'getUserInfo', 'UserInfo', {});
+    return await caller.callServerEndpoint('serverpod_auth.status',
+        'getUserInfo', 'UserInfo', <String, dynamic>{});
   }
 
   Future<UserSettingsConfig> getUserSettingsConfig() async {
     return await caller.callServerEndpoint('serverpod_auth.status',
-        'getUserSettingsConfig', 'UserSettingsConfig', {});
+        'getUserSettingsConfig', 'UserSettingsConfig', <String, dynamic>{});
   }
 }
 
@@ -185,14 +187,14 @@ class _EndpointUser extends EndpointRef {
 
   Future<bool> removeUserImage() async {
     return await caller.callServerEndpoint(
-        'serverpod_auth.user', 'removeUserImage', 'bool', {});
+        'serverpod_auth.user', 'removeUserImage', 'bool', <String, dynamic>{});
   }
 
   Future<bool> setUserImage(
     typed_data.ByteData image,
   ) async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.user', 'setUserImage', 'bool', {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.user', 'setUserImage', 'bool', <String, dynamic>{
       'image': image,
     });
   }
@@ -200,8 +202,8 @@ class _EndpointUser extends EndpointRef {
   Future<bool> changeUserName(
     String userName,
   ) async {
-    return await caller
-        .callServerEndpoint('serverpod_auth.user', 'changeUserName', 'bool', {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.user', 'changeUserName', 'bool', <String, dynamic>{
       'userName': userName,
     });
   }
@@ -225,7 +227,7 @@ class Caller extends ModuleEndpointCaller {
   }
 
   @override
-  Map<String, EndpointRef> get endpointRefLookup => {
+  Map<String, EndpointRef> get endpointRefLookup => <String, EndpointRef>{
         'serverpod_auth.admin': admin,
         'serverpod_auth.apple': apple,
         'serverpod_auth.email': email,

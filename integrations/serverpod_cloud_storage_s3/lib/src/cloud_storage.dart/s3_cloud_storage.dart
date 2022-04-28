@@ -67,6 +67,7 @@ class S3CloudStorage extends CloudStorage {
     if (response.statusCode == 200) {
       return ByteData.view(response.bodyBytes.buffer);
     }
+    return null;
   }
 
   @override
@@ -77,6 +78,7 @@ class S3CloudStorage extends CloudStorage {
     if (await fileExists(session: session, path: path)) {
       return Uri.parse('https://$publicHost/$path');
     }
+    return null;
   }
 
   @override

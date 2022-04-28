@@ -60,7 +60,7 @@ export 'client.dart';
 class Protocol extends SerializationManager {
   static final Protocol instance = Protocol();
 
-  final Map<String, constructor> _constructors = {};
+  final Map<String, constructor> _constructors = <String, constructor>{};
   @override
   Map<String, constructor> get constructors => _constructors;
 

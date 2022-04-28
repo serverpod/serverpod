@@ -8,10 +8,10 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
   bool debug = false,
-  List<String> additionalScopes = const [],
+  List<String> additionalScopes = const <String>[],
   Uri? redirectUri,
 }) async {
-  var scopes = [
+  List<String> scopes = <String>[
     'email',
     'https://www.googleapis.com/auth/userinfo.profile',
   ];
@@ -19,13 +19,13 @@ Future<UserInfo?> signInWithGoogle(
 
   if (kDebugMode) print('serverpod_auth_google: GoogleSignIn');
 
-  var _googleSignIn = GoogleSignIn(
+  GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: scopes,
   );
 
   try {
     // Sign in with Google.
-    var result = await _googleSignIn.signIn();
+    GoogleSignInAccount? result = await _googleSignIn.signIn();
     if (result == null) {
       if (kDebugMode) {
         print(
@@ -38,7 +38,7 @@ Future<UserInfo?> signInWithGoogle(
     // Get the server auth code.
     // var auth = await result.authentication;
 
-    var serverAuthCode = result.serverAuthCode;
+    String? serverAuthCode = result.serverAuthCode;
     String? idToken;
     if (serverAuthCode == null) {
       if (kDebugMode) {
@@ -46,7 +46,7 @@ Future<UserInfo?> signInWithGoogle(
           'serverpod_auth_google: serverAuthCode is null. Trying auth.idToken.',
         );
       }
-      var auth = await result.authentication;
+      GoogleSignInAuthentication auth = await result.authentication;
       idToken = auth.idToken;
     }
 
@@ -82,7 +82,7 @@ Future<UserInfo?> signInWithGoogle(
     }
 
     // Authentication was successful, store the key.
-    var sessionManager = await SessionManager.instance;
+    SessionManager sessionManager = await SessionManager.instance;
     await sessionManager.keyManager
         .put('${serverResponse.keyId}:${serverResponse.key}');
 

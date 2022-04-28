@@ -28,7 +28,7 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
 
   ChatMessageAttachmentUploadDescription.fromSerialization(
       Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     filePath = _data['filePath']!;
     uploadDescription = _data['uploadDescription']!;
@@ -36,7 +36,7 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'filePath': filePath,
       'uploadDescription': uploadDescription,
@@ -45,7 +45,7 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'filePath': filePath,
       'uploadDescription': uploadDescription,

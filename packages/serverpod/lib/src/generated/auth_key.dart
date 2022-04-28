@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class AuthKey extends TableRow {
   @override
   String get tableName => 'serverpod_auth_key';
 
-  static final t = AuthKeyTable();
+  static final AuthKeyTable t = AuthKeyTable();
 
   @override
   int? id;
@@ -38,7 +38,7 @@ class AuthKey extends TableRow {
   });
 
   AuthKey.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     hash = _data['hash']!;
@@ -49,7 +49,7 @@ class AuthKey extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'hash': hash,
@@ -61,7 +61,7 @@ class AuthKey extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'hash': hash,
@@ -72,7 +72,7 @@ class AuthKey extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'hash': hash,
@@ -83,7 +83,7 @@ class AuthKey extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -215,14 +215,14 @@ class AuthKeyTable extends Table {
 
   @override
   String tableName = 'serverpod_auth_key';
-  final id = ColumnInt('id');
-  final userId = ColumnInt('userId');
-  final hash = ColumnString('hash');
-  final scopeNames = ColumnSerializable('scopeNames');
-  final method = ColumnString('method');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt userId = ColumnInt('userId');
+  final ColumnString hash = ColumnString('hash');
+  final ColumnSerializable scopeNames = ColumnSerializable('scopeNames');
+  final ColumnString method = ColumnString('method');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userId,
         hash,

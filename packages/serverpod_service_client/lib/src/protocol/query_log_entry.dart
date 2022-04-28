@@ -36,7 +36,7 @@ class QueryLogEntry extends SerializableEntity {
   });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     serverId = _data['serverId']!;
     sessionLogId = _data['sessionLogId']!;
@@ -49,7 +49,7 @@ class QueryLogEntry extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,

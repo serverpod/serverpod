@@ -18,7 +18,7 @@ class UserImage extends TableRow {
   @override
   String get tableName => 'serverpod_user_image';
 
-  static final t = UserImageTable();
+  static final UserImageTable t = UserImageTable();
 
   @override
   int? id;
@@ -34,7 +34,7 @@ class UserImage extends TableRow {
   });
 
   UserImage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     version = _data['version']!;
@@ -43,7 +43,7 @@ class UserImage extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'version': version,
@@ -53,7 +53,7 @@ class UserImage extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'version': version,
@@ -63,7 +63,7 @@ class UserImage extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'version': version,
@@ -72,7 +72,7 @@ class UserImage extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -201,13 +201,13 @@ class UserImageTable extends Table {
 
   @override
   String tableName = 'serverpod_user_image';
-  final id = ColumnInt('id');
-  final userId = ColumnInt('userId');
-  final version = ColumnInt('version');
-  final url = ColumnString('url');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt userId = ColumnInt('userId');
+  final ColumnInt version = ColumnInt('version');
+  final ColumnString url = ColumnString('url');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userId,
         version,

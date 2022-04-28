@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:serverpod_auth_client/module.dart';
-import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
+import '../serverpod_auth_shared_flutter.dart';
 
-const _prefsKey = 'serverpod_userinfo_key';
-const _prefsVersion = 1;
+const String _prefsKey = 'serverpod_userinfo_key';
+const int _prefsVersion = 1;
 
 /// The [SessionManager] keeps track of and manages the signed-in state of the
 /// user. Use the [instance] method to get access to the singleton instance.
@@ -97,11 +97,11 @@ class SessionManager with ChangeNotifier {
   }
 
   Future<void> _loadSharedPrefs() async {
-    var version = await _storage
+    int? version = await _storage
         .getInt(_prefsKey + '_' + keyManager.runMode + '_version');
     if (version != _prefsVersion) return;
 
-    var json = await _storage.getString(_prefsKey + '_' + keyManager.runMode);
+    String? json = await _storage.getString(_prefsKey + '_' + keyManager.runMode);
     if (json == null) return;
 
     _signedInUser = Protocol.instance
@@ -127,7 +127,7 @@ class SessionManager with ChangeNotifier {
     if (_signedInUser == null) return false;
 
     try {
-      var success = await caller.user.setUserImage(image);
+      bool success = await caller.user.setUserImage(image);
       if (success) {
         _signedInUser = await caller.status.getUserInfo();
 

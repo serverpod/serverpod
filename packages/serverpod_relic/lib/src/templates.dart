@@ -8,16 +8,16 @@ final Templates templates = Templates();
 
 /// Loads and caches templates.
 class Templates {
-  final Map<String, Template> _templates = {};
+  final Map<String, Template> _templates = <String, Template>{};
 
   /// Loads all templates from web/templates
   Future<void> loadAll() async {
-    var dir = Directory('web/templates');
-    for (var entity in await dir.list().toList()) {
+    Directory dir = Directory('web/templates');
+    for (FileSystemEntity entity in await dir.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
-        var file = entity;
-        var name = basenameWithoutExtension(file.path);
-        var data = await file.readAsString();
+        File file = entity;
+        String name = basenameWithoutExtension(file.path);
+        String data = await file.readAsString();
 
         _templates[name] = Template(
           data,

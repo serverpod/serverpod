@@ -8,26 +8,26 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 Future<UserInfo?> signInWithApple(Caller caller) async {
   // Check that Sign in with Apple is available on this platform.
   try {
-    var available = await SignInWithApple.isAvailable();
+    bool available = await SignInWithApple.isAvailable();
     if (!available) return null;
 
     // Attempt to sign in.
-    var credential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
+    AuthorizationCredentialAppleID credential = await SignInWithApple.getAppleIDCredential(
+      scopes: <AppleIDAuthorizationScopes>[
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
       ],
     );
 
-    var userIdentifier = credential.userIdentifier!;
-    var nickname = credential.givenName ?? 'Unknown';
-    var fullName = nickname;
+    String userIdentifier = credential.userIdentifier!;
+    String nickname = credential.givenName ?? 'Unknown';
+    String fullName = nickname;
     if (credential.familyName != null) fullName += ' ${credential.familyName}';
-    var email = credential.email;
-    var identityToken = credential.identityToken!;
-    var authorizationCode = credential.authorizationCode;
+    String? email = credential.email;
+    String identityToken = credential.identityToken!;
+    String authorizationCode = credential.authorizationCode;
 
-    var authInfo = AppleAuthInfo(
+    AppleAuthInfo authInfo = AppleAuthInfo(
       userIdentifier: userIdentifier,
       email: email,
       fullName: fullName,
@@ -37,11 +37,11 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
     );
 
     // Authenticate with the Serverpod server.
-    var serverResponse = await caller.apple.authenticate(authInfo);
+    AuthenticationResponse serverResponse = await caller.apple.authenticate(authInfo);
     if (!serverResponse.success) return null;
 
     // Authentication was successful, store the key.
-    var sessionManager = await SessionManager.instance;
+    SessionManager sessionManager = await SessionManager.instance;
     await sessionManager.keyManager
         .put('${serverResponse.keyId}:${serverResponse.key}');
 

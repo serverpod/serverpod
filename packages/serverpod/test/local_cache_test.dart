@@ -2,7 +2,7 @@ import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
-const cacheMaxSize = 10;
+const int cacheMaxSize = 10;
 
 void main() {
   Protocol serializationManager;
@@ -14,10 +14,10 @@ void main() {
   });
 
   test('Put and get object', () async {
-    var entry = SimpleData(num: 0);
+    SimpleData entry = SimpleData(num: 0);
 
     await cache.put('entry', entry);
-    var retrieved = await cache.get('entry') as SimpleData?;
+    SimpleData? retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));
 
     retrieved = await cache.get('missing') as SimpleData?;
@@ -30,14 +30,14 @@ void main() {
   });
 
   test('Put and get object with lifetime', () async {
-    var entry = SimpleData(num: 0);
+    SimpleData entry = SimpleData(num: 0);
 
     await cache.put('entry', entry,
         lifetime: const Duration(milliseconds: 100));
-    var retrieved = await cache.get('entry') as SimpleData?;
+    SimpleData? retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(0));
 
-    await Future.delayed(const Duration(milliseconds: 110));
+    await Future<void>.delayed(const Duration(milliseconds: 110));
     retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved, isNull);
 
@@ -45,44 +45,44 @@ void main() {
   });
 
   test('Put multiple with same key', () async {
-    var entryA = SimpleData(num: 0);
-    var entryB = SimpleData(num: 1);
+    SimpleData entryA = SimpleData(num: 0);
+    SimpleData entryB = SimpleData(num: 1);
 
     await cache.put('entry', entryA);
     await cache.put('entry', entryB);
 
-    var retrieved = await cache.get('entry') as SimpleData?;
+    SimpleData? retrieved = await cache.get('entry') as SimpleData?;
     expect(retrieved!.num, equals(1));
 
     expect(cache.localSize, equals(1));
   });
 
   test('Cache overflow', () async {
-    var numEntries = cacheMaxSize * 2;
+    int numEntries = cacheMaxSize * 2;
 
-    for (var i = 0; i < numEntries; i++) {
-      var entry = SimpleData(num: i);
+    for (int i = 0; i < numEntries; i++) {
+      SimpleData entry = SimpleData(num: i);
       await cache.put('entry:$i', entry);
     }
 
     expect(cache.localSize, equals(cacheMaxSize));
 
-    var first = await cache.get('entry:0') as SimpleData?;
+    SimpleData? first = await cache.get('entry:0') as SimpleData?;
     expect(first, isNull);
 
-    var last = await cache.get('entry:${numEntries - 1}') as SimpleData?;
+    SimpleData? last = await cache.get('entry:${numEntries - 1}') as SimpleData?;
     expect(last!.num, equals(numEntries - 1));
   });
 
   test('Invalidate keys', () async {
-    for (var i = 0; i < cacheMaxSize; i++) {
-      var entry = SimpleData(num: i);
+    for (int i = 0; i < cacheMaxSize; i++) {
+      SimpleData entry = SimpleData(num: i);
       await cache.put('entry:$i', entry);
     }
 
-    var middleId = cacheMaxSize ~/ 4;
+    int middleId = cacheMaxSize ~/ 4;
 
-    var retrieved = await cache.get('entry:$middleId') as SimpleData?;
+    SimpleData? retrieved = await cache.get('entry:$middleId') as SimpleData?;
     expect(retrieved!.num, equals(middleId));
 
     await cache.invalidateKey('entry:$middleId');
@@ -93,12 +93,12 @@ void main() {
   });
 
   test('Invalidate group', () async {
-    for (var i = 0; i < cacheMaxSize ~/ 2; i++) {
-      var entry = SimpleData(num: i);
+    for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
+      SimpleData entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:0');
     }
-    for (var i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
-      var entry = SimpleData(num: i);
+    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+      SimpleData entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:1');
     }
 
@@ -107,7 +107,7 @@ void main() {
     await cache.invalidateGroup('group:0');
     expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
-    var retrieved = await cache.get('entry:0') as SimpleData?;
+    SimpleData? retrieved = await cache.get('entry:0') as SimpleData?;
     expect(retrieved, isNull);
 
     retrieved = await cache.get('entry:${cacheMaxSize - 1}') as SimpleData?;
@@ -121,17 +121,17 @@ void main() {
   });
 
   test('Invalidate key then group', () async {
-    for (var i = 0; i < cacheMaxSize ~/ 2; i++) {
-      var entry = SimpleData(num: i);
+    for (int i = 0; i < cacheMaxSize ~/ 2; i++) {
+      SimpleData entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:0');
     }
-    for (var i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
-      var entry = SimpleData(num: i);
+    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+      SimpleData entry = SimpleData(num: i);
       await cache.put('entry:$i', entry, group: 'group:1');
     }
 
     await cache.invalidateKey('entry:0');
-    var retrieved = await cache.get('entry:0') as SimpleData?;
+    SimpleData? retrieved = await cache.get('entry:0') as SimpleData?;
     expect(retrieved, isNull);
 
     retrieved = await cache.get('entry:1') as SimpleData?;
@@ -141,7 +141,7 @@ void main() {
 
     expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
-    for (var i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
+    for (int i = cacheMaxSize ~/ 2; i < cacheMaxSize; i++) {
       await cache.invalidateKey('entry:$i');
     }
 

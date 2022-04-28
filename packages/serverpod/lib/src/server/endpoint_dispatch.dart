@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import '../authentication/scope.dart';
 import 'endpoint.dart';
 import 'server.dart';
 import 'serverpod.dart';
@@ -14,10 +15,10 @@ import 'session.dart';
 /// by an Endpoints class that is generated.
 abstract class EndpointDispatch {
   /// All connectors associating endpoint method names with the actual methods.
-  Map<String, EndpointConnector> connectors = {};
+  Map<String, EndpointConnector> connectors = <String, EndpointConnector>{};
 
   /// References to modules.
-  Map<String, EndpointDispatch> modules = {};
+  Map<String, EndpointDispatch> modules = <String, EndpointDispatch>{};
 
   /// Initializes all endpoints that are connected to the dispatch.
   void initializeEndpoints(Server server);
@@ -28,7 +29,7 @@ abstract class EndpointDispatch {
   /// Finds an [EndpointConnector] by its name. If the connector is in a module,
   /// a period should separate the module name from the endpoint name.
   EndpointConnector? getConnectorByName(String endpointName) {
-    var endpointComponents = endpointName.split('.');
+    List<String> endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return null;
     }
@@ -42,9 +43,9 @@ abstract class EndpointDispatch {
       if (connector == null) return null;
     } else {
       // Connector is in a module
-      var modulePackage = endpointComponents[0];
+      String modulePackage = endpointComponents[0];
       endpointName = endpointComponents[1];
-      var module = modules[modulePackage];
+      EndpointDispatch? module = modules[modulePackage];
       if (module == null) return null;
 
       connector = module.connectors[endpointName];
@@ -59,14 +60,14 @@ abstract class EndpointDispatch {
   /// return a [Result] object.
   Future<Result> handleUriCall(Server server, String endpointName, Uri uri,
       String body, HttpRequest request) async {
-    var endpointComponents = endpointName.split('.');
+    List<String> endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return ResultInvalidParams(
           'Endpoint $endpointName is not a valid endpoint name');
     }
 
     // Find correct connector
-    var connector = getConnectorByName(endpointName);
+    EndpointConnector? connector = getConnectorByName(endpointName);
     if (connector == null) {
       return ResultInvalidParams('Endpoint $endpointName does not exist');
     }
@@ -85,16 +86,17 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Malformed call: $uri');
     }
 
-    var methodName = session.methodName;
-    var inputParams = session.queryParameters;
+    String methodName = session.methodName;
+    Map<String, String> inputParams = session.queryParameters;
 
     try {
-      var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
+      ResultAuthenticationFailed? authFailed =
+          await canUserAccessEndpoint(session, connector.endpoint);
       if (authFailed != null) {
         return authFailed;
       }
 
-      var method = connector.methodConnectors[methodName];
+      MethodConnector? method = connector.methodConnectors[methodName];
       if (method == null) {
         await session.close();
         return ResultInvalidParams(
@@ -103,16 +105,16 @@ abstract class EndpointDispatch {
 
       // TODO: Check parameters and check null safety
 
-      var paramMap = <String, dynamic>{};
-      for (var paramName in inputParams.keys) {
-        var type = method.params[paramName]?.type;
+      Map<String, dynamic> paramMap = <String, dynamic>{};
+      for (String paramName in inputParams.keys) {
+        Type? type = method.params[paramName]?.type;
         if (type == null) continue;
-        var formatted = _formatArg(
+        Object? formatted = _formatArg(
             inputParams[paramName], type, server.serializationManager);
         paramMap[paramName] = formatted;
       }
 
-      var result = await method.call(session, paramMap);
+      dynamic result = await method.call(session, paramMap);
 
       // Print session info
       // var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
@@ -125,7 +127,7 @@ abstract class EndpointDispatch {
       );
     } catch (e, stackTrace) {
       // Something did not work out
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      int? sessionLogId = await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
     }
@@ -136,7 +138,7 @@ abstract class EndpointDispatch {
   /// returned.
   Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
       Session session, Endpoint endpoint) async {
-    var auth = session.authenticationKey;
+    String? auth = session.authenticationKey;
     if (endpoint.requireLogin) {
       if (auth == null) {
         // await session.close();
@@ -155,7 +157,7 @@ abstract class EndpointDispatch {
             'Sign in required to access this endpoint');
       }
 
-      for (var requiredScope in endpoint.requiredScopes) {
+      for (Scope requiredScope in endpoint.requiredScopes) {
         if (!(await session.scopes)!.contains(requiredScope)) {
           // await session.close();
           return ResultAuthenticationFailed(
@@ -184,7 +186,7 @@ abstract class EndpointDispatch {
     if (type == ByteData) return input?.base64DecodedByteData();
 
     try {
-      var data = jsonDecode(input!);
+      Map<String, dynamic> data = jsonDecode(input!);
       return serializationManager.createEntityFromSerialization(data);
     } catch (error) {
       return null;
@@ -212,7 +214,7 @@ class EndpointConnector {
 }
 
 /// Calls a named method referenced in a [MethodConnector].
-typedef MethodCall = Future Function(
+typedef MethodCall = Future<dynamic> Function(
     Session session, Map<String, dynamic> params);
 
 /// The [MethodConnector] hooks up a method with its name and the actual call

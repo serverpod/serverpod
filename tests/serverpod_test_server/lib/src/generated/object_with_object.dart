@@ -18,7 +18,7 @@ class ObjectWithObject extends TableRow {
   @override
   String get tableName => 'object_with_object';
 
-  static final t = ObjectWithObjectTable();
+  static final ObjectWithObjectTable t = ObjectWithObjectTable();
 
   @override
   int? id;
@@ -40,31 +40,33 @@ class ObjectWithObject extends TableRow {
   });
 
   ObjectWithObject.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     data = SimpleData.fromSerialization(_data['data']);
     nullableData = _data['nullableData'] != null
         ? SimpleData?.fromSerialization(_data['nullableData'])
         : null;
     dataList = _data['dataList']!
-        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        .map<SimpleData>(
+            (Map<String, dynamic> a) => SimpleData.fromSerialization(a))
         ?.toList();
     nullableDataList = _data['nullableDataList']
-        ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.map<SimpleData>(
+            (Map<String, dynamic> a) => SimpleData.fromSerialization(a))
         ?.toList();
     listWithNullableData = _data['listWithNullableData']!
-        .map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        .map<SimpleData?>((Map<String, dynamic>? a) =>
+            a != null ? SimpleData?.fromSerialization(a) : null)
         ?.toList();
     nullableListWithNullableData = _data['nullableListWithNullableData']
-        ?.map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        ?.map<SimpleData?>((Map<String, dynamic>? a) =>
+            a != null ? SimpleData?.fromSerialization(a) : null)
         ?.toList();
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),
@@ -81,7 +83,7 @@ class ObjectWithObject extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),
@@ -98,7 +100,7 @@ class ObjectWithObject extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'data': data.serialize(),
       'nullableData': nullableData?.serialize(),
@@ -114,7 +116,7 @@ class ObjectWithObject extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -253,17 +255,19 @@ class ObjectWithObjectTable extends Table {
 
   @override
   String tableName = 'object_with_object';
-  final id = ColumnInt('id');
-  final data = ColumnSerializable('data');
-  final nullableData = ColumnSerializable('nullableData');
-  final dataList = ColumnSerializable('dataList');
-  final nullableDataList = ColumnSerializable('nullableDataList');
-  final listWithNullableData = ColumnSerializable('listWithNullableData');
-  final nullableListWithNullableData =
+  final ColumnInt id = ColumnInt('id');
+  final ColumnSerializable data = ColumnSerializable('data');
+  final ColumnSerializable nullableData = ColumnSerializable('nullableData');
+  final ColumnSerializable dataList = ColumnSerializable('dataList');
+  final ColumnSerializable nullableDataList =
+      ColumnSerializable('nullableDataList');
+  final ColumnSerializable listWithNullableData =
+      ColumnSerializable('listWithNullableData');
+  final ColumnSerializable nullableListWithNullableData =
       ColumnSerializable('nullableListWithNullableData');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         data,
         nullableData,

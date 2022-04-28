@@ -14,8 +14,8 @@ class UserImages {
   /// in the cloud and associated with the user.
   static Future<bool> setUserImageFromUrl(
       Session session, int userId, Uri url) async {
-    var result = await http.get(url);
-    var bytes = result.bodyBytes;
+    http.Response result = await http.get(url);
+    Uint8List bytes = result.bodyBytes;
     return await setUserImageFromBytes(session, userId, bytes);
   }
 
@@ -23,32 +23,32 @@ class UserImages {
   /// stored in the cloud and associated with the user.
   static Future<bool> setUserImageFromBytes(
       Session session, int userId, Uint8List bytes) async {
-    var image = decodeImage(bytes);
+    Image? image = decodeImage(bytes);
     if (image == null) return false;
 
-    var imageSize = AuthConfig.current.userImageSize;
+    int imageSize = AuthConfig.current.userImageSize;
     if (image.width != imageSize || image.height != imageSize) {
       image = copyResizeCropSquare(image, imageSize);
     }
 
-    var imageData = _encodeImage(image);
+    ByteData imageData = _encodeImage(image);
 
     return await _setUserImage(session, userId, imageData);
   }
 
   /// Sets a user's image to the default image for that user.
   static Future<bool> setDefaultUserImage(Session session, int userId) async {
-    var userInfo = await Users.findUserByUserId(session, userId);
+    UserInfo? userInfo = await Users.findUserByUserId(session, userId);
     if (userInfo == null) return false;
 
-    var image = await AuthConfig.current.userImageGenerator(userInfo);
-    var imageData = _encodeImage(image);
+    Image image = await AuthConfig.current.userImageGenerator(userInfo);
+    ByteData imageData = _encodeImage(image);
 
     return await _setUserImage(session, userId, imageData);
   }
 
   static ByteData _encodeImage(Image image) {
-    var format = AuthConfig.current.userImageFormat;
+    UserImageType format = AuthConfig.current.userImageFormat;
     List<int> encoded;
     if (format == UserImageType.jpg) {
       encoded = encodeJpg(image, quality: AuthConfig.current.userImageQuality);
@@ -57,21 +57,21 @@ class UserImages {
     }
 
     // Reference as ByteData.
-    var encodedBytes = Uint8List.fromList(encoded);
+    Uint8List encodedBytes = Uint8List.fromList(encoded);
     return ByteData.view(encodedBytes.buffer);
   }
 
   static Future<bool> _setUserImage(
       Session session, int userId, ByteData imageData) async {
     // Find the latest version of the user image if any.
-    var oldImageRef = await session.db.findSingleRow<UserImage>(
+    UserImage? oldImageRef = await session.db.findSingleRow<UserImage>(
       where: UserImage.t.userId.equals(userId),
       orderDescending: true,
       orderBy: UserImage.t.version,
     );
 
     // Add one to the version number or create a new version 1.
-    var version = (oldImageRef?.version ?? 0) + 1;
+    int version = (oldImageRef?.version ?? 0) + 1;
 
     String pathExtension;
     if (AuthConfig.current.userImageFormat == UserImageType.jpg) {
@@ -81,20 +81,20 @@ class UserImages {
     }
 
     // Store the image.
-    var path = 'serverpod/user_images/$userId-$version$pathExtension';
+    String path = 'serverpod/user_images/$userId-$version$pathExtension';
     await session.storage
         .storeFile(storageId: 'public', path: path, byteData: imageData);
-    var publicUrl =
+    Uri? publicUrl =
         await session.storage.getPublicUrl(storageId: 'public', path: path);
     if (publicUrl == null) return false;
 
     // Store the path to the image.
-    var imageRef =
+    UserImage imageRef =
         UserImage(userId: userId, version: version, url: publicUrl.toString());
     await session.db.insert(imageRef);
 
     // Update the UserInfo with the new image path.
-    var userInfo =
+    UserInfo? userInfo =
         await Users.findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return false;
     userInfo.imageUrl = publicUrl.toString();
@@ -122,7 +122,7 @@ class UserImageException extends IOException {
   }
 }
 
-var _defaultUserImageColors = <int>[
+List<int> _defaultUserImageColors = <int>[
   _colorFromHexStr('D32F2F'),
   _colorFromHexStr('D81B60'),
   _colorFromHexStr('AB47BC'),
@@ -145,24 +145,24 @@ int _colorFromHexStr(String hexStr) {
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
 Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
-  var imageSize = AuthConfig.current.userImageSize;
-  var image = Image(256, 256);
+  int imageSize = AuthConfig.current.userImageSize;
+  Image image = Image(256, 256);
 
-  var font = roboto_138;
+  BitmapFont font = roboto_138;
 
   // Get first letter of the user name (or * if not found in bitmap font).
-  var name = userInfo.userName;
-  var charCode =
+  String name = userInfo.userName;
+  int charCode =
       (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*').codeUnits[0];
   if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
 
   // Draw the image.
-  var chWidth = font.characters[charCode]!.width;
-  var chHeight = font.characters[charCode]!.height;
-  var chOffsetY = font.characters[charCode]!.yoffset;
-  var chOffsetX = font.characters[charCode]!.xoffset;
-  var xPos = 128 - chWidth ~/ 2;
-  var yPos = 128 - chHeight ~/ 2;
+  int chWidth = font.characters[charCode]!.width;
+  int chHeight = font.characters[charCode]!.height;
+  int chOffsetY = font.characters[charCode]!.yoffset;
+  int chOffsetX = font.characters[charCode]!.xoffset;
+  int xPos = 128 - chWidth ~/ 2;
+  int yPos = 128 - chHeight ~/ 2;
 
   // Pick color based on user id from the default colors (from material design).
   fill(image,

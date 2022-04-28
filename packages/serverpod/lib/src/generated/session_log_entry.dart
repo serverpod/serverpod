@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class SessionLogEntry extends TableRow {
   @override
   String get tableName => 'serverpod_session_log';
 
-  static final t = SessionLogEntryTable();
+  static final SessionLogEntryTable t = SessionLogEntryTable();
 
   @override
   int? id;
@@ -50,7 +50,7 @@ class SessionLogEntry extends TableRow {
   });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     serverId = _data['serverId']!;
     time = DateTime.tryParse(_data['time'])!;
@@ -67,7 +67,7 @@ class SessionLogEntry extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
@@ -85,7 +85,7 @@ class SessionLogEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
@@ -103,7 +103,7 @@ class SessionLogEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
@@ -120,7 +120,7 @@ class SessionLogEntry extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -274,21 +274,21 @@ class SessionLogEntryTable extends Table {
 
   @override
   String tableName = 'serverpod_session_log';
-  final id = ColumnInt('id');
-  final serverId = ColumnInt('serverId');
-  final time = ColumnDateTime('time');
-  final module = ColumnString('module');
-  final endpoint = ColumnString('endpoint');
-  final method = ColumnString('method');
-  final duration = ColumnDouble('duration');
-  final numQueries = ColumnInt('numQueries');
-  final slow = ColumnBool('slow');
-  final error = ColumnString('error');
-  final stackTrace = ColumnString('stackTrace');
-  final authenticatedUserId = ColumnInt('authenticatedUserId');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt serverId = ColumnInt('serverId');
+  final ColumnDateTime time = ColumnDateTime('time');
+  final ColumnString module = ColumnString('module');
+  final ColumnString endpoint = ColumnString('endpoint');
+  final ColumnString method = ColumnString('method');
+  final ColumnDouble duration = ColumnDouble('duration');
+  final ColumnInt numQueries = ColumnInt('numQueries');
+  final ColumnBool slow = ColumnBool('slow');
+  final ColumnString error = ColumnString('error');
+  final ColumnString stackTrace = ColumnString('stackTrace');
+  final ColumnInt authenticatedUserId = ColumnInt('authenticatedUserId');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         serverId,
         time,

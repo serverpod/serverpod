@@ -32,15 +32,16 @@ class DatabaseConnection {
   Future<List<String>> getTableNames() async {
     List<String> tableNames = <String>[];
 
-    var query = 'SELECT * FROM pg_catalog.pg_tables';
-    var result = await postgresConnection.mappedResultsQuery(
+    String query = 'SELECT * FROM pg_catalog.pg_tables';
+    List<Map<String, Map<String, dynamic>>> result =
+        await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
       timeoutInSeconds: 60,
-      substitutionValues: {},
+      substitutionValues: <String, dynamic>{},
     );
 
-    for (Map row in result) {
+    for (Map<String, dynamic> row in result) {
       row = row.values.first;
       if (row['schemaname'] == 'public') tableNames.add(row['tablename']);
     }
@@ -50,23 +51,24 @@ class DatabaseConnection {
 
   /// Returns a description for a table in the database.
   Future<Table?> getTableDescription(String tableName) async {
-    var query =
+    String query =
         'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
-    var result = await postgresConnection.mappedResultsQuery(
+    List<Map<String, Map<String, dynamic>>> result =
+        await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
       timeoutInSeconds: 60,
-      substitutionValues: {},
+      substitutionValues: <String, dynamic>{},
     );
-    var columns = <Column>[];
+    List<Column> columns = <Column>[];
 
-    var hasID = false;
-    for (Map row in result) {
+    bool hasID = false;
+    for (Map<String, dynamic> row in result) {
       row = row.values.first;
       String? columnName = row['column_name'];
       String? sqlType = row['data_type'];
       int? varcharLength = row['character_maximum_length'];
-      var type = _sqlTypeToDartType(sqlType);
+      Type? type = _sqlTypeToDartType(sqlType);
 
       if (columnName == 'id' && type == int) hasID = true;
 
@@ -112,7 +114,7 @@ class DatabaseConnection {
     required Session session,
     Transaction? transaction,
   }) async {
-    var result = await find<T>(
+    List<T> result = await find<T>(
       where: Expression('id = $id'),
       session: session,
       transaction: transaction,
@@ -134,26 +136,26 @@ class DatabaseConnection {
     Transaction? transaction,
   }) async {
     assert(orderByList == null || orderBy == null);
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    Table? table = session.serverpod.serializationManager.typeTableMapping[T];
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.find<MyTableClass>(where: ...);
 Current type was $T''');
     table = table!;
 
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
     where ??= Expression('TRUE');
 
-    var tableName = table.tableName;
-    var query = 'SELECT * FROM $tableName WHERE $where';
+    String tableName = table.tableName;
+    String query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
       query += ' ORDER BY $orderBy';
       if (orderDescending) query += ' DESC';
     } else if (orderByList != null) {
       assert(orderByList.isNotEmpty);
 
-      var strList = <String>[];
-      for (var order in orderByList) {
+      List<String> strList = <String>[];
+      for (Order order in orderByList) {
         strList.add(order.toString());
       }
 
@@ -164,17 +166,18 @@ Current type was $T''');
 
     List<TableRow?> list = <TableRow>[];
     try {
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      var result = await context.mappedResultsQuery(
+      List<Map<String, Map<String, dynamic>>> result =
+          await context.mappedResultsQuery(
         query,
         allowReuse: false,
         timeoutInSeconds: 60,
-        substitutionValues: {},
+        substitutionValues: <String, dynamic>{},
       );
-      for (var rawRow in result) {
+      for (Map<String, Map<String, dynamic>> rawRow in result) {
         list.add(_formatTableRow(tableName, rawRow[tableName]));
       }
     } catch (e, trace) {
@@ -196,7 +199,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var result = await find<T>(
+    List<T> result = await find<T>(
       where: where,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -218,10 +221,10 @@ Current type was $T''');
     String? className = config.tableClassMapping[tableName];
     if (className == null) return null;
 
-    var data = <String, dynamic>{};
+    Map<String, dynamic> data = <String, dynamic>{};
 
-    for (var columnName in rawRow!.keys) {
-      var value = rawRow[columnName];
+    for (String columnName in rawRow!.keys) {
+      dynamic value = rawRow[columnName];
 
       if (value is DateTime) {
         data[columnName] = value.toIso8601String();
@@ -236,7 +239,10 @@ Current type was $T''');
       }
     }
 
-    var serialization = <String, dynamic>{'data': data, 'class': className};
+    Map<String, dynamic> serialization = <String, dynamic>{
+      'data': data,
+      'class': className
+    };
 
     return config.serializationManager
         .createEntityFromSerialization(serialization) as TableRow?;
@@ -250,36 +256,36 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    Table? table = session.serverpod.serializationManager.typeTableMapping[T];
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. numRows = await session.db.count<MyTableClass>();
 Current type was $T''');
     table = table!;
 
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
 
     where ??= Expression('TRUE');
 
-    var tableName = table.tableName;
-    var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
+    String tableName = table.tableName;
+    String query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
     if (limit != null) query += ' LIMIT $limit';
 
     try {
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      var result =
-          await context.query(query, allowReuse: false, substitutionValues: {});
+      PostgreSQLResult result = await context.query(query,
+          allowReuse: false, substitutionValues: <String, dynamic>{});
 
       if (result.length != 1) return 0;
 
-      List returnedRow = result[0];
+      List<dynamic> returnedRow = result[0];
       if (returnedRow.length != 1) return 0;
 
       _logQuery(session, query, startTime, numRowsAffected: 1);
-      return returnedRow[0];
+      return returnedRow.first as int;
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
@@ -292,35 +298,36 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase()['data'];
+    Map<String, dynamic> data = row.serializeForDatabase()['data'];
 
     int? id = data['id'];
 
-    var updatesList = <String>[];
+    List<String> updatesList = <String>[];
 
-    for (var column in data.keys as Iterable<String>) {
+    for (String column in data.keys) {
       if (column == 'id') continue;
 
       if (data[column] is Map || data[column] is List) {
         data[column] = jsonEncode(data[column]);
       }
 
-      var value = DatabaseConfig.encoder.convert(data[column]);
+      String value = DatabaseConfig.encoder.convert(data[column]);
 
       updatesList.add('"$column" = $value');
     }
-    var updates = updatesList.join(', ');
+    String updates = updatesList.join(', ');
 
-    var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
+    String query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
 
     try {
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      var affectedRows = await context.execute(query, substitutionValues: {});
+      int affectedRows =
+          await context.execute(query, substitutionValues: <String, dynamic>{});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {
@@ -335,14 +342,14 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase()['data'];
+    Map<String, dynamic> data = row.serializeForDatabase()['data'];
 
-    var columnsList = <String>[];
-    var valueList = <String>[];
+    List<String> columnsList = <String>[];
+    List<String> valueList = <String>[];
 
-    for (var column in data.keys as Iterable<String>) {
+    for (String column in data.keys) {
       if (column == 'id') continue;
 
       if (data[column] is Map || data[column] is List) {
@@ -350,7 +357,7 @@ Current type was $T''');
       }
 
       String value;
-      var unformattedValue = data[column];
+      dynamic unformattedValue = data[column];
       // TODO: Support binary stores in the database
       // if (unformattedValue is String && unformattedValue.startsWith('decode(\'')/* && unformattedValue.endsWith('\', \'base64\')') */) {
       //   // TODO:
@@ -369,28 +376,28 @@ Current type was $T''');
       columnsList.add('"$column"');
       valueList.add(value);
     }
-    var columns = columnsList.join(', ');
-    var values = valueList.join(', ');
+    String columns = columnsList.join(', ');
+    String values = valueList.join(', ');
 
-    var query =
+    String query =
         'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
 
     int insertedId;
     try {
       List<List<dynamic>> result;
 
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      result =
-          await context.query(query, allowReuse: false, substitutionValues: {});
+      result = await context.query(query,
+          allowReuse: false, substitutionValues: <String, dynamic>{});
       if (result.length != 1) {
         throw PostgreSQLException(
             'Failed to insert row, updated number of rows is ${result.length} != 1');
       }
 
-      var returnedRow = result[0];
+      List<dynamic> returnedRow = result[0];
       if (returnedRow.length != 1) {
         throw PostgreSQLException(
             'Failed to insert row, updated number of columns is ${returnedRow.length} != 1');
@@ -413,25 +420,26 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    Table? table = session.serverpod.serializationManager.typeTableMapping[T];
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
 Current type was $T''');
     table = table!;
 
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
 
-    var tableName = table.tableName;
+    String tableName = table.tableName;
 
-    var query = 'DELETE FROM $tableName WHERE $where';
+    String query = 'DELETE FROM $tableName WHERE $where';
 
     try {
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      var affectedRows = await context.execute(query, substitutionValues: {});
+      int affectedRows =
+          await context.execute(query, substitutionValues: <String, dynamic>{});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows;
     } catch (exception, trace) {
@@ -446,16 +454,17 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
 
-    var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
+    String query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
 
     try {
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      var affectedRows = await context.execute(query, substitutionValues: {});
+      int affectedRows =
+          await context.execute(query, substitutionValues: <String, dynamic>{});
       _logQuery(session, query, startTime, numRowsAffected: affectedRows);
       return affectedRows == 1;
     } catch (exception, trace) {
@@ -468,17 +477,17 @@ Current type was $T''');
   Future<void> storeFile(String storageId, String path, ByteData byteData,
       DateTime? expiration, bool verified,
       {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
+    DateTime startTime = DateTime.now();
+    String query = '';
     try {
       // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
-      var encoded = byteData.base64encodedString();
+      String encoded = byteData.base64encodedString();
       query =
           'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
       await postgresConnection.query(
         query,
         allowReuse: false,
-        substitutionValues: {
+        substitutionValues: <String, dynamic>{
           'storageId': storageId,
           'path': path,
           'addedTime': DateTime.now().toUtc(),
@@ -498,16 +507,16 @@ Current type was $T''');
   /// For most cases use the corresponding method in [Database] instead.
   Future<ByteData?> retrieveFile(String storageId, String path,
       {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
+    DateTime startTime = DateTime.now();
+    String query = '';
     try {
       // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
       query =
           'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
-      var result = await postgresConnection.query(
+      PostgreSQLResult result = await postgresConnection.query(
         query,
         allowReuse: false,
-        substitutionValues: {
+        substitutionValues: <String, dynamic>{
           'storageId': storageId,
           'path': path,
           'verified': true,
@@ -515,7 +524,7 @@ Current type was $T''');
       );
       _logQuery(session, query, startTime);
       if (result.isNotEmpty) {
-        var encoded = (result.first.first as String).replaceAll('\n', '');
+        String encoded = (result.first.first as String).replaceAll('\n', '');
         return ByteData.view(base64Decode(encoded).buffer);
       }
       return null;
@@ -530,14 +539,14 @@ Current type was $T''');
   Future<bool> verifyFile(String storageId, String path,
       {required Session session}) async {
     // Check so that the file is saved, but not
-    var startTime = DateTime.now();
-    var query =
+    DateTime startTime = DateTime.now();
+    String query =
         'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
     try {
-      var result = await postgresConnection.query(
+      PostgreSQLResult result = await postgresConnection.query(
         query,
         allowReuse: false,
-        substitutionValues: {
+        substitutionValues: <String, dynamic>{
           'storageId': storageId,
           'path': path,
         },
@@ -546,7 +555,7 @@ Current type was $T''');
 
       if (result.isEmpty) return false;
 
-      var verified = result.first.first as bool;
+      bool verified = result.first.first as bool;
       if (verified) return false;
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
@@ -555,12 +564,12 @@ Current type was $T''');
 
     startTime = DateTime.now();
     try {
-      var query =
+      String query =
           'UPDATE serverpod_cloud_storage SET "verified"=@verified WHERE "storageId"=@storageId AND "path"=@path';
       await postgresConnection.query(
         query,
         allowReuse: false,
-        substitutionValues: {
+        substitutionValues: <String, dynamic>{
           'storageId': storageId,
           'path': path,
           'verified': true,
@@ -582,17 +591,17 @@ Current type was $T''');
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var startTime = DateTime.now();
+    DateTime startTime = DateTime.now();
 
     try {
-      var context = transaction != null
+      PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      var result = await context.query(query,
+      PostgreSQLResult result = await context.query(query,
           allowReuse: false,
           timeoutInSeconds: timeoutInSeconds,
-          substitutionValues: {});
+          substitutionValues: <String, dynamic>{});
       _logQuery(session, query, startTime);
       return result;
     } catch (exception, trace) {
@@ -602,7 +611,7 @@ Current type was $T''');
   }
 
   void _logQuery(Session session, String query, DateTime startTime,
-      {int? numRowsAffected, exception, StackTrace? trace}) {
+      {int? numRowsAffected, Object? exception, StackTrace? trace}) {
     session.sessionLogs.queries.add(
       QueryLogEntry(
         sessionLogId: session.temporarySessionId,
@@ -625,8 +634,8 @@ Current type was $T''');
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) {
     return postgresConnection.runTx<R>(
-      (ctx) {
-        var transaction = Transaction._(ctx);
+      (PostgreSQLExecutionContext ctx) {
+        Transaction transaction = Transaction._(ctx);
         return transactionFunction(transaction);
       },
       retryOptions: retryOptions,
@@ -653,7 +662,7 @@ class Order {
 
   @override
   String toString() {
-    var str = '$column';
+    String str = '$column';
     if (orderDescending) str += ' DESC';
     return str;
   }

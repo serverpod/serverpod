@@ -28,7 +28,7 @@ class EmailReset extends SerializableEntity {
   });
 
   EmailReset.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     verificationCode = _data['verificationCode']!;
@@ -37,7 +37,7 @@ class EmailReset extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'verificationCode': verificationCode,

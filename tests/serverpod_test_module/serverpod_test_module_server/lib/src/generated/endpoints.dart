@@ -16,7 +16,7 @@ import '../endpoints/streaming.dart';
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
+    Map<String, Endpoint> endpoints = <String, Endpoint>{
       'module': ModuleEndpoint()
         ..initialize(server, 'module', 'serverpod_test_module'),
       'streaming': StreamingEndpoint()
@@ -26,10 +26,10 @@ class Endpoints extends EndpointDispatch {
     connectors['module'] = EndpointConnector(
       name: 'module',
       endpoint: endpoints['module']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'hello': MethodConnector(
           name: 'hello',
-          params: {
+          params: <String, ParameterDescription>{
             'name': ParameterDescription(
                 name: 'name', type: String, nullable: false),
           },
@@ -42,7 +42,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'modifyModuleObject': MethodConnector(
           name: 'modifyModuleObject',
-          params: {
+          params: <String, ParameterDescription>{
             'object': ParameterDescription(
                 name: 'object', type: ModuleClass, nullable: false),
           },
@@ -59,7 +59,7 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {},
+      methodConnectors: <String, MethodConnector>{},
     );
   }
 

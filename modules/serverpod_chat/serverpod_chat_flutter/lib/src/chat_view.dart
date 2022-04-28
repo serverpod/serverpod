@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_chat_client/module.dart';
-import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:serverpod_chat_flutter/src/chat_tile.dart';
+import '../serverpod_chat_flutter.dart';
+import 'chat_tile.dart';
 
-const _offsetForRequestingNextChunk = 100.0;
+const double _offsetForRequestingNextChunk = 100.0;
 
 typedef ChatTileBuilder = Widget Function(
     BuildContext context, ChatMessage message, ChatMessage? previous);
@@ -31,13 +31,13 @@ class _ChatViewState extends State<ChatView>
   late final ScrollController _scrollController;
   late final AnimationController _fadeInAnimation;
 
-  var _jumpToBottom = true;
-  var _messageAdded = false;
-  var _messageAddedByUser = false;
-  var _offset = 0.0;
-  var _maxExtent = 0.0;
+  bool _jumpToBottom = true;
+  bool _messageAdded = false;
+  bool _messageAddedByUser = false;
+  double _offset = 0.0;
+  double _maxExtent = 0.0;
 
-  var _lastHeight = 0.0;
+  double _lastHeight = 0.0;
 
   @override
   void initState() {
@@ -188,7 +188,7 @@ class _ChatViewState extends State<ChatView>
             if (_scrollController.hasClients &&
                 _scrollController.offset ==
                     _scrollController.position.maxScrollExtent) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) {
                 _scrollController
                     .jumpTo(_scrollController.position.maxScrollExtent);
               });
@@ -217,7 +217,7 @@ class _ChatViewState extends State<ChatView>
   }
 
   Widget _chatItemBuilder(BuildContext context, int item) {
-    final leading = widget.leading;
+    Widget? leading = widget.leading;
     if (leading != null && !widget.controller.hasOlderMessages) {
       // If we have a leading widget, show that on top
       if (item == 0) {
@@ -229,7 +229,7 @@ class _ChatViewState extends State<ChatView>
     }
 
     // Revers the list, because the scroll view is reversed
-    var message = widget.controller.messages[item];
+    ChatMessage message = widget.controller.messages[item];
     ChatMessage? previous;
     if (item > 0) {
       previous = widget.controller.messages[item - 1];
@@ -237,7 +237,7 @@ class _ChatViewState extends State<ChatView>
 
     // Explicit type match, else this gets promoted to a dynamic `Function()`
     // ignore: omit_local_variable_types
-    final ChatTileBuilder tileBuilder =
+    ChatTileBuilder tileBuilder =
         widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
   }

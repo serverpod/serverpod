@@ -65,8 +65,8 @@ class ServerConfig {
   /// on run mode.
   ServerConfig(this.runMode, this.serverId, Map<String, String> passwords)
       : file = 'config/$runMode.yaml' {
-    var data = File(file).readAsStringSync();
-    var doc = loadYaml(data);
+    String data = File(file).readAsStringSync();
+    YamlMap doc = loadYaml(data);
 
     publicHost = doc['publicHost']!;
     publicPort = doc['publicPort']!;
@@ -81,7 +81,7 @@ class ServerConfig {
 
     // Get database setup
     assert(doc['database'] is Map, 'Database setup is missing in config');
-    Map dbSetup = doc['database'];
+    Map<String, dynamic> dbSetup = doc['database'];
     dbHost = dbSetup['host']!;
     dbPort = dbSetup['port']!;
     dbName = dbSetup['name']!;
@@ -90,7 +90,7 @@ class ServerConfig {
 
     // Get Redis setup
     assert(doc['redis'] is Map, 'Redis setup is missing in config');
-    Map redisSetup = doc['redis'];
+    Map<String, dynamic> redisSetup = doc['redis'];
     redisHost = redisSetup['host']!;
     redisPort = redisSetup['port']!;
     redisUser = redisSetup['user'];
@@ -99,7 +99,7 @@ class ServerConfig {
 
   @override
   String toString() {
-    var str = 'Config loaded from: $file';
+    String str = 'Config loaded from: $file';
     str += '\napi port: $port';
     str += '\nservice port: $servicePort';
 
@@ -135,7 +135,7 @@ class RemoteServerConfig {
   String address;
 
   /// Creates a new [RemoteServerConfig].
-  RemoteServerConfig(this.serverId, Map data)
+  RemoteServerConfig(this.serverId, Map<String, dynamic> data)
       : port = data['port'] ?? 8080,
         servicePort = data['servicePort'] ?? 8081,
         address = data['address'] ?? 'localhost';

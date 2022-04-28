@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
-import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
+import '../serverpod_chat_flutter.dart';
 import 'package:serverpod_auth_client/module.dart' as auth;
 
 typedef ChatControllerReceivedMessageCallback = void Function(
@@ -19,7 +19,7 @@ class ChatController {
 
   late final ChatDispatch dispatch;
 
-  final messages = <ChatMessage>[];
+  final List<ChatMessage> messages = <ChatMessage>[];
 
   bool _joinedChannel = false;
   bool get joinedChannel => _joinedChannel;
@@ -37,11 +37,11 @@ class ChatController {
 
   bool _postedMessageChunkRequest = false;
 
-  final _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
-  final _receivedMessageChunkListeners = <VoidCallback>{};
-  final _messageUpdatedListeners = <VoidCallback>{};
-  final _unreadMessagesListeners = <VoidCallback>{};
-  final _connectionStatusListeners = <VoidCallback>{};
+  final Set<ChatControllerReceivedMessageCallback> _receivedMessageListeners = <ChatControllerReceivedMessageCallback>{};
+  final Set<VoidCallback> _receivedMessageChunkListeners = <VoidCallback>{};
+  final Set<VoidCallback> _messageUpdatedListeners = <VoidCallback>{};
+  final Set<VoidCallback> _unreadMessagesListeners = <VoidCallback>{};
+  final Set<VoidCallback> _connectionStatusListeners = <VoidCallback>{};
 
   double scrollOffset = 0;
   bool scrollAtBottom = true;
@@ -96,10 +96,10 @@ class ChatController {
         markLastMessageRead();
       }
 
-      var updated = false;
+      bool updated = false;
       if (serverMessage.sender == _joinedAsUserInfo?.id) {
         // This user is the sender of the message, mark message as sent
-        for (var message in messages) {
+        for (ChatMessage message in messages) {
           if (message.clientMessageId == serverMessage.clientMessageId) {
             message.sent = true;
             message.id = serverMessage.id;
@@ -152,7 +152,7 @@ class ChatController {
     );
 
     // Post dummy message
-    final dummy = ChatMessage(
+    ChatMessage dummy = ChatMessage(
       channel: channel,
       message: message,
       time: DateTime.now().toUtc(),
@@ -170,7 +170,7 @@ class ChatController {
   }
 
   void markLastMessageRead() {
-    final messageId = _getLastMessageId();
+    int? messageId = _getLastMessageId();
     if (messageId == null) {
       return;
     }
@@ -194,7 +194,7 @@ class ChatController {
 
   bool _unreadMessagesLast = false;
   void _updateUnreadMessages() {
-    final hasUnread = hasUnreadMessages;
+    bool hasUnread = hasUnreadMessages;
     if (_unreadMessagesLast != hasUnread) {
       _unreadMessagesLast = hasUnread;
       _notifyUnreadMessagesListeners();
@@ -204,7 +204,7 @@ class ChatController {
   int? _getLastMessageId() {
     int? lastMessageId;
 
-    for (final message in messages.reversed) {
+    for (ChatMessage message in messages.reversed) {
       if (message.sender != _joinedAsUserInfo!.id! && message.id != null) {
         lastMessageId = message.id!;
         break;
@@ -233,12 +233,12 @@ class ChatController {
     }
     _postedMessageChunkRequest = true;
 
-    var messageId = messages[0].id;
+    int? messageId = messages[0].id;
     if (messageId == null) {
       return;
     }
 
-    var request =
+    ChatRequestMessageChunk request =
         ChatRequestMessageChunk(channel: channel, lastMessageId: messageId);
     dispatch.postRequestMessageChunk(request);
   }
@@ -256,7 +256,7 @@ class ChatController {
   }
 
   void _notifyMessageListeners(ChatMessage message, bool addedByUser) {
-    for (final listener in _receivedMessageListeners) {
+    for (ChatControllerReceivedMessageCallback listener in _receivedMessageListeners) {
       listener(message, addedByUser);
     }
   }
@@ -272,7 +272,7 @@ class ChatController {
   }
 
   void _notifyMessageUpdatedListeners() {
-    for (var listener in _messageUpdatedListeners) {
+    for (VoidCallback listener in _messageUpdatedListeners) {
       listener();
     }
   }
@@ -288,7 +288,7 @@ class ChatController {
   }
 
   void _notifyReceivedMessageChunkListeners() {
-    for (var listener in _receivedMessageChunkListeners) {
+    for (VoidCallback listener in _receivedMessageChunkListeners) {
       listener();
     }
   }
@@ -304,7 +304,7 @@ class ChatController {
   }
 
   void _notifyUnreadMessagesListeners() {
-    for (var listener in _unreadMessagesListeners) {
+    for (VoidCallback listener in _unreadMessagesListeners) {
       listener();
     }
   }
@@ -320,7 +320,7 @@ class ChatController {
   }
 
   void _notifyConnectionStatusListener() {
-    for (var listener in _connectionStatusListeners) {
+    for (VoidCallback listener in _connectionStatusListeners) {
       listener();
     }
   }

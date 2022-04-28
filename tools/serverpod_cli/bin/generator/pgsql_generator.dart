@@ -13,20 +13,20 @@ class PgsqlGenerator {
   });
 
   void generate() {
-    var out = '';
+    String out = '';
 
-    for (var classInfo in classInfos) {
+    for (ClassInfo classInfo in classInfos) {
       if (classInfo.tableName != null) {
         out += _generatePgsql(classInfo);
       }
     }
 
-    var outFile = File(outPath);
+    File outFile = File(outPath);
     outFile.writeAsStringSync(out);
   }
 
   String _generatePgsql(ClassInfo classInfo) {
-    var out = '';
+    String out = '';
 
     // Header
     out += '--\n';
@@ -38,14 +38,14 @@ class PgsqlGenerator {
     out += 'CREATE TABLE ${classInfo.tableName} (\n';
     // Id is a special case that is nullable in code but not in the database
     out += '  "id" serial';
-    for (var field in classInfo.fields) {
+    for (FieldDefinition field in classInfo.fields) {
       // Skip id field as it is already added
       if (field.name == 'id') continue;
 
       // Skip fields that are API only
       if (field.scope == FieldScope.api) continue;
 
-      var nullable = field.type.nullable ? '' : ' NOT NULL';
+      String nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';
     }
     out += '\n);\n';
@@ -58,8 +58,8 @@ class PgsqlGenerator {
 
     // Additional indexes
     if (classInfo.indexes != null) {
-      for (var index in classInfo.indexes!) {
-        var uniqueStr = index.unique ? ' UNIQUE' : '';
+      for (IndexDefinition index in classInfo.indexes!) {
+        String uniqueStr = index.unique ? ' UNIQUE' : '';
         out +=
             'CREATE$uniqueStr INDEX ${index.name} ON ${classInfo.tableName} USING ${index.type} (';
         out += index.fields.map((String str) => '"$str"').join(', ');

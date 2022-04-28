@@ -16,29 +16,29 @@ class LogLevel extends SerializableEntity {
   LogLevel._internal(this._index);
 
   LogLevel.fromSerialization(Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
+    Map<String, dynamic> data = unwrapSerializationData(serialization);
     _index = data['index'];
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'index': _index,
     });
   }
 
-  static final debug = LogLevel._internal(0);
-  static final info = LogLevel._internal(1);
-  static final warning = LogLevel._internal(2);
-  static final error = LogLevel._internal(3);
-  static final fatal = LogLevel._internal(4);
+  static final LogLevel debug = LogLevel._internal(0);
+  static final LogLevel info = LogLevel._internal(1);
+  static final LogLevel warning = LogLevel._internal(2);
+  static final LogLevel error = LogLevel._internal(3);
+  static final LogLevel fatal = LogLevel._internal(4);
 
   @override
   int get hashCode => _index.hashCode;
   @override
-  bool operator ==(other) => other is LogLevel && other._index == _index;
+  bool operator ==(Object other) => other is LogLevel && other._index == _index;
 
-  static final values = <LogLevel>[
+  static final List<LogLevel> values = <LogLevel>[
     debug,
     info,
     warning,

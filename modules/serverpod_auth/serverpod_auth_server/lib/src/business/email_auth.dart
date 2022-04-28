@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_auth_server/src/business/user_images.dart';
+import '../../module.dart';
+import 'user_images.dart';
 
 /// Collection of utility methods when working with email authentication.
 class Emails {
@@ -13,7 +13,7 @@ class Emails {
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static String generatePasswordHash(String password, String email) {
-    var salt = Serverpod.instance!.getPassword('email_password_salt') ??
+    String salt = Serverpod.instance!.getPassword('email_password_salt') ??
         'serverpod password salt';
     if (AuthConfig.current.extraSaltyHash) {
       salt += ':$email';
@@ -31,7 +31,7 @@ class Emails {
   ]) async {
     assert(password != null || hash != null,
         'Either password or hash needs to be provided');
-    var userInfo = await Users.findUserByEmail(session, email);
+    UserInfo? userInfo = await Users.findUserByEmail(session, email);
 
     if (userInfo == null) {
       userInfo = UserInfo(
@@ -39,7 +39,7 @@ class Emails {
         email: email,
         userName: userName,
         created: DateTime.now(),
-        scopeNames: [],
+        scopeNames: <String>[],
         active: true,
         blocked: false,
       );
@@ -50,7 +50,7 @@ class Emails {
     }
 
     // Check if there is email authentication in place already
-    var oldAuth = await session.db.findSingleRow<EmailAuth>(
+    EmailAuth? oldAuth = await session.db.findSingleRow<EmailAuth>(
       where: EmailAuth.t.userId.equals(userInfo.id!),
     );
     if (oldAuth != null) {
@@ -59,7 +59,7 @@ class Emails {
 
     session.log('creating email auth', level: LogLevel.debug);
     hash = hash ?? generatePasswordHash(password!, email);
-    var auth = EmailAuth(
+    EmailAuth auth = EmailAuth(
       userId: userInfo.id!,
       email: email,
       hash: hash,
@@ -81,7 +81,7 @@ class Emails {
     String oldPassword,
     String newPassword,
   ) async {
-    var auth = await session.db.findSingleRow<EmailAuth>(
+    EmailAuth? auth = await session.db.findSingleRow<EmailAuth>(
       where: EmailAuth.t.userId.equals(userId),
     );
     if (auth == null) {
@@ -113,11 +113,11 @@ class Emails {
 
     email = email.trim().toLowerCase();
 
-    var userInfo = await Users.findUserByEmail(session, email);
+    UserInfo? userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) return false;
 
-    var verificationCode = _generateVerificationCode();
-    var emailReset = EmailReset(
+    String verificationCode = _generateVerificationCode();
+    EmailReset emailReset = EmailReset(
       userId: userInfo.id!,
       verificationCode: verificationCode,
       expiration: DateTime.now().add(
@@ -140,14 +140,14 @@ class Emails {
     String verificationCode,
   ) async {
     session.log('verificationCode: $verificationCode', level: LogLevel.debug);
-    var passwordReset = await session.db.findSingleRow<EmailReset>(
+    EmailReset? passwordReset = await session.db.findSingleRow<EmailReset>(
       where: EmailReset.t.verificationCode.equals(verificationCode) &
           (EmailReset.t.expiration > DateTime.now().toUtc()),
     );
 
     if (passwordReset == null) return null;
 
-    var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
+    UserInfo? userInfo = await Users.findUserByUserId(session, passwordReset.userId);
     if (userInfo == null) return null;
 
     if (userInfo.email == null) return null;
@@ -164,14 +164,14 @@ class Emails {
     String verificationCode,
     String password,
   ) async {
-    var passwordReset = await session.db.findSingleRow<EmailReset>(
+    EmailReset? passwordReset = await session.db.findSingleRow<EmailReset>(
       where: EmailReset.t.verificationCode.equals(verificationCode) &
           (EmailReset.t.expiration > DateTime.now().toUtc()),
     );
 
     if (passwordReset == null) return false;
 
-    var emailAuth = await session.db.findSingleRow<EmailAuth>(
+    EmailAuth? emailAuth = await session.db.findSingleRow<EmailAuth>(
       where: EmailAuth.t.userId.equals(passwordReset.userId),
     );
 
@@ -198,7 +198,7 @@ class Emails {
 
     try {
       // Check if user already has an account
-      var userInfo = await Users.findUserByEmail(session, email);
+      UserInfo? userInfo = await Users.findUserByEmail(session, email);
       if (userInfo != null) {
         return false;
       }
@@ -217,7 +217,7 @@ class Emails {
         return false;
       }
 
-      var accountRequest = await findAccountRequest(session, email);
+      EmailCreateAccountRequest? accountRequest = await findAccountRequest(session, email);
       if (accountRequest == null) {
         accountRequest = EmailCreateAccountRequest(
           userName: userName,
@@ -250,7 +250,7 @@ class Emails {
   ) async {
     return await EmailCreateAccountRequest.findSingleRow(
       session,
-      where: (t) => t.email.equals(email),
+      where: (EmailCreateAccountRequestTable t) => t.email.equals(email),
     );
   }
 

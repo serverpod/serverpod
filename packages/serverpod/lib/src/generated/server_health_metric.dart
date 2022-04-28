@@ -28,7 +28,7 @@ class ServerHealthMetric extends SerializableEntity {
   });
 
   ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     name = _data['name']!;
     isHealthy = _data['isHealthy']!;
@@ -37,7 +37,7 @@ class ServerHealthMetric extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'isHealthy': isHealthy,
@@ -47,7 +47,7 @@ class ServerHealthMetric extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'isHealthy': isHealthy,

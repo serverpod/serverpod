@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:serverpod/src/hot_reload/hot_reload.dart';
-import 'package:serverpod/src/server/health_check.dart';
+import '../hot_reload/hot_reload.dart';
+import '../server/health_check.dart';
 
 import '../../serverpod.dart';
 import '../cache/cache.dart';
@@ -79,7 +79,7 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.db.find<SessionLogEntry>(
+    List<SessionLogEntry> rows = (await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
@@ -87,15 +87,15 @@ class InsightsEndpoint extends Endpoint {
     ))
         .cast<SessionLogEntry>();
 
-    var sessionLogInfo = <SessionLogInfo>[];
-    for (var logEntry in rows) {
-      var messageLogRows = await session.db.find<LogEntry>(
+    List<SessionLogInfo> sessionLogInfo = <SessionLogInfo>[];
+    for (SessionLogEntry logEntry in rows) {
+      List<LogEntry> messageLogRows = await session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: LogEntry.t.id,
         orderDescending: false,
       );
 
-      var queryLogRows = await session.db.find<QueryLogEntry>(
+      List<QueryLogEntry> queryLogRows = await session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: QueryLogEntry.t.id,
         orderDescending: false,
@@ -116,7 +116,7 @@ class InsightsEndpoint extends Endpoint {
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
       Session session, int? numEntries, SessionLogFilter? filter) async {
-    var logs = session.serverpod.logManager
+    List<SessionLogInfo> logs = session.serverpod.logManager
         .getOpenSessionLogs(numEntries ?? 100, filter);
     return SessionLogResult(sessionLog: logs);
   }

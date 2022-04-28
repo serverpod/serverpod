@@ -1,17 +1,18 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
-import 'package:serverpod_chat_flutter/src/text_with_links.dart';
-import 'package:serverpod_chat_flutter/src/web_util/web_util.dart';
+import 'text_with_links.dart';
+import 'web_util/web_util.dart';
 
 class DefaultChatTile extends StatelessWidget {
   final ChatMessage message;
   final ChatMessage? previous;
   final double horizontalPadding;
 
-  final _timeFormat = DateFormat.jm();
+  final DateFormat _timeFormat = DateFormat.jm();
 
   DefaultChatTile({
     Key? key,
@@ -22,20 +23,20 @@ class DefaultChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final compress = previous != null &&
+    bool compress = previous != null &&
         message.sender == previous!.sender &&
         message.time
                 .difference(previous!.time)
-                .compareTo(Duration(minutes: 3)) <
+                .compareTo(const Duration(minutes: 3)) <
             0;
 
-    final hasPreview = message.attachments != null &&
+    bool hasPreview = message.attachments != null &&
         message.attachments!.length == 1 &&
         message.attachments![0].previewImage != null;
 
-    final attachmentTiles = <Widget>[];
+    List<Widget> attachmentTiles = <Widget>[];
     if (message.attachments != null && !hasPreview) {
-      for (final attachment in message.attachments!) {
+      for (ChatMessageAttachment attachment in message.attachments!) {
         attachmentTiles.add(
           _AttachmentTile(attachment: attachment),
         );
@@ -47,35 +48,35 @@ class DefaultChatTile extends StatelessWidget {
           bottom: 20, left: horizontalPadding, right: horizontalPadding),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           if (!compress)
             Padding(
-              padding: EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(right: 12),
               child: CircularUserImage(
                 userInfo: message.senderInfo,
                 size: 40,
               ),
             ),
           if (compress)
-            SizedBox(
+            const SizedBox(
               width: 52,
             ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+              children: <Widget>[
                 if (!compress)
                   Padding(
-                    padding: EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Text(
                           message.senderInfo?.userName ?? 'Unknown sender',
                           style: Theme.of(context).textTheme.headline6,
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.only(left: 8),
                           child: Text(
                             _formatTime(message.time),
                             style: Theme.of(context).textTheme.caption,
@@ -96,7 +97,7 @@ class DefaultChatTile extends StatelessWidget {
                   ),
                 if (attachmentTiles.isNotEmpty)
                   Container(
-                    margin: EdgeInsets.only(top: 8),
+                    margin: const EdgeInsets.only(top: 8),
                     height: 40,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
@@ -105,7 +106,7 @@ class DefaultChatTile extends StatelessWidget {
                   ),
                 if (hasPreview)
                   Container(
-                    margin: EdgeInsets.only(top: 8),
+                    margin: const EdgeInsets.only(top: 8),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: _AttachmentTile(
@@ -119,14 +120,14 @@ class DefaultChatTile extends StatelessWidget {
       ),
     );
 
-    final showDayHeader =
+    bool showDayHeader =
         previous == null || !_isSameDay(message.time, previous!.time);
     if (showDayHeader) {
       tile = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
           Container(
-            padding: EdgeInsets.only(top: 16, bottom: 16),
+            padding: const EdgeInsets.only(top: 16, bottom: 16),
             child: Center(
               child: Text(
                 _formatDay(message.time),
@@ -169,20 +170,21 @@ class DefaultChatTile extends StatelessWidget {
     date = date.toLocal();
     date = DateTime(date.year, date.month, date.day);
 
-    var today = DateTime.now();
+    DateTime today = DateTime.now();
     today = DateTime(today.year, today.month, today.day);
 
-    var dayDiff = today.difference(date).inDays;
-    if (dayDiff == 0)
+    int dayDiff = today.difference(date).inDays;
+    if (dayDiff == 0) {
       return 'Today';
-    else if (dayDiff == 1)
+    } else if (dayDiff == 1) {
       return 'Yesterday';
-    else if (dayDiff < 7)
+    } else if (dayDiff < 7) {
       return DateFormat.EEEE().format(date);
-    else if (date.year == today.year)
+    } else if (date.year == today.year) {
       return DateFormat.MMMd().format(date);
-    else
+    } else {
       return DateFormat.yMMMd().format(date);
+    }
   }
 }
 
@@ -209,37 +211,38 @@ class _AttachmentTileState extends State<_AttachmentTile> {
     Widget previewTile;
 
     Color color;
-    if (_pressed)
+    if (_pressed) {
       color = Colors.black54;
-    else if (_hover)
+    } else if (_hover) {
       color = Colors.white24;
-    else
+    } else {
       color = Theme.of(context).cardColor;
+    }
 
     if (widget.preview) {
       previewTile = Container(
         width: widget.attachment.previewWidth!.toDouble(),
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor),
-          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
           color: color,
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             SizedBox(
               width: widget.attachment.previewWidth!.toDouble(),
               height: widget.attachment.previewHeight!.toDouble(),
               child: Image.network(widget.attachment.previewImage!),
             ),
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 8),
                     child: Icon(
                       _iconForName(widget.attachment.fileName),
                       color: Theme.of(context).textTheme.bodyText2!.color,
@@ -264,18 +267,18 @@ class _AttachmentTileState extends State<_AttachmentTile> {
         decoration: BoxDecoration(
           color: color,
           border: Border.all(color: Theme.of(context).dividerColor),
-          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
         ),
-        margin: EdgeInsets.only(right: 8),
+        margin: const EdgeInsets.only(right: 8),
         width: 180,
         child: Material(
           type: MaterialType.transparency,
           child: Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Row(
-              children: [
+              children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.only(right: 8),
                   child: Icon(
                     _iconForName(widget.attachment.fileName),
                     color: Theme.of(context).textTheme.bodyText2!.color,
@@ -297,12 +300,12 @@ class _AttachmentTileState extends State<_AttachmentTile> {
     }
 
     return MouseRegion(
-      onHover: (event) {
+      onHover: (PointerHoverEvent event) {
         setState(() {
           _hover = true;
         });
       },
-      onExit: (event) {
+      onExit: (PointerExitEvent event) {
         setState(() {
           _hover = false;
         });
@@ -330,12 +333,13 @@ class _AttachmentTileState extends State<_AttachmentTile> {
   }
 
   IconData _iconForName(String name) {
-    var ext = path.extension(name.toLowerCase());
-    if ({'.png', '.jpg', '.jpeg', '.gif'}.contains(ext))
+    String ext = path.extension(name.toLowerCase());
+    if (<String>{'.png', '.jpg', '.jpeg', '.gif'}.contains(ext)) {
       return Icons.image_outlined;
-    else if ({'.pdf'}.contains(ext))
+    } else if (<String>{'.pdf'}.contains(ext)) {
       return Icons.insert_drive_file_outlined;
-    else
+    } else {
       return Icons.insert_drive_file_outlined;
+    }
   }
 }

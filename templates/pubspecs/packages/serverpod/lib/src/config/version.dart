@@ -1,4 +1,4 @@
 // This file is generated. Do not modify, instead edit the files in the
 // templates/pubspecs directory.
 
-const serverpodVersion = 'VERSION';
+const String serverpodVersion = 'VERSION';

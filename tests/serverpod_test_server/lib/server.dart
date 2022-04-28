@@ -3,7 +3,7 @@ import 'package:serverpod_auth_server/module.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
 import 'package:serverpod_relic/serverpod_relic.dart';
-import 'package:serverpod_test_server/src/web/routes/root.dart';
+import 'src/web/routes/root.dart';
 
 import 'src/futureCalls/test_call.dart';
 import 'src/generated/endpoints.dart';
@@ -11,7 +11,7 @@ import 'src/generated/protocol.dart';
 
 void run(List<String> args) async {
   // Create serverpod
-  var pod = Serverpod(
+  Serverpod pod = Serverpod(
     args,
     Protocol(),
     Endpoints(),
@@ -31,7 +31,7 @@ void run(List<String> args) async {
 
   // Callbacks for auth
   auth.AuthConfig.set(auth.AuthConfig(
-    onUserWillBeCreated: (session, userInfo, authMethod) async {
+    onUserWillBeCreated: (Session session, auth.UserInfo userInfo, String? authMethod) async {
       return (userInfo.email!.endsWith('.bar'));
     },
   ));
@@ -40,7 +40,7 @@ void run(List<String> args) async {
   await pod.start();
 
   // Add relic / webserver
-  var webserver = WebServer(serverpod: pod);
+  WebServer webserver = WebServer(serverpod: pod);
   webserver.addRoute(RouteRoot(), '/');
   await webserver.start();
 }

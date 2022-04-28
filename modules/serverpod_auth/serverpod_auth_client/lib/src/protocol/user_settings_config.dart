@@ -32,7 +32,7 @@ class UserSettingsConfig extends SerializableEntity {
   });
 
   UserSettingsConfig.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     canSeeUserName = _data['canSeeUserName']!;
     canSeeFullName = _data['canSeeFullName']!;
@@ -43,7 +43,7 @@ class UserSettingsConfig extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,

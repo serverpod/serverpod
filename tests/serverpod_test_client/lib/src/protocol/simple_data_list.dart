@@ -27,13 +27,14 @@ class SimpleDataList extends SerializableEntity {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     rows = _data['rows']!
-        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        .map<SimpleData>(
+            (Map<String, dynamic> a) => SimpleData.fromSerialization(a))
         ?.toList();
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'rows': rows.map((SimpleData a) => a.serialize()).toList(),
     });

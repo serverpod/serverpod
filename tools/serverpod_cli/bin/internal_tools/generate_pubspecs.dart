@@ -4,9 +4,9 @@ import '../create/copier.dart';
 
 void performGeneratePubspecs(String version, String mode) {
   // Verify that we are in the serverpod directory
-  var dirPackages = Directory('packages');
-  var dirTemplates = Directory('templates/pubspecs');
-  var dirRoot = Directory('.');
+  Directory dirPackages = Directory('packages');
+  Directory dirTemplates = Directory('templates/pubspecs');
+  Directory dirRoot = Directory('.');
 
   if (!dirPackages.existsSync() ||
       !dirTemplates.existsSync() ||
@@ -19,10 +19,10 @@ void performGeneratePubspecs(String version, String mode) {
 
   if (mode == 'development') {
     // Development mode
-    var copier = Copier(
+    Copier copier = Copier(
       srcDir: dirTemplates,
       dstDir: dirRoot,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'PUBLISH_TO',
           replacement: 'publish_to: none',
@@ -41,15 +41,15 @@ void performGeneratePubspecs(String version, String mode) {
           replacement: 'false',
         ),
       ],
-      fileNameReplacements: [],
+      fileNameReplacements: <Replacement>[],
     );
     copier.copyFiles();
   } else {
     // Production mode
-    var copier = Copier(
+    Copier copier = Copier(
       srcDir: dirTemplates,
       dstDir: dirRoot,
-      replacements: [
+      replacements: <Replacement>[
         Replacement(
           slotName: 'PUBLISH_TO',
           replacement: '',
@@ -72,8 +72,8 @@ void performGeneratePubspecs(String version, String mode) {
           replacement: 'true',
         ),
       ],
-      fileNameReplacements: [],
-      removePrefixes: ['path'],
+      fileNameReplacements: <Replacement>[],
+      removePrefixes: <String>['path'],
     );
     copier.copyFiles();
   }

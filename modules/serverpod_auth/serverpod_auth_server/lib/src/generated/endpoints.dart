@@ -20,7 +20,7 @@ import '../endpoints/user_endpoint.dart';
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
+    Map<String, Endpoint> endpoints = <String, Endpoint>{
       'admin': AdminEndpoint()..initialize(server, 'admin', 'serverpod_auth'),
       'apple': AppleEndpoint()..initialize(server, 'apple', 'serverpod_auth'),
       'email': EmailEndpoint()..initialize(server, 'email', 'serverpod_auth'),
@@ -34,10 +34,10 @@ class Endpoints extends EndpointDispatch {
     connectors['admin'] = EndpointConnector(
       name: 'admin',
       endpoint: endpoints['admin']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'getUserInfo': MethodConnector(
           name: 'getUserInfo',
-          params: {
+          params: <String, ParameterDescription>{
             'userId': ParameterDescription(
                 name: 'userId', type: int, nullable: false),
           },
@@ -54,10 +54,10 @@ class Endpoints extends EndpointDispatch {
     connectors['apple'] = EndpointConnector(
       name: 'apple',
       endpoint: endpoints['apple']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'authenticate': MethodConnector(
           name: 'authenticate',
-          params: {
+          params: <String, ParameterDescription>{
             'authInfo': ParameterDescription(
                 name: 'authInfo', type: AppleAuthInfo, nullable: false),
           },
@@ -74,10 +74,10 @@ class Endpoints extends EndpointDispatch {
     connectors['email'] = EndpointConnector(
       name: 'email',
       endpoint: endpoints['email']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'authenticate': MethodConnector(
           name: 'authenticate',
-          params: {
+          params: <String, ParameterDescription>{
             'email': ParameterDescription(
                 name: 'email', type: String, nullable: false),
             'password': ParameterDescription(
@@ -93,7 +93,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'changePassword': MethodConnector(
           name: 'changePassword',
-          params: {
+          params: <String, ParameterDescription>{
             'oldPassword': ParameterDescription(
                 name: 'oldPassword', type: String, nullable: false),
             'newPassword': ParameterDescription(
@@ -109,7 +109,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'initiatePasswordReset': MethodConnector(
           name: 'initiatePasswordReset',
-          params: {
+          params: <String, ParameterDescription>{
             'email': ParameterDescription(
                 name: 'email', type: String, nullable: false),
           },
@@ -122,7 +122,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'verifyEmailPasswordReset': MethodConnector(
           name: 'verifyEmailPasswordReset',
-          params: {
+          params: <String, ParameterDescription>{
             'verificationCode': ParameterDescription(
                 name: 'verificationCode', type: String, nullable: false),
           },
@@ -136,7 +136,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'resetPassword': MethodConnector(
           name: 'resetPassword',
-          params: {
+          params: <String, ParameterDescription>{
             'verificationCode': ParameterDescription(
                 name: 'verificationCode', type: String, nullable: false),
             'password': ParameterDescription(
@@ -152,7 +152,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'createAccountRequest': MethodConnector(
           name: 'createAccountRequest',
-          params: {
+          params: <String, ParameterDescription>{
             'userName': ParameterDescription(
                 name: 'userName', type: String, nullable: false),
             'email': ParameterDescription(
@@ -171,7 +171,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'createAccount': MethodConnector(
           name: 'createAccount',
-          params: {
+          params: <String, ParameterDescription>{
             'email': ParameterDescription(
                 name: 'email', type: String, nullable: false),
             'verificationCode': ParameterDescription(
@@ -191,10 +191,10 @@ class Endpoints extends EndpointDispatch {
     connectors['google'] = EndpointConnector(
       name: 'google',
       endpoint: endpoints['google']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'authenticateWithServerAuthCode': MethodConnector(
           name: 'authenticateWithServerAuthCode',
-          params: {
+          params: <String, ParameterDescription>{
             'authenticationCode': ParameterDescription(
                 name: 'authenticationCode', type: String, nullable: false),
             'redirectUri': ParameterDescription(
@@ -211,7 +211,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'authenticateWithIdToken': MethodConnector(
           name: 'authenticateWithIdToken',
-          params: {
+          params: <String, ParameterDescription>{
             'idToken': ParameterDescription(
                 name: 'idToken', type: String, nullable: false),
           },
@@ -229,10 +229,10 @@ class Endpoints extends EndpointDispatch {
     connectors['status'] = EndpointConnector(
       name: 'status',
       endpoint: endpoints['status']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'isSignedIn': MethodConnector(
           name: 'isSignedIn',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['status'] as StatusEndpoint).isSignedIn(
               session,
@@ -241,7 +241,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'signOut': MethodConnector(
           name: 'signOut',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['status'] as StatusEndpoint).signOut(
               session,
@@ -250,7 +250,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getUserInfo': MethodConnector(
           name: 'getUserInfo',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['status'] as StatusEndpoint).getUserInfo(
               session,
@@ -259,7 +259,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getUserSettingsConfig': MethodConnector(
           name: 'getUserSettingsConfig',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['status'] as StatusEndpoint)
                 .getUserSettingsConfig(
@@ -273,10 +273,10 @@ class Endpoints extends EndpointDispatch {
     connectors['user'] = EndpointConnector(
       name: 'user',
       endpoint: endpoints['user']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'removeUserImage': MethodConnector(
           name: 'removeUserImage',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['user'] as UserEndpoint).removeUserImage(
               session,
@@ -285,7 +285,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'setUserImage': MethodConnector(
           name: 'setUserImage',
-          params: {
+          params: <String, ParameterDescription>{
             'image': ParameterDescription(
                 name: 'image', type: typed_data.ByteData, nullable: false),
           },
@@ -298,7 +298,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'changeUserName': MethodConnector(
           name: 'changeUserName',
-          params: {
+          params: <String, ParameterDescription>{
             'userName': ParameterDescription(
                 name: 'userName', type: String, nullable: false),
           },

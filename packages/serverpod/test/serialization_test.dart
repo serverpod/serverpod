@@ -5,28 +5,28 @@ import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 ByteData createByteData() {
-  var ints = Uint8List(256);
-  for (var i = 0; i < 256; i++) {
+  Uint8List ints = Uint8List(256);
+  for (int i = 0; i < 256; i++) {
     ints[i] = i;
   }
   return ByteData.view(ints.buffer);
 }
 
 void main() {
-  var protocol = Protocol();
+  Protocol protocol = Protocol();
 
   group('Serializations', () {
     test('Simple data', () {
-      var data = SimpleData(num: 42);
-      var s = jsonEncode(data.serialize());
-      var unpacked = SimpleData.fromSerialization(jsonDecode(s));
+      SimpleData data = SimpleData(num: 42);
+      String s = jsonEncode(data.serialize());
+      SimpleData unpacked = SimpleData.fromSerialization(jsonDecode(s));
       expect(unpacked.num, equals(42));
     });
 
     test('Basic types with null values', () {
-      var types = Types();
-      var s = protocol.serializeEntity(types)!;
-      var unpacked =
+      Types types = Types();
+      String s = protocol.serializeEntity(types)!;
+      Types unpacked =
           protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
       expect(unpacked.aBool, isNull);
       expect(unpacked.anInt, isNull);
@@ -37,7 +37,7 @@ void main() {
     });
 
     test('Basic types with values', () {
-      var types = Types(
+      Types types = Types(
         aBool: true,
         anInt: 42,
         aString: '42',
@@ -45,8 +45,8 @@ void main() {
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
       );
-      var s = protocol.serializeEntity(types)!;
-      var unpacked =
+      String s = protocol.serializeEntity(types)!;
+      Types unpacked =
           protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
       expect(unpacked.aBool, equals(true));
       expect(unpacked.anInt, equals(42));
@@ -54,32 +54,32 @@ void main() {
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aByteData!.lengthInBytes, equals(256));
-      for (var i = 0; i < 256; i++) {
+      for (int i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
       }
     });
 
     test('Nullability with null types', () {
-      var nullability = Nullability(
+      Nullability nullability = Nullability(
         anInt: 42,
         aDouble: 42.42,
         aBool: true,
         aString: 'foo',
         aDateTime: DateTime.utc(1976),
         anObject: SimpleData(num: 42),
-        anIntList: [10, 20],
-        aListWithNullableInts: [10, null],
-        anObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-        aListWithNullableObjects: [SimpleData(num: 10), null],
-        aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
-        aListWithNullableDateTimes: [DateTime.utc(1976), null],
+        anIntList: <int>[10, 20],
+        aListWithNullableInts: <int?>[10, null],
+        anObjectList: <SimpleData>[SimpleData(num: 10), SimpleData(num: 20)],
+        aListWithNullableObjects: <SimpleData?>[SimpleData(num: 10), null],
+        aDateTimeList: <DateTime>[DateTime.utc(1976), DateTime.utc(1977)],
+        aListWithNullableDateTimes: <DateTime?>[DateTime.utc(1976), null],
         aByteData: createByteData(),
-        aByteDataList: [createByteData(), createByteData()],
-        aListWithNullableByteDatas: [createByteData(), null],
+        aByteDataList: <ByteData>[createByteData(), createByteData()],
+        aListWithNullableByteDatas: <ByteData?>[createByteData(), null],
       );
 
-      var s = protocol.serializeEntity(nullability)!;
-      var unpacked =
+      String s = protocol.serializeEntity(nullability)!;
+      Nullability unpacked =
           protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aDouble, equals(42.42));
@@ -135,7 +135,7 @@ void main() {
     });
 
     test('Nullability with values', () {
-      var nullability = Nullability(
+      Nullability nullability = Nullability(
         anInt: 42,
         aNullableInt: 42,
         aDouble: 42.42,
@@ -150,26 +150,38 @@ void main() {
         aNullableByteData: createByteData(),
         anObject: SimpleData(num: 42),
         aNullableObject: SimpleData(num: 42),
-        anIntList: [10, 20],
-        aNullableIntList: [10, 20],
-        aListWithNullableInts: [10, null],
-        aNullableListWithNullableInts: [10, null],
-        anObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-        aNullableObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-        aListWithNullableObjects: [SimpleData(num: 10), null],
-        aNullableListWithNullableObjects: [SimpleData(num: 10), null],
-        aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
-        aNullableDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
-        aListWithNullableDateTimes: [DateTime.utc(1976), null],
-        aNullableListWithNullableDateTimes: [DateTime.utc(1976), null],
-        aByteDataList: [createByteData(), createByteData()],
-        aNullableByteDataList: [createByteData(), createByteData()],
-        aListWithNullableByteDatas: [createByteData(), null],
-        aNullableListWithNullableByteDatas: [createByteData(), null],
+        anIntList: <int>[10, 20],
+        aNullableIntList: <int>[10, 20],
+        aListWithNullableInts: <int?>[10, null],
+        aNullableListWithNullableInts: <int?>[10, null],
+        anObjectList: <SimpleData>[SimpleData(num: 10), SimpleData(num: 20)],
+        aNullableObjectList: <SimpleData>[
+          SimpleData(num: 10),
+          SimpleData(num: 20)
+        ],
+        aListWithNullableObjects: <SimpleData?>[SimpleData(num: 10), null],
+        aNullableListWithNullableObjects: <SimpleData?>[
+          SimpleData(num: 10),
+          null
+        ],
+        aDateTimeList: <DateTime>[DateTime.utc(1976), DateTime.utc(1977)],
+        aNullableDateTimeList: <DateTime>[
+          DateTime.utc(1976),
+          DateTime.utc(1977)
+        ],
+        aListWithNullableDateTimes: <DateTime?>[DateTime.utc(1976), null],
+        aNullableListWithNullableDateTimes: <DateTime?>[
+          DateTime.utc(1976),
+          null
+        ],
+        aByteDataList: <ByteData>[createByteData(), createByteData()],
+        aNullableByteDataList: <ByteData>[createByteData(), createByteData()],
+        aListWithNullableByteDatas: <ByteData?>[createByteData(), null],
+        aNullableListWithNullableByteDatas: <ByteData?>[createByteData(), null],
       );
 
-      var s = protocol.serializeEntity(nullability)!;
-      var unpacked =
+      String s = protocol.serializeEntity(nullability)!;
+      Nullability unpacked =
           protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
       expect(unpacked.aNullableInt, equals(42));
       expect(unpacked.aNullableDouble, equals(42.42));

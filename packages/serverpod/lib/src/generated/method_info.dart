@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,7 @@ class MethodInfo extends TableRow {
   @override
   String get tableName => 'serverpod_method';
 
-  static final t = MethodInfoTable();
+  static final MethodInfoTable t = MethodInfoTable();
 
   @override
   int? id;
@@ -32,7 +32,7 @@ class MethodInfo extends TableRow {
   });
 
   MethodInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     endpoint = _data['endpoint']!;
     method = _data['method']!;
@@ -40,7 +40,7 @@ class MethodInfo extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'endpoint': endpoint,
       'method': method,
@@ -49,7 +49,7 @@ class MethodInfo extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'endpoint': endpoint,
       'method': method,
@@ -58,7 +58,7 @@ class MethodInfo extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'endpoint': endpoint,
       'method': method,
@@ -66,7 +66,7 @@ class MethodInfo extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -192,12 +192,12 @@ class MethodInfoTable extends Table {
 
   @override
   String tableName = 'serverpod_method';
-  final id = ColumnInt('id');
-  final endpoint = ColumnString('endpoint');
-  final method = ColumnString('method');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString endpoint = ColumnString('endpoint');
+  final ColumnString method = ColumnString('method');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         endpoint,
         method,

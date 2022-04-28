@@ -47,15 +47,15 @@ class Policy {
   @override
   String toString() {
     return '''
-{ "expiration": "${this.expiration}",
+{ "expiration": "$expiration",
   "conditions": [
-    {"bucket": "${this.bucket}"},
-    ["starts-with", "\$key", "${this.key}"],
+    {"bucket": "$bucket"},
+    ["starts-with", "\$key", "$key"],
     {"acl": "${public ? 'public-read' : 'private'}"},
-    ["content-length-range", 1, ${this.maxFileSize}],
-    {"x-amz-credential": "${this.credential}"},
+    ["content-length-range", 1, $maxFileSize],
+    {"x-amz-credential": "$credential"},
     {"x-amz-algorithm": "AWS4-HMAC-SHA256"},
-    {"x-amz-date": "${this.datetime}" }
+    {"x-amz-date": "$datetime" }
   ]
 }
 ''';

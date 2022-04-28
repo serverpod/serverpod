@@ -24,16 +24,16 @@ class LogResult extends SerializableEntity {
   });
 
   LogResult.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     entries = _data['entries']!
-        .map<LogEntry>((a) => LogEntry.fromSerialization(a))
+        .map<LogEntry>((Map<String, dynamic>a) => LogEntry.fromSerialization(a))
         ?.toList();
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'entries': entries.map((LogEntry a) => a.serialize()).toList(),
     });
@@ -41,7 +41,7 @@ class LogResult extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'entries': entries.map((LogEntry a) => a.serialize()).toList(),
     });

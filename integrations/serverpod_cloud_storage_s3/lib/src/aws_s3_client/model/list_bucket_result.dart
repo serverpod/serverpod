@@ -15,7 +15,7 @@ abstract class ListBucketResult
     implements Built<ListBucketResult, ListBucketResultBuilder> {
   ListBucketResult._();
 
-  factory ListBucketResult([updates(ListBucketResultBuilder b)?]) =
+  factory ListBucketResult([Function(ListBucketResultBuilder b)? updates]) =
       _$ListBucketResult;
 
   @BuiltValueField(wireName: 'Name')

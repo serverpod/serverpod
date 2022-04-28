@@ -24,7 +24,7 @@ class ModuleClass extends SerializableEntity {
   });
 
   ModuleClass.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     name = _data['name']!;
     data = _data['data']!;
@@ -32,7 +32,7 @@ class ModuleClass extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'name': name,
       'data': data,

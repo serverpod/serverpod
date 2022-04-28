@@ -34,7 +34,7 @@ import '../endpoints/streaming.dart';
 class Endpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
+    Map<String, Endpoint> endpoints = <String, Endpoint>{
       'asyncTasks': AsyncTasksEndpoint()
         ..initialize(server, 'asyncTasks', null),
       'authentication': AuthenticationEndpoint()
@@ -68,10 +68,10 @@ class Endpoints extends EndpointDispatch {
     connectors['asyncTasks'] = EndpointConnector(
       name: 'asyncTasks',
       endpoint: endpoints['asyncTasks']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'insertRowToSimpleDataAfterDelay': MethodConnector(
           name: 'insertRowToSimpleDataAfterDelay',
-          params: {
+          params: <String, ParameterDescription>{
             'num':
                 ParameterDescription(name: 'num', type: int, nullable: false),
             'seconds': ParameterDescription(
@@ -88,7 +88,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'throwExceptionAfterDelay': MethodConnector(
           name: 'throwExceptionAfterDelay',
-          params: {
+          params: <String, ParameterDescription>{
             'seconds': ParameterDescription(
                 name: 'seconds', type: int, nullable: false),
           },
@@ -106,10 +106,10 @@ class Endpoints extends EndpointDispatch {
     connectors['authentication'] = EndpointConnector(
       name: 'authentication',
       endpoint: endpoints['authentication']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'removeAllUsers': MethodConnector(
           name: 'removeAllUsers',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['authentication'] as AuthenticationEndpoint)
                 .removeAllUsers(
@@ -119,7 +119,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'countUsers': MethodConnector(
           name: 'countUsers',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['authentication'] as AuthenticationEndpoint)
                 .countUsers(
@@ -129,7 +129,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'createUser': MethodConnector(
           name: 'createUser',
-          params: {
+          params: <String, ParameterDescription>{
             'email': ParameterDescription(
                 name: 'email', type: String, nullable: false),
             'password': ParameterDescription(
@@ -146,7 +146,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'authenticate': MethodConnector(
           name: 'authenticate',
-          params: {
+          params: <String, ParameterDescription>{
             'email': ParameterDescription(
                 name: 'email', type: String, nullable: false),
             'password': ParameterDescription(
@@ -167,10 +167,10 @@ class Endpoints extends EndpointDispatch {
     connectors['basicTypes'] = EndpointConnector(
       name: 'basicTypes',
       endpoint: endpoints['basicTypes']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'testInt': MethodConnector(
           name: 'testInt',
-          params: {
+          params: <String, ParameterDescription>{
             'value':
                 ParameterDescription(name: 'value', type: int, nullable: true),
           },
@@ -183,7 +183,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'testDouble': MethodConnector(
           name: 'testDouble',
-          params: {
+          params: <String, ParameterDescription>{
             'value': ParameterDescription(
                 name: 'value', type: double, nullable: true),
           },
@@ -196,7 +196,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'testBool': MethodConnector(
           name: 'testBool',
-          params: {
+          params: <String, ParameterDescription>{
             'value':
                 ParameterDescription(name: 'value', type: bool, nullable: true),
           },
@@ -209,7 +209,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'testDateTime': MethodConnector(
           name: 'testDateTime',
-          params: {
+          params: <String, ParameterDescription>{
             'dateTime': ParameterDescription(
                 name: 'dateTime', type: DateTime, nullable: true),
           },
@@ -222,7 +222,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'testString': MethodConnector(
           name: 'testString',
-          params: {
+          params: <String, ParameterDescription>{
             'value': ParameterDescription(
                 name: 'value', type: String, nullable: true),
           },
@@ -235,7 +235,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'testByteData': MethodConnector(
           name: 'testByteData',
-          params: {
+          params: <String, ParameterDescription>{
             'value': ParameterDescription(
                 name: 'value', type: typed_data.ByteData, nullable: true),
           },
@@ -252,10 +252,10 @@ class Endpoints extends EndpointDispatch {
     connectors['cloudStorage'] = EndpointConnector(
       name: 'cloudStorage',
       endpoint: endpoints['cloudStorage']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'reset': MethodConnector(
           name: 'reset',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['cloudStorage'] as CloudStorageEndpoint).reset(
               session,
@@ -264,7 +264,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'storePublicFile': MethodConnector(
           name: 'storePublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
             'byteData': ParameterDescription(
@@ -281,7 +281,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'retrievePublicFile': MethodConnector(
           name: 'retrievePublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -295,7 +295,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'existsPublicFile': MethodConnector(
           name: 'existsPublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -309,7 +309,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'deletePublicFile': MethodConnector(
           name: 'deletePublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -323,7 +323,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getPublicUrlForFile': MethodConnector(
           name: 'getPublicUrlForFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -337,7 +337,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getDirectFilePostUrl': MethodConnector(
           name: 'getDirectFilePostUrl',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -351,7 +351,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'verifyDirectFileUpload': MethodConnector(
           name: 'verifyDirectFileUpload',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -369,10 +369,10 @@ class Endpoints extends EndpointDispatch {
     connectors['s3CloudStorage'] = EndpointConnector(
       name: 's3CloudStorage',
       endpoint: endpoints['s3CloudStorage']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'storePublicFile': MethodConnector(
           name: 'storePublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
             'byteData': ParameterDescription(
@@ -389,7 +389,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'retrievePublicFile': MethodConnector(
           name: 'retrievePublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -403,7 +403,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'existsPublicFile': MethodConnector(
           name: 'existsPublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -417,7 +417,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'deletePublicFile': MethodConnector(
           name: 'deletePublicFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -431,7 +431,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getPublicUrlForFile': MethodConnector(
           name: 'getPublicUrlForFile',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -445,7 +445,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getDirectFilePostUrl': MethodConnector(
           name: 'getDirectFilePostUrl',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -459,7 +459,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'verifyDirectFileUpload': MethodConnector(
           name: 'verifyDirectFileUpload',
-          params: {
+          params: <String, ParameterDescription>{
             'path': ParameterDescription(
                 name: 'path', type: String, nullable: false),
           },
@@ -477,10 +477,10 @@ class Endpoints extends EndpointDispatch {
     connectors['basicDatabase'] = EndpointConnector(
       name: 'basicDatabase',
       endpoint: endpoints['basicDatabase']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'storeTypes': MethodConnector(
           name: 'storeTypes',
-          params: {
+          params: <String, ParameterDescription>{
             'types': ParameterDescription(
                 name: 'types', type: Types, nullable: false),
           },
@@ -493,7 +493,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getTypes': MethodConnector(
           name: 'getTypes',
-          params: {
+          params: <String, ParameterDescription>{
             'id': ParameterDescription(name: 'id', type: int, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
@@ -505,7 +505,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getTypesRawQuery': MethodConnector(
           name: 'getTypesRawQuery',
-          params: {
+          params: <String, ParameterDescription>{
             'id': ParameterDescription(name: 'id', type: int, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
@@ -518,7 +518,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'countTypesRows': MethodConnector(
           name: 'countTypesRows',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicDatabase'] as BasicDatabase).countTypesRows(
               session,
@@ -527,7 +527,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'deleteAllInTypes': MethodConnector(
           name: 'deleteAllInTypes',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicDatabase'] as BasicDatabase)
                 .deleteAllInTypes(
@@ -537,7 +537,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'createSimpleTestData': MethodConnector(
           name: 'createSimpleTestData',
-          params: {
+          params: <String, ParameterDescription>{
             'numRows': ParameterDescription(
                 name: 'numRows', type: int, nullable: false),
           },
@@ -551,7 +551,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'countSimpleData': MethodConnector(
           name: 'countSimpleData',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicDatabase'] as BasicDatabase)
                 .countSimpleData(
@@ -561,7 +561,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'deleteAllSimpleTestData': MethodConnector(
           name: 'deleteAllSimpleTestData',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicDatabase'] as BasicDatabase)
                 .deleteAllSimpleTestData(
@@ -571,7 +571,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'deleteSimpleTestDataLessThan': MethodConnector(
           name: 'deleteSimpleTestDataLessThan',
-          params: {
+          params: <String, ParameterDescription>{
             'num':
                 ParameterDescription(name: 'num', type: int, nullable: false),
           },
@@ -585,7 +585,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'findAndDeleteSimpleTestData': MethodConnector(
           name: 'findAndDeleteSimpleTestData',
-          params: {
+          params: <String, ParameterDescription>{
             'num':
                 ParameterDescription(name: 'num', type: int, nullable: false),
           },
@@ -599,7 +599,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'findSimpleDataRowsLessThan': MethodConnector(
           name: 'findSimpleDataRowsLessThan',
-          params: {
+          params: <String, ParameterDescription>{
             'num':
                 ParameterDescription(name: 'num', type: int, nullable: false),
             'offset': ParameterDescription(
@@ -622,7 +622,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'updateSimpleDataRow': MethodConnector(
           name: 'updateSimpleDataRow',
-          params: {
+          params: <String, ParameterDescription>{
             'num':
                 ParameterDescription(name: 'num', type: int, nullable: false),
             'newNum': ParameterDescription(
@@ -639,7 +639,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'storeObjectWithObject': MethodConnector(
           name: 'storeObjectWithObject',
-          params: {
+          params: <String, ParameterDescription>{
             'object': ParameterDescription(
                 name: 'object', type: ObjectWithObject, nullable: false),
           },
@@ -653,7 +653,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getObjectWithObject': MethodConnector(
           name: 'getObjectWithObject',
-          params: {
+          params: <String, ParameterDescription>{
             'id': ParameterDescription(name: 'id', type: int, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
@@ -670,10 +670,10 @@ class Endpoints extends EndpointDispatch {
     connectors['transactionsDatabase'] = EndpointConnector(
       name: 'transactionsDatabase',
       endpoint: endpoints['transactionsDatabase']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'removeRow': MethodConnector(
           name: 'removeRow',
-          params: {
+          params: <String, ParameterDescription>{
             'num':
                 ParameterDescription(name: 'num', type: int, nullable: false),
           },
@@ -688,7 +688,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'updateInsertDelete': MethodConnector(
           name: 'updateInsertDelete',
-          params: {
+          params: <String, ParameterDescription>{
             'numUpdate': ParameterDescription(
                 name: 'numUpdate', type: int, nullable: false),
             'numInsert': ParameterDescription(
@@ -713,10 +713,10 @@ class Endpoints extends EndpointDispatch {
     connectors['failedCalls'] = EndpointConnector(
       name: 'failedCalls',
       endpoint: endpoints['failedCalls']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'failedCall': MethodConnector(
           name: 'failedCall',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['failedCalls'] as FailedCallsEndpoint).failedCall(
               session,
@@ -729,10 +729,10 @@ class Endpoints extends EndpointDispatch {
     connectors['futureCalls'] = EndpointConnector(
       name: 'futureCalls',
       endpoint: endpoints['futureCalls']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'makeFutureCall': MethodConnector(
           name: 'makeFutureCall',
-          params: {
+          params: <String, ParameterDescription>{
             'data': ParameterDescription(
                 name: 'data', type: SimpleData, nullable: true),
           },
@@ -750,10 +750,10 @@ class Endpoints extends EndpointDispatch {
     connectors['logging'] = EndpointConnector(
       name: 'logging',
       endpoint: endpoints['logging']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'logInfo': MethodConnector(
           name: 'logInfo',
-          params: {
+          params: <String, ParameterDescription>{
             'message': ParameterDescription(
                 name: 'message', type: String, nullable: false),
           },
@@ -766,7 +766,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'logDebugAndInfoAndError': MethodConnector(
           name: 'logDebugAndInfoAndError',
-          params: {
+          params: <String, ParameterDescription>{
             'debug': ParameterDescription(
                 name: 'debug', type: String, nullable: false),
             'info': ParameterDescription(
@@ -786,7 +786,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'twoQueries': MethodConnector(
           name: 'twoQueries',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['logging'] as LoggingEndpoint).twoQueries(
               session,
@@ -799,10 +799,10 @@ class Endpoints extends EndpointDispatch {
     connectors['loggingDisabled'] = EndpointConnector(
       name: 'loggingDisabled',
       endpoint: endpoints['loggingDisabled']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'logInfo': MethodConnector(
           name: 'logInfo',
-          params: {
+          params: <String, ParameterDescription>{
             'message': ParameterDescription(
                 name: 'message', type: String, nullable: false),
           },
@@ -820,10 +820,10 @@ class Endpoints extends EndpointDispatch {
     connectors['moduleSerialization'] = EndpointConnector(
       name: 'moduleSerialization',
       endpoint: endpoints['moduleSerialization']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'serializeModuleObject': MethodConnector(
           name: 'serializeModuleObject',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['moduleSerialization']
                     as ModuleSerializationEndpoint)
@@ -834,7 +834,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'modifyModuleObject': MethodConnector(
           name: 'modifyModuleObject',
-          params: {
+          params: <String, ParameterDescription>{
             'object': ParameterDescription(
                 name: 'object',
                 type: serverpod_test_module.ModuleClass,
@@ -855,10 +855,10 @@ class Endpoints extends EndpointDispatch {
     connectors['redis'] = EndpointConnector(
       name: 'redis',
       endpoint: endpoints['redis']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'setSimpleData': MethodConnector(
           name: 'setSimpleData',
-          params: {
+          params: <String, ParameterDescription>{
             'key': ParameterDescription(
                 name: 'key', type: String, nullable: false),
             'data': ParameterDescription(
@@ -874,7 +874,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'setSimpleDataWithLifetime': MethodConnector(
           name: 'setSimpleDataWithLifetime',
-          params: {
+          params: <String, ParameterDescription>{
             'key': ParameterDescription(
                 name: 'key', type: String, nullable: false),
             'data': ParameterDescription(
@@ -891,7 +891,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getSimpleData': MethodConnector(
           name: 'getSimpleData',
-          params: {
+          params: <String, ParameterDescription>{
             'key': ParameterDescription(
                 name: 'key', type: String, nullable: false),
           },
@@ -904,7 +904,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'deleteSimpleData': MethodConnector(
           name: 'deleteSimpleData',
-          params: {
+          params: <String, ParameterDescription>{
             'key': ParameterDescription(
                 name: 'key', type: String, nullable: false),
           },
@@ -917,7 +917,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'resetMessageCentralTest': MethodConnector(
           name: 'resetMessageCentralTest',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['redis'] as RedisEndpoint)
                 .resetMessageCentralTest(
@@ -927,7 +927,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'listenToChannel': MethodConnector(
           name: 'listenToChannel',
-          params: {
+          params: <String, ParameterDescription>{
             'channel': ParameterDescription(
                 name: 'channel', type: String, nullable: false),
           },
@@ -940,7 +940,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'postToChannel': MethodConnector(
           name: 'postToChannel',
-          params: {
+          params: <String, ParameterDescription>{
             'channel': ParameterDescription(
                 name: 'channel', type: String, nullable: false),
             'data': ParameterDescription(
@@ -956,7 +956,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'countSubscribedChannels': MethodConnector(
           name: 'countSubscribedChannels',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['redis'] as RedisEndpoint)
                 .countSubscribedChannels(
@@ -970,10 +970,10 @@ class Endpoints extends EndpointDispatch {
     connectors['signInRequired'] = EndpointConnector(
       name: 'signInRequired',
       endpoint: endpoints['signInRequired']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'testMethod': MethodConnector(
           name: 'testMethod',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['signInRequired'] as SignInRequiredEndpoint)
                 .testMethod(
@@ -987,10 +987,10 @@ class Endpoints extends EndpointDispatch {
     connectors['simple'] = EndpointConnector(
       name: 'simple',
       endpoint: endpoints['simple']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'setGlobalInt': MethodConnector(
           name: 'setGlobalInt',
-          params: {
+          params: <String, ParameterDescription>{
             'value':
                 ParameterDescription(name: 'value', type: int, nullable: true),
           },
@@ -1004,7 +1004,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'addToGlobalInt': MethodConnector(
           name: 'addToGlobalInt',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['simple'] as SimpleEndpoint).addToGlobalInt(
               session,
@@ -1013,7 +1013,7 @@ class Endpoints extends EndpointDispatch {
         ),
         'getGlobalInt': MethodConnector(
           name: 'getGlobalInt',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['simple'] as SimpleEndpoint).getGlobalInt(
               session,
@@ -1026,10 +1026,10 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {
+      methodConnectors: <String, MethodConnector>{
         'streamOpened': MethodConnector(
           name: 'streamOpened',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['streaming'] as StreamingEndpoint).streamOpened(
               session,

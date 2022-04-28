@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
@@ -7,11 +8,11 @@ import 'package:uuid/uuid.dart';
 import '../generated/version.dart';
 import '../shared/environment.dart';
 
-final resourceManager = ResourceManager();
+final ResourceManager resourceManager = ResourceManager();
 
 class ResourceManager {
   Directory get homeDirectory {
-    var envVars = Platform.environment;
+    Map<String, String> envVars = Platform.environment;
 
     if (Platform.isMacOS) {
       return Directory(envVars['HOME']!);
@@ -37,17 +38,17 @@ class ResourceManager {
   }
 
   String get uniqueUserId {
-    const uuidFilePath = '/uuid';
+    const String uuidFilePath = '/uuid';
     try {
-      var userIdFile = File(localCacheDirectory.path + uuidFilePath);
-      var userId = userIdFile.readAsStringSync();
+      File userIdFile = File(localCacheDirectory.path + uuidFilePath);
+      String userId = userIdFile.readAsStringSync();
       return userId;
     } catch (e) {
       // Failed to read userId from file, it's probably not created.
     }
-    var userId = const Uuid().v4();
+    String userId = const Uuid().v4();
     try {
-      var userIdFile = File(localCacheDirectory.path + uuidFilePath);
+      File userIdFile = File(localCacheDirectory.path + uuidFilePath);
       userIdFile.writeAsStringSync(userId);
     } finally {}
 
@@ -67,19 +68,19 @@ class ResourceManager {
     print('Downloading templates for version $templateVersion');
     if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
-    var response = await http.get(Uri.parse(packageDownloadUrl));
-    var data = response.bodyBytes;
+    http.Response response = await http.get(Uri.parse(packageDownloadUrl));
+    Uint8List data = response.bodyBytes;
 
     // var outFile = File(versionedDir.path + '/serverpod_templates.tar.gz');
     // outFile.writeAsBytesSync(data);
 
-    var unzipped = GZipDecoder().decodeBytes(data);
-    var archive = TarDecoder().decodeBytes(unzipped);
+    List<int> unzipped = GZipDecoder().decodeBytes(data);
+    Archive archive = TarDecoder().decodeBytes(unzipped);
 
-    for (var file in archive) {
-      var outFileName = '${templateDirectory.path}/${file.name}';
+    for (ArchiveFile file in archive) {
+      String outFileName = '${templateDirectory.path}/${file.name}';
       if (file.isFile) {
-        var outFile = File(outFileName);
+        File outFile = File(outFileName);
         outFile = await outFile.create(recursive: true);
         await outFile.writeAsBytes(file.content);
       } else {

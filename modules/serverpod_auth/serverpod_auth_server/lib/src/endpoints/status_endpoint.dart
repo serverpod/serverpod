@@ -11,7 +11,7 @@ import '../generated/protocol.dart';
 class StatusEndpoint extends Endpoint {
   /// Returns true if the client user is signed in.
   Future<bool> isSignedIn(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
+    int? userId = await session.auth.authenticatedUserId;
     return userId != null;
   }
 
@@ -23,14 +23,14 @@ class StatusEndpoint extends Endpoint {
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
   /// not signed in with the server.
   Future<UserInfo?> getUserInfo(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
+    int? userId = await session.auth.authenticatedUserId;
     if (userId == null) return null;
     return await session.db.findById<UserInfo>(userId);
   }
 
   /// Gets the server configuration.
   Future<UserSettingsConfig> getUserSettingsConfig(Session session) async {
-    var config = AuthConfig.current;
+    AuthConfig config = AuthConfig.current;
 
     return UserSettingsConfig(
       canSeeUserName: config.userCanSeeUserName,

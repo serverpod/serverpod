@@ -7,7 +7,7 @@
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
@@ -18,7 +18,8 @@ class CloudStorageDirectUploadEntry extends TableRow {
   @override
   String get tableName => 'serverpod_cloud_storage_direct_upload';
 
-  static final t = CloudStorageDirectUploadEntryTable();
+  static final CloudStorageDirectUploadEntryTable t =
+      CloudStorageDirectUploadEntryTable();
 
   @override
   int? id;
@@ -37,7 +38,7 @@ class CloudStorageDirectUploadEntry extends TableRow {
 
   CloudStorageDirectUploadEntry.fromSerialization(
       Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     storageId = _data['storageId']!;
     path = _data['path']!;
@@ -47,7 +48,7 @@ class CloudStorageDirectUploadEntry extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'storageId': storageId,
       'path': path,
@@ -58,7 +59,7 @@ class CloudStorageDirectUploadEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'storageId': storageId,
       'path': path,
@@ -69,7 +70,7 @@ class CloudStorageDirectUploadEntry extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'storageId': storageId,
       'path': path,
@@ -79,7 +80,7 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -214,14 +215,14 @@ class CloudStorageDirectUploadEntryTable extends Table {
 
   @override
   String tableName = 'serverpod_cloud_storage_direct_upload';
-  final id = ColumnInt('id');
-  final storageId = ColumnString('storageId');
-  final path = ColumnString('path');
-  final expiration = ColumnDateTime('expiration');
-  final authKey = ColumnString('authKey');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnString storageId = ColumnString('storageId');
+  final ColumnString path = ColumnString('path');
+  final ColumnDateTime expiration = ColumnDateTime('expiration');
+  final ColumnString authKey = ColumnString('authKey');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         storageId,
         path,

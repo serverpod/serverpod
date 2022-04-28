@@ -31,7 +31,7 @@ class ChatJoinedChannel extends SerializableEntity {
   });
 
   ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channel = _data['channel']!;
     initialMessageChunk =
@@ -42,7 +42,7 @@ class ChatJoinedChannel extends SerializableEntity {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.serialize(),

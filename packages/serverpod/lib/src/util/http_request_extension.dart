@@ -6,12 +6,12 @@ extension RemoteIp on HttpRequest {
   /// a proxy server.
   String get remoteIpAddress {
     // Check headers to see if there is a forwarded client IP
-    var forwardHeaders = headers['x-forwarded-for'];
+    List<String>? forwardHeaders = headers['x-forwarded-for'];
     if (forwardHeaders != null && forwardHeaders.isNotEmpty) {
-      var forwarded = forwardHeaders[0];
-      var components = forwarded.split(',');
+      String forwarded = forwardHeaders[0];
+      List<String> components = forwarded.split(',');
       if (components.isNotEmpty) {
-        var clientIp = components[0].trim();
+        String clientIp = components[0].trim();
         return clientIp;
       }
     }

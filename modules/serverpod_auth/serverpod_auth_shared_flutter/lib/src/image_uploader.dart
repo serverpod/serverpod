@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -20,26 +21,26 @@ class ImageUploader {
     int imageSize = 256,
   }) async {
     if (kIsWeb) {
-      var result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['jpg', 'png'],
+        allowedExtensions: <String>['jpg', 'png'],
       );
       if (result == null) return;
       if (result.files.first.bytes == null) return;
 
-      var image = img.decodeImage(result.files.first.bytes!);
+      img.Image? image = img.decodeImage(result.files.first.bytes!);
       if (image == null) return;
 
       if (image.width > image.height) {
-        var h = imageSize;
-        var w = imageSize * image.width / image.height;
+        int h = imageSize;
+        double w = imageSize * image.width / image.height;
         image = img.copyResize(image,
             width: w.floor(),
             height: h,
             interpolation: img.Interpolation.average);
       } else {
-        var w = imageSize;
-        var h = imageSize * image.height / image.width;
+        int w = imageSize;
+        double h = imageSize * image.height / image.width;
         image = img.copyResize(image,
             width: w,
             height: h.floor(),
@@ -49,24 +50,24 @@ class ImageUploader {
       image = img.copyResizeCropSquare(image, imageSize);
 
       // Encode as png
-      var encoded = img.encodePng(image);
-      var bytes = Uint8List.fromList(encoded);
-      var data = ByteData.view(bytes.buffer);
+      List<int> encoded = img.encodePng(image);
+      Uint8List bytes = Uint8List.fromList(encoded);
+      ByteData data = ByteData.view(bytes.buffer);
 
       // Upload the image to the server
       await sessionManager.uploadUserImage(data);
     } else {
-      var toolbarColor = Theme.of(context).primaryColor;
-      var toolbarWidgetColor =
+      Color toolbarColor = Theme.of(context).primaryColor;
+      Color toolbarWidgetColor =
           Theme.of(context).buttonTheme.colorScheme?.onPrimary ?? Colors.white;
 
-      var picker = ImagePicker();
+      ImagePicker picker = ImagePicker();
       // Pick an image
-      var imageFile = await picker.pickImage(source: ImageSource.gallery);
+      XFile? imageFile = await picker.pickImage(source: ImageSource.gallery);
       if (imageFile == null) return;
 
       // Crop the image
-      var croppedImageFile = await ImageCropper().cropImage(
+      File? croppedImageFile = await ImageCropper().cropImage(
         sourcePath: imageFile.path,
         maxHeight: imageSize,
         maxWidth: imageSize,
@@ -86,7 +87,7 @@ class ImageUploader {
       if (croppedImageFile == null) return;
 
       // Load and resize
-      var image = img.decodeImage(await croppedImageFile.readAsBytes());
+      img.Image? image = img.decodeImage(await croppedImageFile.readAsBytes());
       if (image == null) return;
 
       if (image.width != imageSize || image.height != imageSize) {
@@ -94,9 +95,9 @@ class ImageUploader {
       }
 
       // Encode as png
-      var encoded = img.encodePng(image);
-      var bytes = Uint8List.fromList(encoded);
-      var data = ByteData.view(bytes.buffer);
+      List<int> encoded = img.encodePng(image);
+      Uint8List bytes = Uint8List.fromList(encoded);
+      ByteData data = ByteData.view(bytes.buffer);
 
       // Upload the image to the server
       await sessionManager.uploadUserImage(data);

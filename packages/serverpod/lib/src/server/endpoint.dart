@@ -34,7 +34,7 @@ abstract class Endpoint {
 
   /// List of [Scope]s that are required to access this [Endpoint]. Override
   /// this getter to setup custom requirements.
-  Set<Scope> get requiredScopes => {};
+  Set<Scope> get requiredScopes => <Scope>{};
 
   /// States if the [Endpoint] only should accept users that are authenticated.
   /// Default value is false, override to change.
@@ -51,7 +51,7 @@ abstract class Endpoint {
   /// the http response (defaults to `text/plain`).
   bool get sendByteDataAsRaw => false;
 
-  final Map<Session, dynamic> _userObjects = {};
+  final Map<Session, dynamic> _userObjects = <Session, dynamic>{};
 
   /// Retrieves a custom object assiciated with this [Endpoint] and [Session].
   dynamic getUserObject(Session session) {
@@ -86,14 +86,14 @@ abstract class Endpoint {
   /// Sends an event to the client represented by the [Session] object.
   Future<void> sendStreamMessage(
       StreamingSession session, SerializableEntity message) async {
-    var prefix = moduleName == null ? '' : '$moduleName.';
+    String prefix = moduleName == null ? '' : '$moduleName.';
 
-    var data = {
+    Map<String, Object> data = <String, Object>{
       'endpoint': '$prefix$name',
       'object': message.serialize(),
     };
 
-    var payload = jsonEncode(data);
+    String payload = jsonEncode(data);
     session.webSocket.add(payload);
   }
 }

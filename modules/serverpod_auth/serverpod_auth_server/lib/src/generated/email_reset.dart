@@ -18,7 +18,7 @@ class EmailReset extends TableRow {
   @override
   String get tableName => 'serverpod_email_reset';
 
-  static final t = EmailResetTable();
+  static final EmailResetTable t = EmailResetTable();
 
   @override
   int? id;
@@ -34,7 +34,7 @@ class EmailReset extends TableRow {
   });
 
   EmailReset.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     verificationCode = _data['verificationCode']!;
@@ -43,7 +43,7 @@ class EmailReset extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
@@ -53,7 +53,7 @@ class EmailReset extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
@@ -63,7 +63,7 @@ class EmailReset extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
@@ -72,7 +72,7 @@ class EmailReset extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -201,13 +201,13 @@ class EmailResetTable extends Table {
 
   @override
   String tableName = 'serverpod_email_reset';
-  final id = ColumnInt('id');
-  final userId = ColumnInt('userId');
-  final verificationCode = ColumnString('verificationCode');
-  final expiration = ColumnDateTime('expiration');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt userId = ColumnInt('userId');
+  final ColumnString verificationCode = ColumnString('verificationCode');
+  final ColumnDateTime expiration = ColumnDateTime('expiration');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userId,
         verificationCode,

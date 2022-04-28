@@ -18,7 +18,7 @@ class GoogleRefreshToken extends TableRow {
   @override
   String get tableName => 'serverpod_google_refresh_token';
 
-  static final t = GoogleRefreshTokenTable();
+  static final GoogleRefreshTokenTable t = GoogleRefreshTokenTable();
 
   @override
   int? id;
@@ -32,7 +32,7 @@ class GoogleRefreshToken extends TableRow {
   });
 
   GoogleRefreshToken.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
+    Map<String, dynamic> _data = unwrapSerializationData(serialization);
     id = _data['id'];
     userId = _data['userId']!;
     refreshToken = _data['refreshToken']!;
@@ -40,7 +40,7 @@ class GoogleRefreshToken extends TableRow {
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
@@ -49,7 +49,7 @@ class GoogleRefreshToken extends TableRow {
 
   @override
   Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
@@ -58,7 +58,7 @@ class GoogleRefreshToken extends TableRow {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
@@ -66,7 +66,7 @@ class GoogleRefreshToken extends TableRow {
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(String columnName, dynamic value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -194,12 +194,12 @@ class GoogleRefreshTokenTable extends Table {
 
   @override
   String tableName = 'serverpod_google_refresh_token';
-  final id = ColumnInt('id');
-  final userId = ColumnInt('userId');
-  final refreshToken = ColumnString('refreshToken');
+  final ColumnInt id = ColumnInt('id');
+  final ColumnInt userId = ColumnInt('userId');
+  final ColumnString refreshToken = ColumnString('refreshToken');
 
   @override
-  List<Column> get columns => [
+  List<Column> get columns => <Column>[
         id,
         userId,
         refreshToken,

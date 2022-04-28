@@ -27,7 +27,7 @@ class Endpoints extends EndpointDispatch {
       methodConnectors: {
         'getChannels': MethodConnector(
           name: 'getChannels',
-          params: {},
+          params: <String, ParameterDescription>{},
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['channels'] as ChannelsEndpoint).getChannels(
               session,

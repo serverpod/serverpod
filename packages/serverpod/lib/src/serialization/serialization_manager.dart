@@ -1,4 +1,4 @@
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 
 /// The [SerializationManager] is responsible for creating objects from a
 /// serialization, but also for serializing objects. This class is typically
@@ -21,13 +21,13 @@ abstract class SerializationManagerServer extends SerializationManager {
   }
 
   void _appendTableClassMapping(Map<String, String> map) {
-    for (var tableName in map.keys) {
+    for (String tableName in map.keys) {
       tableClassMapping[tableName] = map[tableName]!;
     }
   }
 
   void _appendTypeTableMapping(Map<Type, Table> map) {
-    for (var type in map.keys) {
+    for (Type type in map.keys) {
       typeTableMapping[type] = map[type]!;
     }
   }

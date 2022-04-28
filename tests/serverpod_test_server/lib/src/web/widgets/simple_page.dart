@@ -5,7 +5,7 @@ class SimplePageWidget extends Widget {
     required String title,
     required Widget body,
   }) : super(name: 'simple_page') {
-    values = {
+    values = <String, dynamic>{
       'title': title,
       'body': body,
     };

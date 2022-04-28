@@ -26,13 +26,13 @@ class ChannelList extends SerializableEntity {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     channels = _data['channels']!
-        .map<Channel>((a) => Channel.fromSerialization(a))
+        .map<Channel>((Map<String, dynamic> a) => Channel.fromSerialization(a))
         ?.toList();
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channels': channels.map((Channel a) => a.serialize()).toList(),
     });
@@ -40,7 +40,7 @@ class ChannelList extends SerializableEntity {
 
   @override
   Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+    return wrapSerializationData(<String, dynamic>{
       'id': id,
       'channels': channels.map((Channel a) => a.serialize()).toList(),
     });

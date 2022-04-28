@@ -3,9 +3,9 @@ import 'dart:io';
 import 'config.dart';
 
 void performDartFormat(bool verbose) {
-  var result = Process.runSync(
+  ProcessResult result = Process.runSync(
     'dart',
-    ['format', '.'],
+    <String>['format', '.'],
     workingDirectory: config.generatedClientProtocolPath,
   );
   if (verbose) {
@@ -15,7 +15,7 @@ void performDartFormat(bool verbose) {
 
   result = Process.runSync(
     'dart',
-    ['format', '.'],
+    <String>['format', '.'],
     workingDirectory: config.generatedServerProtocolPath,
   );
 

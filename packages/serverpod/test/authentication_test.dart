@@ -1,8 +1,9 @@
+import 'package:serverpod_auth_client/src/protocol/authentication_response.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
+  Client client = Client(
     'http://serverpod_test_server:8080/',
     authenticationKeyManager: TestAuthKeyManager(),
   );
@@ -12,14 +13,14 @@ void main() {
   group('Setup', () {
     test('Remove accounts', () async {
       await client.authentication.removeAllUsers();
-      var userCount = await client.authentication.countUsers();
+      int userCount = await client.authentication.countUsers();
       expect(userCount, equals(0));
     });
   });
 
   group('Basic authentication', () {
     test('Not authenticated', () async {
-      var signedIn = await client.modules.auth.status.isSignedIn();
+      bool signedIn = await client.modules.auth.status.isSignedIn();
       expect(signedIn, equals(false));
     });
 
@@ -42,18 +43,18 @@ void main() {
     });
 
     test('Authenticate with incorrect credentials', () async {
-      var response = await client.authentication
+      AuthenticationResponse response = await client.authentication
           .authenticate('test@foo.bar', 'incorrect password');
       expect(response.success, equals(false));
     });
 
     test('Not authenticated after failed sign in', () async {
-      var signedIn = await client.modules.auth.status.isSignedIn();
+      bool signedIn = await client.modules.auth.status.isSignedIn();
       expect(signedIn, equals(false));
     });
 
     test('Authenticate with correct credentials', () async {
-      var response =
+      AuthenticationResponse response =
           await client.authentication.authenticate('test@foo.bar', 'password');
       if (response.success) {
         await client.authenticationKeyManager!
@@ -64,12 +65,12 @@ void main() {
     });
 
     test('Authenticated', () async {
-      var signedIn = await client.modules.auth.status.isSignedIn();
+      bool signedIn = await client.modules.auth.status.isSignedIn();
       expect(signedIn, equals(true));
     });
 
     test('Access endpoint with required signin', () async {
-      var result = await client.signInRequired.testMethod();
+      bool result = await client.signInRequired.testMethod();
       expect(result, equals(true));
     });
   });
@@ -77,9 +78,9 @@ void main() {
   group('User creation', () {
     test('Create user with ok domain', () async {
       // Only accounts with emails ending with .bar are allowed
-      var oldUserCount = await client.authentication.countUsers();
+      int oldUserCount = await client.authentication.countUsers();
       await client.authentication.createUser('legit@foo.bar', 'password');
-      var newUserCount = await client.authentication.countUsers();
+      int newUserCount = await client.authentication.countUsers();
 
       // We should have added one user
       expect(newUserCount - oldUserCount, equals(1));
@@ -87,9 +88,9 @@ void main() {
 
     test('Create user with invalid domain', () async {
       // Only accounts with emails ending with .bar are allowed
-      var oldUserCount = await client.authentication.countUsers();
+      int oldUserCount = await client.authentication.countUsers();
       await client.authentication.createUser('nonlegit@foo.fail', 'password');
-      var newUserCount = await client.authentication.countUsers();
+      int newUserCount = await client.authentication.countUsers();
 
       // We should not have added any new users
       expect(newUserCount - oldUserCount, equals(0));

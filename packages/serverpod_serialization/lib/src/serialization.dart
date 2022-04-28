@@ -28,7 +28,7 @@ abstract class SerializableEntity {
   /// Wraps the serialized data to combine it with its class name, if the
   /// decoded type isn't known ahead of time.
   Map<String, dynamic> wrapSerializationData(Map<String, dynamic> data) {
-    return {
+    return <String, dynamic>{
       'class': className,
       'data': data,
     };
@@ -96,7 +96,7 @@ abstract class SerializationManager {
   }
 
   void _appendConstructors(Map<String, constructor> map) {
-    for (var className in map.keys) {
+    for (String className in map.keys) {
       constructors[className] = map[className]!;
     }
   }

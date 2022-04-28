@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
-var config = GeneratorConfig();
+GeneratorConfig config = GeneratorConfig();
 
 enum PackageType {
   server,
@@ -26,13 +26,13 @@ class GeneratorConfig {
   final String generatedServerProtocolPath =
       'lib${Platform.pathSeparator}src${Platform.pathSeparator}generated';
 
-  List<ModuleConfig> modules = [];
+  List<ModuleConfig> modules = <ModuleConfig>[];
 
   bool load([String dir = '']) {
-    Map? pubspec;
+    Map<String, dynamic>? pubspec;
     try {
-      var file = File('${dir}pubspec.yaml');
-      var yamlStr = file.readAsStringSync();
+      File file = File('${dir}pubspec.yaml');
+      String yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
     } catch (_) {
       print(
@@ -46,10 +46,10 @@ class GeneratorConfig {
     serverPackage = pubspec['name'];
     name = stripPackage(serverPackage);
 
-    Map? generatorConfig;
+    Map<String, dynamic>? generatorConfig;
     try {
-      var file = File('${dir}config${Platform.pathSeparator}generator.yaml');
-      var yamlStr = file.readAsStringSync();
+      File file = File('${dir}config${Platform.pathSeparator}generator.yaml');
+      String yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {
       print(
@@ -57,7 +57,7 @@ class GeneratorConfig {
       return false;
     }
 
-    var typeStr = generatorConfig!['type'];
+    dynamic typeStr = generatorConfig!['type'];
     if (typeStr == 'module') {
       type = PackageType.module;
     } else {
@@ -76,8 +76,8 @@ class GeneratorConfig {
     if (type == PackageType.server) {
       try {
         if (generatorConfig['modules'] != null) {
-          Map modulesData = generatorConfig['modules'];
-          for (var package in modulesData.keys) {
+          Map<String, dynamic> modulesData = generatorConfig['modules'];
+          for (String package in modulesData.keys) {
             modules.add(ModuleConfig._withMap(package, modulesData[package]));
           }
         }
@@ -93,7 +93,7 @@ class GeneratorConfig {
 
   @override
   String toString() {
-    var str = '''type: $type
+    String str = '''type: $type
 sourceProtocol: $protocolSourcePath
 sourceEndpoints: $endpointsSourcePath
 generatedClientDart: $generatedClientProtocolPath
@@ -101,7 +101,7 @@ generatedServerProtocol: $generatedServerProtocolPath
 ''';
     if (modules.isNotEmpty) {
       str += '\nmodules:\n\n';
-      for (var module in modules) {
+      for (ModuleConfig module in modules) {
         str += '$module';
       }
     }
@@ -115,7 +115,7 @@ class ModuleConfig {
   String clientPackage;
   String serverPackage;
 
-  ModuleConfig._withMap(this.name, Map map)
+  ModuleConfig._withMap(this.name, Map<String, dynamic> map)
       : clientPackage = '${name}_client',
         serverPackage = '${name}_server',
         nickname = map['nickname']!;
@@ -132,7 +132,7 @@ $config''';
 }
 
 String stripPackage(String package) {
-  var strippedPackage = package;
+  String strippedPackage = package;
   if (strippedPackage.endsWith('_server')) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
