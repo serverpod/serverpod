@@ -228,9 +228,8 @@ void main(List<String> args) async {
     }
     if (results.command!.name == cmdRun) {
       if (Platform.isWindows) {
-        printww(
+        printwwln(
             'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
-        printww('');
         stdout.writeln('  \$ docker-compose up --build --detach');
         stdout.writeln('  \$ dart .\\bin\\main.dart');
         printww('');

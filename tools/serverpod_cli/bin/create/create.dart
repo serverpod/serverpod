@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod_shared/serverpod_shared.dart';
-
+import 'package:path/path.dart' as p;
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 import '../util/command_line_tools.dart';
@@ -52,8 +52,7 @@ Future<void> performCreate(
 
   var dbPassword = generateRandomString();
 
-  var pathSeparator = Platform.pathSeparator;
-  var projectDir = Directory(Directory.current.path + pathSeparator + name);
+  var projectDir = Directory(p.join(Directory.current.path, name));
   if (projectDir.existsSync()) {
     print('Project $name already exists.');
     return;
@@ -64,23 +63,22 @@ Future<void> performCreate(
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
-  var serverDir = Directory(projectDir.path + pathSeparator + name + '_server');
+  var serverDir = Directory(p.join(projectDir.path, name + '_server'));
   if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
-  var clientDir = Directory(projectDir.path + pathSeparator + name + '_client');
+  var clientDir = Directory(p.join(projectDir.path, name + '_client'));
   if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
-    var flutterDir =
-        Directory(projectDir.path + pathSeparator + name + '_flutter');
+    var flutterDir = Directory(p.join(projectDir.path, name + '_flutter'));
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_server'),
+          p.join(resourceManager.templateDirectory.path, 'PROJECTNAME_server')),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -135,7 +133,7 @@ Future<void> performCreate(
     // Copy client files
     copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_client'),
+          p.join(resourceManager.templateDirectory.path, 'PROJECTNAME_client')),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -169,8 +167,8 @@ Future<void> performCreate(
 
     // Copy Flutter files
     copier = Copier(
-      srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/PROJECTNAME_flutter'),
+      srcDir: Directory(p.join(
+          resourceManager.templateDirectory.path, 'PROJECTNAME_flutter')),
       dstDir: flutterDir,
       replacements: [
         Replacement(
@@ -218,7 +216,7 @@ Future<void> performCreate(
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/MODULENAME_server'),
+          p.join(resourceManager.templateDirectory.path, 'MODULENAME_server')),
       dstDir: serverDir,
       replacements: [
         Replacement(
@@ -253,7 +251,7 @@ Future<void> performCreate(
     // Copy client files
     copier = Copier(
       srcDir: Directory(
-          '${resourceManager.templateDirectory.path}/MODULENAME_client'),
+          p.join(resourceManager.templateDirectory.path, 'MODULENAME_client')),
       dstDir: clientDir,
       replacements: [
         Replacement(
@@ -292,45 +290,35 @@ Future<void> performCreate(
   if (dockerConfigured && !Platform.isWindows) {
     await CommandLineTools.createTables(projectDir, name);
 
-    printww('');
-    printww('');
-    printww('=== SERVERPOD CREATED ===');
-    printww('');
-    printww('All setup. You are ready to rock!');
-    printww('');
-    printww('Start your Serverpod server by running:');
-    printww('');
-    stdout.writeln('  \$ cd $name/${name}_server');
+    printwwln('');
+    printwwln('=== SERVERPOD CREATED ===');
+    printwwln('All setup. You are ready to rock!');
+    printwwln('Start your Serverpod server by running:');
+    stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
     stdout.writeln('  \$ serverpod run');
     printww('');
-    printww('You can also start Serverpod manually by running:');
-    printww('');
-    stdout.writeln('  \$ cd $name/${name}_server');
+    printwwln('You can also start Serverpod manually by running:');
+    stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
     stdout.writeln('  \$ docker-compose up --build --detach');
     stdout.writeln('  \$ dart bin/main.dart');
     printww('');
   }
 
   if (Platform.isWindows) {
-    printww('');
-    printww('');
-    printww('=== SERVERPOD CREATED ===');
-    printww('');
+    printwwln('');
+    printwwln('=== SERVERPOD CREATED ===');
     printww('You are almost ready to rock!');
-    printww('To get going, you need to start Docker by running:');
-    printww('');
-    stdout.writeln('  \$ cd .\\$name\\${name}_server');
+    printwwln('To get going, you need to start Docker by running:');
+    stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
     stdout.writeln('  \$ docker-compose up --build --detach');
     printww('');
-    printww(
+    printwwln(
         'When your docker container is up and running you need to install the default Serverpod postgres tables. (You only need to to this once.)');
-    printww('');
     stdout.writeln(
         '  \$ Get-Content .\\generated\\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="$dbPassword" psql -h postgres -U postgres -d $name');
     printww('');
-    printww(
+    printwwln(
         'Unfortunately `serverpod run` is not yet supported on Windows, but you should be able to start Serverpod by running:');
-    printww('');
     stdout.writeln('  \$ dart .\\bin\\main.dart');
     printww('');
   }

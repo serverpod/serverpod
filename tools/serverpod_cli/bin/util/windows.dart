@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 class WindowsUtil {
   static String? commandPath(String command) {
@@ -11,7 +12,7 @@ class WindowsUtil {
       if (path.isEmpty) {
         continue;
       }
-      var possibleCommandPath = path + Platform.pathSeparator + command;
+      var possibleCommandPath = p.join(path, command);
       var possibleCommandFile = File(possibleCommandPath);
       if (possibleCommandFile.existsSync()) {
         return possibleCommandPath;

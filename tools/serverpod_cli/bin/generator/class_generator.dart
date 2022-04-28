@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:path/path.dart' as p;
 import 'class_generator_dart.dart';
 import 'config.dart';
 import 'pgsql_generator.dart';
@@ -43,7 +43,7 @@ abstract class ClassGenerator {
 
         try {
           var outFileName = _transformFileNameWithoutPath(entity.path);
-          var outFile = File('$outputPath/$outFileName');
+          var outFile = File(p.join(outputPath, outFileName));
 
           // Read file
           var yamlStr = entity.readAsStringSync();
@@ -63,7 +63,7 @@ abstract class ClassGenerator {
     }
 
     // Generate factory class
-    var outFile = File(outputPath + '/protocol$outputExtension');
+    var outFile = File(p.join(outputPath, 'protocol$outputExtension'));
     var out = generateFactory(classInfos);
     outFile.createSync();
     outFile.writeAsStringSync(out ?? '');
@@ -81,7 +81,7 @@ abstract class ClassGenerator {
 
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split(Platform.pathSeparator);
-    var fileName = pathComponents[pathComponents.length - 1];
+    var fileName = pathComponents.last;
     fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
     return fileName;
   }

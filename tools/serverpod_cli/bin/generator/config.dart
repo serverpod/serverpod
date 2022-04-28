@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as p;
 
 var config = GeneratorConfig();
 
@@ -16,22 +17,19 @@ class GeneratorConfig {
   late String serverPackage;
 
   final String libSourcePath = 'lib';
-  final String protocolSourcePath =
-      'lib${Platform.pathSeparator}src${Platform.pathSeparator}protocol';
-  final String endpointsSourcePath =
-      'lib${Platform.pathSeparator}src${Platform.pathSeparator}endpoints';
+  final String protocolSourcePath = p.join('lib', 'src', 'protocol');
+  final String endpointsSourcePath = p.join('lib', 'src', 'endpoints');
 
   late String clientPackagePath;
   late String generatedClientProtocolPath;
-  final String generatedServerProtocolPath =
-      'lib${Platform.pathSeparator}src${Platform.pathSeparator}generated';
+  final String generatedServerProtocolPath = p.join('lib', 'src', 'generated');
 
   List<ModuleConfig> modules = [];
 
   bool load([String dir = '']) {
     Map? pubspec;
     try {
-      var file = File('${dir}pubspec.yaml');
+      var file = File(p.join(dir, 'pubspec.yaml'));
       var yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
     } catch (_) {
@@ -48,7 +46,7 @@ class GeneratorConfig {
 
     Map? generatorConfig;
     try {
-      var file = File('${dir}config${Platform.pathSeparator}generator.yaml');
+      var file = File(p.join(dir, 'config', 'generator.yaml'));
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {
@@ -70,7 +68,7 @@ class GeneratorConfig {
     }
     clientPackagePath = generatorConfig['client_package_path'];
     generatedClientProtocolPath =
-        '$clientPackagePath${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}protocol';
+        p.join(clientPackagePath, 'lib', 'src', 'protocol');
 
     // Load module settings
     if (type == PackageType.server) {
