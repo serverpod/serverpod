@@ -1,3 +1,6 @@
+## 0.9.7
+- `serverpod create` and `serverpod generate` is now working on Windows. Tested on a fresh install of Windows 10.
+
 ## 0.9.6
 - Improved, but still experimental support for Windows.
 - Fixes issue with error being thrown when internet connection is missing in CLI.
