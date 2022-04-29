@@ -6,7 +6,6 @@ import 'package:colorize/colorize.dart';
 import 'analytics/analytics.dart';
 import 'certificate_generator/generator.dart';
 import 'config_info/config_info.dart';
-import 'create/command_line_tools.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
@@ -14,6 +13,8 @@ import 'generator/generator.dart';
 import 'internal_tools/generate_pubspecs.dart';
 import 'run/runner.dart';
 import 'shared/environment.dart';
+import 'util/command_line_tools.dart';
+import 'util/print.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
@@ -226,7 +227,15 @@ void main(List<String> args) async {
       return;
     }
     if (results.command!.name == cmdRun) {
-      performRun(results.command!['verbose'], results.command!['run-docker']);
+      if (Platform.isWindows) {
+        printwwln(
+            'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
+        stdout.writeln('  \$ docker-compose up --build --detach');
+        stdout.writeln('  \$ dart .\\bin\\main.dart');
+        printww('');
+      } else {
+        performRun(results.command!['verbose'], results.command!['run-docker']);
+      }
       _analytics.cleanUp();
       return;
     }

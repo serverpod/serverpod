@@ -39,12 +39,12 @@ class RouteStaticDirectory extends Route {
         var middlePath = requestDir.substring(basePath!.length);
 
         if (middlePath.isNotEmpty) {
-          path = dir + '/' + middlePath + '/' + base + extension;
+          path = p.join(dir, middlePath, base + extension);
         } else {
-          path = dir + '/' + base + extension;
+          path = p.join(dir, base + extension);
         }
       } else {
-        path = dir + '/' + base + extension;
+        path = p.join(dir, base + extension);
       }
 
       // TODO: Correctly set headers for more types

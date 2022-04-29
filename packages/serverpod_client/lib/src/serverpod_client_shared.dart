@@ -23,6 +23,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   WebSocketChannel? _webSocket;
 
+  Timer? _connectionTimer;
+
   final List<VoidCallback> _websocketConnectionStatusListeners = [];
 
   /// Full host name of the web socket endpoint.
@@ -82,6 +84,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
     return _consolidatedEndpointRefLookupCache!;
   }
 
+  /// Timeout when opening a web socket connection. If no message has been
+  /// received within the timeout duration the socket will be closed.
+  final Duration webSocketTimeout;
+
+  bool _firstMessageReceived = false;
+
   /// Creates a new ServerpodClient.
   ServerpodClientShared(
     this.host,
@@ -90,6 +98,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.errorHandler,
     this.authenticationKeyManager,
     this.logFailedCalls = true,
+    this.webSocketTimeout = const Duration(seconds: 5),
   }) {
     assert(host.endsWith('/'),
         'host must end with a slash, eg: https://example.com/');
@@ -144,9 +153,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Closes all open connections to the server.
+  @override
   void close() {
     _webSocket?.sink.close();
     _webSocket = null;
+    _cancelConnectionTimer();
+  }
+
+  void _cancelConnectionTimer() {
+    _connectionTimer?.cancel();
+    _connectionTimer = null;
   }
 
   /// Open up a web socket connection to the server.
@@ -154,11 +170,22 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (_webSocket != null) return;
 
     try {
+      _firstMessageReceived = false;
       var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       unawaited(_listenToWebSocketStream());
+
+      _connectionTimer = Timer(webSocketTimeout, () async {
+        if (!_firstMessageReceived) {
+          await _webSocket?.sink.close();
+          _webSocket = null;
+          _cancelConnectionTimer();
+          _notifyWebSocketConnectionStatusListeners();
+        }
+      });
     } catch (e) {
       _webSocket = null;
+      _cancelConnectionTimer();
     }
     _notifyWebSocketConnectionStatusListeners();
   }
@@ -169,6 +196,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     await _webSocket?.sink.close();
     _webSocket = null;
+    _cancelConnectionTimer();
+
     await connectWebSocket();
   }
 
@@ -178,10 +207,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       await for (String message in _webSocket!.stream) {
         _handleRawWebSocketMessage(message);
+        _firstMessageReceived = true;
       }
       _webSocket = null;
+      _cancelConnectionTimer();
     } catch (e) {
       _webSocket = null;
+      _cancelConnectionTimer();
     }
     _notifyWebSocketConnectionStatusListeners();
   }

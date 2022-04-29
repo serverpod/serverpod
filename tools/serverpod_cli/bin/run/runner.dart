@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import '../config_info/config_info.dart';
-import '../create/command_line_tools.dart';
 import '../create/port_checker.dart';
 import '../generator/class_generator.dart';
 import '../generator/config.dart';
@@ -10,6 +9,7 @@ import '../generator/dart_format.dart';
 import '../generator/protocol_analyzer.dart';
 import '../generator/protocol_generator.dart';
 import '../port_scanner/port_scanner.dart';
+import '../util/command_line_tools.dart';
 import '../util/print.dart';
 import '../util/process_killer_extension.dart';
 import 'file_watcher.dart';
@@ -27,7 +27,7 @@ void performRun(bool verbose, bool runDocker) async {
   var mainPortAvailable =
       await isNetworkPortAvailable(configInfo.config.publicPort);
   var servicePortAvailable =
-      await await isNetworkPortAvailable(configInfo.config.servicePort);
+      await isNetworkPortAvailable(configInfo.config.servicePort);
 
   if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
     var strIssue =
