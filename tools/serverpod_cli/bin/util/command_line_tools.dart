@@ -47,7 +47,7 @@ class CommandLineTools {
     var _isNetstatAvailable = await existsCommand('netstat');
     if (!_isNetstatAvailable) {
       printwwln(
-          'netstat is not available on this platform. Please install it and try again. Aborting...');
+          'netstat is not available on this platform. Aborting tables creation. Please install it and try again.');
       return;
     }
     var serverPath = p.join(dir.path, '${name}_server');
