@@ -48,8 +48,7 @@ class CommandLineTools {
     if (!_isNetstatAvailable) {
       printwwln(
           'netstat is not available on this platform. Please install it and try again. Aborting...');
-      await dir.delete(recursive: true);
-      exit(-1);
+      return;
     }
     var serverPath = p.join(dir.path, '${name}_server');
     printww('Setting up Docker and default database tables in $serverPath');
