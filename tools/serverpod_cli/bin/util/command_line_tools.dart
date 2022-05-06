@@ -46,7 +46,7 @@ class CommandLineTools {
   static Future<void> createTables(Directory dir, String name) async {
     var _isNetstatAvailable = await existsCommand('netstat');
     if (!_isNetstatAvailable) {
-      printww(
+      printwwln(
           'netstat is not available on this platform. Please install it and try again. Aborting...');
       await dir.delete(recursive: true);
       exit(-1);
