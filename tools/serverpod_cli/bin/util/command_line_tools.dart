@@ -44,6 +44,13 @@ class CommandLineTools {
   }
 
   static Future<void> createTables(Directory dir, String name) async {
+    var _isNetstatAvailable = await existsCommand('netstat');
+    if (!_isNetstatAvailable) {
+      printww(
+          'netstat is not available on this platform. Please install it and try again. Aborting...');
+      await dir.delete(recursive: true);
+      exit(-1);
+    }
     var serverPath = p.join(dir.path, '${name}_server');
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
