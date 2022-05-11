@@ -19,7 +19,7 @@ dependencies:
   http: ^0.13.0
   path: ^1.8.0
   postgres: ^2.3.0
-  redis: ^3.0.0
+  redis: ^3.1.0
   retry: ^3.1.0
   serverpod_postgres_pool: ^2.1.1
   vm_service: ^8.2.0
