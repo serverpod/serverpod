@@ -1,4 +1,4 @@
-name: PROJECTNAME_flutter
+name: projectname_flutter
 description: A new Flutter project with Serverpod.
 
 # The following line prevents the package from being accidentally published to
@@ -23,8 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  PROJECTNAME_client:
-    path: ../PROJECTNAME_client
+  projectname_client:
+    path: ../projectname_client
 
 
   # The following adds the Cupertino Icons font to your application.

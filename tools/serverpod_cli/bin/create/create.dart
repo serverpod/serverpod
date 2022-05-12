@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/serverpod_shared.dart';
+
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 import '../util/command_line_tools.dart';
@@ -78,11 +79,11 @@ Future<void> performCreate(
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'PROJECTNAME_server')),
+          p.join(resourceManager.templateDirectory.path, 'projectname_server')),
       dstDir: serverDir,
       replacements: [
         Replacement(
-          slotName: 'PROJECTNAME',
+          slotName: 'projectname',
           replacement: name,
         ),
         Replacement(
@@ -116,7 +117,7 @@ Future<void> performCreate(
       ],
       fileNameReplacements: [
         Replacement(
-          slotName: 'PROJECTNAME',
+          slotName: 'projectname',
           replacement: name,
         ),
         Replacement(
@@ -133,11 +134,11 @@ Future<void> performCreate(
     // Copy client files
     copier = Copier(
       srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'PROJECTNAME_client')),
+          p.join(resourceManager.templateDirectory.path, 'projectname_client')),
       dstDir: clientDir,
       replacements: [
         Replacement(
-          slotName: 'PROJECTNAME',
+          slotName: 'projectname',
           replacement: name,
         ),
         Replacement(
@@ -151,7 +152,7 @@ Future<void> performCreate(
       ],
       fileNameReplacements: [
         Replacement(
-          slotName: 'PROJECTNAME',
+          slotName: 'projectname',
           replacement: name,
         ),
         Replacement(
@@ -168,11 +169,11 @@ Future<void> performCreate(
     // Copy Flutter files
     copier = Copier(
       srcDir: Directory(p.join(
-          resourceManager.templateDirectory.path, 'PROJECTNAME_flutter')),
+          resourceManager.templateDirectory.path, 'projectname_flutter')),
       dstDir: flutterDir,
       replacements: [
         Replacement(
-          slotName: 'PROJECTNAME',
+          slotName: 'projectname',
           replacement: name,
         ),
         Replacement(
@@ -186,7 +187,7 @@ Future<void> performCreate(
       ],
       fileNameReplacements: [
         Replacement(
-          slotName: 'PROJECTNAME',
+          slotName: 'projectname',
           replacement: name,
         ),
         Replacement(
@@ -216,11 +217,11 @@ Future<void> performCreate(
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'MODULENAME_server')),
+          p.join(resourceManager.templateDirectory.path, 'modulename_server')),
       dstDir: serverDir,
       replacements: [
         Replacement(
-          slotName: 'MODULENAME',
+          slotName: 'modulename',
           replacement: name,
         ),
         Replacement(
@@ -234,7 +235,7 @@ Future<void> performCreate(
       ],
       fileNameReplacements: [
         Replacement(
-          slotName: 'MODULENAME',
+          slotName: 'modulename',
           replacement: name,
         ),
         Replacement(
@@ -251,11 +252,11 @@ Future<void> performCreate(
     // Copy client files
     copier = Copier(
       srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'MODULENAME_client')),
+          p.join(resourceManager.templateDirectory.path, 'modulename_client')),
       dstDir: clientDir,
       replacements: [
         Replacement(
-          slotName: 'MODULENAME',
+          slotName: 'modulename',
           replacement: name,
         ),
         Replacement(
@@ -269,7 +270,7 @@ Future<void> performCreate(
       ],
       fileNameReplacements: [
         Replacement(
-          slotName: 'MODULENAME',
+          slotName: 'modulename',
           replacement: name,
         ),
         Replacement(

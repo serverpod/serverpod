@@ -18,7 +18,7 @@ servicePort: 8081
 database:
   host: localhost
   port: 8090
-  name: PROJECTNAME
+  name: projectname
   user: postgres
 
 # This is the setup for Redis.

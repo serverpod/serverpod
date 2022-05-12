@@ -7,16 +7,16 @@ services:
       - '8090:5432'
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: PROJECTNAME
-      POSTGRES_PASSWORD: DB_PASSWORD
+      POSTGRES_DB: projectname
+      POSTGRES_PASSWORD: "DB_PASSWORD"
     volumes:
-      - PROJECTNAME_data:/var/lib/postgresql/data
+      - projectname_data:/var/lib/postgresql/data
   redis:
     image: redis:6.2.6
     ports:
       - '8091:6379'
-    command: redis-server --requirepass REDIS_PASSWORD
+    command: redis-server --requirepass "REDIS_PASSWORD"
     environment:
       - REDIS_REPLICATION_MODE=master
 volumes:
-  PROJECTNAME_data:
+  projectname_data:

@@ -9,7 +9,7 @@
 
 # Defines public facing access to the server, in staging mode this will be
 # the address of your staging load balancer or cloud front.
-publicHost: api.staging.example.com
+publicHost: api.staging.examplepod.com
 publicPort: 443
 publicScheme: https
 
@@ -21,7 +21,7 @@ servicePort: 8081
 # This is the database setup for your servers. You will need to edit this to get
 # the server up and running.
 database:
-  host: database.example.com
+  host: database.examplepod.com
   port: 5432
   name: DATABASE_NAME
   user: DATABASE_USER

@@ -1,7 +1,5 @@
-name: MODULENAME_server
+name: modulename_server
 description: Starting point for a Serverpod module.
-# version: 1.0.0
-# homepage: https://www.example.com
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

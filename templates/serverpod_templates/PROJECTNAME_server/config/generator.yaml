@@ -1,3 +1,3 @@
 type: server
 
-client_package_path: ../PROJECTNAME_client
+client_package_path: ../projectname_client

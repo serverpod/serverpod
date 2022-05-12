@@ -6,7 +6,7 @@
 
 # Defines public facing access to the server, in production mode this will be
 # the address of your load balancer or cloud front.
-publicHost: api.example.com
+publicHost: api.examplepod.com
 publicPort: 443
 publicScheme: https
 
@@ -18,7 +18,7 @@ servicePort: 8081
 # This is the database setup for your servers. You will need to edit this to get
 # the server up and running.
 database:
-  host: database.example.com
+  host: database.examplepod.com
   port: 5432
   name: DATABASE_NAME
   user: DATABASE_USER
@@ -27,5 +27,5 @@ database:
 # the server up and running.
 # This is the setup for Redis.
 redis:
-  host: redis.example.com
+  host: redis.examplepod.com
   port: 6379

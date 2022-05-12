@@ -1,4 +1,4 @@
-import 'package:PROJECTNAME_client/PROJECTNAME_client.dart';
+import 'package:projectname_client/projectname_client.dart';
 import 'package:flutter/material.dart';
 
 // Sets up a singleton client object that can be used to talk to the server from

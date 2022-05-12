@@ -1,4 +1,4 @@
-import 'package:PROJECTNAME_server/server.dart';
+import 'package:projectname_server/server.dart';
 
 /// This is the starting point for your Serverpod server. Typically, there is
 /// no need to modify this file.

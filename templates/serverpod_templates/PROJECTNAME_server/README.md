@@ -1,4 +1,6 @@
-## This is the starting point for a Serverpod server.
+# projectname_server
+
+This is the starting point for your Serverpod server.
 
 To run your server, you first need to start Postgres and Redis. It's easiest to do with Docker.
 

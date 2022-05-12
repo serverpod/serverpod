@@ -1,4 +1,4 @@
-name: MODULENAME_client
+name: modulename_client
 description: Starting point for a Serverpod module client.
 # version: 1.0.0
 # homepage: https://www.example.com
