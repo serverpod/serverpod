@@ -23,8 +23,8 @@ servicePort: 8081
 database:
   host: database.examplepod.com
   port: 5432
-  name: DATABASE_NAME
-  user: DATABASE_USER
+  name: serverpod
+  user: postgres
 
 # This is the database setup for your servers. You will need to edit this to get
 # the server up and running.
