@@ -28,3 +28,9 @@ dart analyze modules/serverpod_auth/serverpod_auth_shared_flutter
 dart analyze modules/serverpod_auth/serverpod_auth_apple_flutter
 dart analyze modules/serverpod_auth/serverpod_auth_google_flutter
 dart analyze modules/serverpod_auth/serverpod_auth_email_flutter
+
+dart analyze templates/serverpod_templates/projectname_flutter
+dart analyze templates/serverpod_templates/projectname_client
+dart analyze templates/serverpod_templates/projectname_server
+dart analyze templates/serverpod_templates/modulename_client
+dart analyze templates/serverpod_templates/modulename_server
