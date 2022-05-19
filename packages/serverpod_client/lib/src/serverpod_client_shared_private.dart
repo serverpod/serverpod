@@ -42,6 +42,17 @@ dynamic parseData(String data, String returnTypeName,
     return data.base64DecodedByteData();
   } else if (returnTypeName == 'String') {
     return jsonDecode(data);
+  } else if (returnTypeName.startsWith('List')) {
+    String type = returnTypeName.split('<').last.replaceAll('>', '');
+    if (serializationManager.constructors.containsKey(type)) {
+      List datalist = jsonDecode(data) as List;
+      var value = datalist
+          .map((e) => serializationManager.createEntityFromSerialization(e)!)
+          .toList();
+      return value;
+    } else {
+      return data;
+    }
   }
   return serializationManager.createEntityFromSerialization(jsonDecode(data));
 }

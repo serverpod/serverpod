@@ -83,6 +83,9 @@ abstract class SerializationManager {
         entity is double ||
         entity is SerializableEntity) {
       return '$entity';
+    } else if (entity is List<SerializableEntity>) {
+      // print('this is Seriziable List');
+      return json.encode((entity).map((e) => e.serialize()).toList());
     } else {
       throw FormatException('Unknown entity type ${entity.runtimeType}');
     }

@@ -660,10 +660,14 @@ class FieldDefinition {
     }
 
     if (type.typeNonNullable == 'String' ||
-        type.typeNonNullable == 'int' ||
-        type.typeNonNullable == 'double' ||
+        // type.typeNonNullable == 'int' ||
+        // type.typeNonNullable == 'double' ||
         type.typeNonNullable == 'bool') {
       return '_data[\'$name\']${type.nullable ? '' : '!'}';
+    } else if (type.typeNonNullable == 'double') {
+      return '_data[\'$name\']${type.nullable ? '?' : '!'}.toDouble()';
+    } else if (type.typeNonNullable == 'int') {
+      return '_data[\'$name\']${type.nullable ? '?' : '!'}.toInt()';
     } else if (type.typeNonNullable == 'DateTime') {
       if (type.nullable) {
         return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
