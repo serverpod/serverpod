@@ -344,6 +344,7 @@ Future<void> performCreate(
     printwwln('All setup. You are ready to rock!');
     printwwln('Start your Serverpod server by running:');
     stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
+    stdout.writeln('  \$ docker-compose up --build --detach');
     stdout.writeln('  \$ serverpod run');
     printww('');
     printwwln('You can also start Serverpod manually by running:');

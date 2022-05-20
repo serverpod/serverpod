@@ -14,7 +14,10 @@ import '../util/print.dart';
 import '../util/process_killer_extension.dart';
 import 'file_watcher.dart';
 
-void performRun(bool verbose, bool runDocker) async {
+void performRun(bool verbose) async {
+  // TODO: Fix Docker management
+  bool runDocker = false;
+
   if (!config.load()) return;
 
   var configInfo = ConfigInfo('development');
@@ -57,15 +60,15 @@ void performRun(bool verbose, bool runDocker) async {
   }
 
   // It looks like we are ready to go.
-  print('Starting Serverpod.');
-  print(' • Automatic generate and reload are enabled.');
-  if (runDocker) {
-    print(' • Running Postgres and Redis in Docker container.');
-  }
-  print('');
+  printwwln('Starting Serverpod.');
+  printww(' • Automatic generate and reload are enabled.');
+  // if (runDocker) {
+  //   print(' • Running Postgres and Redis in Docker container.');
+  // }
+  printww('');
 
   // Do an initial serverpod generate.
-  print('Spinning up serverpod generate (this can take a few seconds).');
+  printww('Spinning up serverpod generate (this can take a few seconds).');
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);
