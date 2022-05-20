@@ -1,3 +1,8 @@
+## 0.9.8
+- Adds Terraform deployment scripts for AWS. Documentation here: [https://github.com/serverpod/serverpod/discussions/182](https://github.com/serverpod/serverpod/discussions/182)
+- __Breaking change__: Updates structure of config files. Migration instructions here: [https://github.com/serverpod/serverpod/discussions/182](https://github.com/serverpod/serverpod/discussions/182)
+- Moves Redis enabled option to config file and turns it off by default.
+
 ## 0.9.7
 - `serverpod create` and `serverpod generate` is now working on Windows. Tested on a fresh install of Windows 10.
 
