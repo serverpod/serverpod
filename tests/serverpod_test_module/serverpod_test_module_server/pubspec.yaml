@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_test_module_server
-version: 0.9.7
+version: 0.9.8
 description: A simple Serverpod module.
 repository: https://github.com/serverpod/serverpod
 
@@ -11,7 +11,7 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  serverpod: #^0.9.7
+  serverpod: #^0.9.8
     path: ../../../packages/serverpod
 
 dev_dependencies:

@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_templates
-version: 0.9.7
+version: 0.9.8
 description: Templates for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
