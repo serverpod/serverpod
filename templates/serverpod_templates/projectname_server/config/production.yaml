@@ -27,5 +27,6 @@ database:
 
 # This is the setup for Redis.
 redis:
+  enabled: false
   host: redis.examplepod.com
   port: 6379

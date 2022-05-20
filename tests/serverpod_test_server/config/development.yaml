@@ -17,6 +17,6 @@ database:
   user: postgres
 
 redis:
-  enable: true
+  enabled: true
   host: localhost
   port: 8091
