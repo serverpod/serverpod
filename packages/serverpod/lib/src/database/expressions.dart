@@ -31,25 +31,33 @@ class Expression {
 
   /// Database greater than operator.
   Expression operator >(dynamic other) {
-    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) {
+      other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this > $other)');
   }
 
   /// Database greater or equal than operator.
   Expression operator >=(dynamic other) {
-    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) {
+      other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this >= $other)');
   }
 
   /// Database less than operator.
   Expression operator <(dynamic other) {
-    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) {
+      other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this < $other)');
   }
 
   /// Database less or equal than operator.
   Expression operator <=(dynamic other) {
-    if (other is! Expression) other = DatabaseConfig.encoder.convert(other);
+    if (other is! Expression) {
+      other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this <= $other)');
   }
 }
@@ -138,7 +146,7 @@ class ColumnString extends Column {
       return Expression('"$columnName" IS NULL');
     } else {
       return Expression(
-          '"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
+          '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}');
     }
   }
 
@@ -149,7 +157,7 @@ class ColumnString extends Column {
       return Expression('"$columnName" IS NOT NULL');
     } else {
       return Expression(
-          '"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
+          '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}');
     }
   }
 
@@ -157,7 +165,7 @@ class ColumnString extends Column {
   /// specified value. See Postgresql docs for more info on the LIKE operator.
   Expression like(String value) {
     return Expression(
-        '"$columnName" LIKE ${DatabaseConfig.encoder.convert(value)}');
+        '"$columnName" LIKE ${DatabasePoolManager.encoder.convert(value)}');
   }
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -165,7 +173,7 @@ class ColumnString extends Column {
   /// the ILIKE operator.
   Expression ilike(String value) {
     return Expression(
-        '"$columnName" ILIKE ${DatabaseConfig.encoder.convert(value)}');
+        '"$columnName" ILIKE ${DatabasePoolManager.encoder.convert(value)}');
   }
 }
 
@@ -214,7 +222,7 @@ class ColumnDateTime extends Column {
       return Expression('"$columnName" IS NULL');
     } else {
       return Expression(
-          '"$columnName" = ${DatabaseConfig.encoder.convert(value)}');
+          '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}');
     }
   }
 
@@ -225,7 +233,7 @@ class ColumnDateTime extends Column {
       return Expression('"$columnName" IS NOT NULL');
     } else {
       return Expression(
-          '"$columnName" != ${DatabaseConfig.encoder.convert(value)}');
+          '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}');
     }
   }
 }

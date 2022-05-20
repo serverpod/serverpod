@@ -17,7 +17,7 @@ import '../authentication/authentication_info.dart';
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
-import '../database/database_config.dart';
+import '../database/database_pool_manager.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
 import 'endpoint_dispatch.dart';
@@ -48,7 +48,7 @@ class Serverpod {
   String get runMode => _runMode;
 
   /// The server configuration, as read from the config/ directory.
-  late ServerConfig config;
+  late ServerpodConfig config;
   Map<String, String> _passwords = <String, String>{};
 
   /// Custom [AuthenticationHandler] used to authenticate users.
@@ -69,7 +69,7 @@ class Serverpod {
   final EndpointDispatch endpoints;
 
   /// The database configuration.
-  late DatabaseConfig databaseConfig;
+  late DatabasePoolManager databaseConfig;
 
   /// Runs Serverpod with Redis enabled, true by default. If you disable Redis
   /// inter-server communication will be disabled, including messaging and
@@ -231,25 +231,21 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    config = ServerConfig(_runMode, serverId, _passwords);
+    config = ServerpodConfig(_runMode, serverId, _passwords);
 
     // Setup database
-    databaseConfig = DatabaseConfig(
+    databaseConfig = DatabasePoolManager(
       serializationManager,
-      config.dbHost,
-      config.dbPort,
-      config.dbName,
-      config.dbUser,
-      config.dbPass,
+      config.database,
     );
 
     // Setup Redis
     if (enableRedis) {
       redisController = RedisController(
-        host: config.redisHost,
-        port: config.redisPort,
-        user: config.redisUser,
-        password: config.redisPassword,
+        host: config.redis.host,
+        port: config.redis.port,
+        user: config.redis.user,
+        password: config.redis.password,
       );
     }
 
@@ -258,7 +254,7 @@ class Serverpod {
     server = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.port,
+      port: config.apiServer.port,
       serializationManager: serializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,
@@ -352,7 +348,7 @@ class Serverpod {
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.servicePort,
+      port: config.insightsServer.port,
       serializationManager: _internalSerializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,

@@ -25,7 +25,7 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  DatabaseConfig databaseConfig;
+  DatabasePoolManager databaseConfig;
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;

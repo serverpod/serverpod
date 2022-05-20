@@ -15,7 +15,7 @@ class Caches {
   /// by the [Server].
   Caches(
     this._serializationManager,
-    ServerConfig config,
+    ServerpodConfig config,
     int serverId,
     RedisController? redisController,
   ) {
