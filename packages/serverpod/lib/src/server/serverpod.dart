@@ -71,11 +71,6 @@ class Serverpod {
   /// The database configuration.
   late DatabasePoolManager databaseConfig;
 
-  /// Runs Serverpod with Redis enabled, true by default. If you disable Redis
-  /// inter-server communication will be disabled, including messaging and
-  /// global caching.
-  final bool enableRedis;
-
   late Caches _caches;
 
   /// The Redis controller used by Serverpod.
@@ -199,7 +194,6 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
-    this.enableRedis = true,
   }) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
@@ -240,7 +234,7 @@ class Serverpod {
     );
 
     // Setup Redis
-    if (enableRedis) {
+    if (config.redis.enabled) {
       redisController = RedisController(
         host: config.redis.host,
         port: config.redis.port,
