@@ -32,7 +32,7 @@ subdomain_redis            = "redis"
 subdomain_api              = "api"
 subdomain_insights         = "insights"
 subdomain_storage          = "storage"
-subdomain_staging          = "staging"
+subdomain_staging          = "api-staging"
 subdomain_insights_staging = "insights-staging"
 
 # The definition of the server instances to deploy. Note that if you change the
