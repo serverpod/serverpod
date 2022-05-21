@@ -1,0 +1,32 @@
+# This is the configuration file for your production environment.
+# Typically, you will want to route the traffic through a load balancer
+# which adds SSL security through https. If you use Serverpod's standard
+# Terraform scripts to deploy your server, all you need to change in
+# this file is the examplepod.com domain name.
+
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: api.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: insights.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# This is the database setup for your servers.
+database:
+  host: database.examplepod.com
+  port: 5432
+  name: serverpod
+  user: postgres
+
+# This is the setup for Redis.
+redis:
+  enabled: false
+  host: redis.examplepod.com
+  port: 6379

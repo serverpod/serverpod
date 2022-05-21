@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Start docker
+echo "Starting docker"
+docker-compose up --build --detach
+
+while ! netstat -tna | grep 'LISTEN' | grep -q '.8090'; do
+  echo "Waiting for Postgres..."
+  sleep 2 # time in seconds, tune it as needed
+done
+
+sleep 2
+
+echo "Postgres is ready"
+
+docker-compose run postgres env PGPASSWORD="DB_PASSWORD" psql -h postgres -U postgres -d projectname < generated/tables-serverpod.pgsql
+
+echo "Stopping docker"
+docker-compose stop

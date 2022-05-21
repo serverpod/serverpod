@@ -1,0 +1,4 @@
+#!/bin/sh
+RUNMODE=$(cat /home/ec2-user/runmode)
+cd /home/ec2-user/serverpod/active/projectname_server
+/usr/lib/dart/bin/dart --old_gen_heap_size=0  bin/main.dart --mode $RUNMODE --server-id 0 > /home/ec2-user/serverpod.log 2> /home/ec2-user/serverpod.err

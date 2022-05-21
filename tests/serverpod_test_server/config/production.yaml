@@ -1,9 +1,14 @@
-publicHost: serverpod_test_server
-publicPort: 8080
-publicScheme: http
+apiServer:
+  port: 8080
+  publicHost: serverpod_test_server
+  publicPort: 8080
+  publicScheme: http
 
-port: 8080
-servicePort: 8081
+insightsServer:
+  port: 8081
+  publicHost: serverpod_test_server
+  publicPort: 8081
+  publicScheme: http
 
 database:
   host: postgres
@@ -12,5 +17,6 @@ database:
   user: postgres
 
 redis:
+  enabled: true
   host: redis
   port: 6379
