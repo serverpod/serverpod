@@ -584,21 +584,38 @@ class FieldDefinition {
 
   FieldScope scope = FieldScope.all;
 
-  FieldDefinition(this.name, Map description) {
-    var typeStr = description['type'];
-    var scopeStr = description['scope'];
-    if (scopeStr == 'database') {
-      scope = FieldScope.database;
-    } else if (scopeStr == 'api') {
-      scope = FieldScope.api;
+  FieldDefinition(this.name, dynamic description) {
+    String _typeStr;
+    if (description is Map) {
+      _typeStr = description['type'];
+      var _scopeStr = description['scope'];
+      if (_scopeStr == 'database') {
+        scope = FieldScope.database;
+      } else if (_scopeStr == 'api') {
+        scope = FieldScope.api;
+      }
+      // if (['String', 'int', 'double', 'bool','DateTime'].contains(typeStr)) {
+      defaultValue = description['defaultvalue'];
+      // } else if (typeStr.contains('List<')) {
+      // defaultValue = description['defaultvalue'];
+      // }
+    } else {
+      var components = description.split(',').map((String s) {
+        return s.trim();
+      }).toList();
+      _typeStr = components[0];
+      if (components.length == 2) {
+        var _scopeStr = components[1];
+        if (_scopeStr == 'database') {
+          scope = FieldScope.database;
+        } else if (_scopeStr == 'api') {
+          scope = FieldScope.api;
+        }
+      }
     }
-    // if (['String', 'int', 'double', 'bool','DateTime'].contains(typeStr)) {
-    defaultValue = description['defaultvalue'];
-    // } else if (typeStr.contains('List<')) {
-    // defaultValue = description['defaultvalue'];
-    // }
-    // TODO: Fix package?
-    type = TypeDefinition(typeStr, null);
+
+// TODO: Fix package?
+    type = TypeDefinition(_typeStr, null);
   }
 
   String get serialization {
