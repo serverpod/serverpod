@@ -34,6 +34,10 @@ class PgsqlGenerator {
     out += '--\n';
     out += '\n';
 
+    // Drop Table If Already Exist
+    // out += 'CREATE TABLE mycopy AS SELECT * ${classInfo.tableName}; (\n';
+    // out += 'DROP TABLE IF EXISTS ${classInfo.tableName}; (\n';
+
     // Table definition
     out += 'CREATE TABLE ${classInfo.tableName} (\n';
     // Id is a special case that is nullable in code but not in the database
@@ -41,12 +45,16 @@ class PgsqlGenerator {
     for (var field in classInfo.fields) {
       // Skip id field as it is already added
       if (field.name == 'id') continue;
-
       // Skip fields that are API only
       if (field.scope == FieldScope.api) continue;
-
       var nullable = field.type.nullable ? '' : ' NOT NULL';
-      out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';
+      var defaultValue = field.defaultValue == null
+          ? ''
+          : (!['json', 'String'].contains(field.type.type)
+              ? " DEFAULT '${field.defaultValue}'"
+              : ' DEFAULT ${field.defaultValue}');
+      out +=
+          ',\n  "${field.name}" ${field.type.databaseType}$nullable$defaultValue';
     }
     out += '\n);\n';
     out += '\n';
@@ -67,6 +75,8 @@ class PgsqlGenerator {
       }
       out += '\n';
     }
+    // Todo: Copy Data From Old Table and Paste to new table where match in column Name
+    // out += 'DROP TABLE IF EXISTS mycopy; (\n';
 
     out += '\n';
     return out;

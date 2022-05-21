@@ -5,5 +5,7 @@
 
 class: ModuleClass
 fields:
-  name: String
-  data: int
+  name: 
+    type: String
+  data: 
+    type: int

@@ -17,6 +17,9 @@ class: Example
 # types are `bool`, `int`, `float`, `String`, `DateTime`, and any other
 # generated classes. You can also add lists of objects and types have support
 # for null safety. Eg. `List<int>?` or `List<MyOtherClass?>`.
+# Map fields with type: [types], defaultvalue:[Default Value], scope: [api/database]
 fields:
-  name: String
-  data: int
+  name: 
+    type: String
+  data: 
+    type: int

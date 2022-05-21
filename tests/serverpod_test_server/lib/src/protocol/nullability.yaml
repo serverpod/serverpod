@@ -1,40 +1,78 @@
 class: Nullability
 fields:
-  anInt: int
-  aNullableInt: int?
+  anInt: 
+    type: int
+  aNullableInt: 
+    type: int?
 
-  aDouble: double
-  aNullableDouble: double?
+  aDouble: 
+    type: double
+  aNullableDouble: 
+    type: double?
+  aDoublewithDefaultVal: 
+    type: double
+    defaultvalue: 0
 
-  aBool: bool
-  aNullableBool: bool?
+  aBool: 
+    type: bool
+  aNullableBool: 
+    type: bool?
+  aBoolDefaultVal: 
+    type: bool
+    defaultvalue: true
 
-  aString: String
-  aNullableString: String?
+  aString: 
+    type: String
+  aNullableString: 
+    type: String?
+  aStringDefaultVal: 
+    type: String
+    defaultvalue: 'Hello World'
 
-  aDateTime: DateTime
-  aNullableDateTime: DateTime?
+  aDateTime: 
+    type: DateTime
+  aNullableDateTime: 
+    type: DateTime?
+  aDateTimeDefaultVal: 
+    type: DateTime
+    defaultvalue: '2022-05-21T14:46:17.119'
 
-  aByteData: ByteData
-  aNullableByteData: ByteData?
+  aByteData: 
+    type: ByteData
+  aNullableByteData: 
+    type: ByteData?
 
-  anObject: SimpleData
-  aNullableObject: SimpleData?
+  anObject: 
+    type: SimpleData
+  aNullableObject: 
+    type: SimpleData?
 
-  anIntList: List<int>
-  aNullableIntList: List<int>?
-  aListWithNullableInts: List<int?>
-  aNullableListWithNullableInts: List<int?>?
+  anIntList: 
+    type: List<int>
+  aNullableIntList: 
+    type: List<int>?
+  aListWithNullableInts: 
+    type: List<int?>
+  aNullableListWithNullableInts: 
+    type: List<int?>?
 
-  anObjectList: List<SimpleData>
-  aNullableObjectList: List<SimpleData>?
-  aListWithNullableObjects: List<SimpleData?>
-  aNullableListWithNullableObjects: List<SimpleData?>?
+  anObjectList: 
+    type: List<SimpleData>
+  aNullableObjectList: 
+    type: List<SimpleData>?
+  aListWithNullableObjects: 
+    type: List<SimpleData?>
+  aNullableListWithNullableObjects: 
+    type: List<SimpleData?>?
 
-  aDateTimeList: List<DateTime>
-  aNullableDateTimeList: List<DateTime>?
-  aListWithNullableDateTimes: List<DateTime?>
-  aNullableListWithNullableDateTimes: List<DateTime?>?
+  aDateTimeList: 
+    type: List<DateTime>
+  aNullableDateTimeList: 
+    type: List<DateTime>?
+  aListWithNullableDateTimes: 
+    type: List<DateTime?>
+  aNullableListWithNullableDateTimes: 
+    type: List<DateTime?>?
 
   aByteDataList: List<ByteData>
   aNullableByteDataList: List<ByteData>?

@@ -1,9 +1,19 @@
 class: Types
 table: types
 fields:
-  anInt: int?
-  aBool: bool?
-  aDouble: double?
-  aDateTime: DateTime?
-  aString: String?
-  aByteData: ByteData?
+  anInt: 
+    type: int?
+    defaultvalue: 0
+  aBool: 
+    type: bool?
+  aDouble: 
+    type: double?
+  aDateTime: 
+    type: DateTime?
+  aDateTimeWithDefaultVla: 
+    type: DateTime
+    defaultvalue: '2022-05-21T14:46:17.119'
+  aString: 
+    type: String?
+  aByteData: 
+    type: ByteData?

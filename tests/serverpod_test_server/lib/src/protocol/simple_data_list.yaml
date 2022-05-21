@@ -1,3 +1,5 @@
 class: SimpleDataList
 fields:
-  rows: List<SimpleData>
+  rows: 
+    type: List<SimpleData>
+    defaultvalue: '[]'

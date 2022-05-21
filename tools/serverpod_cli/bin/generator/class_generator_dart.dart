@@ -122,7 +122,7 @@ class ClassGeneratorDart extends ClassGenerator {
       var docFields = _expectMap(doc, 'fields');
       var fields = <FieldDefinition>[];
 
-      fields.add(FieldDefinition('id', 'int?'));
+      fields.add(FieldDefinition('id', {'type': 'int?'}));
       for (var docFieldName in docFields.keys) {
         fields.add(FieldDefinition(docFieldName, docFields[docFieldName]));
       }
@@ -227,8 +227,17 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '  $className({\n';
       for (var field in fields) {
         if (field.shouldIncludeField(serverCode)) {
-          out +=
-              '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
+          String isRequired = field.type.nullable ? '' : 'required ';
+          String defValue = '';
+          if (field.defaultValue != null) {
+            defValue = field.type.isTypedList
+                ? '= const ${field.defaultValue}'
+                : (field.type.type == 'String'
+                    ? "= '${field.defaultValue}'"
+                    : '= ${field.defaultValue}');
+            isRequired = '';
+          }
+          out += '   ${isRequired}this.${field.name}$defValue,\n';
         }
       }
       out += '});\n';
@@ -560,6 +569,7 @@ enum FieldScope {
 class FieldDefinition {
   String name;
   late TypeDefinition type;
+  dynamic defaultValue;
   // bool nullable = true;
 
   String? get columnType {
@@ -574,21 +584,19 @@ class FieldDefinition {
 
   FieldScope scope = FieldScope.all;
 
-  FieldDefinition(this.name, String description) {
-    var components = description.split(',').map((String s) {
-      return s.trim();
-    }).toList();
-    var typeStr = components[0];
-
-    if (components.length == 2) {
-      var scopeStr = components[1];
-      if (scopeStr == 'database') {
-        scope = FieldScope.database;
-      } else if (scopeStr == 'api') {
-        scope = FieldScope.api;
-      }
+  FieldDefinition(this.name, Map description) {
+    var typeStr = description['type'];
+    var scopeStr = description['scope'];
+    if (scopeStr == 'database') {
+      scope = FieldScope.database;
+    } else if (scopeStr == 'api') {
+      scope = FieldScope.api;
     }
-
+    // if (['String', 'int', 'double', 'bool','DateTime'].contains(typeStr)) {
+    defaultValue = description['defaultvalue'];
+    // } else if (typeStr.contains('List<')) {
+    // defaultValue = description['defaultvalue'];
+    // }
     // TODO: Fix package?
     type = TypeDefinition(typeStr, null);
   }
@@ -633,28 +641,30 @@ class FieldDefinition {
 
   String get deserialization {
     if (type.isTypedList) {
+      String nullablity =
+          (type.nullable ? '?' : (scope == FieldScope.api ? '?? []' : '!'));
       if (type.listType!.typeNonNullable == 'String' ||
           type.listType!.typeNonNullable == 'int' ||
           type.listType!.typeNonNullable == 'double' ||
           type.listType!.typeNonNullable == 'bool') {
-        return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<${type.listType!.type}>()';
+        return '(_data[\'$name\']$nullablity).cast<${type.listType!.type}>()';
       } else if (type.listType!.typeNonNullable == 'DateTime') {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
+          return '(_data[\'$name\']$nullablity).map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
+          return '(_data[\'$name\']$nullablity).map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
         }
       } else if (type.listType!.typeNonNullable == 'ByteData') {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
+          return '(_data[\'$name\']$nullablity).map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
+          return '(_data[\'$name\']$nullablity).map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
         }
       } else {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
+          return '(_data[\'$name\']$nullablity).map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
+          return '(_data[\'$name\']$nullablity).map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a)).toList()';
         }
       }
     }
