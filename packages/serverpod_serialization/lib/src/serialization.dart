@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types
 
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -12,7 +13,7 @@ typedef constructor = SerializableEntity Function(
 
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
-abstract class SerializableEntity {
+abstract class SerializableEntity with ServerpodResponse {
   /// Returns the class name of this entity.
   String get className;
 
@@ -31,6 +32,9 @@ abstract class SerializableEntity {
     return {
       'class': className,
       'data': data,
+      'rStatusCode': resStatusCode,
+      'rContent': resContent,
+      'rAdditionalValue': resAdditionalValue
     };
   }
 
@@ -39,7 +43,15 @@ abstract class SerializableEntity {
       Map<String, dynamic> serialization) {
     if (serialization['class'] != className) throw const FormatException();
     if (serialization['data'] == null) throw const FormatException();
-
+    if (serialization['rContent'] != null) {
+      resContent = serialization['rContent'];
+    }
+    if (serialization['rStatusCode'] != null) {
+      resStatusCode = serialization['rStatusCode'] ?? -1;
+    }
+    if (serialization['rAdditionalValue'] != null) {
+      resAdditionalValue = serialization['rAdditionalValue'];
+    }
     return serialization['data'];
   }
 
@@ -84,7 +96,6 @@ abstract class SerializationManager {
         entity is SerializableEntity) {
       return '$entity';
     } else if (entity is List<SerializableEntity>) {
-      // print('this is Seriziable List');
       return json.encode((entity).map((e) => e.serialize()).toList());
     } else {
       throw FormatException('Unknown entity type ${entity.runtimeType}');
@@ -103,4 +114,16 @@ abstract class SerializationManager {
       constructors[className] = map[className]!;
     }
   }
+}
+
+/// To get Additional info from server along with data
+mixin ServerpodResponse {
+  ///  StatusCode that may required sometime
+  int resStatusCode = -1;
+
+  /// Response Content that may Reqired
+  String resContent = 'No Content Passes';
+
+  /// Response With some additional Value
+  dynamic resAdditionalValue;
 }

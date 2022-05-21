@@ -3,8 +3,7 @@ table: object_with_object
 fields:
   data: 
     type: SimpleData
-  nullableData: 
-    type: SimpleData?
+  nullableData: SimpleData?
   dataList: 
     type: List<SimpleData>
     defaultvalue: '[]'

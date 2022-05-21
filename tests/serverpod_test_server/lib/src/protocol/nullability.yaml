@@ -1,20 +1,17 @@
 class: Nullability
 fields:
-  anInt: 
-    type: int
+  anInt: int
   aNullableInt: 
     type: int?
 
-  aDouble: 
-    type: double
+  aDouble: double
   aNullableDouble: 
     type: double?
   aDoublewithDefaultVal: 
     type: double
     defaultvalue: 0
 
-  aBool: 
-    type: bool
+  aBool: bool
   aNullableBool: 
     type: bool?
   aBoolDefaultVal: 
