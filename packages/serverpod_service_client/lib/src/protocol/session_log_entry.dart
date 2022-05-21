@@ -16,7 +16,7 @@ class SessionLogEntry extends SerializableEntity {
   String get className => 'SessionLogEntry';
 
   int? id;
-  late int serverId;
+  late String serverId;
   late DateTime time;
   String? module;
   String? endpoint;

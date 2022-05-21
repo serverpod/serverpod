@@ -31,7 +31,7 @@ class FutureCallManager {
     String name,
     SerializableEntity? object,
     DateTime time,
-    int serverId,
+    String serverId,
     String? identifier,
   ) async {
     String? serialization;

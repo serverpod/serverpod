@@ -80,7 +80,7 @@ class Serverpod {
   Caches get caches => _caches;
 
   /// The id of this [Serverpod].
-  int serverId = 0;
+  String serverId = 'undefined';
 
   /// The main server managed by this [Serverpod].
   late Server server;
@@ -212,10 +212,10 @@ class Serverpod {
               ServerpodRunMode.production,
             ],
             defaultsTo: ServerpodRunMode.development)
-        ..addOption('server-id', abbr: 'i', defaultsTo: '0');
+        ..addOption('server-id', abbr: 'i', defaultsTo: 'undefined');
       var results = argParser.parse(args);
       _runMode = results['mode'];
-      serverId = int.tryParse(results['server-id']) ?? 0;
+      serverId = results['server-id'];
     } catch (e) {
       stdout.writeln('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;

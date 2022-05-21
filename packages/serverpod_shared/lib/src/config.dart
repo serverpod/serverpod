@@ -11,7 +11,7 @@ class ServerpodConfig {
   final String runMode;
 
   /// Id of the current server.
-  final int serverId;
+  final String serverId;
 
   /// Max limit in bytes of requests to the server.
   late int maxRequestSize;

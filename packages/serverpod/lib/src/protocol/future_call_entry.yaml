@@ -5,7 +5,7 @@ fields:
   name: String
   time: DateTime
   serializedObject: String?
-  serverId: int
+  serverId: String
   identifier: String?
 
 indexes:

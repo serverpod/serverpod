@@ -16,7 +16,7 @@ class QueryLogEntry extends SerializableEntity {
   String get className => 'QueryLogEntry';
 
   int? id;
-  late int serverId;
+  late String serverId;
   late int sessionLogId;
   late String query;
   late double duration;
