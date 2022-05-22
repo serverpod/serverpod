@@ -2,4 +2,5 @@
 // templates/pubspecs directory.
 
 const templateVersion = 'VERSION';
+// ignore: undefined_identifier, const_initialized_with_non_constant_value
 const productionMode = PRODUCTION_MODE;

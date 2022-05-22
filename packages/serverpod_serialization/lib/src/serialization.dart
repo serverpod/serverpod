@@ -32,9 +32,9 @@ abstract class SerializableEntity with ServerpodResponse {
     return {
       'class': className,
       'data': data,
-      'rStatusCode': resStatusCode,
-      'rContent': resContent,
-      'rAdditionalValue': resAdditionalValue
+      if (resStatusCode != -1) 'rStatusCode': resStatusCode,
+      if (resContent.isNotEmpty) 'rContent': resContent,
+      if (resAdditionalValue != null) 'rAdditionalValue': resAdditionalValue
     };
   }
 
@@ -122,8 +122,35 @@ mixin ServerpodResponse {
   int resStatusCode = -1;
 
   /// Response Content that may Reqired
-  String resContent = 'No Content Passes';
+  String resContent = '';
 
   /// Response With some additional Value
   dynamic resAdditionalValue;
+}
+
+/// To get Additional info from server along with list data [List<SerializableEntity>]
+/// This will helpful when you want to get additional info with filter like to get total items
+/// available when you do pagination
+extension SerializableEntityListExtension on List<SerializableEntity> {
+  set resStatusCode(int statusCode) {
+    if (length > 0) first.resStatusCode = statusCode;
+  }
+
+  set resContent(String resContent) {
+    if (length > 0) first.resContent = resContent;
+  }
+
+  set resAdditionalValue(dynamic resAdditionalValue) {
+    if (length > 0) first.resAdditionalValue = resAdditionalValue;
+  }
+
+  ///  StatusCode that may required sometime
+  int get resStatusCode => (length > 0) ? first.resStatusCode : -1;
+
+  /// Response Content that may Reqired
+  String get resContent => (length > 0) ? first.resContent : '';
+
+  /// Response With some additional Value
+  dynamic get resAdditionalValue =>
+      (length > 0) ? first.resAdditionalValue : null;
 }
