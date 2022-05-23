@@ -62,19 +62,20 @@ Future<void> performCreate(
   print('Creating project $name...');
 
   if (verbose) print('Creating directory: ${projectDir.path}');
-  projectDir.createSync();
+  await projectDir.create(recursive: true);
 
   var serverDir = Directory(p.join(projectDir.path, name + '_server'));
   if (verbose) print('Creating directory: ${serverDir.path}');
-  serverDir.createSync();
+  await serverDir.create(recursive: true);
 
   var clientDir = Directory(p.join(projectDir.path, name + '_client'));
   if (verbose) print('Creating directory: ${clientDir.path}');
+  await clientDir.create(recursive: true);
 
   if (template == 'server') {
     var flutterDir = Directory(p.join(projectDir.path, name + '_flutter'));
     if (verbose) print('Creating directory: ${flutterDir.path}');
-    flutterDir.createSync();
+    await flutterDir.create(recursive: true);
 
     // Copy server files
     var copier = Copier(

@@ -233,4 +233,20 @@ class Database {
       retryIf: retryIf,
     );
   }
+
+  /// Inserts/Update a Multiple [TableRow].
+  /// [id] must be null to all values or not null to all value
+  Future<void> insertOrupdateBulk(
+    List<TableRow> row,
+    Table table, {
+    Transaction? transaction,
+  }) async {
+    var conn = await databaseConnection;
+    await conn.insertOrupdateBulk(
+      row,
+      table,
+      session: session,
+      transaction: transaction,
+    );
+  }
 }

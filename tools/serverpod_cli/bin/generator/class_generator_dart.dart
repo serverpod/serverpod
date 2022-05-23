@@ -377,6 +377,14 @@ class ClassGeneratorDart extends ClassGenerator {
               '    return session.db.insert(row, transaction: transaction);\n';
           out += '  }\n';
 
+          // insertOrupdateBulk
+          out += '\n';
+          out +=
+              '  static Future<void> insertOrupdateBulk(Session session, List<$className> row,{Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.insertOrupdateBulk(row, $className.t, transaction: transaction);\n';
+          out += '  }\n';
+
           // count
           out += '\n';
           out +=
