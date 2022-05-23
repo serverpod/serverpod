@@ -167,11 +167,12 @@ abstract class EndpointDispatch {
   }
 
   Object? _formatArg(
-      String? input, Type type, SerializationManager serializationManager) {
+      dynamic input, Type type, SerializationManager serializationManager) {
     // Check for basic types
+    if (input == null) return null;
     if (type == String) return input;
-    if (type == int) return int.tryParse(input!);
-    if (type == double) return double.tryParse(input!);
+    if (type == int) return int.tryParse(input);
+    if (type == double) return double.tryParse(input);
     if (type == bool) {
       if (input == 'true') {
         return true;
@@ -180,13 +181,28 @@ abstract class EndpointDispatch {
       }
       return null;
     }
-    if (type == DateTime) return DateTime.tryParse(input!);
-    if (type == ByteData) return input?.base64DecodedByteData();
+    if (type == DateTime) return DateTime.tryParse(input);
+    if (type == ByteData) return input.base64DecodedByteData();
+    if (type.toString().contains('List')) {
+      var listData = (jsonDecode(input) as List?);
+      var dds = listData
+          ?.map((e) => _formatArg(e, e.runtimeType, serializationManager))
+          .toList();
+      return dds;
+    }
 
     try {
-      var data = jsonDecode(input!);
-      return serializationManager.createEntityFromSerialization(data);
+      var data = input is Map ? input : jsonDecode(input);
+      var dataResponse =
+          serializationManager.createEntityFromSerialization(data);
+      if (dataResponse != null) {
+        return dataResponse;
+      } else {
+        // Class Name Not Found
+        return data;
+      }
     } catch (error) {
+      // print('Error in Format Args: $error');
       return null;
     }
   }

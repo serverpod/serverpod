@@ -594,11 +594,7 @@ class FieldDefinition {
       } else if (_scopeStr == 'api') {
         scope = FieldScope.api;
       }
-      // if (['String', 'int', 'double', 'bool','DateTime'].contains(typeStr)) {
       defaultValue = description['defaultvalue'];
-      // } else if (typeStr.contains('List<')) {
-      // defaultValue = description['defaultvalue'];
-      // }
     } else {
       var components = description.split(',').map((String s) {
         return s.trim();
@@ -658,8 +654,11 @@ class FieldDefinition {
 
   String get deserialization {
     if (type.isTypedList) {
-      String nullablity =
-          (type.nullable ? '?' : (scope == FieldScope.api ? '?? []' : '!'));
+      String nullablity = (type.nullable
+          ? '?'
+          : ([FieldScope.api, FieldScope.database].contains(scope)
+              ? '?? []'
+              : '!'));
       if (type.listType!.typeNonNullable == 'String' ||
           type.listType!.typeNonNullable == 'int' ||
           type.listType!.typeNonNullable == 'double' ||

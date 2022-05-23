@@ -90,9 +90,20 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         }
         endPt += '    });\n';
         if (returnType.isTypedList) {
-          out += '     List<SerializableEntity> datas = $endPt';
-          out +=
-              '     return datas.map((e) => ${returnType.listType!.type}.fromSerialization(e.serializeAll())).toList();';
+          out += '     List datas = $endPt';
+          String _castStr = '';
+          if (returnType.listType!.databaseType == 'json') {
+            // Todo: check wheather this if else is correct or not
+            String isNulable =
+                returnType.listType!.nullable ? 'e == null ? null : ' : '';
+            _castStr += '.map((e) {';
+            _castStr +=
+                'return $isNulable${returnType.listType!.type}.fromSerialization(e.serializeAll());}).toList();';
+          } else {
+            _castStr +=
+                '${returnType.nullable ? '?' : ''}.cast<${returnType.listType!.type}>();';
+          }
+          out += '     return datas$_castStr';
         } else {
           out += ' return $endPt';
         }

@@ -1,6 +1,5 @@
 // ignore_for_file: camel_case_types
 
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -96,7 +95,11 @@ abstract class SerializationManager {
         entity is SerializableEntity) {
       return '$entity';
     } else if (entity is List<SerializableEntity>) {
-      return json.encode((entity).map((e) => e.serialize()).toList());
+      return json.encode((entity).map((e) => e.serializeAll()).toList());
+    } else if (entity is Map) {
+      return json.encode(entity);
+    } else if (entity is List) {
+      return json.encode(entity.map((e) => serializeEntity(e)).toList());
     } else {
       throw FormatException('Unknown entity type ${entity.runtimeType}');
     }
