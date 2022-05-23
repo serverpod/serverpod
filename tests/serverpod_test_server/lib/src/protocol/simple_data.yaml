@@ -1,6 +1,4 @@
 class: SimpleData
 table: simple_data
 fields:
-  num: 
-    type: int
-    defaultvalue: 1
+  num: int

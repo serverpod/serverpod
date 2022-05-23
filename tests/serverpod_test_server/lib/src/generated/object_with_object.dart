@@ -33,7 +33,7 @@ class ObjectWithObject extends TableRow {
     this.id,
     required this.data,
     this.nullableData,
-    this.dataList = const [],
+    required this.dataList,
     this.nullableDataList,
     required this.listWithNullableData,
     this.nullableListWithNullableData,
@@ -227,6 +227,15 @@ class ObjectWithObject extends TableRow {
     Transaction? transaction,
   }) async {
     return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<void> insertOrupdateBulk(
+    Session session,
+    List<ObjectWithObject> row, {
+    Transaction? transaction,
+  }) async {
+    return session.db
+        .insertOrupdateBulk(row, ObjectWithObject.t, transaction: transaction);
   }
 
   static Future<int> count(

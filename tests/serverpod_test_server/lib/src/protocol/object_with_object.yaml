@@ -1,15 +1,9 @@
 class: ObjectWithObject
 table: object_with_object
 fields:
-  data: 
-    type: SimpleData
+  data: SimpleData
   nullableData: SimpleData?
-  dataList: 
-    type: List<SimpleData>
-    defaultvalue: '[]'
-  nullableDataList: 
-    type: List<SimpleData>?
-  listWithNullableData: 
-    type: List<SimpleData?>
-  nullableListWithNullableData: 
-    type: List<SimpleData?>?
+  dataList: List<SimpleData>
+  nullableDataList: List<SimpleData>?
+  listWithNullableData: List<SimpleData?>
+  nullableListWithNullableData: List<SimpleData?>?

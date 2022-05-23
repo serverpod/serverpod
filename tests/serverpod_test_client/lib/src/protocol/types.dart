@@ -19,22 +19,22 @@ class Types extends SerializableEntity {
   int? anInt;
   bool? aBool;
   double? aDouble;
-  double? aDoubleWithDefaultValue;
   DateTime? aDateTime;
   String? aString;
-  String? aStringWithDefaultValue;
   ByteData? aByteData;
+  String? aStringWithDefaultValue;
+  double? aDoubleWithDefaultValue;
 
   Types({
     this.id,
-    this.anInt = 0,
+    this.anInt,
     this.aBool,
     this.aDouble,
-    this.aDoubleWithDefaultValue = 100,
     this.aDateTime,
     this.aString,
-    this.aStringWithDefaultValue = 'Default Value',
     this.aByteData,
+    this.aStringWithDefaultValue = 'Default Value',
+    this.aDoubleWithDefaultValue = 100,
   });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
@@ -43,17 +43,17 @@ class Types extends SerializableEntity {
     anInt = _data['anInt']?.toInt();
     aBool = _data['aBool'];
     aDouble = _data['aDouble']?.toDouble();
-    aDoubleWithDefaultValue = _data['aDoubleWithDefaultValue']?.toDouble();
     aDateTime = _data['aDateTime'] != null
         ? DateTime.tryParse(_data['aDateTime'])
         : null;
     aString = _data['aString'];
-    aStringWithDefaultValue = _data['aStringWithDefaultValue'];
     aByteData = _data['aByteData'] == null
         ? null
         : (_data['aByteData'] is String
             ? (_data['aByteData'] as String).base64DecodedByteData()
             : ByteData.view((_data['aByteData'] as Uint8List).buffer));
+    aStringWithDefaultValue = _data['aStringWithDefaultValue'];
+    aDoubleWithDefaultValue = _data['aDoubleWithDefaultValue']?.toDouble();
   }
 
   @override
@@ -63,11 +63,11 @@ class Types extends SerializableEntity {
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDoubleWithDefaultValue': aDoubleWithDefaultValue,
       'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
-      'aStringWithDefaultValue': aStringWithDefaultValue,
       'aByteData': aByteData?.base64encodedString(),
+      'aStringWithDefaultValue': aStringWithDefaultValue,
+      'aDoubleWithDefaultValue': aDoubleWithDefaultValue,
     });
   }
 }

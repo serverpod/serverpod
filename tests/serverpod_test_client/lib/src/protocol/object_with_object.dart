@@ -27,7 +27,7 @@ class ObjectWithObject extends SerializableEntity {
     this.id,
     required this.data,
     this.nullableData,
-    this.dataList = const [],
+    required this.dataList,
     this.nullableDataList,
     required this.listWithNullableData,
     this.nullableListWithNullableData,

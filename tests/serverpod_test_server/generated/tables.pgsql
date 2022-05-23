@@ -6,7 +6,7 @@ CREATE TABLE object_with_object (
   "id" serial,
   "data" json NOT NULL,
   "nullableData" json,
-  "dataList" json NOT NULL DEFAULT '[]',
+  "dataList" json NOT NULL,
   "nullableDataList" json,
   "listWithNullableData" json NOT NULL,
   "nullableListWithNullableData" json
@@ -22,7 +22,7 @@ ALTER TABLE ONLY object_with_object
 
 CREATE TABLE simple_data (
   "id" serial,
-  "num" integer NOT NULL DEFAULT '1'
+  "num" integer NOT NULL
 );
 
 ALTER TABLE ONLY simple_data
@@ -35,14 +35,14 @@ ALTER TABLE ONLY simple_data
 
 CREATE TABLE types (
   "id" serial,
-  "anInt" integer DEFAULT '0',
+  "anInt" integer,
   "aBool" boolean,
   "aDouble" double precision,
-  "aDoubleWithDefaultValue" double precision DEFAULT '100',
   "aDateTime" timestamp without time zone,
   "aString" text,
+  "aByteData" bytea,
   "aStringWithDefaultValue" text DEFAULT 'Default Value',
-  "aByteData" bytea
+  "aDoubleWithDefaultValue" double precision DEFAULT '100'
 );
 
 ALTER TABLE ONLY types

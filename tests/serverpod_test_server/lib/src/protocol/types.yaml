@@ -1,23 +1,15 @@
 class: Types
 table: types
 fields:
-  anInt: 
-    type: int?
-    defaultvalue: 0
-  aBool: 
-    type: bool?
+  anInt: int?
+  aBool: bool?
   aDouble: double?
-  aDoubleWithDefaultValue: 
-    type: double?
-    defaultvalue: 100
-
-  aDateTime: 
-    type: DateTime?
-
+  aDateTime: DateTime?
   aString: String?
-
+  aByteData: ByteData?
   aStringWithDefaultValue: 
     type: String?
     defaultvalue: "Default Value"
-
-  aByteData: ByteData?
+  aDoubleWithDefaultValue: 
+    type: double?
+    defaultvalue: 100

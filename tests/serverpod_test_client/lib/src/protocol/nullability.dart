@@ -20,13 +20,10 @@ class Nullability extends SerializableEntity {
   int? aNullableInt;
   late double aDouble;
   double? aNullableDouble;
-  late double aDoublewithDefaultVal;
   late bool aBool;
   bool? aNullableBool;
-  late bool aBoolDefaultVal;
   late String aString;
   String? aNullableString;
-  late String aStringDefaultVal;
   late DateTime aDateTime;
   DateTime? aNullableDateTime;
   late ByteData aByteData;
@@ -56,13 +53,10 @@ class Nullability extends SerializableEntity {
     this.aNullableInt,
     required this.aDouble,
     this.aNullableDouble,
-    this.aDoublewithDefaultVal = 0,
     required this.aBool,
     this.aNullableBool,
-    this.aBoolDefaultVal = true,
     required this.aString,
     this.aNullableString,
-    this.aStringDefaultVal = 'Hello World',
     required this.aDateTime,
     this.aNullableDateTime,
     required this.aByteData,
@@ -94,13 +88,10 @@ class Nullability extends SerializableEntity {
     aNullableInt = _data['aNullableInt']?.toInt();
     aDouble = _data['aDouble']!.toDouble();
     aNullableDouble = _data['aNullableDouble']?.toDouble();
-    aDoublewithDefaultVal = _data['aDoublewithDefaultVal']!.toDouble();
     aBool = _data['aBool']!;
     aNullableBool = _data['aNullableBool'];
-    aBoolDefaultVal = _data['aBoolDefaultVal']!;
     aString = _data['aString']!;
     aNullableString = _data['aNullableString'];
-    aStringDefaultVal = _data['aStringDefaultVal']!;
     aDateTime = DateTime.tryParse(_data['aDateTime'])!;
     aNullableDateTime = _data['aNullableDateTime'] != null
         ? DateTime.tryParse(_data['aNullableDateTime'])
@@ -173,13 +164,10 @@ class Nullability extends SerializableEntity {
       'aNullableInt': aNullableInt,
       'aDouble': aDouble,
       'aNullableDouble': aNullableDouble,
-      'aDoublewithDefaultVal': aDoublewithDefaultVal,
       'aBool': aBool,
       'aNullableBool': aNullableBool,
-      'aBoolDefaultVal': aBoolDefaultVal,
       'aString': aString,
       'aNullableString': aNullableString,
-      'aStringDefaultVal': aStringDefaultVal,
       'aDateTime': aDateTime.toUtc().toIso8601String(),
       'aNullableDateTime': aNullableDateTime?.toUtc().toIso8601String(),
       'aByteData': aByteData.base64encodedString(),

@@ -20,7 +20,7 @@ class SimpleDataList extends SerializableEntity {
 
   SimpleDataList({
     this.id,
-    this.rows = const [],
+    required this.rows,
   });
 
   SimpleDataList.fromSerialization(Map<String, dynamic> serialization) {

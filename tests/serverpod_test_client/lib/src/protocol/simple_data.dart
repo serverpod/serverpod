@@ -20,7 +20,7 @@ class SimpleData extends SerializableEntity {
 
   SimpleData({
     this.id,
-    this.num = 1,
+    required this.num,
   });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {

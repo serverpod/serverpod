@@ -26,7 +26,7 @@ class SimpleData extends TableRow {
 
   SimpleData({
     this.id,
-    this.num = 1,
+    required this.num,
   });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {
@@ -158,6 +158,15 @@ class SimpleData extends TableRow {
     Transaction? transaction,
   }) async {
     return session.db.insert(row, transaction: transaction);
+  }
+
+  static Future<void> insertOrupdateBulk(
+    Session session,
+    List<SimpleData> row, {
+    Transaction? transaction,
+  }) async {
+    return session.db
+        .insertOrupdateBulk(row, SimpleData.t, transaction: transaction);
   }
 
   static Future<int> count(
