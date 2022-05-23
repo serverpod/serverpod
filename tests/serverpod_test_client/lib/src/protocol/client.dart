@@ -136,6 +136,77 @@ class _EndpointBasicTypes extends EndpointRef {
       'value': value,
     });
   }
+
+  Future<List<String>> testListOfString(
+    List<String> value,
+  ) async {
+    List datas = await caller
+        .callServerEndpoint('basicTypes', 'testListOfString', 'List<String>', {
+      'value': value,
+    });
+    return datas.cast<String>();
+  }
+
+  Future<List<dynamic>> testListOfdynamic(
+    List<dynamic> value,
+  ) async {
+    List datas = await caller.callServerEndpoint(
+        'basicTypes', 'testListOfdynamic', 'List<dynamic>', {
+      'value': value,
+    });
+    return datas.cast<dynamic>();
+  }
+
+  Future<List<double>> testListOfdouble(
+    List<double> value,
+  ) async {
+    List datas = await caller
+        .callServerEndpoint('basicTypes', 'testListOfdouble', 'List<double>', {
+      'value': value,
+    });
+    return datas.cast<double>();
+  }
+
+  Future<List<DateTime>> testListOfDateTime(
+    List<DateTime> value,
+  ) async {
+    List datas = await caller.callServerEndpoint(
+        'basicTypes', 'testListOfDateTime', 'List<DateTime>', {
+      'value': value,
+    });
+    return datas.cast<DateTime>();
+  }
+
+  Future<List<bool>> testListOfbool(
+    List<bool> value,
+  ) async {
+    List datas = await caller
+        .callServerEndpoint('basicTypes', 'testListOfbool', 'List<bool>', {
+      'value': value,
+    });
+    return datas.cast<bool>();
+  }
+
+  Future<Map<String, dynamic>> testListOfmapDynamic(
+    Map<String, dynamic> value,
+  ) async {
+    return await caller.callServerEndpoint(
+        'basicTypes', 'testListOfmapDynamic', 'Map<String,dynamic>', {
+      'value': value,
+    });
+  }
+
+  Future<List<SimpleData>> testListOfSimpleData(
+    List<SimpleData> object,
+  ) async {
+    List datas = await caller.callServerEndpoint(
+        'basicTypes', 'testListOfSimpleData', 'List<SimpleData>', {
+      'object': object,
+    });
+    return datas.map((e) {
+      return SimpleData.fromSerialization(e.serializeAll());
+    }).toList();
+  }
 }
 
 class _EndpointCloudStorage extends EndpointRef {
@@ -655,11 +726,6 @@ class _EndpointStreaming extends EndpointRef {
   String get name => 'streaming';
 
   _EndpointStreaming(EndpointCaller caller) : super(caller);
-
-  Future<void> streamOpened() async {
-    return await caller
-        .callServerEndpoint('streaming', 'streamOpened', 'void', {});
-  }
 }
 
 class _Modules {

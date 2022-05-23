@@ -20,15 +20,15 @@ class SimpleDataList extends SerializableEntity {
 
   SimpleDataList({
     this.id,
-    required this.rows,
+    this.rows = const [],
   });
 
   SimpleDataList.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    rows = _data['rows']!
+    id = _data['id']?.toInt();
+    rows = (_data['rows']!)
         .map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
+        .toList();
   }
 
   @override

@@ -20,13 +20,13 @@ class SimpleData extends SerializableEntity {
 
   SimpleData({
     this.id,
-    required this.num,
+    this.num = 1,
   });
 
   SimpleData.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    num = _data['num']!;
+    id = _data['id']?.toInt();
+    num = _data['num']!.toInt();
   }
 
   @override

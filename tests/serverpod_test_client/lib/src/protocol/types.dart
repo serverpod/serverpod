@@ -19,30 +19,36 @@ class Types extends SerializableEntity {
   int? anInt;
   bool? aBool;
   double? aDouble;
+  double? aDoubleWithDefaultValue;
   DateTime? aDateTime;
   String? aString;
+  String? aStringWithDefaultValue;
   ByteData? aByteData;
 
   Types({
     this.id,
-    this.anInt,
+    this.anInt = 0,
     this.aBool,
     this.aDouble,
+    this.aDoubleWithDefaultValue = 100,
     this.aDateTime,
     this.aString,
+    this.aStringWithDefaultValue = 'Default Value',
     this.aByteData,
   });
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    anInt = _data['anInt'];
+    id = _data['id']?.toInt();
+    anInt = _data['anInt']?.toInt();
     aBool = _data['aBool'];
-    aDouble = _data['aDouble'];
+    aDouble = _data['aDouble']?.toDouble();
+    aDoubleWithDefaultValue = _data['aDoubleWithDefaultValue']?.toDouble();
     aDateTime = _data['aDateTime'] != null
         ? DateTime.tryParse(_data['aDateTime'])
         : null;
     aString = _data['aString'];
+    aStringWithDefaultValue = _data['aStringWithDefaultValue'];
     aByteData = _data['aByteData'] == null
         ? null
         : (_data['aByteData'] is String
@@ -57,8 +63,10 @@ class Types extends SerializableEntity {
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
+      'aDoubleWithDefaultValue': aDoubleWithDefaultValue,
       'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
+      'aStringWithDefaultValue': aStringWithDefaultValue,
       'aByteData': aByteData?.base64encodedString(),
     });
   }

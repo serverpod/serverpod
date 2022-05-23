@@ -6,14 +6,18 @@ fields:
     defaultvalue: 0
   aBool: 
     type: bool?
-  aDouble: 
+  aDouble: double?
+  aDoubleWithDefaultValue: 
     type: double?
+    defaultvalue: 100
+
   aDateTime: 
     type: DateTime?
-  aDateTimeWithDefaultVla: 
-    type: DateTime
-    defaultvalue: '2022-05-21T14:46:17.119'
-  aString: 
+
+  aString: String?
+
+  aStringWithDefaultValue: 
     type: String?
-  aByteData: 
-    type: ByteData?
+    defaultvalue: "Default Value"
+
+  aByteData: ByteData?

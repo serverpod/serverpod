@@ -92,7 +92,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         if (returnType.isTypedList) {
           out += '     List datas = $endPt';
           String _castStr = '';
-          if (returnType.listType!.databaseType == 'json') {
+          if (returnType.listType!.databaseType == 'json' && returnType.listType!.type != 'dynamic') {
             // Todo: check wheather this if else is correct or not
             String isNulable =
                 returnType.listType!.nullable ? 'e == null ? null : ' : '';

@@ -20,10 +20,13 @@ class Nullability extends SerializableEntity {
   int? aNullableInt;
   late double aDouble;
   double? aNullableDouble;
+  late double aDoublewithDefaultVal;
   late bool aBool;
   bool? aNullableBool;
+  late bool aBoolDefaultVal;
   late String aString;
   String? aNullableString;
+  late String aStringDefaultVal;
   late DateTime aDateTime;
   DateTime? aNullableDateTime;
   late ByteData aByteData;
@@ -53,10 +56,13 @@ class Nullability extends SerializableEntity {
     this.aNullableInt,
     required this.aDouble,
     this.aNullableDouble,
+    this.aDoublewithDefaultVal = 0,
     required this.aBool,
     this.aNullableBool,
+    this.aBoolDefaultVal = true,
     required this.aString,
     this.aNullableString,
+    this.aStringDefaultVal = 'Hello World',
     required this.aDateTime,
     this.aNullableDateTime,
     required this.aByteData,
@@ -83,15 +89,18 @@ class Nullability extends SerializableEntity {
 
   Nullability.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    anInt = _data['anInt']!;
-    aNullableInt = _data['aNullableInt'];
-    aDouble = _data['aDouble']!;
-    aNullableDouble = _data['aNullableDouble'];
+    id = _data['id']?.toInt();
+    anInt = _data['anInt']!.toInt();
+    aNullableInt = _data['aNullableInt']?.toInt();
+    aDouble = _data['aDouble']!.toDouble();
+    aNullableDouble = _data['aNullableDouble']?.toDouble();
+    aDoublewithDefaultVal = _data['aDoublewithDefaultVal']!.toDouble();
     aBool = _data['aBool']!;
     aNullableBool = _data['aNullableBool'];
+    aBoolDefaultVal = _data['aBoolDefaultVal']!;
     aString = _data['aString']!;
     aNullableString = _data['aNullableString'];
+    aStringDefaultVal = _data['aStringDefaultVal']!;
     aDateTime = DateTime.tryParse(_data['aDateTime'])!;
     aNullableDateTime = _data['aNullableDateTime'] != null
         ? DateTime.tryParse(_data['aNullableDateTime'])
@@ -108,49 +117,50 @@ class Nullability extends SerializableEntity {
     aNullableObject = _data['aNullableObject'] != null
         ? SimpleData?.fromSerialization(_data['aNullableObject'])
         : null;
-    anIntList = _data['anIntList']!.cast<int>();
-    aNullableIntList = _data['aNullableIntList']?.cast<int>();
-    aListWithNullableInts = _data['aListWithNullableInts']!.cast<int?>();
+    anIntList = (_data['anIntList']!).cast<int>();
+    aNullableIntList = (_data['aNullableIntList'])?.cast<int>();
+    aListWithNullableInts = (_data['aListWithNullableInts']!).cast<int?>();
     aNullableListWithNullableInts =
-        _data['aNullableListWithNullableInts']?.cast<int?>();
-    anObjectList = _data['anObjectList']!
+        (_data['aNullableListWithNullableInts'])?.cast<int?>();
+    anObjectList = (_data['anObjectList']!)
         .map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    aNullableObjectList = _data['aNullableObjectList']
+        .toList();
+    aNullableObjectList = (_data['aNullableObjectList'])
         ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    aListWithNullableObjects = _data['aListWithNullableObjects']!
+        .toList();
+    aListWithNullableObjects = (_data['aListWithNullableObjects']!)
         .map<SimpleData?>(
             (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
-    aNullableListWithNullableObjects = _data['aNullableListWithNullableObjects']
-        ?.map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
-    aDateTimeList = _data['aDateTimeList']!
+        .toList();
+    aNullableListWithNullableObjects =
+        (_data['aNullableListWithNullableObjects'])
+            ?.map<SimpleData?>(
+                (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+            .toList();
+    aDateTimeList = (_data['aDateTimeList']!)
         .map<DateTime>((a) => DateTime.tryParse(a)!)
         .toList();
-    aNullableDateTimeList = _data['aNullableDateTimeList']
+    aNullableDateTimeList = (_data['aNullableDateTimeList'])
         ?.map<DateTime>((a) => DateTime.tryParse(a)!)
         .toList();
-    aListWithNullableDateTimes = _data['aListWithNullableDateTimes']!
+    aListWithNullableDateTimes = (_data['aListWithNullableDateTimes']!)
         .map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null)
         .toList();
     aNullableListWithNullableDateTimes =
-        _data['aNullableListWithNullableDateTimes']
+        (_data['aNullableListWithNullableDateTimes'])
             ?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null)
             .toList();
-    aByteDataList = _data['aByteDataList']!
+    aByteDataList = (_data['aByteDataList']!)
         .map<ByteData>((a) => (a as String).base64DecodedByteData()!)
         .toList();
-    aNullableByteDataList = _data['aNullableByteDataList']
+    aNullableByteDataList = (_data['aNullableByteDataList'])
         ?.map<ByteData>((a) => (a as String).base64DecodedByteData()!)
         .toList();
-    aListWithNullableByteDatas = _data['aListWithNullableByteDatas']!
+    aListWithNullableByteDatas = (_data['aListWithNullableByteDatas']!)
         .map<ByteData?>((a) => (a as String?)?.base64DecodedByteData())
         .toList();
     aNullableListWithNullableByteDatas =
-        _data['aNullableListWithNullableByteDatas']
+        (_data['aNullableListWithNullableByteDatas'])
             ?.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData())
             .toList();
   }
@@ -163,10 +173,13 @@ class Nullability extends SerializableEntity {
       'aNullableInt': aNullableInt,
       'aDouble': aDouble,
       'aNullableDouble': aNullableDouble,
+      'aDoublewithDefaultVal': aDoublewithDefaultVal,
       'aBool': aBool,
       'aNullableBool': aNullableBool,
+      'aBoolDefaultVal': aBoolDefaultVal,
       'aString': aString,
       'aNullableString': aNullableString,
+      'aStringDefaultVal': aStringDefaultVal,
       'aDateTime': aDateTime.toUtc().toIso8601String(),
       'aNullableDateTime': aNullableDateTime?.toUtc().toIso8601String(),
       'aByteData': aByteData.base64encodedString(),

@@ -30,9 +30,6 @@ fields:
     type: DateTime
   aNullableDateTime: 
     type: DateTime?
-  aDateTimeDefaultVal: 
-    type: DateTime
-    defaultvalue: '2022-05-21T14:46:17.119'
 
   aByteData: 
     type: ByteData
