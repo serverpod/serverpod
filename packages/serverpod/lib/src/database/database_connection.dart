@@ -634,6 +634,67 @@ Current type was $T''');
       retryIf: retryIf,
     );
   }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  /// If [id] in [TableRow] Already Exist then that row will be replaced by new value
+  /// [id] must be [null] or [not-null] for all values
+  Future<bool> insertOrupdateBulk(List<TableRow> row, Table table,
+      {required Session session, Transaction? transaction}) async {
+    if (row.isEmpty) return false;
+    // Todo: To handle for list of TableRow with (not null) and without (null) id value
+    var startTime = DateTime.now();
+    String tbName = row.first.tableName;
+    List<String> columnsList = table.columns.map((e) => e.columnName).toList();
+    List<List<String>> allValueList = [];
+    for (var row in row) {
+      List<String> valueList = [];
+      for (var column in columnsList) {
+        Map data = row.serializeForDatabase()['data'];
+        if (data[column] is Map || data[column] is List) {
+          data[column] = jsonEncode(data[column]);
+        }
+        String value;
+        var unformattedValue = data[column];
+        value = DatabaseConfig.encoder.convert(unformattedValue);
+        valueList.add(value);
+      }
+      allValueList.add(valueList);
+    }
+    columnsList.remove('id');
+    var ids = allValueList.map((e) => e.first).toSet();
+    if (ids.contains(null) && ids.length > 1) {
+      print('Id must be null or not null for all values');
+      return false;
+    }
+    ids.removeWhere((e) => e.toString().toLowerCase() == 'null');
+    String idText = ids.isEmpty ? '' : '"id" ,';
+    if (ids.isEmpty) {
+      for (var e in allValueList) {
+        e.removeAt(0);
+      }
+    }
+
+    var columns = columnsList.map((e) => '"$e"').join(', ');
+    var values = allValueList.map((e) => e.join(', ')).join('), (');
+    var excludeNames = columnsList.map((e) => 'EXCLUDED."$e"').join(', ');
+
+    var query = '''INSERT INTO $tbName ($idText$columns) VALUES ($values)
+    ON CONFLICT (id) DO UPDATE SET 
+      ($columns) = ($excludeNames) RETURNING *;''';
+
+    try {
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var affectedRows = await context.execute(query, substitutionValues: {});
+      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
+      return affectedRows == 1;
+    } catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
 }
 
 /// A function performing a transaction, passed to the transaction method.
