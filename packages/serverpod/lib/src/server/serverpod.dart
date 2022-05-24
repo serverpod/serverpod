@@ -17,7 +17,7 @@ import '../authentication/authentication_info.dart';
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
-import '../database/database_config.dart';
+import '../database/database_pool_manager.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
 import 'endpoint_dispatch.dart';
@@ -48,7 +48,7 @@ class Serverpod {
   String get runMode => _runMode;
 
   /// The server configuration, as read from the config/ directory.
-  late ServerConfig config;
+  late ServerpodConfig config;
   Map<String, String> _passwords = <String, String>{};
 
   /// Custom [AuthenticationHandler] used to authenticate users.
@@ -69,12 +69,7 @@ class Serverpod {
   final EndpointDispatch endpoints;
 
   /// The database configuration.
-  late DatabaseConfig databaseConfig;
-
-  /// Runs Serverpod with Redis enabled, true by default. If you disable Redis
-  /// inter-server communication will be disabled, including messaging and
-  /// global caching.
-  final bool enableRedis;
+  late DatabasePoolManager databaseConfig;
 
   late Caches _caches;
 
@@ -85,7 +80,7 @@ class Serverpod {
   Caches get caches => _caches;
 
   /// The id of this [Serverpod].
-  int serverId = 0;
+  String serverId = 'undefined';
 
   /// The main server managed by this [Serverpod].
   late Server server;
@@ -199,7 +194,6 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
-    this.enableRedis = true,
   }) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
@@ -218,10 +212,10 @@ class Serverpod {
               ServerpodRunMode.production,
             ],
             defaultsTo: ServerpodRunMode.development)
-        ..addOption('server-id', abbr: 'i', defaultsTo: '0');
+        ..addOption('server-id', abbr: 'i', defaultsTo: 'undefined');
       var results = argParser.parse(args);
       _runMode = results['mode'];
-      serverId = int.tryParse(results['server-id']) ?? 0;
+      serverId = results['server-id'];
     } catch (e) {
       stdout.writeln('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
@@ -231,25 +225,21 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    config = ServerConfig(_runMode, serverId, _passwords);
+    config = ServerpodConfig(_runMode, serverId, _passwords);
 
     // Setup database
-    databaseConfig = DatabaseConfig(
+    databaseConfig = DatabasePoolManager(
       serializationManager,
-      config.dbHost,
-      config.dbPort,
-      config.dbName,
-      config.dbUser,
-      config.dbPass,
+      config.database,
     );
 
     // Setup Redis
-    if (enableRedis) {
+    if (config.redis.enabled) {
       redisController = RedisController(
-        host: config.redisHost,
-        port: config.redisPort,
-        user: config.redisUser,
-        password: config.redisPassword,
+        host: config.redis.host,
+        port: config.redis.port,
+        user: config.redis.user,
+        password: config.redis.password,
       );
     }
 
@@ -258,7 +248,7 @@ class Serverpod {
     server = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.port,
+      port: config.apiServer.port,
       serializationManager: serializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,
@@ -352,7 +342,7 @@ class Serverpod {
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.servicePort,
+      port: config.insightsServer.port,
       serializationManager: _internalSerializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,

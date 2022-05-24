@@ -2,17 +2,23 @@
 # default, it runs a single server on port 8080. To set up your server, you will
 # need to add the name of the database you are connecting to and the user name.
 # The password for the database is stored in the config/passwords.yaml.
+#
+# When running your server locally, the server ports are the same as the public
+# facing ports.
 
-# Defines public facing access to the server, in development mode this is
-# typically the same as your server setup.
-publicHost: localhost
-publicPort: 8080
-publicScheme: http
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
 
-# Main port to run the server on.
-port: 8080
-# Service port, used for insights from the server while it's running.
-servicePort: 8081
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
 
 # This is the database setup for your server.
 database:
@@ -23,5 +29,6 @@ database:
 
 # This is the setup for Redis.
 redis:
+  enabled: false
   host: localhost
   port: 8091

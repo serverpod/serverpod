@@ -54,9 +54,9 @@ class DatabaseCloudStorage extends CloudStorage {
     var config = session.server.serverpod.config;
 
     return Uri(
-      scheme: config.publicScheme,
-      host: config.publicHost,
-      port: config.publicPort,
+      scheme: config.apiServer.publicScheme,
+      host: config.apiServer.publicHost,
+      port: config.apiServer.publicPort,
       path: '/serverpod_cloud_storage',
       queryParameters: {
         'method': 'file',
@@ -111,9 +111,9 @@ class DatabaseCloudStorage extends CloudStorage {
     if (uploadEntry.id == null) return null;
 
     var uri = Uri(
-      scheme: config.publicScheme,
-      host: config.publicHost,
-      port: config.publicPort,
+      scheme: config.apiServer.publicScheme,
+      host: config.apiServer.publicHost,
+      port: config.apiServer.publicPort,
       path: '/serverpod_cloud_storage',
       queryParameters: {
         'method': 'upload',

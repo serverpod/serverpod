@@ -64,7 +64,7 @@ CREATE TABLE serverpod_future_call (
   "name" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "serializedObject" text,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "identifier" text
 );
 
@@ -84,7 +84,7 @@ CREATE TABLE serverpod_log (
   "id" serial,
   "sessionLogId" integer NOT NULL,
   "reference" text,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "logLevel" integer NOT NULL,
   "message" text NOT NULL,
@@ -120,7 +120,7 @@ CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON serverpod_method USI
 
 CREATE TABLE serverpod_query_log (
   "id" serial,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "sessionLogId" integer NOT NULL,
   "query" text NOT NULL,
   "duration" double precision NOT NULL,
@@ -170,7 +170,7 @@ ALTER TABLE ONLY serverpod_runtime_settings
 
 CREATE TABLE serverpod_session_log (
   "id" serial,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "module" text,
   "endpoint" text,

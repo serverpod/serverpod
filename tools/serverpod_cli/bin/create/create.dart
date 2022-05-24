@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -13,7 +14,11 @@ import 'port_checker.dart';
 const _defaultPorts = <int>[8080, 8081, 8090, 8091];
 
 Future<void> performCreate(
-    String name, bool verbose, String template, bool force) async {
+  String name,
+  bool verbose,
+  String template,
+  bool force,
+) async {
   // Check we are set to create a new project
   var portsAvailable = true;
   for (var port in _defaultPorts) {
@@ -52,6 +57,10 @@ Future<void> performCreate(
   }
 
   var dbPassword = generateRandomString();
+  var dbProductionPassword = generateRandomString();
+
+  var awsName = name.replaceAll('_', '-');
+  var randomAwsId = Random.secure().nextInt(10000000).toString();
 
   var projectDir = Directory(p.join(Directory.current.path, name));
   if (projectDir.existsSync()) {
@@ -76,6 +85,10 @@ Future<void> performCreate(
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
+    var githubDir = Directory(p.join(projectDir.path, '.github'));
+    if (verbose) print('Creating directory: ${githubDir.path}');
+    githubDir.createSync();
+
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
@@ -85,6 +98,14 @@ Future<void> performCreate(
         Replacement(
           slotName: 'projectname',
           replacement: name,
+        ),
+        Replacement(
+          slotName: 'awsname',
+          replacement: awsName,
+        ),
+        Replacement(
+          slotName: 'randomawsid',
+          replacement: randomAwsId,
         ),
         Replacement(
           slotName: '#^',
@@ -109,6 +130,10 @@ Future<void> performCreate(
         Replacement(
           slotName: 'DB_PASSWORD',
           replacement: dbPassword,
+        ),
+        Replacement(
+          slotName: 'DB_PRODUCTION_PASSWORD',
+          replacement: dbProductionPassword,
         ),
         Replacement(
           slotName: 'REDIS_PASSWORD',
@@ -208,6 +233,29 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
+    copier = Copier(
+      srcDir:
+          Directory(p.join(resourceManager.templateDirectory.path, 'github')),
+      dstDir: githubDir,
+      replacements: [
+        Replacement(
+          slotName: 'projectname',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'awsname',
+          replacement: awsName,
+        ),
+        Replacement(
+          slotName: 'randomawsid',
+          replacement: randomAwsId,
+        ),
+      ],
+      fileNameReplacements: [],
+      verbose: verbose,
+    );
+    copier.copyFiles();
+
     print('');
 
     CommandLineTools.dartPubGet(serverDir);
@@ -296,6 +344,7 @@ Future<void> performCreate(
     printwwln('All setup. You are ready to rock!');
     printwwln('Start your Serverpod server by running:');
     stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
+    stdout.writeln('  \$ docker-compose up --build --detach');
     stdout.writeln('  \$ serverpod run');
     printww('');
     printwwln('You can also start Serverpod manually by running:');

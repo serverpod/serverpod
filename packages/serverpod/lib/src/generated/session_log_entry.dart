@@ -22,7 +22,7 @@ class SessionLogEntry extends TableRow {
 
   @override
   int? id;
-  late int serverId;
+  late String serverId;
   late DateTime time;
   String? module;
   String? endpoint;
@@ -275,7 +275,7 @@ class SessionLogEntryTable extends Table {
   @override
   String tableName = 'serverpod_session_log';
   final id = ColumnInt('id');
-  final serverId = ColumnInt('serverId');
+  final serverId = ColumnString('serverId');
   final time = ColumnDateTime('time');
   final module = ColumnString('module');
   final endpoint = ColumnString('endpoint');

@@ -24,7 +24,7 @@ class LogEntry extends TableRow {
   int? id;
   late int sessionLogId;
   String? reference;
-  late int serverId;
+  late String serverId;
   late DateTime time;
   late int logLevel;
   late String message;
@@ -249,7 +249,7 @@ class LogEntryTable extends Table {
   final id = ColumnInt('id');
   final sessionLogId = ColumnInt('sessionLogId');
   final reference = ColumnString('reference');
-  final serverId = ColumnInt('serverId');
+  final serverId = ColumnString('serverId');
   final time = ColumnDateTime('time');
   final logLevel = ColumnInt('logLevel');
   final message = ColumnString('message');

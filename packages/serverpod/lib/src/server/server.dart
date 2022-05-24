@@ -16,7 +16,7 @@ class Server {
 
   /// The id of the server. If running in a cluster, all servers need unique
   /// ids.
-  final int serverId;
+  final String serverId;
 
   /// Port the server is listening on.
   final int port;
@@ -25,7 +25,7 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  DatabaseConfig databaseConfig;
+  DatabasePoolManager databaseConfig;
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;

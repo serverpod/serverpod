@@ -14,7 +14,7 @@ class WebServer {
   final Serverpod serverpod;
 
   /// The server id of this server.
-  final int serverId;
+  final String serverId;
 
   /// The port the webserver is running on.
   late final int port;

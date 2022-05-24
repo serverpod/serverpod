@@ -1,7 +1,7 @@
 class: SessionLogEntry
 table: serverpod_session_log
 fields:
-  serverId: int
+  serverId: String
   time: DateTime
   module: String?
   endpoint: String?

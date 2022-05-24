@@ -25,7 +25,7 @@ class FutureCallEntry extends TableRow {
   late String name;
   late DateTime time;
   String? serializedObject;
-  late int serverId;
+  late String serverId;
   String? identifier;
 
   FutureCallEntry({
@@ -224,7 +224,7 @@ class FutureCallEntryTable extends Table {
   final name = ColumnString('name');
   final time = ColumnDateTime('time');
   final serializedObject = ColumnString('serializedObject');
-  final serverId = ColumnInt('serverId');
+  final serverId = ColumnString('serverId');
   final identifier = ColumnString('identifier');
 
   @override

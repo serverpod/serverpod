@@ -8,7 +8,7 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   final String name;
 
   /// Server configuration.
-  final ServerConfig config;
+  final ServerpodConfig config;
 
   /// Creates a new [ServiceKeyManager].
   ServiceKeyManager(this.name, this.config);

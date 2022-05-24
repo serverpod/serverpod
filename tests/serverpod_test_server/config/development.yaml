@@ -1,9 +1,14 @@
-publicHost: localhost
-publicPort: 8080
-publicScheme: http
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
 
-port: 8080
-servicePort: 8081
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
 
 database:
   host: localhost
@@ -12,5 +17,6 @@ database:
   user: postgres
 
 redis:
+  enabled: true
   host: localhost
   port: 8091

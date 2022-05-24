@@ -3,17 +3,17 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ConfigInfo {
   int? serverId;
-  late ServerConfig config;
+  late ServerpodConfig config;
   ConfigInfo(String runMode, {this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
-    config = ServerConfig(runMode, serverId ?? 0, passwords);
+    config = ServerpodConfig(runMode, serverId ?? 0, passwords);
   }
 
   Client createServiceClient() {
     print('serviceSecret: ${config.serviceSecret}');
     var keyManager = ServiceKeyManager('CLI', config);
     return Client(
-      '${config.publicScheme}://${config.publicHost}:${config.servicePort}/',
+      '${config.insightsServer.publicScheme}://${config.insightsServer.publicHost}:${config.insightsServer.port}/',
       authenticationKeyManager: keyManager,
     );
   }

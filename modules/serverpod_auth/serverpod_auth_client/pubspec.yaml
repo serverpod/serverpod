@@ -4,7 +4,7 @@ publish_to: none
 
 name: serverpod_auth_client
 description: Serverpod authentication client.
-version: 0.9.7
+version: 0.9.8
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -13,5 +13,5 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 dependencies:
   lints: ^1.0.1
-  serverpod_client: #^0.9.7
+  serverpod_client: #^0.9.8
     path: ../../../packages/serverpod_client

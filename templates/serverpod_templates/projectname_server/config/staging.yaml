@@ -3,32 +3,34 @@
 # possible and may connect to production databases services and data. You use it
 # for final testing before deploying the production server.
 #
-# To improve scalability and reliability it's possible to run Serverpod over a
-# cluster of servers. The ids of the servers should be in a consecutive sequence
-# from 0 to n-1 where n is the number of servers in your cluster.
+# Typically, you will want to route the traffic through a load balancer
+# which adds SSL security through https. If you use Serverpod's standard
+# Terraform scripts to deploy your server, all you need to change in
+# this file is the examplepod.com domain name.
 
-# Defines public facing access to the server, in staging mode this will be
-# the address of your staging load balancer or cloud front.
-publicHost: api.staging.examplepod.com
-publicPort: 443
-publicScheme: https
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: api-staging.examplepod.com
+  publicPort: 443
+  publicScheme: https
 
-# Main port to run the server on.
-port: 8080
-# Service port, used for insights from the server while it's running.
-servicePort: 8081
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: insights-staging.examplepod.com
+  publicPort: 443
+  publicScheme: https
 
-# This is the database setup for your servers. You will need to edit this to get
-# the server up and running.
+# This is the database setup for your servers.
 database:
   host: database.examplepod.com
   port: 5432
-  name: DATABASE_NAME
-  user: DATABASE_USER
+  name: serverpod
+  user: postgres
 
-# This is the database setup for your servers. You will need to edit this to get
-# the server up and running.
 # This is the setup for Redis.
 redis:
-  host: redis.example.com
+  enabled: false
+  host: redis.examplepod.com
   port: 6379

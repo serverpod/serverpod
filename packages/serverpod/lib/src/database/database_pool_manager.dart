@@ -1,26 +1,15 @@
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod_postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'database_connection.dart';
 import 'value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
-class DatabaseConfig {
-  /// Host name.
-  final String host;
-
-  /// Port to connect to.
-  final int port;
-
-  /// Name of the database to use.
-  final String databaseName;
-
-  /// User name.
-  final String userName;
-
-  /// Password.
-  final String password;
+class DatabasePoolManager {
+  /// Database configuration.
+  final DatabaseConfig config;
 
   late SerializationManager _serializationManager;
 
@@ -39,11 +28,12 @@ class DatabaseConfig {
   /// The encoder used to encode objects for storing in the database.
   static final ValueEncoder encoder = ValueEncoder();
 
-  /// Creates a new [DatabaseConfig]. Typically, this is done automatically
+  /// Creates a new [DatabasePoolManager]. Typically, this is done automatically
   /// when starting the [Server].
-  DatabaseConfig(SerializationManagerServer serializationManager, this.host,
-      this.port, this.databaseName, this.userName, this.password)
-      : tableClassMapping = serializationManager.tableClassMapping {
+  DatabasePoolManager(
+    SerializationManagerServer serializationManager,
+    this.config,
+  ) : tableClassMapping = serializationManager.tableClassMapping {
     _serializationManager = serializationManager;
 
     var poolSettings = PgPoolSettings();
@@ -53,11 +43,11 @@ class DatabaseConfig {
     // Setup database connection pool
     _pgPool = PgPool(
       PgEndpoint(
-          host: host,
-          port: port,
-          database: databaseName,
-          username: userName,
-          password: password),
+          host: config.host,
+          port: config.port,
+          database: config.name,
+          username: config.user,
+          password: config.password),
       settings: poolSettings,
     );
   }

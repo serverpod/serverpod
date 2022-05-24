@@ -3,7 +3,7 @@ table: serverpod_log
 fields:
   sessionLogId: int
   reference: String?
-  serverId: int
+  serverId: String
   time: DateTime
   logLevel: int
   message: String
