@@ -655,7 +655,7 @@ Current type was $T''');
         }
         String value;
         var unformattedValue = data[column];
-        value = DatabaseConfig.encoder.convert(unformattedValue);
+        value = DatabasePoolManager.encoder.convert(unformattedValue);
         valueList.add(value);
       }
       allValueList.add(valueList);
