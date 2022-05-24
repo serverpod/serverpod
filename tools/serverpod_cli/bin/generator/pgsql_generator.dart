@@ -34,6 +34,10 @@ class PgsqlGenerator {
     out += '--\n';
     out += '\n';
 
+    // Todo: Drop Table If Already Exist. But all data will be erased
+    // out += 'CREATE TABLE mycopy AS SELECT * ${classInfo.tableName}; (\n';
+    // out += 'DROP TABLE IF EXISTS ${classInfo.tableName}; (\n';
+
     // Table definition
     out += 'CREATE TABLE ${classInfo.tableName} (\n';
     // Id is a special case that is nullable in code but not in the database
@@ -46,7 +50,13 @@ class PgsqlGenerator {
       if (field.scope == FieldScope.api) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
-      out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';
+      var defaultValue = field.defaultValue == null
+          ? ''
+          : (!['json', 'String'].contains(field.type.type)
+              ? " DEFAULT '${field.defaultValue}'"
+              : ' DEFAULT ${field.defaultValue}');
+      out +=
+          ',\n  "${field.name}" ${field.type.databaseType}$nullable$defaultValue';
     }
     out += '\n);\n';
     out += '\n';

@@ -227,8 +227,17 @@ class ClassGeneratorDart extends ClassGenerator {
       out += '  $className({\n';
       for (var field in fields) {
         if (field.shouldIncludeField(serverCode)) {
-          out +=
-              '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
+          String isRequired = field.type.nullable ? '' : 'required ';
+          String defValue = '';
+          if (field.defaultValue != null) {
+            defValue = field.type.isTypedList
+                ? '= const ${field.defaultValue}'
+                : (field.type.type.startsWith('String')
+                    ? "= '${field.defaultValue}'"
+                    : '= ${field.defaultValue}');
+            isRequired = '';
+          }
+          out += '   ${isRequired}this.${field.name}$defValue,\n';
         }
       }
       out += '});\n';
@@ -560,6 +569,7 @@ enum FieldScope {
 class FieldDefinition {
   String name;
   late TypeDefinition type;
+  dynamic defaultValue;
   // bool nullable = true;
 
   String? get columnType {
@@ -574,23 +584,35 @@ class FieldDefinition {
 
   FieldScope scope = FieldScope.all;
 
-  FieldDefinition(this.name, String description) {
-    var components = description.split(',').map((String s) {
-      return s.trim();
-    }).toList();
-    var typeStr = components[0];
-
-    if (components.length == 2) {
-      var scopeStr = components[1];
-      if (scopeStr == 'database') {
+  FieldDefinition(this.name, dynamic description) {
+    String _typeStr;
+    if (description is String) {
+      var components = description.split(',').map((String s) {
+        return s.trim();
+      }).toList();
+      _typeStr = components[0];
+      if (components.length == 2) {
+        var scopeStr = components[1];
+        if (scopeStr == 'database') {
+          scope = FieldScope.database;
+        } else if (scopeStr == 'api') {
+          scope = FieldScope.api;
+        }
+      }
+    } else if (description is Map) {
+      _typeStr = description['type'];
+      var _scopeStr = description['scope'];
+      if (_scopeStr == 'database') {
         scope = FieldScope.database;
-      } else if (scopeStr == 'api') {
+      } else if (_scopeStr == 'api') {
         scope = FieldScope.api;
       }
+      defaultValue = description['defaultvalue'];
+    } else {
+      _typeStr = 'null';
     }
-
     // TODO: Fix package?
-    type = TypeDefinition(typeStr, null);
+    type = TypeDefinition(_typeStr, null);
   }
 
   String get serialization {
