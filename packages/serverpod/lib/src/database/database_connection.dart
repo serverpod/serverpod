@@ -726,3 +726,86 @@ class Transaction {
   final PostgreSQLExecutionContext postgresContext;
   Transaction._(this.postgresContext);
 }
+
+///
+extension DatabaseConnectionExt on DatabaseConnection {
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List> findDistinctValue<T>({
+    List<Column>? columns,
+    bool? isDistinct,
+    bool? returnAsList,
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    assert(orderByList == null || orderBy == null);
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.find<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
+
+    var startTime = DateTime.now();
+    where ??= Expression('TRUE');
+    String tableName = table.tableName;
+    String columnNames =
+        (columns?.isEmpty ?? true) ? '*' : columns!.map((e) => e).join(',');
+    String distinctNames = '';
+
+    if ((isDistinct ?? false) && columnNames != '*') {
+      distinctNames = 'DISTINCT ';
+    }
+    var query =
+        'SELECT $distinctNames$columnNames FROM $tableName WHERE $where';
+
+    if (orderBy != null) {
+      query += ' ORDER BY $orderBy';
+      if (orderDescending) query += ' DESC';
+    } else if (orderByList != null) {
+      assert(orderByList.isNotEmpty);
+
+      var strList = <String>[];
+      for (var order in orderByList) {
+        strList.add(order.toString());
+      }
+
+      query += ' ORDER BY ${strList.join(',')}';
+    }
+    if (limit != null) query += ' LIMIT $limit';
+    if (offset != null) query += ' OFFSET $offset';
+
+    List<Map<String, Map<String, dynamic>>> list = [];
+    try {
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+      list = await context.mappedResultsQuery(
+        query,
+        allowReuse: false,
+        timeoutInSeconds: 60,
+        substitutionValues: {},
+      );
+    } catch (e, trace) {
+      _logQuery(session, query, startTime, exception: e, trace: trace);
+      rethrow;
+    }
+
+    _logQuery(session, query, startTime, numRowsAffected: list.length);
+    if (returnAsList ?? false) {
+      List<List> data = [];
+      for (var e in list) {
+        Map<String, dynamic> value = e[tableName]!;
+        data.add(value.values.toList());
+      }
+      return data;
+    }
+    return list;
+  }
+}

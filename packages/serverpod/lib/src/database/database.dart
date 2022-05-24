@@ -70,6 +70,40 @@ class Database {
     );
   }
 
+  /// Find a list of [Distinct Column]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
+  Future<List> findDistinctValue<T>({
+    Expression? where,
+    int? limit,
+    List<Column>? columns,
+    bool? returnAsList,
+    bool? isDistinct,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    var conn = await databaseConnection;
+    return await conn.findDistinctValue<T>(
+      where: where,
+      limit: limit,
+      offset: offset,
+      returnAsList: returnAsList,
+      columns: columns,
+      isDistinct: isDistinct,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      session: session,
+      transaction: transaction,
+    );
+  }
+
   /// Find a single [TableRow] from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList].
