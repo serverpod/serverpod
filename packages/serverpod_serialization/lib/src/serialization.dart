@@ -12,7 +12,7 @@ typedef constructor = SerializableEntity Function(
 
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
-abstract class SerializableEntity {
+abstract class SerializableEntity with ServerpodResponse {
   /// Returns the class name of this entity.
   String get className;
 
@@ -31,6 +31,9 @@ abstract class SerializableEntity {
     return {
       'class': className,
       'data': data,
+      if (resStatusCode != -1) 'rStatusCode': resStatusCode,
+      if (resContent.isNotEmpty) 'rContent': resContent,
+      if (resAdditionalValue != null) 'rAdditionalValue': resAdditionalValue
     };
   }
 
@@ -39,7 +42,15 @@ abstract class SerializableEntity {
       Map<String, dynamic> serialization) {
     if (serialization['class'] != className) throw const FormatException();
     if (serialization['data'] == null) throw const FormatException();
-
+    if (serialization['rContent'] != null) {
+      resContent = serialization['rContent'];
+    }
+    if (serialization['rStatusCode'] != null) {
+      resStatusCode = serialization['rStatusCode'] ?? -1;
+    }
+    if (serialization['rAdditionalValue'] != null) {
+      resAdditionalValue = serialization['rAdditionalValue'];
+    }
     return serialization['data'];
   }
 
@@ -100,4 +111,43 @@ abstract class SerializationManager {
       constructors[className] = map[className]!;
     }
   }
+}
+
+/// To get Additional info from server along with data
+mixin ServerpodResponse {
+  ///  StatusCode that may required sometime
+  int resStatusCode = -1;
+
+  /// Response Content that may Reqired
+  String resContent = '';
+
+  /// Response With some additional Value
+  dynamic resAdditionalValue;
+}
+
+/// To get Additional info from server along with list data [List<SerializableEntity>]
+/// This will helpful when you want to get additional info with filter like to get total items
+/// available when you do pagination
+extension SerializableEntityListExtension on List<SerializableEntity> {
+  set resStatusCode(int statusCode) {
+    if (length > 0) first.resStatusCode = statusCode;
+  }
+
+  set resContent(String resContent) {
+    if (length > 0) first.resContent = resContent;
+  }
+
+  set resAdditionalValue(dynamic resAdditionalValue) {
+    if (length > 0) first.resAdditionalValue = resAdditionalValue;
+  }
+
+  ///  StatusCode that may required sometime
+  int get resStatusCode => (length > 0) ? first.resStatusCode : -1;
+
+  /// Response Content that may Reqired
+  String get resContent => (length > 0) ? first.resContent : '';
+
+  /// Response With some additional Value
+  dynamic get resAdditionalValue =>
+      (length > 0) ? first.resAdditionalValue : null;
 }
