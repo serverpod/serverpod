@@ -13,6 +13,13 @@ basicTypes:
   - testDateTime:
   - testString:
   - testByteData:
+  - testListOfString:
+  - testListOfdynamic:
+  - testListOfdouble:
+  - testListOfDateTime:
+  - testListOfbool:
+  - testListOfmapDynamic:
+  - testListOfSimpleData:
 cloudStorage:
   - reset:
   - storePublicFile:
@@ -77,4 +84,3 @@ simple:
   - addToGlobalInt:
   - getGlobalInt:
 streaming:
-  - streamOpened:

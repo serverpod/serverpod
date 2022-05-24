@@ -560,6 +560,7 @@ enum FieldScope {
 class FieldDefinition {
   String name;
   late TypeDefinition type;
+  // dynamic defaultValue;
   // bool nullable = true;
 
   String? get columnType {
@@ -633,37 +634,43 @@ class FieldDefinition {
 
   String get deserialization {
     if (type.isTypedList) {
+      String nullablity = (type.nullable
+          ? ')?'
+          : ([FieldScope.api, FieldScope.database].contains(scope)
+              ? '?? [])'
+              : '!)'));
       if (type.listType!.typeNonNullable == 'String' ||
           type.listType!.typeNonNullable == 'int' ||
           type.listType!.typeNonNullable == 'double' ||
           type.listType!.typeNonNullable == 'bool') {
-        return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<${type.listType!.type}>()';
+        return '(_data[\'$name\']$nullablity.cast<${type.listType!.type}>()';
       } else if (type.listType!.typeNonNullable == 'DateTime') {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
+          return '(_data[\'$name\']$nullablity.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
+          return '(_data[\'$name\']$nullablity.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
         }
       } else if (type.listType!.typeNonNullable == 'ByteData') {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
+          return '(_data[\'$name\']$nullablity.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
+          return '(_data[\'$name\']$nullablity.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
         }
       } else {
         if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
+          return '(_data[\'$name\']$nullablity.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null).toList()';
         } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
+          return '(_data[\'$name\']$nullablity.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a)).toList()';
         }
       }
     }
 
-    if (type.typeNonNullable == 'String' ||
-        type.typeNonNullable == 'int' ||
-        type.typeNonNullable == 'double' ||
-        type.typeNonNullable == 'bool') {
+    if (type.typeNonNullable == 'String' || type.typeNonNullable == 'bool') {
       return '_data[\'$name\']${type.nullable ? '' : '!'}';
+    } else if (type.typeNonNullable == 'double') {
+      return '_data[\'$name\']${type.nullable ? '?' : '!'}.toDouble()';
+    } else if (type.typeNonNullable == 'int') {
+      return '_data[\'$name\']${type.nullable ? '?' : '!'}.toInt()';
     } else if (type.typeNonNullable == 'DateTime') {
       if (type.nullable) {
         return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';

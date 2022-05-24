@@ -19,6 +19,9 @@ String formatArgs(
           formattedArgs[argName] = jsonEncode((value)
               .map((e) => (e as SerializableEntity).serialize())
               .toList());
+        } else if (value.firstOrNull is DateTime) {
+          formattedArgs[argName] = jsonEncode(
+              (value).map((e) => (e as DateTime).toIso8601String()).toList());
         } else {
           formattedArgs[argName] = jsonEncode(value);
         }

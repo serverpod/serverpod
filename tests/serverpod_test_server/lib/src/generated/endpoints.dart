@@ -246,6 +246,104 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'testListOfString': MethodConnector(
+          name: 'testListOfString',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: List<String>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfString(
+              session,
+              params['value'].cast<String>(),
+            );
+          },
+        ),
+        'testListOfdynamic': MethodConnector(
+          name: 'testListOfdynamic',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: List<dynamic>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfdynamic(
+              session,
+              params['value'].cast<dynamic>(),
+            );
+          },
+        ),
+        'testListOfdouble': MethodConnector(
+          name: 'testListOfdouble',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: List<double>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfdouble(
+              session,
+              params['value'].cast<double>(),
+            );
+          },
+        ),
+        'testListOfDateTime': MethodConnector(
+          name: 'testListOfDateTime',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: List<DateTime>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfDateTime(
+              session,
+              params['value'].cast<DateTime>(),
+            );
+          },
+        ),
+        'testListOfbool': MethodConnector(
+          name: 'testListOfbool',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: List<bool>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfbool(
+              session,
+              params['value'].cast<bool>(),
+            );
+          },
+        ),
+        'testListOfmapDynamic': MethodConnector(
+          name: 'testListOfmapDynamic',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, dynamic>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfmapDynamic(
+              session,
+              params['value'],
+            );
+          },
+        ),
+        'testListOfSimpleData': MethodConnector(
+          name: 'testListOfSimpleData',
+          params: {
+            'object': ParameterDescription(
+                name: 'object', type: List<SimpleData>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfSimpleData(
+              session,
+              params['object'].cast<SimpleData>(),
+            );
+          },
+        ),
       },
     );
 
@@ -1026,17 +1124,7 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {
-        'streamOpened': MethodConnector(
-          name: 'streamOpened',
-          params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['streaming'] as StreamingEndpoint).streamOpened(
-              session,
-            );
-          },
-        ),
-      },
+      methodConnectors: {},
     );
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()

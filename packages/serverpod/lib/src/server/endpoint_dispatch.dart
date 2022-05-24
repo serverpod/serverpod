@@ -166,33 +166,54 @@ abstract class EndpointDispatch {
     return null;
   }
 
+  RegExp get _dateFormatValidationregExp => RegExp(
+        r'(\d{4}-\d{2}-\d{2})[A-Z]+(\d{2}:\d{2}:\d{2}).([0-9+-:]+)',
+        caseSensitive: false,
+        multiLine: false,
+      );
+
   Object? _formatArg(
       dynamic input, Type type, SerializationManager serializationManager) {
     // Check for basic types
     if (input == null) return null;
-    if (type == String) return input;
-    if (type == int) return int.tryParse(input);
-    if (type == double) return double.tryParse(input);
+    if (type == String) return input.toString();
+    if (type == int) return int.tryParse(input.toString());
+    if (type == double) return double.tryParse(input.toString());
     if (type == bool) {
-      if (input == 'true') {
+      if (input.toString() == 'true') {
         return true;
-      } else if (input == 'false') {
+      } else if (input.toString() == 'false') {
         return false;
       }
       return null;
     }
-    if (type == DateTime) return DateTime.tryParse(input);
+    if (type == DateTime) return DateTime.tryParse(input.toString());
     if (type == ByteData) return input.base64DecodedByteData();
     if (type.toString().contains('List')) {
+      String subType =
+          type.toString().replaceAll('List<', '').replaceAll('>', '');
+      bool isDynamic = subType == 'dynamic';
       var listData = (jsonDecode(input) as List?);
-      var dds = listData
-          ?.map((e) => _formatArg(e, e.runtimeType, serializationManager))
-          .toList();
+      var dds = listData?.map((e) {
+        Type _type;
+        if (isDynamic) {
+          _type = _dateFormatValidationregExp.hasMatch('$e')
+              ? DateTime
+              : e.runtimeType;
+        } else {
+          _type = subType == 'DateTime'
+              ? DateTime
+              : subType == 'ByteData'
+                  ? ByteData
+                  : e.runtimeType;
+        }
+        return _formatArg(e, _type, serializationManager);
+      }).toList();
       return dds;
     }
 
     try {
-      var data = input is Map ? input : jsonDecode(input);
+      var data = input is Map ? input : jsonDecode(input.toString());
       var dataResponse =
           serializationManager.createEntityFromSerialization(data);
       if (dataResponse != null) {
