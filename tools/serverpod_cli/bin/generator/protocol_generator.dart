@@ -127,7 +127,10 @@ abstract class ProtocolGenerator {
         out +=
             '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
         for (var param in method.parameters) {
-          out += 'params[\'${param.name}\'],';
+          String casttxt = !param.type.isTypedList
+              ? ''
+              : ('${param.type.nullable ? '?' : ''}.cast<${param.type.listType}>()');
+          out += 'params[\'${param.name}\']$casttxt,';
         }
         for (var param in method.parametersPositional) {
           out += 'params[\'${param.name}\'],';

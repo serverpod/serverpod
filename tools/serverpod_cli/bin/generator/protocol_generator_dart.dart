@@ -79,18 +79,34 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         out += ') async {\n';
 
         // Call to server endpoint
-        out +=
-            '    return await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
-
+        String endPt = '';
+        endPt +=
+            '    await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
         for (var paramDef in requiredParams) {
-          out += '      \'${paramDef.name}\':${paramDef.name},\n';
+          endPt += '      \'${paramDef.name}\':${paramDef.name},\n';
         }
-
         for (var paramDef in optionalParams) {
-          out += '      \'${paramDef.name}\': ${paramDef.name},\n';
+          endPt += '      \'${paramDef.name}\': ${paramDef.name},\n';
         }
-
-        out += '    });\n';
+        endPt += '    });\n';
+        if (returnType.isTypedList) {
+          out += '     List datas = $endPt';
+          String _castStr = '';
+          if (returnType.listType!.databaseType == 'json' && returnType.listType!.type != 'dynamic') {
+            // Todo: check wheather this if else is correct or not [for Entity only]
+            String isNulable =
+                returnType.listType!.nullable ? 'e == null ? null : ' : '';
+            _castStr += '.map((e) {';
+            _castStr +=
+                'return $isNulable${returnType.listType!.type}.fromSerialization(e.serializeAll());}).toList();';
+          } else {
+            _castStr +=
+                '${returnType.nullable ? '?' : ''}.cast<${returnType.listType!.type}>();';
+          }
+          out += '     return datas$_castStr';
+        } else {
+          out += ' return $endPt';
+        }
         out += '  }\n';
       }
 
