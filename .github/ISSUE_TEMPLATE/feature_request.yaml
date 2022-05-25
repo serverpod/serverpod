@@ -16,6 +16,7 @@ body:
         - sessionlog
         - cacheinfo
         - shutdown
+        - new command
     validations:
       required: true
   - type: dropdown
@@ -29,7 +30,6 @@ body:
         - Linux
     validations:
       required: true
-        - Linux
   - type: textarea
     id: problem
     attributes:

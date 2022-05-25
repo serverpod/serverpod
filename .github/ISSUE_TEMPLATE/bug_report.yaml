@@ -66,17 +66,17 @@ body:
     attributes:
       label: Relevant log output
       placeholder: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
+      render: console
   - type: textarea
     id: flutter-analyze
     attributes:
       label: Flutter analyze output
       description: Paste the output of `flutter analyze` here, if you are developing.
       placeholder: If there are any analysis errors, try resolving them before filing this issue.
-      render: shell
+      render: console
   - type: textarea
     id: flutter-doctor
     attributes:
       label: Flutter doctor output
       description: Paste the output of `flutter doctor -v` here, If you are developing.
-      render: shell
+      render: console
