@@ -175,6 +175,17 @@ class ColumnString extends Column {
     return Expression(
         '"$columnName" ILIKE ${DatabasePoolManager.encoder.convert(value)}');
   }
+
+  /// Creates an [Expression] checking if the value in the column Matches Regex.
+  /// See Postgresql docs for more info on the Regex.
+  Expression regex(String regexString,
+      {bool caseSensitive = true, bool notMatch = false}) {
+    String operator = notMatch ? '!~' : '~';
+    if (!caseSensitive) {
+      operator += '*';
+    }
+    return Expression('"$columnName" $operator \'$regexString\'');
+  }
 }
 
 /// A [Column] holding an [bool].
