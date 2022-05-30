@@ -79,6 +79,12 @@ abstract class Column extends Expression {
   /// Creates a new [Column], this is typically done in generated code only.
   Column(this._columnName, this.type, {this.varcharLength})
       : super('"$_columnName"');
+
+  /// Creates an [Expression] to Add custom where query
+  /// See Postgresql docs for more info.
+  Expression whereQuery(String query) {
+    return Expression('"$columnName" $query');
+  }
 }
 
 /// A [Column] holding an [int].
