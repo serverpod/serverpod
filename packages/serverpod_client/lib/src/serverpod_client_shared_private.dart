@@ -13,11 +13,17 @@ String formatArgs(
       if (value is ByteData) {
         formattedArgs[argName] = value.base64encodedString();
       } else if (value is Map) {
-        formattedArgs[argName] = jsonEncode(value);
+        Map neVal = {};
+        value.forEach((key, value) {
+          var newKey = getParsedValueForEncoding(key);
+          var newValue = getParsedValueForEncoding(value);
+          neVal[newKey] = newValue;
+        });
+        formattedArgs[argName] = jsonEncode(neVal);
       } else if (value is List) {
         if (value.firstOrNull is SerializableEntity) {
           formattedArgs[argName] = jsonEncode((value)
-              .map((e) => (e as SerializableEntity).serialize())
+              // .map((e) => (e as SerializableEntity).serialize())
               .toList());
         } else if (value.firstOrNull is DateTime) {
           formattedArgs[argName] = jsonEncode(
@@ -36,6 +42,24 @@ String formatArgs(
   formattedArgs['method'] = method;
 
   return jsonEncode(formattedArgs);
+}
+
+/// To Prase Value for Json Encoding
+dynamic getParsedValueForEncoding(dynamic value) {
+  if (value.runtimeType == DateTime) {
+    return (value as DateTime).toIso8601String();
+  } else if (value.runtimeType == ByteData) {
+    return (value as ByteData).base64encodedString();
+  } else if ([int, String, double, bool, Null].contains(value.runtimeType)) {
+    return value;
+  } else {
+    try {
+      // Todo: Find validation method to check the type is SerializableEntity or Not
+      return (value as SerializableEntity).serialize();
+    } catch (e) {
+      return value;
+    }
+  }
 }
 
 /// Deserializes data sent from the server based on the return type.
@@ -83,6 +107,44 @@ dynamic parseData(String data, String returnTypeName,
   if (serializedData != null) {
     return serializedData;
   } else if (returnTypeName.startsWith('Map<')) {
-    return receivedData;
+    List<String> mapTypes = returnTypeName
+        .replaceAll('Map<', '')
+        .substring(0, returnTypeName.length - 5)
+        .split(',');
+    var newMap = {};
+    (receivedData as Map).forEach((key, value) {
+      newMap[getPrasedValue(key, mapTypes.first, serializationManager)] =
+          getPrasedValue(value, mapTypes.last, serializationManager);
+    });
+    return Map.from(newMap);
+  }
+}
+
+/// Parsing Key and Vaues of Map
+dynamic getPrasedValue(dynamic value, String expectedType,
+    SerializationManager serializationManager) {
+  // bool isNullable = expectedType.contains('?');
+  // expectedType = expectedType.replaceAll('', '');
+  if (value.runtimeType.toString() == expectedType) return value;
+  if (value == null) return null;
+  if (expectedType.startsWith('DateTime')) {
+    return DateTime.tryParse(value);
+  } else if (expectedType.toString().trim() == 'null') {
+    return null;
+  } else if (expectedType.startsWith('int')) {
+    return int.tryParse(value);
+  } else if (expectedType.startsWith('double')) {
+    return double.tryParse(value);
+  } else if (expectedType.startsWith('bool')) {
+    return value?.toString().trim() == 'true';
+  } else if (expectedType.startsWith('String')) {
+    return value?.toString().trim();
+  } else if (expectedType == 'ByteData') {
+    return value?.toString().base64DecodedByteData();
+  } else {
+    // Todo: For Nested Map Function & list in map
+    return serializationManager.createEntityFromSerialization(
+            value.runtimeType == String ? jsonDecode(value) : value) ??
+        value;
   }
 }

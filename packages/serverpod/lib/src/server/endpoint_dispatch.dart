@@ -188,44 +188,64 @@ abstract class EndpointDispatch {
       return null;
     }
     if (type == DateTime) return DateTime.tryParse(input.toString());
-    if (type == ByteData) return input.base64DecodedByteData();
+    if (type == ByteData) return input.toString().base64DecodedByteData();
     if (type.toString().contains('List')) {
       String subType =
           type.toString().replaceAll('List<', '').replaceAll('>', '');
-      bool isDynamic = subType == 'dynamic';
       var listData = (jsonDecode(input) as List?);
       var dds = listData?.map((e) {
-        Type _type;
-        if (isDynamic) {
-          _type = _dateFormatValidationregExp.hasMatch('$e')
-              ? DateTime
-              : e.runtimeType;
-        } else {
-          _type = subType == 'DateTime'
-              ? DateTime
-              : subType == 'ByteData'
-                  ? ByteData
-                  : e.runtimeType;
-        }
+        Type _type = _getParsedDataType(e, subType);
         return _formatArg(e, _type, serializationManager);
       }).toList();
       return dds;
     }
 
     try {
-      var data = input is Map ? input : jsonDecode(input.toString());
+      var data = input is Map ? input : jsonDecode(input);
       var dataResponse =
           serializationManager.createEntityFromSerialization(data);
       if (dataResponse != null) {
         return dataResponse;
       } else {
-        // Class Name Not Found
-        return data;
+        Map encodedmap = {};
+        List<String> subTypes = type
+            .toString()
+            .replaceAll('Map<', '')
+            .substring(0, type.toString().length - 5)
+            .split(',');
+        String mapKeyType = subTypes.first.trim();
+        String mapValueType = subTypes.last.trim();
+        for (var key in (data as Map).keys) {
+          var mapValue = data[key];
+          Type _keyType = _getParsedDataType(key, mapKeyType);
+          Type _type = _getParsedDataType(mapValue, mapValueType);
+          var resKey = _formatArg(key, _keyType, serializationManager);
+          var resValue = _formatArg(mapValue, _type, serializationManager);
+          encodedmap[resKey] = resValue;
+        }
+        return encodedmap;
       }
     } catch (error) {
       // print('Error in Format Args: $error');
       return null;
     }
+  }
+
+  Type _getParsedDataType(dynamic mapValue, String mapValueType) {
+    Type _type;
+    bool isDynamic = mapValueType == 'dynamic';
+    if (isDynamic) {
+      _type = _dateFormatValidationregExp.hasMatch(mapValue)
+          ? DateTime
+          : mapValue.runtimeType;
+    } else {
+      _type = mapValueType.startsWith('DateTime')
+          ? DateTime
+          : mapValueType.startsWith('ByteData')
+              ? ByteData
+              : mapValue.runtimeType;
+    }
+    return _type;
   }
 }
 

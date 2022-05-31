@@ -127,10 +127,14 @@ abstract class ProtocolGenerator {
         out +=
             '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
         for (var param in method.parameters) {
-          String casttxt = !param.type.isTypedList
-              ? ''
-              : ('${param.type.nullable ? '?' : ''}.cast<${param.type.listType}>()');
-          out += 'params[\'${param.name}\']$casttxt,';
+          if (!param.type.isMapType) {
+            String casttxt = !param.type.isTypedList
+                ? ''
+                : ('${param.type.nullable ? '?' : ''}.cast<${param.type.listType}>()');
+            out += 'params[\'${param.name}\']$casttxt,';
+          } else {
+            out += 'Map.from(params[\'${param.name}\']),';
+          }
         }
         for (var param in method.parametersPositional) {
           out += 'params[\'${param.name}\'],';

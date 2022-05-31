@@ -20,6 +20,8 @@ abstract class SerializableEntity {
   /// through the API. This does not include fields that are marked as
   /// database only.
   Map<String, dynamic> serialize();
+  /// This helps while json encoding
+  Map<String, dynamic> toJson() => serialize();
 
   /// Returns a serialized JSON structure of the entity which also includes
   /// fields used by the database.
@@ -86,7 +88,13 @@ abstract class SerializationManager {
     } else if (entity is List<SerializableEntity>) {
       return json.encode((entity).map((e) => e.serialize()).toList());
     } else if (entity is Map) {
-      return json.encode(entity);
+      var parsedMap = {};
+      entity.forEach((key, value) {
+        var newKey = serializeEntity(key);
+        var newValue = serializeEntity(value);
+        parsedMap[newKey] = newValue;
+      });
+      return json.encode(parsedMap);
     } else if (entity is List) {
       return json.encode(entity.map((e) => serializeEntity(e)).toList());
     } else {

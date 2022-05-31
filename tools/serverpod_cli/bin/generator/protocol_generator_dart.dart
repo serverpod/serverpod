@@ -19,7 +19,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += '// ignore_for_file: public_member_api_docs\n';
     out += '// ignore_for_file: unused_import\n';
     out += '\n';
-
+    out += 'import \'dart:convert\';';
     out += 'import \'dart:io\';\n';
     out += 'import \'dart:typed_data\' as typed_data;\n';
     out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
@@ -92,7 +92,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         if (returnType.isTypedList) {
           out += '     List datas = $endPt';
           String _castStr = '';
-          if (returnType.listType!.databaseType == 'json' && returnType.listType!.type != 'dynamic') {
+          if (returnType.listType!.databaseType == 'json' &&
+              returnType.listType!.type != 'dynamic') {
             // Todo: check wheather this if else is correct or not [for Entity only]
             String isNulable =
                 returnType.listType!.nullable ? 'e == null ? null : ' : '';
@@ -104,6 +105,9 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                 '${returnType.nullable ? '?' : ''}.cast<${returnType.listType!.type}>();';
           }
           out += '     return datas$_castStr';
+        } else if (returnType.isMapType) {
+          out += ' final mapValue = $endPt';
+          out += ' return Map.from(mapValue);';
         } else {
           out += ' return $endPt';
         }

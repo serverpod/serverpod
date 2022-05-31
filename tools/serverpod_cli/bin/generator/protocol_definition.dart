@@ -51,7 +51,9 @@ class TypeDefinition {
   late final String typeNonNullable;
   late final String type;
   final String? package;
-
+  late final bool isMapType;
+  late final TypeDefinition? mapKeyType;
+  late final TypeDefinition? mapValueType;
   String get typePrefix {
     var prefix = '';
     if (package != null &&
@@ -81,10 +83,22 @@ class TypeDefinition {
     // Check if it's a list
     isTypedList =
         withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
+    isMapType =
+        withoutQuestion.startsWith('Map<') && withoutQuestion.endsWith('>');
+
     if (isTypedList) {
       var listTypeStr =
           withoutQuestion.substring(5, withoutQuestion.length - 1);
       listType = TypeDefinition(listTypeStr, package);
+    }
+
+    if (isMapType) {
+      List<String> mapTypes = withoutQuestion
+          .replaceAll('Map<', '')
+          .substring(0, withoutQuestion.length - 5)
+          .split(',');
+      mapKeyType = TypeDefinition(mapTypes.first.trim(), package);
+      mapValueType = TypeDefinition(mapTypes.last.trim(), package);
     }
 
     // Generate type strings
