@@ -34,10 +34,6 @@ class PgsqlGenerator {
     out += '--\n';
     out += '\n';
 
-    // Todo: Drop Table If Already Exist. But all data will be erased
-    // out += 'CREATE TABLE mycopy AS SELECT * ${classInfo.tableName}; (\n';
-    // out += 'DROP TABLE IF EXISTS ${classInfo.tableName}; (\n';
-
     // Table definition
     out += 'CREATE TABLE ${classInfo.tableName} (\n';
     // Id is a special case that is nullable in code but not in the database
