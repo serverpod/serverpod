@@ -71,20 +71,19 @@ Future<void> performCreate(
   print('Creating project $name...');
 
   if (verbose) print('Creating directory: ${projectDir.path}');
-  await projectDir.create(recursive: true);
+  projectDir.createSync();
 
   var serverDir = Directory(p.join(projectDir.path, name + '_server'));
   if (verbose) print('Creating directory: ${serverDir.path}');
-  await serverDir.create(recursive: true);
+  serverDir.createSync();
 
   var clientDir = Directory(p.join(projectDir.path, name + '_client'));
   if (verbose) print('Creating directory: ${clientDir.path}');
-  await clientDir.create(recursive: true);
 
   if (template == 'server') {
     var flutterDir = Directory(p.join(projectDir.path, name + '_flutter'));
     if (verbose) print('Creating directory: ${flutterDir.path}');
-    await flutterDir.create(recursive: true);
+    flutterDir.createSync();
 
     var githubDir = Directory(p.join(projectDir.path, '.github'));
     if (verbose) print('Creating directory: ${githubDir.path}');
