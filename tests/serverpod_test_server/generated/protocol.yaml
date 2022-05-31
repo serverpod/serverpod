@@ -16,19 +16,20 @@ basicTypes:
   - testListOfString:
   - testListOfdynamic:
   - testListOfdouble:
+  - testListOfint:
   - testListOfDateTime:
   - testListOfbool:
   - testListOfSimpleData:
   - testMapOfString:
   - testMapOfBool:
   - testMapOfInt:
-  - testListMapOfDouble:
+  - testMapOfDouble:
   - testMapOfDateTime:
   - testMapOfSimpleData:
   - testMapOfStringNullable:
   - testMapOfBoolNullable:
   - testMapOfIntNullable:
-  - testListMapOfDoubleNullable:
+  - testMapOfDoubleNullable:
   - testMapOfDateTimeNullable:
   - testMapOfSimpleDataNullable:
 cloudStorage:

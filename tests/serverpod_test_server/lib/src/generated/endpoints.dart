@@ -288,6 +288,20 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'testListOfint': MethodConnector(
+          name: 'testListOfint',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: List<int>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListOfint(
+              session,
+              params['value'].cast<int>(),
+            );
+          },
+        ),
         'testListOfDateTime': MethodConnector(
           name: 'testListOfDateTime',
           params: {
@@ -371,15 +385,15 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
-        'testListMapOfDouble': MethodConnector(
-          name: 'testListMapOfDouble',
+        'testMapOfDouble': MethodConnector(
+          name: 'testMapOfDouble',
           params: {
             'value': ParameterDescription(
                 name: 'value', type: Map<String, double>, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicTypes'] as BasicTypesEndpoint)
-                .testListMapOfDouble(
+                .testMapOfDouble(
               session,
               Map.from(params['value']),
             );
@@ -455,15 +469,15 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
-        'testListMapOfDoubleNullable': MethodConnector(
-          name: 'testListMapOfDoubleNullable',
+        'testMapOfDoubleNullable': MethodConnector(
+          name: 'testMapOfDoubleNullable',
           params: {
             'value': ParameterDescription(
                 name: 'value', type: Map<String, double?>, nullable: false),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['basicTypes'] as BasicTypesEndpoint)
-                .testListMapOfDoubleNullable(
+                .testMapOfDoubleNullable(
               session,
               Map.from(params['value']),
             );

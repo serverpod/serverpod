@@ -41,6 +41,10 @@ class BasicTypesEndpoint extends Endpoint {
     return value;
   }
 
+  Future<List<int>> testListOfint(Session session, List<int> value) async {
+    return value;
+  }
+
   Future<List<DateTime>> testListOfDateTime(
       Session session, List<DateTime> value) async {
     return value;
@@ -52,11 +56,6 @@ class BasicTypesEndpoint extends Endpoint {
 
   Future<List<SimpleData>> testListOfSimpleData(
       Session session, List<SimpleData> object) async {
-    int i = 0;
-    for (var e in object) {
-      i++;
-      e.num = i;
-    }
     return object;
   }
 
@@ -75,7 +74,7 @@ class BasicTypesEndpoint extends Endpoint {
     return value;
   }
 
-  Future<Map<String, double>> testListMapOfDouble(
+  Future<Map<String, double>> testMapOfDouble(
       Session session, Map<String, double> value) async {
     return value;
   }
@@ -105,7 +104,7 @@ class BasicTypesEndpoint extends Endpoint {
     return value;
   }
 
-  Future<Map<String, double?>> testListMapOfDoubleNullable(
+  Future<Map<String, double?>> testMapOfDoubleNullable(
       Session session, Map<String, double?> value) async {
     return value;
   }

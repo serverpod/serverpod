@@ -93,9 +93,7 @@ dynamic parseData(String data, String returnTypeName,
       return value;
     } else {
       var listData = (jsonDecode(data) as List?)?.map((e) {
-        return e == null
-            ? null
-            : parseData(e, e.runtimeType.toString(), serializationManager);
+        return getPrasedValue(e, type, serializationManager);
       }).toList();
       return listData;
     }
@@ -123,28 +121,13 @@ dynamic parseData(String data, String returnTypeName,
 /// Parsing Key and Vaues of Map
 dynamic getPrasedValue(dynamic value, String expectedType,
     SerializationManager serializationManager) {
-  // bool isNullable = expectedType.contains('?');
-  // expectedType = expectedType.replaceAll('', '');
-  if (value.runtimeType.toString() == expectedType) return value;
+  // Todo: To Handle Dynamic Value
   if (value == null) return null;
-  if (expectedType.startsWith('DateTime')) {
-    return DateTime.tryParse(value);
-  } else if (expectedType.toString().trim() == 'null') {
-    return null;
-  } else if (expectedType.startsWith('int')) {
-    return int.tryParse(value);
-  } else if (expectedType.startsWith('double')) {
-    return double.tryParse(value);
-  } else if (expectedType.startsWith('bool')) {
-    return value?.toString().trim() == 'true';
-  } else if (expectedType.startsWith('String')) {
-    return value?.toString().trim();
-  } else if (expectedType == 'ByteData') {
-    return value?.toString().base64DecodedByteData();
+  if (value is String) {
+    return parseData(
+        value, expectedType.replaceAll('?', ''), serializationManager);
   } else {
-    // Todo: For Nested Map Function & list in map
-    return serializationManager.createEntityFromSerialization(
-            value.runtimeType == String ? jsonDecode(value) : value) ??
-        value;
+  // Todo: to Recheck This Loop 
+    return value;
   }
 }

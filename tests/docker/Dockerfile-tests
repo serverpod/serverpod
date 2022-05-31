@@ -1,5 +1,5 @@
 # Specify the Dart SDK base image version
-FROM dart:2.14 AS build
+FROM dart:2.17 AS build
 
 # Set the working directory
 WORKDIR /app

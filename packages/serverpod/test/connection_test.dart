@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -94,6 +95,107 @@ void main() {
     test('Type null ByteData', () async {
       var result = await client.basicTypes.testByteData(null);
       expect(result, isNull);
+    });
+
+    test('Type List<String>', () async {
+      var result = await client.basicTypes.testListOfString(['Hello', 'There']);
+      expect(result, ['Hello', 'There']);
+    });
+
+    test('Type List<int>', () async {
+      var result = await client.basicTypes.testListOfint([10, 11]);
+      expect(result, [10, 11]);
+    });
+    test('Type List<double>', () async {
+      var result = await client.basicTypes.testListOfdouble([10.2, 11.1]);
+      expect(result, [10.2, 11.1]);
+    });
+    test('Type List<bool>', () async {
+      var result = await client.basicTypes.testListOfbool([true, false]);
+      expect(result, [true, false]);
+    });
+    test('Type List<DateTime>', () async {
+      var result =
+          await client.basicTypes.testListOfDateTime([DateTime(1997, 12, 30)]);
+      expect(result.first.toLocal(), equals(DateTime(1997, 12, 30)));
+    });
+
+    test('Type List<SimpleData>', () async {
+      var result =
+          await client.basicTypes.testListOfSimpleData([SimpleData(num: 12)]);
+      expect(result.first.num, 12);
+    });
+
+    // test('Type List<dynamic>', () async {
+    //   var result = await client.basicTypes.testListOfdynamic(
+    //       [1, 1.2, true, 'Hello', DateTime(1997, 12, 30), SimpleData(num: 12)]);
+    //   expect(result,
+    //       [1, 1.2, true, 'Hello', DateTime(1997, 12, 30), SimpleData(num: 12)]);
+    // });
+
+    test('Type Map<String,String>', () async {
+      var result = await client.basicTypes.testMapOfString({'Name': 'Anand'});
+      expect(jsonEncode(result), jsonEncode({'Name': 'Anand'}));
+    });
+    test('Type Map<String,int>', () async {
+      var result = await client.basicTypes.testMapOfInt({'value': 1});
+      expect(jsonEncode(result), jsonEncode({'value': 1}));
+    });
+    test('Type Map<String,double>', () async {
+      var result = await client.basicTypes.testMapOfDouble({'value': 1.1});
+      expect(jsonEncode(result), jsonEncode({'value': 1.1}));
+    });
+    test('Type Map<String,bool>', () async {
+      var result = await client.basicTypes.testMapOfBool({'value': true});
+      expect(jsonEncode(result), jsonEncode({'value': true}));
+    });
+    test('Type Map<String,DateTime>', () async {
+      var result = await client.basicTypes
+          .testMapOfDateTime({'value': DateTime(30, 12, 1)});
+      expect(result['value']?.toLocal(), equals(DateTime(30, 12, 1)));
+    });
+
+    test('Type Map<String,SimpleData>', () async {
+      var result = await client.basicTypes
+          .testMapOfSimpleData({'value': SimpleData(num: 2)});
+      expect(result['value']!.num, 2);
+    });
+    test('Type Map<String,String?>', () async {
+      var result = await client.basicTypes
+          .testMapOfStringNullable({'Name': 'Anand', 'NullVal': null});
+      expect(result['NullVal'], isNull);
+      expect(result['Name'], 'Anand');
+    });
+    test('Type Map<String,int?>', () async {
+      var result = await client.basicTypes
+          .testMapOfIntNullable({'value': 1, 'NullVal': null});
+      expect(result['NullVal'], isNull);
+      expect(result['value'], 1);
+    });
+    test('Type Map<String,double?>', () async {
+      var result = await client.basicTypes
+          .testMapOfDoubleNullable({'value': 1.1, 'NullVal': null});
+      expect(result['NullVal'], isNull);
+      expect(result['value'], 1.1);
+    });
+    test('Type Map<String,bool?>', () async {
+      var result = await client.basicTypes
+          .testMapOfBoolNullable({'value': true, 'NullVal': null});
+      expect(result['NullVal'], isNull);
+      expect(result['value'], true);
+    });
+    test('Type Map<String,DateTime?>', () async {
+      var result = await client.basicTypes.testMapOfDateTimeNullable(
+          {'value': DateTime(30, 12, 1), 'NullVal': null});
+      expect(result['NullVal'], isNull);
+      expect(result['value']?.toLocal(), equals(DateTime(30, 12, 1)));
+    });
+
+    test('Type Map<String,SimpleData>', () async {
+      var result = await client.basicTypes.testMapOfSimpleDataNullable(
+          {'value': SimpleData(num: 2), 'NullVal': null});
+      expect(result['NullVal'], isNull);
+      expect(result['value']!.num, 2);
     });
   });
 

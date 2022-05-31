@@ -167,6 +167,16 @@ class _EndpointBasicTypes extends EndpointRef {
     return datas.cast<double>();
   }
 
+  Future<List<int>> testListOfint(
+    List<int> value,
+  ) async {
+    List datas = await caller
+        .callServerEndpoint('basicTypes', 'testListOfint', 'List<int>', {
+      'value': value,
+    });
+    return datas.cast<int>();
+  }
+
   Future<List<DateTime>> testListOfDateTime(
     List<DateTime> value,
   ) async {
@@ -229,11 +239,11 @@ class _EndpointBasicTypes extends EndpointRef {
     return Map.from(mapValue);
   }
 
-  Future<Map<String, double>> testListMapOfDouble(
+  Future<Map<String, double>> testMapOfDouble(
     Map<String, double> value,
   ) async {
     final mapValue = await caller.callServerEndpoint(
-        'basicTypes', 'testListMapOfDouble', 'Map<String,double>', {
+        'basicTypes', 'testMapOfDouble', 'Map<String,double>', {
       'value': value,
     });
     return Map.from(mapValue);
@@ -289,11 +299,11 @@ class _EndpointBasicTypes extends EndpointRef {
     return Map.from(mapValue);
   }
 
-  Future<Map<String, double?>> testListMapOfDoubleNullable(
+  Future<Map<String, double?>> testMapOfDoubleNullable(
     Map<String, double?> value,
   ) async {
     final mapValue = await caller.callServerEndpoint(
-        'basicTypes', 'testListMapOfDoubleNullable', 'Map<String,double?>', {
+        'basicTypes', 'testMapOfDoubleNullable', 'Map<String,double?>', {
       'value': value,
     });
     return Map.from(mapValue);
