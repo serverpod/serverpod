@@ -187,15 +187,6 @@ class _EndpointBasicTypes extends EndpointRef {
     return datas.cast<bool>();
   }
 
-  Future<Map<String, dynamic>> testListOfmapDynamic(
-    Map<String, dynamic> value,
-  ) async {
-    return await caller.callServerEndpoint(
-        'basicTypes', 'testListOfmapDynamic', 'Map<String,dynamic>', {
-      'value': value,
-    });
-  }
-
   Future<List<SimpleData>> testListOfSimpleData(
     List<SimpleData> object,
   ) async {
@@ -206,6 +197,126 @@ class _EndpointBasicTypes extends EndpointRef {
     return datas.map((e) {
       return SimpleData.fromSerialization(e.serializeAll());
     }).toList();
+  }
+
+  Future<Map<String, String>> testMapOfString(
+    Map<String, String> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfString', 'Map<String,String>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, bool>> testMapOfBool(
+    Map<String, bool> value,
+  ) async {
+    final mapValue = await caller
+        .callServerEndpoint('basicTypes', 'testMapOfBool', 'Map<String,bool>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, int>> testMapOfInt(
+    Map<String, int> value,
+  ) async {
+    final mapValue = await caller
+        .callServerEndpoint('basicTypes', 'testMapOfInt', 'Map<String,int>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, double>> testListMapOfDouble(
+    Map<String, double> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testListMapOfDouble', 'Map<String,double>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, DateTime>> testMapOfDateTime(
+    Map<String, DateTime> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfDateTime', 'Map<String,DateTime>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, SimpleData>> testMapOfSimpleData(
+    Map<String, SimpleData> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfSimpleData', 'Map<String,SimpleData>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, String?>> testMapOfStringNullable(
+    Map<String, String?> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfStringNullable', 'Map<String,String?>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, bool?>> testMapOfBoolNullable(
+    Map<String, bool?> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfBoolNullable', 'Map<String,bool?>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, int?>> testMapOfIntNullable(
+    Map<String, int?> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfIntNullable', 'Map<String,int?>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, double?>> testListMapOfDoubleNullable(
+    Map<String, double?> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testListMapOfDoubleNullable', 'Map<String,double?>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, DateTime?>> testMapOfDateTimeNullable(
+    Map<String, DateTime?> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint(
+        'basicTypes', 'testMapOfDateTimeNullable', 'Map<String,DateTime?>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
+  }
+
+  Future<Map<String, SimpleData?>> testMapOfSimpleDataNullable(
+    Map<String, SimpleData?> value,
+  ) async {
+    final mapValue = await caller.callServerEndpoint('basicTypes',
+        'testMapOfSimpleDataNullable', 'Map<String,SimpleData?>', {
+      'value': value,
+    });
+    return Map.from(mapValue);
   }
 }
 

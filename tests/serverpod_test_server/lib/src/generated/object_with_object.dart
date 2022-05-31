@@ -41,25 +41,25 @@ class ObjectWithObject extends TableRow {
 
   ObjectWithObject.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
+    id = _data['id']?.toInt();
     data = SimpleData.fromSerialization(_data['data']);
     nullableData = _data['nullableData'] != null
         ? SimpleData?.fromSerialization(_data['nullableData'])
         : null;
-    dataList = _data['dataList']!
+    dataList = (_data['dataList']!)
         .map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    nullableDataList = _data['nullableDataList']
+        .toList();
+    nullableDataList = (_data['nullableDataList'])
         ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    listWithNullableData = _data['listWithNullableData']!
+        .toList();
+    listWithNullableData = (_data['listWithNullableData']!)
         .map<SimpleData?>(
             (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
-    nullableListWithNullableData = _data['nullableListWithNullableData']
+        .toList();
+    nullableListWithNullableData = (_data['nullableListWithNullableData'])
         ?.map<SimpleData?>(
             (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
+        .toList();
   }
 
   @override

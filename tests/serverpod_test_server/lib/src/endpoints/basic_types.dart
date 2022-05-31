@@ -50,11 +50,6 @@ class BasicTypesEndpoint extends Endpoint {
     return value;
   }
 
-  Future<Map<String, dynamic>> testListOfmapDynamic(
-      Session session, Map<String, dynamic> value) async {
-    return value;
-  }
-
   Future<List<SimpleData>> testListOfSimpleData(
       Session session, List<SimpleData> object) async {
     int i = 0;
@@ -63,5 +58,65 @@ class BasicTypesEndpoint extends Endpoint {
       e.num = i;
     }
     return object;
+  }
+
+  Future<Map<String, String>> testMapOfString(
+      Session session, Map<String, String> value) async {
+    return value;
+  }
+
+  Future<Map<String, bool>> testMapOfBool(
+      Session session, Map<String, bool> value) async {
+    return value;
+  }
+
+  Future<Map<String, int>> testMapOfInt(
+      Session session, Map<String, int> value) async {
+    return value;
+  }
+
+  Future<Map<String, double>> testListMapOfDouble(
+      Session session, Map<String, double> value) async {
+    return value;
+  }
+
+  Future<Map<String, DateTime>> testMapOfDateTime(
+      Session session, Map<String, DateTime> value) async {
+    return value;
+  }
+
+  Future<Map<String, SimpleData>> testMapOfSimpleData(
+      Session session, Map<String, SimpleData> value) async {
+    return value;
+  }
+
+  Future<Map<String, String?>> testMapOfStringNullable(
+      Session session, Map<String, String?> value) async {
+    return value;
+  }
+
+  Future<Map<String, bool?>> testMapOfBoolNullable(
+      Session session, Map<String, bool?> value) async {
+    return value;
+  }
+
+  Future<Map<String, int?>> testMapOfIntNullable(
+      Session session, Map<String, int?> value) async {
+    return value;
+  }
+
+  Future<Map<String, double?>> testListMapOfDoubleNullable(
+      Session session, Map<String, double?> value) async {
+    return value;
+  }
+
+  Future<Map<String, DateTime?>> testMapOfDateTimeNullable(
+      Session session, Map<String, DateTime?> value) async {
+    return value;
+  }
+
+  Future<Map<String, SimpleData?>> testMapOfSimpleDataNullable(
+      Session session, Map<String, SimpleData?> value) async {
+    return value;
   }
 }

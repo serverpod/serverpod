@@ -41,10 +41,10 @@ class Types extends TableRow {
 
   Types.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    anInt = _data['anInt'];
+    id = _data['id']?.toInt();
+    anInt = _data['anInt']?.toInt();
     aBool = _data['aBool'];
-    aDouble = _data['aDouble'];
+    aDouble = _data['aDouble']?.toDouble();
     aDateTime = _data['aDateTime'] != null
         ? DateTime.tryParse(_data['aDateTime'])
         : null;

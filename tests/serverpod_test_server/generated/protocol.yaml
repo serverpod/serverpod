@@ -18,8 +18,19 @@ basicTypes:
   - testListOfdouble:
   - testListOfDateTime:
   - testListOfbool:
-  - testListOfmapDynamic:
   - testListOfSimpleData:
+  - testMapOfString:
+  - testMapOfBool:
+  - testMapOfInt:
+  - testListMapOfDouble:
+  - testMapOfDateTime:
+  - testMapOfSimpleData:
+  - testMapOfStringNullable:
+  - testMapOfBoolNullable:
+  - testMapOfIntNullable:
+  - testListMapOfDoubleNullable:
+  - testMapOfDateTimeNullable:
+  - testMapOfSimpleDataNullable:
 cloudStorage:
   - reset:
   - storePublicFile:

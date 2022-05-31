@@ -316,20 +316,6 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
-        'testListOfmapDynamic': MethodConnector(
-          name: 'testListOfmapDynamic',
-          params: {
-            'value': ParameterDescription(
-                name: 'value', type: Map<String, dynamic>, nullable: false),
-          },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint)
-                .testListOfmapDynamic(
-              session,
-              params['value'],
-            );
-          },
-        ),
         'testListOfSimpleData': MethodConnector(
           name: 'testListOfSimpleData',
           params: {
@@ -341,6 +327,173 @@ class Endpoints extends EndpointDispatch {
                 .testListOfSimpleData(
               session,
               params['object'].cast<SimpleData>(),
+            );
+          },
+        ),
+        'testMapOfString': MethodConnector(
+          name: 'testMapOfString',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, String>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfString(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfBool': MethodConnector(
+          name: 'testMapOfBool',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, bool>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfBool(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfInt': MethodConnector(
+          name: 'testMapOfInt',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, int>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint).testMapOfInt(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testListMapOfDouble': MethodConnector(
+          name: 'testListMapOfDouble',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, double>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListMapOfDouble(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfDateTime': MethodConnector(
+          name: 'testMapOfDateTime',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, DateTime>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfDateTime(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfSimpleData': MethodConnector(
+          name: 'testMapOfSimpleData',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, SimpleData>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfSimpleData(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfStringNullable': MethodConnector(
+          name: 'testMapOfStringNullable',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, String?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfStringNullable(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfBoolNullable': MethodConnector(
+          name: 'testMapOfBoolNullable',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, bool?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfBoolNullable(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfIntNullable': MethodConnector(
+          name: 'testMapOfIntNullable',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, int?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfIntNullable(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testListMapOfDoubleNullable': MethodConnector(
+          name: 'testListMapOfDoubleNullable',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, double?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testListMapOfDoubleNullable(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfDateTimeNullable': MethodConnector(
+          name: 'testMapOfDateTimeNullable',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, DateTime?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfDateTimeNullable(
+              session,
+              Map.from(params['value']),
+            );
+          },
+        ),
+        'testMapOfSimpleDataNullable': MethodConnector(
+          name: 'testMapOfSimpleDataNullable',
+          params: {
+            'value': ParameterDescription(
+                name: 'value', type: Map<String, SimpleData?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicTypes'] as BasicTypesEndpoint)
+                .testMapOfSimpleDataNullable(
+              session,
+              Map.from(params['value']),
             );
           },
         ),
