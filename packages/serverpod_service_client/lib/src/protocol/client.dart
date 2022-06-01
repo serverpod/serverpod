@@ -29,11 +29,6 @@ class _EndpointInsights extends EndpointRef {
     });
   }
 
-  Future<void> reloadRuntimeSettings() async {
-    return await caller
-        .callServerEndpoint('insights', 'reloadRuntimeSettings', 'void', {});
-  }
-
   Future<void> clearAllLogs() async {
     return await caller
         .callServerEndpoint('insights', 'clearAllLogs', 'void', {});
@@ -77,6 +72,17 @@ class _EndpointInsights extends EndpointRef {
   Future<ServerHealthResult> checkHealth() async {
     return await caller.callServerEndpoint(
         'insights', 'checkHealth', 'ServerHealthResult', {});
+  }
+
+  Future<ServerHealthResult> getHealthData(
+    DateTime start,
+    DateTime end,
+  ) async {
+    return await caller
+        .callServerEndpoint('insights', 'getHealthData', 'ServerHealthResult', {
+      'start': start,
+      'end': end,
+    });
   }
 
   Future<bool> hotReload() async {

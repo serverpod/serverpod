@@ -18,6 +18,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the current [RuntimeSettings] from the running [Server].
   Future<RuntimeSettings> getRuntimeSettings(Session session) async {
+    await server.serverpod.reloadRuntimeSettings();
     return server.serverpod.runtimeSettings;
   }
 
@@ -25,12 +26,6 @@ class InsightsEndpoint extends Endpoint {
   Future<void> setRuntimeSettings(
       Session session, RuntimeSettings runtimeSettings) async {
     server.serverpod.runtimeSettings = runtimeSettings;
-  }
-
-  /// Reload the current [RuntimeSettings] in the running [Server] from what's
-  /// stored in the database.
-  Future<void> reloadRuntimeSettings(Session session) async {
-    await server.serverpod.reloadRuntimeSettings();
   }
 
   /// Clear all server logs.
@@ -146,6 +141,29 @@ class InsightsEndpoint extends Endpoint {
   /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth(Session session) async {
     return await performHealthChecks(pod);
+  }
+
+  /// Gets historical health check data. Returns data for the whole cluster.
+  Future<ServerHealthResult> getHealthData(
+    Session session,
+    DateTime start,
+    DateTime end,
+  ) async {
+    // Load metrics and connection information.
+    var metrics = await ServerHealthMetric.find(
+      session,
+      where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
+    );
+
+    var connectionInfos = await ServerHealthConnectionInfo.find(
+      session,
+      where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
+    );
+
+    return ServerHealthResult(
+      metrics: metrics,
+      connectionInfos: connectionInfos,
+    );
   }
 
   /// Performs a hot reload of the server.

@@ -79,7 +79,7 @@ class Server {
     this.securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
-  }) : name = name ?? 'Server id $serverId';
+  }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
   Future<void> start() async {

@@ -26,6 +26,7 @@ import 'method_info.dart';
 import 'query_log_entry.dart';
 import 'readwrite_test.dart';
 import 'runtime_settings.dart';
+import 'server_health_connection_info.dart';
 import 'server_health_metric.dart';
 import 'server_health_result.dart';
 import 'session_log_entry.dart';
@@ -49,6 +50,7 @@ export 'method_info.dart';
 export 'query_log_entry.dart';
 export 'readwrite_test.dart';
 export 'runtime_settings.dart';
+export 'server_health_connection_info.dart';
 export 'server_health_metric.dart';
 export 'server_health_result.dart';
 export 'session_log_entry.dart';
@@ -107,6 +109,9 @@ class Protocol extends SerializationManagerServer {
         ReadWriteTestEntry.fromSerialization(serialization);
     constructors['RuntimeSettings'] = (Map<String, dynamic> serialization) =>
         RuntimeSettings.fromSerialization(serialization);
+    constructors['ServerHealthConnectionInfo'] =
+        (Map<String, dynamic> serialization) =>
+            ServerHealthConnectionInfo.fromSerialization(serialization);
     constructors['ServerHealthMetric'] = (Map<String, dynamic> serialization) =>
         ServerHealthMetric.fromSerialization(serialization);
     constructors['ServerHealthResult'] = (Map<String, dynamic> serialization) =>
@@ -140,6 +145,11 @@ class Protocol extends SerializationManagerServer {
     typeTableMapping[ReadWriteTestEntry] = ReadWriteTestEntry.t;
     tableClassMapping['serverpod_runtime_settings'] = 'RuntimeSettings';
     typeTableMapping[RuntimeSettings] = RuntimeSettings.t;
+    tableClassMapping['serverpod_health_connection_info'] =
+        'ServerHealthConnectionInfo';
+    typeTableMapping[ServerHealthConnectionInfo] = ServerHealthConnectionInfo.t;
+    tableClassMapping['serverpod_health_metric'] = 'ServerHealthMetric';
+    typeTableMapping[ServerHealthMetric] = ServerHealthMetric.t;
     tableClassMapping['serverpod_session_log'] = 'SessionLogEntry';
     typeTableMapping[SessionLogEntry] = SessionLogEntry.t;
   }

@@ -1,0 +1,9 @@
+class: ServerHealthConnectionInfo
+table: serverpod_health_connection_info
+fields:
+  serverId: String
+  type: int
+  timestamp: DateTime
+  active: int
+  closing: int
+  idle: int

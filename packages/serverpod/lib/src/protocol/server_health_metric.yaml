@@ -1,5 +1,8 @@
 class: ServerHealthMetric
+table: serverpod_health_metric
 fields:
   name: String
+  serverId: String
+  timestamp: DateTime
   isHealthy: bool
   value: double

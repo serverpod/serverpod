@@ -165,6 +165,41 @@ ALTER TABLE ONLY serverpod_runtime_settings
 
 
 --
+-- Class ServerHealthConnectionInfo as table serverpod_health_connection_info
+--
+
+CREATE TABLE serverpod_health_connection_info (
+  "id" serial,
+  "serverId" text NOT NULL,
+  "type" integer NOT NULL,
+  "timestamp" timestamp without time zone NOT NULL,
+  "active" integer NOT NULL,
+  "closing" integer NOT NULL,
+  "idle" integer NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_health_connection_info
+  ADD CONSTRAINT serverpod_health_connection_info_pkey PRIMARY KEY (id);
+
+
+--
+-- Class ServerHealthMetric as table serverpod_health_metric
+--
+
+CREATE TABLE serverpod_health_metric (
+  "id" serial,
+  "name" text NOT NULL,
+  "serverId" text NOT NULL,
+  "timestamp" timestamp without time zone NOT NULL,
+  "isHealthy" boolean NOT NULL,
+  "value" double precision NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_health_metric
+  ADD CONSTRAINT serverpod_health_metric_pkey PRIMARY KEY (id);
+
+
+--
 -- Class SessionLogEntry as table serverpod_session_log
 --
 

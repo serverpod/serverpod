@@ -9,6 +9,7 @@ import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
+import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -29,7 +30,9 @@ import 'session.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
-    Serverpod pod);
+  Serverpod pod,
+  DateTime timestamp,
+);
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
@@ -187,6 +190,8 @@ class Serverpod {
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
 
+  late final HealthCheckManager _healthCheckManager;
+
   /// Creates a new Serverpod.
   Serverpod(
     List<String> args,
@@ -267,8 +272,13 @@ class Serverpod {
 
     _instance = this;
 
-    // TODO: Print version
-    stdout.writeln('SERVERPOD version: $serverpodVersion mode: $_runMode');
+    // Setup health check manager
+    _healthCheckManager = HealthCheckManager(this);
+
+    // Print version
+    stdout.writeln(
+      'SERVERPOD version: $serverpodVersion mode: $_runMode time: ${DateTime.now().toUtc()}',
+    );
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
@@ -321,18 +331,21 @@ class Serverpod {
 
       // Start future calls
       _futureCallManager.start();
+
+      // Start health check managager
+      _healthCheckManager.start();
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
       stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Zoned exception.');
+        '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
+      );
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
     });
   }
 
   Future<void> _startServiceServer() async {
-    // TODO: Add support for https on service server.
     // var context = SecurityContext();
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
@@ -437,6 +450,7 @@ class Serverpod {
     server.shutdown();
     _serviceServer?.shutdown();
     _futureCallManager.stop();
+    _healthCheckManager.stop;
     exit(0);
   }
 }
