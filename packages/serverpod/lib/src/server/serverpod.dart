@@ -97,10 +97,12 @@ class Serverpod {
 
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
-  set runtimeSettings(internal.RuntimeSettings settings) {
+
+  /// Updates the runtime settings and writes the new settings to the database.
+  Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
     _runtimeSettings = settings;
     _logManager = LogManager(settings);
-    _storeRuntimeSettings(settings);
+    await _storeRuntimeSettings(settings);
   }
 
   late LogManager _logManager;

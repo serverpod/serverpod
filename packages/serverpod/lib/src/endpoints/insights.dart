@@ -24,8 +24,10 @@ class InsightsEndpoint extends Endpoint {
 
   /// Update the current [RuntimeSettings] in the running [Server].
   Future<void> setRuntimeSettings(
-      Session session, RuntimeSettings runtimeSettings) async {
-    server.serverpod.runtimeSettings = runtimeSettings;
+    Session session,
+    RuntimeSettings runtimeSettings,
+  ) async {
+    await server.serverpod.updateRuntimeSettings(runtimeSettings);
   }
 
   /// Clear all server logs.
