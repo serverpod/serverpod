@@ -43,29 +43,33 @@ class Expression {
 
   /// Database greater than operator.
   Expression operator >(dynamic other) {
-    if (other is! Expression)
+    if (other is! Expression) {
       other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this > $other)');
   }
 
   /// Database greater or equal than operator.
   Expression operator >=(dynamic other) {
-    if (other is! Expression)
+    if (other is! Expression) {
       other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this >= $other)');
   }
 
   /// Database less than operator.
   Expression operator <(dynamic other) {
-    if (other is! Expression)
+    if (other is! Expression) {
       other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this < $other)');
   }
 
   /// Database less or equal than operator.
   Expression operator <=(dynamic other) {
-    if (other is! Expression)
+    if (other is! Expression) {
       other = DatabasePoolManager.encoder.convert(other);
+    }
     return Expression('($this <= $other)');
   }
 }
