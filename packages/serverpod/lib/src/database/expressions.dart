@@ -17,46 +17,55 @@ class Expression {
     return expression;
   }
 
-  Expression? _validate(Expression other) {
-    if (other.expression.isEmpty) {
-      return Expression('($this)');
+  Expression _getvalidExpression(
+      Expression one, Expression two, String operator) {
+    if (one.expression.isEmpty && two.expression.isEmpty) {
+      return Expression('');
+    } else if (one.expression.isEmpty) {
+      return Expression('($two)');
+    } else if (two.expression.isEmpty) {
+      return Expression('($one)');
     }
-    return null;
+    return Expression('($one $operator $two)');
   }
 
   /// Database AND operator.
   Expression operator &(dynamic other) {
     assert(other is Expression);
-    return _validate(other) ?? Expression('($this AND $other)');
+    return _getvalidExpression(other, this, 'AND');
   }
 
   /// Database OR operator.
   Expression operator |(dynamic other) {
     assert(other is Expression);
-    return _validate(other) ?? Expression('($this OR $other)');
+    return _getvalidExpression(other, this, 'OR');
   }
 
   /// Database greater than operator.
   Expression operator >(dynamic other) {
-    if (other is! Expression) other = DatabasePoolManager.encoder.convert(other);
+    if (other is! Expression)
+      other = DatabasePoolManager.encoder.convert(other);
     return Expression('($this > $other)');
   }
 
   /// Database greater or equal than operator.
   Expression operator >=(dynamic other) {
-    if (other is! Expression) other = DatabasePoolManager.encoder.convert(other);
+    if (other is! Expression)
+      other = DatabasePoolManager.encoder.convert(other);
     return Expression('($this >= $other)');
   }
 
   /// Database less than operator.
   Expression operator <(dynamic other) {
-    if (other is! Expression) other = DatabasePoolManager.encoder.convert(other);
+    if (other is! Expression)
+      other = DatabasePoolManager.encoder.convert(other);
     return Expression('($this < $other)');
   }
 
   /// Database less or equal than operator.
   Expression operator <=(dynamic other) {
-    if (other is! Expression) other = DatabasePoolManager.encoder.convert(other);
+    if (other is! Expression)
+      other = DatabasePoolManager.encoder.convert(other);
     return Expression('($this <= $other)');
   }
 }
@@ -81,7 +90,8 @@ abstract class Column extends Expression {
 
   /// Creates an [Expression] to Add custom where query
   /// See Postgresql docs for more info.
-  Expression whereQuery(String query) {
+  Expression whereQuery(String query, [bool enabled = true]) {
+    if (!enabled) return Expression('');
     return Expression('"$columnName" = $query');
   }
 }
@@ -150,7 +160,8 @@ class ColumnDouble extends Column {
 
   /// Creates an [Expression] checking if the value Exist in List
   /// See Postgresql docs for more info.
-  Expression contains(List<double> listOfDouble, {bool isAny = true,bool enabled = true}) {
+  Expression contains(List<double> listOfDouble,
+      {bool isAny = true, bool enabled = true}) {
     if (!enabled) return Expression('');
     return Expression('"$columnName" = ANY(array$listOfDouble)');
   }

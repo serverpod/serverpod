@@ -663,8 +663,7 @@ Current type was $T''');
     columnsList.remove('id');
     var ids = allValueList.map((e) => e.first).toSet();
     if (ids.contains(null) && ids.length > 1) {
-      print('Id must be null or not null for all values');
-      return false;
+      throw ('Id must be null or not null for all values');
     }
     ids.removeWhere((e) => e.toString().toLowerCase() == 'null');
     String idText = ids.isEmpty ? '' : '"id" ,';
