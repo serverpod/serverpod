@@ -7,3 +7,6 @@ fields:
   active: int
   closing: int
   idle: int
+indexes:
+  serverpod_health_metric_timestamp_idx:
+    fields: timestamp

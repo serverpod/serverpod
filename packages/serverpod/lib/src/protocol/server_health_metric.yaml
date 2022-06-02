@@ -6,3 +6,6 @@ fields:
   timestamp: DateTime
   isHealthy: bool
   value: double
+indexes:
+  serverpod_health_metric_timestamp_idx:
+    fields: timestamp
