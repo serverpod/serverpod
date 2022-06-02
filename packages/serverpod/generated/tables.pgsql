@@ -181,7 +181,7 @@ CREATE TABLE serverpod_health_connection_info (
 ALTER TABLE ONLY serverpod_health_connection_info
   ADD CONSTRAINT serverpod_health_connection_info_pkey PRIMARY KEY (id);
 
-CREATE INDEX serverpod_health_metric_timestamp_idx ON serverpod_health_connection_info USING btree ("timestamp");
+CREATE UNIQUE INDEX serverpod_health_connection_info_timestamp_idx ON serverpod_health_connection_info USING btree ("timestamp", "serverId", "type");
 
 
 --
@@ -200,7 +200,7 @@ CREATE TABLE serverpod_health_metric (
 ALTER TABLE ONLY serverpod_health_metric
   ADD CONSTRAINT serverpod_health_metric_pkey PRIMARY KEY (id);
 
-CREATE INDEX serverpod_health_metric_timestamp_idx ON serverpod_health_metric USING btree ("timestamp");
+CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON serverpod_health_metric USING btree ("timestamp", "serverId", "name");
 
 
 --

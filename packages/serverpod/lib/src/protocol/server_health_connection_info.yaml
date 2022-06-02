@@ -8,5 +8,6 @@ fields:
   closing: int
   idle: int
 indexes:
-  serverpod_health_metric_timestamp_idx:
-    fields: timestamp
+  serverpod_health_connection_info_timestamp_idx:
+    fields: timestamp, serverId, type
+    unique: true

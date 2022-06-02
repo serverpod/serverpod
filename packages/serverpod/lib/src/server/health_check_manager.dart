@@ -72,7 +72,7 @@ class _HealthCheckFutureCall extends FutureCall {
 
 Duration _timeUntilNextMinute() {
   // Add a second to make sure we don't end up on the same minute.
-  var now = DateTime.now().toUtc().add(const Duration(seconds: 1));
+  var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
   var next =
       DateTime.utc(now.year, now.month, now.day, now.hour, now.minute).add(
     const Duration(minutes: 1),

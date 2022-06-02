@@ -8,4 +8,5 @@ fields:
   value: double
 indexes:
   serverpod_health_metric_timestamp_idx:
-    fields: timestamp
+    fields: timestamp, serverId, name
+    unique: true
