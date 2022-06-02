@@ -155,11 +155,13 @@ class InsightsEndpoint extends Endpoint {
     var metrics = await ServerHealthMetric.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
+      orderBy: ServerHealthMetric.t.timestamp,
     );
 
     var connectionInfos = await ServerHealthConnectionInfo.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
+      orderBy: ServerHealthMetric.t.timestamp,
     );
 
     return ServerHealthResult(
