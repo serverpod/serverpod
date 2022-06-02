@@ -17,25 +17,27 @@ class Expression {
     return expression;
   }
 
-  Expression? _validate(Expression other) {
-    if (other.expression.isEmpty) {
-      return Expression('($this)');
+  Expression _getvalidExpression(
+      Expression one, Expression two, String operator) {
+    if (one.expression.isEmpty) {
+      return Expression('($two)');
+    } else if (two.expression.isEmpty) {
+      return Expression('($one)');
     }
-    return null;
+    return Expression('($one $operator $two)');
   }
 
   /// Database AND operator.
   Expression operator &(dynamic other) {
     assert(other is Expression);
-    return _validate(other) ?? Expression('($this AND $other)');
+    return _getvalidExpression(other, this, 'AND');
   }
 
   /// Database OR operator.
   Expression operator |(dynamic other) {
     assert(other is Expression);
-    return _validate(other) ?? Expression('($this OR $other)');
+    return _getvalidExpression(other, this, 'OR');
   }
-
   /// Database greater than operator.
   Expression operator >(dynamic other) {
     if (other is! Expression) other = DatabasePoolManager.encoder.convert(other);
