@@ -491,6 +491,61 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'getDistinctTypesValue': MethodConnector(
+          name: 'getDistinctTypesValue',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .getDistinctTypesValue(
+              session,
+            );
+          },
+        ),
+        'getDistinctTypesValueOnly': MethodConnector(
+          name: 'getDistinctTypesValueOnly',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .getDistinctTypesValueOnly(
+              session,
+            );
+          },
+        ),
+        'optionalWhereQuery': MethodConnector(
+          name: 'optionalWhereQuery',
+          params: {
+            'id': ParameterDescription(name: 'id', type: int, nullable: true),
+            'aString': ParameterDescription(
+                name: 'aString', type: String, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .optionalWhereQuery(
+              session,
+              params['id'],
+              params['aString'],
+            );
+          },
+        ),
+        'getRegExTypes': MethodConnector(
+          name: 'getRegExTypes',
+          params: {
+            'regEx': ParameterDescription(
+                name: 'regEx', type: String, nullable: false),
+            'caseSensitive': ParameterDescription(
+                name: 'caseSensitive', type: bool, nullable: false),
+            'notMatch': ParameterDescription(
+                name: 'notMatch', type: bool, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase).getRegExTypes(
+              session,
+              params['regEx'],
+              params['caseSensitive'],
+              params['notMatch'],
+            );
+          },
+        ),
         'getTypes': MethodConnector(
           name: 'getTypes',
           params: {
@@ -500,6 +555,20 @@ class Endpoints extends EndpointDispatch {
             return (endpoints['basicDatabase'] as BasicDatabase).getTypes(
               session,
               params['id'],
+            );
+          },
+        ),
+        'getTypesWithWhereQuery': MethodConnector(
+          name: 'getTypesWithWhereQuery',
+          params: {
+            'idQuery': ParameterDescription(
+                name: 'idQuery', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .getTypesWithWhereQuery(
+              session,
+              params['idQuery'],
             );
           },
         ),
@@ -661,6 +730,16 @@ class Endpoints extends EndpointDispatch {
                 .getObjectWithObject(
               session,
               params['id'],
+            );
+          },
+        ),
+        'storeListOfTypes': MethodConnector(
+          name: 'storeListOfTypes',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .storeListOfTypes(
+              session,
             );
           },
         ),
@@ -1026,17 +1105,7 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {
-        'streamOpened': MethodConnector(
-          name: 'streamOpened',
-          params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['streaming'] as StreamingEndpoint).streamOpened(
-              session,
-            );
-          },
-        ),
-      },
+      methodConnectors: {},
     );
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()

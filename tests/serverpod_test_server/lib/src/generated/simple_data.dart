@@ -160,6 +160,44 @@ class SimpleData extends TableRow {
     return session.db.insert(row, transaction: transaction);
   }
 
+  static Future<void> insertOrupdateBulk(
+    Session session,
+    List<SimpleData> row, {
+    Transaction? transaction,
+  }) async {
+    return session.db
+        .insertOrupdateBulk(row, SimpleData.t, transaction: transaction);
+  }
+
+  static Future<List> findDistinctValue(
+    Session session, {
+    SimpleDataExpressionBuilder? where,
+    List<Column>? columns,
+    bool? returnAsList,
+    bool? isDistinct,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findDistinctValue<SimpleData>(
+      where: where != null ? where(SimpleData.t) : null,
+      columns: columns,
+      returnAsList: returnAsList,
+      isDistinct: isDistinct,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
   static Future<int> count(
     Session session, {
     SimpleDataExpressionBuilder? where,

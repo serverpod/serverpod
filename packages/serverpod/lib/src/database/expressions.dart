@@ -96,7 +96,7 @@ abstract class Column extends Expression {
   /// See Postgresql docs for more info.
   Expression whereQuery(String query, [bool enabled = true]) {
     if (!enabled) return Expression('');
-    return Expression('"$columnName" = $query');
+    return Expression('"$columnName" $query');
   }
 }
 

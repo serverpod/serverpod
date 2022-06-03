@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
@@ -10,9 +12,49 @@ class BasicDatabase extends Endpoint {
     return types.id;
   }
 
+  Future<String> getDistinctTypesValue(Session session) async {
+    var responce = await Types.findDistinctValue(session,
+        isDistinct: true,
+        returnAsList: false,
+        columns: [Types.t.anInt, Types.t.aString]);
+    return jsonEncode(responce);
+  }
+
+  Future<String> getDistinctTypesValueOnly(Session session) async {
+    var responce = await Types.findDistinctValue(session,
+        isDistinct: true,
+        returnAsList: true,
+        columns: [Types.t.anInt, Types.t.aString]);
+    return jsonEncode(responce);
+  }
+
+  Future<Types?> optionalWhereQuery(
+      Session session, int? id, String? aString) async {
+    return await Types.findSingleRow(session,
+        where: (t) =>
+            t.id.equals(id, id != null) &
+            t.aString.equals(aString, aString != null));
+  }
+
+  Future<int?> getRegExTypes(
+      Session session, String regEx, bool caseSensitive, bool notMatch) async {
+    var types = await Types.count(
+      session,
+      where: (t) => t.aString
+          .regex(regEx, caseSensitive: caseSensitive, notMatch: notMatch),
+    );
+    return types;
+  }
+
   Future<Types?> getTypes(Session session, int id) async {
     var types = await Types.findById(session, id);
     return types;
+  }
+
+  Future<int?> getTypesWithWhereQuery(Session session, String idQuery) async {
+    var count =
+        await Types.count(session, where: (t) => t.id.whereQuery(idQuery));
+    return count;
   }
 
   Future<int?> getTypesRawQuery(Session session, int id) async {
@@ -112,5 +154,24 @@ class BasicDatabase extends Endpoint {
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {
     return await ObjectWithObject.findById(session, id);
+  }
+
+  Future<bool> storeListOfTypes(Session session) async {
+    List<Types> newTypesWithId = [
+      Types(id: 1111, aString: 'Test'),
+      Types(id: 2222, aString: 'Test')
+    ];
+    await Types.insertOrupdateBulk(session, newTypesWithId);
+    List<Types> typesWithNewValue = [
+      Types(aString: 'New_Test_1'),
+      Types(aString: 'New_Test_2')
+    ];
+    await Types.insertOrupdateBulk(session, typesWithNewValue);
+    List<Types> updateTypes = [
+      Types(id: 1111, aString: 'Test_Update'),
+      Types(id: 2222, aString: 'Test_Update')
+    ];
+    await Types.insertOrupdateBulk(session, updateTypes);
+    return true;
   }
 }
