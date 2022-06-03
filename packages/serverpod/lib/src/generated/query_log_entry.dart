@@ -22,7 +22,7 @@ class QueryLogEntry extends TableRow {
 
   @override
   int? id;
-  late int serverId;
+  late String serverId;
   late int sessionLogId;
   late String query;
   late double duration;
@@ -239,7 +239,7 @@ class QueryLogEntryTable extends Table {
   @override
   String tableName = 'serverpod_query_log';
   final id = ColumnInt('id');
-  final serverId = ColumnInt('serverId');
+  final serverId = ColumnString('serverId');
   final sessionLogId = ColumnInt('sessionLogId');
   final query = ColumnString('query');
   final duration = ColumnDouble('duration');

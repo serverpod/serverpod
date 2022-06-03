@@ -19,7 +19,7 @@ class FutureCallEntry extends SerializableEntity {
   late String name;
   late DateTime time;
   String? serializedObject;
-  late int serverId;
+  late String serverId;
   String? identifier;
 
   FutureCallEntry({

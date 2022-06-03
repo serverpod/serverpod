@@ -12,50 +12,55 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class ServerHealthMetric extends TableRow {
+class ServerHealthConnectionInfo extends TableRow {
   @override
-  String get className => 'ServerHealthMetric';
+  String get className => 'ServerHealthConnectionInfo';
   @override
-  String get tableName => 'serverpod_health_metric';
+  String get tableName => 'serverpod_health_connection_info';
 
-  static final t = ServerHealthMetricTable();
+  static final t = ServerHealthConnectionInfoTable();
 
   @override
   int? id;
-  late String name;
   late String serverId;
+  late int type;
   late DateTime timestamp;
-  late bool isHealthy;
-  late double value;
+  late int active;
+  late int closing;
+  late int idle;
 
-  ServerHealthMetric({
+  ServerHealthConnectionInfo({
     this.id,
-    required this.name,
     required this.serverId,
+    required this.type,
     required this.timestamp,
-    required this.isHealthy,
-    required this.value,
+    required this.active,
+    required this.closing,
+    required this.idle,
   });
 
-  ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
+  ServerHealthConnectionInfo.fromSerialization(
+      Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    name = _data['name']!;
     serverId = _data['serverId']!;
+    type = _data['type']!;
     timestamp = DateTime.tryParse(_data['timestamp'])!;
-    isHealthy = _data['isHealthy']!;
-    value = _data['value']!;
+    active = _data['active']!;
+    closing = _data['closing']!;
+    idle = _data['idle']!;
   }
 
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'name': name,
       'serverId': serverId,
+      'type': type,
       'timestamp': timestamp.toUtc().toIso8601String(),
-      'isHealthy': isHealthy,
-      'value': value,
+      'active': active,
+      'closing': closing,
+      'idle': idle,
     });
   }
 
@@ -63,11 +68,12 @@ class ServerHealthMetric extends TableRow {
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
-      'name': name,
       'serverId': serverId,
+      'type': type,
       'timestamp': timestamp.toUtc().toIso8601String(),
-      'isHealthy': isHealthy,
-      'value': value,
+      'active': active,
+      'closing': closing,
+      'idle': idle,
     });
   }
 
@@ -75,11 +81,12 @@ class ServerHealthMetric extends TableRow {
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
-      'name': name,
       'serverId': serverId,
+      'type': type,
       'timestamp': timestamp.toUtc().toIso8601String(),
-      'isHealthy': isHealthy,
-      'value': value,
+      'active': active,
+      'closing': closing,
+      'idle': idle,
     });
   }
 
@@ -89,29 +96,32 @@ class ServerHealthMetric extends TableRow {
       case 'id':
         id = value;
         return;
-      case 'name':
-        name = value;
-        return;
       case 'serverId':
         serverId = value;
+        return;
+      case 'type':
+        type = value;
         return;
       case 'timestamp':
         timestamp = value;
         return;
-      case 'isHealthy':
-        isHealthy = value;
+      case 'active':
+        active = value;
         return;
-      case 'value':
-        value = value;
+      case 'closing':
+        closing = value;
+        return;
+      case 'idle':
+        idle = value;
         return;
       default:
         throw UnimplementedError();
     }
   }
 
-  static Future<List<ServerHealthMetric>> find(
+  static Future<List<ServerHealthConnectionInfo>> find(
     Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    ServerHealthConnectionInfoExpressionBuilder? where,
     int? limit,
     int? offset,
     Column? orderBy,
@@ -120,8 +130,8 @@ class ServerHealthMetric extends TableRow {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return session.db.find<ServerHealthMetric>(
-      where: where != null ? where(ServerHealthMetric.t) : null,
+    return session.db.find<ServerHealthConnectionInfo>(
+      where: where != null ? where(ServerHealthConnectionInfo.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -132,17 +142,17 @@ class ServerHealthMetric extends TableRow {
     );
   }
 
-  static Future<ServerHealthMetric?> findSingleRow(
+  static Future<ServerHealthConnectionInfo?> findSingleRow(
     Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    ServerHealthConnectionInfoExpressionBuilder? where,
     int? offset,
     Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<ServerHealthMetric>(
-      where: where != null ? where(ServerHealthMetric.t) : null,
+    return session.db.findSingleRow<ServerHealthConnectionInfo>(
+      where: where != null ? where(ServerHealthConnectionInfo.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -151,24 +161,25 @@ class ServerHealthMetric extends TableRow {
     );
   }
 
-  static Future<ServerHealthMetric?> findById(Session session, int id) async {
-    return session.db.findById<ServerHealthMetric>(id);
+  static Future<ServerHealthConnectionInfo?> findById(
+      Session session, int id) async {
+    return session.db.findById<ServerHealthConnectionInfo>(id);
   }
 
   static Future<int> delete(
     Session session, {
-    required ServerHealthMetricExpressionBuilder where,
+    required ServerHealthConnectionInfoExpressionBuilder where,
     Transaction? transaction,
   }) async {
-    return session.db.delete<ServerHealthMetric>(
-      where: where(ServerHealthMetric.t),
+    return session.db.delete<ServerHealthConnectionInfo>(
+      where: where(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
   }
 
   static Future<bool> deleteRow(
     Session session,
-    ServerHealthMetric row, {
+    ServerHealthConnectionInfo row, {
     Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -179,7 +190,7 @@ class ServerHealthMetric extends TableRow {
 
   static Future<bool> update(
     Session session,
-    ServerHealthMetric row, {
+    ServerHealthConnectionInfo row, {
     Transaction? transaction,
   }) async {
     return session.db.update(
@@ -190,7 +201,7 @@ class ServerHealthMetric extends TableRow {
 
   static Future<void> insert(
     Session session,
-    ServerHealthMetric row, {
+    ServerHealthConnectionInfo row, {
     Transaction? transaction,
   }) async {
     return session.db.insert(row, transaction: transaction);
@@ -198,13 +209,13 @@ class ServerHealthMetric extends TableRow {
 
   static Future<int> count(
     Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    ServerHealthConnectionInfoExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return session.db.count<ServerHealthMetric>(
-      where: where != null ? where(ServerHealthMetric.t) : null,
+    return session.db.count<ServerHealthConnectionInfo>(
+      where: where != null ? where(ServerHealthConnectionInfo.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
@@ -212,31 +223,35 @@ class ServerHealthMetric extends TableRow {
   }
 }
 
-typedef ServerHealthMetricExpressionBuilder = Expression Function(
-    ServerHealthMetricTable t);
+typedef ServerHealthConnectionInfoExpressionBuilder = Expression Function(
+    ServerHealthConnectionInfoTable t);
 
-class ServerHealthMetricTable extends Table {
-  ServerHealthMetricTable() : super(tableName: 'serverpod_health_metric');
+class ServerHealthConnectionInfoTable extends Table {
+  ServerHealthConnectionInfoTable()
+      : super(tableName: 'serverpod_health_connection_info');
 
   @override
-  String tableName = 'serverpod_health_metric';
+  String tableName = 'serverpod_health_connection_info';
   final id = ColumnInt('id');
-  final name = ColumnString('name');
   final serverId = ColumnString('serverId');
+  final type = ColumnInt('type');
   final timestamp = ColumnDateTime('timestamp');
-  final isHealthy = ColumnBool('isHealthy');
-  final value = ColumnDouble('value');
+  final active = ColumnInt('active');
+  final closing = ColumnInt('closing');
+  final idle = ColumnInt('idle');
 
   @override
   List<Column> get columns => [
         id,
-        name,
         serverId,
+        type,
         timestamp,
-        isHealthy,
-        value,
+        active,
+        closing,
+        idle,
       ];
 }
 
-@Deprecated('Use ServerHealthMetricTable.t instead.')
-ServerHealthMetricTable tServerHealthMetric = ServerHealthMetricTable();
+@Deprecated('Use ServerHealthConnectionInfoTable.t instead.')
+ServerHealthConnectionInfoTable tServerHealthConnectionInfo =
+    ServerHealthConnectionInfoTable();

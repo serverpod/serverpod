@@ -5,22 +5,23 @@ import '../generated/protocol.dart';
 
 /// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
-  var metrics = <ServerHealthMetric>[];
+  var now = DateTime.now().toUtc();
+  now = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute);
+
+  var result = await defaultHealthCheckMetrics(pod, now);
+
   if (pod.healthCheckHandler != null) {
-    metrics.addAll(await pod.healthCheckHandler!(pod));
+    result.metrics.addAll(await pod.healthCheckHandler!(pod, now));
   }
 
-  metrics.addAll(await defaultHealthCheckMetrics(pod));
-
-  return ServerHealthResult(
-    serverName: pod.server.name,
-    metrics: metrics,
-  );
+  return result;
 }
 
 /// Performs all default health checks on the [Serverpod].
-Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
-    Serverpod pod) async {
+Future<ServerHealthResult> defaultHealthCheckMetrics(
+  Serverpod pod,
+  DateTime timestamp,
+) async {
   /*
   // Check cpu
   double psUsage = 0.0;
@@ -108,9 +109,29 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
   catch (e) {}
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
-  var connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
 
-  return <ServerHealthMetric>[
+  return ServerHealthResult(
+    metrics: [
+      ServerHealthMetric(
+        serverId: pod.serverId,
+        name: 'serverpod_database',
+        timestamp: timestamp,
+        value: dbResponseTime,
+        isHealthy: dbHealthy,
+      ),
+    ],
+    connectionInfos: [
+      ServerHealthConnectionInfo(
+        serverId: pod.serverId,
+        type: 0,
+        timestamp: timestamp,
+        active: connectionsInfo.active,
+        closing: connectionsInfo.closing,
+        idle: connectionsInfo.idle,
+      )
+    ],
+  );
+
 //    ServerHealthMetric(
 //      name: 'serverpod_cpu',
 //      value: psUsage,
@@ -121,50 +142,4 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
 //      value: memUsage,
 //      isHealthy: memUsageHealthy,
 //    ),
-    ServerHealthMetric(
-      name: 'serverpod_database',
-      value: dbResponseTime,
-      isHealthy: dbHealthy,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_active',
-      value: connectionsInfo.active.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_closing',
-      value: connectionsInfo.closing.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_idle',
-      value: connectionsInfo.idle.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_total',
-      value: connectionsInfo.total.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_active',
-      value: connectionsInfoService.active.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_closing',
-      value: connectionsInfoService.closing.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_idle',
-      value: connectionsInfoService.idle.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_total',
-      value: connectionsInfoService.total.toDouble(),
-      isHealthy: true,
-    ),
-  ];
 }

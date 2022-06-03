@@ -18,7 +18,7 @@ class LogEntry extends SerializableEntity {
   int? id;
   late int sessionLogId;
   String? reference;
-  late int serverId;
+  late String serverId;
   late DateTime time;
   late int logLevel;
   late String message;

@@ -11,7 +11,7 @@ class WebserverConfig {
   final String runMode;
 
   /// The server id of this server.
-  final int serverId;
+  final String serverId;
 
   /// The port the webserver is running on.
   int? port;
@@ -26,7 +26,8 @@ class WebserverConfig {
     var doc = loadYaml(data);
 
     Map clusterData = doc['cluster'];
-    Map serverData = clusterData[serverId];
+    // TODO: Fix in future update
+    Map serverData = clusterData[0];
 
     port = serverData['port'];
     hostname = serverData['hostname'];

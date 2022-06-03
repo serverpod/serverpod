@@ -281,8 +281,10 @@ void main(List<String> args) async {
     //   return;
     // }
     if (results.command!.name == cmdServerAddress) {
-      var configInfo = ConfigInfo(results.command!['config'],
-          serverId: int.tryParse(results.command!['id'])!);
+      var configInfo = ConfigInfo(
+        results.command!['config'],
+        serverId: results.command!['id'],
+      );
       configInfo.printAddress();
       _analytics.cleanUp();
       return;

@@ -64,7 +64,7 @@ CREATE TABLE serverpod_future_call (
   "name" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "serializedObject" text,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "identifier" text
 );
 
@@ -84,7 +84,7 @@ CREATE TABLE serverpod_log (
   "id" serial,
   "sessionLogId" integer NOT NULL,
   "reference" text,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "logLevel" integer NOT NULL,
   "message" text NOT NULL,
@@ -120,7 +120,7 @@ CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON serverpod_method USI
 
 CREATE TABLE serverpod_query_log (
   "id" serial,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "sessionLogId" integer NOT NULL,
   "query" text NOT NULL,
   "duration" double precision NOT NULL,
@@ -165,12 +165,51 @@ ALTER TABLE ONLY serverpod_runtime_settings
 
 
 --
+-- Class ServerHealthConnectionInfo as table serverpod_health_connection_info
+--
+
+CREATE TABLE serverpod_health_connection_info (
+  "id" serial,
+  "serverId" text NOT NULL,
+  "type" integer NOT NULL,
+  "timestamp" timestamp without time zone NOT NULL,
+  "active" integer NOT NULL,
+  "closing" integer NOT NULL,
+  "idle" integer NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_health_connection_info
+  ADD CONSTRAINT serverpod_health_connection_info_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_health_connection_info_timestamp_idx ON serverpod_health_connection_info USING btree ("timestamp", "serverId", "type");
+
+
+--
+-- Class ServerHealthMetric as table serverpod_health_metric
+--
+
+CREATE TABLE serverpod_health_metric (
+  "id" serial,
+  "name" text NOT NULL,
+  "serverId" text NOT NULL,
+  "timestamp" timestamp without time zone NOT NULL,
+  "isHealthy" boolean NOT NULL,
+  "value" double precision NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_health_metric
+  ADD CONSTRAINT serverpod_health_metric_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON serverpod_health_metric USING btree ("timestamp", "serverId", "name");
+
+
+--
 -- Class SessionLogEntry as table serverpod_session_log
 --
 
 CREATE TABLE serverpod_session_log (
   "id" serial,
-  "serverId" integer NOT NULL,
+  "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "module" text,
   "endpoint" text,

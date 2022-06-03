@@ -2,7 +2,7 @@ class: QueryLogEntry
 table: serverpod_query_log
 
 fields:
-  serverId: int
+  serverId: String
   sessionLogId: int
   query: String
   duration: double

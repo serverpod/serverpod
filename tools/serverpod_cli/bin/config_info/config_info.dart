@@ -2,11 +2,11 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ConfigInfo {
-  int? serverId;
+  String? serverId;
   late ServerpodConfig config;
   ConfigInfo(String runMode, {this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
-    config = ServerpodConfig(runMode, serverId ?? 0, passwords);
+    config = ServerpodConfig(runMode, serverId ?? 'undefined', passwords);
   }
 
   Client createServiceClient() {

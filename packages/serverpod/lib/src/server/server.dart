@@ -16,7 +16,7 @@ class Server {
 
   /// The id of the server. If running in a cluster, all servers need unique
   /// ids.
-  final int serverId;
+  final String serverId;
 
   /// Port the server is listening on.
   final int port;
@@ -79,7 +79,7 @@ class Server {
     this.securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
-  }) : name = name ?? 'Server id $serverId';
+  }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
   Future<void> start() async {

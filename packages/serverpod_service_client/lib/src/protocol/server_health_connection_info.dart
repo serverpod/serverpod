@@ -11,45 +11,50 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class ServerHealthMetric extends SerializableEntity {
+class ServerHealthConnectionInfo extends SerializableEntity {
   @override
-  String get className => 'ServerHealthMetric';
+  String get className => 'ServerHealthConnectionInfo';
 
   int? id;
-  late String name;
   late String serverId;
+  late int type;
   late DateTime timestamp;
-  late bool isHealthy;
-  late double value;
+  late int active;
+  late int closing;
+  late int idle;
 
-  ServerHealthMetric({
+  ServerHealthConnectionInfo({
     this.id,
-    required this.name,
     required this.serverId,
+    required this.type,
     required this.timestamp,
-    required this.isHealthy,
-    required this.value,
+    required this.active,
+    required this.closing,
+    required this.idle,
   });
 
-  ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
+  ServerHealthConnectionInfo.fromSerialization(
+      Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
-    name = _data['name']!;
     serverId = _data['serverId']!;
+    type = _data['type']!;
     timestamp = DateTime.tryParse(_data['timestamp'])!;
-    isHealthy = _data['isHealthy']!;
-    value = _data['value']!;
+    active = _data['active']!;
+    closing = _data['closing']!;
+    idle = _data['idle']!;
   }
 
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
-      'name': name,
       'serverId': serverId,
+      'type': type,
       'timestamp': timestamp.toUtc().toIso8601String(),
-      'isHealthy': isHealthy,
-      'value': value,
+      'active': active,
+      'closing': closing,
+      'idle': idle,
     });
   }
 }
