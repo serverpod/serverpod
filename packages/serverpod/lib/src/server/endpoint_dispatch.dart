@@ -126,6 +126,7 @@ abstract class EndpointDispatch {
     } catch (e, stackTrace) {
       // Something did not work out
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      if (e is ServerpodServerException) return e;
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
     }
@@ -326,4 +327,23 @@ class ResultStatusCode extends Result {
   String toString() {
     return 'Status Code: $statusCode';
   }
+}
+
+/// The result of a failed [Endpoint] method call, with a custom status code & msg.
+class ServerpodServerException extends Result {
+  /// Description of the error.
+  final String errorDescription;
+
+  /// Description of the error.
+  final int statusCode;
+
+  /// Creates a new [ServerpodServerException] object.
+  ServerpodServerException(
+      {required this.errorDescription, required this.statusCode});
+
+  @override
+  String toString() => '$statusCode/$errorDescription';
+
+  /// to parse the errorDescription
+  String toJson() => json.encode(errorDescription);
 }
