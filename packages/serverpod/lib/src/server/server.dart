@@ -245,6 +245,11 @@ class Server {
       request.response.statusCode = result.statusCode;
       await request.response.close();
       return;
+    } else if (result is ServerpodServerException) {
+      request.response.statusCode = result.statusCode;
+      request.response.write(result.toJson());
+      await request.response.close();
+      return;
     } else if (result is ResultSuccess) {
       // Set content type.
       if (!result.sendByteDataAsRaw) {
