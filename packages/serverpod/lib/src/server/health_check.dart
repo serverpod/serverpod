@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'dart:math';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
+
+import 'package:system_resources/system_resources.dart';
 
 /// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
@@ -22,59 +25,16 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
   Serverpod pod,
   DateTime timestamp,
 ) async {
-  /*
-  // Check cpu
-  double psUsage = 0.0;
-  bool psUsageHealthy = false;
+  double? cpuLoad;
+  double? memoryUsage;
 
-  ProcessResult psResult;
   try {
-    // ps -A -o %cpu | awk '{s+=$1} END {print s}'
-    psResult = await Process.run('ps', ['-A', '-o', '%cpu']);
-    List<String> psStrs = psResult.stdout.toString().split('\n');
-    psStrs.removeAt(0);
-
-    for (var psStr in psStrs) {
-      psUsage += double.tryParse(psStr) ?? 0.0;
-    }
-    psUsageHealthy = true;
+    cpuLoad = SystemResources.cpuLoadAvg();
+    memoryUsage = SystemResources.memUsage();
+  } catch (e, stackTrace) {
+    stderr.writeln('CPU health check failed: $e');
+    stderr.writeln(stackTrace);
   }
-  catch(e, stackTrace) {
-    print('CPU Health check failed: $e');
-    print('memResult: $psResult');
-    print('stdout: ${psResult?.stdout}');
-    print('stderr: ${psResult?.stderr}');
-    print('$stackTrace');
-    print('Local stack trace');
-    print('${StackTrace.current}');
-  }
-
-  // Check memory usage
-  double memUsage = 0.0;
-  bool memUsageHealthy = false;
-
-  ProcessResult memResult;
-  try {
-    // ps -A -o %cpu | awk '{s+=$1} END {print s}'
-    memResult = await Process.run('ps', ['-A', '-o', '%mem']);
-    List<String> memStrs = memResult.stdout.toString().split('\n');
-    memStrs.removeAt(0);
-
-    for (var memStr in memStrs) {
-      memUsage += double.tryParse(memStr) ?? 0.0;
-    }
-    memUsageHealthy = true;
-  }
-  catch(e, stackTrace) {
-    print('CPU Health check failed: $e');
-    print('memResult: $memResult');
-    print('stdout: ${memResult?.stdout}');
-    print('stderr: ${memResult?.stderr}');
-    print('$stackTrace');
-    print('Local stack trace');
-    print('${StackTrace.current}');
-  }
-  */
 
   // Check database response time
   var dbResponseTime = 0.0;
@@ -119,6 +79,22 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         value: dbResponseTime,
         isHealthy: dbHealthy,
       ),
+      if (cpuLoad != null)
+        ServerHealthMetric(
+          serverId: pod.serverId,
+          name: 'serverpod_cpu',
+          timestamp: timestamp,
+          value: cpuLoad,
+          isHealthy: true,
+        ),
+      if (memoryUsage != null)
+        ServerHealthMetric(
+          serverId: pod.serverId,
+          name: 'serverpod_memory',
+          timestamp: timestamp,
+          value: memoryUsage,
+          isHealthy: true,
+        ),
     ],
     connectionInfos: [
       ServerHealthConnectionInfo(
