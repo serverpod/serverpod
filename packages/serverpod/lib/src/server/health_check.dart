@@ -51,7 +51,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
       number: rnd,
     );
 
-    var session = await pod.createSession();
+    var session = await pod.createSession(enableLogging: false);
     await databaseConnection.insert(entry, session: session);
 
     // Read entry
