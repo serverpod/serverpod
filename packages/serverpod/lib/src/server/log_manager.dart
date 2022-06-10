@@ -143,7 +143,9 @@ class LogManager {
         authenticatedUserId: authenticatedUserId,
       );
 
-      var tempSession = await session.serverpod.createSession();
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
       try {
         // var dbConn = DatabaseConnection(databaseConfig);
         await tempSession.db.insert(sessionLogEntry);
@@ -182,7 +184,7 @@ class LogManager {
         stderr.writeln('Current stacktrace:');
         stderr.writeln('${StackTrace.current}');
       }
-      await tempSession.close(logSession: false);
+      await tempSession.close();
 
       return sessionLogId;
     }

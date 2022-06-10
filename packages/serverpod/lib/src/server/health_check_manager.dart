@@ -32,7 +32,7 @@ class HealthCheckManager {
   }
 
   void _performHealthCheck() async {
-    var session = await _pod.createSession();
+    var session = await _pod.createSession(enableLogging: false);
 
     try {
       var result = await performHealthChecks(_pod);
@@ -49,7 +49,7 @@ class HealthCheckManager {
       stderr.write(stackTrace);
     }
 
-    await session.close(logSession: false);
+    await session.close();
 
     await _pod.reloadRuntimeSettings();
 

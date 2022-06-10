@@ -74,6 +74,8 @@ abstract class Session {
 
   bool _closed = false;
 
+  final bool enableLogging;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     required this.server,
@@ -82,6 +84,7 @@ abstract class Session {
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     String? futureCallName,
+    required this.enableLogging,
   }) {
     _startTime = DateTime.now();
     temporarySessionId = serverpod.logManager.nextTemporarySessionId();
@@ -132,7 +135,6 @@ abstract class Session {
   Future<int?> close({
     dynamic error,
     StackTrace? stackTrace,
-    bool logSession = true,
   }) async {
     if (_closed) return null;
     _closed = true;
@@ -144,7 +146,7 @@ abstract class Session {
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
         authenticatedUserId: _authenticatedUser,
-        logSession: logSession,
+        logSession: enableLogging,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -180,7 +182,13 @@ abstract class Session {
 class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
-  InternalSession({required Server server}) : super(server: server);
+  InternalSession({
+    required Server server,
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        );
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -213,7 +221,11 @@ class MethodCallSession extends Session {
     required this.endpointName,
     required this.httpRequest,
     String? authenticationKey,
-  }) : super(server: server) {
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        ) {
     // Read query parameters
     var queryParameters = <String, String>{};
     if (body != '' && body != 'null') {
@@ -255,7 +267,11 @@ class StreamingSession extends Session {
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-  }) : super(server: server) {
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        ) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -276,7 +292,11 @@ class FutureCallSession extends Session {
   FutureCallSession({
     required Server server,
     required this.futureCallName,
-  }) : super(server: server);
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        );
 }
 
 /// Collects methods for authenticating users.

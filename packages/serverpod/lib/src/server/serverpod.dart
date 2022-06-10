@@ -151,7 +151,7 @@ class Serverpod {
   }
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    var session = await createSession();
+    var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
           await session.db.findSingleRow<internal.RuntimeSettings>();
@@ -166,19 +166,19 @@ class Serverpod {
       await session.close(error: e, stackTrace: stackTrace);
       return;
     }
-    await session.close(logSession: false);
+    await session.close();
   }
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
-    var session = await createSession();
+    var session = await createSession(enableLogging: false);
     try {
       var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
       }
-      await session.close(logSession: false);
+      await session.close();
     } catch (e, stackTrace) {
       await session.close(error: e, stackTrace: stackTrace);
       return;
@@ -293,7 +293,7 @@ class Serverpod {
       }
 
       // Runtime settings
-      var session = await createSession();
+      var session = await createSession(enableLogging: false);
       try {
         _runtimeSettings =
             await session.db.findSingleRow<internal.RuntimeSettings>();
@@ -319,7 +319,7 @@ class Serverpod {
         stderr.writeln('$stackTrace');
       }
 
-      await session.close(logSession: false);
+      await session.close();
 
       // Connect to Redis
       if (redisController != null) {
@@ -433,8 +433,11 @@ class Serverpod {
   /// logging outside of sessions triggered by external events. If you are
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
-  Future<InternalSession> createSession() async {
-    var session = InternalSession(server: server);
+  Future<InternalSession> createSession({bool enableLogging = true}) async {
+    var session = InternalSession(
+      server: server,
+      enableLogging: enableLogging,
+    );
     return session;
   }
 

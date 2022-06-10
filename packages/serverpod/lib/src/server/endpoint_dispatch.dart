@@ -80,6 +80,7 @@ abstract class EndpointDispatch {
         body: body,
         endpointName: endpointName,
         httpRequest: request,
+        enableLogging: connector.endpoint.logSessions,
       );
     } catch (e) {
       return ResultInvalidParams('Malformed call: $uri');
@@ -117,7 +118,7 @@ abstract class EndpointDispatch {
       // Print session info
       // var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
 
-      await session.close(logSession: connector.endpoint.logSessions);
+      await session.close();
 
       return ResultSuccess(
         result,
