@@ -37,6 +37,8 @@ void main() {
 
       await serviceClient.insights.setRuntimeSettings(settings);
 
+      await Future.delayed(const Duration(seconds: 1));
+
       settings = await serviceClient.insights.getRuntimeSettings();
       expect(settings.logSettings.logFailedSessions, equals(false));
 

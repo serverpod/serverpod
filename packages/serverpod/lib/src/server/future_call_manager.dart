@@ -130,7 +130,9 @@ class FutureCallManager {
 
       // Remove the invoked calls
       if (rows.isNotEmpty) {
-        var tempSession = await _server.serverpod.createSession();
+        var tempSession = await _server.serverpod.createSession(
+          enableLogging: false,
+        );
         await tempSession.db.delete<FutureCallEntry>(
           where:
               FutureCallEntry.t.serverId.equals(tempSession.server.serverId) &
