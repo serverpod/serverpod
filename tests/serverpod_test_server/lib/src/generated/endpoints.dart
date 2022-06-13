@@ -723,6 +723,26 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'failedDatabaseQuery': MethodConnector(
+          name: 'failedDatabaseQuery',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint)
+                .failedDatabaseQuery(
+              session,
+            );
+          },
+        ),
+        'failedDatabaseQueryCaughtException': MethodConnector(
+          name: 'failedDatabaseQueryCaughtException',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint)
+                .failedDatabaseQueryCaughtException(
+              session,
+            );
+          },
+        ),
       },
     );
 
@@ -1026,17 +1046,7 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {
-        'streamOpened': MethodConnector(
-          name: 'streamOpened',
-          params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['streaming'] as StreamingEndpoint).streamOpened(
-              session,
-            );
-          },
-        ),
-      },
+      methodConnectors: {},
     );
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()

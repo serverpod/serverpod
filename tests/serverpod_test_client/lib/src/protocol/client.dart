@@ -450,6 +450,16 @@ class _EndpointFailedCalls extends EndpointRef {
     return await caller
         .callServerEndpoint('failedCalls', 'failedCall', 'void', {});
   }
+
+  Future<void> failedDatabaseQuery() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'failedDatabaseQuery', 'void', {});
+  }
+
+  Future<bool> failedDatabaseQueryCaughtException() async {
+    return await caller.callServerEndpoint(
+        'failedCalls', 'failedDatabaseQueryCaughtException', 'bool', {});
+  }
 }
 
 class _EndpointFutureCalls extends EndpointRef {
@@ -655,11 +665,6 @@ class _EndpointStreaming extends EndpointRef {
   String get name => 'streaming';
 
   _EndpointStreaming(EndpointCaller caller) : super(caller);
-
-  Future<void> streamOpened() async {
-    return await caller
-        .callServerEndpoint('streaming', 'streamOpened', 'void', {});
-  }
 }
 
 class _Modules {

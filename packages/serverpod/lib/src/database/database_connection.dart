@@ -603,6 +603,9 @@ Current type was $T''');
 
   void _logQuery(Session session, String query, DateTime startTime,
       {int? numRowsAffected, exception, StackTrace? trace}) {
+    // Use the current stack trace if there is no exception
+    trace ??= StackTrace.current;
+
     session.sessionLogs.queries.add(
       QueryLogEntry(
         sessionLogId: session.temporarySessionId,
@@ -612,7 +615,7 @@ Current type was $T''');
             DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
         numRows: numRowsAffected,
         error: exception?.toString(),
-        stackTrace: trace?.toString(),
+        stackTrace: trace.toString(),
       ),
     );
   }
