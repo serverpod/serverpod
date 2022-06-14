@@ -601,18 +601,37 @@ Current type was $T''');
     }
   }
 
-  void _logQuery(Session session, String query, DateTime startTime,
-      {int? numRowsAffected, exception, StackTrace? trace}) {
-    // Use the current stack trace if there is no exception
+  void _logQuery(
+    Session session,
+    String query,
+    DateTime startTime, {
+    int? numRowsAffected,
+    exception,
+    StackTrace? trace,
+  }) {
+    // Check if this query should be logged.
+    var duration =
+        DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+    var shouldLog = session.serverpod.logManager.shouldLogQuery(
+      session: session,
+      duration: duration,
+      failed: exception != null,
+    );
+
+    if (!shouldLog) {
+      return;
+    }
+
+    // Use the current stack trace if there is no exception.
     trace ??= StackTrace.current;
 
+    // Log the query.
     session.sessionLogs.queries.add(
       QueryLogEntry(
         sessionLogId: session.temporarySessionId,
         serverId: session.server.serverId,
         query: query,
-        duration:
-            DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
+        duration: duration,
         numRows: numRowsAffected,
         error: exception?.toString(),
         stackTrace: trace.toString(),

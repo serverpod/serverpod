@@ -87,12 +87,43 @@ class LogManager {
     return logEntry;
   }
 
+  /// Returns true if a query should be logged based on the current session and
+  /// its duration and if it failed.
+  bool shouldLogQuery({
+    required Session session,
+    required double duration,
+    required bool failed,
+  }) {
+    var logSettings = getLogSettingsForSession(session);
+    if (logSettings.logAllQueries) {
+      return true;
+    }
+    if (logSettings.logSlowQueries &&
+        duration >= logSettings.slowQueryDuration) {
+      return true;
+    }
+    if (logSettings.logFailedQueries && failed) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Returns true if a log entry should be stored for the provided session.
+  bool shouldLogEntry({
+    required Session session,
+    required LogEntry entry,
+  }) {
+    var logSettings = getLogSettingsForSession(session);
+    var serverLogLevel = (logSettings.logLevel);
+
+    return entry.logLevel >= serverLogLevel;
+  }
+
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
   Future<int?> finalizeSessionLog(
     Session session, {
     int? authenticatedUserId,
-    bool logSession = true,
     String? exception,
     StackTrace? stackTrace,
   }) async {
@@ -100,13 +131,14 @@ class LogManager {
     _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
 
     // Check if we should log to database
-    if (!logSession) return null;
+    if (!session.enableLogging) return null;
 
     // Log session to database
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     var logSettings = getLogSettingsForSession(session);
 
+    // Output to console in development mode.
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
@@ -127,7 +159,9 @@ class LogManager {
 
     if (logSettings.logAllSessions ||
         logSettings.logSlowSessions && isSlow ||
-        logSettings.logFailedSessions && exception != null) {
+        logSettings.logFailedSessions && exception != null ||
+        cachedEntry.queries.isNotEmpty ||
+        cachedEntry.logEntries.isNotEmpty) {
       int? sessionLogId;
 
       var sessionLogEntry = SessionLogEntry(
@@ -147,27 +181,21 @@ class LogManager {
         enableLogging: false,
       );
       try {
-        // var dbConn = DatabaseConnection(databaseConfig);
         await tempSession.db.insert(sessionLogEntry);
 
         sessionLogId = sessionLogEntry.id!;
 
+        // Write log entries
         for (var logInfo in cachedEntry.logEntries) {
-          await _log(logInfo, sessionLogId, logSettings, tempSession,
-              session.serverpod.runMode);
+          logInfo.sessionLogId = sessionLogId;
+          logInfo.serverId = session.server.serverId;
+          await tempSession.db.insert(logInfo);
         }
-
+        // Write queries
         for (var queryInfo in cachedEntry.queries) {
-          if (logSettings.logAllQueries ||
-              logSettings.logSlowQueries &&
-                  queryInfo.duration >
-                      runtimeSettings.logSettings.slowQueryDuration ||
-              logSettings.logFailedQueries && queryInfo.error != null) {
-            // Log query
-            queryInfo.sessionLogId = sessionLogId;
-            queryInfo.serverId = session.server.serverId;
-            await tempSession.db.insert(queryInfo);
-          }
+          queryInfo.sessionLogId = sessionLogId;
+          queryInfo.serverId = session.server.serverId;
+          await tempSession.db.insert(queryInfo);
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
@@ -218,29 +246,6 @@ class LogManager {
       return session.futureCallName;
     }
     return null;
-  }
-
-  Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings,
-      Session tempSession, String runMode) async {
-    var serverLogLevel = (logSettings.logLevel);
-
-    if (entry.logLevel >= serverLogLevel) {
-      entry.sessionLogId = sessionLogId;
-
-      try {
-        await tempSession.db.insert(entry);
-      } catch (e) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
-      }
-    }
-
-    if (runMode == ServerpodRunMode.development) {
-      stdout.writeln(
-          '${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
   }
 
   /// Returns a list of logs for all open sessions.

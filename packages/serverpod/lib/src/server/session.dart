@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/message_central.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -146,7 +147,6 @@ abstract class Session {
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
         authenticatedUserId: _authenticatedUser,
-        logSession: enableLogging,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -157,22 +157,39 @@ abstract class Session {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
-  void log(String message,
-      {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
+  void log(
+    String message, {
+    LogLevel? level,
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) {
     assert(
-        !_closed, 'Session is closed, and logging can no longer be performed.');
-
-    sessionLogs.logEntries.add(
-      LogEntry(
-        sessionLogId: temporarySessionId,
-        serverId: server.serverId,
-        logLevel: (level ?? LogLevel.info).index,
-        message: message,
-        time: DateTime.now(),
-        error: exception != null ? '$exception' : null,
-        stackTrace: stackTrace != null ? '$stackTrace' : null,
-      ),
+      !_closed,
+      'Session is closed, and logging can no longer be performed.',
     );
+
+    var entry = LogEntry(
+      sessionLogId: temporarySessionId,
+      serverId: server.serverId,
+      logLevel: (level ?? LogLevel.info).index,
+      message: message,
+      time: DateTime.now(),
+      error: exception != null ? '$exception' : null,
+      stackTrace: stackTrace != null ? '$stackTrace' : null,
+    );
+
+    if (serverpod.runMode == ServerpodRunMode.development) {
+      stdout.writeln(
+          '${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+      if (entry.error != null) stdout.writeln(entry.error);
+      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
+    }
+
+    if (!serverpod.logManager.shouldLogEntry(session: this, entry: entry)) {
+      return;
+    }
+
+    sessionLogs.logEntries.add(entry);
   }
 }
 
