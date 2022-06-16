@@ -12,78 +12,70 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class SessionLogEntry extends TableRow {
+class MessageLogEntry extends TableRow {
   @override
-  String get className => 'SessionLogEntry';
+  String get className => 'MessageLogEntry';
   @override
-  String get tableName => 'serverpod_session_log';
+  String get tableName => 'serverpod_message_log';
 
-  static final t = SessionLogEntryTable();
+  static final t = MessageLogEntryTable();
 
   @override
   int? id;
+  late int sessionLogId;
   late String serverId;
-  late DateTime time;
-  String? module;
-  String? endpoint;
-  String? method;
-  double? duration;
-  int? numQueries;
-  bool? slow;
+  late int messageId;
+  late String endpoint;
+  late String messageName;
+  late double duration;
   String? error;
   String? stackTrace;
-  int? authenticatedUserId;
-  bool? isOpen;
+  late bool slow;
+  late int order;
 
-  SessionLogEntry({
+  MessageLogEntry({
     this.id,
+    required this.sessionLogId,
     required this.serverId,
-    required this.time,
-    this.module,
-    this.endpoint,
-    this.method,
-    this.duration,
-    this.numQueries,
-    this.slow,
+    required this.messageId,
+    required this.endpoint,
+    required this.messageName,
+    required this.duration,
     this.error,
     this.stackTrace,
-    this.authenticatedUserId,
-    this.isOpen,
+    required this.slow,
+    required this.order,
   });
 
-  SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
+  MessageLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
+    sessionLogId = _data['sessionLogId']!;
     serverId = _data['serverId']!;
-    time = DateTime.tryParse(_data['time'])!;
-    module = _data['module'];
-    endpoint = _data['endpoint'];
-    method = _data['method'];
-    duration = _data['duration'];
-    numQueries = _data['numQueries'];
-    slow = _data['slow'];
+    messageId = _data['messageId']!;
+    endpoint = _data['endpoint']!;
+    messageName = _data['messageName']!;
+    duration = _data['duration']!;
     error = _data['error'];
     stackTrace = _data['stackTrace'];
-    authenticatedUserId = _data['authenticatedUserId'];
-    isOpen = _data['isOpen'];
+    slow = _data['slow']!;
+    order = _data['order']!;
   }
 
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
       'id': id,
+      'sessionLogId': sessionLogId,
       'serverId': serverId,
-      'time': time.toUtc().toIso8601String(),
-      'module': module,
+      'messageId': messageId,
       'endpoint': endpoint,
-      'method': method,
+      'messageName': messageName,
       'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
+      'slow': slow,
+      'order': order,
     });
   }
 
@@ -91,18 +83,16 @@ class SessionLogEntry extends TableRow {
   Map<String, dynamic> serializeForDatabase() {
     return wrapSerializationData({
       'id': id,
+      'sessionLogId': sessionLogId,
       'serverId': serverId,
-      'time': time.toUtc().toIso8601String(),
-      'module': module,
+      'messageId': messageId,
       'endpoint': endpoint,
-      'method': method,
+      'messageName': messageName,
       'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
+      'slow': slow,
+      'order': order,
     });
   }
 
@@ -110,18 +100,16 @@ class SessionLogEntry extends TableRow {
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
       'id': id,
+      'sessionLogId': sessionLogId,
       'serverId': serverId,
-      'time': time.toUtc().toIso8601String(),
-      'module': module,
+      'messageId': messageId,
       'endpoint': endpoint,
-      'method': method,
+      'messageName': messageName,
       'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
       'error': error,
       'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
+      'slow': slow,
+      'order': order,
     });
   }
 
@@ -131,29 +119,23 @@ class SessionLogEntry extends TableRow {
       case 'id':
         id = value;
         return;
+      case 'sessionLogId':
+        sessionLogId = value;
+        return;
       case 'serverId':
         serverId = value;
         return;
-      case 'time':
-        time = value;
-        return;
-      case 'module':
-        module = value;
+      case 'messageId':
+        messageId = value;
         return;
       case 'endpoint':
         endpoint = value;
         return;
-      case 'method':
-        method = value;
+      case 'messageName':
+        messageName = value;
         return;
       case 'duration':
         duration = value;
-        return;
-      case 'numQueries':
-        numQueries = value;
-        return;
-      case 'slow':
-        slow = value;
         return;
       case 'error':
         error = value;
@@ -161,20 +143,20 @@ class SessionLogEntry extends TableRow {
       case 'stackTrace':
         stackTrace = value;
         return;
-      case 'authenticatedUserId':
-        authenticatedUserId = value;
+      case 'slow':
+        slow = value;
         return;
-      case 'isOpen':
-        isOpen = value;
+      case 'order':
+        order = value;
         return;
       default:
         throw UnimplementedError();
     }
   }
 
-  static Future<List<SessionLogEntry>> find(
+  static Future<List<MessageLogEntry>> find(
     Session session, {
-    SessionLogEntryExpressionBuilder? where,
+    MessageLogEntryExpressionBuilder? where,
     int? limit,
     int? offset,
     Column? orderBy,
@@ -183,8 +165,8 @@ class SessionLogEntry extends TableRow {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return session.db.find<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
+    return session.db.find<MessageLogEntry>(
+      where: where != null ? where(MessageLogEntry.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -195,17 +177,17 @@ class SessionLogEntry extends TableRow {
     );
   }
 
-  static Future<SessionLogEntry?> findSingleRow(
+  static Future<MessageLogEntry?> findSingleRow(
     Session session, {
-    SessionLogEntryExpressionBuilder? where,
+    MessageLogEntryExpressionBuilder? where,
     int? offset,
     Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
+    return session.db.findSingleRow<MessageLogEntry>(
+      where: where != null ? where(MessageLogEntry.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -214,24 +196,24 @@ class SessionLogEntry extends TableRow {
     );
   }
 
-  static Future<SessionLogEntry?> findById(Session session, int id) async {
-    return session.db.findById<SessionLogEntry>(id);
+  static Future<MessageLogEntry?> findById(Session session, int id) async {
+    return session.db.findById<MessageLogEntry>(id);
   }
 
   static Future<int> delete(
     Session session, {
-    required SessionLogEntryExpressionBuilder where,
+    required MessageLogEntryExpressionBuilder where,
     Transaction? transaction,
   }) async {
-    return session.db.delete<SessionLogEntry>(
-      where: where(SessionLogEntry.t),
+    return session.db.delete<MessageLogEntry>(
+      where: where(MessageLogEntry.t),
       transaction: transaction,
     );
   }
 
   static Future<bool> deleteRow(
     Session session,
-    SessionLogEntry row, {
+    MessageLogEntry row, {
     Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -242,7 +224,7 @@ class SessionLogEntry extends TableRow {
 
   static Future<bool> update(
     Session session,
-    SessionLogEntry row, {
+    MessageLogEntry row, {
     Transaction? transaction,
   }) async {
     return session.db.update(
@@ -253,7 +235,7 @@ class SessionLogEntry extends TableRow {
 
   static Future<void> insert(
     Session session,
-    SessionLogEntry row, {
+    MessageLogEntry row, {
     Transaction? transaction,
   }) async {
     return session.db.insert(row, transaction: transaction);
@@ -261,13 +243,13 @@ class SessionLogEntry extends TableRow {
 
   static Future<int> count(
     Session session, {
-    SessionLogEntryExpressionBuilder? where,
+    MessageLogEntryExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return session.db.count<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
+    return session.db.count<MessageLogEntry>(
+      where: where != null ? where(MessageLogEntry.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
@@ -275,45 +257,41 @@ class SessionLogEntry extends TableRow {
   }
 }
 
-typedef SessionLogEntryExpressionBuilder = Expression Function(
-    SessionLogEntryTable t);
+typedef MessageLogEntryExpressionBuilder = Expression Function(
+    MessageLogEntryTable t);
 
-class SessionLogEntryTable extends Table {
-  SessionLogEntryTable() : super(tableName: 'serverpod_session_log');
+class MessageLogEntryTable extends Table {
+  MessageLogEntryTable() : super(tableName: 'serverpod_message_log');
 
   @override
-  String tableName = 'serverpod_session_log';
+  String tableName = 'serverpod_message_log';
   final id = ColumnInt('id');
+  final sessionLogId = ColumnInt('sessionLogId');
   final serverId = ColumnString('serverId');
-  final time = ColumnDateTime('time');
-  final module = ColumnString('module');
+  final messageId = ColumnInt('messageId');
   final endpoint = ColumnString('endpoint');
-  final method = ColumnString('method');
+  final messageName = ColumnString('messageName');
   final duration = ColumnDouble('duration');
-  final numQueries = ColumnInt('numQueries');
-  final slow = ColumnBool('slow');
   final error = ColumnString('error');
   final stackTrace = ColumnString('stackTrace');
-  final authenticatedUserId = ColumnInt('authenticatedUserId');
-  final isOpen = ColumnBool('isOpen');
+  final slow = ColumnBool('slow');
+  final order = ColumnInt('order');
 
   @override
   List<Column> get columns => [
         id,
+        sessionLogId,
         serverId,
-        time,
-        module,
+        messageId,
         endpoint,
-        method,
+        messageName,
         duration,
-        numQueries,
-        slow,
         error,
         stackTrace,
-        authenticatedUserId,
-        isOpen,
+        slow,
+        order,
       ];
 }
 
-@Deprecated('Use SessionLogEntryTable.t instead.')
-SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();
+@Deprecated('Use MessageLogEntryTable.t instead.')
+MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();

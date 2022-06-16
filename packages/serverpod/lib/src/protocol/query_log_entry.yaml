@@ -4,11 +4,14 @@ table: serverpod_query_log
 fields:
   serverId: String
   sessionLogId: int
+  messageId: int?
   query: String
   duration: double
   numRows: int?
   error: String?
   stackTrace: String?
+  slow: bool
+  order: int
 
 indexes:
   serverpod_query_log_sessionLogId_idx:

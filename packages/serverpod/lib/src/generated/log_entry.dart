@@ -23,6 +23,7 @@ class LogEntry extends TableRow {
   @override
   int? id;
   late int sessionLogId;
+  int? messageId;
   String? reference;
   late String serverId;
   late DateTime time;
@@ -30,10 +31,12 @@ class LogEntry extends TableRow {
   late String message;
   String? error;
   String? stackTrace;
+  late int order;
 
   LogEntry({
     this.id,
     required this.sessionLogId,
+    this.messageId,
     this.reference,
     required this.serverId,
     required this.time,
@@ -41,12 +44,14 @@ class LogEntry extends TableRow {
     required this.message,
     this.error,
     this.stackTrace,
+    required this.order,
   });
 
   LogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     sessionLogId = _data['sessionLogId']!;
+    messageId = _data['messageId'];
     reference = _data['reference'];
     serverId = _data['serverId']!;
     time = DateTime.tryParse(_data['time'])!;
@@ -54,6 +59,7 @@ class LogEntry extends TableRow {
     message = _data['message']!;
     error = _data['error'];
     stackTrace = _data['stackTrace'];
+    order = _data['order']!;
   }
 
   @override
@@ -61,6 +67,7 @@ class LogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'sessionLogId': sessionLogId,
+      'messageId': messageId,
       'reference': reference,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
@@ -68,6 +75,7 @@ class LogEntry extends TableRow {
       'message': message,
       'error': error,
       'stackTrace': stackTrace,
+      'order': order,
     });
   }
 
@@ -76,6 +84,7 @@ class LogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'sessionLogId': sessionLogId,
+      'messageId': messageId,
       'reference': reference,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
@@ -83,6 +92,7 @@ class LogEntry extends TableRow {
       'message': message,
       'error': error,
       'stackTrace': stackTrace,
+      'order': order,
     });
   }
 
@@ -91,6 +101,7 @@ class LogEntry extends TableRow {
     return wrapSerializationData({
       'id': id,
       'sessionLogId': sessionLogId,
+      'messageId': messageId,
       'reference': reference,
       'serverId': serverId,
       'time': time.toUtc().toIso8601String(),
@@ -98,6 +109,7 @@ class LogEntry extends TableRow {
       'message': message,
       'error': error,
       'stackTrace': stackTrace,
+      'order': order,
     });
   }
 
@@ -109,6 +121,9 @@ class LogEntry extends TableRow {
         return;
       case 'sessionLogId':
         sessionLogId = value;
+        return;
+      case 'messageId':
+        messageId = value;
         return;
       case 'reference':
         reference = value;
@@ -130,6 +145,9 @@ class LogEntry extends TableRow {
         return;
       case 'stackTrace':
         stackTrace = value;
+        return;
+      case 'order':
+        order = value;
         return;
       default:
         throw UnimplementedError();
@@ -248,6 +266,7 @@ class LogEntryTable extends Table {
   String tableName = 'serverpod_log';
   final id = ColumnInt('id');
   final sessionLogId = ColumnInt('sessionLogId');
+  final messageId = ColumnInt('messageId');
   final reference = ColumnString('reference');
   final serverId = ColumnString('serverId');
   final time = ColumnDateTime('time');
@@ -255,11 +274,13 @@ class LogEntryTable extends Table {
   final message = ColumnString('message');
   final error = ColumnString('error');
   final stackTrace = ColumnString('stackTrace');
+  final order = ColumnInt('order');
 
   @override
   List<Column> get columns => [
         id,
         sessionLogId,
+        messageId,
         reference,
         serverId,
         time,
@@ -267,6 +288,7 @@ class LogEntryTable extends Table {
         message,
         error,
         stackTrace,
+        order,
       ];
 }
 

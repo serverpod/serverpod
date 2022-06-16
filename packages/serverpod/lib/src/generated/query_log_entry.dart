@@ -24,21 +24,27 @@ class QueryLogEntry extends TableRow {
   int? id;
   late String serverId;
   late int sessionLogId;
+  int? messageId;
   late String query;
   late double duration;
   int? numRows;
   String? error;
   String? stackTrace;
+  late bool slow;
+  late int order;
 
   QueryLogEntry({
     this.id,
     required this.serverId,
     required this.sessionLogId,
+    this.messageId,
     required this.query,
     required this.duration,
     this.numRows,
     this.error,
     this.stackTrace,
+    required this.slow,
+    required this.order,
   });
 
   QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -46,11 +52,14 @@ class QueryLogEntry extends TableRow {
     id = _data['id'];
     serverId = _data['serverId']!;
     sessionLogId = _data['sessionLogId']!;
+    messageId = _data['messageId'];
     query = _data['query']!;
     duration = _data['duration']!;
     numRows = _data['numRows'];
     error = _data['error'];
     stackTrace = _data['stackTrace'];
+    slow = _data['slow']!;
+    order = _data['order']!;
   }
 
   @override
@@ -59,11 +68,14 @@ class QueryLogEntry extends TableRow {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
+      'messageId': messageId,
       'query': query,
       'duration': duration,
       'numRows': numRows,
       'error': error,
       'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
     });
   }
 
@@ -73,11 +85,14 @@ class QueryLogEntry extends TableRow {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
+      'messageId': messageId,
       'query': query,
       'duration': duration,
       'numRows': numRows,
       'error': error,
       'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
     });
   }
 
@@ -87,11 +102,14 @@ class QueryLogEntry extends TableRow {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
+      'messageId': messageId,
       'query': query,
       'duration': duration,
       'numRows': numRows,
       'error': error,
       'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
     });
   }
 
@@ -107,6 +125,9 @@ class QueryLogEntry extends TableRow {
       case 'sessionLogId':
         sessionLogId = value;
         return;
+      case 'messageId':
+        messageId = value;
+        return;
       case 'query':
         query = value;
         return;
@@ -121,6 +142,12 @@ class QueryLogEntry extends TableRow {
         return;
       case 'stackTrace':
         stackTrace = value;
+        return;
+      case 'slow':
+        slow = value;
+        return;
+      case 'order':
+        order = value;
         return;
       default:
         throw UnimplementedError();
@@ -241,22 +268,28 @@ class QueryLogEntryTable extends Table {
   final id = ColumnInt('id');
   final serverId = ColumnString('serverId');
   final sessionLogId = ColumnInt('sessionLogId');
+  final messageId = ColumnInt('messageId');
   final query = ColumnString('query');
   final duration = ColumnDouble('duration');
   final numRows = ColumnInt('numRows');
   final error = ColumnString('error');
   final stackTrace = ColumnString('stackTrace');
+  final slow = ColumnBool('slow');
+  final order = ColumnInt('order');
 
   @override
   List<Column> get columns => [
         id,
         serverId,
         sessionLogId,
+        messageId,
         query,
         duration,
         numRows,
         error,
         stackTrace,
+        slow,
+        order,
       ];
 }
 

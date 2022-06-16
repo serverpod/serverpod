@@ -8,6 +8,7 @@ import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
+import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
@@ -140,6 +141,7 @@ class Serverpod {
         logSlowQueries: true,
         logFailedSessions: true,
         logFailedQueries: true,
+        logStreamingSessionsContinuously: true,
         logLevel: internal.LogLevel.warning.index,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
@@ -193,6 +195,11 @@ class Serverpod {
   List<String>? whitelistedExternalCalls;
 
   late final HealthCheckManager _healthCheckManager;
+
+  /// The [ClusterManager] provides information about other servers in the same
+  /// server cluster. This method isn't valid until the Serverpod has been
+  /// started.
+  late final ClusterManager cluster;
 
   /// Creates a new Serverpod.
   Serverpod(
@@ -371,6 +378,8 @@ class Serverpod {
     endpoints.initializeEndpoints(_serviceServer!);
 
     await _serviceServer!.start();
+
+    cluster = ClusterManager(_serviceServer!);
   }
 
   /// Registers a [FutureCall] with the [Serverpod] and associates it with

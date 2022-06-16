@@ -27,6 +27,7 @@ class SessionLogEntry extends SerializableEntity {
   String? error;
   String? stackTrace;
   int? authenticatedUserId;
+  bool? isOpen;
 
   SessionLogEntry({
     this.id,
@@ -41,6 +42,7 @@ class SessionLogEntry extends SerializableEntity {
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
+    this.isOpen,
   });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -57,6 +59,7 @@ class SessionLogEntry extends SerializableEntity {
     error = _data['error'];
     stackTrace = _data['stackTrace'];
     authenticatedUserId = _data['authenticatedUserId'];
+    isOpen = _data['isOpen'];
   }
 
   @override
@@ -74,6 +77,7 @@ class SessionLogEntry extends SerializableEntity {
       'error': error,
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
+      'isOpen': isOpen,
     });
   }
 }

@@ -15,6 +15,8 @@ import 'cache_info.dart';
 import 'caches_info.dart';
 import 'cloud_storage.dart';
 import 'cloud_storage_direct_upload.dart';
+import 'cluster_info.dart';
+import 'cluster_server_info.dart';
 import 'distributed_cache_entry.dart';
 import 'future_call_entry.dart';
 import 'log_entry.dart';
@@ -22,6 +24,7 @@ import 'log_level.dart';
 import 'log_result.dart';
 import 'log_settings.dart';
 import 'log_settings_override.dart';
+import 'message_log_entry.dart';
 import 'method_info.dart';
 import 'query_log_entry.dart';
 import 'readwrite_test.dart';
@@ -39,6 +42,8 @@ export 'cache_info.dart';
 export 'caches_info.dart';
 export 'cloud_storage.dart';
 export 'cloud_storage_direct_upload.dart';
+export 'cluster_info.dart';
+export 'cluster_server_info.dart';
 export 'distributed_cache_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
@@ -46,6 +51,7 @@ export 'log_level.dart';
 export 'log_result.dart';
 export 'log_settings.dart';
 export 'log_settings_override.dart';
+export 'message_log_entry.dart';
 export 'method_info.dart';
 export 'query_log_entry.dart';
 export 'readwrite_test.dart';
@@ -78,6 +84,10 @@ class Protocol extends SerializationManager {
     constructors['CloudStorageDirectUploadEntry'] =
         (Map<String, dynamic> serialization) =>
             CloudStorageDirectUploadEntry.fromSerialization(serialization);
+    constructors['ClusterInfo'] = (Map<String, dynamic> serialization) =>
+        ClusterInfo.fromSerialization(serialization);
+    constructors['ClusterServerInfo'] = (Map<String, dynamic> serialization) =>
+        ClusterServerInfo.fromSerialization(serialization);
     constructors['DistributedCacheEntry'] =
         (Map<String, dynamic> serialization) =>
             DistributedCacheEntry.fromSerialization(serialization);
@@ -94,6 +104,8 @@ class Protocol extends SerializationManager {
     constructors['LogSettingsOverride'] =
         (Map<String, dynamic> serialization) =>
             LogSettingsOverride.fromSerialization(serialization);
+    constructors['MessageLogEntry'] = (Map<String, dynamic> serialization) =>
+        MessageLogEntry.fromSerialization(serialization);
     constructors['MethodInfo'] = (Map<String, dynamic> serialization) =>
         MethodInfo.fromSerialization(serialization);
     constructors['QueryLogEntry'] = (Map<String, dynamic> serialization) =>

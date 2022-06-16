@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
@@ -290,7 +291,9 @@ class Server {
   }
 
   Future<void> _handleWebsocket(
-      WebSocket webSocket, HttpRequest request) async {
+    WebSocket webSocket,
+    HttpRequest request,
+  ) async {
     try {
       var session = StreamingSession(
         server: this,
@@ -298,6 +301,8 @@ class Server {
         httpRequest: request,
         webSocket: webSocket,
       );
+
+      bool openedSessionLog = false;
 
       for (var endpointConnector in endpoints.connectors.values) {
         await _callStreamOpened(session, endpointConnector.endpoint);
@@ -326,11 +331,71 @@ class Server {
             throw Exception('Endpoint not found: $endpointName');
           }
 
+          var logSettings = serverpod.logManager
+              .getLogSettingsForStreamingSession(endpoint: endpointName);
+
+          // Check if we should open a streaming session log.
+          if (!openedSessionLog &&
+              logSettings.logStreamingSessionsContinuously) {
+            await serverpod.logManager.openStreamingLog(session);
+            openedSessionLog = true;
+          }
+
           var authFailed = await endpoints.canUserAccessEndpoint(
               session, endpointConnector.endpoint);
+
           if (authFailed == null) {
-            await endpointConnector.endpoint
-                .handleStreamMessage(session, message);
+            // Process the message.
+            var startTime = DateTime.now();
+            dynamic messageError;
+            StackTrace? messageStackTrace;
+
+            try {
+              session.sessionLogs.currentEndpoint = endpointName;
+              await endpointConnector.endpoint
+                  .handleStreamMessage(session, message);
+            } catch (e, s) {
+              messageError = e;
+              messageStackTrace = s;
+            }
+
+            var duration =
+                DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+            var logManager = session.serverpod.logManager;
+
+            var slow = duration >=
+                logManager
+                    .getLogSettingsForStreamingSession(
+                      endpoint: endpointName,
+                    )
+                    .slowSessionDuration;
+
+            var shouldLog = logManager.shouldLogMessage(
+              session: session,
+              endpoint: endpointName,
+              slow: slow,
+              failed: messageError != null,
+            );
+
+            if (shouldLog) {
+              var logEntry = MessageLogEntry(
+                sessionLogId: session.sessionLogs.temporarySessionId,
+                serverId: serverId,
+                messageId: session.currentMessageId,
+                endpoint: endpointName,
+                messageName: message.className,
+                duration: duration,
+                order: session.currentLogOrderId,
+                error: messageError?.toString(),
+                stackTrace: messageStackTrace?.toString(),
+                slow: slow,
+              );
+              unawaited(logManager.logMessage(session, logEntry));
+
+              session.currentLogOrderId += 1;
+            }
+
+            session.currentMessageId += 1;
           }
         }
       } catch (e, s) {

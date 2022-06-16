@@ -1,0 +1,3 @@
+class: ClusterServerInfo
+fields:
+  serverId: String

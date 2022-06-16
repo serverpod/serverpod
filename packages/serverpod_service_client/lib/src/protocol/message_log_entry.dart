@@ -11,48 +11,48 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
 import 'protocol.dart';
 
-class LogEntry extends SerializableEntity {
+class MessageLogEntry extends SerializableEntity {
   @override
-  String get className => 'LogEntry';
+  String get className => 'MessageLogEntry';
 
   int? id;
   late int sessionLogId;
-  int? messageId;
-  String? reference;
   late String serverId;
-  late DateTime time;
-  late int logLevel;
-  late String message;
+  late int messageId;
+  late String endpoint;
+  late String messageName;
+  late double duration;
   String? error;
   String? stackTrace;
+  late bool slow;
   late int order;
 
-  LogEntry({
+  MessageLogEntry({
     this.id,
     required this.sessionLogId,
-    this.messageId,
-    this.reference,
     required this.serverId,
-    required this.time,
-    required this.logLevel,
-    required this.message,
+    required this.messageId,
+    required this.endpoint,
+    required this.messageName,
+    required this.duration,
     this.error,
     this.stackTrace,
+    required this.slow,
     required this.order,
   });
 
-  LogEntry.fromSerialization(Map<String, dynamic> serialization) {
+  MessageLogEntry.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     sessionLogId = _data['sessionLogId']!;
-    messageId = _data['messageId'];
-    reference = _data['reference'];
     serverId = _data['serverId']!;
-    time = DateTime.tryParse(_data['time'])!;
-    logLevel = _data['logLevel']!;
-    message = _data['message']!;
+    messageId = _data['messageId']!;
+    endpoint = _data['endpoint']!;
+    messageName = _data['messageName']!;
+    duration = _data['duration']!;
     error = _data['error'];
     stackTrace = _data['stackTrace'];
+    slow = _data['slow']!;
     order = _data['order']!;
   }
 
@@ -61,14 +61,14 @@ class LogEntry extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'reference': reference,
       'serverId': serverId,
-      'time': time.toUtc().toIso8601String(),
-      'logLevel': logLevel,
-      'message': message,
+      'messageId': messageId,
+      'endpoint': endpoint,
+      'messageName': messageName,
+      'duration': duration,
       'error': error,
       'stackTrace': stackTrace,
+      'slow': slow,
       'order': order,
     });
   }

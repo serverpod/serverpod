@@ -12,3 +12,4 @@ fields:
   error: String?
   stackTrace: String?
   authenticatedUserId: int?
+  isOpen: bool?
