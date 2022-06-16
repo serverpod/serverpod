@@ -42,3 +42,4 @@ dev_dependencies:
   serverpod_test_module_client: #^0.9.8
     path: ../../tests/serverpod_test_module/serverpod_test_module_client
   lints: ^1.0.1
+  meta: ^1.8.0
