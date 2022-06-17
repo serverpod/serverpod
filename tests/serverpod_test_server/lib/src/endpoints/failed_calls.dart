@@ -22,4 +22,8 @@ class FailedCallsEndpoint extends Endpoint {
     }
     return true;
   }
+
+  Future<void> slowCall(Session session) async {
+    await Future.delayed(const Duration(seconds: 2));
+  }
 }

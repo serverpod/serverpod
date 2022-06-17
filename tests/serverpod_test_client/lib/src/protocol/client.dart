@@ -460,6 +460,11 @@ class _EndpointFailedCalls extends EndpointRef {
     return await caller.callServerEndpoint(
         'failedCalls', 'failedDatabaseQueryCaughtException', 'bool', {});
   }
+
+  Future<void> slowCall() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'slowCall', 'void', {});
+  }
 }
 
 class _EndpointFutureCalls extends EndpointRef {

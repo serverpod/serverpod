@@ -369,5 +369,9 @@ void main() {
           await client.failedCalls.failedDatabaseQueryCaughtException();
       expect(result, equals(true));
     });
+
+    test('Slow call', () async {
+      await client.failedCalls.slowCall();
+    });
   });
 }

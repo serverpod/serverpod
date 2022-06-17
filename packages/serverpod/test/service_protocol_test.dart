@@ -210,6 +210,14 @@ void main() {
       expect(
           logResult.sessionLog[0].sessionLogEntry.method, equals('testCall'));
     });
+
+    test('Slow call logging', () async {
+      await client.failedCalls.slowCall();
+
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
+      expect(logResult.sessionLog.length, equals(1));
+      expect(logResult.sessionLog[0].sessionLogEntry.slow, equals(true));
+    });
   });
 }
 

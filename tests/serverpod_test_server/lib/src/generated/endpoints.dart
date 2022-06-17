@@ -743,6 +743,15 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'slowCall': MethodConnector(
+          name: 'slowCall',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint).slowCall(
+              session,
+            );
+          },
+        ),
       },
     );
 
