@@ -21,6 +21,7 @@ class SessionLogFilter extends SerializableEntity {
   String? futureCall;
   late bool slow;
   late bool error;
+  late bool open;
   int? lastSessionLogId;
 
   SessionLogFilter({
@@ -30,6 +31,7 @@ class SessionLogFilter extends SerializableEntity {
     this.futureCall,
     required this.slow,
     required this.error,
+    required this.open,
     this.lastSessionLogId,
   });
 
@@ -41,6 +43,7 @@ class SessionLogFilter extends SerializableEntity {
     futureCall = _data['futureCall'];
     slow = _data['slow']!;
     error = _data['error']!;
+    open = _data['open']!;
     lastSessionLogId = _data['lastSessionLogId'];
   }
 
@@ -53,6 +56,7 @@ class SessionLogFilter extends SerializableEntity {
       'futureCall': futureCall,
       'slow': slow,
       'error': error,
+      'open': open,
       'lastSessionLogId': lastSessionLogId,
     });
   }

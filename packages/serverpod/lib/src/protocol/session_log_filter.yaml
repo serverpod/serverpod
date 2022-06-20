@@ -5,4 +5,5 @@ fields:
   futureCall: String?
   slow: bool
   error: bool
+  open: bool
   lastSessionLogId: int?

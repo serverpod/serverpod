@@ -48,8 +48,10 @@ class InsightsEndpoint extends Endpoint {
       Session session, int? numEntries, SessionLogFilter? filter) async {
     // Filter for errors and slow
     Expression where;
-    if (filter == null || (!filter.slow && !filter.error)) {
+    if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
       where = Constant(true);
+    } else if (filter.open) {
+      where = SessionLogEntry.t.isOpen.equals(true);
     } else {
       if (filter.slow && filter.error) {
         where = SessionLogEntry.t.slow.equals(true) |
