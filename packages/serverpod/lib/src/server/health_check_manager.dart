@@ -15,9 +15,7 @@ class HealthCheckManager {
   Timer? _timer;
 
   /// Creates a new [HealthCheckManager].
-  HealthCheckManager(this._pod) {
-    _pod.registerFutureCall(_HealthCheckFutureCall(), 'serverpod_health_check');
-  }
+  HealthCheckManager(this._pod);
 
   /// Starts the health check manager.
   void start() {
@@ -63,11 +61,6 @@ class HealthCheckManager {
     }
     _timer = Timer(_timeUntilNextMinute(), _performHealthCheck);
   }
-}
-
-class _HealthCheckFutureCall extends FutureCall {
-  @override
-  Future<void> invoke(Session session, SerializableEntity? object) async {}
 }
 
 Duration _timeUntilNextMinute() {
