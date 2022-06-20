@@ -278,9 +278,12 @@ class LogManager {
         enableLogging: false,
       );
 
+      var now = DateTime.now();
+
       var sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
-        time: DateTime.now(),
+        time: now,
+        touched: now,
         endpoint: _endpointForSession(session),
         method: _methodForSession(session),
         isOpen: true,
@@ -347,9 +350,12 @@ class LogManager {
         _continuouslyLogging(session)) {
       int? sessionLogId;
 
+      var now = DateTime.now();
+
       var sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
-        time: DateTime.now(),
+        time: now,
+        touched: now,
         endpoint: _endpointForSession(session),
         method: _methodForSession(session),
         duration: duration.inMicroseconds / 1000000.0,
@@ -481,6 +487,7 @@ class LogManager {
           sessionLogEntry: SessionLogEntry(
             serverId: Serverpod.instance!.serverId,
             time: entry.session.startTime,
+            touched: DateTime.now(),
             endpoint: _endpointForSession(entry.session),
             method: _methodForSession(entry.session),
             numQueries: entry.numQueries,

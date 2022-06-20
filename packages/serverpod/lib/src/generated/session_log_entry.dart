@@ -34,6 +34,7 @@ class SessionLogEntry extends TableRow {
   String? stackTrace;
   int? authenticatedUserId;
   bool? isOpen;
+  late DateTime touched;
 
   SessionLogEntry({
     this.id,
@@ -49,6 +50,7 @@ class SessionLogEntry extends TableRow {
     this.stackTrace,
     this.authenticatedUserId,
     this.isOpen,
+    required this.touched,
   });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -66,6 +68,7 @@ class SessionLogEntry extends TableRow {
     stackTrace = _data['stackTrace'];
     authenticatedUserId = _data['authenticatedUserId'];
     isOpen = _data['isOpen'];
+    touched = DateTime.tryParse(_data['touched'])!;
   }
 
   @override
@@ -84,6 +87,7 @@ class SessionLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 
@@ -103,6 +107,7 @@ class SessionLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 
@@ -122,6 +127,7 @@ class SessionLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 
@@ -166,6 +172,9 @@ class SessionLogEntry extends TableRow {
         return;
       case 'isOpen':
         isOpen = value;
+        return;
+      case 'touched':
+        touched = value;
         return;
       default:
         throw UnimplementedError();
@@ -296,6 +305,7 @@ class SessionLogEntryTable extends Table {
   final stackTrace = ColumnString('stackTrace');
   final authenticatedUserId = ColumnInt('authenticatedUserId');
   final isOpen = ColumnBool('isOpen');
+  final touched = ColumnDateTime('touched');
 
   @override
   List<Column> get columns => [
@@ -312,6 +322,7 @@ class SessionLogEntryTable extends Table {
         stackTrace,
         authenticatedUserId,
         isOpen,
+        touched,
       ];
 }
 

@@ -262,10 +262,15 @@ CREATE TABLE serverpod_session_log (
   "error" text,
   "stackTrace" text,
   "authenticatedUserId" integer,
-  "isOpen" boolean
+  "isOpen" boolean,
+  "touched" timestamp without time zone NOT NULL
 );
 
 ALTER TABLE ONLY serverpod_session_log
   ADD CONSTRAINT serverpod_session_log_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_session_log_serverid_idx ON serverpod_session_log USING btree ("serverId");
+CREATE INDEX serverpod_session_log_touched_idx ON serverpod_session_log USING btree ("touched");
+CREATE INDEX serverpod_session_log_isopen_idx ON serverpod_session_log USING btree ("isOpen");
 
 

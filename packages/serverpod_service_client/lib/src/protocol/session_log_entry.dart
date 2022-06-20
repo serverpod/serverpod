@@ -28,6 +28,7 @@ class SessionLogEntry extends SerializableEntity {
   String? stackTrace;
   int? authenticatedUserId;
   bool? isOpen;
+  late DateTime touched;
 
   SessionLogEntry({
     this.id,
@@ -43,6 +44,7 @@ class SessionLogEntry extends SerializableEntity {
     this.stackTrace,
     this.authenticatedUserId,
     this.isOpen,
+    required this.touched,
   });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -60,6 +62,7 @@ class SessionLogEntry extends SerializableEntity {
     stackTrace = _data['stackTrace'];
     authenticatedUserId = _data['authenticatedUserId'];
     isOpen = _data['isOpen'];
+    touched = DateTime.tryParse(_data['touched'])!;
   }
 
   @override
@@ -78,6 +81,7 @@ class SessionLogEntry extends SerializableEntity {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 }

@@ -13,3 +13,11 @@ fields:
   stackTrace: String?
   authenticatedUserId: int?
   isOpen: bool?
+  touched: DateTime
+indexes:
+  serverpod_session_log_serverid_idx:
+    fields: serverId
+  serverpod_session_log_touched_idx:
+    fields: touched
+  serverpod_session_log_isopen_idx:
+    fields: isOpen
