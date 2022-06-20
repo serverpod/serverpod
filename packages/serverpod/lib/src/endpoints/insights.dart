@@ -41,6 +41,10 @@ class InsightsEndpoint extends Endpoint {
     await session.db.delete<LogEntry>(
       where: Constant(true),
     );
+
+    await session.db.delete<MessageLogEntry>(
+      where: Constant(true),
+    );
   }
 
   /// Get the latest [numEntries] from the session log.
