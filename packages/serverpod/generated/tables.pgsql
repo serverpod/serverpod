@@ -103,7 +103,7 @@ ALTER TABLE ONLY serverpod_log
   ADD CONSTRAINT serverpod_log_fk
     FOREIGN KEY("sessionLogId")
       REFERENCES serverpod_session_log(id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 
 --
 -- Class MessageLogEntry as table serverpod_message_log
@@ -130,7 +130,7 @@ ALTER TABLE ONLY serverpod_message_log
   ADD CONSTRAINT serverpod_message_log_fk
     FOREIGN KEY("sessionLogId")
       REFERENCES serverpod_session_log(id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 
 --
 -- Class MethodInfo as table serverpod_method
@@ -175,7 +175,7 @@ ALTER TABLE ONLY serverpod_query_log
   ADD CONSTRAINT serverpod_query_log_fk
     FOREIGN KEY("sessionLogId")
       REFERENCES serverpod_session_log(id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE;
 
 --
 -- Class ReadWriteTestEntry as table serverpod_readwrite_test

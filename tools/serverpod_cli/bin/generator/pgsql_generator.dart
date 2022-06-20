@@ -75,7 +75,7 @@ class PgsqlGenerator {
         out += '  ADD CONSTRAINT ${classInfo.tableName}_fk\n';
         out += '    FOREIGN KEY("${field.name}")\n';
         out += '      REFERENCES ${field.parentTable}(id)\n';
-        out += '        ON DELETE CASCADE\n';
+        out += '        ON DELETE CASCADE;\n';
       }
     }
 
