@@ -1,1 +1,6 @@
 include: ../analysis_options.yaml
+
+analyzer:
+  errors:
+    invalid_use_of_internal_member: error
+    unawaited_futures: error

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
+import 'package:synchronized/synchronized.dart';
 
 import '../../server.dart';
 import '../generated/protocol.dart';
@@ -162,8 +163,11 @@ class LogManager {
   /// before calling this method. This method can be called asyncronously.
   @internal
   Future<void> logEntry(Session session, LogEntry entry) async {
+    await _attemptOpenStreamingLog(session: session);
+
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
+      entry.sessionLogId = (session as StreamingSession).sessionLogId!;
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
@@ -189,6 +193,8 @@ class LogManager {
   /// before calling this method. This method can be called asyncronously.
   @internal
   Future<void> logQuery(Session session, QueryLogEntry entry) async {
+    await _attemptOpenStreamingLog(session: session);
+
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
       var tempSession = await session.serverpod.createSession(
@@ -217,6 +223,8 @@ class LogManager {
   /// asyncronously.
   @internal
   Future<void> logMessage(Session session, MessageLogEntry entry) async {
+    await _attemptOpenStreamingLog(session: session);
+
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
       var tempSession = await session.serverpod.createSession(
@@ -238,28 +246,51 @@ class LogManager {
     }
   }
 
+  final Lock _openStreamLogLock = Lock();
+
   /// Sets up a log for a streaming session. Instead of writing all session data
   /// when the session is completed the session will be continuously logged.
-  @internal
-  Future<void> openStreamingLog(
-    StreamingSession session,
-  ) async {
-    var tempSession = await session.serverpod.createSession(
-      enableLogging: false,
-    );
+  Future<void> _attemptOpenStreamingLog({
+    required Session session,
+  }) async {
+    await _openStreamLogLock.synchronized(() async {
+      if (session is! StreamingSession) {
+        // Only open streaming logs for streaming sessions.
+        return;
+      }
 
-    var sessionLogEntry = SessionLogEntry(
-      serverId: session.server.serverId,
-      time: DateTime.now(),
-      endpoint: _endpointForSession(session),
-      method: _methodForSession(session),
-      isOpen: true,
-    );
+      if (session.sessionLogId != null) {
+        // Streaming log is already opened.
+        return;
+      }
 
-    await SessionLogEntry.insert(tempSession, sessionLogEntry);
-    session.sessionLogId = sessionLogEntry.id;
+      assert(session.sessionLogs.currentEndpoint != null);
 
-    await tempSession.close();
+      var logSettings = getLogSettingsForStreamingSession(
+        endpoint: session.sessionLogs.currentEndpoint!,
+      );
+      if (!logSettings.logStreamingSessionsContinuously) {
+        // This call should not stream continuously.
+        return;
+      }
+
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
+
+      var sessionLogEntry = SessionLogEntry(
+        serverId: session.server.serverId,
+        time: DateTime.now(),
+        endpoint: _endpointForSession(session),
+        method: _methodForSession(session),
+        isOpen: true,
+      );
+
+      await SessionLogEntry.insert(tempSession, sessionLogEntry);
+      session.sessionLogId = sessionLogEntry.id;
+
+      await tempSession.close();
+    });
   }
 
   /// Called automatically when a session is closed. Writes the session and its
@@ -484,6 +515,10 @@ class SessionLogEntryCache {
 
   /// Name of streaming message currently being processed.
   String? currentEndpoint;
+
+  /// This is used internally by Serverpod to ensure the ordering of log entries
+  /// and log queries are correct.
+  int currentLogOrderId = 0;
 
   /// Creates a new [SessionLogEntryCache].
   SessionLogEntryCache(this.session);

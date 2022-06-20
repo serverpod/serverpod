@@ -639,10 +639,10 @@ Current type was $T''');
       error: exception?.toString(),
       stackTrace: trace.toString(),
       slow: slow,
-      order: session.currentLogOrderId,
+      order: session.sessionLogs.currentLogOrderId,
     );
     session.serverpod.logManager.logQuery(session, entry);
-    session.currentLogOrderId += 1;
+    session.sessionLogs.currentLogOrderId += 1;
   }
 
   /// For most cases use the corresponding method in [Database] instead.

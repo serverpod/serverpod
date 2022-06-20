@@ -80,3 +80,4 @@ simple:
   - addToGlobalInt:
   - getGlobalInt:
 streaming:
+streamingLogging:

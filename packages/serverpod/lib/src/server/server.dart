@@ -302,13 +302,13 @@ class Server {
         webSocket: webSocket,
       );
 
-      bool openedSessionLog = false;
-
       for (var endpointConnector in endpoints.connectors.values) {
+        session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
         await _callStreamOpened(session, endpointConnector.endpoint);
       }
       for (var module in endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
+          session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
           await _callStreamOpened(session, endpointConnector.endpoint);
         }
       }
@@ -329,16 +329,6 @@ class Server {
           var endpointConnector = endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null) {
             throw Exception('Endpoint not found: $endpointName');
-          }
-
-          var logSettings = serverpod.logManager
-              .getLogSettingsForStreamingSession(endpoint: endpointName);
-
-          // Check if we should open a streaming session log.
-          if (!openedSessionLog &&
-              logSettings.logStreamingSessionsContinuously) {
-            await serverpod.logManager.openStreamingLog(session);
-            openedSessionLog = true;
           }
 
           var authFailed = await endpoints.canUserAccessEndpoint(
@@ -385,14 +375,14 @@ class Server {
                 endpoint: endpointName,
                 messageName: message.className,
                 duration: duration,
-                order: session.currentLogOrderId,
+                order: session.sessionLogs.currentLogOrderId,
                 error: messageError?.toString(),
                 stackTrace: messageStackTrace?.toString(),
                 slow: slow,
               );
               unawaited(logManager.logMessage(session, logEntry));
 
-              session.currentLogOrderId += 1;
+              session.sessionLogs.currentLogOrderId += 1;
             }
 
             session.currentMessageId += 1;

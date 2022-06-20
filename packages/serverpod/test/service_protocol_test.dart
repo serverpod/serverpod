@@ -218,6 +218,43 @@ void main() {
       expect(logResult.sessionLog.length, equals(1));
       expect(logResult.sessionLog[0].sessionLogEntry.slow, equals(true));
     });
+
+    test('Logging in stream', () async {
+      // Set log level to info
+      var settings = service.RuntimeSettings(
+        logSettings: service.LogSettings(
+          logAllSessions: true,
+          logSlowSessions: true,
+          logFailedSessions: true,
+          logStreamingSessionsContinuously: true,
+          logAllQueries: true,
+          logSlowQueries: true,
+          logFailedQueries: true,
+          slowSessionDuration: 1.0,
+          slowQueryDuration: 1.0,
+          logLevel: service.LogLevel.info.index,
+        ),
+        logMalformedCalls: true,
+        logServiceCalls: false,
+        logSettingsOverrides: [],
+      );
+      await serviceClient.insights.setRuntimeSettings(settings);
+
+      await client.connectWebSocket();
+
+      for (var i = 0; i < 10; i += 1) {
+        await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
+      expect(logResult.sessionLog.length, equals(1));
+      expect(logResult.sessionLog[0].sessionLogEntry.isOpen, equals(true));
+      // We should have logged one entry when opening the stream and 10 when
+      // sending messages.
+      expect(logResult.sessionLog[0].messageLog.length, equals(11));
+    });
   });
 }
 

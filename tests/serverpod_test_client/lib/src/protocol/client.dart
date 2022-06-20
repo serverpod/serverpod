@@ -672,6 +672,13 @@ class _EndpointStreaming extends EndpointRef {
   _EndpointStreaming(EndpointCaller caller) : super(caller);
 }
 
+class _EndpointStreamingLogging extends EndpointRef {
+  @override
+  String get name => 'streamingLogging';
+
+  _EndpointStreamingLogging(EndpointCaller caller) : super(caller);
+}
+
 class _Modules {
   late final serverpod_test_module.Caller module;
   late final serverpod_auth.Caller auth;
@@ -699,6 +706,7 @@ class Client extends ServerpodClient {
   late final _EndpointSignInRequired signInRequired;
   late final _EndpointSimple simple;
   late final _EndpointStreaming streaming;
+  late final _EndpointStreamingLogging streamingLogging;
   late final _Modules modules;
 
   Client(String host,
@@ -725,6 +733,7 @@ class Client extends ServerpodClient {
     signInRequired = _EndpointSignInRequired(this);
     simple = _EndpointSimple(this);
     streaming = _EndpointStreaming(this);
+    streamingLogging = _EndpointStreamingLogging(this);
 
     modules = _Modules(this);
     registerModuleProtocol(serverpod_test_module.Protocol());
@@ -749,6 +758,7 @@ class Client extends ServerpodClient {
         'signInRequired': signInRequired,
         'simple': simple,
         'streaming': streaming,
+        'streamingLogging': streamingLogging,
       };
 
   @override

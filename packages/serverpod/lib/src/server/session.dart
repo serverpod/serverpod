@@ -71,11 +71,6 @@ abstract class Session {
   /// enabled but it will be disabled for internal sessions used by Serverpod.
   final bool enableLogging;
 
-  /// This is used internally by Serverpod to ensure the ordering of log entries
-  /// and log queries are correct.
-  @internal
-  int currentLogOrderId = 0;
-
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     required this.server,
@@ -182,10 +177,10 @@ abstract class Session {
       time: DateTime.now(),
       error: exception != null ? '$exception' : null,
       stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: currentLogOrderId,
+      order: sessionLogs.currentLogOrderId,
     );
 
-    currentLogOrderId += 1;
+    sessionLogs.currentLogOrderId += 1;
 
     if (serverpod.runMode == ServerpodRunMode.development) {
       stdout.writeln(

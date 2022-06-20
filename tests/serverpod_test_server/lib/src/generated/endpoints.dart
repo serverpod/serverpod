@@ -30,6 +30,7 @@ import '../endpoints/redis.dart';
 import '../endpoints/signin_required.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/streaming.dart';
+import '../endpoints/streaming_logging.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
@@ -63,6 +64,8 @@ class Endpoints extends EndpointDispatch {
         ..initialize(server, 'signInRequired', null),
       'simple': SimpleEndpoint()..initialize(server, 'simple', null),
       'streaming': StreamingEndpoint()..initialize(server, 'streaming', null),
+      'streamingLogging': StreamingLoggingEndpoint()
+        ..initialize(server, 'streamingLogging', null),
     };
 
     connectors['asyncTasks'] = EndpointConnector(
@@ -1055,6 +1058,12 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
+      methodConnectors: {},
+    );
+
+    connectors['streamingLogging'] = EndpointConnector(
+      name: 'streamingLogging',
+      endpoint: endpoints['streamingLogging']!,
       methodConnectors: {},
     );
 
