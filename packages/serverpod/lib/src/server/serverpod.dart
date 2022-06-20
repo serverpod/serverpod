@@ -41,6 +41,14 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
 class Serverpod {
   static Serverpod? _instance;
 
+  DateTime? _startedTime;
+
+  /// The time the [Serverpod] was started.
+  DateTime get startedTime {
+    assert(_startedTime != null, 'Server has not been started');
+    return _startedTime!;
+  }
+
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
@@ -292,6 +300,8 @@ class Serverpod {
 
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
+    _startedTime = DateTime.now().toUtc();
+
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
       if (storage['public'] is DatabaseCloudStorage ||

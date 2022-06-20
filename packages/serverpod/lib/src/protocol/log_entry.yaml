@@ -1,7 +1,7 @@
 class: LogEntry
 table: serverpod_log
 fields:
-  sessionLogId: int
+  sessionLogId: int, parent=serverpod_session_log
   messageId: int?
   reference: String?
   serverId: String

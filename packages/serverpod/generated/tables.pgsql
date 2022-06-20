@@ -99,6 +99,11 @@ ALTER TABLE ONLY serverpod_log
 
 CREATE INDEX serverpod_log_sessionLogId_idx ON serverpod_log USING btree ("sessionLogId");
 
+ALTER TABLE ONLY serverpod_log
+  ADD CONSTRAINT serverpod_log_fk
+    FOREIGN KEY("sessionLogId")
+      REFERENCES serverpod_session_log(id)
+        ON DELETE CASCADE
 
 --
 -- Class MessageLogEntry as table serverpod_message_log
@@ -121,6 +126,11 @@ CREATE TABLE serverpod_message_log (
 ALTER TABLE ONLY serverpod_message_log
   ADD CONSTRAINT serverpod_message_log_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY serverpod_message_log
+  ADD CONSTRAINT serverpod_message_log_fk
+    FOREIGN KEY("sessionLogId")
+      REFERENCES serverpod_session_log(id)
+        ON DELETE CASCADE
 
 --
 -- Class MethodInfo as table serverpod_method
@@ -161,6 +171,11 @@ ALTER TABLE ONLY serverpod_query_log
 
 CREATE INDEX serverpod_query_log_sessionLogId_idx ON serverpod_query_log USING btree ("sessionLogId");
 
+ALTER TABLE ONLY serverpod_query_log
+  ADD CONSTRAINT serverpod_query_log_fk
+    FOREIGN KEY("sessionLogId")
+      REFERENCES serverpod_session_log(id)
+        ON DELETE CASCADE
 
 --
 -- Class ReadWriteTestEntry as table serverpod_readwrite_test

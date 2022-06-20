@@ -3,7 +3,7 @@ table: serverpod_query_log
 
 fields:
   serverId: String
-  sessionLogId: int
+  sessionLogId: int, parent=serverpod_session_log
   messageId: int?
   query: String
   duration: double
