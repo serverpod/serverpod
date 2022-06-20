@@ -643,6 +643,7 @@ Current type was $T''');
     );
     session.serverpod.logManager.logQuery(session, entry);
     session.sessionLogs.currentLogOrderId += 1;
+    session.sessionLogs.numQueries += 1;
   }
 
   /// For most cases use the corresponding method in [Database] instead.

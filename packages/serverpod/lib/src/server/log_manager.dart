@@ -353,7 +353,7 @@ class LogManager {
         endpoint: _endpointForSession(session),
         method: _methodForSession(session),
         duration: duration.inMicroseconds / 1000000.0,
-        numQueries: cachedEntry.queries.length,
+        numQueries: cachedEntry.numQueries,
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
@@ -483,7 +483,7 @@ class LogManager {
             time: entry.session.startTime,
             endpoint: _endpointForSession(entry.session),
             method: _methodForSession(entry.session),
-            numQueries: entry.queries.length,
+            numQueries: entry.numQueries,
           ),
           queries: entry.queries,
           messageLog: entry.logEntries,
@@ -503,6 +503,9 @@ class SessionLogEntryCache {
 
   /// Queries made during the session.
   final List<QueryLogEntry> queries = [];
+
+  /// Number of queries made during this session.
+  int numQueries = 0;
 
   /// Log entries made during the session.
   final List<LogEntry> logEntries = [];
