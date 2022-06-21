@@ -494,7 +494,8 @@ class LogManager {
             numQueries: entry.numQueries,
           ),
           queries: entry.queries,
-          messageLog: entry.logEntries,
+          logs: entry.logEntries,
+          messages: entry.messages,
         ),
       );
     }

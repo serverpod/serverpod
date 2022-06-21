@@ -73,8 +73,8 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
-      expect(logResult.sessionLog[0].messageLog.length, equals(1));
-      expect(logResult.sessionLog[0].messageLog[0].message, equals('test'));
+      expect(logResult.sessionLog[0].logs.length, equals(1));
+      expect(logResult.sessionLog[0].logs[0].message, equals('test'));
     });
 
     test('All log levels', () async {
@@ -87,10 +87,10 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
-      expect(logResult.sessionLog[0].messageLog.length, equals(3));
-      expect(logResult.sessionLog[0].messageLog[0].message, equals('debug'));
-      expect(logResult.sessionLog[0].messageLog[1].message, equals('info'));
-      expect(logResult.sessionLog[0].messageLog[2].message, equals('error'));
+      expect(logResult.sessionLog[0].logs.length, equals(3));
+      expect(logResult.sessionLog[0].logs[0].message, equals('debug'));
+      expect(logResult.sessionLog[0].logs[1].message, equals('info'));
+      expect(logResult.sessionLog[0].logs[2].message, equals('error'));
     });
 
     test('Error log level', () async {
@@ -124,8 +124,8 @@ void main() {
       expect(logResult.sessionLog.length, equals(1));
 
       // Debug and info logs should be ignored
-      expect(logResult.sessionLog[0].messageLog.length, equals(1));
-      expect(logResult.sessionLog[0].messageLog[0].message, equals('error'));
+      expect(logResult.sessionLog[0].logs.length, equals(1));
+      expect(logResult.sessionLog[0].logs[0].message, equals('error'));
     });
 
     test('Query log', () async {
@@ -205,8 +205,8 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
-      expect(logResult.sessionLog[0].messageLog.length, equals(1));
-      expect(logResult.sessionLog[0].messageLog[0].message, equals('42'));
+      expect(logResult.sessionLog[0].logs.length, equals(1));
+      expect(logResult.sessionLog[0].logs[0].message, equals('42'));
       expect(
           logResult.sessionLog[0].sessionLogEntry.method, equals('testCall'));
     });
@@ -253,7 +253,7 @@ void main() {
       expect(logResult.sessionLog[0].sessionLogEntry.isOpen, equals(true));
       // We should have logged one entry when opening the stream and 10 when
       // sending messages.
-      expect(logResult.sessionLog[0].messageLog.length, equals(11));
+      expect(logResult.sessionLog[0].logs.length, equals(11));
     });
   });
 }
@@ -274,4 +274,8 @@ class ServiceKeyManager extends AuthenticationKeyManager {
 
   @override
   Future<void> remove() async {}
+}
+
+List<List<bool>> performIteration(List<List<bool>> board) {
+  return [];
 }
