@@ -231,6 +231,7 @@ class LogManager {
         enableLogging: false,
       );
       try {
+        entry.sessionLogId = (session as StreamingSession).sessionLogId!;
         await MessageLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
