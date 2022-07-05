@@ -755,6 +755,16 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'caughtException': MethodConnector(
+          name: 'caughtException',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint)
+                .caughtException(
+              session,
+            );
+          },
+        ),
       },
     );
 

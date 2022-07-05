@@ -465,6 +465,11 @@ class _EndpointFailedCalls extends EndpointRef {
     return await caller
         .callServerEndpoint('failedCalls', 'slowCall', 'void', {});
   }
+
+  Future<void> caughtException() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'caughtException', 'void', {});
+  }
 }
 
 class _EndpointFutureCalls extends EndpointRef {

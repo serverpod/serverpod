@@ -87,10 +87,17 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
 
+      logResult.sessionLog[0].logs.sort((a, b) => a.order - b.order);
+
       expect(logResult.sessionLog[0].logs.length, equals(3));
       expect(logResult.sessionLog[0].logs[0].message, equals('debug'));
       expect(logResult.sessionLog[0].logs[1].message, equals('info'));
       expect(logResult.sessionLog[0].logs[2].message, equals('error'));
+    });
+
+    test('Long log message', () async {
+      await client.logging.logInfo(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
     });
 
     test('Error log level', () async {
@@ -217,6 +224,22 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(logResult.sessionLog[0].sessionLogEntry.slow, equals(true));
+    });
+
+    test('Exception logging', () async {
+      await client.failedCalls.caughtException();
+      await Future.delayed(const Duration(seconds: 1));
+
+      var logResult = await serviceClient.insights.getSessionLog(1, null);
+
+      logResult.sessionLog[0].logs.sort((a, b) => a.order - b.order);
+
+      expect(logResult.sessionLog.length, equals(1));
+      expect(logResult.sessionLog[0].logs.length, equals(3));
+      expect(logResult.sessionLog[0].logs[0].error, isNotNull);
+      expect(logResult.sessionLog[0].logs[0].stackTrace, isNotNull);
+      expect(logResult.sessionLog[0].logs[2].error, isNull);
+      expect(logResult.sessionLog[0].logs[2].stackTrace, isNull);
     });
 
     test('Logging in stream', () async {

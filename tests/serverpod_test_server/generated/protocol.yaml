@@ -53,6 +53,7 @@ failedCalls:
   - failedDatabaseQuery:
   - failedDatabaseQueryCaughtException:
   - slowCall:
+  - caughtException:
 futureCalls:
   - makeFutureCall:
 logging:
