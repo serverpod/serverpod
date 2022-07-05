@@ -265,7 +265,13 @@ void main() {
 
       await client.connectWebSocket();
 
-      for (var i = 0; i < 10; i += 1) {
+      for (var i = 0; i < 5; i += 1) {
+        await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
+      }
+
+      await client.streamingLogging.sendStreamMessage(SimpleData(num: -1));
+
+      for (var i = 0; i < 5; i += 1) {
         await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
       }
 
@@ -274,9 +280,16 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(logResult.sessionLog[0].sessionLogEntry.isOpen, equals(true));
-      // We should have logged one entry when opening the stream and 10 when
+      // We should have logged one entry when opening the stream and 11 when
       // sending messages.
-      expect(logResult.sessionLog[0].logs.length, equals(11));
+      expect(logResult.sessionLog[0].logs.length, equals(12));
+
+      // Expect 11 messages to have been sent
+      expect(logResult.sessionLog[0].messages.length, equals(11));
+      logResult.sessionLog[0].messages.sort((a, b) => a.order - b.order);
+
+      // Expect us to find an exception in the 6th logged message
+      expect(logResult.sessionLog[0].messages[5].error, isNotNull);
     });
   });
 }

@@ -18,6 +18,10 @@ class StreamingLoggingEndpoint extends Endpoint {
     if (message is SimpleData) {
       session.log('handleStreamMessage $_logCount');
       _logCount += 1;
+
+      if (message.num < 0) {
+        throw Exception('Test exception');
+      }
     }
   }
 }
