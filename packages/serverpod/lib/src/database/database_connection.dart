@@ -752,7 +752,8 @@ Current type was $T''');
     table = table!;
 
     var startTime = DateTime.now();
-    where ??= Expression('TRUE');
+    // where ??= Expression('TRUE');
+    if(where?.isEmpty ?? true) where = Expression('TRUE');
     String tableName = table.tableName;
     String columnNames =
         (columns?.isEmpty ?? true) ? '*' : columns!.map((e) => e).join(',');
