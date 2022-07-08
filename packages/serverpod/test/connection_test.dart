@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -327,6 +328,80 @@ void main() {
       await client.asyncTasks.throwExceptionAfterDelay(1);
       // TODO: Check that it is recorded in error logs.
     });
+  });
+
+  test('Distinct Column Values', () async {
+    await client.basicDatabase.deleteAllInTypes();
+    var types = [
+      Types(id: 81, aString: 'Test', anInt: 1),
+      Types(id: 82, aString: 'Test', anInt: 2),
+      Types(id: 83, aString: 'Test_1', anInt: 3),
+      Types(id: 84, aString: 'Test_1', anInt: 3),
+    ];
+    await Future.forEach(types,
+        (Types type) async => await client.basicDatabase.storeTypes(type));
+    var jsonResp = await client.basicDatabase.getDistinctTypesValueOnly();
+    expect(
+        jsonResp,
+        jsonEncode([
+          [2, 'Test'],
+          [1, 'Test'],
+          [3, 'Test_1']
+        ]));
+    var jsonResp2 = await client.basicDatabase.getDistinctTypesValue();
+    expect(
+        jsonResp2,
+        jsonEncode([
+          {
+            'types': {'anInt': 2, 'aString': 'Test'}
+          },
+          {
+            'types': {'anInt': 1, 'aString': 'Test'}
+          },
+          {
+            'types': {'anInt': 3, 'aString': 'Test_1'}
+          }
+        ]));
+  });
+
+  test('Regular Expression Where type ', () async {
+    var types = Types(aString: 'Anand Subbu');
+    await client.basicDatabase.storeTypes(types);
+    var type = await client.basicDatabase
+        .getRegExTypes('(Anand|Alagu){1}', false, false);
+    expect(type, 1);
+    var typewithCaseSensitive = await client.basicDatabase
+        .getRegExTypes('(anand|alagu){1}', true, false);
+    expect(typewithCaseSensitive, 0);
+    var typewithCaseSensitiveOpp = await client.basicDatabase
+        .getRegExTypes('(Subbu|Alagu){1}', true, true);
+    expect(typewithCaseSensitiveOpp! > 0, true);
+  });
+
+  test('Get Types With Query For One Column ', () async {
+    var types = Types(aString: 'Test');
+    var id = await client.basicDatabase.storeTypes(types);
+    var count =
+        await client.basicDatabase.getTypesWithWhereQuery(' = ANY(array[$id])');
+    expect(count, 1);
+  });
+
+  test('Optional Where Query', () async {
+    var types = Types(aString: 'Test');
+    var id = await client.basicDatabase.storeTypes(types);
+    var typeResp = await client.basicDatabase.optionalWhereQuery(id, null);
+    expect(typeResp!.id, id);
+    var typeResp2 =
+        await client.basicDatabase.optionalWhereQuery(null, types.aString);
+    expect(typeResp2!.aString, types.aString);
+  });
+
+  test('Insert/Update Batch of Data', () async {
+    // To update test case if it supports list parameter
+    var oldCount = await client.basicDatabase.countTypesRows();
+    await client.basicDatabase.storeListOfTypes();
+    var updatedCount = await client.basicDatabase.countTypesRows();
+    expect(updatedCount!, oldCount! + 4);
   });
 
   group('Failed calls', () {

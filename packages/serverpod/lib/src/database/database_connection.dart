@@ -634,6 +634,66 @@ Current type was $T''');
       retryIf: retryIf,
     );
   }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  /// If [id] in [TableRow] Already Exist then that row will be replaced by new value
+  /// [id] must be [null] or [not-null] for all values
+  Future<bool> insertOrupdateBulk(List<TableRow> row, Table table,
+      {required Session session, Transaction? transaction}) async {
+    if (row.isEmpty) return false;
+    // Todo: To handle for list of TableRow with (not null) and without (null) id value
+    var startTime = DateTime.now();
+    String tbName = row.first.tableName;
+    List<String> columnsList = table.columns.map((e) => e.columnName).toList();
+    List<List<String>> allValueList = [];
+    for (var row in row) {
+      List<String> valueList = [];
+      for (var column in columnsList) {
+        Map data = row.serializeForDatabase()['data'];
+        if (data[column] is Map || data[column] is List) {
+          data[column] = jsonEncode(data[column]);
+        }
+        String value;
+        var unformattedValue = data[column];
+        value = DatabasePoolManager.encoder.convert(unformattedValue);
+        valueList.add(value);
+      }
+      allValueList.add(valueList);
+    }
+    columnsList.remove('id');
+    var ids = allValueList.map((e) => e.first).toSet();
+    if (ids.contains(null) && ids.length > 1) {
+      throw ('Id must be null or not null for all values');
+    }
+    ids.removeWhere((e) => e.toString().toLowerCase() == 'null');
+    String idText = ids.isEmpty ? '' : '"id" ,';
+    if (ids.isEmpty) {
+      for (var e in allValueList) {
+        e.removeAt(0);
+      }
+    }
+
+    var columns = columnsList.map((e) => '"$e"').join(', ');
+    var values = allValueList.map((e) => e.join(', ')).join('), (');
+    var excludeNames = columnsList.map((e) => 'EXCLUDED."$e"').join(', ');
+
+    var query = '''INSERT INTO $tbName ($idText$columns) VALUES ($values)
+    ON CONFLICT (id) DO UPDATE SET 
+      ($columns) = ($excludeNames) RETURNING *;''';
+
+    try {
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var affectedRows = await context.execute(query, substitutionValues: {});
+      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
+      return affectedRows == 1;
+    } catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
 }
 
 /// A function performing a transaction, passed to the transaction method.
@@ -664,4 +724,88 @@ class Transaction {
   /// The Postgresql execution context associated with a running transaction.
   final PostgreSQLExecutionContext postgresContext;
   Transaction._(this.postgresContext);
+}
+
+///
+extension DatabaseConnectionExt on DatabaseConnection {
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List> findDistinctValue<T>({
+    List<Column>? columns,
+    bool? isDistinct,
+    bool? returnAsList,
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    assert(orderByList == null || orderBy == null);
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.find<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
+
+    var startTime = DateTime.now();
+    // where ??= Expression('TRUE');
+    if(where?.isEmpty ?? true) where = Expression('TRUE');
+    String tableName = table.tableName;
+    String columnNames =
+        (columns?.isEmpty ?? true) ? '*' : columns!.map((e) => e).join(',');
+    String distinctNames = '';
+
+    if ((isDistinct ?? false) && columnNames != '*') {
+      distinctNames = 'DISTINCT ';
+    }
+    var query =
+        'SELECT $distinctNames$columnNames FROM $tableName WHERE $where';
+
+    if (orderBy != null) {
+      query += ' ORDER BY $orderBy';
+      if (orderDescending) query += ' DESC';
+    } else if (orderByList != null) {
+      assert(orderByList.isNotEmpty);
+
+      var strList = <String>[];
+      for (var order in orderByList) {
+        strList.add(order.toString());
+      }
+
+      query += ' ORDER BY ${strList.join(',')}';
+    }
+    if (limit != null) query += ' LIMIT $limit';
+    if (offset != null) query += ' OFFSET $offset';
+
+    List<Map<String, Map<String, dynamic>>> list = [];
+    try {
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+      list = await context.mappedResultsQuery(
+        query,
+        allowReuse: false,
+        timeoutInSeconds: 60,
+        substitutionValues: {},
+      );
+    } catch (e, trace) {
+      _logQuery(session, query, startTime, exception: e, trace: trace);
+      rethrow;
+    }
+
+    _logQuery(session, query, startTime, numRowsAffected: list.length);
+    if (returnAsList ?? false) {
+      List<List> data = [];
+      for (var e in list) {
+        Map<String, dynamic> value = e[tableName]!;
+        data.add(value.values.toList());
+      }
+      return data;
+    }
+    return list;
+  }
 }

@@ -211,6 +211,44 @@ class Types extends TableRow {
     return session.db.insert(row, transaction: transaction);
   }
 
+  static Future<void> insertOrupdateBulk(
+    Session session,
+    List<Types> row, {
+    Transaction? transaction,
+  }) async {
+    return session.db
+        .insertOrupdateBulk(row, Types.t, transaction: transaction);
+  }
+
+  static Future<List> findDistinctValue(
+    Session session, {
+    TypesExpressionBuilder? where,
+    List<Column>? columns,
+    bool? returnAsList,
+    bool? isDistinct,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    Transaction? transaction,
+  }) async {
+    return session.db.findDistinctValue<Types>(
+      where: where != null ? where(Types.t) : null,
+      columns: columns,
+      returnAsList: returnAsList,
+      isDistinct: isDistinct,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
   static Future<int> count(
     Session session, {
     TypesExpressionBuilder? where,

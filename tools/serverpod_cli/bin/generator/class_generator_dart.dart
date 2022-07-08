@@ -365,6 +365,22 @@ class ClassGeneratorDart extends ClassGenerator {
               '    return session.db.insert(row, transaction: transaction);\n';
           out += '  }\n';
 
+          // insertOrupdateBulk
+          out += '\n';
+          out +=
+              '  static Future<void> insertOrupdateBulk(Session session, List<$className> row,{Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.insertOrupdateBulk(row, $className.t, transaction: transaction);\n';
+          out += '  }\n';
+
+          // findDistinctValue
+          out += '\n';
+          out +=
+              '  static Future<List> findDistinctValue(Session session, {${className}ExpressionBuilder? where,    List<Column>? columns, bool? returnAsList, bool? isDistinct, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
+          out +=
+              '    return session.db.findDistinctValue<$className>(where: where != null ? where($className.t) : null,columns:columns,returnAsList:returnAsList, isDistinct: isDistinct,limit: limit, offset: offset, orderBy: orderBy, orderByList: orderByList, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
+          out += '  }\n';
+
           // count
           out += '\n';
           out +=

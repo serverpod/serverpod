@@ -301,12 +301,55 @@ class _EndpointBasicDatabase extends EndpointRef {
     });
   }
 
+  Future<String> getDistinctTypesValue() async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'getDistinctTypesValue', 'String', {});
+  }
+
+  Future<String> getDistinctTypesValueOnly() async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'getDistinctTypesValueOnly', 'String', {});
+  }
+
+  Future<Types?> optionalWhereQuery(
+    int? id,
+    String? aString,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'optionalWhereQuery', 'Types', {
+      'id': id,
+      'aString': aString,
+    });
+  }
+
+  Future<int?> getRegExTypes(
+    String regEx,
+    bool caseSensitive,
+    bool notMatch,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'getRegExTypes', 'int', {
+      'regEx': regEx,
+      'caseSensitive': caseSensitive,
+      'notMatch': notMatch,
+    });
+  }
+
   Future<Types?> getTypes(
     int id,
   ) async {
     return await caller
         .callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
       'id': id,
+    });
+  }
+
+  Future<int?> getTypesWithWhereQuery(
+    String idQuery,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'getTypesWithWhereQuery', 'int', {
+      'idQuery': idQuery,
     });
   }
 
@@ -408,6 +451,11 @@ class _EndpointBasicDatabase extends EndpointRef {
         'basicDatabase', 'getObjectWithObject', 'ObjectWithObject', {
       'id': id,
     });
+  }
+
+  Future<bool> storeListOfTypes() async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'storeListOfTypes', 'bool', {});
   }
 }
 
@@ -655,11 +703,6 @@ class _EndpointStreaming extends EndpointRef {
   String get name => 'streaming';
 
   _EndpointStreaming(EndpointCaller caller) : super(caller);
-
-  Future<void> streamOpened() async {
-    return await caller
-        .callServerEndpoint('streaming', 'streamOpened', 'void', {});
-  }
 }
 
 class _Modules {
