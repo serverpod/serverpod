@@ -450,6 +450,26 @@ class _EndpointFailedCalls extends EndpointRef {
     return await caller
         .callServerEndpoint('failedCalls', 'failedCall', 'void', {});
   }
+
+  Future<void> failedDatabaseQuery() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'failedDatabaseQuery', 'void', {});
+  }
+
+  Future<bool> failedDatabaseQueryCaughtException() async {
+    return await caller.callServerEndpoint(
+        'failedCalls', 'failedDatabaseQueryCaughtException', 'bool', {});
+  }
+
+  Future<void> slowCall() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'slowCall', 'void', {});
+  }
+
+  Future<void> caughtException() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'caughtException', 'void', {});
+  }
 }
 
 class _EndpointFutureCalls extends EndpointRef {
@@ -655,11 +675,13 @@ class _EndpointStreaming extends EndpointRef {
   String get name => 'streaming';
 
   _EndpointStreaming(EndpointCaller caller) : super(caller);
+}
 
-  Future<void> streamOpened() async {
-    return await caller
-        .callServerEndpoint('streaming', 'streamOpened', 'void', {});
-  }
+class _EndpointStreamingLogging extends EndpointRef {
+  @override
+  String get name => 'streamingLogging';
+
+  _EndpointStreamingLogging(EndpointCaller caller) : super(caller);
 }
 
 class _Modules {
@@ -689,6 +711,7 @@ class Client extends ServerpodClient {
   late final _EndpointSignInRequired signInRequired;
   late final _EndpointSimple simple;
   late final _EndpointStreaming streaming;
+  late final _EndpointStreamingLogging streamingLogging;
   late final _Modules modules;
 
   Client(String host,
@@ -715,6 +738,7 @@ class Client extends ServerpodClient {
     signInRequired = _EndpointSignInRequired(this);
     simple = _EndpointSimple(this);
     streaming = _EndpointStreaming(this);
+    streamingLogging = _EndpointStreamingLogging(this);
 
     modules = _Modules(this);
     registerModuleProtocol(serverpod_test_module.Protocol());
@@ -739,6 +763,7 @@ class Client extends ServerpodClient {
         'signInRequired': signInRequired,
         'simple': simple,
         'streaming': streaming,
+        'streamingLogging': streamingLogging,
       };
 
   @override

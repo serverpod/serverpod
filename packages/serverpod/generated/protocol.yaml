@@ -1,11 +1,11 @@
 insights:
   - getRuntimeSettings:
   - setRuntimeSettings:
-  - reloadRuntimeSettings:
   - clearAllLogs:
   - getSessionLog:
   - getOpenSessionLog:
   - getCachesInfo:
   - shutdown:
   - checkHealth:
+  - getHealthData:
   - hotReload:

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:meta/meta.dart';
+import 'package:synchronized/synchronized.dart';
 
 import '../../server.dart';
 import '../generated/protocol.dart';
@@ -38,7 +40,9 @@ class LogManager {
 
   /// Gets the log settings for a [MethodCallSession].
   LogSettings _getLogSettingsForMethodCallSession(
-      String endpoint, String method) {
+    String endpoint,
+    String method,
+  ) {
     var settings = _methodOverrides['$endpoint.$method'];
     if (settings != null) return settings;
 
@@ -54,7 +58,10 @@ class LogManager {
   }
 
   /// Gets the log settings for a [StreamingSession].
-  LogSettings _getLogSettingsForStreamingSession() {
+  LogSettings getLogSettingsForStreamingSession({required String endpoint}) {
+    var settings = _endpointOverrides[endpoint];
+    if (settings != null) return settings;
+
     return runtimeSettings.logSettings;
   }
 
@@ -69,7 +76,13 @@ class LogManager {
       return _getLogSettingsForMethodCallSession(
           session.endpointName, session.methodName);
     } else if (session is StreamingSession) {
-      return _getLogSettingsForStreamingSession();
+      assert(
+        session.sessionLogs.currentEndpoint != null,
+        'currentEndpoint for the StreamingSession must be set.',
+      );
+      return getLogSettingsForStreamingSession(
+        endpoint: session.sessionLogs.currentEndpoint!,
+      );
     } else if (session is InternalSession) {
       return _getLogSettingsForInternalSession();
     } else if (session is FutureCallSession) {
@@ -87,12 +100,208 @@ class LogManager {
     return logEntry;
   }
 
+  /// Returns true if a query should be logged based on the current session and
+  /// its duration and if it failed.
+  @internal
+  bool shouldLogQuery({
+    required Session session,
+    required bool slow,
+    required bool failed,
+  }) {
+    var logSettings = getLogSettingsForSession(session);
+    if (logSettings.logAllQueries) {
+      return true;
+    }
+    if (logSettings.logSlowQueries && slow) {
+      return true;
+    }
+    if (logSettings.logFailedQueries && failed) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Returns true if a log entry should be stored for the provided session.
+  @internal
+  bool shouldLogEntry({
+    required Session session,
+    required LogEntry entry,
+  }) {
+    var logSettings = getLogSettingsForSession(session);
+    var serverLogLevel = (logSettings.logLevel);
+
+    return entry.logLevel >= serverLogLevel;
+  }
+
+  /// Returns true if a message should be logged for the provided session.
+  @internal
+  bool shouldLogMessage({
+    required StreamingSession session,
+    required String endpoint,
+    required bool slow,
+    required bool failed,
+  }) {
+    var logSettings = getLogSettingsForStreamingSession(endpoint: endpoint);
+    if (logSettings.logAllSessions) {
+      return true;
+    }
+    if (logSettings.logSlowSessions && slow) {
+      return true;
+    }
+    if (logSettings.logFailedSessions && failed) {
+      return true;
+    }
+    return false;
+  }
+
+  bool _continuouslyLogging(Session session) =>
+      session is StreamingSession && session.sessionLogId != null;
+
+  /// Logs an entry, depending on the session type it will be logged directly
+  /// to the database or stored in the temporary cache until the session is
+  /// closed. Call [shouldLogEntry] to check if the entry should be logged
+  /// before calling this method. This method can be called asyncronously.
+  @internal
+  Future<void> logEntry(Session session, LogEntry entry) async {
+    await _attemptOpenStreamingLog(session: session);
+
+    if (_continuouslyLogging(session)) {
+      // We are continuously writing to this sessions log.
+      entry.sessionLogId = (session as StreamingSession).sessionLogId!;
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
+      try {
+        await LogEntry.insert(tempSession, entry);
+      } catch (exception, stackTrace) {
+        stderr
+            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING ENTRY');
+        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
+        stderr.writeln('CALL error: $exception');
+        stderr.writeln('$stackTrace');
+      }
+
+      await tempSession.close();
+    } else {
+      session.sessionLogs.logEntries.add(entry);
+    }
+  }
+
+  /// Logs a query, depending on the session type it will be logged directly
+  /// to the database or stored in the temporary cache until the session is
+  /// closed. Call [shouldLogQuery] to check if the entry should be logged
+  /// before calling this method. This method can be called asyncronously.
+  @internal
+  Future<void> logQuery(Session session, QueryLogEntry entry) async {
+    await _attemptOpenStreamingLog(session: session);
+
+    if (_continuouslyLogging(session)) {
+      // We are continuously writing to this sessions log.
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
+      try {
+        await QueryLogEntry.insert(tempSession, entry);
+      } catch (exception, stackTrace) {
+        stderr
+            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY');
+        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
+        stderr.writeln('CALL error: $exception');
+        stderr.writeln('$stackTrace');
+      }
+
+      await tempSession.close();
+    } else {
+      session.sessionLogs.queries.add(entry);
+    }
+  }
+
+  /// Logs a message from a stream, depending on the session type it will be
+  /// logged directly to the database or stored in the temporary cache until the
+  /// session is closed. Call [shouldLogMessage] to check if the entry should be
+  /// logged before calling this method. This method can be called
+  /// asyncronously.
+  @internal
+  Future<void> logMessage(Session session, MessageLogEntry entry) async {
+    await _attemptOpenStreamingLog(session: session);
+
+    if (_continuouslyLogging(session)) {
+      // We are continuously writing to this sessions log.
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
+      try {
+        entry.sessionLogId = (session as StreamingSession).sessionLogId!;
+        await MessageLogEntry.insert(tempSession, entry);
+      } catch (exception, stackTrace) {
+        stderr
+            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY');
+        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
+        stderr.writeln('CALL error: $exception');
+        stderr.writeln('$stackTrace');
+      }
+
+      await tempSession.close();
+    } else {
+      session.sessionLogs.messages.add(entry);
+    }
+  }
+
+  final Lock _openStreamLogLock = Lock();
+
+  /// Sets up a log for a streaming session. Instead of writing all session data
+  /// when the session is completed the session will be continuously logged.
+  Future<void> _attemptOpenStreamingLog({
+    required Session session,
+  }) async {
+    await _openStreamLogLock.synchronized(() async {
+      if (session is! StreamingSession) {
+        // Only open streaming logs for streaming sessions.
+        return;
+      }
+
+      if (session.sessionLogId != null) {
+        // Streaming log is already opened.
+        return;
+      }
+
+      assert(session.sessionLogs.currentEndpoint != null);
+
+      var logSettings = getLogSettingsForStreamingSession(
+        endpoint: session.sessionLogs.currentEndpoint!,
+      );
+      if (!logSettings.logStreamingSessionsContinuously) {
+        // This call should not stream continuously.
+        return;
+      }
+
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
+
+      var now = DateTime.now();
+
+      var sessionLogEntry = SessionLogEntry(
+        serverId: session.server.serverId,
+        time: now,
+        touched: now,
+        endpoint: _endpointForSession(session),
+        method: _methodForSession(session),
+        isOpen: true,
+      );
+
+      await SessionLogEntry.insert(tempSession, sessionLogEntry);
+      session.sessionLogId = sessionLogEntry.id;
+
+      await tempSession.close();
+    });
+  }
+
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
   Future<int?> finalizeSessionLog(
     Session session, {
     int? authenticatedUserId,
-    bool logSession = true,
     String? exception,
     StackTrace? stackTrace,
   }) async {
@@ -100,13 +309,17 @@ class LogManager {
     _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
 
     // Check if we should log to database
-    if (!logSession) return null;
+    if (!session.enableLogging) return null;
 
     // Log session to database
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
-    var logSettings = getLogSettingsForSession(session);
+    LogSettings? logSettings;
+    if (session is! StreamingSession) {
+      logSettings = getLogSettingsForSession(session);
+    }
 
+    // Output to console in development mode.
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
@@ -121,51 +334,70 @@ class LogManager {
       }
     }
 
-    var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
-    var isSlow = duration > Duration(microseconds: slowMicros) &&
-        session is! StreamingSession;
+    var isSlow = false;
 
-    if (logSettings.logAllSessions ||
-        logSettings.logSlowSessions && isSlow ||
-        logSettings.logFailedSessions && exception != null) {
+    if (logSettings != null) {
+      var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+      isSlow = duration > Duration(microseconds: slowMicros) &&
+          session is! StreamingSession;
+    }
+
+    if ((logSettings?.logAllSessions ?? false) ||
+        (logSettings?.logSlowSessions ?? false) && isSlow ||
+        (logSettings?.logFailedSessions ?? false) && exception != null ||
+        cachedEntry.queries.isNotEmpty ||
+        cachedEntry.logEntries.isNotEmpty ||
+        cachedEntry.messages.isNotEmpty ||
+        _continuouslyLogging(session)) {
       int? sessionLogId;
+
+      var now = DateTime.now();
 
       var sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
-        time: DateTime.now(),
+        time: now,
+        touched: now,
         endpoint: _endpointForSession(session),
         method: _methodForSession(session),
         duration: duration.inMicroseconds / 1000000.0,
-        numQueries: cachedEntry.queries.length,
+        numQueries: cachedEntry.numQueries,
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
         authenticatedUserId: authenticatedUserId,
       );
 
-      var tempSession = await session.serverpod.createSession();
+      var tempSession = await session.serverpod.createSession(
+        enableLogging: false,
+      );
       try {
-        // var dbConn = DatabaseConnection(databaseConfig);
-        await tempSession.db.insert(sessionLogEntry);
-
-        sessionLogId = sessionLogEntry.id!;
-
-        for (var logInfo in cachedEntry.logEntries) {
-          await _log(logInfo, sessionLogId, logSettings, tempSession,
-              session.serverpod.runMode);
+        if (_continuouslyLogging(session)) {
+          // Close open session.
+          session as StreamingSession;
+          sessionLogId = session.sessionLogId!;
+          sessionLogEntry.id = sessionLogId;
+          sessionLogEntry.isOpen = false;
+          await SessionLogEntry.update(tempSession, sessionLogEntry);
+        } else {
+          // Create new session row.
+          await tempSession.db.insert(sessionLogEntry);
+          sessionLogId = sessionLogEntry.id!;
         }
 
+        // Write log entries
+        for (var logInfo in cachedEntry.logEntries) {
+          logInfo.sessionLogId = sessionLogId;
+          await tempSession.db.insert(logInfo);
+        }
+        // Write queries
         for (var queryInfo in cachedEntry.queries) {
-          if (logSettings.logAllQueries ||
-              logSettings.logSlowQueries &&
-                  queryInfo.duration >
-                      runtimeSettings.logSettings.slowQueryDuration ||
-              logSettings.logFailedQueries && queryInfo.error != null) {
-            // Log query
-            queryInfo.sessionLogId = sessionLogId;
-            queryInfo.serverId = session.server.serverId;
-            await tempSession.db.insert(queryInfo);
-          }
+          queryInfo.sessionLogId = sessionLogId;
+          await tempSession.db.insert(queryInfo);
+        }
+        // Write streaming messages
+        for (var messageInfo in cachedEntry.messages) {
+          messageInfo.sessionLogId = sessionLogId;
+          await tempSession.db.insert(messageInfo);
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
@@ -182,7 +414,7 @@ class LogManager {
         stderr.writeln('Current stacktrace:');
         stderr.writeln('${StackTrace.current}');
       }
-      await tempSession.close(logSession: false);
+      await tempSession.close();
 
       return sessionLogId;
     }
@@ -216,29 +448,6 @@ class LogManager {
       return session.futureCallName;
     }
     return null;
-  }
-
-  Future<void> _log(LogEntry entry, int sessionLogId, LogSettings logSettings,
-      Session tempSession, String runMode) async {
-    var serverLogLevel = (logSettings.logLevel);
-
-    if (entry.logLevel >= serverLogLevel) {
-      entry.sessionLogId = sessionLogId;
-
-      try {
-        await tempSession.db.insert(entry);
-      } catch (e) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} FAILED LOG ENTRY: $entry.message');
-      }
-    }
-
-    if (runMode == ServerpodRunMode.development) {
-      stdout.writeln(
-          '${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
   }
 
   /// Returns a list of logs for all open sessions.
@@ -275,16 +484,18 @@ class LogManager {
       // Add to list
       sessionLog.add(
         SessionLogInfo(
-          id: entry.session.temporarySessionId,
+          id: entry.session.sessionLogs.temporarySessionId,
           sessionLogEntry: SessionLogEntry(
             serverId: Serverpod.instance!.serverId,
             time: entry.session.startTime,
+            touched: DateTime.now(),
             endpoint: _endpointForSession(entry.session),
             method: _methodForSession(entry.session),
-            numQueries: entry.queries.length,
+            numQueries: entry.numQueries,
           ),
           queries: entry.queries,
-          messageLog: entry.logEntries,
+          logs: entry.logEntries,
+          messages: entry.messages,
         ),
       );
     }
@@ -302,8 +513,24 @@ class SessionLogEntryCache {
   /// Queries made during the session.
   final List<QueryLogEntry> queries = [];
 
+  /// Number of queries made during this session.
+  int numQueries = 0;
+
   /// Log entries made during the session.
   final List<LogEntry> logEntries = [];
+
+  /// Streaming messages handled during the session.
+  final List<MessageLogEntry> messages = [];
+
+  /// A temporary session id used internally by the server.
+  late int temporarySessionId;
+
+  /// Name of streaming message currently being processed.
+  String? currentEndpoint;
+
+  /// This is used internally by Serverpod to ensure the ordering of log entries
+  /// and log queries are correct.
+  int currentLogOrderId = 0;
 
   /// Creates a new [SessionLogEntryCache].
   SessionLogEntryCache(this.session);

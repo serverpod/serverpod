@@ -30,6 +30,7 @@ import '../endpoints/redis.dart';
 import '../endpoints/signin_required.dart';
 import '../endpoints/simple.dart';
 import '../endpoints/streaming.dart';
+import '../endpoints/streaming_logging.dart';
 
 class Endpoints extends EndpointDispatch {
   @override
@@ -63,6 +64,8 @@ class Endpoints extends EndpointDispatch {
         ..initialize(server, 'signInRequired', null),
       'simple': SimpleEndpoint()..initialize(server, 'simple', null),
       'streaming': StreamingEndpoint()..initialize(server, 'streaming', null),
+      'streamingLogging': StreamingLoggingEndpoint()
+        ..initialize(server, 'streamingLogging', null),
     };
 
     connectors['asyncTasks'] = EndpointConnector(
@@ -723,6 +726,45 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'failedDatabaseQuery': MethodConnector(
+          name: 'failedDatabaseQuery',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint)
+                .failedDatabaseQuery(
+              session,
+            );
+          },
+        ),
+        'failedDatabaseQueryCaughtException': MethodConnector(
+          name: 'failedDatabaseQueryCaughtException',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint)
+                .failedDatabaseQueryCaughtException(
+              session,
+            );
+          },
+        ),
+        'slowCall': MethodConnector(
+          name: 'slowCall',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint).slowCall(
+              session,
+            );
+          },
+        ),
+        'caughtException': MethodConnector(
+          name: 'caughtException',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['failedCalls'] as FailedCallsEndpoint)
+                .caughtException(
+              session,
+            );
+          },
+        ),
       },
     );
 
@@ -1026,17 +1068,13 @@ class Endpoints extends EndpointDispatch {
     connectors['streaming'] = EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {
-        'streamOpened': MethodConnector(
-          name: 'streamOpened',
-          params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['streaming'] as StreamingEndpoint).streamOpened(
-              session,
-            );
-          },
-        ),
-      },
+      methodConnectors: {},
+    );
+
+    connectors['streamingLogging'] = EndpointConnector(
+      name: 'streamingLogging',
+      endpoint: endpoints['streamingLogging']!,
+      methodConnectors: {},
     );
 
     modules['serverpod_test_module'] = serverpod_test_module.Endpoints()

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
@@ -16,7 +17,7 @@ class Server {
 
   /// The id of the server. If running in a cluster, all servers need unique
   /// ids.
-  final int serverId;
+  final String serverId;
 
   /// Port the server is listening on.
   final int port;
@@ -25,7 +26,7 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  DatabaseConfig databaseConfig;
+  DatabasePoolManager databaseConfig;
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
@@ -79,7 +80,7 @@ class Server {
     this.securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
-  }) : name = name ?? 'Server id $serverId';
+  }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
   Future<void> start() async {
@@ -290,7 +291,9 @@ class Server {
   }
 
   Future<void> _handleWebsocket(
-      WebSocket webSocket, HttpRequest request) async {
+    WebSocket webSocket,
+    HttpRequest request,
+  ) async {
     try {
       var session = StreamingSession(
         server: this,
@@ -300,10 +303,12 @@ class Server {
       );
 
       for (var endpointConnector in endpoints.connectors.values) {
+        session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
         await _callStreamOpened(session, endpointConnector.endpoint);
       }
       for (var module in endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
+          session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
           await _callStreamOpened(session, endpointConnector.endpoint);
         }
       }
@@ -328,9 +333,59 @@ class Server {
 
           var authFailed = await endpoints.canUserAccessEndpoint(
               session, endpointConnector.endpoint);
+
           if (authFailed == null) {
-            await endpointConnector.endpoint
-                .handleStreamMessage(session, message);
+            // Process the message.
+            var startTime = DateTime.now();
+            dynamic messageError;
+            StackTrace? messageStackTrace;
+
+            try {
+              session.sessionLogs.currentEndpoint = endpointName;
+              await endpointConnector.endpoint
+                  .handleStreamMessage(session, message);
+            } catch (e, s) {
+              messageError = e;
+              messageStackTrace = s;
+            }
+
+            var duration =
+                DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+            var logManager = session.serverpod.logManager;
+
+            var slow = duration >=
+                logManager
+                    .getLogSettingsForStreamingSession(
+                      endpoint: endpointName,
+                    )
+                    .slowSessionDuration;
+
+            var shouldLog = logManager.shouldLogMessage(
+              session: session,
+              endpoint: endpointName,
+              slow: slow,
+              failed: messageError != null,
+            );
+
+            if (shouldLog) {
+              var logEntry = MessageLogEntry(
+                sessionLogId: session.sessionLogs.temporarySessionId,
+                serverId: serverId,
+                messageId: session.currentMessageId,
+                endpoint: endpointName,
+                messageName: message.className,
+                duration: duration,
+                order: session.sessionLogs.currentLogOrderId,
+                error: messageError?.toString(),
+                stackTrace: messageStackTrace?.toString(),
+                slow: slow,
+              );
+              unawaited(logManager.logMessage(session, logEntry));
+
+              session.sessionLogs.currentLogOrderId += 1;
+            }
+
+            session.currentMessageId += 1;
           }
         }
       } catch (e, s) {

@@ -50,6 +50,10 @@ transactionsDatabase:
   - updateInsertDelete:
 failedCalls:
   - failedCall:
+  - failedDatabaseQuery:
+  - failedDatabaseQueryCaughtException:
+  - slowCall:
+  - caughtException:
 futureCalls:
   - makeFutureCall:
 logging:
@@ -77,4 +81,4 @@ simple:
   - addToGlobalInt:
   - getGlobalInt:
 streaming:
-  - streamOpened:
+streamingLogging:

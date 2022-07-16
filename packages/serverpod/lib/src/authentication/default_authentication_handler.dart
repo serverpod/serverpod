@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod/src/generated/auth_key.dart';
 
 import '../server/session.dart';
@@ -18,7 +20,13 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
     var secret = parts[1];
 
     // Get the authentication key from the database
-    var authKey = await session.db.findById<AuthKey>(keyId);
+    var tempSession = await session.serverpod.createSession(
+      enableLogging: false,
+    );
+
+    var authKey = await tempSession.db.findById<AuthKey>(keyId);
+    await tempSession.close();
+
     if (authKey == null) return null;
 
     // Hash the key from the user and check that it is what we expect
@@ -35,7 +43,9 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
       scopes.add(Scope(scopeName));
     }
     return AuthenticationInfo(authKey.userId, scopes);
-  } catch (e) {
+  } catch (exception, stackTrace) {
+    stderr.writeln('Failed authentication: $exception');
+    stderr.writeln('$stackTrace');
     return null;
   }
 }

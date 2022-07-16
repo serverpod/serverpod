@@ -15,6 +15,8 @@ import 'cache_info.dart';
 import 'caches_info.dart';
 import 'cloud_storage.dart';
 import 'cloud_storage_direct_upload.dart';
+import 'cluster_info.dart';
+import 'cluster_server_info.dart';
 import 'distributed_cache_entry.dart';
 import 'future_call_entry.dart';
 import 'log_entry.dart';
@@ -22,10 +24,12 @@ import 'log_level.dart';
 import 'log_result.dart';
 import 'log_settings.dart';
 import 'log_settings_override.dart';
+import 'message_log_entry.dart';
 import 'method_info.dart';
 import 'query_log_entry.dart';
 import 'readwrite_test.dart';
 import 'runtime_settings.dart';
+import 'server_health_connection_info.dart';
 import 'server_health_metric.dart';
 import 'server_health_result.dart';
 import 'session_log_entry.dart';
@@ -38,6 +42,8 @@ export 'cache_info.dart';
 export 'caches_info.dart';
 export 'cloud_storage.dart';
 export 'cloud_storage_direct_upload.dart';
+export 'cluster_info.dart';
+export 'cluster_server_info.dart';
 export 'distributed_cache_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
@@ -45,10 +51,12 @@ export 'log_level.dart';
 export 'log_result.dart';
 export 'log_settings.dart';
 export 'log_settings_override.dart';
+export 'message_log_entry.dart';
 export 'method_info.dart';
 export 'query_log_entry.dart';
 export 'readwrite_test.dart';
 export 'runtime_settings.dart';
+export 'server_health_connection_info.dart';
 export 'server_health_metric.dart';
 export 'server_health_result.dart';
 export 'session_log_entry.dart';
@@ -83,6 +91,10 @@ class Protocol extends SerializationManagerServer {
     constructors['CloudStorageDirectUploadEntry'] =
         (Map<String, dynamic> serialization) =>
             CloudStorageDirectUploadEntry.fromSerialization(serialization);
+    constructors['ClusterInfo'] = (Map<String, dynamic> serialization) =>
+        ClusterInfo.fromSerialization(serialization);
+    constructors['ClusterServerInfo'] = (Map<String, dynamic> serialization) =>
+        ClusterServerInfo.fromSerialization(serialization);
     constructors['DistributedCacheEntry'] =
         (Map<String, dynamic> serialization) =>
             DistributedCacheEntry.fromSerialization(serialization);
@@ -99,6 +111,8 @@ class Protocol extends SerializationManagerServer {
     constructors['LogSettingsOverride'] =
         (Map<String, dynamic> serialization) =>
             LogSettingsOverride.fromSerialization(serialization);
+    constructors['MessageLogEntry'] = (Map<String, dynamic> serialization) =>
+        MessageLogEntry.fromSerialization(serialization);
     constructors['MethodInfo'] = (Map<String, dynamic> serialization) =>
         MethodInfo.fromSerialization(serialization);
     constructors['QueryLogEntry'] = (Map<String, dynamic> serialization) =>
@@ -107,6 +121,9 @@ class Protocol extends SerializationManagerServer {
         ReadWriteTestEntry.fromSerialization(serialization);
     constructors['RuntimeSettings'] = (Map<String, dynamic> serialization) =>
         RuntimeSettings.fromSerialization(serialization);
+    constructors['ServerHealthConnectionInfo'] =
+        (Map<String, dynamic> serialization) =>
+            ServerHealthConnectionInfo.fromSerialization(serialization);
     constructors['ServerHealthMetric'] = (Map<String, dynamic> serialization) =>
         ServerHealthMetric.fromSerialization(serialization);
     constructors['ServerHealthResult'] = (Map<String, dynamic> serialization) =>
@@ -132,6 +149,8 @@ class Protocol extends SerializationManagerServer {
     typeTableMapping[FutureCallEntry] = FutureCallEntry.t;
     tableClassMapping['serverpod_log'] = 'LogEntry';
     typeTableMapping[LogEntry] = LogEntry.t;
+    tableClassMapping['serverpod_message_log'] = 'MessageLogEntry';
+    typeTableMapping[MessageLogEntry] = MessageLogEntry.t;
     tableClassMapping['serverpod_method'] = 'MethodInfo';
     typeTableMapping[MethodInfo] = MethodInfo.t;
     tableClassMapping['serverpod_query_log'] = 'QueryLogEntry';
@@ -140,6 +159,11 @@ class Protocol extends SerializationManagerServer {
     typeTableMapping[ReadWriteTestEntry] = ReadWriteTestEntry.t;
     tableClassMapping['serverpod_runtime_settings'] = 'RuntimeSettings';
     typeTableMapping[RuntimeSettings] = RuntimeSettings.t;
+    tableClassMapping['serverpod_health_connection_info'] =
+        'ServerHealthConnectionInfo';
+    typeTableMapping[ServerHealthConnectionInfo] = ServerHealthConnectionInfo.t;
+    tableClassMapping['serverpod_health_metric'] = 'ServerHealthMetric';
+    typeTableMapping[ServerHealthMetric] = ServerHealthMetric.t;
     tableClassMapping['serverpod_session_log'] = 'SessionLogEntry';
     typeTableMapping[SessionLogEntry] = SessionLogEntry.t;
   }

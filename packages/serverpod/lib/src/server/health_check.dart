@@ -1,79 +1,40 @@
+import 'dart:io';
 import 'dart:math';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
 
+import 'package:system_resources/system_resources.dart';
+
 /// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
-  var metrics = <ServerHealthMetric>[];
+  var now = DateTime.now().toUtc();
+  now = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute);
+
+  var result = await defaultHealthCheckMetrics(pod, now);
+
   if (pod.healthCheckHandler != null) {
-    metrics.addAll(await pod.healthCheckHandler!(pod));
+    result.metrics.addAll(await pod.healthCheckHandler!(pod, now));
   }
 
-  metrics.addAll(await defaultHealthCheckMetrics(pod));
-
-  return ServerHealthResult(
-    serverName: pod.server.name,
-    metrics: metrics,
-  );
+  return result;
 }
 
 /// Performs all default health checks on the [Serverpod].
-Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
-    Serverpod pod) async {
-  /*
-  // Check cpu
-  double psUsage = 0.0;
-  bool psUsageHealthy = false;
+Future<ServerHealthResult> defaultHealthCheckMetrics(
+  Serverpod pod,
+  DateTime timestamp,
+) async {
+  double? cpuLoad;
+  double? memoryUsage;
 
-  ProcessResult psResult;
   try {
-    // ps -A -o %cpu | awk '{s+=$1} END {print s}'
-    psResult = await Process.run('ps', ['-A', '-o', '%cpu']);
-    List<String> psStrs = psResult.stdout.toString().split('\n');
-    psStrs.removeAt(0);
-
-    for (var psStr in psStrs) {
-      psUsage += double.tryParse(psStr) ?? 0.0;
-    }
-    psUsageHealthy = true;
+    cpuLoad = SystemResources.cpuLoadAvg();
+    memoryUsage = SystemResources.memUsage();
+  } catch (e, stackTrace) {
+    stderr.writeln('CPU health check failed: $e');
+    stderr.writeln(stackTrace);
   }
-  catch(e, stackTrace) {
-    print('CPU Health check failed: $e');
-    print('memResult: $psResult');
-    print('stdout: ${psResult?.stdout}');
-    print('stderr: ${psResult?.stderr}');
-    print('$stackTrace');
-    print('Local stack trace');
-    print('${StackTrace.current}');
-  }
-
-  // Check memory usage
-  double memUsage = 0.0;
-  bool memUsageHealthy = false;
-
-  ProcessResult memResult;
-  try {
-    // ps -A -o %cpu | awk '{s+=$1} END {print s}'
-    memResult = await Process.run('ps', ['-A', '-o', '%mem']);
-    List<String> memStrs = memResult.stdout.toString().split('\n');
-    memStrs.removeAt(0);
-
-    for (var memStr in memStrs) {
-      memUsage += double.tryParse(memStr) ?? 0.0;
-    }
-    memUsageHealthy = true;
-  }
-  catch(e, stackTrace) {
-    print('CPU Health check failed: $e');
-    print('memResult: $memResult');
-    print('stdout: ${memResult?.stdout}');
-    print('stderr: ${memResult?.stderr}');
-    print('$stackTrace');
-    print('Local stack trace');
-    print('${StackTrace.current}');
-  }
-  */
 
   // Check database response time
   var dbResponseTime = 0.0;
@@ -90,7 +51,7 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
       number: rnd,
     );
 
-    var session = await pod.createSession();
+    var session = await pod.createSession(enableLogging: false);
     await databaseConnection.insert(entry, session: session);
 
     // Read entry
@@ -108,9 +69,45 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
   catch (e) {}
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
-  var connectionsInfoService = pod.serviceServer.httpServer.connectionsInfo();
 
-  return <ServerHealthMetric>[
+  return ServerHealthResult(
+    metrics: [
+      ServerHealthMetric(
+        serverId: pod.serverId,
+        name: 'serverpod_database',
+        timestamp: timestamp,
+        value: dbResponseTime,
+        isHealthy: dbHealthy,
+      ),
+      if (cpuLoad != null)
+        ServerHealthMetric(
+          serverId: pod.serverId,
+          name: 'serverpod_cpu',
+          timestamp: timestamp,
+          value: cpuLoad,
+          isHealthy: true,
+        ),
+      if (memoryUsage != null)
+        ServerHealthMetric(
+          serverId: pod.serverId,
+          name: 'serverpod_memory',
+          timestamp: timestamp,
+          value: memoryUsage,
+          isHealthy: true,
+        ),
+    ],
+    connectionInfos: [
+      ServerHealthConnectionInfo(
+        serverId: pod.serverId,
+        type: 0,
+        timestamp: timestamp,
+        active: connectionsInfo.active,
+        closing: connectionsInfo.closing,
+        idle: connectionsInfo.idle,
+      )
+    ],
+  );
+
 //    ServerHealthMetric(
 //      name: 'serverpod_cpu',
 //      value: psUsage,
@@ -121,50 +118,4 @@ Future<List<ServerHealthMetric>> defaultHealthCheckMetrics(
 //      value: memUsage,
 //      isHealthy: memUsageHealthy,
 //    ),
-    ServerHealthMetric(
-      name: 'serverpod_database',
-      value: dbResponseTime,
-      isHealthy: dbHealthy,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_active',
-      value: connectionsInfo.active.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_closing',
-      value: connectionsInfo.closing.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_idle',
-      value: connectionsInfo.idle.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_connections_total',
-      value: connectionsInfo.total.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_active',
-      value: connectionsInfoService.active.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_closing',
-      value: connectionsInfoService.closing.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_idle',
-      value: connectionsInfoService.idle.toDouble(),
-      isHealthy: true,
-    ),
-    ServerHealthMetric(
-      name: 'serverpod_service_connections_total',
-      value: connectionsInfoService.total.toDouble(),
-      isHealthy: true,
-    ),
-  ];
 }

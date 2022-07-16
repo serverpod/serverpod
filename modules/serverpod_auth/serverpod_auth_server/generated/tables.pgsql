@@ -30,7 +30,7 @@ CREATE TABLE serverpod_email_create_request (
 ALTER TABLE ONLY serverpod_email_create_request
   ADD CONSTRAINT serverpod_email_create_request_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX serverpod_email_auth_email ON serverpod_email_create_request USING btree ("email");
+CREATE UNIQUE INDEX serverpod_email_auth_create_account_request_idx ON serverpod_email_create_request USING btree ("email");
 
 
 --

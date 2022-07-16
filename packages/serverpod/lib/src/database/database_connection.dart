@@ -8,7 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
 import '../server/session.dart';
-import 'database_config.dart';
+import 'database_pool_manager.dart';
 import 'expressions.dart';
 import 'table.dart';
 
@@ -16,7 +16,7 @@ import 'table.dart';
 /// the [Session] object should be used when connecting with the database.
 class DatabaseConnection {
   /// Database configuration.
-  final DatabaseConfig config;
+  final DatabasePoolManager poolManager;
 
   /// Access to the raw Postgresql connection pool.
   late PgPool postgresConnection;
@@ -24,8 +24,8 @@ class DatabaseConnection {
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
-  DatabaseConnection(this.config) {
-    postgresConnection = config.pool;
+  DatabaseConnection(this.poolManager) {
+    postgresConnection = poolManager.pool;
   }
 
   /// Returns a list of names of all tables in the current database.
@@ -215,7 +215,7 @@ Current type was $T''');
   }
 
   TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
-    String? className = config.tableClassMapping[tableName];
+    String? className = poolManager.tableClassMapping[tableName];
     if (className == null) return null;
 
     var data = <String, dynamic>{};
@@ -238,7 +238,7 @@ Current type was $T''');
 
     var serialization = <String, dynamic>{'data': data, 'class': className};
 
-    return config.serializationManager
+    return poolManager.serializationManager
         .createEntityFromSerialization(serialization) as TableRow?;
   }
 
@@ -307,7 +307,7 @@ Current type was $T''');
         data[column] = jsonEncode(data[column]);
       }
 
-      var value = DatabaseConfig.encoder.convert(data[column]);
+      var value = DatabasePoolManager.encoder.convert(data[column]);
 
       updatesList.add('"$column" = $value');
     }
@@ -364,7 +364,7 @@ Current type was $T''');
       // else {
       //   value = DatabaseConfig.encoder.convert(unformattedValue);
       // }
-      value = DatabaseConfig.encoder.convert(unformattedValue);
+      value = DatabasePoolManager.encoder.convert(unformattedValue);
 
       columnsList.add('"$column"');
       valueList.add(value);
@@ -601,20 +601,49 @@ Current type was $T''');
     }
   }
 
-  void _logQuery(Session session, String query, DateTime startTime,
-      {int? numRowsAffected, exception, StackTrace? trace}) {
-    session.sessionLogs.queries.add(
-      QueryLogEntry(
-        sessionLogId: session.temporarySessionId,
-        serverId: session.server.serverId,
-        query: query,
-        duration:
-            DateTime.now().difference(startTime).inMicroseconds / 1000000.0,
-        numRows: numRowsAffected,
-        error: exception?.toString(),
-        stackTrace: trace?.toString(),
-      ),
+  void _logQuery(
+    Session session,
+    String query,
+    DateTime startTime, {
+    int? numRowsAffected,
+    exception,
+    StackTrace? trace,
+  }) {
+    // Check if this query should be logged.
+    var logSettings = session.serverpod.logManager.getLogSettingsForSession(
+      session,
     );
+    var duration =
+        DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+    var slow = duration >= logSettings.slowQueryDuration;
+    var shouldLog = session.serverpod.logManager.shouldLogQuery(
+      session: session,
+      slow: slow,
+      failed: exception != null,
+    );
+
+    if (!shouldLog) {
+      return;
+    }
+
+    // Use the current stack trace if there is no exception.
+    trace ??= StackTrace.current;
+
+    // Log the query.
+    var entry = QueryLogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: session.server.serverId,
+      query: query,
+      duration: duration,
+      numRows: numRowsAffected,
+      error: exception?.toString(),
+      stackTrace: trace.toString(),
+      slow: slow,
+      order: session.sessionLogs.currentLogOrderId,
+    );
+    session.serverpod.logManager.logQuery(session, entry);
+    session.sessionLogs.currentLogOrderId += 1;
+    session.sessionLogs.numQueries += 1;
   }
 
   /// For most cases use the corresponding method in [Database] instead.

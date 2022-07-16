@@ -573,24 +573,33 @@ class FieldDefinition {
   }
 
   FieldScope scope = FieldScope.all;
+  String? parentTable;
 
   FieldDefinition(this.name, String description) {
-    var components = description.split(',').map((String s) {
-      return s.trim();
-    }).toList();
+    var components = description.split(',').map((s) => s.trim()).toList();
     var typeStr = components[0];
 
-    if (components.length == 2) {
-      var scopeStr = components[1];
-      if (scopeStr == 'database') {
-        scope = FieldScope.database;
-      } else if (scopeStr == 'api') {
-        scope = FieldScope.api;
-      }
+    if (components.length >= 2) {
+      _parseOptions(components.sublist(1));
     }
 
     // TODO: Fix package?
     type = TypeDefinition(typeStr, null);
+  }
+
+  void _parseOptions(List<String> options) {
+    for (var option in options) {
+      if (option == 'database') {
+        scope = FieldScope.database;
+      } else if (option == 'api') {
+        scope = FieldScope.api;
+      } else if (option.startsWith('parent')) {
+        var components = option.split('=').map((s) => s.trim()).toList();
+        if (components.length == 2 && components[0] == 'parent') {
+          parentTable = components[1];
+        }
+      }
+    }
   }
 
   String get serialization {
