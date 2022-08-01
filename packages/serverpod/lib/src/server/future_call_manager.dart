@@ -96,9 +96,8 @@ class FutureCallManager {
       var tempSession = await _server.serverpod.createSession(
         enableLogging: false,
       );
-      var rows = await tempSession.db.find<FutureCallEntry>(
-        where: (FutureCallEntry.t.time <= now) &
-            FutureCallEntry.t.serverId.equals(_server.serverId),
+      var rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
+        where: (FutureCallEntry.t.time <= now),
       );
       await tempSession.close();
 
@@ -126,19 +125,6 @@ class FutureCallManager {
         } catch (e, stackTrace) {
           await futureCallSession.close(error: e, stackTrace: stackTrace);
         }
-      }
-
-      // Remove the invoked calls
-      if (rows.isNotEmpty) {
-        var tempSession = await _server.serverpod.createSession(
-          enableLogging: false,
-        );
-        await tempSession.db.delete<FutureCallEntry>(
-          where:
-              FutureCallEntry.t.serverId.equals(tempSession.server.serverId) &
-                  (FutureCallEntry.t.time <= now),
-        );
-        await tempSession.close();
       }
     } catch (e, stackTrace) {
       // Most likely we lost connection to the database
