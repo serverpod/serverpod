@@ -18,6 +18,13 @@ insightsServer:
   publicPort: 443
   publicScheme: https
 
+# Configuration for the web server.
+webServer:
+  port: 8082
+  publicHost: app.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
 # This is the database setup for your servers.
 database:
   host: database.examplepod.com
