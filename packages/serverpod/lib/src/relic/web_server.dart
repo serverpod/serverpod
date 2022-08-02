@@ -4,9 +4,6 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
-import 'templates.dart';
-import 'web_widget.dart';
-
 /// The Serverpod webserver.
 class WebServer {
   /// Reference to the [Serverpod] this webserver is associated with.
@@ -196,16 +193,27 @@ enum RouteMethod {
   post,
 }
 
+/// A [Route] defines a destination in Serverpod's web server. It will handle
+/// a call and generate an appropriate response by manipulating the
+/// [HttpRequest] object. You override [Route], or more likely it's subclass
+/// [WidgetRoute] to create your own custom routes in your server.
 abstract class Route {
+  /// The method this route will respond to, i.e. HTTP get or post.
   final RouteMethod method;
   String? _matchPath;
 
+  /// Creates a new [Route].
   Route({this.method = RouteMethod.get});
 
+  /// Sets the headers of the response. Default is text/html with UTF-8
+  /// encoding.
   void setHeaders(HttpHeaders headers) {
     headers.contentType = ContentType('text', 'html', charset: 'utf-8');
   }
 
+  /// Handles a call to this route. This method is repsonsible for setting
+  /// a correct response headers, status code, and write the response body to
+  /// `request.response`.
   Future<bool> handleCall(Session session, HttpRequest request);
 
   bool _isMatch(String path) {
@@ -220,7 +228,12 @@ abstract class Route {
     }
   }
 
-  Future<Map<String, String>> getBody(HttpRequest request) async {
+  // TODO: May want to create another abstraction layer here, to handle other
+  // types of responses too. Or at least clarify the naming of the method.
+
+  /// Returns the body of the request, assuming it is standard URL encoded form
+  /// post request.
+  static Future<Map<String, String>> getBody(HttpRequest request) async {
     var body = await _readBody(request);
 
     var params = <String, String>{};
@@ -243,7 +256,7 @@ abstract class Route {
     return params;
   }
 
-  Future<String?> _readBody(HttpRequest request) async {
+  static Future<String?> _readBody(HttpRequest request) async {
     // TODO: Find more efficient solution?
     var len = 0;
     var data = <int>[];
@@ -258,14 +271,16 @@ abstract class Route {
   }
 }
 
+/// A [WidgetRoute] is the most convienient way to create routes in your server.
+/// Override the [build] method and return an appropriate [Widget].
 abstract class WidgetRoute extends Route {
+  /// Override this method to build your web [Widget] from the current [session]
+  /// and [request].
   Future<AbstractWidget> build(Session session, HttpRequest request);
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
     var widget = await build(session, request);
-    // if (widget == null)
-    //   return false;
 
     if (widget is WidgetJson) {
       request.response.headers.contentType = ContentType('application', 'json');
