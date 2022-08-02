@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
-import 'config.dart';
 import 'templates.dart';
 import 'web_widget.dart';
 
@@ -17,10 +16,10 @@ class WebServer {
   final String serverId;
 
   /// The port the webserver is running on.
-  late final int port;
+  late final int _port;
 
   /// The hostname of the webserver.
-  late final String hostname;
+  late final String _hostname;
 
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
@@ -29,13 +28,13 @@ class WebServer {
   WebServer({
     required this.serverpod,
   }) : serverId = serverpod.serverId {
-    var config = WebserverConfig(
-      serverId: serverId,
-      runMode: serverpod.runMode,
+    assert(
+      serverpod.config.webServer != null,
+      'To use the Relic web server you must have configured the web server in your config file.',
     );
 
-    port = config.port!;
-    hostname = config.hostname!;
+    _port = serverpod.config.webServer!.port;
+    _hostname = serverpod.config.webServer!.publicHost;
   }
 
   bool _running = false;
@@ -70,7 +69,7 @@ class WebServer {
   }
 
   Future<void> _start() async {
-    await HttpServer.bind(InternetAddress.anyIPv6, port)
+    await HttpServer.bind(InternetAddress.anyIPv6, _port)
         .then((HttpServer httpServer) {
       _httpServer = httpServer;
       httpServer.autoCompress = true;
@@ -87,7 +86,7 @@ class WebServer {
       });
     });
 
-    stdout.writeln('Webserver listening on port $port');
+    stdout.writeln('Webserver listening on port $_port');
   }
 
   void _handleRequest(HttpRequest request) async {
@@ -108,8 +107,8 @@ class WebServer {
       return;
     }
 
-    if (uri.host != hostname) {
-      var redirect = uri.replace(host: hostname);
+    if (uri.host != _hostname) {
+      var redirect = uri.replace(host: _hostname);
       request.response.headers.add('Location', redirect.toString());
       request.response.statusCode = HttpStatus.movedPermanently;
       await request.response.close();

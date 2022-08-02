@@ -22,6 +22,9 @@ class ServerpodConfig {
   /// Configuration for the Insights server.
   late ServerConfig insightsServer;
 
+  /// Configuration for the web server (optional).
+  ServerConfig? webServer;
+
   /// Configuration for the Postgres database.
   late DatabaseConfig database;
 
@@ -43,6 +46,10 @@ class ServerpodConfig {
 
     assert(doc['insightsServer'] is Map, 'insightsServer is missing in config');
     insightsServer = ServerConfig._(doc['insightsServer'], 'insights');
+
+    if (doc['webServer'] != null) {
+      webServer = ServerConfig._(doc['webServer'], 'web');
+    }
 
     // Get max request size (default to 512kb)
     maxRequestSize = doc['maxRequestSize'] ?? 524288;
@@ -66,6 +73,9 @@ class ServerpodConfig {
 
     str += apiServer.toString();
     str += insightsServer.toString();
+    if (webServer != null) {
+      str += webServer!.toString();
+    }
 
     str += database.toString();
     str += redis.toString();
