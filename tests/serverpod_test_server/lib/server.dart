@@ -35,11 +35,6 @@ void run(List<String> args) async {
     },
   ));
 
-  // Start the server
-  await pod.start();
-
-  // Add relic / webserver
-  var webserver = WebServer(serverpod: pod);
-  webserver.addRoute(RouteRoot(), '/');
-  await webserver.start();
+  // Add route to web server
+  pod.webServer.addRoute(RouteRoot(), '/');
 }

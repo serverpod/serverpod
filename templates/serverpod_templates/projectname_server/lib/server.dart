@@ -20,23 +20,12 @@ void run(List<String> args) async {
   // If you are using any future calls, they need to be registered here.
   // pod.registerFutureCall(ExampleFutureCall(), 'exampleFutureCall');
 
+  // Setup a default page at the web root.
+  pod.webServer.addRoute(RouteRoot(), '/');
+  // Serve all files in the /static directory.
+  pod.webServer
+      .addRoute(RouteStaticDirectory(serverDirectory: 'static'), '/static/*');
+
   // Start the server.
   await pod.start();
-
-  // Setup the Relic web server. If you prefer to not use the Serverpod web
-  // server, you can safely remove this section.
-  final webServer = WebServer(serverpod: pod);
-
-  // Setup a default page at the web root.
-  webServer.addRoute(
-    RouteRoot(),
-    '/',
-  );
-  // Serve anything under the /static directory statically.
-  webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static'),
-    '/static/*',
-  );
-
-  await webServer.start();
 }
