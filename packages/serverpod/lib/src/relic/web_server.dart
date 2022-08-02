@@ -25,13 +25,8 @@ class WebServer {
   WebServer({
     required this.serverpod,
   }) : serverId = serverpod.serverId {
-    assert(
-      serverpod.config.webServer != null,
-      'To use the Relic web server you must have configured the web server in your config file.',
-    );
-
-    _port = serverpod.config.webServer!.port;
-    _hostname = serverpod.config.webServer!.publicHost;
+    _port = serverpod.config.webServer.port;
+    _hostname = serverpod.config.webServer.publicHost;
   }
 
   bool _running = false;
