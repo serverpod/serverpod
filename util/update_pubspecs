@@ -10,7 +10,6 @@ serverpod generate-pubspecs --version $VERSION --mode development
 echo "Copying CHANGELOG.md"
 cp CHANGELOG.md packages/serverpod/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_client/CHANGELOG.md
-cp CHANGELOG.md packages/serverpod_relic/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_serialization/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
@@ -32,7 +31,6 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_google_flutter/CHANGELOG.m
 echo "Copying README.md"
 cp README.md packages/serverpod/README.md
 cp README_subpackage.md packages/serverpod_client/README.md
-cp README_subpackage.md packages/serverpod_relic/README.md
 cp README_subpackage.md packages/serverpod_serialization/README.md
 cp README_subpackage.md packages/serverpod_service_client/README.md
 cp README_subpackage.md packages/serverpod_shared/README.md

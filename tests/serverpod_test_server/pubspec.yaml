@@ -12,8 +12,6 @@ environment:
 dependencies:
   serverpod: #^0.9.8
     path: ../../packages/serverpod
-  serverpod_relic: #^0.9.8
-    path: ../../packages/serverpod_relic
   serverpod_test_module_server: #^0.9.8
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_auth_server: #^0.9.8

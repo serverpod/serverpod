@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_relic/serverpod_relic.dart';
 
 import 'package:projectname_server/src/web/routes/root.dart';
 

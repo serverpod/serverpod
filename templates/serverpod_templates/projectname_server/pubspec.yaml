@@ -9,8 +9,6 @@ environment:
 dependencies:
   serverpod: #^VERSION
     path: ../../../packages/serverpod
-  serverpod_relic: #^VERSION
-    path: ../../../packages/serverpod_relic
 
 dev_dependencies:
   lints: ^1.0.1
