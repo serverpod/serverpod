@@ -21,7 +21,7 @@ resource "aws_launch_configuration" "serverpod" {
   image_id    = var.instance_ami
   #   image_id = data.aws_ami.amazon-linux.id
   instance_type = var.instance_type
-  user_data     = templatefile("init-script.sh", {runmode="production"})
+  user_data     = templatefile("init-script.sh", { runmode = "production" })
 
   security_groups = [
     aws_security_group.serverpod.id,
@@ -44,7 +44,8 @@ resource "aws_autoscaling_group" "serverpod" {
 
   target_group_arns = [
     aws_lb_target_group.api.arn,
-    aws_lb_target_group.insights.arn
+    aws_lb_target_group.insights.arn,
+    aws_lb_target_group.web.arn
   ]
 
   tag {
@@ -65,7 +66,7 @@ resource "aws_security_group" "serverpod" {
 
   ingress {
     from_port       = 8080
-    to_port         = 8081
+    to_port         = 8082
     protocol        = "tcp"
     security_groups = [aws_security_group.api.id]
   }
