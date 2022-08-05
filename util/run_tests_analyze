@@ -12,7 +12,6 @@ set -e
 echo "### Running dart analyze"
 dart analyze packages/serverpod
 dart analyze packages/serverpod_client
-dart analyze packages/serverpod_relic
 dart analyze packages/serverpod_serialization
 dart analyze packages/serverpod_service_client
 dart analyze packages/serverpod_shared

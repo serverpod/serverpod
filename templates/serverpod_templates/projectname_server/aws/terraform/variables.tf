@@ -118,18 +118,28 @@ variable "subdomain_insights" {
   type        = string
 }
 
+variable "subdomain_web" {
+  description = "The domain name for use with the web server"
+  type        = string
+}
+
 variable "subdomain_storage" {
   description = "The domain name for use with public storage"
   type        = string
 }
 
-variable "subdomain_staging" {
-  description = "The domain name for use by staging"
+variable "subdomain_api_staging" {
+  description = "The domain name for use by api staging"
   type        = string
 }
 
 variable "subdomain_insights_staging" {
-  description = "The domain name for use by staging"
+  description = "The domain name for use by insights staging"
+  type        = string
+}
+
+variable "subdomain_web_staging" {
+  description = "The domain name for use by web server staging"
   type        = string
 }
 
@@ -148,6 +158,6 @@ variable "private_storage_bucket_name" {
 # Database
 
 variable "DATABASE_PASSWORD_PRODUCTION" {
-  description = "Name of S3 bucket used for private storage"
+  description = "The production database password, you can find it in the config/passwords.yaml file"
   type        = string
 }

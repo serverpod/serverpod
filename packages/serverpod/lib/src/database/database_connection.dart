@@ -441,6 +441,48 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> deleteAndReturn<T>({
+    required Expression where,
+    required Session session,
+    Transaction? transaction,
+  }) async {
+    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.deleteAndReturn<MyTableClass>(where: ...);
+Current type was $T''');
+    table = table!;
+
+    var startTime = DateTime.now();
+
+    var tableName = table.tableName;
+    var query = 'DELETE FROM $tableName WHERE $where RETURNING *';
+
+    List<TableRow?> list = <TableRow>[];
+    try {
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var result = await context.mappedResultsQuery(
+        query,
+        allowReuse: false,
+        timeoutInSeconds: 60,
+        substitutionValues: {},
+      );
+      for (var rawRow in result) {
+        list.add(_formatTableRow(tableName, rawRow[tableName]));
+      }
+    } catch (e, trace) {
+      _logQuery(session, query, startTime, exception: e, trace: trace);
+      rethrow;
+    }
+
+    _logQuery(session, query, startTime, numRowsAffected: list.length);
+    return list.cast<T>();
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
   Future<bool> deleteRow(
     TableRow row, {
     required Session session,

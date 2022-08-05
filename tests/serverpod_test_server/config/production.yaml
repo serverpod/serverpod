@@ -10,6 +10,12 @@ insightsServer:
   publicPort: 8081
   publicScheme: http
 
+webServer:
+  port: 8082
+  publicHost: serverpod_test_server
+  publicPort: 8082
+  publicScheme: http
+
 database:
   host: postgres
   port: 5432

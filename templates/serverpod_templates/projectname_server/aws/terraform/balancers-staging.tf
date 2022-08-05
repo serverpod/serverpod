@@ -13,7 +13,7 @@ resource "aws_lb" "api_staging" {
 resource "aws_lb_listener" "api_staging" {
   count = var.enable_staging_server ? 1 : 0
 
-  load_balancer_arn = aws_lb.api.arn
+  load_balancer_arn = aws_lb.api_staging[0].arn
   port              = "443"
   protocol          = "HTTPS"
   certificate_arn   = var.certificate_arn
@@ -44,10 +44,10 @@ resource "aws_route53_record" "api_staging" {
   count = var.enable_staging_server ? 1 : 0
 
   zone_id = var.hosted_zone_id
-  name    = "${var.subdomain_staging}.${var.top_domain}"
+  name    = "${var.subdomain_api_staging}.${var.top_domain}"
   type    = "CNAME"
   ttl     = "300"
-  records = ["${aws_lb.api.dns_name}"]
+  records = ["${aws_lb.api_staging[0].dns_name}"]
 }
 
 # Insights load balancer setup
@@ -99,5 +99,57 @@ resource "aws_route53_record" "insights_staging" {
   name    = "${var.subdomain_insights_staging}.${var.top_domain}"
   type    = "CNAME"
   ttl     = "300"
-  records = ["${aws_lb.insights.dns_name}"]
+  records = ["${aws_lb.insights_staging[0].dns_name}"]
+}
+
+# Insights load balancer setup
+
+resource "aws_lb" "web_staging" {
+  count = var.enable_staging_server ? 1 : 0
+
+  name               = "${var.project_name}-web-staging"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.api.id]
+  subnets            = module.vpc.public_subnets
+}
+
+resource "aws_lb_listener" "web_staging" {
+  count = var.enable_staging_server ? 1 : 0
+
+  load_balancer_arn = aws_lb.web_staging[0].arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web_staging[0].arn
+  }
+}
+
+resource "aws_lb_target_group" "web_staging" {
+  count = var.enable_staging_server ? 1 : 0
+
+  name     = "${var.project_name}-web-staging"
+  port     = 8082
+  protocol = "HTTP"
+  vpc_id   = module.vpc.vpc_id
+}
+
+resource "aws_autoscaling_attachment" "web_staging" {
+  count = var.enable_staging_server ? 1 : 0
+
+  autoscaling_group_name = aws_autoscaling_group.staging[0].id
+  lb_target_group_arn    = aws_lb_target_group.web_staging[0].arn
+}
+
+resource "aws_route53_record" "web_staging" {
+  count = var.enable_staging_server ? 1 : 0
+
+  zone_id = var.hosted_zone_id
+  name    = "${var.subdomain_web_staging}.${var.top_domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_lb.web_staging[0].dns_name}"]
 }

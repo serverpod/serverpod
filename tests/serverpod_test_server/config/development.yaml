@@ -10,6 +10,12 @@ insightsServer:
   publicPort: 8081
   publicScheme: http
 
+webServer:
+  port: 8082
+  publicHost: localhost
+  publicPort: 8082
+  publicScheme: http
+
 database:
   host: localhost
   port: 8090

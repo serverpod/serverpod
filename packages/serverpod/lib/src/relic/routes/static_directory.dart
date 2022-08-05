@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 
-import '../web_server.dart';
-
 /// Route for serving a directory of static files.
 class RouteStaticDirectory extends Route {
   /// The path to the directory to serve relative to the web/ directory.
