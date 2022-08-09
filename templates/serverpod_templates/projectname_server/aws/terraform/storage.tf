@@ -1,6 +1,6 @@
 # S3 buckets
 resource "aws_s3_bucket" "public_storage" {
-  bucket = var.public_storage_bucket_name
+  bucket        = var.public_storage_bucket_name
   force_destroy = true
 
   tags = {
@@ -14,7 +14,7 @@ resource "aws_s3_bucket_acl" "public_storage" {
 }
 
 resource "aws_s3_bucket" "private_storage" {
-  bucket = var.private_storage_bucket_name
+  bucket        = var.private_storage_bucket_name
   force_destroy = true
 
   tags = {

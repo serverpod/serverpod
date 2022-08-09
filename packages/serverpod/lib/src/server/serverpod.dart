@@ -2,32 +2,22 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
-import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/redis/controller.dart';
-import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../authentication/authentication_info.dart';
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
-import '../database/database_pool_manager.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'endpoint_dispatch.dart';
-import 'future_call.dart';
 import 'method_lookup.dart';
-import 'run_mode.dart';
-import 'server.dart';
-import 'session.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -103,6 +93,9 @@ class Serverpod {
   Server get serviceServer => _serviceServer!;
 
   internal.RuntimeSettings? _runtimeSettings;
+
+  /// The web server managed by this [Serverpod].
+  late WebServer webServer;
 
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
@@ -292,6 +285,9 @@ class Serverpod {
     // Setup health check manager
     _healthCheckManager = HealthCheckManager(this);
 
+    // Create web server.
+    webServer = WebServer(serverpod: this);
+
     // Print version
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion mode: $_runMode time: ${DateTime.now().toUtc()}',
@@ -347,6 +343,8 @@ class Serverpod {
       await _startServiceServer();
 
       await server.start();
+
+      await webServer.start();
 
       // Start future calls
       _futureCallManager.start();

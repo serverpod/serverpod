@@ -5,7 +5,7 @@ resource "aws_launch_configuration" "staging" {
   image_id    = var.instance_ami
   #   image_id = data.aws_ami.amazon-linux.id
   instance_type = var.staging_instance_type
-  user_data     = templatefile("init-script.sh", {runmode="staging"})
+  user_data     = templatefile("init-script.sh", { runmode = "staging" })
 
   security_groups = [
     aws_security_group.serverpod.id,
@@ -30,7 +30,8 @@ resource "aws_autoscaling_group" "staging" {
 
   target_group_arns = [
     aws_lb_target_group.api_staging[0].arn,
-    aws_lb_target_group.insights_staging[0].arn
+    aws_lb_target_group.insights_staging[0].arn,
+    aws_lb_target_group.web_staging[0].arn
   ]
 
   tag {

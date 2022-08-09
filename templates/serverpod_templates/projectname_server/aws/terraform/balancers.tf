@@ -119,3 +119,64 @@ resource "aws_route53_record" "insights" {
   ttl     = "300"
   records = ["${aws_lb.insights.dns_name}"]
 }
+
+# Web server load balancer setup
+
+resource "aws_lb" "web" {
+  name               = "${var.project_name}-web"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.api.id]
+  subnets            = module.vpc.public_subnets
+}
+
+resource "aws_lb_listener" "web" {
+  load_balancer_arn = aws_lb.web.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web.arn
+  }
+}
+
+resource "aws_security_group" "web" {
+  name = "${var.project_name}-web"
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  vpc_id = module.vpc.vpc_id
+}
+
+resource "aws_lb_target_group" "web" {
+  name     = "${var.project_name}-web"
+  port     = 8082
+  protocol = "HTTP"
+  vpc_id   = module.vpc.vpc_id
+}
+
+resource "aws_autoscaling_attachment" "web" {
+  autoscaling_group_name = aws_autoscaling_group.serverpod.id
+  lb_target_group_arn    = aws_lb_target_group.web.arn
+}
+
+resource "aws_route53_record" "web" {
+  zone_id = var.hosted_zone_id
+  name    = "${var.subdomain_web}.${var.top_domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_lb.web.dns_name}"]
+}
