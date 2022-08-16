@@ -6,14 +6,12 @@ import 'config.dart';
 import 'protocol_definition.dart';
 
 class ClassGeneratorDart extends ClassGenerator {
-  final bool serverCode;
-
   @override
   String get outputExtension => '.dart';
 
   ClassGeneratorDart(
-      String inputPath, String outputPath, bool verbose, this.serverCode)
-      : super(inputPath, outputPath, verbose);
+      String inputPath, String outputPath, bool verbose, bool serverCode)
+      : super(inputPath, outputPath, verbose, serverCode);
 
   @override
   String? generateFile(

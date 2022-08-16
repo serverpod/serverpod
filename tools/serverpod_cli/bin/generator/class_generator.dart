@@ -22,12 +22,14 @@ abstract class ClassGenerator {
   final String outputPath;
   final String inputPath;
   final bool verbose;
+  final bool serverCode;
   final classInfos = <ClassInfo>{};
 
   ClassGenerator(
     this.inputPath,
     this.outputPath,
     this.verbose,
+    this.serverCode,
   );
 
   String get outputExtension;
@@ -68,10 +70,12 @@ abstract class ClassGenerator {
     outFile.createSync();
     outFile.writeAsStringSync(out ?? '');
 
-    // Generate SQL statements
-    var pgsqlGenerator = PgsqlGenerator(
-        classInfos: classInfos, outPath: 'generated/tables.pgsql');
-    pgsqlGenerator.generate();
+    if (serverCode) {
+      // Generate SQL statements
+      var pgsqlGenerator = PgsqlGenerator(
+          classInfos: classInfos, outPath: 'generated/tables.pgsql');
+      pgsqlGenerator.generate();
+    }
   }
 
   String? generateFile(
