@@ -1,13 +1,11 @@
 ![Serverpod banner](https://github.com/serverpod/serverpod/raw/main/misc/images/github-header.webp)
 
 # Serverpod
-
 [Serverpod](https://serverpod.dev) is a next-generation app and web server, built for the Flutter community. It allows you to write your server-side code in Dart, automatically generate your APIs, and hook up your database with minimal effort. Serverpod is open-source, and you can host your server anywhere.
 
 __[Get Started](https://docs.serverpod.dev)__
 
 ## Capabilities
-
 Serverpod is a complete, competent backend for Flutter. For the glossy sales pitch, head over to our main page at [Serverpod.dev](https://serverpod.dev).
 
 Every design decision made in Serverpod aims to minimize the amount of code you need to write and make it as readable as possible. Apart from being just a server, Serverpod incorporates many common tasks that are otherwise cumbersome to implement or require external services.
@@ -25,7 +23,7 @@ Cut down on your database costs. Don't save all your data permanently when you d
 Save time. Talking with your database can be a hassle. With Serverpod's ORM, your queries use native Dart types and null-safety. There is a straight path from your statically checked code to the database. Serverpod automatically generates the Postgres queries you need to set up your database. _Database migrations are coming soon._
 
 ### File uploads
-Upload files straight to S3 or store them in your database. _Google cloud storage support is coming soon._
+Upload files straight to S3 or store them in your database.
 
 ### Authentication
 Sign in through social logins or wing your own. Currently supported are Google, Apple, and email. _More options are coming soon._
@@ -40,4 +38,7 @@ Serverpod's future calls replace complicated cron jobs. Call a method anytime in
 Monitor the database and external services that you are using. Write custom health checks and get notified when something goes wrong. _This feature is coming soon in the visual interface._
 
 ### Easy deployment
-We are working hard on creating deployment scripts for AWS and Google cloud. Please get in touch with us if you want to [contribute](https://docs.serverpod.dev/contribute).
+Serverpod comes with Terraform scripts for AWS which makes it very quick to deploy your server. We are still working on scripts for Google Cloud and other platforms. Please get in touch with us if you want to [contribute](https://docs.serverpod.dev/contribute).
+
+### Built in web server
+Serverpod comes with a built-in web server. This makes it very easy to share data for applications that need both an app and traditional web pages. You can also use the web server to create webhooks or generate custom REST APIs to communicate with 3rd party services. _The web server is still experimental and we are actively working on it_.
