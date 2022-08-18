@@ -9,12 +9,14 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
+/// Endpoint for handling admin functions.
 class _EndpointAdmin extends EndpointRef {
   @override
   String get name => 'serverpod_auth.admin';
 
   _EndpointAdmin(EndpointCaller caller) : super(caller);
 
+  /// Finds a user by its id.
   Future<UserInfo?> getUserInfo(
     int userId,
   ) async {
@@ -25,12 +27,14 @@ class _EndpointAdmin extends EndpointRef {
   }
 }
 
+/// Endpoint for handling Sign in with Apple.
 class _EndpointApple extends EndpointRef {
   @override
   String get name => 'serverpod_auth.apple';
 
   _EndpointApple(EndpointCaller caller) : super(caller);
 
+  /// Authenticates a user with Apple.
   Future<AuthenticationResponse> authenticate(
     AppleAuthInfo authInfo,
   ) async {
@@ -41,12 +45,15 @@ class _EndpointApple extends EndpointRef {
   }
 }
 
+/// Endpoint for handling Sign in with Google.
 class _EndpointEmail extends EndpointRef {
   @override
   String get name => 'serverpod_auth.email';
 
   _EndpointEmail(EndpointCaller caller) : super(caller);
 
+  /// Authenticates a user with email and password. Returns an
+  /// [AuthenticationResponse] with the users information.
   Future<AuthenticationResponse> authenticate(
     String email,
     String password,
@@ -58,6 +65,7 @@ class _EndpointEmail extends EndpointRef {
     });
   }
 
+  /// Changes a users password.
   Future<bool> changePassword(
     String oldPassword,
     String newPassword,
@@ -69,6 +77,8 @@ class _EndpointEmail extends EndpointRef {
     });
   }
 
+  /// Initiates a password reset and sends an email with the reset code to the
+  /// user.
   Future<bool> initiatePasswordReset(
     String email,
   ) async {
@@ -78,6 +88,8 @@ class _EndpointEmail extends EndpointRef {
     });
   }
 
+  /// Verifies a password reset code, if successful returns an
+  /// [EmailPasswordReset] object, otherwise returns null.
   Future<EmailPasswordReset?> verifyEmailPasswordReset(
     String verificationCode,
   ) async {
@@ -87,6 +99,7 @@ class _EndpointEmail extends EndpointRef {
     });
   }
 
+  /// Resets a users password using the reset code.
   Future<bool> resetPassword(
     String verificationCode,
     String password,
@@ -98,6 +111,8 @@ class _EndpointEmail extends EndpointRef {
     });
   }
 
+  /// Starts the procedure for creating an account by sending an email with
+  /// a verification code.
   Future<bool> createAccountRequest(
     String userName,
     String email,
@@ -111,6 +126,7 @@ class _EndpointEmail extends EndpointRef {
     });
   }
 
+  /// Creates a new account using a verification code.
   Future<UserInfo?> createAccount(
     String email,
     String verificationCode,
@@ -123,12 +139,14 @@ class _EndpointEmail extends EndpointRef {
   }
 }
 
+/// Endpoint for handling Sign in with Google.
 class _EndpointGoogle extends EndpointRef {
   @override
   String get name => 'serverpod_auth.google';
 
   _EndpointGoogle(EndpointCaller caller) : super(caller);
 
+  /// Authenticates a user with Google using the serverAuthCode.
   Future<AuthenticationResponse> authenticateWithServerAuthCode(
     String authenticationCode,
     String? redirectUri,
@@ -140,6 +158,7 @@ class _EndpointGoogle extends EndpointRef {
     });
   }
 
+  /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
     String idToken,
   ) async {
@@ -150,44 +169,54 @@ class _EndpointGoogle extends EndpointRef {
   }
 }
 
+/// Endpoint for getting status for a signed in user and module configuration.
 class _EndpointStatus extends EndpointRef {
   @override
   String get name => 'serverpod_auth.status';
 
   _EndpointStatus(EndpointCaller caller) : super(caller);
 
+  /// Returns true if the client user is signed in.
   Future<bool> isSignedIn() async {
     return await caller
         .callServerEndpoint('serverpod_auth.status', 'isSignedIn', 'bool', {});
   }
 
+  /// Signs out a user.
   Future<void> signOut() async {
     return await caller
         .callServerEndpoint('serverpod_auth.status', 'signOut', 'void', {});
   }
 
+  /// Gets the [UserInfo] for a signed in user, or null if the user is currently
+  /// not signed in with the server.
   Future<UserInfo?> getUserInfo() async {
     return await caller.callServerEndpoint(
         'serverpod_auth.status', 'getUserInfo', 'UserInfo', {});
   }
 
+  /// Gets the server configuration.
   Future<UserSettingsConfig> getUserSettingsConfig() async {
     return await caller.callServerEndpoint('serverpod_auth.status',
         'getUserSettingsConfig', 'UserSettingsConfig', {});
   }
 }
 
+/// Endpoint with methods for managing the currently signed in user.
 class _EndpointUser extends EndpointRef {
   @override
   String get name => 'serverpod_auth.user';
 
   _EndpointUser(EndpointCaller caller) : super(caller);
 
+  /// Removes the users uploaded image, replacing it with the default user
+  /// image.
   Future<bool> removeUserImage() async {
     return await caller.callServerEndpoint(
         'serverpod_auth.user', 'removeUserImage', 'bool', {});
   }
 
+  /// Sets a new user image for the signed in user.
   Future<bool> setUserImage(
     typed_data.ByteData image,
   ) async {
@@ -197,6 +226,7 @@ class _EndpointUser extends EndpointRef {
     });
   }
 
+  /// Changes the name of a user.
   Future<bool> changeUserName(
     String userName,
   ) async {
