@@ -1,3 +1,9 @@
+## 0.9.10
+- Brings example code up-to-date with latest changes in Serverpod
+- Improved security for email sign in (limits sign in attempts based on a time period).
+- Dart docs are now copied to generated code, making it easier to document APIs.
+- Fixes issue with logging of queries in streaming sessions.
+
 ## 0.9.9
 - Improved Terraform scripts for AWS will use less resources. Most notably, only uses one load balancer which will fit within AWS free tier.
 - Adds web server to Terraform scripts.
