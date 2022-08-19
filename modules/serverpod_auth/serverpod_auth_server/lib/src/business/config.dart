@@ -45,6 +45,14 @@ class AuthConfig {
   /// Gets the current Auth module configuration.
   static AuthConfig get current => _config;
 
+  /// Max allowed failed email sign in attempts within the reset period.
+  /// Defaults to 5. (By default, a user can make 5 sign in attempts within a
+  /// 5 minute window.)
+  final int maxAllowedEmailSignInAttempts;
+
+  /// The reset period for email sign in attempts. Defaults to 5 minutes.
+  final Duration emailSignInFailureResetTime;
+
   /// True if users can update their profile images.
   final bool userCanEditUserImage;
 
@@ -111,6 +119,8 @@ class AuthConfig {
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings.
   AuthConfig({
+    this.maxAllowedEmailSignInAttempts = 5,
+    this.emailSignInFailureResetTime = const Duration(minutes: 5),
     this.enableUserImages = true,
     this.importUserImagesFromGoogleSignIn = true,
     this.userImageSize = 256,
