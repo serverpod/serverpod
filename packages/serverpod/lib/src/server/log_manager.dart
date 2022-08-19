@@ -155,7 +155,9 @@ class LogManager {
   }
 
   bool _continuouslyLogging(Session session) =>
-      session is StreamingSession && session.sessionLogId != null;
+      session is StreamingSession &&
+      session.sessionLogId != null &&
+      session.sessionLogId! >= 0;
 
   /// Logs an entry, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
@@ -167,7 +169,8 @@ class LogManager {
 
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
-      entry.sessionLogId = (session as StreamingSession).sessionLogId!;
+      session as StreamingSession;
+      entry.sessionLogId = session.sessionLogId!;
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
@@ -197,6 +200,8 @@ class LogManager {
 
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
+      session as StreamingSession;
+      entry.sessionLogId = session.sessionLogId!;
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
@@ -227,15 +232,16 @@ class LogManager {
 
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
+      session as StreamingSession;
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
       try {
-        entry.sessionLogId = (session as StreamingSession).sessionLogId!;
+        entry.sessionLogId = session.sessionLogId!;
         await MessageLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
-        stderr
-            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY');
+        stderr.writeln(
+            '${DateTime.now().toUtc()} FAILED TO LOG STREAMING MESSAGE');
         stderr.write('ENDPOINT: ${_endpointForSession(session)}');
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$stackTrace');
