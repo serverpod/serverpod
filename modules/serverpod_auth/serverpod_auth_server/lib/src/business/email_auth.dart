@@ -213,7 +213,7 @@ class Emails {
         return false;
       }
 
-      if (password.length < 8) {
+      if (password.length < 8 || password.length > 32) {
         return false;
       }
 
