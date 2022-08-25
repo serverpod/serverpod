@@ -27,10 +27,10 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "2.10.5"
+          flutter-version: "3.0.5"
       - name: Install dependencies
         run: util/pub_get_all
       - name: Analyze
