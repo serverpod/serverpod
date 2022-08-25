@@ -26,7 +26,7 @@ Save time. Talking with your database can be a hassle. With Serverpod's ORM, you
 Upload files straight to S3 or store them in your database.
 
 ### Authentication
-Sign in through social logins or wing your own. Currently supported are Google, Apple, and email. _More options are coming soon._
+Sign in through social logins or wing your own. Currently supported are Google, Apple, Firebase, and email. _More options are coming soon._
 
 ### Data streaming
 Pass serialized objects through authenticated sockets. Push messages from your server for real-time communication. Sending messages across a cluster of servers is supported. Perfect for building games or chatting applications, or anything you can imagine.

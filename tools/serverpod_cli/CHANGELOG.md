@@ -1,3 +1,11 @@
+## 0.9.10
+- Brings example code up-to-date with latest changes in Serverpod
+- Improved security for email sign in (limits sign in attempts based on a time period).
+- Dart docs are now copied to generated code, making it easier to document APIs.
+- Fixes issue with logging of queries in streaming sessions.
+- Adds support for Sign in with Firebase.
+- __Breaking changes__: Adds a new table for email sign in. Migration instructions here: [https://github.com/serverpod/serverpod/discussions/246](https://github.com/serverpod/serverpod/discussions/246)
+
 ## 0.9.9
 - Improved Terraform scripts for AWS will use less resources. Most notably, only uses one load balancer which will fit within AWS free tier.
 - Adds web server to Terraform scripts.

@@ -31,6 +31,8 @@ dependencies:
     path: ../../../../modules/serverpod_auth/serverpod_auth_apple_flutter
   serverpod_auth_email_flutter:
     path: ../../../../modules/serverpod_auth/serverpod_auth_email_flutter
+  serverpod_auth_firebase_flutter:
+    path: ../../../../modules/serverpod_auth/serverpod_auth_firebase_flutter
   serverpod_chat_flutter:
     path: ../../../../modules/serverpod_chat/serverpod_chat_flutter
 
@@ -38,6 +40,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  firebase_auth: ^3.6.4
 
 dev_dependencies:
   flutter_test:

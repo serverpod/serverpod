@@ -1,10 +1,9 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
-publish_to: none
+# TEMPLATE
+PUBLISH_TO
 
-name: serverpod_auth_apple_flutter
-description: Sign in with Apple for the Serverpod auth module.
-version: 0.9.10
+name: serverpod_auth_firebase_flutter
+description: Sign in with Firebase for the Serverpod auth module.
+version: VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -14,14 +13,16 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  firebase_auth: ^3.6.4
+  firebase_core: ^1.21.0
   flutter:
     sdk: flutter
+  flutterfire_ui: ^0.4.3+6
   material_design_icons_flutter: 5.0.6996
-  serverpod_auth_client: #^0.9.10
+  serverpod_auth_client: #^VERSION
     path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter: #^0.9.10
+  serverpod_auth_shared_flutter: #^VERSION
     path: ../serverpod_auth_shared_flutter
-  sign_in_with_apple: ^3.3.0
 
 dev_dependencies:
   flutter_test:

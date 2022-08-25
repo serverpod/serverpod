@@ -1,8 +1,10 @@
 import 'package:example_client/example_client.dart';
+import 'package:example_flutter/firebase_options.dart';
 import 'package:example_flutter/src/disconnected_page.dart';
 import 'package:example_flutter/src/loading_page.dart';
 import 'package:example_flutter/src/main_page.dart';
 import 'package:example_flutter/src/sign_in_dialog.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
@@ -14,6 +16,11 @@ void main() async {
   // Need to call this as SessionManager is using Flutter bindings before runApp
   // is called.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initilize Firebase (this is only required if you are using Firebase auth).
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Sets up a singleton client object that can be used to talk to the server
   // from anywhere in our app. The client is generated from your server code.

@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: 2.14.2
+          sdk: 2.16.2
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 

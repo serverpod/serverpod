@@ -139,6 +139,24 @@ class _EndpointEmail extends EndpointRef {
   }
 }
 
+/// Endpoint for handling Sign in with Firebase.
+class _EndpointFirebase extends EndpointRef {
+  @override
+  String get name => 'serverpod_auth.firebase';
+
+  _EndpointFirebase(EndpointCaller caller) : super(caller);
+
+  /// Authenticate a user with a Firebase id token.
+  Future<AuthenticationResponse> authenticate(
+    String idToken,
+  ) async {
+    return await caller.callServerEndpoint(
+        'serverpod_auth.firebase', 'authenticate', 'AuthenticationResponse', {
+      'idToken': idToken,
+    });
+  }
+}
+
 /// Endpoint for handling Sign in with Google.
 class _EndpointGoogle extends EndpointRef {
   @override
@@ -241,6 +259,7 @@ class Caller extends ModuleEndpointCaller {
   late final _EndpointAdmin admin;
   late final _EndpointApple apple;
   late final _EndpointEmail email;
+  late final _EndpointFirebase firebase;
   late final _EndpointGoogle google;
   late final _EndpointStatus status;
   late final _EndpointUser user;
@@ -249,6 +268,7 @@ class Caller extends ModuleEndpointCaller {
     admin = _EndpointAdmin(this);
     apple = _EndpointApple(this);
     email = _EndpointEmail(this);
+    firebase = _EndpointFirebase(this);
     google = _EndpointGoogle(this);
     status = _EndpointStatus(this);
     user = _EndpointUser(this);
@@ -259,6 +279,7 @@ class Caller extends ModuleEndpointCaller {
         'serverpod_auth.admin': admin,
         'serverpod_auth.apple': apple,
         'serverpod_auth.email': email,
+        'serverpod_auth.firebase': firebase,
         'serverpod_auth.google': google,
         'serverpod_auth.status': status,
         'serverpod_auth.user': user,
