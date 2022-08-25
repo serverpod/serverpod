@@ -31,6 +31,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.0.5"
+      - name: Setup Firebase dummy file
+        run: mv packages/serverpod/example/example_flutter/lib/firebase_options_dummy.dart packages/serverpod/example/example_flutter/lib/firebase_dummy.dart
       - name: Install dependencies
         run: util/pub_get_all
       - name: Analyze
