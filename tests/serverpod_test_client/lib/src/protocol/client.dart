@@ -644,12 +644,15 @@ class _EndpointSignInRequired extends EndpointRef {
   }
 }
 
+/// A simple endpoint that modifies a global integer. This class is meant for
+/// testing and the documentation has multiple lines.
 class _EndpointSimple extends EndpointRef {
   @override
   String get name => 'simple';
 
   _EndpointSimple(EndpointCaller caller) : super(caller);
 
+  /// Sets a global integer.
   Future<void> setGlobalInt(
     int? value, [
     int? secondValue,
@@ -660,11 +663,13 @@ class _EndpointSimple extends EndpointRef {
     });
   }
 
+  /// Adds 1 to the global integer.
   Future<void> addToGlobalInt() async {
     return await caller
         .callServerEndpoint('simple', 'addToGlobalInt', 'void', {});
   }
 
+  /// Retrieves a global integer.
   Future<int> getGlobalInt() async {
     return await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {});
   }

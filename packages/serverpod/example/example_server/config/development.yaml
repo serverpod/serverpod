@@ -1,31 +1,28 @@
-# This is the configuration file for your local development environment. By
-# default, it runs a single server on port 8080. To set up your server, you will
-# need to add the name of the database you are connecting to and the user name.
-# The password for the database is stored in the config/passwords.yaml.
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
 
-# Defines public facing access to the server, in development mode this is
-# typically the same as your server setup. If you are accessing Serverpod
-# through a load balancer and/or cloud front the ports can be mapped to other
-# ports.
-publicHost: localhost
-publicPort: 8080
-publicServicePort: 8081
-publicScheme: http
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
 
-# The ports Serverpod will be running on.
-port: 8080
-servicePort: 8081
+webServer:
+  port: 8082
+  publicHost: localhost
+  publicPort: 8082
+  publicScheme: http
 
-# This is the database setup for your server. You will need to edit this to get
-# the server up and running. Password is defined in the passwords.yaml file.
 database:
   host: localhost
   port: 8090
   name: example
   user: postgres
 
-# Your Redis setup. Password is defined in the passwords.yaml file.
 redis:
+  enabled: true
   host: localhost
-  # user: username <-- Username is optional in Redis
   port: 8091

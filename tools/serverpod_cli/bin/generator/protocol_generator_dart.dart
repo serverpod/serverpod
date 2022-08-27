@@ -43,6 +43,9 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     for (var endpointDef in protocolDefinition.endpoints) {
       var endpointClassName = _endpointClassName(endpointDef.name);
 
+      if (endpointDef.documentationComment != null) {
+        out += '${endpointDef.documentationComment}\n';
+      }
       out += 'class $endpointClassName extends EndpointRef {\n';
       out += '  @override\n';
       out += '  String get name => \'$modulePrefix${endpointDef.name}\';\n';
@@ -58,6 +61,9 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
         // Method definition
         out += '\n';
+        if (methodDef.documentationComment != null) {
+          out += '${methodDef.documentationComment}\n';
+        }
         out +=
             '  Future<${returnType.typePrefix}${returnType.type}> ${methodDef.name}(';
 

@@ -12,11 +12,13 @@ class ProtocolDefinition {
 
 class EndpointDefinition {
   final String name;
+  final String? documentationComment;
   final String className;
   final List<MethodDefinition> methods;
 
   EndpointDefinition({
     required this.name,
+    required this.documentationComment,
     required this.methods,
     required this.className,
   });
@@ -24,6 +26,7 @@ class EndpointDefinition {
 
 class MethodDefinition {
   final String name;
+  final String? documentationComment;
   final TypeDefinition returnType;
   final List<ParameterDefinition> parameters;
   final List<ParameterDefinition> parametersPositional;
@@ -31,6 +34,7 @@ class MethodDefinition {
 
   MethodDefinition(
       {required this.name,
+      required this.documentationComment,
       required this.parameters,
       required this.parametersPositional,
       required this.parametersNamed,

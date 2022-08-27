@@ -3,3 +3,4 @@ values:
   - invalidCredentials
   - userCreationDenied
   - internalError
+  - tooManyFailedAttempts

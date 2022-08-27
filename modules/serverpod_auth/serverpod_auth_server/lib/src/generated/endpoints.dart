@@ -13,6 +13,7 @@ import 'protocol.dart';
 import '../endpoints/admin_endpoint.dart';
 import '../endpoints/apple_endpoint.dart';
 import '../endpoints/email_endpoint.dart';
+import '../endpoints/firebase_endpoint.dart';
 import '../endpoints/google_endpoint.dart';
 import '../endpoints/status_endpoint.dart';
 import '../endpoints/user_endpoint.dart';
@@ -24,6 +25,8 @@ class Endpoints extends EndpointDispatch {
       'admin': AdminEndpoint()..initialize(server, 'admin', 'serverpod_auth'),
       'apple': AppleEndpoint()..initialize(server, 'apple', 'serverpod_auth'),
       'email': EmailEndpoint()..initialize(server, 'email', 'serverpod_auth'),
+      'firebase': FirebaseEndpoint()
+        ..initialize(server, 'firebase', 'serverpod_auth'),
       'google': GoogleEndpoint()
         ..initialize(server, 'google', 'serverpod_auth'),
       'status': StatusEndpoint()
@@ -182,6 +185,26 @@ class Endpoints extends EndpointDispatch {
               session,
               params['email'],
               params['verificationCode'],
+            );
+          },
+        ),
+      },
+    );
+
+    connectors['firebase'] = EndpointConnector(
+      name: 'firebase',
+      endpoint: endpoints['firebase']!,
+      methodConnectors: {
+        'authenticate': MethodConnector(
+          name: 'authenticate',
+          params: {
+            'idToken': ParameterDescription(
+                name: 'idToken', type: String, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['firebase'] as FirebaseEndpoint).authenticate(
+              session,
+              params['idToken'],
             );
           },
         ),

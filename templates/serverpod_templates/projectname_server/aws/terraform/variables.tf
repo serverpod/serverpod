@@ -88,8 +88,8 @@ variable "certificate_arn" {
   type        = string
 }
 
-variable "public_storage_certificate_arn" {
-  description = "Certificate for public storage"
+variable "cloudfront_certificate_arn" {
+  description = "Certificate for use with Cloudfront, must be in us-east-1 region."
   type        = string
 }
 
@@ -141,6 +141,11 @@ variable "subdomain_insights_staging" {
 variable "subdomain_web_staging" {
   description = "The domain name for use by web server staging"
   type        = string
+}
+
+variable "use_top_domain_for_web" {
+  description = "Set to true if you want to point the top domain to the web server"
+  type        = bool
 }
 
 # Storage
