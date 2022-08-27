@@ -25,3 +25,5 @@ pubspec.lock
 .flutter-plugins
 .dart_tool
 google_client_secret.json
+firebase_service_account_key.json
+firebase_options.dart

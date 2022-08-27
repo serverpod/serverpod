@@ -22,7 +22,7 @@ class SessionLogEntry extends TableRow {
 
   @override
   int? id;
-  late int serverId;
+  late String serverId;
   late DateTime time;
   String? module;
   String? endpoint;
@@ -33,6 +33,8 @@ class SessionLogEntry extends TableRow {
   String? error;
   String? stackTrace;
   int? authenticatedUserId;
+  bool? isOpen;
+  late DateTime touched;
 
   SessionLogEntry({
     this.id,
@@ -47,6 +49,8 @@ class SessionLogEntry extends TableRow {
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
+    this.isOpen,
+    required this.touched,
   });
 
   SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
@@ -63,6 +67,8 @@ class SessionLogEntry extends TableRow {
     error = _data['error'];
     stackTrace = _data['stackTrace'];
     authenticatedUserId = _data['authenticatedUserId'];
+    isOpen = _data['isOpen'];
+    touched = DateTime.tryParse(_data['touched'])!;
   }
 
   @override
@@ -80,6 +86,8 @@ class SessionLogEntry extends TableRow {
       'error': error,
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
+      'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 
@@ -98,6 +106,8 @@ class SessionLogEntry extends TableRow {
       'error': error,
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
+      'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 
@@ -116,6 +126,8 @@ class SessionLogEntry extends TableRow {
       'error': error,
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
+      'isOpen': isOpen,
+      'touched': touched.toUtc().toIso8601String(),
     });
   }
 
@@ -157,6 +169,12 @@ class SessionLogEntry extends TableRow {
         return;
       case 'authenticatedUserId':
         authenticatedUserId = value;
+        return;
+      case 'isOpen':
+        isOpen = value;
+        return;
+      case 'touched':
+        touched = value;
         return;
       default:
         throw UnimplementedError();
@@ -275,7 +293,7 @@ class SessionLogEntryTable extends Table {
   @override
   String tableName = 'serverpod_session_log';
   final id = ColumnInt('id');
-  final serverId = ColumnInt('serverId');
+  final serverId = ColumnString('serverId');
   final time = ColumnDateTime('time');
   final module = ColumnString('module');
   final endpoint = ColumnString('endpoint');
@@ -286,6 +304,8 @@ class SessionLogEntryTable extends Table {
   final error = ColumnString('error');
   final stackTrace = ColumnString('stackTrace');
   final authenticatedUserId = ColumnInt('authenticatedUserId');
+  final isOpen = ColumnBool('isOpen');
+  final touched = ColumnDateTime('touched');
 
   @override
   List<Column> get columns => [
@@ -301,6 +321,8 @@ class SessionLogEntryTable extends Table {
         error,
         stackTrace,
         authenticatedUserId,
+        isOpen,
+        touched,
       ];
 }
 

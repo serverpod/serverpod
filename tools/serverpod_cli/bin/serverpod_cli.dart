@@ -104,7 +104,8 @@ void main(List<String> args) async {
   var runParser = ArgParser();
   runParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  runParser.addFlag('run-docker', negatable: true, defaultsTo: true);
+  // TODO: Fix Docker management
+  // runParser.addFlag('run-docker', negatable: true, defaultsTo: true);
   parser.addCommand(cmdRun, runParser);
 
   // "generatecerts" command
@@ -234,7 +235,11 @@ void main(List<String> args) async {
         stdout.writeln('  \$ dart .\\bin\\main.dart');
         printww('');
       } else {
-        performRun(results.command!['verbose'], results.command!['run-docker']);
+        // TODO: Fix Docker management
+        performRun(
+          results.command!['verbose'],
+          // results.command!['run-docker'],
+        );
       }
       _analytics.cleanUp();
       return;
@@ -276,8 +281,10 @@ void main(List<String> args) async {
     //   return;
     // }
     if (results.command!.name == cmdServerAddress) {
-      var configInfo = ConfigInfo(results.command!['config'],
-          serverId: int.tryParse(results.command!['id'])!);
+      var configInfo = ConfigInfo(
+        results.command!['config'],
+        serverId: results.command!['id'],
+      );
       configInfo.printAddress();
       _analytics.cleanUp();
       return;

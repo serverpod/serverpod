@@ -30,7 +30,25 @@ CREATE TABLE serverpod_email_create_request (
 ALTER TABLE ONLY serverpod_email_create_request
   ADD CONSTRAINT serverpod_email_create_request_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX serverpod_email_auth_email ON serverpod_email_create_request USING btree ("email");
+CREATE UNIQUE INDEX serverpod_email_auth_create_account_request_idx ON serverpod_email_create_request USING btree ("email");
+
+
+--
+-- Class EmailFailedSignIn as table serverpod_email_failed_sign_in
+--
+
+CREATE TABLE serverpod_email_failed_sign_in (
+  "id" serial,
+  "email" text NOT NULL,
+  "time" timestamp without time zone NOT NULL,
+  "ipAddress" text NOT NULL
+);
+
+ALTER TABLE ONLY serverpod_email_failed_sign_in
+  ADD CONSTRAINT serverpod_email_failed_sign_in_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_email_failed_sign_in_email_idx ON serverpod_email_failed_sign_in USING btree ("email");
+CREATE INDEX serverpod_email_failed_sign_in_time_idx ON serverpod_email_failed_sign_in USING btree ("time");
 
 
 --

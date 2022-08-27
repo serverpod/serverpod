@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_relic/serverpod_relic.dart';
 
 import '../widgets/simple_page.dart';
 import '../widgets/text.dart';

@@ -32,6 +32,13 @@ class EmailEndpoint extends Endpoint {
       );
     }
 
+    if (await _hasTooManyFailedSignIns(session, email)) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.tooManyFailedAttempts,
+      );
+    }
+
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
@@ -39,6 +46,7 @@ class EmailEndpoint extends Endpoint {
       session.log(
           ' - ${Emails.generatePasswordHash(password, email)} saved: ${entry.hash}',
           level: LogLevel.debug);
+      await _logFailedSignIn(session, email);
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
@@ -73,6 +81,29 @@ class EmailEndpoint extends Endpoint {
       key: auth.key,
       keyId: auth.id,
     );
+  }
+
+  Future<void> _logFailedSignIn(Session session, String email) async {
+    session as MethodCallSession;
+    var failedSignIn = EmailFailedSignIn(
+      email: email,
+      time: DateTime.now(),
+      ipAddress: session.httpRequest.remoteIpAddress,
+    );
+    await EmailFailedSignIn.insert(session, failedSignIn);
+  }
+
+  Future<bool> _hasTooManyFailedSignIns(Session session, String email) async {
+    var numFailedSignIns = await EmailFailedSignIn.count(
+      session,
+      where: (t) =>
+          t.email.equals(email) &
+          (t.time >
+              DateTime.now()
+                  .toUtc()
+                  .subtract(AuthConfig.current.emailSignInFailureResetTime)),
+    );
+    return numFailedSignIns >= AuthConfig.current.maxAllowedEmailSignInAttempts;
   }
 
   /// Changes a users password.

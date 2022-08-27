@@ -103,3 +103,7 @@ dart pub get
 echo "\nserverpod_auth_email_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_email_flutter
 dart pub get
+
+echo "\nserverpod_auth_firebase_flutter"
+cd $BASE/modules/serverpod_auth/serverpod_auth_firebase_flutter
+dart pub get

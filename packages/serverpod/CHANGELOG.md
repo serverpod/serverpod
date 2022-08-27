@@ -1,3 +1,26 @@
+## 0.9.10
+- Brings example code up-to-date with latest changes in Serverpod
+- Improved security for email sign in (limits sign in attempts based on a time period).
+- Dart docs are now copied to generated code, making it easier to document APIs.
+- Fixes issue with logging of queries in streaming sessions.
+- Adds support for Sign in with Firebase.
+- __Breaking changes__: Adds a new table for email sign in. Migration instructions here: [https://github.com/serverpod/serverpod/discussions/246](https://github.com/serverpod/serverpod/discussions/246)
+
+## 0.9.9
+- Improved Terraform scripts for AWS will use less resources. Most notably, only uses one load balancer which will fit within AWS free tier.
+- Adds web server to Terraform scripts.
+- Includes the Relic web server within the main Serverpod package.
+- Much improved logging and health checks.
+- Allows for monitoring of CPU and memory use.
+- Many smaller bug fixes and improvements.
+- __Breaking changes__: Updates config files and tables for logging. Migration instructions here: [https://github.com/serverpod/serverpod/discussions/190](https://github.com/serverpod/serverpod/discussions/190)
+
+## 0.9.8
+- Adds Terraform deployment scripts for AWS. Documentation here: [https://github.com/serverpod/serverpod/discussions/182](https://github.com/serverpod/serverpod/discussions/182)
+- __Breaking change__: Updates structure of config files. Migration instructions here: [https://github.com/serverpod/serverpod/discussions/182](https://github.com/serverpod/serverpod/discussions/182)
+- Moves Redis enabled option to config file and turns it off by default.
+- `serverpod run` no longer manages the Docker containers as it caused an issue with restarting the server.
+
 ## 0.9.7
 - `serverpod create` and `serverpod generate` is now working on Windows. Tested on a fresh install of Windows 10.
 

@@ -31,6 +31,7 @@ class AuthenticationFailReason extends SerializableEntity {
   static final invalidCredentials = AuthenticationFailReason._internal(0);
   static final userCreationDenied = AuthenticationFailReason._internal(1);
   static final internalError = AuthenticationFailReason._internal(2);
+  static final tooManyFailedAttempts = AuthenticationFailReason._internal(3);
 
   @override
   int get hashCode => _index.hashCode;
@@ -42,12 +43,14 @@ class AuthenticationFailReason extends SerializableEntity {
     invalidCredentials,
     userCreationDenied,
     internalError,
+    tooManyFailedAttempts,
   ];
 
   String get name {
     if (this == invalidCredentials) return 'invalidCredentials';
     if (this == userCreationDenied) return 'userCreationDenied';
     if (this == internalError) return 'internalError';
+    if (this == tooManyFailedAttempts) return 'tooManyFailedAttempts';
     throw const FormatException();
   }
 }

@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+files:
+  - source: /vendor/
+    destination: /home/ec2-user/serverpod/upload/vendor/
+  - source: /projectname_server/
+    destination: /home/ec2-user/serverpod/upload/projectname_server/
+hooks:
+  BeforeInstall:
+    - location: projectname_server/aws/scripts/install_dependencies
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: projectname_server/aws/scripts/start_server
+      timeout: 300
+      runas: root

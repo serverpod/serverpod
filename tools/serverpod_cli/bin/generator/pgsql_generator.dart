@@ -15,14 +15,65 @@ class PgsqlGenerator {
   void generate() {
     var out = '';
 
-    for (var classInfo in classInfos) {
-      if (classInfo.tableName != null) {
-        out += _generatePgsql(classInfo);
+    var tableInfoList = classInfos.toList();
+    tableInfoList.removeWhere((element) => element.tableName == null);
+    _sortClassInfos(tableInfoList);
+
+    for (var tableInfo in tableInfoList) {
+      if (tableInfo.tableName != null) {
+        out += _generatePgsql(tableInfo);
       }
     }
 
     var outFile = File(outPath);
     outFile.writeAsStringSync(out);
+  }
+
+  void _sortClassInfos(List<ClassInfo> tableInfos) {
+    // First sort by name to make sure that we get consistant output
+    tableInfos.sort((a, b) => a.tableName!.compareTo(b.tableName!));
+
+    // Force to run at least one time
+    var movedEntry = true;
+
+    // Move tables with dependencies down the list until all dependencies are
+    // resolved
+    while (movedEntry) {
+      movedEntry = false;
+      var visitedTableNames = <String>{};
+
+      // Iterate from the top of the list
+      classInfoLoop:
+      for (int i = 0; i < tableInfos.length; i++) {
+        var tableInfo = tableInfos[i];
+
+        for (var field in tableInfo.fields) {
+          // Check if a parent is not above the current table
+          if (field.parentTable != null &&
+              !visitedTableNames.contains(field.parentTable!)) {
+            var tableToMove = tableInfo;
+            for (int j = i; j < tableInfos.length; j++) {
+              if (tableInfos[j].tableName! == field.parentTable!) {
+                // Move a table down the list, below its dependency
+                tableInfos.removeAt(i);
+                tableInfos.insert(j, tableToMove);
+                movedEntry = true;
+                break;
+              }
+            }
+
+            if (!movedEntry) {
+              // We failed to move a table because the dependency is missing
+              throw FormatException(
+                  'The table "${tableInfo.tableName}" (class "${tableInfo.className}" is referencing a table that doesn\'t exist (${field.parentTable}).)');
+            }
+
+            break classInfoLoop;
+          }
+        }
+        visitedTableNames.add(tableInfo.tableName!);
+      }
+    }
   }
 
   String _generatePgsql(ClassInfo classInfo) {
@@ -66,6 +117,17 @@ class PgsqlGenerator {
         out += ');\n';
       }
       out += '\n';
+    }
+
+    // Foreign keys
+    for (var field in classInfo.fields) {
+      if (field.parentTable != null) {
+        out += 'ALTER TABLE ONLY ${classInfo.tableName}\n';
+        out += '  ADD CONSTRAINT ${classInfo.tableName}_fk\n';
+        out += '    FOREIGN KEY("${field.name}")\n';
+        out += '      REFERENCES ${field.parentTable}(id)\n';
+        out += '        ON DELETE CASCADE;\n';
+      }
     }
 
     out += '\n';

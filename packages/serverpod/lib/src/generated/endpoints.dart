@@ -50,16 +50,6 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
-        'reloadRuntimeSettings': MethodConnector(
-          name: 'reloadRuntimeSettings',
-          params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint)
-                .reloadRuntimeSettings(
-              session,
-            );
-          },
-        ),
         'clearAllLogs': MethodConnector(
           name: 'clearAllLogs',
           params: {},
@@ -130,6 +120,22 @@ class Endpoints extends EndpointDispatch {
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['insights'] as InsightsEndpoint).checkHealth(
               session,
+            );
+          },
+        ),
+        'getHealthData': MethodConnector(
+          name: 'getHealthData',
+          params: {
+            'start': ParameterDescription(
+                name: 'start', type: DateTime, nullable: false),
+            'end': ParameterDescription(
+                name: 'end', type: DateTime, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['insights'] as InsightsEndpoint).getHealthData(
+              session,
+              params['start'],
+              params['end'],
             );
           },
         ),

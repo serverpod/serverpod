@@ -6,6 +6,6 @@ fields:
   hash: String
   verificationCode: String
 indexes:
-  serverpod_email_auth_email:
+  serverpod_email_auth_create_account_request_idx:
     fields: email
     unique: true

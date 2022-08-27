@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
@@ -67,7 +67,7 @@ class _SignInWithAppleButtonState extends State<SignInWithAppleButton> {
         });
       },
       label: const Text('Sign in with Apple'),
-      icon: const Icon(Mdi.apple),
+      icon: const Icon(MdiIcons.apple),
     );
   }
 }

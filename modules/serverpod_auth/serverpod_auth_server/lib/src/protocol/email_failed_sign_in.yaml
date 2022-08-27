@@ -1,0 +1,11 @@
+class: EmailFailedSignIn
+table: serverpod_email_failed_sign_in
+fields:
+  email: String
+  time: DateTime
+  ipAddress: String
+indexes:
+  serverpod_email_failed_sign_in_email_idx:
+    fields: email
+  serverpod_email_failed_sign_in_time_idx:
+    fields: time

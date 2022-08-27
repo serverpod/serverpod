@@ -283,6 +283,7 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         TextField(
           enabled: _enabled,
+          maxLength: 32,
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
@@ -352,6 +353,12 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     if (password.length < 8) {
       setState(() {
         _passwordIssue = 'Minimum 8 characters';
+      });
+      return;
+    }
+    if (password.length > 32) {
+      setState(() {
+        _passwordIssue = 'Maximum 32 characters';
       });
       return;
     }

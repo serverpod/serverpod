@@ -1,0 +1,13 @@
+class: MessageLogEntry
+table: serverpod_message_log
+fields:
+  sessionLogId: int, parent=serverpod_session_log
+  serverId: String
+  messageId: int
+  endpoint: String
+  messageName: String
+  duration: double
+  error: String?
+  stackTrace: String?
+  slow: bool
+  order: int

@@ -17,12 +17,12 @@ class ServerHealthResult extends SerializableEntity {
 
   int? id;
   late List<ServerHealthMetric> metrics;
-  late String serverName;
+  late List<ServerHealthConnectionInfo> connectionInfos;
 
   ServerHealthResult({
     this.id,
     required this.metrics,
-    required this.serverName,
+    required this.connectionInfos,
   });
 
   ServerHealthResult.fromSerialization(Map<String, dynamic> serialization) {
@@ -31,7 +31,10 @@ class ServerHealthResult extends SerializableEntity {
     metrics = _data['metrics']!
         .map<ServerHealthMetric>((a) => ServerHealthMetric.fromSerialization(a))
         ?.toList();
-    serverName = _data['serverName']!;
+    connectionInfos = _data['connectionInfos']!
+        .map<ServerHealthConnectionInfo>(
+            (a) => ServerHealthConnectionInfo.fromSerialization(a))
+        ?.toList();
   }
 
   @override
@@ -39,7 +42,9 @@ class ServerHealthResult extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'metrics': metrics.map((ServerHealthMetric a) => a.serialize()).toList(),
-      'serverName': serverName,
+      'connectionInfos': connectionInfos
+          .map((ServerHealthConnectionInfo a) => a.serialize())
+          .toList(),
     });
   }
 
@@ -48,7 +53,9 @@ class ServerHealthResult extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'metrics': metrics.map((ServerHealthMetric a) => a.serialize()).toList(),
-      'serverName': serverName,
+      'connectionInfos': connectionInfos
+          .map((ServerHealthConnectionInfo a) => a.serialize())
+          .toList(),
     });
   }
 }

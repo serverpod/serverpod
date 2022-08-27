@@ -2,40 +2,42 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:serverpod/src/cloud_storage/cloud_storage.dart';
-import 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/redis/controller.dart';
-import 'package:serverpod/src/serialization/serialization_manager.dart';
+import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
+import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../authentication/authentication_info.dart';
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
-import '../database/database_config.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'endpoint_dispatch.dart';
-import 'future_call.dart';
 import 'method_lookup.dart';
-import 'run_mode.dart';
-import 'server.dart';
-import 'session.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
-    Serverpod pod);
+  Serverpod pod,
+  DateTime timestamp,
+);
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
 /// [DistributedCache] and other connections through the [InsightsEndpoint].
 class Serverpod {
   static Serverpod? _instance;
+
+  DateTime? _startedTime;
+
+  /// The time the [Serverpod] was started.
+  DateTime get startedTime {
+    assert(_startedTime != null, 'Server has not been started');
+    return _startedTime!;
+  }
 
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
@@ -48,7 +50,7 @@ class Serverpod {
   String get runMode => _runMode;
 
   /// The server configuration, as read from the config/ directory.
-  late ServerConfig config;
+  late ServerpodConfig config;
   Map<String, String> _passwords = <String, String>{};
 
   /// Custom [AuthenticationHandler] used to authenticate users.
@@ -69,12 +71,7 @@ class Serverpod {
   final EndpointDispatch endpoints;
 
   /// The database configuration.
-  late DatabaseConfig databaseConfig;
-
-  /// Runs Serverpod with Redis enabled, true by default. If you disable Redis
-  /// inter-server communication will be disabled, including messaging and
-  /// global caching.
-  final bool enableRedis;
+  late DatabasePoolManager databaseConfig;
 
   late Caches _caches;
 
@@ -85,7 +82,7 @@ class Serverpod {
   Caches get caches => _caches;
 
   /// The id of this [Serverpod].
-  int serverId = 0;
+  String serverId = 'default';
 
   /// The main server managed by this [Serverpod].
   late Server server;
@@ -97,12 +94,17 @@ class Serverpod {
 
   internal.RuntimeSettings? _runtimeSettings;
 
+  /// The web server managed by this [Serverpod].
+  late WebServer webServer;
+
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
-  set runtimeSettings(internal.RuntimeSettings settings) {
+
+  /// Updates the runtime settings and writes the new settings to the database.
+  Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
     _runtimeSettings = settings;
     _logManager = LogManager(settings);
-    _storeRuntimeSettings(settings);
+    await _storeRuntimeSettings(settings);
   }
 
   late LogManager _logManager;
@@ -140,6 +142,7 @@ class Serverpod {
         logSlowQueries: true,
         logFailedSessions: true,
         logFailedQueries: true,
+        logStreamingSessionsContinuously: true,
         logLevel: internal.LogLevel.warning.index,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
@@ -151,7 +154,7 @@ class Serverpod {
   }
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    var session = await createSession();
+    var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
           await session.db.findSingleRow<internal.RuntimeSettings>();
@@ -166,19 +169,19 @@ class Serverpod {
       await session.close(error: e, stackTrace: stackTrace);
       return;
     }
-    await session.close(logSession: false);
+    await session.close();
   }
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
-    var session = await createSession();
+    var session = await createSession(enableLogging: false);
     try {
       var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
       }
-      await session.close(logSession: false);
+      await session.close();
     } catch (e, stackTrace) {
       await session.close(error: e, stackTrace: stackTrace);
       return;
@@ -192,6 +195,13 @@ class Serverpod {
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
 
+  late final HealthCheckManager _healthCheckManager;
+
+  /// The [ClusterManager] provides information about other servers in the same
+  /// server cluster. This method isn't valid until the Serverpod has been
+  /// started.
+  late final ClusterManager cluster;
+
   /// Creates a new Serverpod.
   Serverpod(
     List<String> args,
@@ -199,7 +209,6 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
-    this.enableRedis = true,
   }) {
     _internalSerializationManager = internal.Protocol();
     serializationManager.merge(_internalSerializationManager);
@@ -218,10 +227,10 @@ class Serverpod {
               ServerpodRunMode.production,
             ],
             defaultsTo: ServerpodRunMode.development)
-        ..addOption('server-id', abbr: 'i', defaultsTo: '0');
+        ..addOption('server-id', abbr: 'i', defaultsTo: 'default');
       var results = argParser.parse(args);
       _runMode = results['mode'];
-      serverId = int.tryParse(results['server-id']) ?? 0;
+      serverId = results['server-id'];
     } catch (e) {
       stdout.writeln('Unknown run mode, defaulting to development');
       _runMode = ServerpodRunMode.development;
@@ -231,25 +240,21 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    config = ServerConfig(_runMode, serverId, _passwords);
+    config = ServerpodConfig(_runMode, serverId, _passwords);
 
     // Setup database
-    databaseConfig = DatabaseConfig(
+    databaseConfig = DatabasePoolManager(
       serializationManager,
-      config.dbHost,
-      config.dbPort,
-      config.dbName,
-      config.dbUser,
-      config.dbPass,
+      config.database,
     );
 
     // Setup Redis
-    if (enableRedis) {
+    if (config.redis.enabled) {
       redisController = RedisController(
-        host: config.redisHost,
-        port: config.redisPort,
-        user: config.redisUser,
-        password: config.redisPassword,
+        host: config.redis.host,
+        port: config.redis.port,
+        user: config.redis.user,
+        password: config.redis.password,
       );
     }
 
@@ -258,7 +263,7 @@ class Serverpod {
     server = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.port,
+      port: config.apiServer.port,
       serializationManager: serializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,
@@ -277,12 +282,22 @@ class Serverpod {
 
     _instance = this;
 
-    // TODO: Print version
-    stdout.writeln('SERVERPOD version: $serverpodVersion mode: $_runMode');
+    // Setup health check manager
+    _healthCheckManager = HealthCheckManager(this);
+
+    // Create web server.
+    webServer = WebServer(serverpod: this);
+
+    // Print version
+    stdout.writeln(
+      'SERVERPOD version: $serverpodVersion mode: $_runMode time: ${DateTime.now().toUtc()}',
+    );
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
+    _startedTime = DateTime.now().toUtc();
+
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
       if (storage['public'] is DatabaseCloudStorage ||
@@ -291,7 +306,7 @@ class Serverpod {
       }
 
       // Runtime settings
-      var session = await createSession();
+      var session = await createSession(enableLogging: false);
       try {
         _runtimeSettings =
             await session.db.findSingleRow<internal.RuntimeSettings>();
@@ -317,7 +332,7 @@ class Serverpod {
         stderr.writeln('$stackTrace');
       }
 
-      await session.close(logSession: false);
+      await session.close();
 
       // Connect to Redis
       if (redisController != null) {
@@ -329,20 +344,25 @@ class Serverpod {
 
       await server.start();
 
+      await webServer.start();
+
       // Start future calls
       _futureCallManager.start();
+
+      // Start health check managager
+      _healthCheckManager.start();
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
       stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Zoned exception.');
+        '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
+      );
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
     });
   }
 
   Future<void> _startServiceServer() async {
-    // TODO: Add support for https on service server.
     // var context = SecurityContext();
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
@@ -352,7 +372,7 @@ class Serverpod {
     _serviceServer = Server(
       serverpod: this,
       serverId: serverId,
-      port: config.servicePort,
+      port: config.insightsServer.port,
       serializationManager: _internalSerializationManager,
       databaseConfig: databaseConfig,
       passwords: _passwords,
@@ -366,6 +386,8 @@ class Serverpod {
     endpoints.initializeEndpoints(_serviceServer!);
 
     await _serviceServer!.start();
+
+    cluster = ClusterManager(_serviceServer!);
   }
 
   /// Registers a [FutureCall] with the [Serverpod] and associates it with
@@ -428,8 +450,11 @@ class Serverpod {
   /// logging outside of sessions triggered by external events. If you are
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
-  Future<InternalSession> createSession() async {
-    var session = InternalSession(server: server);
+  Future<InternalSession> createSession({bool enableLogging = true}) async {
+    var session = InternalSession(
+      server: server,
+      enableLogging: enableLogging,
+    );
     return session;
   }
 
@@ -447,6 +472,7 @@ class Serverpod {
     server.shutdown();
     _serviceServer?.shutdown();
     _futureCallManager.stop();
+    _healthCheckManager.stop;
     exit(0);
   }
 }
