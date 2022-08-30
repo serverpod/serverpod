@@ -51,7 +51,9 @@ class ParameterDefinition {
 class TypeDefinition {
   late final bool nullable;
   late final bool isTypedList;
+  late final bool isTypedMap;
   late final TypeDefinition? listType;
+  late final TypeDefinition? mapType;
   late final String typeNonNullable;
   late final String type;
   final String? package;
@@ -82,7 +84,7 @@ class TypeDefinition {
     var withoutQuestion =
         nullable ? trimmed.substring(0, trimmed.length - 1) : trimmed;
 
-    // Check if it's a list
+    // Check if it's a List
     isTypedList =
         withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
     if (isTypedList) {
@@ -91,10 +93,34 @@ class TypeDefinition {
       listType = TypeDefinition(listTypeStr, package);
     }
 
+    // Check if it's a Map
+    isTypedMap =
+        withoutQuestion.startsWith('Map<') && withoutQuestion.endsWith('>');
+    if (isTypedMap) {
+      print('TypeDefinition type: $type package: $package');
+      print(' - isTypedMap');
+      var mapTypesStr =
+          withoutQuestion.substring(4, withoutQuestion.length - 1);
+      var mapComponents = mapTypesStr.split(',');
+      if (mapComponents.length != 2) {
+        throw const FormatException(
+            'A Map requires a key type and a value type');
+      }
+      if (mapComponents[0].trim() != 'String') {
+        throw const FormatException('Only String is allowed as Map keys');
+      }
+      print(' - mapComponents: $mapComponents');
+      mapType = TypeDefinition(mapComponents[1], package);
+      print(' - mapType: ${mapType?.type}');
+    }
+
     // Generate type strings
     if (isTypedList) {
       this.type = 'List<${listType!.type}>${nullable ? '?' : ''}';
       typeNonNullable = 'List<${listType!.typeNonNullable}>';
+    } else if (isTypedMap) {
+      this.type = 'Map<String,${mapType!.type}>${nullable ? '?' : ''}';
+      typeNonNullable = 'Map<String,${mapType!.typeNonNullable}>';
     } else {
       this.type = '$withoutQuestion${nullable ? '?' : ''}';
       typeNonNullable = withoutQuestion;

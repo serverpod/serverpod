@@ -577,6 +577,13 @@ class FieldDefinition {
     var components = description.split(',').map((s) => s.trim()).toList();
     var typeStr = components[0];
 
+    // Fix for handling Maps where the type contains a comma (which is also used
+    // to separate the options).
+    if (typeStr.startsWith('Map<') && components.length >= 2) {
+      typeStr = '$typeStr,${components[1]}';
+      components.removeAt(1);
+    }
+
     if (components.length >= 2) {
       _parseOptions(components.sublist(1));
     }
@@ -621,6 +628,31 @@ class FieldDefinition {
         }
       } else {
         return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
+      }
+    }
+
+    if (type.isTypedMap) {
+      if (type.mapType!.typeNonNullable == 'String' ||
+          type.mapType!.typeNonNullable == 'int' ||
+          type.mapType!.typeNonNullable == 'double' ||
+          type.mapType!.typeNonNullable == 'bool') {
+        return name;
+      } else if (type.mapType!.typeNonNullable == 'DateTime') {
+        if (type.mapType!.nullable) {
+          return '$name${type.nullable ? '?' : ''}.map<String,String?>((a) => MapEntry(a.key, a.value?.toIso8601String()))';
+        } else {
+          return '$name${type.nullable ? '?' : ''}.map<String,String?>((a) => MapEntry(a.key, a.value.toIso8601String()))';
+        }
+      } else if (type.mapType!.typeNonNullable == 'ByteData') {
+        if (type.mapType!.nullable) {
+          return '$name${type.nullable ? '?' : ''}.map<String,String?>((a) => MapEntry(a.key, a.value?.base64encodedString()))';
+        } else {
+          return '$name${type.nullable ? '?' : ''}.map<String,String>((a) => MapEntry(a.key, a.value.base64encodedString()))';
+        }
+      } else {
+        // TODO:
+        return '$name${type.nullable ? '?' : ''}.map(MapEntry<String,${type.mapType!.type}> a) => MapEntry<String, String${type.mapType!.nullable ? '?' : ''}>(a.key, a.value${type.mapType!.nullable ? '?' : ''}.serialize()))';
+        // return '$name${type.nullable ? '?' : ''}.map((${type.mapType!.type} a) => a${type.mapType!.nullable ? '?' : ''}.serialize()).toList()';
       }
     }
 

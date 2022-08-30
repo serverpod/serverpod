@@ -40,3 +40,8 @@ fields:
   aNullableByteDataList: List<ByteData>?
   aListWithNullableByteDatas: List<ByteData?>
   aNullableListWithNullableByteDatas: List<ByteData?>?
+
+  anIntMap: Map<String,int>
+  aNullableIntMap: Map<String,int>?
+  aMapWithNullableInts: Map<String,int?>
+  aNullableMapWithNullableInts: Map<String,int?>?
