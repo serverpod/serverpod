@@ -55,6 +55,11 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
+      
+      - name: Dart pub get
+        working-directory: tools/serverpod_cli
+        run: dart pub get
+      
       - name: Run CLI tests
         working-directory: tools/serverpod_cli
         run: dart test
