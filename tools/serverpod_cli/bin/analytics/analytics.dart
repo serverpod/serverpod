@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
+import '../util/constants.dart';
 
 const _projectToken = '05e8ab306c393c7482e0f41851a176d8';
 const _endpoint = 'https://api.mixpanel.com/track';
@@ -43,11 +44,11 @@ class Analytics {
   }
 
   String _getPlatform() {
-    if (Platform.isMacOS) {
+    if (isMacOs) {
       return 'MacOS';
-    } else if (Platform.isWindows) {
+    } else if (isWindows) {
       return 'Windows';
-    } else if (Platform.isLinux) {
+    } else if (isLinux) {
       return 'Linux';
     } else {
       return 'Unknown';

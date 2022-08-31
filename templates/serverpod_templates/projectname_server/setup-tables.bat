@@ -15,7 +15,7 @@ goto :LOOP
 
 :PORT_FOUND
 echo Postgres is ready
-docker-compose exec -u postgres postgres psql -f /generated/tables-serverprod.pgsql
+cat .\generated\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="DB_PASSWORD" psql -h postgres -U postgres -d projectname
 echo Stopping docker
 docker-compose stop
 pause

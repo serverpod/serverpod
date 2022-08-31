@@ -7,6 +7,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 import '../util/command_line_tools.dart';
+import '../util/constants.dart';
 import '../util/print.dart';
 import 'copier.dart';
 import 'port_checker.dart';
@@ -336,7 +337,7 @@ Future<void> performCreate(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 
-  if (dockerConfigured && !Platform.isWindows) {
+  if (dockerConfigured && !isWindows) {
     await CommandLineTools.createTables(projectDir, name);
 
     printwwln('');
@@ -354,7 +355,7 @@ Future<void> performCreate(
     printww('');
   }
 
-  if (Platform.isWindows) {
+  if (isWindows) {
     printwwln('');
     printwwln('=== SERVERPOD CREATED ===');
     printww('You are almost ready to rock!');

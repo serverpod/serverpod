@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../generated/version.dart';
 import '../shared/environment.dart';
+import '../util/constants.dart';
 
 final resourceManager = ResourceManager();
 
@@ -14,9 +15,9 @@ class ResourceManager {
   Directory get homeDirectory {
     var envVars = Platform.environment;
 
-    if (Platform.isWindows) {
+    if (isWindows) {
       return Directory(envVars['UserProfile']!);
-    } else if (Platform.isLinux || Platform.isMacOS) {
+    } else if (isLinux || isMacOs) {
       return Directory(envVars['HOME']!);
     }
     throw (Exception('Unsupported platform.'));
