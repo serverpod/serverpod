@@ -15,6 +15,7 @@ import 'run/runner.dart';
 import 'shared/environment.dart';
 import 'util/command_line_tools.dart';
 import 'util/print.dart';
+import 'util/version.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
@@ -28,6 +29,7 @@ const cmdServerAddress = 'serveraddress';
 const cmdServerIds = 'serverids';
 const cmdHealthCheck = 'healthcheck';
 const cmdGeneratePubspecs = 'generate-pubspecs';
+const cmdVersion = 'version';
 
 final runModes = <String>['development', 'staging', 'production'];
 
@@ -72,6 +74,10 @@ void main(List<String> args) async {
   }
 
   var parser = ArgParser();
+
+  // "version" command
+  var versionParser = ArgParser();
+  parser.addCommand(cmdVersion, versionParser);
 
   // "create" command
   var createParser = ArgParser();
@@ -204,7 +210,11 @@ void main(List<String> args) async {
 
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
-
+    if (results.command!.name == cmdVersion) {
+      getVersion();
+      _analytics.cleanUp();
+      return;
+    }
     if (results.command!.name == cmdCreate) {
       var name = results.arguments.last;
       bool verbose = results.command!['verbose'];
@@ -322,7 +332,8 @@ void _printUsage(ArgParser parser) {
   print('');
   print('${Colorize('COMMANDS')..bold()}');
   print('');
-
+  _printCommandUsage(
+      cmdVersion, 'Prints the current active version of serverpod.');
   _printCommandUsage(
       cmdCreate,
       'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).',
@@ -356,12 +367,14 @@ void _printUsage(ArgParser parser) {
       parser.commands[cmdGenerate]!, true);
 }
 
-void _printCommandUsage(String name, String descr, ArgParser parser,
-    [bool last = false]) {
+void _printCommandUsage(String name, String descr,
+    [ArgParser? parser, bool last = false]) {
   print('${Colorize('$name:')..bold()} $descr');
-  print('');
-  print(parser.usage);
-  print('');
+  if (parser != null) {
+    print('');
+    print(parser.usage);
+    print('');
+  }
 
   if (!last) {
     print('');
