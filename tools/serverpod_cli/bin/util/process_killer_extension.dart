@@ -1,11 +1,10 @@
 import 'dart:io';
 
 extension ProcessKillerExtension on Process {
-  Future<void> killAll([int? killPid]) async {
+  Future<bool> killAll([int? killPid]) async {
     if (Platform.isWindows) {
       // TODO: Fix for Windows, if necessary
-      Process.killPid(killPid ?? this.pid);
-      return;
+      return Process.killPid(killPid ?? this.pid);
     }
 
     killPid ??= this.pid;
@@ -21,7 +20,7 @@ extension ProcessKillerExtension on Process {
       }
     }
 
-    Process.killPid(killPid);
+    return Process.killPid(killPid);
   }
 
   static bool isProcessAlive(int pid) {
