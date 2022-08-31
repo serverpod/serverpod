@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "### Checking dart format"
+dart format -o none --set-exit-if-changed .
+echo ""
+
+cd $(dirname $0)/../..
+
+cd tools/serverpod_cli
+
+echo "### Running CLI tests"
+
+dart test

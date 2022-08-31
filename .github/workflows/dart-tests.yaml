@@ -6,12 +6,10 @@ on:
       - main
       - dev
       - tests
-      - cli-tests
   pull_request:
     branches:
       - main
       - dev
-      - cli-tests
 jobs:
 
   dart_format:
@@ -48,3 +46,12 @@ jobs:
 
       - name: Run single server tests
         run: util/run_tests_single_server
+  
+  cli_tests:
+    name: Cli tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run CLI tests
+        run: util/run_cli_tests
