@@ -52,6 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
       - name: Run CLI tests
         working-directory: tools/serverpod_cli
         run: dart test
