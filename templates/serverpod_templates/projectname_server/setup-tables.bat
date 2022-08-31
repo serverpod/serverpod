@@ -18,5 +18,5 @@ echo Postgres is ready
 cat .\generated\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="DB_PASSWORD" psql -h postgres -U postgres -d projectname
 echo Stopping docker
 docker-compose stop
-pause
+
 exit /b
