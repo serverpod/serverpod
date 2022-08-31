@@ -45,6 +45,12 @@ class CommandLineTools {
 
   static Future<void> createTables(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
+    var _isNetstatAvailable = await existsCommand('netstat');
+    if (!_isNetstatAvailable) {
+      printWarning(
+          'netstat is not available on this platform. Please install it and tr running setup-tables manually from $serverPath.');
+      return;
+    }
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
