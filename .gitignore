@@ -13,7 +13,7 @@ doc/api/
 *.ipr
 *.iws
 
-
+.vscode/
 .DS_Store
 .atom/
 .idea
