@@ -13,6 +13,7 @@ import '../bin/util/windows.dart';
 
 Future<void> main() async {
   loadEnvironmentVars();
+  serverpodHome = _getProjectRootPath();
   Directory dummyProject = Directory(p.join(Directory.current.path, 'dummy'));
   var clientDir = Directory(p.join(dummyProject.path, 'dummy_client'));
   var serverDir = Directory(p.join(dummyProject.path, 'dummy_server'));
@@ -30,7 +31,7 @@ Future<void> main() async {
     });
     test('for checking command exists with extension (Only for windows)',
         () async {
-      if (Platform.isWindows) {
+      if (!Platform.isWindows) {
         markTestSkipped('Skipping for non-Windows platform');
       } else {
         var dartExeExists = await CommandLineTools.existsCommand('dart.exe');
@@ -46,11 +47,9 @@ Future<void> main() async {
     test('Checking flutter create', () {
       if (dest.existsSync()) dest.deleteSync(recursive: true);
       dest.createSync();
-      List<String> path = Directory.current.path.split(Platform.pathSeparator);
-      path.removeLast();
-      path.removeLast();
+      String path = _getProjectRootPath();
       Directory src =
-          Directory(p.joinAll([...path, 'templates', 'serverpod_templates']));
+          Directory(p.join(path, 'templates', 'serverpod_templates'));
       var copier = Copier(
         srcDir: Directory(p.join(src.path, 'projectname_flutter')),
         dstDir: dest,
@@ -117,6 +116,13 @@ Future<void> main() async {
       await tearDown([dest, serverDir, flutterDir, clientDir, dummyProject]);
     });
   });
+}
+
+String _getProjectRootPath() {
+  List<String> path = Directory.current.path.split(Platform.pathSeparator);
+  path.removeLast();
+  path.removeLast();
+  return p.joinAll(path);
 }
 
 Future<void> tearDown(List<Directory> directories) async {
