@@ -114,14 +114,14 @@ Future<void> main() async {
       expect(serverDirExists, true);
       expect(flutterDirExists, true);
       expect(clientDirExists, true);
+      await tearDown([dest, serverDir, flutterDir, clientDir, dummyProject]);
     });
   });
-  await tearDown([dest, serverDir, flutterDir, clientDir, dummyProject]);
 }
 
 Future<void> tearDown(List<Directory> directories) async {
   print('Tear down called');
-  await Future.delayed(const Duration(seconds: 5), () async {
+  await Future.delayed(const Duration(seconds: 3), () async {
     for (var directory in directories) {
       if (await directory.exists()) {
         await directory.delete(recursive: true);

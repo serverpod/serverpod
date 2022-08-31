@@ -6,10 +6,12 @@ on:
       - main
       - dev
       - tests
+      - cli-tests
   pull_request:
     branches:
       - main
       - dev
+      - cli-tests
 jobs:
 
   dart_format:
