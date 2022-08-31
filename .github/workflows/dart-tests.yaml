@@ -52,6 +52,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run CLI tests
-        working-directory: tools/serverpod_cli
-        run: dart test
+      - name: Setting permissions
+        run: chmod +x util/run_cli_tests
