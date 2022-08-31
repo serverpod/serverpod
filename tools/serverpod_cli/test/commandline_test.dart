@@ -44,9 +44,9 @@ Future<void> main() async {
       var isKilled = await process.killAll();
       expect(isKilled, true);
     });
-    test('Checking flutter create', () {
-      if (dest.existsSync()) dest.deleteSync(recursive: true);
-      dest.createSync();
+    test('Checking flutter create', () async {
+      if (await dest.exists()) await dest.delete(recursive: true);
+      await dest.create();
       String path = _getProjectRootPath();
       Directory src =
           Directory(p.join(path, 'templates', 'serverpod_templates'));
@@ -92,37 +92,45 @@ Future<void> main() async {
       CommandLineTools.flutterCreate(dest);
       var a = Directory(p.join(dest.path, 'lib')).existsSync();
       expect(a, true);
+      await tearDown([dest]);
     });
-    test('to test serverpod create command', () async {
-      bool serverDirExists = false;
-      bool flutterDirExists = false;
-      bool clientDirExists = false;
-      if (await dummyProject.exists()) {
-        await dummyProject.delete(recursive: true);
-      }
-      await performCreate('dummy', false, 'server', true);
-      if (await clientDir.exists()) {
-        clientDirExists = true;
-      }
-      if (await flutterDir.exists()) {
-        flutterDirExists = true;
-      }
-      if (await serverDir.exists()) {
-        serverDirExists = true;
-      }
-      expect(serverDirExists, true);
-      expect(flutterDirExists, true);
-      expect(clientDirExists, true);
-      await tearDown([dest, serverDir, flutterDir, clientDir, dummyProject]);
-    });
+    test(
+      'to test serverpod create command',
+      () async {
+        bool serverDirExists = false;
+        bool flutterDirExists = false;
+        bool clientDirExists = false;
+        if (await dummyProject.exists()) {
+          await dummyProject.delete(recursive: true);
+        }
+        await performCreate('dummy', false, 'server', true);
+        if (await clientDir.exists()) {
+          clientDirExists = true;
+        }
+        if (await flutterDir.exists()) {
+          flutterDirExists = true;
+        }
+        if (await serverDir.exists()) {
+          serverDirExists = true;
+        }
+        expect(serverDirExists, true);
+        expect(flutterDirExists, true);
+        expect(clientDirExists, true);
+        await tearDown([dest, serverDir, flutterDir, clientDir, dummyProject]);
+      },
+      timeout: const Timeout(
+        Duration(seconds: 60),
+      ),
+    );
   });
 }
 
 String _getProjectRootPath() {
-  List<String> path = Directory.current.path.split(Platform.pathSeparator);
+  List<String> path =
+      Directory.current.absolute.path.split(Platform.pathSeparator);
   path.removeLast();
   path.removeLast();
-  return p.joinAll(path);
+  return p.joinAll(!Platform.isWindows ? ['/', ...path] : path);
 }
 
 Future<void> tearDown(List<Directory> directories) async {
