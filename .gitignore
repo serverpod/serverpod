@@ -27,3 +27,4 @@ pubspec.lock
 google_client_secret.json
 firebase_service_account_key.json
 firebase_options.dart
+dummy/
