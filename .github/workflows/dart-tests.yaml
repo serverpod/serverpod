@@ -52,9 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1
+      - uses: britannio/action-install-flutter@v1.1
         with:
-          sdk: stable
+          version: stable
       
       - name: Dart pub get
         working-directory: tools/serverpod_cli
