@@ -117,6 +117,8 @@ Future<void> main() async {
         expect(flutterDirExists, true);
         expect(clientDirExists, true);
         await tearDown([dest, serverDir, flutterDir, clientDir, dummyProject]);
+        var res = await Process.run('docker', ['system', 'prune', '-f']);
+        print(res.stdout);
       },
       timeout: const Timeout(
         Duration(seconds: 60),
