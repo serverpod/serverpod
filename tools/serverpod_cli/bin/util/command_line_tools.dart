@@ -63,7 +63,7 @@ class CommandLineTools {
       /// Windows has an issue with running batch file directly without the complete path.
       /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
       Platform.isWindows
-          ? p.join(serverPath, 'setup-tables.bat')
+          ? p.join(serverPath, 'setup-tables.cmd')
           : './setup-tables',
       [],
       workingDirectory: serverPath,
