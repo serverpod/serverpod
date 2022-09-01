@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'print.dart';
 import 'windows.dart';
-import 'package:path/path.dart' as p;
 
 class CommandLineTools {
   static void dartPubGet(Directory dir) {
@@ -44,17 +45,11 @@ class CommandLineTools {
   }
 
   static Future<void> createTables(Directory dir, String name) async {
-    var _isNetstatAvailable = await existsCommand('netstat');
-    if (!_isNetstatAvailable) {
-      printwwln(
-          'netstat is not available on this platform. Aborting tables creation. Please install it and try again.');
-      return;
-    }
     var serverPath = p.join(dir.path, '${name}_server');
     var _isNetstatAvailable = await existsCommand('netstat');
     if (!_isNetstatAvailable) {
-      printWarning(
-          'netstat is not available on this platform. Please install it and tr running setup-tables manually from $serverPath.');
+      printwwln(
+          'netstat is not installed on this machine. Please install it and tr running setup-tables manually from $serverPath.');
       return;
     }
     printww('Setting up Docker and default database tables in $serverPath');
