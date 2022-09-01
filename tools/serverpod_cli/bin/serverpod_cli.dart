@@ -14,13 +14,27 @@ import 'internal_tools/generate_pubspecs.dart';
 import 'run/runner.dart';
 import 'shared/environment.dart';
 import 'util/command_line_tools.dart';
-import 'util/constants.dart';
 import 'util/print.dart';
+
+const cmdCreate = 'create';
+const cmdGenerate = 'generate';
+const cmdRun = 'run';
+const cmdGenerateCertificates = 'generate-certs';
+const cmdShutdown = 'shutdown';
+const cmdLogs = 'logs';
+const cmdSessionLogs = 'sessionlog';
+const cmdCacheInfo = 'cacheinfo';
+const cmdServerAddress = 'serveraddress';
+const cmdServerIds = 'serverids';
+const cmdHealthCheck = 'healthcheck';
+const cmdGeneratePubspecs = 'generate-pubspecs';
+
+final runModes = <String>['development', 'staging', 'production'];
 
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
-  if (isWindows) {
+  if (Platform.isWindows) {
     print(
         'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
     print('');
@@ -214,7 +228,7 @@ void main(List<String> args) async {
       return;
     }
     if (results.command!.name == cmdRun) {
-      if (isWindows) {
+      if (Platform.isWindows) {
         printwwln(
             'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
         stdout.writeln('  \$ docker-compose up --build --detach');

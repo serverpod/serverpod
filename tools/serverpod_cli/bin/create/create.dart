@@ -7,7 +7,6 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 import '../util/command_line_tools.dart';
-import '../util/constants.dart';
 import '../util/print.dart';
 import 'copier.dart';
 import 'port_checker.dart';
@@ -337,7 +336,7 @@ Future<void> performCreate(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 
-  if (dockerConfigured && isWindows) {
+  if (dockerConfigured && Platform.isWindows) {
     await CommandLineTools.createTables(projectDir, name);
 
     printwwln('');
@@ -355,18 +354,13 @@ Future<void> performCreate(
     printww('');
   }
 
-  if (isWindows) {
+  if (Platform.isWindows) {
     printwwln('');
     printwwln('=== SERVERPOD CREATED ===');
     printww('You are almost ready to rock!');
     printwwln('To get going, you need to start Docker by running:');
     stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
     stdout.writeln('  \$ docker-compose up --build --detach');
-    // printww('');
-    // printwwln(
-    //     'When your docker container is up and running you need to install the default Serverpod postgres tables. (You only need to to this once.)');
-    // stdout.writeln(
-    //     '  \$ Get-Content .\\generated\\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="$dbPassword" psql -h postgres -U postgres -d $name');
     printww('');
     printwwln(
         'Unfortunately `serverpod run` is not yet supported on Windows, but you should be able to start Serverpod by running:');

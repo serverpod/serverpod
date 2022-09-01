@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'constants.dart';
 import 'print.dart';
 import 'windows.dart';
 
@@ -31,7 +30,7 @@ class CommandLineTools {
   }
 
   static Future<bool> existsCommand(String command) async {
-    if (isWindows) {
+    if (Platform.isWindows) {
       var commandPath = WindowsUtil.commandPath(command);
       return commandPath != null;
     } else {
@@ -51,7 +50,7 @@ class CommandLineTools {
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
     late ProcessResult result;
-    if (!isWindows) {
+    if (!Platform.isWindows) {
       result = await Process.run(
         'chmod',
         ['u+x', 'setup-tables'],
@@ -63,7 +62,7 @@ class CommandLineTools {
     var process = await Process.start(
       /// Windows has an issue with running batch file directly without the complete path.
       /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
-      isWindows ? p.join(serverPath, 'setup-tables.bat') : './setup-tables',
+      Platform.isWindows ? p.join(serverPath, 'setup-tables.bat') : './setup-tables',
       [],
       workingDirectory: serverPath,
     );
@@ -89,7 +88,7 @@ class _CommandFormatter {
   late final List<String> args;
 
   _CommandFormatter(String command, this.args) {
-    this.command = isWindows ? '$command.bat' : command;
+    this.command = Platform.isWindows ? '$command.bat' : command;
   }
 
   @override

@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'constants.dart';
 
 extension ProcessKillerExtension on Process {
   Future<void> killAll([int? killPid]) async {
-    if (isWindows) {
+    if (Platform.isWindows) {
       // TODO: Fix for Windows, if necessary
       Process.killPid(killPid ?? this.pid);
       return;
