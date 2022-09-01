@@ -211,7 +211,7 @@ void main(List<String> args) async {
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
     if (results.command!.name == cmdVersion) {
-      getVersion();
+      printVersion();
       _analytics.cleanUp();
       return;
     }
@@ -333,7 +333,9 @@ void _printUsage(ArgParser parser) {
   print('${Colorize('COMMANDS')..bold()}');
   print('');
   _printCommandUsage(
-      cmdVersion, 'Prints the current active version of serverpod.');
+    cmdVersion,
+    'Prints the current active version of serverpod.',
+  );
   _printCommandUsage(
       cmdCreate,
       'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).',
