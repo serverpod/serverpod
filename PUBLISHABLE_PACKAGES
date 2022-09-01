@@ -5,7 +5,6 @@ packages/serverpod_shared
 tests/serverpod_test_module/serverpod_test_module_client
 tests/serverpod_test_client
 packages/serverpod
-packages/serverpod_relic
 templates/serverpod_templates
 tools/serverpod_cli
 modules/serverpod_auth/serverpod_auth_server
@@ -14,3 +13,4 @@ modules/serverpod_auth/serverpod_auth_shared_flutter
 modules/serverpod_auth/serverpod_auth_apple_flutter
 modules/serverpod_auth/serverpod_auth_google_flutter
 modules/serverpod_auth/serverpod_auth_email_flutter
+modules/serverpod_auth/serverpod_auth_firebase_flutter

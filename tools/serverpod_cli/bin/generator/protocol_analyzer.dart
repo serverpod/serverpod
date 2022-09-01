@@ -95,6 +95,8 @@ class ProtocolAnalyzer {
             var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
+              var classDocumentationComment = element.documentationComment;
+
               var methodDefs = <MethodDefinition>[];
               var methods = element.methods;
               for (var method in methods) {
@@ -141,6 +143,7 @@ class ProtocolAnalyzer {
 
                   var methodDef = MethodDefinition(
                     name: method.name,
+                    documentationComment: method.documentationComment,
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
@@ -156,6 +159,7 @@ class ProtocolAnalyzer {
 
               var endpointDef = EndpointDefinition(
                 name: endpointName,
+                documentationComment: classDocumentationComment,
                 className: className,
                 methods: methodDefs,
               );

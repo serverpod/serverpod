@@ -2,4 +2,5 @@ class: SessionLogInfo
 fields:
   sessionLogEntry: SessionLogEntry
   queries: List<QueryLogEntry>
-  messageLog: List<LogEntry>
+  logs: List<LogEntry>
+  messages: List<MessageLogEntry>

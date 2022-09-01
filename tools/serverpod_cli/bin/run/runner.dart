@@ -14,7 +14,10 @@ import '../util/print.dart';
 import '../util/process_killer_extension.dart';
 import 'file_watcher.dart';
 
-void performRun(bool verbose, bool runDocker) async {
+void performRun(bool verbose) async {
+  // TODO: Fix Docker management
+  bool runDocker = false;
+
   if (!config.load()) return;
 
   var configInfo = ConfigInfo('development');
@@ -25,9 +28,9 @@ void performRun(bool verbose, bool runDocker) async {
       !runDocker;
 
   var mainPortAvailable =
-      await isNetworkPortAvailable(configInfo.config.publicPort);
+      await isNetworkPortAvailable(configInfo.config.apiServer.port);
   var servicePortAvailable =
-      await isNetworkPortAvailable(configInfo.config.servicePort);
+      await isNetworkPortAvailable(configInfo.config.insightsServer.port);
 
   if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
     var strIssue =
@@ -35,9 +38,9 @@ void performRun(bool verbose, bool runDocker) async {
     var strIssueDocker =
         'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the --no-run-docker flag added.';
     var strIssueMainPort =
-        'The public api port (${configInfo.config.publicPort}) is occupied by another application or you are running another instance of Serverpod.';
+        'The public api port (${configInfo.config.apiServer.port}) is occupied by another application or you are running another instance of Serverpod.';
     var strIssueServicePort =
-        'The service insights port (${configInfo.config.servicePort}) is occupied by another application or you are running another instance of Serverpod.';
+        'The service insights port (${configInfo.config.insightsServer.port}) is occupied by another application or you are running another instance of Serverpod.';
 
     printww(strIssue);
 
@@ -57,15 +60,15 @@ void performRun(bool verbose, bool runDocker) async {
   }
 
   // It looks like we are ready to go.
-  print('Starting Serverpod.');
-  print(' • Automatic generate and reload are enabled.');
-  if (runDocker) {
-    print(' • Running Postgres and Redis in Docker container.');
-  }
-  print('');
+  printwwln('Starting Serverpod.');
+  printww(' • Automatic generate and reload are enabled.');
+  // if (runDocker) {
+  //   print(' • Running Postgres and Redis in Docker container.');
+  // }
+  printww('');
 
   // Do an initial serverpod generate.
-  print('Spinning up serverpod generate (this can take a few seconds).');
+  printww('Spinning up serverpod generate (this can take a few seconds).');
   performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);
@@ -130,10 +133,10 @@ void performRun(bool verbose, bool runDocker) async {
 
   // Verify that Postgres & Redis is up and running.
   print(
-      'Waiting for Postgres on ${configInfo.config.dbHost}:${configInfo.config.dbPort}.');
+      'Waiting for Postgres on ${configInfo.config.database.host}:${configInfo.config.database.port}.');
   if (!await PortScanner.waitForPort(
-    configInfo.config.dbHost,
-    configInfo.config.dbPort,
+    configInfo.config.database.host,
+    configInfo.config.database.port,
     printProgress: true,
   )) {
     print('Failed to connect to Postgres.');
@@ -141,10 +144,10 @@ void performRun(bool verbose, bool runDocker) async {
   }
 
   print(
-      'Waiting for Redis on ${configInfo.config.redisHost}:${configInfo.config.redisPort}.');
+      'Waiting for Redis on ${configInfo.config.redis.host}:${configInfo.config.redis.port}.');
   if (!await PortScanner.waitForPort(
-    configInfo.config.redisHost,
-    configInfo.config.redisPort,
+    configInfo.config.redis.host,
+    configInfo.config.redis.port,
     printProgress: true,
   )) {
     print('Failed to connect to Redis.');

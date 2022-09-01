@@ -15,8 +15,8 @@ class Caches {
   /// by the [Server].
   Caches(
     this._serializationManager,
-    ServerConfig config,
-    int serverId,
+    ServerpodConfig config,
+    String serverId,
     RedisController? redisController,
   ) {
     _local = LocalCache(10000, _serializationManager);

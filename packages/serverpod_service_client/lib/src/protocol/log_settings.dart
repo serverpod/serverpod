@@ -20,6 +20,7 @@ class LogSettings extends SerializableEntity {
   late bool logAllSessions;
   late bool logAllQueries;
   late bool logSlowSessions;
+  late bool logStreamingSessionsContinuously;
   late bool logSlowQueries;
   late bool logFailedSessions;
   late bool logFailedQueries;
@@ -32,6 +33,7 @@ class LogSettings extends SerializableEntity {
     required this.logAllSessions,
     required this.logAllQueries,
     required this.logSlowSessions,
+    required this.logStreamingSessionsContinuously,
     required this.logSlowQueries,
     required this.logFailedSessions,
     required this.logFailedQueries,
@@ -46,6 +48,8 @@ class LogSettings extends SerializableEntity {
     logAllSessions = _data['logAllSessions']!;
     logAllQueries = _data['logAllQueries']!;
     logSlowSessions = _data['logSlowSessions']!;
+    logStreamingSessionsContinuously =
+        _data['logStreamingSessionsContinuously']!;
     logSlowQueries = _data['logSlowQueries']!;
     logFailedSessions = _data['logFailedSessions']!;
     logFailedQueries = _data['logFailedQueries']!;
@@ -61,6 +65,7 @@ class LogSettings extends SerializableEntity {
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
       'logSlowSessions': logSlowSessions,
+      'logStreamingSessionsContinuously': logStreamingSessionsContinuously,
       'logSlowQueries': logSlowQueries,
       'logFailedSessions': logFailedSessions,
       'logFailedQueries': logFailedQueries,

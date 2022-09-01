@@ -1,4 +1,4 @@
-import 'package:serverpod_relic/serverpod_relic.dart';
+import 'package:serverpod/serverpod.dart';
 
 class SimplePageWidget extends Widget {
   SimplePageWidget({

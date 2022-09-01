@@ -346,5 +346,32 @@ void main() {
         expect(clientException!.statusCode, equals(500));
       }
     });
+
+    test('Exception in call from database', () async {
+      ServerpodClientException? clientException;
+      try {
+        await client.failedCalls.failedDatabaseQuery();
+      } catch (e) {
+        clientException = e as ServerpodClientException?;
+      }
+
+      expect(clientException, isNotNull);
+      if (identical(0, 0.0)) {
+        // Cannot always detect status code in web
+        expect(clientException!.statusCode, equals(-1));
+      } else {
+        expect(clientException!.statusCode, equals(500));
+      }
+    });
+
+    test('Exception in call from database being caugt', () async {
+      var result =
+          await client.failedCalls.failedDatabaseQueryCaughtException();
+      expect(result, equals(true));
+    });
+
+    test('Slow call', () async {
+      await client.failedCalls.slowCall();
+    });
   });
 }

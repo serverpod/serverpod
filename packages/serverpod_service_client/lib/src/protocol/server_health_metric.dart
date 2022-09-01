@@ -17,12 +17,16 @@ class ServerHealthMetric extends SerializableEntity {
 
   int? id;
   late String name;
+  late String serverId;
+  late DateTime timestamp;
   late bool isHealthy;
   late double value;
 
   ServerHealthMetric({
     this.id,
     required this.name,
+    required this.serverId,
+    required this.timestamp,
     required this.isHealthy,
     required this.value,
   });
@@ -31,6 +35,8 @@ class ServerHealthMetric extends SerializableEntity {
     var _data = unwrapSerializationData(serialization);
     id = _data['id'];
     name = _data['name']!;
+    serverId = _data['serverId']!;
+    timestamp = DateTime.tryParse(_data['timestamp'])!;
     isHealthy = _data['isHealthy']!;
     value = _data['value']!;
   }
@@ -40,6 +46,8 @@ class ServerHealthMetric extends SerializableEntity {
     return wrapSerializationData({
       'id': id,
       'name': name,
+      'serverId': serverId,
+      'timestamp': timestamp.toUtc().toIso8601String(),
       'isHealthy': isHealthy,
       'value': value,
     });

@@ -15,6 +15,7 @@ import 'authentication_fail_reason.dart';
 import 'authentication_response.dart';
 import 'email_auth.dart';
 import 'email_create_account_request.dart';
+import 'email_failed_sign_in.dart';
 import 'email_password_reset.dart';
 import 'email_reset.dart';
 import 'google_refresh_token.dart';
@@ -27,6 +28,7 @@ export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
 export 'email_auth.dart';
 export 'email_create_account_request.dart';
+export 'email_failed_sign_in.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
 export 'google_refresh_token.dart';
@@ -58,6 +60,9 @@ class Protocol extends SerializationManager {
     constructors['serverpod_auth_server.EmailCreateAccountRequest'] =
         (Map<String, dynamic> serialization) =>
             EmailCreateAccountRequest.fromSerialization(serialization);
+    constructors['serverpod_auth_server.EmailFailedSignIn'] =
+        (Map<String, dynamic> serialization) =>
+            EmailFailedSignIn.fromSerialization(serialization);
     constructors['serverpod_auth_server.EmailPasswordReset'] =
         (Map<String, dynamic> serialization) =>
             EmailPasswordReset.fromSerialization(serialization);

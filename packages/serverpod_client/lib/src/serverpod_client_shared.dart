@@ -153,7 +153,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Closes all open connections to the server.
-  @override
   void close() {
     _webSocket?.sink.close();
     _webSocket = null;

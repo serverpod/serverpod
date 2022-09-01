@@ -18,13 +18,15 @@ class SessionLogInfo extends SerializableEntity {
   int? id;
   late SessionLogEntry sessionLogEntry;
   late List<QueryLogEntry> queries;
-  late List<LogEntry> messageLog;
+  late List<LogEntry> logs;
+  late List<MessageLogEntry> messages;
 
   SessionLogInfo({
     this.id,
     required this.sessionLogEntry,
     required this.queries,
-    required this.messageLog,
+    required this.logs,
+    required this.messages,
   });
 
   SessionLogInfo.fromSerialization(Map<String, dynamic> serialization) {
@@ -35,8 +37,11 @@ class SessionLogInfo extends SerializableEntity {
     queries = _data['queries']!
         .map<QueryLogEntry>((a) => QueryLogEntry.fromSerialization(a))
         ?.toList();
-    messageLog = _data['messageLog']!
+    logs = _data['logs']!
         .map<LogEntry>((a) => LogEntry.fromSerialization(a))
+        ?.toList();
+    messages = _data['messages']!
+        .map<MessageLogEntry>((a) => MessageLogEntry.fromSerialization(a))
         ?.toList();
   }
 
@@ -46,7 +51,8 @@ class SessionLogInfo extends SerializableEntity {
       'id': id,
       'sessionLogEntry': sessionLogEntry.serialize(),
       'queries': queries.map((QueryLogEntry a) => a.serialize()).toList(),
-      'messageLog': messageLog.map((LogEntry a) => a.serialize()).toList(),
+      'logs': logs.map((LogEntry a) => a.serialize()).toList(),
+      'messages': messages.map((MessageLogEntry a) => a.serialize()).toList(),
     });
   }
 }

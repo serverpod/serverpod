@@ -1,0 +1,3 @@
+class: ClusterInfo
+fields:
+  servers: List<ClusterServerInfo>

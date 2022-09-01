@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
+import 'package:serverpod_auth_firebase_flutter/serverpod_auth_firebase_flutter.dart';
 
 import '../main.dart';
 
@@ -17,10 +19,13 @@ class SignInDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const firebaseProviderConfigs = [EmailProviderConfiguration()];
+
     return Dialog(
       child: Container(
         width: 200,
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+        padding:
+            const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -33,7 +38,7 @@ class SignInDialog extends StatelessWidget {
               onFailure: _failedToSignIn,
             ),
             const SizedBox(
-              height: 2,
+              height: 8,
             ),
             SignInWithGoogleButton(
               caller: client.modules.auth,
@@ -43,10 +48,21 @@ class SignInDialog extends StatelessWidget {
               onFailure: _failedToSignIn,
             ),
             const SizedBox(
-              height: 2,
+              height: 8,
             ),
             SignInWithAppleButton(
               caller: client.modules.auth,
+              onSignedIn: () {
+                _signedIn(context);
+              },
+              onFailure: _failedToSignIn,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            SignInWithFirebaseButton(
+              caller: client.modules.auth,
+              providerConfigs: firebaseProviderConfigs,
               onSignedIn: () {
                 _signedIn(context);
               },

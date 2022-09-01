@@ -3,6 +3,9 @@ library serverpod;
 // Server
 export 'package:serverpod/server.dart';
 
+// Web server
+export 'package:serverpod/relic.dart';
+
 // Database
 export 'package:serverpod/database.dart';
 

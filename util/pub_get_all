@@ -38,6 +38,8 @@ echo "\nserverpod_shared"
 cd $BASE/packages/serverpod_shared
 dart pub get
 
+# Tests
+
 echo "\nserverpod_test_client"
 cd $BASE/tests/serverpod_test_client
 dart pub get
@@ -52,6 +54,28 @@ dart pub get
 
 echo "\nserverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
+dart pub get
+
+# Templates
+
+echo "\nprojectname_server"
+cd $BASE/templates/serverpod_templates/projectname_server
+dart pub get
+
+echo "\nprojectname_client"
+cd $BASE/templates/serverpod_templates/projectname_client
+dart pub get
+
+echo "\nprojectname_flutter"
+cd $BASE/templates/serverpod_templates/projectname_flutter
+dart pub get
+
+echo "\nmodulename_server"
+cd $BASE/templates/serverpod_templates/modulename_server
+dart pub get
+
+echo "\nmodulename_client"
+cd $BASE/templates/serverpod_templates/modulename_client
 dart pub get
 
 # Auth module
@@ -78,4 +102,8 @@ dart pub get
 
 echo "\nserverpod_auth_email_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_email_flutter
+dart pub get
+
+echo "\nserverpod_auth_firebase_flutter"
+cd $BASE/modules/serverpod_auth/serverpod_auth_firebase_flutter
 dart pub get

@@ -4,6 +4,7 @@ fields:
   logAllSessions: bool
   logAllQueries: bool
   logSlowSessions: bool
+  logStreamingSessionsContinuously: bool
   logSlowQueries: bool
   logFailedSessions: bool
   logFailedQueries: bool

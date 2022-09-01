@@ -155,6 +155,21 @@ class Database {
     );
   }
 
+  /// Deletes all rows matching the [where] expression, returns all deleted
+  /// rows.
+  Future<List<T>> deleteAndReturn<T>({
+    required Expression where,
+    Transaction? transaction,
+  }) async {
+    var conn = await databaseConnection;
+
+    return await conn.deleteAndReturn<T>(
+      where: where,
+      session: session,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes a single [TableRow].
   Future<bool> deleteRow(
     TableRow row, {

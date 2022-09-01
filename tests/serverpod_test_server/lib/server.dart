@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
-import 'package:serverpod_relic/serverpod_relic.dart';
 import 'package:serverpod_test_server/src/web/routes/root.dart';
 
 import 'src/futureCalls/test_call.dart';
@@ -36,11 +35,9 @@ void run(List<String> args) async {
     },
   ));
 
+  // Add route to web server
+  pod.webServer.addRoute(RouteRoot(), '/');
+
   // Start the server
   await pod.start();
-
-  // Add relic / webserver
-  var webserver = WebServer(serverpod: pod);
-  webserver.addRoute(RouteRoot(), '/');
-  await webserver.start();
 }

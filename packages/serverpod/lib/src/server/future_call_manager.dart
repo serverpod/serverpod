@@ -31,7 +31,7 @@ class FutureCallManager {
     String name,
     SerializableEntity? object,
     DateTime time,
-    int serverId,
+    String serverId,
     String? identifier,
   ) async {
     String? serialization;
@@ -45,22 +45,22 @@ class FutureCallManager {
       identifier: identifier,
     );
 
-    var session = await _server.serverpod.createSession();
+    var session = await _server.serverpod.createSession(enableLogging: false);
     await session.db.insert(entry);
-    await session.close(logSession: false);
+    await session.close();
   }
 
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = await _server.serverpod.createSession();
+    var session = await _server.serverpod.createSession(enableLogging: false);
 
     await FutureCallEntry.delete(
       session,
       where: (t) => t.identifier.equals(identifier),
     );
 
-    await session.close(logSession: false);
+    await session.close();
   }
 
   /// Registers a [FutureCall] with the manager.
@@ -93,12 +93,13 @@ class FutureCallManager {
       // Get calls
       var now = DateTime.now().toUtc();
 
-      var tempSession = await _server.serverpod.createSession();
-      var rows = await tempSession.db.find<FutureCallEntry>(
-        where: (FutureCallEntry.t.time <= now) &
-            FutureCallEntry.t.serverId.equals(_server.serverId),
+      var tempSession = await _server.serverpod.createSession(
+        enableLogging: false,
       );
-      await tempSession.close(logSession: false);
+      var rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
+        where: (FutureCallEntry.t.time <= now),
+      );
+      await tempSession.close();
 
       for (var entry in rows.cast<FutureCallEntry>()) {
         var call = _futureCalls[entry.name];
@@ -124,17 +125,6 @@ class FutureCallManager {
         } catch (e, stackTrace) {
           await futureCallSession.close(error: e, stackTrace: stackTrace);
         }
-      }
-
-      // Remove the invoked calls
-      if (rows.isNotEmpty) {
-        var tempSession = await _server.serverpod.createSession();
-        await tempSession.db.delete<FutureCallEntry>(
-          where:
-              FutureCallEntry.t.serverId.equals(tempSession.server.serverId) &
-                  (FutureCallEntry.t.time <= now),
-        );
-        await tempSession.close(logSession: false);
       }
     } catch (e, stackTrace) {
       // Most likely we lost connection to the database

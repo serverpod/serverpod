@@ -18,30 +18,21 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the current [RuntimeSettings] from the running [Server].
   Future<RuntimeSettings> getRuntimeSettings(Session session) async {
+    await server.serverpod.reloadRuntimeSettings();
     return server.serverpod.runtimeSettings;
   }
 
   /// Update the current [RuntimeSettings] in the running [Server].
   Future<void> setRuntimeSettings(
-      Session session, RuntimeSettings runtimeSettings) async {
-    server.serverpod.runtimeSettings = runtimeSettings;
-  }
-
-  /// Reload the current [RuntimeSettings] in the running [Server] from what's
-  /// stored in the database.
-  Future<void> reloadRuntimeSettings(Session session) async {
-    await server.serverpod.reloadRuntimeSettings();
+    Session session,
+    RuntimeSettings runtimeSettings,
+  ) async {
+    await server.serverpod.updateRuntimeSettings(runtimeSettings);
   }
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
     await session.db.delete<SessionLogEntry>(
-      where: Constant(true),
-    );
-    await session.db.delete<QueryLogEntry>(
-      where: Constant(true),
-    );
-    await session.db.delete<LogEntry>(
       where: Constant(true),
     );
   }
@@ -51,8 +42,10 @@ class InsightsEndpoint extends Endpoint {
       Session session, int? numEntries, SessionLogFilter? filter) async {
     // Filter for errors and slow
     Expression where;
-    if (filter == null || (!filter.slow && !filter.error)) {
+    if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
       where = Constant(true);
+    } else if (filter.open) {
+      where = SessionLogEntry.t.isOpen.equals(true);
     } else {
       if (filter.slow && filter.error) {
         where = SessionLogEntry.t.slow.equals(true) |
@@ -89,23 +82,24 @@ class InsightsEndpoint extends Endpoint {
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var messageLogRows = await session.db.find<LogEntry>(
+      var logRows = await session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
-        orderBy: LogEntry.t.id,
-        orderDescending: false,
       );
 
-      var queryLogRows = await session.db.find<QueryLogEntry>(
+      var queryRows = await session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
-        orderBy: QueryLogEntry.t.id,
-        orderDescending: false,
+      );
+
+      var messageRows = await session.db.find<MessageLogEntry>(
+        where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
       sessionLogInfo.add(
         SessionLogInfo(
           sessionLogEntry: logEntry,
-          messageLog: messageLogRows.cast<LogEntry>(),
-          queries: queryLogRows.cast<QueryLogEntry>(),
+          logs: logRows.cast<LogEntry>(),
+          queries: queryRows.cast<QueryLogEntry>(),
+          messages: messageRows,
         ),
       );
     }
@@ -146,6 +140,31 @@ class InsightsEndpoint extends Endpoint {
   /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth(Session session) async {
     return await performHealthChecks(pod);
+  }
+
+  /// Gets historical health check data. Returns data for the whole cluster.
+  Future<ServerHealthResult> getHealthData(
+    Session session,
+    DateTime start,
+    DateTime end,
+  ) async {
+    // Load metrics and connection information.
+    var metrics = await ServerHealthMetric.find(
+      session,
+      where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
+      orderBy: ServerHealthMetric.t.timestamp,
+    );
+
+    var connectionInfos = await ServerHealthConnectionInfo.find(
+      session,
+      where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
+      orderBy: ServerHealthMetric.t.timestamp,
+    );
+
+    return ServerHealthResult(
+      metrics: metrics,
+      connectionInfos: connectionInfos,
+    );
   }
 
   /// Performs a hot reload of the server.

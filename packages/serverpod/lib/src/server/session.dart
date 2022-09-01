@@ -2,19 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/src/server/message_central.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:meta/meta.dart';
 
-import '../authentication/scope.dart';
 import '../authentication/util.dart';
 import '../cache/caches.dart';
-import '../cloud_storage/cloud_storage.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
 import 'log_manager.dart';
-import 'server.dart';
-import 'serverpod.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
@@ -26,9 +22,6 @@ abstract class Session {
   /// The [Serverpod] this session is running on.
   Serverpod get serverpod => server.serverpod;
 
-  /// A temporary session id used internally by the server.
-  late int temporarySessionId;
-
   /// Max lifetime of the session, after it will be forcefully terminated.
   final Duration maxLifeTime;
 
@@ -38,7 +31,7 @@ abstract class Session {
   DateTime get startTime => _startTime;
 
   /// Log messages saved during the session.
-  // final List<LogEntry> logs = [];
+  @internal
   late final SessionLogEntryCache sessionLogs;
 
   int? _authenticatedUser;
@@ -74,6 +67,10 @@ abstract class Session {
 
   bool _closed = false;
 
+  /// True if logging is enabled for this session. Normally, logging should be
+  /// enabled but it will be disabled for internal sessions used by Serverpod.
+  final bool enableLogging;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     required this.server,
@@ -82,9 +79,9 @@ abstract class Session {
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     String? futureCallName,
+    required this.enableLogging,
   }) {
     _startTime = DateTime.now();
-    temporarySessionId = serverpod.logManager.nextTemporarySessionId();
 
     auth = UserAuthetication._(this);
     storage = StorageAccess._(this);
@@ -93,6 +90,8 @@ abstract class Session {
     db = Database(session: this);
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
+    sessionLogs.temporarySessionId =
+        serverpod.logManager.nextTemporarySessionId();
   }
 
   bool _initialized = false;
@@ -132,7 +131,6 @@ abstract class Session {
   Future<int?> close({
     dynamic error,
     StackTrace? stackTrace,
-    bool logSession = true,
   }) async {
     if (_closed) return null;
     _closed = true;
@@ -144,7 +142,6 @@ abstract class Session {
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
         authenticatedUserId: _authenticatedUser,
-        logSession: logSession,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -155,22 +152,49 @@ abstract class Session {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
-  void log(String message,
-      {LogLevel? level, dynamic exception, StackTrace? stackTrace}) {
+  void log(
+    String message, {
+    LogLevel? level,
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) {
     assert(
-        !_closed, 'Session is closed, and logging can no longer be performed.');
-
-    sessionLogs.logEntries.add(
-      LogEntry(
-        sessionLogId: temporarySessionId,
-        serverId: server.serverId,
-        logLevel: (level ?? LogLevel.info).index,
-        message: message,
-        time: DateTime.now(),
-        error: exception != null ? '$exception' : null,
-        stackTrace: stackTrace != null ? '$stackTrace' : null,
-      ),
+      !_closed,
+      'Session is closed, and logging can no longer be performed.',
     );
+
+    int? messageId;
+    if (this is StreamingSession) {
+      messageId = (this as StreamingSession).currentMessageId;
+    }
+
+    var entry = LogEntry(
+      sessionLogId: sessionLogs.temporarySessionId,
+      serverId: server.serverId,
+      messageId: messageId,
+      logLevel: (level ?? LogLevel.info).index,
+      message: message,
+      time: DateTime.now(),
+      error: exception != null ? '$exception' : null,
+      stackTrace: stackTrace != null ? '$stackTrace' : null,
+      order: sessionLogs.currentLogOrderId,
+    );
+
+    sessionLogs.currentLogOrderId += 1;
+
+    if (serverpod.runMode == ServerpodRunMode.development) {
+      stdout.writeln(
+          '${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+      if (entry.error != null) stdout.writeln(entry.error);
+      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
+    }
+
+    if (!serverpod.logManager.shouldLogEntry(session: this, entry: entry)) {
+      return;
+    }
+
+    // Called asynchronously.
+    serverpod.logManager.logEntry(this, entry);
   }
 }
 
@@ -180,7 +204,13 @@ abstract class Session {
 class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
-  InternalSession({required Server server}) : super(server: server);
+  InternalSession({
+    required Server server,
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        );
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -213,7 +243,11 @@ class MethodCallSession extends Session {
     required this.endpointName,
     required this.httpRequest,
     String? authenticationKey,
-  }) : super(server: server) {
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        ) {
     // Read query parameters
     var queryParameters = <String, String>{};
     if (body != '' && body != 'null') {
@@ -249,13 +283,24 @@ class StreamingSession extends Session {
   /// The underlying web socket that handles communication with the server.
   final WebSocket webSocket;
 
+  /// Set if there is an open session log.
+  int? sessionLogId;
+
+  /// The id of the current incoming message being processed. Increments by 1
+  /// for each message passed to an endpoint for processing.
+  int currentMessageId = 0;
+
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
     required Server server,
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-  }) : super(server: server) {
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        ) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -276,7 +321,11 @@ class FutureCallSession extends Session {
   FutureCallSession({
     required Server server,
     required this.futureCallName,
-  }) : super(server: server);
+    bool enableLogging = true,
+  }) : super(
+          server: server,
+          enableLogging: enableLogging,
+        );
 }
 
 /// Collects methods for authenticating users.
