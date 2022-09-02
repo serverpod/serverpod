@@ -8,10 +8,13 @@ class SignInWithGoogleButton extends StatefulWidget {
   final Caller caller;
 
   /// Called if sign in is successful.
-  final VoidCallback? onSignedIn;
+  final Function(UserInfo)? onSignedIn;
 
   /// Called if sign in is unsuccessful.
   final VoidCallback? onFailure;
+
+  /// Called if any errors occured during sign in.
+  final Function(Object?, StackTrace)? onError;
 
   /// The style of the button.
   final ButtonStyle? style;
@@ -29,10 +32,15 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// Redirect Uri as setup in Google console.
   final Uri? redirectUri;
 
+  /// GoogleOAuth client id.
+  final String clientId;
+
   /// Creates a new Sign in with Google button.
   const SignInWithGoogleButton({
     required this.caller,
+    required this.clientId,
     this.onSignedIn,
+    this.onError,
     this.onFailure,
     this.debug = false,
     this.style,
@@ -64,6 +72,7 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         // Attempt to sign in the user.
         signInWithGoogle(
           widget.caller,
+          clientId: widget.clientId,
           debug: widget.debug,
           additionalScopes: widget.additionalScopes,
           redirectUri: widget.redirectUri,
@@ -74,12 +83,17 @@ class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           // Notify the parent.
           if (userInfo != null) {
             if (widget.onSignedIn != null) {
-              widget.onSignedIn!();
+              widget.onSignedIn!(userInfo);
             }
           } else {
             if (widget.onFailure != null) {
               widget.onFailure!();
             }
+          }
+        }).onError((Object? error, StackTrace stackTrace) {
+          // Notify the parent.
+          if (widget.onError != null) {
+            widget.onError!(error, stackTrace);
           }
         });
       },

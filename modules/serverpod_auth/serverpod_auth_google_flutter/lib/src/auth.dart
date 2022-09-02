@@ -7,6 +7,7 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 /// If the attempt is not a success, null is returned.
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
+    required String clientId,
   bool debug = false,
   List<String> additionalScopes = const [],
   Uri? redirectUri,
@@ -21,6 +22,7 @@ Future<UserInfo?> signInWithGoogle(
 
   var _googleSignIn = GoogleSignIn(
     scopes: scopes,
+    clientId: clientId,
   );
 
   try {
