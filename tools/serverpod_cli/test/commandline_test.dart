@@ -25,6 +25,10 @@ Future<void> main() async {
       var dartPath = WindowsUtil.commandPath('dart');
       expect(dartPath, isNotNull);
     });
+    test('fail to get command path', () {
+      var dart2JsPath = WindowsUtil.commandPath('dart2js');
+      expect(dart2JsPath, isNull);
+    });
     test('for checking command exists', () async {
       var dartExists = await CommandLineTools.existsCommand('dart');
       expect(dartExists, true);
