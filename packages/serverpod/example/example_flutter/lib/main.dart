@@ -1,5 +1,4 @@
 import 'package:example_client/example_client.dart';
-import 'package:example_flutter/firebase_options.dart';
 import 'package:example_flutter/src/disconnected_page.dart';
 import 'package:example_flutter/src/loading_page.dart';
 import 'package:example_flutter/src/main_page.dart';
@@ -8,6 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
+
+import 'firebase_options_dummy.dart';
 
 late SessionManager sessionManager;
 late Client client;

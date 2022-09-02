@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
@@ -42,7 +43,11 @@ class SignInDialog extends StatelessWidget {
             ),
             SignInWithGoogleButton(
               caller: client.modules.auth,
-              onSignedIn: () {
+              clientId: 'YOUR_CLIENT_ID',
+              onSignedIn: (userInfo) {
+                if (kDebugMode) {
+                  print(userInfo.email);
+                }
                 _signedIn(context);
               },
               onFailure: _failedToSignIn,
