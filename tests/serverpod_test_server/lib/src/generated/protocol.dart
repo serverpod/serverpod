@@ -11,17 +11,17 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 
 import 'nullability.dart';
+import 'object_with_maps.dart';
 import 'object_with_object.dart';
 import 'simple_data.dart';
 import 'simple_data_list.dart';
-import 'simple_data_map.dart';
 import 'types.dart';
 
 export 'nullability.dart';
+export 'object_with_maps.dart';
 export 'object_with_object.dart';
 export 'simple_data.dart';
 export 'simple_data_list.dart';
-export 'simple_data_map.dart';
 export 'types.dart';
 
 class Protocol extends SerializationManagerServer {
@@ -42,14 +42,14 @@ class Protocol extends SerializationManagerServer {
   Protocol() {
     constructors['Nullability'] = (Map<String, dynamic> serialization) =>
         Nullability.fromSerialization(serialization);
+    constructors['ObjectWithMaps'] = (Map<String, dynamic> serialization) =>
+        ObjectWithMaps.fromSerialization(serialization);
     constructors['ObjectWithObject'] = (Map<String, dynamic> serialization) =>
         ObjectWithObject.fromSerialization(serialization);
     constructors['SimpleData'] = (Map<String, dynamic> serialization) =>
         SimpleData.fromSerialization(serialization);
     constructors['SimpleDataList'] = (Map<String, dynamic> serialization) =>
         SimpleDataList.fromSerialization(serialization);
-    constructors['SimpleDataMap'] = (Map<String, dynamic> serialization) =>
-        SimpleDataMap.fromSerialization(serialization);
     constructors['Types'] = (Map<String, dynamic> serialization) =>
         Types.fromSerialization(serialization);
 

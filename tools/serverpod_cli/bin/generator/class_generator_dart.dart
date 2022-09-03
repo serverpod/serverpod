@@ -639,20 +639,18 @@ class FieldDefinition {
         return name;
       } else if (type.mapType!.typeNonNullable == 'DateTime') {
         if (type.mapType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String,String?>((a) => MapEntry(a.key, a.value?.toIso8601String()))';
+          return '$name${type.nullable ? '?' : ''}.map<String,String?>((key, value) => MapEntry(key, value?.toIso8601String()))';
         } else {
-          return '$name${type.nullable ? '?' : ''}.map<String,String?>((a) => MapEntry(a.key, a.value.toIso8601String()))';
+          return '$name${type.nullable ? '?' : ''}.map<String,String?>((key, value) => MapEntry(key, value.toIso8601String()))';
         }
       } else if (type.mapType!.typeNonNullable == 'ByteData') {
         if (type.mapType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String,String?>((a) => MapEntry(a.key, a.value?.base64encodedString()))';
+          return '$name${type.nullable ? '?' : ''}.map<String,String?>((key, value) => MapEntry(key, value?.base64encodedString()))';
         } else {
-          return '$name${type.nullable ? '?' : ''}.map<String,String>((a) => MapEntry(a.key, a.value.base64encodedString()))';
+          return '$name${type.nullable ? '?' : ''}.map<String,String>((key, value) => MapEntry(key, value.base64encodedString()))';
         }
       } else {
-        // TODO:
-        return '$name${type.nullable ? '?' : ''}.map(MapEntry<String,${type.mapType!.type}> a) => MapEntry<String, String${type.mapType!.nullable ? '?' : ''}>(a.key, a.value${type.mapType!.nullable ? '?' : ''}.serialize()))';
-        // return '$name${type.nullable ? '?' : ''}.map((${type.mapType!.type} a) => a${type.mapType!.nullable ? '?' : ''}.serialize()).toList()';
+        return '$name${type.nullable ? '?' : ''}.map<String, Map<String, dynamic>${type.mapType!.nullable ? '?' : ''}>((String key, ${type.mapType!.type} value) => MapEntry(key, value${type.mapType!.nullable ? '?' : ''}.serialize()))';
       }
     }
 
@@ -694,6 +692,33 @@ class FieldDefinition {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
         } else {
           return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
+        }
+      }
+    }
+
+    if (type.isTypedMap) {
+      if (type.mapType!.typeNonNullable == 'String' ||
+          type.mapType!.typeNonNullable == 'int' ||
+          type.mapType!.typeNonNullable == 'double' ||
+          type.mapType!.typeNonNullable == 'bool') {
+        return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<String, ${type.mapType!.type}>()';
+      } else if (type.mapType!.typeNonNullable == 'DateTime') {
+        if (type.mapType!.nullable) {
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, DateTime?>((String key, dynamic value) => MapEntry(key, value == null ? null : DateTime.tryParse(value as String)))';
+        } else {
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, DateTime>((String key, dynamic value) => MapEntry(key, DateTime.tryParse(value as String)!))';
+        }
+      } else if (type.mapType!.typeNonNullable == 'ByteData') {
+        if (type.mapType!.nullable) {
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ByteData?>((String key, dynamic value) => MapEntry(key, (value as String?)?.base64DecodedByteData()))';
+        } else {
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ByteData>((String key, dynamic value) => MapEntry(key, (value as String).base64DecodedByteData()!))';
+        }
+      } else {
+        if (type.mapType!.nullable) {
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ${type.mapType!.type}>((String key, dynamic value) => MapEntry(key, value != null ? ${type.mapType!.type}.fromSerialization(value) : null))';
+        } else {
+          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ${type.mapType!.type}>((String key, dynamic value) => MapEntry(key, ${type.mapType!.type}.fromSerialization(value)))';
         }
       }
     }
