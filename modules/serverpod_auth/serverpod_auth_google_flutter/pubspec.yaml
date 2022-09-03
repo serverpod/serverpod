@@ -14,10 +14,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_auth_client: ^0.9.10
-#     path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter: ^0.9.10
-#     path: ../serverpod_auth_shared_flutter
+  serverpod_auth_client: # ^0.9.10
+    path: ../serverpod_auth_client
+  serverpod_auth_shared_flutter: # ^0.9.10
+    path: ../serverpod_auth_shared_flutter
   google_sign_in: ^5.2.1
 
 dev_dependencies:
