@@ -472,6 +472,27 @@ class _EndpointFailedCalls extends EndpointRef {
   }
 }
 
+class _EndpointFieldScopes extends EndpointRef {
+  @override
+  String get name => 'fieldScopes';
+
+  _EndpointFieldScopes(EndpointCaller caller) : super(caller);
+
+  Future<void> storeObject(
+    ObjectFieldScopes object,
+  ) async {
+    return await caller
+        .callServerEndpoint('fieldScopes', 'storeObject', 'void', {
+      'object': object,
+    });
+  }
+
+  Future<ObjectFieldScopes?> retrieveObject() async {
+    return await caller.callServerEndpoint(
+        'fieldScopes', 'retrieveObject', 'ObjectFieldScopes', {});
+  }
+}
+
 class _EndpointFutureCalls extends EndpointRef {
   @override
   String get name => 'futureCalls';
@@ -708,6 +729,7 @@ class Client extends ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointTransactionsDatabase transactionsDatabase;
   late final _EndpointFailedCalls failedCalls;
+  late final _EndpointFieldScopes fieldScopes;
   late final _EndpointFutureCalls futureCalls;
   late final _EndpointLogging logging;
   late final _EndpointLoggingDisabled loggingDisabled;
@@ -735,6 +757,7 @@ class Client extends ServerpodClient {
     basicDatabase = _EndpointBasicDatabase(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
     failedCalls = _EndpointFailedCalls(this);
+    fieldScopes = _EndpointFieldScopes(this);
     futureCalls = _EndpointFutureCalls(this);
     logging = _EndpointLogging(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
@@ -760,6 +783,7 @@ class Client extends ServerpodClient {
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
         'failedCalls': failedCalls,
+        'fieldScopes': fieldScopes,
         'futureCalls': futureCalls,
         'logging': logging,
         'loggingDisabled': loggingDisabled,

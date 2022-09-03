@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -304,6 +305,21 @@ void main() {
 
       expect(result.nullableDataList, isNull);
       expect(result.nullableListWithNullableData, isNull);
+    });
+
+    test('Field scopes', () async {
+      var object = ObjectFieldScopes(
+        normal: 'test normal',
+        api: 'test api',
+      );
+
+      await client.fieldScopes.storeObject(object);
+
+      var result = await client.fieldScopes.retrieveObject();
+
+      expect(result, isNotNull);
+      expect(result!.normal, equals('test normal'));
+      expect(result.api, isNull);
     });
   });
 

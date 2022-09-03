@@ -22,6 +22,7 @@ import '../endpoints/cloud_storage_s3.dart';
 import '../endpoints/database_basic.dart';
 import '../endpoints/database_transactions.dart';
 import '../endpoints/failed_calls.dart';
+import '../endpoints/field_scopes.dart';
 import '../endpoints/future_calls.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/logging_disabled.dart';
@@ -52,6 +53,8 @@ class Endpoints extends EndpointDispatch {
         ..initialize(server, 'transactionsDatabase', null),
       'failedCalls': FailedCallsEndpoint()
         ..initialize(server, 'failedCalls', null),
+      'fieldScopes': FieldScopesEndpoint()
+        ..initialize(server, 'fieldScopes', null),
       'futureCalls': FutureCallsEndpoint()
         ..initialize(server, 'futureCalls', null),
       'logging': LoggingEndpoint()..initialize(server, 'logging', null),
@@ -761,6 +764,37 @@ class Endpoints extends EndpointDispatch {
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['failedCalls'] as FailedCallsEndpoint)
                 .caughtException(
+              session,
+            );
+          },
+        ),
+      },
+    );
+
+    connectors['fieldScopes'] = EndpointConnector(
+      name: 'fieldScopes',
+      endpoint: endpoints['fieldScopes']!,
+      methodConnectors: {
+        'storeObject': MethodConnector(
+          name: 'storeObject',
+          params: {
+            'object': ParameterDescription(
+                name: 'object', type: ObjectFieldScopes, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['fieldScopes'] as FieldScopesEndpoint)
+                .storeObject(
+              session,
+              params['object'],
+            );
+          },
+        ),
+        'retrieveObject': MethodConnector(
+          name: 'retrieveObject',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['fieldScopes'] as FieldScopesEndpoint)
+                .retrieveObject(
               session,
             );
           },

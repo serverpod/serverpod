@@ -54,6 +54,9 @@ failedCalls:
   - failedDatabaseQueryCaughtException:
   - slowCall:
   - caughtException:
+fieldScopes:
+  - storeObject:
+  - retrieveObject:
 futureCalls:
   - makeFutureCall:
 logging:
