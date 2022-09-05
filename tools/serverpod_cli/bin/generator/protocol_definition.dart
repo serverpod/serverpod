@@ -97,8 +97,6 @@ class TypeDefinition {
     isTypedMap =
         withoutQuestion.startsWith('Map<') && withoutQuestion.endsWith('>');
     if (isTypedMap) {
-      print('TypeDefinition type: $type package: $package');
-      print(' - isTypedMap');
       var mapTypesStr =
           withoutQuestion.substring(4, withoutQuestion.length - 1);
       var mapComponents = mapTypesStr.split(',');
@@ -109,9 +107,7 @@ class TypeDefinition {
       if (mapComponents[0].trim() != 'String') {
         throw const FormatException('Only String is allowed as Map keys');
       }
-      print(' - mapComponents: $mapComponents');
       mapType = TypeDefinition(mapComponents[1], package);
-      print(' - mapType: ${mapType?.type}');
     }
 
     // Generate type strings
