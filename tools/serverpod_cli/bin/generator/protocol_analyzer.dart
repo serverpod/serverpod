@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -114,9 +115,15 @@ class ProtocolAnalyzer {
                       param.type.element?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
+                    required: param.isRequiredPositional ||
+                        param.isRequiredNamed ||
+                        (param.isNamed &&
+                            param.type.nullabilitySuffix ==
+                                NullabilitySuffix.none),
                     type: TypeDefinition(
-                        param.type.getDisplayString(withNullability: true),
-                        package),
+                      param.type.getDisplayString(withNullability: true),
+                      package,
+                    ),
                   );
 
                   if (param.isRequiredPositional) {

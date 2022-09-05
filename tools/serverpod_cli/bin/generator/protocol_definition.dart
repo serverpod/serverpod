@@ -44,8 +44,13 @@ class MethodDefinition {
 class ParameterDefinition {
   final String name;
   final TypeDefinition type;
+  final bool required;
 
-  ParameterDefinition({required this.name, required this.type});
+  ParameterDefinition({
+    required this.name,
+    required this.type,
+    required this.required,
+  });
 }
 
 class TypeDefinition {

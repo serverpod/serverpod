@@ -27,6 +27,8 @@ import '../endpoints/future_calls.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/logging_disabled.dart';
 import '../endpoints/module_serialization.dart';
+import '../endpoints/named_parameters.dart';
+import '../endpoints/optional_parameters.dart';
 import '../endpoints/redis.dart';
 import '../endpoints/signin_required.dart';
 import '../endpoints/simple.dart';
@@ -62,6 +64,10 @@ class Endpoints extends EndpointDispatch {
         ..initialize(server, 'loggingDisabled', null),
       'moduleSerialization': ModuleSerializationEndpoint()
         ..initialize(server, 'moduleSerialization', null),
+      'namedParameters': NamedParametersEndpoint()
+        ..initialize(server, 'namedParameters', null),
+      'optionalParameters': OptionalParametersEndpoint()
+        ..initialize(server, 'optionalParameters', null),
       'redis': RedisEndpoint()..initialize(server, 'redis', null),
       'signInRequired': SignInRequiredEndpoint()
         ..initialize(server, 'signInRequired', null),
@@ -928,6 +934,76 @@ class Endpoints extends EndpointDispatch {
       },
     );
 
+    connectors['namedParameters'] = EndpointConnector(
+      name: 'namedParameters',
+      endpoint: endpoints['namedParameters']!,
+      methodConnectors: {
+        'namedParametersMethod': MethodConnector(
+          name: 'namedParametersMethod',
+          params: {
+            'namedInt': ParameterDescription(
+                name: 'namedInt', type: int, nullable: false),
+            'intWithDefaultValue': ParameterDescription(
+                name: 'intWithDefaultValue', type: int, nullable: false),
+            'nullableInt': ParameterDescription(
+                name: 'nullableInt', type: int, nullable: true),
+            'nullableIntWithDefaultValue': ParameterDescription(
+                name: 'nullableIntWithDefaultValue', type: int, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['namedParameters'] as NamedParametersEndpoint)
+                .namedParametersMethod(
+              session,
+              namedInt: params['namedInt'],
+              intWithDefaultValue: params['intWithDefaultValue'],
+              nullableInt: params['nullableInt'],
+              nullableIntWithDefaultValue:
+                  params['nullableIntWithDefaultValue'],
+            );
+          },
+        ),
+        'namedParametersMethodEqualInts': MethodConnector(
+          name: 'namedParametersMethodEqualInts',
+          params: {
+            'namedInt': ParameterDescription(
+                name: 'namedInt', type: int, nullable: false),
+            'nullableInt': ParameterDescription(
+                name: 'nullableInt', type: int, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['namedParameters'] as NamedParametersEndpoint)
+                .namedParametersMethodEqualInts(
+              session,
+              namedInt: params['namedInt'],
+              nullableInt: params['nullableInt'],
+            );
+          },
+        ),
+      },
+    );
+
+    connectors['optionalParameters'] = EndpointConnector(
+      name: 'optionalParameters',
+      endpoint: endpoints['optionalParameters']!,
+      methodConnectors: {
+        'returnOptionalInt': MethodConnector(
+          name: 'returnOptionalInt',
+          params: {
+            'optionalInt': ParameterDescription(
+                name: 'optionalInt', type: int, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['optionalParameters']
+                    as OptionalParametersEndpoint)
+                .returnOptionalInt(
+              session,
+              params['optionalInt'],
+            );
+          },
+        ),
+      },
+    );
+
     connectors['redis'] = EndpointConnector(
       name: 'redis',
       endpoint: endpoints['redis']!,
@@ -1069,6 +1145,8 @@ class Endpoints extends EndpointDispatch {
           params: {
             'value':
                 ParameterDescription(name: 'value', type: int, nullable: true),
+            'secondValue': ParameterDescription(
+                name: 'secondValue', type: int, nullable: true),
           },
           call: (Session session, Map<String, dynamic> params) async {
             return (endpoints['simple'] as SimpleEndpoint).setGlobalInt(

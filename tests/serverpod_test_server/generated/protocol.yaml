@@ -68,6 +68,11 @@ loggingDisabled:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+namedParameters:
+  - namedParametersMethod:
+  - namedParametersMethodEqualInts:
+optionalParameters:
+  - returnOptionalInt:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:

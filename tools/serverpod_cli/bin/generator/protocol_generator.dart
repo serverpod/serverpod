@@ -117,7 +117,11 @@ abstract class ProtocolGenerator {
         out += '        \'${method.name}\': MethodConnector(\n';
         out += '          name: \'${method.name}\',\n';
         out += '          params: {\n';
-        for (var param in method.parameters) {
+        for (var param in [
+          ...method.parameters,
+          ...method.parametersPositional,
+          ...method.parametersNamed,
+        ]) {
           out +=
               '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typePrefix}${param.type.typeNonNullable}, nullable: ${param.type.nullable}),\n';
         }
@@ -131,6 +135,11 @@ abstract class ProtocolGenerator {
         }
         for (var param in method.parametersPositional) {
           out += 'params[\'${param.name}\'],';
+        }
+        if (method.parametersNamed.isNotEmpty) {
+          for (var param in method.parametersNamed) {
+            out += '${param.name}: params[\'${param.name}\'],';
+          }
         }
         out += ');\n';
         out += '          },\n';

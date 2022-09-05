@@ -57,6 +57,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       for (var methodDef in endpointDef.methods) {
         var requiredParams = methodDef.parameters;
         var optionalParams = methodDef.parametersPositional;
+        var namedParameters = methodDef.parametersNamed;
         var returnType = methodDef.returnType;
 
         // Method definition
@@ -82,6 +83,20 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
           out += ']';
         }
 
+        if (namedParameters.isNotEmpty) {
+          out += '{';
+
+          for (var paramDef in namedParameters) {
+            if (paramDef.required) {
+              out += 'required ${paramDef.type.type} ${paramDef.name},';
+            } else {
+              out += '${paramDef.type.type} ${paramDef.name},';
+            }
+          }
+
+          out += '}';
+        }
+
         out += ') async {\n';
 
         // Call to server endpoint
@@ -93,6 +108,10 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         }
 
         for (var paramDef in optionalParams) {
+          out += '      \'${paramDef.name}\': ${paramDef.name},\n';
+        }
+
+        for (var paramDef in namedParameters) {
           out += '      \'${paramDef.name}\': ${paramDef.name},\n';
         }
 

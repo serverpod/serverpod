@@ -21,6 +21,52 @@ void main() {
 
   setUp(() {});
 
+  group('Calls', () {
+    test('Named parameters basic call', () async {
+      var result = await client.namedParameters.namedParametersMethod(
+        namedInt: 42,
+        intWithDefaultValue: 42,
+      );
+      expect(result, equals(true));
+    });
+
+    test('Named parameters equal', () async {
+      var result = await client.namedParameters.namedParametersMethodEqualInts(
+        namedInt: 42,
+        nullableInt: 42,
+      );
+      expect(result, equals(true));
+    });
+
+    test('Named parameters not equal', () async {
+      var result = await client.namedParameters.namedParametersMethodEqualInts(
+        namedInt: 42,
+      );
+      expect(result, equals(false));
+
+      result = await client.namedParameters.namedParametersMethodEqualInts(
+        namedInt: 42,
+        nullableInt: 1337,
+      );
+      expect(result, equals(false));
+    });
+
+    test('Optional parameters ignored', () async {
+      var result = await client.optionalParameters.returnOptionalInt();
+      expect(result, isNull);
+    });
+
+    test('Optional parameters set to value', () async {
+      var result = await client.optionalParameters.returnOptionalInt(42);
+      expect(result, 42);
+    });
+
+    test('Optional parameters set to null', () async {
+      var result = await client.optionalParameters.returnOptionalInt(null);
+      expect(result, null);
+    });
+  });
+
   group('Basic types', () {
     var dateTime = DateTime(1976, 9, 10, 2, 10);
 

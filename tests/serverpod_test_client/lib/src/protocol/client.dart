@@ -578,6 +578,55 @@ class _EndpointModuleSerialization extends EndpointRef {
   }
 }
 
+class _EndpointNamedParameters extends EndpointRef {
+  @override
+  String get name => 'namedParameters';
+
+  _EndpointNamedParameters(EndpointCaller caller) : super(caller);
+
+  Future<bool> namedParametersMethod({
+    required int namedInt,
+    required int intWithDefaultValue,
+    int? nullableInt,
+    int? nullableIntWithDefaultValue,
+  }) async {
+    return await caller.callServerEndpoint(
+        'namedParameters', 'namedParametersMethod', 'bool', {
+      'namedInt': namedInt,
+      'intWithDefaultValue': intWithDefaultValue,
+      'nullableInt': nullableInt,
+      'nullableIntWithDefaultValue': nullableIntWithDefaultValue,
+    });
+  }
+
+  Future<bool> namedParametersMethodEqualInts({
+    required int namedInt,
+    int? nullableInt,
+  }) async {
+    return await caller.callServerEndpoint(
+        'namedParameters', 'namedParametersMethodEqualInts', 'bool', {
+      'namedInt': namedInt,
+      'nullableInt': nullableInt,
+    });
+  }
+}
+
+class _EndpointOptionalParameters extends EndpointRef {
+  @override
+  String get name => 'optionalParameters';
+
+  _EndpointOptionalParameters(EndpointCaller caller) : super(caller);
+
+  Future<int?> returnOptionalInt([
+    int? optionalInt,
+  ]) async {
+    return await caller
+        .callServerEndpoint('optionalParameters', 'returnOptionalInt', 'int', {
+      'optionalInt': optionalInt,
+    });
+  }
+}
+
 class _EndpointRedis extends EndpointRef {
   @override
   String get name => 'redis';
@@ -734,6 +783,8 @@ class Client extends ServerpodClient {
   late final _EndpointLogging logging;
   late final _EndpointLoggingDisabled loggingDisabled;
   late final _EndpointModuleSerialization moduleSerialization;
+  late final _EndpointNamedParameters namedParameters;
+  late final _EndpointOptionalParameters optionalParameters;
   late final _EndpointRedis redis;
   late final _EndpointSignInRequired signInRequired;
   late final _EndpointSimple simple;
@@ -762,6 +813,8 @@ class Client extends ServerpodClient {
     logging = _EndpointLogging(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
     moduleSerialization = _EndpointModuleSerialization(this);
+    namedParameters = _EndpointNamedParameters(this);
+    optionalParameters = _EndpointOptionalParameters(this);
     redis = _EndpointRedis(this);
     signInRequired = _EndpointSignInRequired(this);
     simple = _EndpointSimple(this);
@@ -788,6 +841,8 @@ class Client extends ServerpodClient {
         'logging': logging,
         'loggingDisabled': loggingDisabled,
         'moduleSerialization': moduleSerialization,
+        'namedParameters': namedParameters,
+        'optionalParameters': optionalParameters,
         'redis': redis,
         'signInRequired': signInRequired,
         'simple': simple,
