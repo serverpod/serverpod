@@ -44,17 +44,25 @@ class MethodDefinition {
 class ParameterDefinition {
   final String name;
   final TypeDefinition type;
+  final bool required;
 
-  ParameterDefinition({required this.name, required this.type});
+  ParameterDefinition({
+    required this.name,
+    required this.type,
+    required this.required,
+  });
 }
 
 class TypeDefinition {
   late final bool nullable;
   late final bool isTypedList;
+  late final bool isTypedMap;
   late final TypeDefinition? listType;
+  late final TypeDefinition? mapType;
   late final String typeNonNullable;
   late final String type;
   final String? package;
+  final String? innerPackage;
 
   String get typePrefix {
     var prefix = '';
@@ -66,7 +74,22 @@ class TypeDefinition {
     return prefix;
   }
 
-  TypeDefinition(String type, this.package, {bool stripFuture = false}) {
+  String get typeNonNullableWithPrefix {
+    if (isTypedList) {
+      return 'List<${listType!.typeWithPrefix}>';
+    } else if (isTypedMap) {
+      return 'Map<String, ${mapType!.typeWithPrefix}>';
+    } else {
+      return '$typePrefix$typeNonNullable';
+    }
+  }
+
+  String get typeWithPrefix {
+    return '$typeNonNullableWithPrefix${nullable ? '?' : ''}';
+  }
+
+  TypeDefinition(String type, this.package, this.innerPackage,
+      {bool stripFuture = false}) {
     // Remove all spaces
     var trimmed = type.replaceAll(' ', '');
 
@@ -82,19 +105,39 @@ class TypeDefinition {
     var withoutQuestion =
         nullable ? trimmed.substring(0, trimmed.length - 1) : trimmed;
 
-    // Check if it's a list
+    // Check if it's a List
     isTypedList =
         withoutQuestion.startsWith('List<') && withoutQuestion.endsWith('>');
     if (isTypedList) {
       var listTypeStr =
           withoutQuestion.substring(5, withoutQuestion.length - 1);
-      listType = TypeDefinition(listTypeStr, package);
+      listType = TypeDefinition(listTypeStr, innerPackage, null);
+    }
+
+    // Check if it's a Map
+    isTypedMap =
+        withoutQuestion.startsWith('Map<') && withoutQuestion.endsWith('>');
+    if (isTypedMap) {
+      var mapTypesStr =
+          withoutQuestion.substring(4, withoutQuestion.length - 1);
+      var mapComponents = mapTypesStr.split(',');
+      if (mapComponents.length != 2) {
+        throw const FormatException(
+            'A Map requires a key type and a value type');
+      }
+      if (mapComponents[0].trim() != 'String') {
+        throw const FormatException('Only String is allowed as Map keys');
+      }
+      mapType = TypeDefinition(mapComponents[1], innerPackage, null);
     }
 
     // Generate type strings
     if (isTypedList) {
       this.type = 'List<${listType!.type}>${nullable ? '?' : ''}';
-      typeNonNullable = 'List<${listType!.typeNonNullable}>';
+      typeNonNullable = 'List<${listType!.type}>';
+    } else if (isTypedMap) {
+      this.type = 'Map<String,${mapType!.type}>${nullable ? '?' : ''}';
+      typeNonNullable = 'Map<String,${mapType!.typeNonNullable}>';
     } else {
       this.type = '$withoutQuestion${nullable ? '?' : ''}';
       typeNonNullable = withoutQuestion;

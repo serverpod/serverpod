@@ -1,0 +1,6 @@
+class: ObjectFieldScopes
+table: object_field_scopes
+fields:
+  normal: String
+  api: String?, api
+  database: String?, database

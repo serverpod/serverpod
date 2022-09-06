@@ -46,6 +46,10 @@ class Nullability extends SerializableEntity {
   List<ByteData>? aNullableByteDataList;
   late List<ByteData?> aListWithNullableByteDatas;
   List<ByteData?>? aNullableListWithNullableByteDatas;
+  late Map<String, int> anIntMap;
+  Map<String, int>? aNullableIntMap;
+  late Map<String, int?> aMapWithNullableInts;
+  Map<String, int?>? aNullableMapWithNullableInts;
 
   Nullability({
     this.id,
@@ -79,6 +83,10 @@ class Nullability extends SerializableEntity {
     this.aNullableByteDataList,
     required this.aListWithNullableByteDatas,
     this.aNullableListWithNullableByteDatas,
+    required this.anIntMap,
+    this.aNullableIntMap,
+    required this.aMapWithNullableInts,
+    this.aNullableMapWithNullableInts,
   });
 
   Nullability.fromSerialization(Map<String, dynamic> serialization) {
@@ -153,6 +161,11 @@ class Nullability extends SerializableEntity {
         _data['aNullableListWithNullableByteDatas']
             ?.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData())
             .toList();
+    anIntMap = _data['anIntMap']!.cast<String, int>();
+    aNullableIntMap = _data['aNullableIntMap']?.cast<String, int>();
+    aMapWithNullableInts = _data['aMapWithNullableInts']!.cast<String, int?>();
+    aNullableMapWithNullableInts =
+        _data['aNullableMapWithNullableInts']?.cast<String, int?>();
   }
 
   @override
@@ -209,6 +222,10 @@ class Nullability extends SerializableEntity {
       'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas
           ?.map<String?>((a) => a?.base64encodedString())
           .toList(),
+      'anIntMap': anIntMap,
+      'aNullableIntMap': aNullableIntMap,
+      'aMapWithNullableInts': aMapWithNullableInts,
+      'aNullableMapWithNullableInts': aNullableMapWithNullableInts,
     });
   }
 
@@ -266,6 +283,10 @@ class Nullability extends SerializableEntity {
       'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas
           ?.map<String?>((a) => a?.base64encodedString())
           .toList(),
+      'anIntMap': anIntMap,
+      'aNullableIntMap': aNullableIntMap,
+      'aMapWithNullableInts': aMapWithNullableInts,
+      'aNullableMapWithNullableInts': aNullableMapWithNullableInts,
     });
   }
 }

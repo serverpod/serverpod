@@ -76,6 +76,8 @@ void main() {
         aByteData: createByteData(),
         aByteDataList: [createByteData(), createByteData()],
         aListWithNullableByteDatas: [createByteData(), null],
+        anIntMap: {'0': 0, '1': 1, '2': 2},
+        aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
       );
 
       var s = protocol.serializeEntity(nullability)!;
@@ -132,6 +134,14 @@ void main() {
       expect(unpacked.aNullableObjectList, isNull);
       expect(unpacked.aNullableDateTimeList, isNull);
       expect(unpacked.aNullableListWithNullableDateTimes, isNull);
+
+      expect(unpacked.anIntMap['0'], equals(0));
+      expect(unpacked.anIntMap['1'], equals(1));
+      expect(unpacked.anIntMap['2'], equals(2));
+
+      expect(unpacked.aMapWithNullableInts['0'], equals(0));
+      expect(unpacked.aMapWithNullableInts['1'], isNull);
+      expect(unpacked.aMapWithNullableInts['2'], equals(2));
     });
 
     test('Nullability with values', () {
@@ -166,6 +176,8 @@ void main() {
         aNullableByteDataList: [createByteData(), createByteData()],
         aListWithNullableByteDatas: [createByteData(), null],
         aNullableListWithNullableByteDatas: [createByteData(), null],
+        anIntMap: {'0': 0, '1': 1, '2': 2},
+        aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
       );
 
       var s = protocol.serializeEntity(nullability)!;
@@ -212,6 +224,84 @@ void main() {
       expect(unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes,
           equals(256));
       expect(unpacked.aNullableListWithNullableByteDatas![1], isNull);
+    });
+
+    test('Map types', () {
+      var maps = ObjectWithMaps(
+        dataMap: {
+          '0': SimpleData(num: 0),
+          '1': SimpleData(num: 1),
+          '2': SimpleData(num: 2),
+        },
+        intMap: {'0': 0, '1': 1, '2': 2},
+        stringMap: {'0': 'String 0', '1': 'String 1', '2': 'String 2'},
+        dateTimeMap: {
+          '2020': DateTime(2020),
+          '2021': DateTime(2021),
+          '2022': DateTime(2022),
+        },
+        byteDataMap: {
+          '0': createByteData(),
+          '1': createByteData(),
+        },
+        nullableDataMap: {
+          '0': SimpleData(num: 0),
+          '1': null,
+          '2': SimpleData(num: 2),
+        },
+        nullableIntMap: {'0': 0, '1': null, '2': 2},
+        nullableStringMap: {'0': 'null', '1': null, '2': 'String 2'},
+        nullableDateTimeMap: {
+          '2020': DateTime(2020),
+          '2021': null,
+          '2022': DateTime(2022),
+        },
+        nullableByteDataMap: {
+          '0': createByteData(),
+          '1': null,
+        },
+      );
+
+      var s = protocol.serializeEntity(maps)!;
+      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s))
+          as ObjectWithMaps;
+      expect(unpacked.dataMap['0']!.num, equals(0));
+      expect(unpacked.dataMap['1']!.num, equals(1));
+      expect(unpacked.dataMap['2']!.num, equals(2));
+
+      expect(unpacked.intMap['0'], equals(0));
+      expect(unpacked.intMap['1'], equals(1));
+      expect(unpacked.intMap['2'], equals(2));
+
+      expect(unpacked.stringMap['0'], equals('String 0'));
+      expect(unpacked.stringMap['1'], equals('String 1'));
+      expect(unpacked.stringMap['2'], equals('String 2'));
+
+      expect(unpacked.dateTimeMap['2020'], equals(DateTime(2020)));
+      expect(unpacked.dateTimeMap['2021'], equals(DateTime(2021)));
+      expect(unpacked.dateTimeMap['2022'], equals(DateTime(2022)));
+
+      expect(unpacked.byteDataMap['0']!.lengthInBytes, equals(256));
+      expect(unpacked.byteDataMap['1']!.lengthInBytes, equals(256));
+
+      expect(unpacked.nullableDataMap['0']!.num, equals(0));
+      expect(unpacked.nullableDataMap['1'], isNull);
+      expect(unpacked.nullableDataMap['2']!.num, equals(2));
+
+      expect(unpacked.nullableIntMap['0'], equals(0));
+      expect(unpacked.nullableIntMap['1'], isNull);
+      expect(unpacked.nullableIntMap['2'], equals(2));
+
+      expect(unpacked.nullableStringMap['0'], equals('null'));
+      expect(unpacked.nullableStringMap['1'], isNull);
+      expect(unpacked.nullableStringMap['2'], equals('String 2'));
+
+      expect(unpacked.nullableDateTimeMap['2020'], equals(DateTime(2020)));
+      expect(unpacked.nullableDateTimeMap['2021'], isNull);
+      expect(unpacked.nullableDateTimeMap['2022'], equals(DateTime(2022)));
+
+      expect(unpacked.nullableByteDataMap['0']!.lengthInBytes, equals(256));
+      expect(unpacked.nullableByteDataMap['1'], isNull);
     });
   });
 }

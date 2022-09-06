@@ -83,6 +83,34 @@ abstract class SerializationManager {
         entity is double ||
         entity is SerializableEntity) {
       return '$entity';
+    } else if (entity is List<int> ||
+        entity is List<int?> ||
+        entity is List<double> ||
+        entity is List<double?> ||
+        entity is List<bool> ||
+        entity is List<bool?> ||
+        entity is List<String> ||
+        entity is List<String?>) {
+      return jsonEncode(entity);
+    } else if (entity is List<DateTime> || entity is List<DateTime?>) {
+      return jsonEncode(
+        (entity as List)
+            .map((e) => (e as DateTime?)?.toIso8601String())
+            .toList(),
+      );
+    } else if (entity is List<ByteData> || entity is List<ByteData?>) {
+      return jsonEncode(
+        (entity as List)
+            .map((e) => (e as ByteData?)?.base64encodedString())
+            .toList(),
+      );
+    } else if (entity is List) {
+      return jsonEncode(
+        entity
+            .cast<SerializableEntity?>()
+            .map((e) => e == null ? null : '$e')
+            .toList(),
+      );
     } else {
       throw FormatException('Unknown entity type ${entity.runtimeType}');
     }

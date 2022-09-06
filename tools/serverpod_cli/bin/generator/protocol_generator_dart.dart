@@ -57,6 +57,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       for (var methodDef in endpointDef.methods) {
         var requiredParams = methodDef.parameters;
         var optionalParams = methodDef.parametersPositional;
+        var namedParameters = methodDef.parametersNamed;
         var returnType = methodDef.returnType;
 
         // Method definition
@@ -64,12 +65,10 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         if (methodDef.documentationComment != null) {
           out += '${methodDef.documentationComment}\n';
         }
-        out +=
-            '  Future<${returnType.typePrefix}${returnType.type}> ${methodDef.name}(';
+        out += '  Future<${returnType.typeWithPrefix}> ${methodDef.name}(';
 
         for (var paramDef in requiredParams) {
-          out +=
-              '${paramDef.type.typePrefix}${paramDef.type} ${paramDef.name},';
+          out += '${paramDef.type.typeWithPrefix} ${paramDef.name},';
         }
 
         if (optionalParams.isNotEmpty) {
@@ -82,11 +81,25 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
           out += ']';
         }
 
+        if (namedParameters.isNotEmpty) {
+          out += '{';
+
+          for (var paramDef in namedParameters) {
+            if (paramDef.required) {
+              out += 'required ${paramDef.type.type} ${paramDef.name},';
+            } else {
+              out += '${paramDef.type.type} ${paramDef.name},';
+            }
+          }
+
+          out += '}';
+        }
+
         out += ') async {\n';
 
         // Call to server endpoint
         out +=
-            '    return await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
+            '    var retval = await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
 
         for (var paramDef in requiredParams) {
           out += '      \'${paramDef.name}\':${paramDef.name},\n';
@@ -96,7 +109,22 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
           out += '      \'${paramDef.name}\': ${paramDef.name},\n';
         }
 
+        for (var paramDef in namedParameters) {
+          out += '      \'${paramDef.name}\': ${paramDef.name},\n';
+        }
+
         out += '    });\n';
+
+        if (returnType.isTypedList) {
+          if (returnType.nullable) {
+            out += '    return (retval as List?)?.cast();\n';
+          } else {
+            out += '    return (retval as List).cast();\n';
+          }
+        } else {
+          out += '    return retval;\n';
+        }
+
         out += '  }\n';
       }
 

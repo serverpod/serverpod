@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -91,7 +92,7 @@ class ProtocolAnalyzer {
         for (var element in topElements) {
           if (element is ClassElement) {
             var className = element.name;
-            var superclassName = element.supertype!.element.name;
+            var superclassName = element.supertype!.element2.name;
             var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
@@ -111,12 +112,19 @@ class ProtocolAnalyzer {
                 var parameters = method.parameters;
                 for (var param in parameters) {
                   var package =
-                      param.type.element?.librarySource?.uri.pathSegments[0];
+                      param.type.element2?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
+                    required: param.isRequiredPositional ||
+                        param.isRequiredNamed ||
+                        (param.isNamed &&
+                            param.type.nullabilitySuffix ==
+                                NullabilitySuffix.none),
                     type: TypeDefinition(
-                        param.type.getDisplayString(withNullability: true),
-                        package),
+                      param.type.getDisplayString(withNullability: true),
+                      package,
+                      _getInnerPackage(param.type),
+                    ),
                   );
 
                   if (param.isRequiredPositional) {
@@ -132,12 +140,15 @@ class ProtocolAnalyzer {
                     paramDefs[0].type.type == 'Session' &&
                     method.returnType.isDartAsyncFuture) {
                   String? package;
+                  String? innerPackage;
                   var returnType = method.returnType;
                   if (returnType is InterfaceType) {
                     var interfaceType = returnType;
                     if (interfaceType.typeArguments.length == 1) {
-                      package = interfaceType.typeArguments[0].element
+                      package = interfaceType.typeArguments[0].element2
                           ?.librarySource?.uri.pathSegments[0];
+                      innerPackage =
+                          _getInnerPackage(interfaceType.typeArguments[0]);
                     }
                   }
 
@@ -148,10 +159,11 @@ class ProtocolAnalyzer {
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
                     returnType: TypeDefinition(
-                        method.returnType
-                            .getDisplayString(withNullability: true),
-                        package,
-                        stripFuture: true),
+                      method.returnType.getDisplayString(withNullability: true),
+                      package,
+                      innerPackage,
+                      stripFuture: true,
+                    ),
                   );
                   methodDefs.add(methodDef);
                 }
@@ -173,6 +185,23 @@ class ProtocolAnalyzer {
       endpoints: endpointDefs,
       filePaths: filePaths,
     );
+  }
+
+  String? _getInnerPackage(DartType type) {
+    if (type.isDartCoreList) {
+      type as InterfaceType;
+      if (type.typeArguments.length == 1) {
+        return type
+            .typeArguments[0].element2?.librarySource?.uri.pathSegments[0];
+      }
+    } else if (type.isDartCoreMap) {
+      type as InterfaceType;
+      if (type.typeArguments.length == 2) {
+        return type
+            .typeArguments[1].element2?.librarySource?.uri.pathSegments[0];
+      }
+    }
+    return null;
   }
 
   String _formatEndpointName(String className) {
