@@ -65,6 +65,221 @@ void main() {
       var result = await client.optionalParameters.returnOptionalInt(null);
       expect(result, null);
     });
+
+    test('List<int> parameter and return type', () async {
+      var result = await client.listParameters.returnIntList([0, 1, 2]);
+      expect(result.length, equals(3));
+      expect(result[0], equals(0));
+      expect(result[1], equals(1));
+      expect(result[2], equals(2));
+    });
+
+    test('List<int>? parameter and return type', () async {
+      var result = await client.listParameters.returnIntListNullable([0, 1, 2]);
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result[0], equals(0));
+      expect(result[1], equals(1));
+      expect(result[2], equals(2));
+
+      result = await client.listParameters.returnIntListNullable(null);
+      expect(result, isNull);
+    });
+
+    test('List<int?> parameter and return type', () async {
+      var result =
+          await client.listParameters.returnIntListNullableInts([0, null, 2]);
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0], equals(0));
+      expect(result[1], isNull);
+      expect(result[2], equals(2));
+    });
+
+    test('List<int?>? parameter and return type', () async {
+      var result = await client.listParameters
+          .returnNullableIntListNullableInts([0, null, 2]);
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result[0], equals(0));
+      expect(result[1], isNull);
+      expect(result[2], equals(2));
+
+      result =
+          await client.listParameters.returnNullableIntListNullableInts(null);
+      expect(result, isNull);
+    });
+
+    test('List<double> parameter and return type', () async {
+      var result =
+          await client.listParameters.returnDoubleList([0.0, 1.0, 2.0]);
+      expect(result.length, equals(3));
+      expect(result[0], equals(0.0));
+      expect(result[1], equals(1.0));
+      expect(result[2], equals(2.0));
+    });
+
+    test('List<double?> parameter and return type', () async {
+      var result = await client.listParameters.returnDoubleListNullableDoubles(
+        [0.0, null, 2.0],
+      );
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0], equals(0.0));
+      expect(result[1], isNull);
+      expect(result[2], equals(2.0));
+    });
+
+    test('List<bool> parameter and return type', () async {
+      var result = await client.listParameters.returnBoolList([false, true]);
+      expect(result.length, equals(2));
+      expect(result[0], equals(false));
+      expect(result[1], equals(true));
+    });
+
+    test('List<bool?> parameter and return type', () async {
+      var result = await client.listParameters.returnBoolListNullableBools(
+        [false, null, true],
+      );
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0], equals(false));
+      expect(result[1], isNull);
+      expect(result[2], equals(true));
+    });
+
+    test('List<String> parameter and return type', () async {
+      var result = await client.listParameters.returnStringList(
+        ['A', 'B', 'C'],
+      );
+      expect(result.length, equals(3));
+      expect(result[0], equals('A'));
+      expect(result[1], equals('B'));
+      expect(result[2], equals('C'));
+    });
+
+    test('List<String?> parameter and return type', () async {
+      var result = await client.listParameters.returnStringListNullableStrings(
+        ['A', null, 'C'],
+      );
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0], equals('A'));
+      expect(result[1], isNull);
+      expect(result[2], equals('C'));
+    });
+
+    test('List<DateTime> parameter and return type', () async {
+      var result = await client.listParameters.returnDateTimeList([
+        DateTime.utc(2020),
+        DateTime.utc(2021),
+        DateTime.utc(2022),
+      ]);
+      expect(result.length, equals(3));
+      expect(result[0], equals(DateTime.utc(2020)));
+      expect(result[1], equals(DateTime.utc(2021)));
+      expect(result[2], equals(DateTime.utc(2022)));
+    });
+
+    test('List<DateTime?> parameter and return type', () async {
+      var result =
+          await client.listParameters.returnDateTimeListNullableDateTimes([
+        DateTime.utc(2020),
+        null,
+        DateTime.utc(2022),
+      ]);
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0], equals(DateTime.utc(2020)));
+      expect(result[1], isNull);
+      expect(result[2], equals(DateTime.utc(2022)));
+    });
+
+    test('List<ByteData> parameter and return type', () async {
+      var result = await client.listParameters.returnByteDataList([
+        createByteData(),
+        createByteData(),
+        createByteData(),
+      ]);
+      expect(result.length, equals(3));
+      expect(result[0].lengthInBytes, equals(256));
+      expect(result[1].lengthInBytes, equals(256));
+      expect(result[2].lengthInBytes, equals(256));
+    });
+
+    test('List<ByteData?> parameter and return type', () async {
+      var result =
+          await client.listParameters.returnByteDataListNullableByteDatas([
+        createByteData(),
+        null,
+        createByteData(),
+      ]);
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0]!.lengthInBytes, equals(256));
+      expect(result[1], isNull);
+      expect(result[2]!.lengthInBytes, equals(256));
+    });
+
+    test('List<SimpleData> parameter and return type', () async {
+      var result = await client.listParameters.returnSimpleDataList([
+        SimpleData(num: 0),
+        SimpleData(num: 1),
+        SimpleData(num: 2),
+      ]);
+      expect(result.length, equals(3));
+      expect(result[0].num, equals(0));
+      expect(result[1].num, equals(1));
+      expect(result[2].num, equals(2));
+    });
+
+    test('List<SimpleData?> parameter and return type', () async {
+      var result =
+          await client.listParameters.returnSimpleDataListNullableSimpleData([
+        SimpleData(num: 0),
+        null,
+        SimpleData(num: 2),
+      ]);
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result[0]!.num, equals(0));
+      expect(result[1], isNull);
+      expect(result[2]!.num, equals(2));
+    });
+
+    test('List<SimpleData>? parameter and return type', () async {
+      var result = await client.listParameters.returnSimpleDataListNullable([
+        SimpleData(num: 0),
+        SimpleData(num: 1),
+        SimpleData(num: 2),
+      ]);
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result[0].num, equals(0));
+      expect(result[1].num, equals(1));
+      expect(result[2].num, equals(2));
+
+      result = await client.listParameters.returnSimpleDataListNullable(null);
+      expect(result, isNull);
+    });
+
+    test('List<SimpleData?>? parameter and return type', () async {
+      var result = await client.listParameters
+          .returnNullableSimpleDataListNullableSimpleData([
+        SimpleData(num: 0),
+        null,
+        SimpleData(num: 2),
+      ]);
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result[0]!.num, equals(0));
+      expect(result[1], isNull);
+      expect(result[2]!.num, equals(2));
+
+      result = await client.listParameters
+          .returnNullableSimpleDataListNullableSimpleData(null);
+      expect(result, isNull);
+    });
   });
 
   group('Basic types', () {

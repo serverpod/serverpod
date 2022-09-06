@@ -65,12 +65,10 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         if (methodDef.documentationComment != null) {
           out += '${methodDef.documentationComment}\n';
         }
-        out +=
-            '  Future<${returnType.typePrefix}${returnType.type}> ${methodDef.name}(';
+        out += '  Future<${returnType.typeWithPrefix}> ${methodDef.name}(';
 
         for (var paramDef in requiredParams) {
-          out +=
-              '${paramDef.type.typePrefix}${paramDef.type} ${paramDef.name},';
+          out += '${paramDef.type.typeWithPrefix} ${paramDef.name},';
         }
 
         if (optionalParams.isNotEmpty) {
@@ -101,7 +99,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
 
         // Call to server endpoint
         out +=
-            '    return await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
+            '    var retval = await caller.callServerEndpoint(\'$modulePrefix${endpointDef.name}\', \'${methodDef.name}\', \'${returnType.typeNonNullable}\', {\n';
 
         for (var paramDef in requiredParams) {
           out += '      \'${paramDef.name}\':${paramDef.name},\n';
@@ -116,6 +114,17 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         }
 
         out += '    });\n';
+
+        if (returnType.isTypedList) {
+          if (returnType.nullable) {
+            out += '    return (retval as List?)?.cast();\n';
+          } else {
+            out += '    return (retval as List).cast();\n';
+          }
+        } else {
+          out += '    return retval;\n';
+        }
+
         out += '  }\n';
       }
 

@@ -59,6 +59,25 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
+listParameters:
+  - returnIntList:
+  - returnIntListNullable:
+  - returnIntListNullableInts:
+  - returnNullableIntListNullableInts:
+  - returnDoubleList:
+  - returnDoubleListNullableDoubles:
+  - returnBoolList:
+  - returnBoolListNullableBools:
+  - returnStringList:
+  - returnStringListNullableStrings:
+  - returnDateTimeList:
+  - returnDateTimeListNullableDateTimes:
+  - returnByteDataList:
+  - returnByteDataListNullableByteDatas:
+  - returnSimpleDataList:
+  - returnSimpleDataListNullableSimpleData:
+  - returnSimpleDataListNullable:
+  - returnNullableSimpleDataListNullableSimpleData:
 logging:
   - logInfo:
   - logDebugAndInfoAndError:

@@ -92,7 +92,7 @@ class ProtocolAnalyzer {
         for (var element in topElements) {
           if (element is ClassElement) {
             var className = element.name;
-            var superclassName = element.supertype!.element.name;
+            var superclassName = element.supertype!.element2.name;
             var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
@@ -112,7 +112,7 @@ class ProtocolAnalyzer {
                 var parameters = method.parameters;
                 for (var param in parameters) {
                   var package =
-                      param.type.element?.librarySource?.uri.pathSegments[0];
+                      param.type.element2?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
                     required: param.isRequiredPositional ||
@@ -123,6 +123,7 @@ class ProtocolAnalyzer {
                     type: TypeDefinition(
                       param.type.getDisplayString(withNullability: true),
                       package,
+                      _getInnerPackage(param.type),
                     ),
                   );
 
@@ -139,12 +140,15 @@ class ProtocolAnalyzer {
                     paramDefs[0].type.type == 'Session' &&
                     method.returnType.isDartAsyncFuture) {
                   String? package;
+                  String? innerPackage;
                   var returnType = method.returnType;
                   if (returnType is InterfaceType) {
                     var interfaceType = returnType;
                     if (interfaceType.typeArguments.length == 1) {
-                      package = interfaceType.typeArguments[0].element
+                      package = interfaceType.typeArguments[0].element2
                           ?.librarySource?.uri.pathSegments[0];
+                      innerPackage =
+                          _getInnerPackage(interfaceType.typeArguments[0]);
                     }
                   }
 
@@ -155,10 +159,11 @@ class ProtocolAnalyzer {
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
                     returnType: TypeDefinition(
-                        method.returnType
-                            .getDisplayString(withNullability: true),
-                        package,
-                        stripFuture: true),
+                      method.returnType.getDisplayString(withNullability: true),
+                      package,
+                      innerPackage,
+                      stripFuture: true,
+                    ),
                   );
                   methodDefs.add(methodDef);
                 }
@@ -180,6 +185,23 @@ class ProtocolAnalyzer {
       endpoints: endpointDefs,
       filePaths: filePaths,
     );
+  }
+
+  String? _getInnerPackage(DartType type) {
+    if (type.isDartCoreList) {
+      type as InterfaceType;
+      if (type.typeArguments.length == 1) {
+        return type
+            .typeArguments[0].element2?.librarySource?.uri.pathSegments[0];
+      }
+    } else if (type.isDartCoreMap) {
+      type as InterfaceType;
+      if (type.typeArguments.length == 2) {
+        return type
+            .typeArguments[1].element2?.librarySource?.uri.pathSegments[0];
+      }
+    }
+    return null;
   }
 
   String _formatEndpointName(String className) {

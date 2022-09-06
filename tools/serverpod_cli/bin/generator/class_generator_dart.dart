@@ -589,7 +589,7 @@ class FieldDefinition {
     }
 
     // TODO: Fix package?
-    type = TypeDefinition(typeStr, null);
+    type = TypeDefinition(typeStr, null, null);
   }
 
   void _parseOptions(List<String> options) {

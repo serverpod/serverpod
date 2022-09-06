@@ -62,6 +62,7 @@ class TypeDefinition {
   late final String typeNonNullable;
   late final String type;
   final String? package;
+  final String? innerPackage;
 
   String get typePrefix {
     var prefix = '';
@@ -73,7 +74,22 @@ class TypeDefinition {
     return prefix;
   }
 
-  TypeDefinition(String type, this.package, {bool stripFuture = false}) {
+  String get typeNonNullableWithPrefix {
+    if (isTypedList) {
+      return 'List<${listType!.typeWithPrefix}>';
+    } else if (isTypedMap) {
+      return 'Map<String, ${mapType!.typeWithPrefix}>';
+    } else {
+      return '$typePrefix$typeNonNullable';
+    }
+  }
+
+  String get typeWithPrefix {
+    return '$typeNonNullableWithPrefix${nullable ? '?' : ''}';
+  }
+
+  TypeDefinition(String type, this.package, this.innerPackage,
+      {bool stripFuture = false}) {
     // Remove all spaces
     var trimmed = type.replaceAll(' ', '');
 
@@ -95,7 +111,7 @@ class TypeDefinition {
     if (isTypedList) {
       var listTypeStr =
           withoutQuestion.substring(5, withoutQuestion.length - 1);
-      listType = TypeDefinition(listTypeStr, package);
+      listType = TypeDefinition(listTypeStr, innerPackage, null);
     }
 
     // Check if it's a Map
@@ -112,13 +128,13 @@ class TypeDefinition {
       if (mapComponents[0].trim() != 'String') {
         throw const FormatException('Only String is allowed as Map keys');
       }
-      mapType = TypeDefinition(mapComponents[1], package);
+      mapType = TypeDefinition(mapComponents[1], innerPackage, null);
     }
 
     // Generate type strings
     if (isTypedList) {
       this.type = 'List<${listType!.type}>${nullable ? '?' : ''}';
-      typeNonNullable = 'List<${listType!.typeNonNullable}>';
+      typeNonNullable = 'List<${listType!.type}>';
     } else if (isTypedMap) {
       this.type = 'Map<String,${mapType!.type}>${nullable ? '?' : ''}';
       typeNonNullable = 'Map<String,${mapType!.typeNonNullable}>';
