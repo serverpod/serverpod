@@ -84,6 +84,25 @@ logging:
   - twoQueries:
 loggingDisabled:
   - logInfo:
+mapParameters:
+  - returnIntMap:
+  - returnIntMapNullable:
+  - returnIntMapNullableInts:
+  - returnNullableIntMapNullableInts:
+  - returnDoubleMap:
+  - returnDoubleMapNullableDoubles:
+  - returnBoolMap:
+  - returnBoolMapNullableBools:
+  - returnStringMap:
+  - returnStringMapNullableStrings:
+  - returnDateTimeMap:
+  - returnDateTimeMapNullableDateTimes:
+  - returnByteDataMap:
+  - returnByteDataMapNullableByteDatas:
+  - returnSimpleDataMap:
+  - returnSimpleDataMapNullableSimpleData:
+  - returnSimpleDataMapNullable:
+  - returnNullableSimpleDataMapNullableSimpleData:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:

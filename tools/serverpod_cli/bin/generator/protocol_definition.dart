@@ -137,7 +137,7 @@ class TypeDefinition {
       typeNonNullable = 'List<${listType!.type}>';
     } else if (isTypedMap) {
       this.type = 'Map<String,${mapType!.type}>${nullable ? '?' : ''}';
-      typeNonNullable = 'Map<String,${mapType!.typeNonNullable}>';
+      typeNonNullable = 'Map<String,${mapType!.type}>';
     } else {
       this.type = '$withoutQuestion${nullable ? '?' : ''}';
       typeNonNullable = withoutQuestion;

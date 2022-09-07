@@ -121,6 +121,12 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
           } else {
             out += '    return (retval as List).cast();\n';
           }
+        } else if (returnType.isTypedMap) {
+          if (returnType.nullable) {
+            out += '    return (retval as Map?)?.cast();\n';
+          } else {
+            out += '    return (retval as Map).cast();\n';
+          }
         } else {
           out += '    return retval;\n';
         }

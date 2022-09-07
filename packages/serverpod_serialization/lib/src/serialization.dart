@@ -111,6 +111,33 @@ abstract class SerializationManager {
             .map((e) => e == null ? null : '$e')
             .toList(),
       );
+    } else if (entity is Map<String, int> ||
+        entity is Map<String, int?> ||
+        entity is Map<String, double> ||
+        entity is Map<String, double?> ||
+        entity is Map<String, bool> ||
+        entity is Map<String, bool?> ||
+        entity is Map<String, String> ||
+        entity is Map<String, String?>) {
+      return jsonEncode(entity);
+    } else if (entity is Map<String, DateTime> ||
+        entity is Map<String, DateTime?>) {
+      return jsonEncode(
+        (entity as Map).map(
+          (k, v) => MapEntry(k, (v as DateTime?)?.toIso8601String()),
+        ),
+      );
+    } else if (entity is Map<String, ByteData> ||
+        entity is Map<String, ByteData?>) {
+      return jsonEncode(
+        (entity as Map).map(
+          (k, v) => MapEntry(k, (v as ByteData?)?.base64encodedString()),
+        ),
+      );
+    } else if (entity is Map) {
+      return jsonEncode(entity.cast<String, SerializableEntity?>().map(
+            (k, v) => MapEntry(k, v == null ? null : '$v'),
+          ));
     } else {
       throw FormatException('Unknown entity type ${entity.runtimeType}');
     }

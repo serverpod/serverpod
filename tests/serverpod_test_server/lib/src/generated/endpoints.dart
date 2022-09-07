@@ -27,6 +27,7 @@ import '../endpoints/future_calls.dart';
 import '../endpoints/list_parameters.dart';
 import '../endpoints/logging.dart';
 import '../endpoints/logging_disabled.dart';
+import '../endpoints/map_parameters.dart';
 import '../endpoints/module_serialization.dart';
 import '../endpoints/named_parameters.dart';
 import '../endpoints/optional_parameters.dart';
@@ -65,6 +66,8 @@ class Endpoints extends EndpointDispatch {
       'logging': LoggingEndpoint()..initialize(server, 'logging', null),
       'loggingDisabled': LoggingDisabledEndpoint()
         ..initialize(server, 'loggingDisabled', null),
+      'mapParameters': MapParametersEndpoint()
+        ..initialize(server, 'mapParameters', null),
       'moduleSerialization': ModuleSerializationEndpoint()
         ..initialize(server, 'moduleSerialization', null),
       'namedParameters': NamedParametersEndpoint()
@@ -1157,6 +1160,269 @@ class Endpoints extends EndpointDispatch {
                 .logInfo(
               session,
               params['message'],
+            );
+          },
+        ),
+      },
+    );
+
+    connectors['mapParameters'] = EndpointConnector(
+      name: 'mapParameters',
+      endpoint: endpoints['mapParameters']!,
+      methodConnectors: {
+        'returnIntMap': MethodConnector(
+          name: 'returnIntMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, int>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnIntMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnIntMapNullable': MethodConnector(
+          name: 'returnIntMapNullable',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, int>, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnIntMapNullable(
+              session,
+              (params['map'] as Map?)?.cast(),
+            );
+          },
+        ),
+        'returnIntMapNullableInts': MethodConnector(
+          name: 'returnIntMapNullableInts',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, int?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnIntMapNullableInts(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnNullableIntMapNullableInts': MethodConnector(
+          name: 'returnNullableIntMapNullableInts',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, int?>, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnNullableIntMapNullableInts(
+              session,
+              (params['map'] as Map?)?.cast(),
+            );
+          },
+        ),
+        'returnDoubleMap': MethodConnector(
+          name: 'returnDoubleMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, double>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnDoubleMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnDoubleMapNullableDoubles': MethodConnector(
+          name: 'returnDoubleMapNullableDoubles',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, double?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnDoubleMapNullableDoubles(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnBoolMap': MethodConnector(
+          name: 'returnBoolMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, bool>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnBoolMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnBoolMapNullableBools': MethodConnector(
+          name: 'returnBoolMapNullableBools',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, bool?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnBoolMapNullableBools(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnStringMap': MethodConnector(
+          name: 'returnStringMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, String>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnStringMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnStringMapNullableStrings': MethodConnector(
+          name: 'returnStringMapNullableStrings',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, String?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnStringMapNullableStrings(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnDateTimeMap': MethodConnector(
+          name: 'returnDateTimeMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, DateTime>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnDateTimeMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnDateTimeMapNullableDateTimes': MethodConnector(
+          name: 'returnDateTimeMapNullableDateTimes',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, DateTime?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnDateTimeMapNullableDateTimes(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnByteDataMap': MethodConnector(
+          name: 'returnByteDataMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map',
+                type: Map<String, typed_data.ByteData>,
+                nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnByteDataMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnByteDataMapNullableByteDatas': MethodConnector(
+          name: 'returnByteDataMapNullableByteDatas',
+          params: {
+            'map': ParameterDescription(
+                name: 'map',
+                type: Map<String, typed_data.ByteData?>,
+                nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnByteDataMapNullableByteDatas(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnSimpleDataMap': MethodConnector(
+          name: 'returnSimpleDataMap',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, SimpleData>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnSimpleDataMap(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnSimpleDataMapNullableSimpleData': MethodConnector(
+          name: 'returnSimpleDataMapNullableSimpleData',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, SimpleData?>, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnSimpleDataMapNullableSimpleData(
+              session,
+              (params['map'] as Map).cast(),
+            );
+          },
+        ),
+        'returnSimpleDataMapNullable': MethodConnector(
+          name: 'returnSimpleDataMapNullable',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, SimpleData>, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnSimpleDataMapNullable(
+              session,
+              (params['map'] as Map?)?.cast(),
+            );
+          },
+        ),
+        'returnNullableSimpleDataMapNullableSimpleData': MethodConnector(
+          name: 'returnNullableSimpleDataMapNullableSimpleData',
+          params: {
+            'map': ParameterDescription(
+                name: 'map', type: Map<String, SimpleData?>, nullable: true),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['mapParameters'] as MapParametersEndpoint)
+                .returnNullableSimpleDataMapNullableSimpleData(
+              session,
+              (params['map'] as Map?)?.cast(),
             );
           },
         ),

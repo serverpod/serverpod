@@ -140,17 +140,16 @@ abstract class ProtocolGenerator {
             } else {
               out += '(params[\'${param.name}\'] as List).cast(),';
             }
+          } else if (param.type.isTypedMap) {
+            if (param.type.nullable) {
+              out += '(params[\'${param.name}\'] as Map?)?.cast(),';
+            } else {
+              out += '(params[\'${param.name}\'] as Map).cast(),';
+            }
           } else {
             out += 'params[\'${param.name}\'],';
           }
         }
-        // for (var param in method.parametersPositional) {
-        //   if (param.type.isTypedList) {
-        //     out += '(params[\'${param.name}\'] as List).cast(),';
-        //   } else {
-        //     out += 'params[\'${param.name}\'],';
-        //   }
-        // }
         if (method.parametersNamed.isNotEmpty) {
           for (var param in method.parametersNamed) {
             if (param.type.isTypedList) {
@@ -160,6 +159,14 @@ abstract class ProtocolGenerator {
               } else {
                 out +=
                     '${param.name}: (params[\'${param.name}\'] as List).cast(),';
+              }
+            } else if (param.type.isTypedMap) {
+              if (param.type.nullable) {
+                out +=
+                    '${param.name}: (params[\'${param.name}\'] as Map?)?.cast(),';
+              } else {
+                out +=
+                    '${param.name}: (params[\'${param.name}\'] as Map).cast(),';
               }
             } else {
               out += '${param.name}: params[\'${param.name}\'],';

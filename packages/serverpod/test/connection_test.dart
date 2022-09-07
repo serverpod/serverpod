@@ -280,6 +280,251 @@ void main() {
           .returnNullableSimpleDataListNullableSimpleData(null);
       expect(result, isNull);
     });
+
+    test('Map<String, int> parameter and return type', () async {
+      var result = await client.mapParameters.returnIntMap({
+        '0': 0,
+        '1': 1,
+        '2': 2,
+      });
+      expect(result.length, equals(3));
+      expect(result['0'], equals(0));
+      expect(result['1'], equals(1));
+      expect(result['2'], equals(2));
+    });
+
+    test('Map<String, int>? parameter and return type', () async {
+      var result = await client.mapParameters.returnIntMapNullable({
+        '0': 0,
+        '1': 1,
+        '2': 2,
+      });
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result['0'], equals(0));
+      expect(result['1'], equals(1));
+      expect(result['2'], equals(2));
+
+      result = await client.mapParameters.returnIntMapNullable(null);
+      expect(result, isNull);
+    });
+
+    test('Map<String, int?> parameter and return type', () async {
+      var result = await client.mapParameters.returnIntMapNullableInts({
+        '0': 0,
+        '1': null,
+        '2': 2,
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['0'], equals(0));
+      expect(result['1'], isNull);
+      expect(result['2'], equals(2));
+    });
+
+    test('Map<String, int?>? parameter and return type', () async {
+      var result = await client.mapParameters.returnNullableIntMapNullableInts({
+        '0': 0,
+        '1': null,
+        '2': 2,
+      });
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result['0'], equals(0));
+      expect(result['1'], isNull);
+      expect(result['2'], equals(2));
+
+      result =
+          await client.mapParameters.returnNullableIntMapNullableInts(null);
+      expect(result, isNull);
+    });
+
+    test('Map<String, double> parameter and return type', () async {
+      var result = await client.mapParameters.returnDoubleMap({
+        '0': 0.0,
+        '1': 1.0,
+        '2': 2.0,
+      });
+      expect(result.length, equals(3));
+      expect(result['0'], equals(0.0));
+      expect(result['1'], equals(1.0));
+      expect(result['2'], equals(2.0));
+    });
+
+    test('Map<String, double?> parameter and return type', () async {
+      var result = await client.mapParameters.returnDoubleMapNullableDoubles({
+        '0': 0.0,
+        '1': null,
+        '2': 2.0,
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['0'], equals(0.0));
+      expect(result['1'], isNull);
+      expect(result['2'], equals(2.0));
+    });
+
+    test('Map<String, bool> parameter and return type', () async {
+      var result = await client.mapParameters.returnBoolMap({
+        '0': false,
+        '1': false,
+        '2': true,
+      });
+      expect(result.length, equals(3));
+      expect(result['0'], equals(false));
+      expect(result['1'], equals(false));
+      expect(result['2'], equals(true));
+    });
+
+    test('Map<String, bool?> parameter and return type', () async {
+      var result = await client.mapParameters.returnBoolMapNullableBools({
+        '0': false,
+        '1': null,
+        '2': true,
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['0'], equals(false));
+      expect(result['1'], isNull);
+      expect(result['2'], equals(true));
+    });
+
+    test('Map<String, String> parameter and return type', () async {
+      var result = await client.mapParameters.returnStringMap({
+        '0': 'String 0',
+        '1': 'String 1',
+        '2': 'String 2',
+      });
+      expect(result.length, equals(3));
+      expect(result['0'], equals('String 0'));
+      expect(result['1'], equals('String 1'));
+      expect(result['2'], equals('String 2'));
+    });
+
+    test('Map<String, String?> parameter and return type', () async {
+      var result = await client.mapParameters.returnStringMapNullableStrings({
+        '0': 'String 0',
+        '1': null,
+        '2': 'null',
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['0'], equals('String 0'));
+      expect(result['1'], isNull);
+      expect(result['2'], equals('null'));
+    });
+
+    test('Map<String, DateTime> parameter and return type', () async {
+      var result = await client.mapParameters.returnDateTimeMap({
+        '2020': DateTime.utc(2020),
+        '2021': DateTime.utc(2021),
+        '2022': DateTime.utc(2022),
+      });
+      expect(result.length, equals(3));
+      expect(result['2020'], equals(DateTime.utc(2020)));
+      expect(result['2021'], equals(DateTime.utc(2021)));
+      expect(result['2022'], equals(DateTime.utc(2022)));
+    });
+
+    test('Map<String, DateTime?> parameter and return type', () async {
+      var result =
+          await client.mapParameters.returnDateTimeMapNullableDateTimes({
+        '2020': DateTime.utc(2020),
+        '2021': null,
+        '2022': DateTime.utc(2022),
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['2020'], equals(DateTime.utc(2020)));
+      expect(result['2021'], isNull);
+      expect(result['2022'], equals(DateTime.utc(2022)));
+    });
+
+    test('Map<String, ByteData> parameter and return type', () async {
+      var result = await client.mapParameters.returnByteDataMap({
+        '0': createByteData(),
+        '1': createByteData(),
+        '2': createByteData(),
+      });
+      expect(result.length, equals(3));
+      expect(result['0']!.lengthInBytes, equals(256));
+      expect(result['1']!.lengthInBytes, equals(256));
+      expect(result['2']!.lengthInBytes, equals(256));
+    });
+
+    test('Map<String, ByteData?> parameter and return type', () async {
+      var result =
+          await client.mapParameters.returnByteDataMapNullableByteDatas({
+        '0': createByteData(),
+        '1': null,
+        '2': createByteData(),
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['0']!.lengthInBytes, equals(256));
+      expect(result['1'], isNull);
+      expect(result['2']!.lengthInBytes, equals(256));
+    });
+
+    test('Map<String, SimpleData> parameter and return type', () async {
+      var result = await client.mapParameters.returnSimpleDataMap({
+        '0': SimpleData(num: 0),
+        '1': SimpleData(num: 1),
+        '2': SimpleData(num: 2),
+      });
+      expect(result.length, equals(3));
+      expect(result['0']!.num, equals(0));
+      expect(result['1']!.num, equals(1));
+      expect(result['2']!.num, equals(2));
+    });
+
+    test('Map<String, SimpleData>? parameter and return type', () async {
+      var result = await client.mapParameters.returnSimpleDataMapNullable({
+        '0': SimpleData(num: 0),
+        '1': SimpleData(num: 1),
+        '2': SimpleData(num: 2),
+      });
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result['0']!.num, equals(0));
+      expect(result['1']!.num, equals(1));
+      expect(result['2']!.num, equals(2));
+
+      result = await client.mapParameters.returnSimpleDataMapNullable(null);
+      expect(result, isNull);
+    });
+
+    test('Map<String, SimpleData?> parameter and return type', () async {
+      var result =
+          await client.mapParameters.returnSimpleDataMapNullableSimpleData({
+        '0': SimpleData(num: 0),
+        '1': null,
+        '2': SimpleData(num: 2),
+      });
+      expect(result, isNotNull);
+      expect(result.length, equals(3));
+      expect(result['0']!.num, equals(0));
+      expect(result['1'], isNull);
+      expect(result['2']!.num, equals(2));
+    });
+
+    test('Map<String, SimpleData?>? parameter and return type', () async {
+      var result = await client.mapParameters
+          .returnNullableSimpleDataMapNullableSimpleData({
+        '0': SimpleData(num: 0),
+        '1': null,
+        '2': SimpleData(num: 2),
+      });
+      expect(result, isNotNull);
+      expect(result!.length, equals(3));
+      expect(result['0']!.num, equals(0));
+      expect(result['1'], isNull);
+      expect(result['2']!.num, equals(2));
+
+      result = await client.mapParameters
+          .returnNullableSimpleDataMapNullableSimpleData(null);
+      expect(result, isNull);
+    });
   });
 
   group('Basic types', () {

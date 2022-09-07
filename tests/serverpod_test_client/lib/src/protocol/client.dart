@@ -803,6 +803,196 @@ class _EndpointLoggingDisabled extends EndpointRef {
   }
 }
 
+class _EndpointMapParameters extends EndpointRef {
+  @override
+  String get name => 'mapParameters';
+
+  _EndpointMapParameters(EndpointCaller caller) : super(caller);
+
+  Future<Map<String, int>> returnIntMap(
+    Map<String, int> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMap', 'Map<String,int>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, int>?> returnIntMapNullable(
+    Map<String, int>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMapNullable', 'Map<String,int>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+
+  Future<Map<String, int?>> returnIntMapNullableInts(
+    Map<String, int?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMapNullableInts', 'Map<String,int?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, int?>?> returnNullableIntMapNullableInts(
+    Map<String, int?>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnNullableIntMapNullableInts', 'Map<String,int?>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+
+  Future<Map<String, double>> returnDoubleMap(
+    Map<String, double> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnDoubleMap', 'Map<String,double>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, double?>> returnDoubleMapNullableDoubles(
+    Map<String, double?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnDoubleMapNullableDoubles', 'Map<String,double?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, bool>> returnBoolMap(
+    Map<String, bool> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnBoolMap', 'Map<String,bool>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, bool?>> returnBoolMapNullableBools(
+    Map<String, bool?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnBoolMapNullableBools', 'Map<String,bool?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, String>> returnStringMap(
+    Map<String, String> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnStringMap', 'Map<String,String>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, String?>> returnStringMapNullableStrings(
+    Map<String, String?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnStringMapNullableStrings', 'Map<String,String?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, DateTime>> returnDateTimeMap(
+    Map<String, DateTime> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnDateTimeMap', 'Map<String,DateTime>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
+    Map<String, DateTime?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnDateTimeMapNullableDateTimes', 'Map<String,DateTime?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, typed_data.ByteData>> returnByteDataMap(
+    Map<String, typed_data.ByteData> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnByteDataMap', 'Map<String,ByteData>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, typed_data.ByteData?>> returnByteDataMapNullableByteDatas(
+    Map<String, typed_data.ByteData?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnByteDataMapNullableByteDatas', 'Map<String,ByteData?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, SimpleData>> returnSimpleDataMap(
+    Map<String, SimpleData> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnSimpleDataMap', 'Map<String,SimpleData>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, SimpleData?>> returnSimpleDataMapNullableSimpleData(
+    Map<String, SimpleData?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnSimpleDataMapNullableSimpleData', 'Map<String,SimpleData?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, SimpleData>?> returnSimpleDataMapNullable(
+    Map<String, SimpleData>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnSimpleDataMapNullable', 'Map<String,SimpleData>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+
+  Future<Map<String, SimpleData?>?>
+      returnNullableSimpleDataMapNullableSimpleData(
+    Map<String, SimpleData?>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters',
+        'returnNullableSimpleDataMapNullableSimpleData',
+        'Map<String,SimpleData?>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+}
+
 class _EndpointModuleSerialization extends EndpointRef {
   @override
   String get name => 'moduleSerialization';
@@ -1050,6 +1240,7 @@ class Client extends ServerpodClient {
   late final _EndpointListParameters listParameters;
   late final _EndpointLogging logging;
   late final _EndpointLoggingDisabled loggingDisabled;
+  late final _EndpointMapParameters mapParameters;
   late final _EndpointModuleSerialization moduleSerialization;
   late final _EndpointNamedParameters namedParameters;
   late final _EndpointOptionalParameters optionalParameters;
@@ -1081,6 +1272,7 @@ class Client extends ServerpodClient {
     listParameters = _EndpointListParameters(this);
     logging = _EndpointLogging(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
+    mapParameters = _EndpointMapParameters(this);
     moduleSerialization = _EndpointModuleSerialization(this);
     namedParameters = _EndpointNamedParameters(this);
     optionalParameters = _EndpointOptionalParameters(this);
@@ -1110,6 +1302,7 @@ class Client extends ServerpodClient {
         'listParameters': listParameters,
         'logging': logging,
         'loggingDisabled': loggingDisabled,
+        'mapParameters': mapParameters,
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
