@@ -60,7 +60,7 @@ resource "aws_cloudfront_distribution" "public_storage" {
   price_class = "PriceClass_100"
 
   viewer_certificate {
-    acm_certificate_arn = var.public_storage_certificate_arn
+    acm_certificate_arn = var.cloudfront_certificate_arn
     ssl_support_method  = "sni-only"
   }
 

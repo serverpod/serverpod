@@ -83,6 +83,61 @@ abstract class SerializationManager {
         entity is double ||
         entity is SerializableEntity) {
       return '$entity';
+    } else if (entity is List<int> ||
+        entity is List<int?> ||
+        entity is List<double> ||
+        entity is List<double?> ||
+        entity is List<bool> ||
+        entity is List<bool?> ||
+        entity is List<String> ||
+        entity is List<String?>) {
+      return jsonEncode(entity);
+    } else if (entity is List<DateTime> || entity is List<DateTime?>) {
+      return jsonEncode(
+        (entity as List)
+            .map((e) => (e as DateTime?)?.toIso8601String())
+            .toList(),
+      );
+    } else if (entity is List<ByteData> || entity is List<ByteData?>) {
+      return jsonEncode(
+        (entity as List)
+            .map((e) => (e as ByteData?)?.base64encodedString())
+            .toList(),
+      );
+    } else if (entity is List) {
+      return jsonEncode(
+        entity
+            .cast<SerializableEntity?>()
+            .map((e) => e == null ? null : '$e')
+            .toList(),
+      );
+    } else if (entity is Map<String, int> ||
+        entity is Map<String, int?> ||
+        entity is Map<String, double> ||
+        entity is Map<String, double?> ||
+        entity is Map<String, bool> ||
+        entity is Map<String, bool?> ||
+        entity is Map<String, String> ||
+        entity is Map<String, String?>) {
+      return jsonEncode(entity);
+    } else if (entity is Map<String, DateTime> ||
+        entity is Map<String, DateTime?>) {
+      return jsonEncode(
+        (entity as Map).map(
+          (k, v) => MapEntry(k, (v as DateTime?)?.toIso8601String()),
+        ),
+      );
+    } else if (entity is Map<String, ByteData> ||
+        entity is Map<String, ByteData?>) {
+      return jsonEncode(
+        (entity as Map).map(
+          (k, v) => MapEntry(k, (v as ByteData?)?.base64encodedString()),
+        ),
+      );
+    } else if (entity is Map) {
+      return jsonEncode(entity.cast<String, SerializableEntity?>().map(
+            (k, v) => MapEntry(k, v == null ? null : '$v'),
+          ));
     } else {
       throw FormatException('Unknown entity type ${entity.runtimeType}');
     }

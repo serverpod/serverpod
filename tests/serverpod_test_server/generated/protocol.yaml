@@ -54,17 +54,63 @@ failedCalls:
   - failedDatabaseQueryCaughtException:
   - slowCall:
   - caughtException:
+fieldScopes:
+  - storeObject:
+  - retrieveObject:
 futureCalls:
   - makeFutureCall:
+listParameters:
+  - returnIntList:
+  - returnIntListNullable:
+  - returnIntListNullableInts:
+  - returnNullableIntListNullableInts:
+  - returnDoubleList:
+  - returnDoubleListNullableDoubles:
+  - returnBoolList:
+  - returnBoolListNullableBools:
+  - returnStringList:
+  - returnStringListNullableStrings:
+  - returnDateTimeList:
+  - returnDateTimeListNullableDateTimes:
+  - returnByteDataList:
+  - returnByteDataListNullableByteDatas:
+  - returnSimpleDataList:
+  - returnSimpleDataListNullableSimpleData:
+  - returnSimpleDataListNullable:
+  - returnNullableSimpleDataListNullableSimpleData:
 logging:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:
 loggingDisabled:
   - logInfo:
+mapParameters:
+  - returnIntMap:
+  - returnIntMapNullable:
+  - returnIntMapNullableInts:
+  - returnNullableIntMapNullableInts:
+  - returnDoubleMap:
+  - returnDoubleMapNullableDoubles:
+  - returnBoolMap:
+  - returnBoolMapNullableBools:
+  - returnStringMap:
+  - returnStringMapNullableStrings:
+  - returnDateTimeMap:
+  - returnDateTimeMapNullableDateTimes:
+  - returnByteDataMap:
+  - returnByteDataMapNullableByteDatas:
+  - returnSimpleDataMap:
+  - returnSimpleDataMapNullableSimpleData:
+  - returnSimpleDataMapNullable:
+  - returnNullableSimpleDataMapNullableSimpleData:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+namedParameters:
+  - namedParametersMethod:
+  - namedParametersMethodEqualInts:
+optionalParameters:
+  - returnOptionalInt:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:

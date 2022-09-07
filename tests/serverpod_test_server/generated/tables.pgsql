@@ -1,4 +1,18 @@
 --
+-- Class ObjectFieldScopes as table object_field_scopes
+--
+
+CREATE TABLE object_field_scopes (
+  "id" serial,
+  "normal" text NOT NULL,
+  "database" text
+);
+
+ALTER TABLE ONLY object_field_scopes
+  ADD CONSTRAINT object_field_scopes_pkey PRIMARY KEY (id);
+
+
+--
 -- Class ObjectWithObject as table object_with_object
 --
 

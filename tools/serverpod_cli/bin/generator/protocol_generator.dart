@@ -117,20 +117,61 @@ abstract class ProtocolGenerator {
         out += '        \'${method.name}\': MethodConnector(\n';
         out += '          name: \'${method.name}\',\n';
         out += '          params: {\n';
-        for (var param in method.parameters) {
+        for (var param in [
+          ...method.parameters,
+          ...method.parametersPositional,
+          ...method.parametersNamed,
+        ]) {
           out +=
-              '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typePrefix}${param.type.typeNonNullable}, nullable: ${param.type.nullable}),\n';
+              '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typeNonNullableWithPrefix}, nullable: ${param.type.nullable}),\n';
         }
         out += '          },\n';
         out +=
             '          call: (Session session, Map<String, dynamic> params) async {\n';
         out +=
             '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
-        for (var param in method.parameters) {
-          out += 'params[\'${param.name}\'],';
+        for (var param in [
+          ...method.parameters,
+          ...method.parametersPositional
+        ]) {
+          if (param.type.isTypedList) {
+            if (param.type.nullable) {
+              out += '(params[\'${param.name}\'] as List?)?.cast(),';
+            } else {
+              out += '(params[\'${param.name}\'] as List).cast(),';
+            }
+          } else if (param.type.isTypedMap) {
+            if (param.type.nullable) {
+              out += '(params[\'${param.name}\'] as Map?)?.cast(),';
+            } else {
+              out += '(params[\'${param.name}\'] as Map).cast(),';
+            }
+          } else {
+            out += 'params[\'${param.name}\'],';
+          }
         }
-        for (var param in method.parametersPositional) {
-          out += 'params[\'${param.name}\'],';
+        if (method.parametersNamed.isNotEmpty) {
+          for (var param in method.parametersNamed) {
+            if (param.type.isTypedList) {
+              if (param.type.nullable) {
+                out +=
+                    '${param.name}: (params[\'${param.name}\'] as List?)?.cast(),';
+              } else {
+                out +=
+                    '${param.name}: (params[\'${param.name}\'] as List).cast(),';
+              }
+            } else if (param.type.isTypedMap) {
+              if (param.type.nullable) {
+                out +=
+                    '${param.name}: (params[\'${param.name}\'] as Map?)?.cast(),';
+              } else {
+                out +=
+                    '${param.name}: (params[\'${param.name}\'] as Map).cast(),';
+              }
+            } else {
+              out += '${param.name}: params[\'${param.name}\'],';
+            }
+          }
         }
         out += ');\n';
         out += '          },\n';

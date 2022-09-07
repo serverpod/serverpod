@@ -1,0 +1,13 @@
+class: ObjectWithMaps
+fields:
+  dataMap: Map<String,SimpleData>
+  intMap: Map<String, int>
+  stringMap: Map<String, String>
+  dateTimeMap: Map<String, DateTime>
+  byteDataMap: Map<String, ByteData>
+  nullableDataMap: Map<String,SimpleData?>
+  nullableIntMap: Map<String, int?>
+  nullableStringMap: Map<String, String?>
+  nullableDateTimeMap: Map<String, DateTime?>
+  nullableByteDataMap: Map<String, ByteData?>
+  

@@ -165,7 +165,7 @@ abstract class EndpointDispatch {
 
   Object? _formatArg(
       String? input, Type type, SerializationManager serializationManager) {
-    // Check for basic types
+    // Check for basic types.
     if (type == String) return input;
     if (type == int) return int.tryParse(input!);
     if (type == double) return double.tryParse(input!);
@@ -180,6 +180,132 @@ abstract class EndpointDispatch {
     if (type == DateTime) return DateTime.tryParse(input!);
     if (type == ByteData) return input?.base64DecodedByteData();
 
+    // List types.
+    if (type == List<int>) {
+      return (jsonDecode(input!) as List).cast<int>();
+    }
+    if (type == List<int?>) {
+      return (jsonDecode(input!) as List).cast<int?>();
+    }
+    if (type == List<double>) {
+      return (jsonDecode(input!) as List).cast<double>();
+    }
+    if (type == List<double?>) {
+      return (jsonDecode(input!) as List).cast<double?>();
+    }
+    if (type == List<bool>) {
+      return (jsonDecode(input!) as List).cast<bool>();
+    }
+    if (type == List<bool?>) {
+      return (jsonDecode(input!) as List).cast<bool?>();
+    }
+    if (type == List<String>) {
+      return (jsonDecode(input!) as List).cast<String>();
+    }
+    if (type == List<String?>) {
+      return (jsonDecode(input!) as List).cast<String?>();
+    }
+    if (type == List<DateTime>) {
+      var stringList = (jsonDecode(input!) as List).cast<String>();
+      return stringList
+          .map((e) => DateTime.tryParse(e)!)
+          .toList()
+          .cast<DateTime>();
+    }
+    if (type == List<DateTime?>) {
+      var stringList = (jsonDecode(input!) as List).cast<String?>();
+      return stringList
+          .map((e) => e == null ? null : DateTime.tryParse(e)!)
+          .toList()
+          .cast<DateTime?>();
+    }
+    if (type == List<ByteData>) {
+      var stringList = (jsonDecode(input!) as List).cast<String>();
+      return stringList
+          .map((e) => e.base64DecodedByteData()!)
+          .toList()
+          .cast<ByteData>();
+    }
+    if (type == List<ByteData?>) {
+      var stringList = (jsonDecode(input!) as List).cast<String?>();
+      return stringList
+          .map((e) => e?.base64DecodedByteData())
+          .toList()
+          .cast<ByteData?>();
+    }
+    if (type.toString().startsWith('List<')) {
+      var stringList = (jsonDecode(input!) as List).cast<String?>();
+      return stringList
+          .map((e) => e == null
+              ? null
+              : serializationManager
+                  .createEntityFromSerialization(jsonDecode(e)))
+          .toList();
+    }
+
+    // Map types.
+    if (type == Map<String, int>) {
+      return (jsonDecode(input!) as Map).cast<String, int>();
+    }
+    if (type == Map<String, int?>) {
+      return (jsonDecode(input!) as Map).cast<String, int?>();
+    }
+    if (type == Map<String, double>) {
+      return (jsonDecode(input!) as Map).cast<String, double>();
+    }
+    if (type == Map<String, double?>) {
+      return (jsonDecode(input!) as Map).cast<String, double?>();
+    }
+    if (type == Map<String, bool>) {
+      return (jsonDecode(input!) as Map).cast<String, bool>();
+    }
+    if (type == Map<String, bool?>) {
+      return (jsonDecode(input!) as Map).cast<String, bool?>();
+    }
+    if (type == Map<String, String>) {
+      return (jsonDecode(input!) as Map).cast<String, String>();
+    }
+    if (type == Map<String, String?>) {
+      return (jsonDecode(input!) as Map).cast<String, String?>();
+    }
+    if (type == Map<String, DateTime>) {
+      var stringMap = (jsonDecode(input!) as Map).cast<String, String>();
+      return stringMap
+          .map((k, v) => MapEntry(k, DateTime.tryParse(v)!))
+          .cast<String, DateTime>();
+    }
+    if (type == Map<String, DateTime?>) {
+      var stringMap = (jsonDecode(input!) as Map).cast<String, String?>();
+      return stringMap
+          .map((k, v) => MapEntry(k, v == null ? null : DateTime.tryParse(v)!))
+          .cast<String, DateTime?>();
+    }
+    if (type == Map<String, ByteData>) {
+      var stringMap = (jsonDecode(input!) as Map).cast<String, String>();
+      return stringMap
+          .map((k, v) => MapEntry(k, v.base64DecodedByteData()!))
+          .cast<String, ByteData>();
+    }
+    if (type == Map<String, ByteData?>) {
+      var stringMap = (jsonDecode(input!) as Map).cast<String, String?>();
+      return stringMap
+          .map((k, v) => MapEntry(k, v?.base64DecodedByteData()))
+          .cast<String, ByteData?>();
+    }
+    if (type.toString().startsWith('Map<')) {
+      var stringMap = (jsonDecode(input!) as Map).cast<String, String?>();
+      return stringMap.map(
+        (k, v) => MapEntry(
+          k,
+          v == null
+              ? null
+              : serializationManager
+                  .createEntityFromSerialization(jsonDecode(v)),
+        ),
+      );
+    }
+
+    // Serialized objects.
     try {
       var data = jsonDecode(input!);
       return serializationManager.createEntityFromSerialization(data);

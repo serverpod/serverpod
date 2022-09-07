@@ -23,20 +23,22 @@ class _EndpointAsyncTasks extends EndpointRef {
     int num,
     int seconds,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
       'num': num,
       'seconds': seconds,
     });
+    return retval;
   }
 
   Future<void> throwExceptionAfterDelay(
     int seconds,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
       'seconds': seconds,
     });
+    return retval;
   }
 }
 
@@ -47,35 +49,39 @@ class _EndpointAuthentication extends EndpointRef {
   _EndpointAuthentication(EndpointCaller caller) : super(caller);
 
   Future<void> removeAllUsers() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('authentication', 'removeAllUsers', 'void', {});
+    return retval;
   }
 
   Future<int> countUsers() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('authentication', 'countUsers', 'int', {});
+    return retval;
   }
 
   Future<void> createUser(
     String email,
     String password,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('authentication', 'createUser', 'void', {
       'email': email,
       'password': password,
     });
+    return retval;
   }
 
   Future<serverpod_auth.AuthenticationResponse> authenticate(
     String email,
     String password,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'authentication', 'authenticate', 'AuthenticationResponse', {
       'email': email,
       'password': password,
     });
+    return retval;
   }
 }
 
@@ -88,53 +94,61 @@ class _EndpointBasicTypes extends EndpointRef {
   Future<int?> testInt(
     int? value,
   ) async {
-    return await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
+    var retval =
+        await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
       'value': value,
     });
+    return retval;
   }
 
   Future<double?> testDouble(
     double? value,
   ) async {
-    return await caller
-        .callServerEndpoint('basicTypes', 'testDouble', 'double', {
+    var retval =
+        await caller.callServerEndpoint('basicTypes', 'testDouble', 'double', {
       'value': value,
     });
+    return retval;
   }
 
   Future<bool?> testBool(
     bool? value,
   ) async {
-    return await caller.callServerEndpoint('basicTypes', 'testBool', 'bool', {
+    var retval =
+        await caller.callServerEndpoint('basicTypes', 'testBool', 'bool', {
       'value': value,
     });
+    return retval;
   }
 
   Future<DateTime?> testDateTime(
     DateTime? dateTime,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
       'dateTime': dateTime,
     });
+    return retval;
   }
 
   Future<String?> testString(
     String? value,
   ) async {
-    return await caller
-        .callServerEndpoint('basicTypes', 'testString', 'String', {
+    var retval =
+        await caller.callServerEndpoint('basicTypes', 'testString', 'String', {
       'value': value,
     });
+    return retval;
   }
 
   Future<typed_data.ByteData?> testByteData(
     typed_data.ByteData? value,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicTypes', 'testByteData', 'ByteData', {
       'value': value,
     });
+    return retval;
   }
 }
 
@@ -145,72 +159,81 @@ class _EndpointCloudStorage extends EndpointRef {
   _EndpointCloudStorage(EndpointCaller caller) : super(caller);
 
   Future<void> reset() async {
-    return await caller.callServerEndpoint('cloudStorage', 'reset', 'void', {});
+    var retval =
+        await caller.callServerEndpoint('cloudStorage', 'reset', 'void', {});
+    return retval;
   }
 
   Future<void> storePublicFile(
     String path,
     typed_data.ByteData byteData,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'storePublicFile', 'void', {
       'path': path,
       'byteData': byteData,
     });
+    return retval;
   }
 
   Future<typed_data.ByteData?> retrievePublicFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'retrievePublicFile', 'ByteData', {
       'path': path,
     });
+    return retval;
   }
 
   Future<bool?> existsPublicFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'existsPublicFile', 'bool', {
       'path': path,
     });
+    return retval;
   }
 
   Future<void> deletePublicFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'deletePublicFile', 'void', {
       'path': path,
     });
+    return retval;
   }
 
   Future<String?> getPublicUrlForFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'getPublicUrlForFile', 'String', {
       'path': path,
     });
+    return retval;
   }
 
   Future<String?> getDirectFilePostUrl(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'getDirectFilePostUrl', 'String', {
       'path': path,
     });
+    return retval;
   }
 
   Future<bool> verifyDirectFileUpload(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('cloudStorage', 'verifyDirectFileUpload', 'bool', {
       'path': path,
     });
+    return retval;
   }
 }
 
@@ -224,65 +247,72 @@ class _EndpointS3CloudStorage extends EndpointRef {
     String path,
     typed_data.ByteData byteData,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('s3CloudStorage', 'storePublicFile', 'void', {
       'path': path,
       'byteData': byteData,
     });
+    return retval;
   }
 
   Future<typed_data.ByteData?> retrievePublicFile(
     String path,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         's3CloudStorage', 'retrievePublicFile', 'ByteData', {
       'path': path,
     });
+    return retval;
   }
 
   Future<bool?> existsPublicFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('s3CloudStorage', 'existsPublicFile', 'bool', {
       'path': path,
     });
+    return retval;
   }
 
   Future<void> deletePublicFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('s3CloudStorage', 'deletePublicFile', 'void', {
       'path': path,
     });
+    return retval;
   }
 
   Future<String?> getPublicUrlForFile(
     String path,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('s3CloudStorage', 'getPublicUrlForFile', 'String', {
       'path': path,
     });
+    return retval;
   }
 
   Future<String?> getDirectFilePostUrl(
     String path,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         's3CloudStorage', 'getDirectFilePostUrl', 'String', {
       'path': path,
     });
+    return retval;
   }
 
   Future<bool> verifyDirectFileUpload(
     String path,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         's3CloudStorage', 'verifyDirectFileUpload', 'bool', {
       'path': path,
     });
+    return retval;
   }
 }
 
@@ -295,75 +325,85 @@ class _EndpointBasicDatabase extends EndpointRef {
   Future<int?> storeTypes(
     Types types,
   ) async {
-    return await caller
-        .callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
+    var retval =
+        await caller.callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
       'types': types,
     });
+    return retval;
   }
 
   Future<Types?> getTypes(
     int id,
   ) async {
-    return await caller
-        .callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
+    var retval =
+        await caller.callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
       'id': id,
     });
+    return retval;
   }
 
   Future<int?> getTypesRawQuery(
     int id,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'getTypesRawQuery', 'int', {
       'id': id,
     });
+    return retval;
   }
 
   Future<int?> countTypesRows() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'countTypesRows', 'int', {});
+    return retval;
   }
 
   Future<int?> deleteAllInTypes() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'deleteAllInTypes', 'int', {});
+    return retval;
   }
 
   Future<void> createSimpleTestData(
     int numRows,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'createSimpleTestData', 'void', {
       'numRows': numRows,
     });
+    return retval;
   }
 
   Future<int?> countSimpleData() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'countSimpleData', 'int', {});
+    return retval;
   }
 
   Future<void> deleteAllSimpleTestData() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'basicDatabase', 'deleteAllSimpleTestData', 'void', {});
+    return retval;
   }
 
   Future<void> deleteSimpleTestDataLessThan(
     int num,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'basicDatabase', 'deleteSimpleTestDataLessThan', 'void', {
       'num': num,
     });
+    return retval;
   }
 
   Future<bool?> findAndDeleteSimpleTestData(
     int num,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'basicDatabase', 'findAndDeleteSimpleTestData', 'bool', {
       'num': num,
     });
+    return retval;
   }
 
   Future<SimpleDataList?> findSimpleDataRowsLessThan(
@@ -372,42 +412,46 @@ class _EndpointBasicDatabase extends EndpointRef {
     int limit,
     bool descending,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'basicDatabase', 'findSimpleDataRowsLessThan', 'SimpleDataList', {
       'num': num,
       'offset': offset,
       'limit': limit,
       'descending': descending,
     });
+    return retval;
   }
 
   Future<bool?> updateSimpleDataRow(
     int num,
     int newNum,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'updateSimpleDataRow', 'bool', {
       'num': num,
       'newNum': newNum,
     });
+    return retval;
   }
 
   Future<int?> storeObjectWithObject(
     ObjectWithObject object,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('basicDatabase', 'storeObjectWithObject', 'int', {
       'object': object,
     });
+    return retval;
   }
 
   Future<ObjectWithObject?> getObjectWithObject(
     int id,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'basicDatabase', 'getObjectWithObject', 'ObjectWithObject', {
       'id': id,
     });
+    return retval;
   }
 }
 
@@ -420,10 +464,11 @@ class _EndpointTransactionsDatabase extends EndpointRef {
   Future<void> removeRow(
     int num,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
       'num': num,
     });
+    return retval;
   }
 
   Future<bool> updateInsertDelete(
@@ -431,12 +476,13 @@ class _EndpointTransactionsDatabase extends EndpointRef {
     int numInsert,
     int numDelete,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'transactionsDatabase', 'updateInsertDelete', 'bool', {
       'numUpdate': numUpdate,
       'numInsert': numInsert,
       'numDelete': numDelete,
     });
+    return retval;
   }
 }
 
@@ -447,28 +493,56 @@ class _EndpointFailedCalls extends EndpointRef {
   _EndpointFailedCalls(EndpointCaller caller) : super(caller);
 
   Future<void> failedCall() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('failedCalls', 'failedCall', 'void', {});
+    return retval;
   }
 
   Future<void> failedDatabaseQuery() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('failedCalls', 'failedDatabaseQuery', 'void', {});
+    return retval;
   }
 
   Future<bool> failedDatabaseQueryCaughtException() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'failedCalls', 'failedDatabaseQueryCaughtException', 'bool', {});
+    return retval;
   }
 
   Future<void> slowCall() async {
-    return await caller
-        .callServerEndpoint('failedCalls', 'slowCall', 'void', {});
+    var retval =
+        await caller.callServerEndpoint('failedCalls', 'slowCall', 'void', {});
+    return retval;
   }
 
   Future<void> caughtException() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('failedCalls', 'caughtException', 'void', {});
+    return retval;
+  }
+}
+
+class _EndpointFieldScopes extends EndpointRef {
+  @override
+  String get name => 'fieldScopes';
+
+  _EndpointFieldScopes(EndpointCaller caller) : super(caller);
+
+  Future<void> storeObject(
+    ObjectFieldScopes object,
+  ) async {
+    var retval =
+        await caller.callServerEndpoint('fieldScopes', 'storeObject', 'void', {
+      'object': object,
+    });
+    return retval;
+  }
+
+  Future<ObjectFieldScopes?> retrieveObject() async {
+    var retval = await caller.callServerEndpoint(
+        'fieldScopes', 'retrieveObject', 'ObjectFieldScopes', {});
+    return retval;
   }
 }
 
@@ -481,10 +555,198 @@ class _EndpointFutureCalls extends EndpointRef {
   Future<void> makeFutureCall(
     SimpleData? data,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('futureCalls', 'makeFutureCall', 'void', {
       'data': data,
     });
+    return retval;
+  }
+}
+
+class _EndpointListParameters extends EndpointRef {
+  @override
+  String get name => 'listParameters';
+
+  _EndpointListParameters(EndpointCaller caller) : super(caller);
+
+  Future<List<int>> returnIntList(
+    List<int> list,
+  ) async {
+    var retval = await caller
+        .callServerEndpoint('listParameters', 'returnIntList', 'List<int>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<int>?> returnIntListNullable(
+    List<int>? list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnIntListNullable', 'List<int>', {
+      'list': list,
+    });
+    return (retval as List?)?.cast();
+  }
+
+  Future<List<int?>> returnIntListNullableInts(
+    List<int?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnIntListNullableInts', 'List<int?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<int?>?> returnNullableIntListNullableInts(
+    List<int?>? list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnNullableIntListNullableInts', 'List<int?>', {
+      'list': list,
+    });
+    return (retval as List?)?.cast();
+  }
+
+  Future<List<double>> returnDoubleList(
+    List<double> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnDoubleList', 'List<double>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<double?>> returnDoubleListNullableDoubles(
+    List<double?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnDoubleListNullableDoubles', 'List<double?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<bool>> returnBoolList(
+    List<bool> list,
+  ) async {
+    var retval = await caller
+        .callServerEndpoint('listParameters', 'returnBoolList', 'List<bool>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<bool?>> returnBoolListNullableBools(
+    List<bool?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnBoolListNullableBools', 'List<bool?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<String>> returnStringList(
+    List<String> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnStringList', 'List<String>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<String?>> returnStringListNullableStrings(
+    List<String?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnStringListNullableStrings', 'List<String?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<DateTime>> returnDateTimeList(
+    List<DateTime> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnDateTimeList', 'List<DateTime>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<DateTime?>> returnDateTimeListNullableDateTimes(
+    List<DateTime?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint('listParameters',
+        'returnDateTimeListNullableDateTimes', 'List<DateTime?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<typed_data.ByteData>> returnByteDataList(
+    List<typed_data.ByteData> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnByteDataList', 'List<ByteData>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<typed_data.ByteData?>> returnByteDataListNullableByteDatas(
+    List<typed_data.ByteData?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint('listParameters',
+        'returnByteDataListNullableByteDatas', 'List<ByteData?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<SimpleData>> returnSimpleDataList(
+    List<SimpleData> list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnSimpleDataList', 'List<SimpleData>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<SimpleData?>> returnSimpleDataListNullableSimpleData(
+    List<SimpleData?> list,
+  ) async {
+    var retval = await caller.callServerEndpoint('listParameters',
+        'returnSimpleDataListNullableSimpleData', 'List<SimpleData?>', {
+      'list': list,
+    });
+    return (retval as List).cast();
+  }
+
+  Future<List<SimpleData>?> returnSimpleDataListNullable(
+    List<SimpleData>? list,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'listParameters', 'returnSimpleDataListNullable', 'List<SimpleData>', {
+      'list': list,
+    });
+    return (retval as List?)?.cast();
+  }
+
+  Future<List<SimpleData?>?> returnNullableSimpleDataListNullableSimpleData(
+    List<SimpleData?>? list,
+  ) async {
+    var retval = await caller.callServerEndpoint('listParameters',
+        'returnNullableSimpleDataListNullableSimpleData', 'List<SimpleData?>', {
+      'list': list,
+    });
+    return (retval as List?)?.cast();
   }
 }
 
@@ -497,9 +759,10 @@ class _EndpointLogging extends EndpointRef {
   Future<void> logInfo(
     String message,
   ) async {
-    return await caller.callServerEndpoint('logging', 'logInfo', 'void', {
+    var retval = await caller.callServerEndpoint('logging', 'logInfo', 'void', {
       'message': message,
     });
+    return retval;
   }
 
   Future<void> logDebugAndInfoAndError(
@@ -507,16 +770,19 @@ class _EndpointLogging extends EndpointRef {
     String info,
     String error,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('logging', 'logDebugAndInfoAndError', 'void', {
       'debug': debug,
       'info': info,
       'error': error,
     });
+    return retval;
   }
 
   Future<void> twoQueries() async {
-    return await caller.callServerEndpoint('logging', 'twoQueries', 'void', {});
+    var retval =
+        await caller.callServerEndpoint('logging', 'twoQueries', 'void', {});
+    return retval;
   }
 }
 
@@ -529,10 +795,201 @@ class _EndpointLoggingDisabled extends EndpointRef {
   Future<void> logInfo(
     String message,
   ) async {
-    return await caller
-        .callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
+    var retval =
+        await caller.callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
       'message': message,
     });
+    return retval;
+  }
+}
+
+class _EndpointMapParameters extends EndpointRef {
+  @override
+  String get name => 'mapParameters';
+
+  _EndpointMapParameters(EndpointCaller caller) : super(caller);
+
+  Future<Map<String, int>> returnIntMap(
+    Map<String, int> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMap', 'Map<String,int>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, int>?> returnIntMapNullable(
+    Map<String, int>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMapNullable', 'Map<String,int>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+
+  Future<Map<String, int?>> returnIntMapNullableInts(
+    Map<String, int?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMapNullableInts', 'Map<String,int?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, int?>?> returnNullableIntMapNullableInts(
+    Map<String, int?>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnNullableIntMapNullableInts', 'Map<String,int?>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+
+  Future<Map<String, double>> returnDoubleMap(
+    Map<String, double> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnDoubleMap', 'Map<String,double>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, double?>> returnDoubleMapNullableDoubles(
+    Map<String, double?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnDoubleMapNullableDoubles', 'Map<String,double?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, bool>> returnBoolMap(
+    Map<String, bool> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnBoolMap', 'Map<String,bool>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, bool?>> returnBoolMapNullableBools(
+    Map<String, bool?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnBoolMapNullableBools', 'Map<String,bool?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, String>> returnStringMap(
+    Map<String, String> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnStringMap', 'Map<String,String>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, String?>> returnStringMapNullableStrings(
+    Map<String, String?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnStringMapNullableStrings', 'Map<String,String?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, DateTime>> returnDateTimeMap(
+    Map<String, DateTime> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnDateTimeMap', 'Map<String,DateTime>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
+    Map<String, DateTime?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnDateTimeMapNullableDateTimes', 'Map<String,DateTime?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, typed_data.ByteData>> returnByteDataMap(
+    Map<String, typed_data.ByteData> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnByteDataMap', 'Map<String,ByteData>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, typed_data.ByteData?>> returnByteDataMapNullableByteDatas(
+    Map<String, typed_data.ByteData?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnByteDataMapNullableByteDatas', 'Map<String,ByteData?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, SimpleData>> returnSimpleDataMap(
+    Map<String, SimpleData> map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters', 'returnSimpleDataMap', 'Map<String,SimpleData>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, SimpleData?>> returnSimpleDataMapNullableSimpleData(
+    Map<String, SimpleData?> map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnSimpleDataMapNullableSimpleData', 'Map<String,SimpleData?>', {
+      'map': map,
+    });
+    return (retval as Map).cast();
+  }
+
+  Future<Map<String, SimpleData>?> returnSimpleDataMapNullable(
+    Map<String, SimpleData>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint('mapParameters',
+        'returnSimpleDataMapNullable', 'Map<String,SimpleData>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
+  }
+
+  Future<Map<String, SimpleData?>?>
+      returnNullableSimpleDataMapNullableSimpleData(
+    Map<String, SimpleData?>? map,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'mapParameters',
+        'returnNullableSimpleDataMapNullableSimpleData',
+        'Map<String,SimpleData?>', {
+      'map': map,
+    });
+    return (retval as Map?)?.cast();
   }
 }
 
@@ -543,17 +1000,71 @@ class _EndpointModuleSerialization extends EndpointRef {
   _EndpointModuleSerialization(EndpointCaller caller) : super(caller);
 
   Future<bool> serializeModuleObject() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'moduleSerialization', 'serializeModuleObject', 'bool', {});
+    return retval;
   }
 
   Future<serverpod_test_module.ModuleClass> modifyModuleObject(
     serverpod_test_module.ModuleClass object,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'moduleSerialization', 'modifyModuleObject', 'ModuleClass', {
       'object': object,
     });
+    return retval;
+  }
+}
+
+class _EndpointNamedParameters extends EndpointRef {
+  @override
+  String get name => 'namedParameters';
+
+  _EndpointNamedParameters(EndpointCaller caller) : super(caller);
+
+  Future<bool> namedParametersMethod({
+    required int namedInt,
+    required int intWithDefaultValue,
+    int? nullableInt,
+    int? nullableIntWithDefaultValue,
+  }) async {
+    var retval = await caller.callServerEndpoint(
+        'namedParameters', 'namedParametersMethod', 'bool', {
+      'namedInt': namedInt,
+      'intWithDefaultValue': intWithDefaultValue,
+      'nullableInt': nullableInt,
+      'nullableIntWithDefaultValue': nullableIntWithDefaultValue,
+    });
+    return retval;
+  }
+
+  Future<bool> namedParametersMethodEqualInts({
+    required int namedInt,
+    int? nullableInt,
+  }) async {
+    var retval = await caller.callServerEndpoint(
+        'namedParameters', 'namedParametersMethodEqualInts', 'bool', {
+      'namedInt': namedInt,
+      'nullableInt': nullableInt,
+    });
+    return retval;
+  }
+}
+
+class _EndpointOptionalParameters extends EndpointRef {
+  @override
+  String get name => 'optionalParameters';
+
+  _EndpointOptionalParameters(EndpointCaller caller) : super(caller);
+
+  Future<int?> returnOptionalInt([
+    int? optionalInt,
+  ]) async {
+    var retval = await caller
+        .callServerEndpoint('optionalParameters', 'returnOptionalInt', 'int', {
+      'optionalInt': optionalInt,
+    });
+    return retval;
   }
 }
 
@@ -567,68 +1078,78 @@ class _EndpointRedis extends EndpointRef {
     String key,
     SimpleData data,
   ) async {
-    return await caller.callServerEndpoint('redis', 'setSimpleData', 'void', {
+    var retval =
+        await caller.callServerEndpoint('redis', 'setSimpleData', 'void', {
       'key': key,
       'data': data,
     });
+    return retval;
   }
 
   Future<void> setSimpleDataWithLifetime(
     String key,
     SimpleData data,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('redis', 'setSimpleDataWithLifetime', 'void', {
       'key': key,
       'data': data,
     });
+    return retval;
   }
 
   Future<SimpleData?> getSimpleData(
     String key,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('redis', 'getSimpleData', 'SimpleData', {
       'key': key,
     });
+    return retval;
   }
 
   Future<void> deleteSimpleData(
     String key,
   ) async {
-    return await caller
-        .callServerEndpoint('redis', 'deleteSimpleData', 'void', {
+    var retval =
+        await caller.callServerEndpoint('redis', 'deleteSimpleData', 'void', {
       'key': key,
     });
+    return retval;
   }
 
   Future<void> resetMessageCentralTest() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('redis', 'resetMessageCentralTest', 'void', {});
+    return retval;
   }
 
   Future<SimpleData?> listenToChannel(
     String channel,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('redis', 'listenToChannel', 'SimpleData', {
       'channel': channel,
     });
+    return retval;
   }
 
   Future<void> postToChannel(
     String channel,
     SimpleData data,
   ) async {
-    return await caller.callServerEndpoint('redis', 'postToChannel', 'void', {
+    var retval =
+        await caller.callServerEndpoint('redis', 'postToChannel', 'void', {
       'channel': channel,
       'data': data,
     });
+    return retval;
   }
 
   Future<int> countSubscribedChannels() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('redis', 'countSubscribedChannels', 'int', {});
+    return retval;
   }
 }
 
@@ -639,34 +1160,45 @@ class _EndpointSignInRequired extends EndpointRef {
   _EndpointSignInRequired(EndpointCaller caller) : super(caller);
 
   Future<bool> testMethod() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('signInRequired', 'testMethod', 'bool', {});
+    return retval;
   }
 }
 
+/// A simple endpoint that modifies a global integer. This class is meant for
+/// testing and the documentation has multiple lines.
 class _EndpointSimple extends EndpointRef {
   @override
   String get name => 'simple';
 
   _EndpointSimple(EndpointCaller caller) : super(caller);
 
+  /// Sets a global integer.
   Future<void> setGlobalInt(
     int? value, [
     int? secondValue,
   ]) async {
-    return await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
+    var retval =
+        await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
       'value': value,
       'secondValue': secondValue,
     });
+    return retval;
   }
 
+  /// Adds 1 to the global integer.
   Future<void> addToGlobalInt() async {
-    return await caller
-        .callServerEndpoint('simple', 'addToGlobalInt', 'void', {});
+    var retval =
+        await caller.callServerEndpoint('simple', 'addToGlobalInt', 'void', {});
+    return retval;
   }
 
+  /// Retrieves a global integer.
   Future<int> getGlobalInt() async {
-    return await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {});
+    var retval =
+        await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {});
+    return retval;
   }
 }
 
@@ -703,10 +1235,15 @@ class Client extends ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
   late final _EndpointTransactionsDatabase transactionsDatabase;
   late final _EndpointFailedCalls failedCalls;
+  late final _EndpointFieldScopes fieldScopes;
   late final _EndpointFutureCalls futureCalls;
+  late final _EndpointListParameters listParameters;
   late final _EndpointLogging logging;
   late final _EndpointLoggingDisabled loggingDisabled;
+  late final _EndpointMapParameters mapParameters;
   late final _EndpointModuleSerialization moduleSerialization;
+  late final _EndpointNamedParameters namedParameters;
+  late final _EndpointOptionalParameters optionalParameters;
   late final _EndpointRedis redis;
   late final _EndpointSignInRequired signInRequired;
   late final _EndpointSimple simple;
@@ -730,10 +1267,15 @@ class Client extends ServerpodClient {
     basicDatabase = _EndpointBasicDatabase(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
     failedCalls = _EndpointFailedCalls(this);
+    fieldScopes = _EndpointFieldScopes(this);
     futureCalls = _EndpointFutureCalls(this);
+    listParameters = _EndpointListParameters(this);
     logging = _EndpointLogging(this);
     loggingDisabled = _EndpointLoggingDisabled(this);
+    mapParameters = _EndpointMapParameters(this);
     moduleSerialization = _EndpointModuleSerialization(this);
+    namedParameters = _EndpointNamedParameters(this);
+    optionalParameters = _EndpointOptionalParameters(this);
     redis = _EndpointRedis(this);
     signInRequired = _EndpointSignInRequired(this);
     simple = _EndpointSimple(this);
@@ -755,10 +1297,15 @@ class Client extends ServerpodClient {
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
         'failedCalls': failedCalls,
+        'fieldScopes': fieldScopes,
         'futureCalls': futureCalls,
+        'listParameters': listParameters,
         'logging': logging,
         'loggingDisabled': loggingDisabled,
+        'mapParameters': mapParameters,
         'moduleSerialization': moduleSerialization,
+        'namedParameters': namedParameters,
+        'optionalParameters': optionalParameters,
         'redis': redis,
         'signInRequired': signInRequired,
         'simple': simple,

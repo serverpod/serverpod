@@ -27,6 +27,7 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_shared_flutter/CHANGELOG.m
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_email_flutter/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_apple_flutter/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_google_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_firebase_flutter/CHANGELOG.md
 
 echo "Copying README.md"
 cp README.md packages/serverpod/README.md
@@ -48,6 +49,7 @@ cp README_subpackage.md modules/serverpod_auth/serverpod_auth_shared_flutter/REA
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_email_flutter/README.md
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_apple_flutter/README.md
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_google_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_firebase_flutter/README.md
 
 echo "Copy tables"
 cp packages/serverpod/generated/tables.pgsql templates/serverpod_templates/PROJECTNAME_server/generated/tables-serverpod.pgsql
