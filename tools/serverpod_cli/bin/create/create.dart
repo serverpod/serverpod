@@ -336,7 +336,7 @@ Future<void> performCreate(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 
-  if (dockerConfigured && !Platform.isWindows) {
+  if (dockerConfigured) {
     await CommandLineTools.createTables(projectDir, name);
 
     printwwln('');
@@ -361,11 +361,6 @@ Future<void> performCreate(
     printwwln('To get going, you need to start Docker by running:');
     stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
     stdout.writeln('  \$ docker-compose up --build --detach');
-    printww('');
-    printwwln(
-        'When your docker container is up and running you need to install the default Serverpod postgres tables. (You only need to to this once.)');
-    stdout.writeln(
-        '  \$ Get-Content .\\generated\\tables-serverpod.pgsql | docker-compose run -T postgres env PGPASSWORD="$dbPassword" psql -h postgres -U postgres -d $name');
     printww('');
     printwwln(
         'Unfortunately `serverpod run` is not yet supported on Windows, but you should be able to start Serverpod by running:');

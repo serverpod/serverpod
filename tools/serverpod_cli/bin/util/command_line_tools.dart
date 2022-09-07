@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'print.dart';
 import 'windows.dart';
-import 'package:path/path.dart' as p;
 
 class CommandLineTools {
   static void dartPubGet(Directory dir) {
@@ -48,15 +49,22 @@ class CommandLineTools {
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
-    var result = await Process.run(
-      'chmod',
-      ['u+x', 'setup-tables'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
+    late ProcessResult result;
+    if (!Platform.isWindows) {
+      result = await Process.run(
+        'chmod',
+        ['u+x', 'setup-tables'],
+        workingDirectory: serverPath,
+      );
+      print(result.stdout);
+    }
 
     var process = await Process.start(
-      './setup-tables',
+      /// Windows has an issue with running batch file directly without the complete path.
+      /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
+      Platform.isWindows
+          ? p.join(serverPath, 'setup-tables.cmd')
+          : './setup-tables',
       [],
       workingDirectory: serverPath,
     );
