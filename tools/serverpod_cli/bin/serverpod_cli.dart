@@ -177,17 +177,13 @@ void main(List<String> args) async {
 }
 
 void _printUsage(ArgParser parser) {
-  print(Colorize('SERVERPOD HELP')..bold());
-  print('');
-  print(
-      'Serverpod is a utility for generating serverpod bindings, testing and deploying serverpods.\n');
   print('${Colorize('Usage:')..bold()} serverpod <command> [arguments]\n');
   print('');
   print('${Colorize('COMMANDS')..bold()}');
   print('');
   _printCommandUsage(
     cmdVersion,
-    'Prints the current active version of serverpod.',
+    'Prints the active version of the serverpod CLI util.',
   );
   _printCommandUsage(
     cmdCreate,
