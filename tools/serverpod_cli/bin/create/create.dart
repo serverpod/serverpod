@@ -336,7 +336,7 @@ Future<void> performCreate(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 
-  if (dockerConfigured) {
+  if (dockerConfigured && template != 'module') {
     await CommandLineTools.createTables(projectDir, name);
 
     printwwln('');
