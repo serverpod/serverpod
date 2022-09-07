@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ci/ci.dart' as ci;
 import 'package:http/http.dart' as http;
 
 import '../downloads/resource_manager.dart';
@@ -20,6 +21,7 @@ class Analytics {
         'token': _projectToken,
         'platform': _getPlatform(),
         'dart_version': Platform.version,
+        'is_ci': ci.isCI,
         'version': templateVersion,
       }
     });
