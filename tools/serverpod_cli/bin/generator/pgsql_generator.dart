@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'class_generator.dart';
 import 'class_generator_dart.dart';
+import 'protocol_definition.dart';
 
 class PgsqlGenerator {
-  final Set<ClassInfo> classInfos;
+  final Set<ClassDefinition> classInfos;
   final String outPath;
 
   PgsqlGenerator({
@@ -29,7 +29,7 @@ class PgsqlGenerator {
     outFile.writeAsStringSync(out);
   }
 
-  void _sortClassInfos(List<ClassInfo> tableInfos) {
+  void _sortClassInfos(List<ClassDefinition> tableInfos) {
     // First sort by name to make sure that we get consistant output
     tableInfos.sort((a, b) => a.tableName!.compareTo(b.tableName!));
 
@@ -76,7 +76,7 @@ class PgsqlGenerator {
     }
   }
 
-  String _generatePgsql(ClassInfo classInfo) {
+  String _generatePgsql(ClassDefinition classInfo) {
     var out = '';
 
     // Header

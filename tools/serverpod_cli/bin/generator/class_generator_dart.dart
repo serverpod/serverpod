@@ -1,9 +1,11 @@
 //import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
+import 'class_analyzer.dart';
 import 'class_generator.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
+import 'serverpod_error_collector.dart';
 
 class ClassGeneratorDart extends ClassGenerator {
   @override
@@ -15,7 +17,10 @@ class ClassGeneratorDart extends ClassGenerator {
 
   @override
   String? generateFile(
-      String yamlStr, String outFileName, Set<ClassInfo> classInfos) {
+    String yamlStr,
+    String outFileName,
+    Set<ClassDefinition> classInfos,
+  ) {
     var doc = loadYaml(yamlStr);
     var out = '';
 
@@ -25,7 +30,7 @@ class ClassGeneratorDart extends ClassGenerator {
         String enumName = doc['enum'];
 
         // Add enum info to set
-        classInfos.add(ClassInfo(
+        classInfos.add(ClassDefinition(
           className: enumName,
           fileName: outFileName,
           fields: [],
@@ -136,7 +141,7 @@ class ClassGeneratorDart extends ClassGenerator {
       }
 
       // Add class info to set
-      classInfos.add(ClassInfo(
+      classInfos.add(ClassDefinition(
         className: className,
         tableName: tableName,
         fileName: outFileName,
@@ -450,7 +455,7 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   @override
-  String generateFactory(Set<ClassInfo> classInfos) {
+  String generateFactory(Set<ClassDefinition> classInfos) {
     var out = '';
 
     // Header

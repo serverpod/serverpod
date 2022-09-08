@@ -84,7 +84,7 @@ void performRun(bool verbose) async {
 
   // Generate continuously and hot reload.
   var serverRunner = _ServerRunner();
-  var dockerRunner = _DockerRunner();
+  // var dockerRunner = _DockerRunner();
   var generatingAndReloading = false;
 
   bool protocolIsDirty = false;
@@ -126,10 +126,10 @@ void performRun(bool verbose) async {
   );
 
   // Start Docker.
-  if (runDocker) {
-    print('Starting Docker (for Postgres and Redis).');
-    await dockerRunner.start(verbose);
-  }
+  // if (runDocker) {
+  //   print('Starting Docker (for Postgres and Redis).');
+  //   await dockerRunner.start(verbose);
+  // }
 
   // Verify that Postgres & Redis is up and running.
   print(
@@ -247,17 +247,17 @@ class _ServerRunner {
   }
 }
 
-class _DockerRunner {
-  Future<void> start(bool verbose) async {
-    await Process.start(
-      'docker-compose',
-      ['up', '--build'],
-    );
+// class _DockerRunner {
+//   Future<void> start(bool verbose) async {
+//     await Process.start(
+//       'docker-compose',
+//       ['up', '--build'],
+//     );
 
-    // TODO: Check if it is possible to also pipe docker output to stdout.
-    // if (verbose) {
-    //   unawaited(stdout.addStream(process.stdout));
-    //   unawaited(stderr.addStream(process.stderr));
-    // }
-  }
-}
+//     // TODO: Check if it is possible to also pipe docker output to stdout.
+//     // if (verbose) {
+//     //   unawaited(stdout.addStream(process.stdout));
+//     //   unawaited(stderr.addStream(process.stderr));
+//     // }
+//   }
+// }

@@ -4,7 +4,6 @@ import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
 import 'analytics/analytics.dart';
-import 'config_info/config_info.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';

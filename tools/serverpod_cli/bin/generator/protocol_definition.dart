@@ -1,3 +1,4 @@
+import 'class_generator_dart.dart';
 import 'config.dart';
 
 class ProtocolDefinition {
@@ -159,4 +160,41 @@ class TypeDefinition {
   String toString() {
     return type;
   }
+}
+
+class IndexDefinition {
+  final String name;
+  late final List<String> fields;
+  late final String type;
+  late final bool unique;
+
+  IndexDefinition(this.name, Map doc) {
+    String fieldsStr = doc['fields'];
+    fields = fieldsStr.split(',').map((String str) => str.trim()).toList();
+    type = doc['type'] ?? 'btree';
+    unique = (doc['unique'] ?? 'false') != 'false';
+  }
+
+  IndexDefinition.parsed({
+    required this.name,
+    required this.type,
+    required this.unique,
+    required this.fields,
+  });
+}
+
+class ClassDefinition {
+  final String className;
+  final String fileName;
+  final String? tableName;
+  final List<FieldDefinition> fields;
+  final List<IndexDefinition>? indexes;
+
+  ClassDefinition({
+    required this.className,
+    required this.fileName,
+    required this.fields,
+    this.tableName,
+    this.indexes,
+  });
 }

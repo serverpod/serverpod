@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'class_generator_dart.dart';
 import 'config.dart';
 import 'pgsql_generator.dart';
+import 'protocol_definition.dart';
 
 void performGenerateClasses(bool verbose) {
   // Generate server side code
@@ -23,7 +24,7 @@ abstract class ClassGenerator {
   final String inputPath;
   final bool verbose;
   final bool serverCode;
-  final classInfos = <ClassInfo>{};
+  final classInfos = <ClassDefinition>{};
 
   ClassGenerator(
     this.inputPath,
@@ -79,9 +80,9 @@ abstract class ClassGenerator {
   }
 
   String? generateFile(
-      String input, String outputFileName, Set<ClassInfo> classNames);
+      String input, String outputFileName, Set<ClassDefinition> classNames);
 
-  String? generateFactory(Set<ClassInfo> classNames);
+  String? generateFactory(Set<ClassDefinition> classNames);
 
   String _transformFileNameWithoutPath(String path) {
     var pathComponents = path.split(Platform.pathSeparator);
@@ -89,34 +90,4 @@ abstract class ClassGenerator {
     fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
     return fileName;
   }
-}
-
-class IndexDefinition {
-  final String name;
-  late final List<String> fields;
-  late final String type;
-  late final bool unique;
-
-  IndexDefinition(this.name, Map doc) {
-    String fieldsStr = doc['fields'];
-    fields = fieldsStr.split(',').map((String str) => str.trim()).toList();
-    type = doc['type'] ?? 'btree';
-    unique = (doc['unique'] ?? 'false') != 'false';
-  }
-}
-
-class ClassInfo {
-  final String className;
-  final String fileName;
-  final String? tableName;
-  final List<FieldDefinition> fields;
-  final List<IndexDefinition>? indexes;
-
-  ClassInfo({
-    required this.className,
-    required this.fileName,
-    required this.fields,
-    this.tableName,
-    this.indexes,
-  });
 }
