@@ -15,17 +15,14 @@ class ClusterInfo extends SerializableEntity {
   @override
   String get className => 'ClusterInfo';
 
-  int? id;
   late List<ClusterServerInfo> servers;
 
   ClusterInfo({
-    this.id,
     required this.servers,
   });
 
   ClusterInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     servers = _data['servers']!
         .map<ClusterServerInfo>((a) => ClusterServerInfo.fromSerialization(a))
         ?.toList();
@@ -34,7 +31,6 @@ class ClusterInfo extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'servers': servers.map((ClusterServerInfo a) => a.serialize()).toList(),
     });
   }
@@ -42,7 +38,6 @@ class ClusterInfo extends SerializableEntity {
   @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
-      'id': id,
       'servers': servers.map((ClusterServerInfo a) => a.serialize()).toList(),
     });
   }

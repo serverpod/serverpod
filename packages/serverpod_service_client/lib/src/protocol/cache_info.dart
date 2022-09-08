@@ -15,13 +15,11 @@ class CacheInfo extends SerializableEntity {
   @override
   String get className => 'CacheInfo';
 
-  int? id;
   late int numEntries;
   late int maxEntries;
   List<String>? keys;
 
   CacheInfo({
-    this.id,
     required this.numEntries,
     required this.maxEntries,
     this.keys,
@@ -29,7 +27,6 @@ class CacheInfo extends SerializableEntity {
 
   CacheInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     numEntries = _data['numEntries']!;
     maxEntries = _data['maxEntries']!;
     keys = _data['keys']?.cast<String>();
@@ -38,7 +35,6 @@ class CacheInfo extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'numEntries': numEntries,
       'maxEntries': maxEntries,
       'keys': keys,

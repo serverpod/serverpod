@@ -15,17 +15,14 @@ class LogResult extends SerializableEntity {
   @override
   String get className => 'LogResult';
 
-  int? id;
   late List<LogEntry> entries;
 
   LogResult({
-    this.id,
     required this.entries,
   });
 
   LogResult.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     entries = _data['entries']!
         .map<LogEntry>((a) => LogEntry.fromSerialization(a))
         ?.toList();
@@ -34,7 +31,6 @@ class LogResult extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'entries': entries.map((LogEntry a) => a.serialize()).toList(),
     });
   }

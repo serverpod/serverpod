@@ -15,19 +15,16 @@ class ServerHealthResult extends SerializableEntity {
   @override
   String get className => 'ServerHealthResult';
 
-  int? id;
   late List<ServerHealthMetric> metrics;
   late List<ServerHealthConnectionInfo> connectionInfos;
 
   ServerHealthResult({
-    this.id,
     required this.metrics,
     required this.connectionInfos,
   });
 
   ServerHealthResult.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     metrics = _data['metrics']!
         .map<ServerHealthMetric>((a) => ServerHealthMetric.fromSerialization(a))
         ?.toList();
@@ -40,7 +37,6 @@ class ServerHealthResult extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'metrics': metrics.map((ServerHealthMetric a) => a.serialize()).toList(),
       'connectionInfos': connectionInfos
           .map((ServerHealthConnectionInfo a) => a.serialize())

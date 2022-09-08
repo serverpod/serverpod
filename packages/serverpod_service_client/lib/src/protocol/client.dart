@@ -9,84 +9,108 @@ import 'dart:typed_data' as typed_data;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'protocol.dart';
 
+/// The [InsightsEndpoint] provides a way to access real time information from
+/// the running server or to change settings.
 class _EndpointInsights extends EndpointRef {
   @override
   String get name => 'insights';
 
   _EndpointInsights(EndpointCaller caller) : super(caller);
 
+  /// Get the current [RuntimeSettings] from the running [Server].
   Future<RuntimeSettings> getRuntimeSettings() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'insights', 'getRuntimeSettings', 'RuntimeSettings', {});
+    return retval;
   }
 
+  /// Update the current [RuntimeSettings] in the running [Server].
   Future<void> setRuntimeSettings(
     RuntimeSettings runtimeSettings,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('insights', 'setRuntimeSettings', 'void', {
       'runtimeSettings': runtimeSettings,
     });
+    return retval;
   }
 
+  /// Clear all server logs.
   Future<void> clearAllLogs() async {
-    return await caller
-        .callServerEndpoint('insights', 'clearAllLogs', 'void', {});
+    var retval =
+        await caller.callServerEndpoint('insights', 'clearAllLogs', 'void', {});
+    return retval;
   }
 
+  /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(
     int? numEntries,
     SessionLogFilter? filter,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
       'numEntries': numEntries,
       'filter': filter,
     });
+    return retval;
   }
 
+  /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
     int? numEntries,
     SessionLogFilter? filter,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'insights', 'getOpenSessionLog', 'SessionLogResult', {
       'numEntries': numEntries,
       'filter': filter,
     });
+    return retval;
   }
 
+  /// Retrieve information about the state of the caches on this server.
   Future<CachesInfo> getCachesInfo(
     bool fetchKeys,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
       'fetchKeys': fetchKeys,
     });
+    return retval;
   }
 
+  /// Safely shuts down this [ServerPod].
   Future<void> shutdown() async {
-    return await caller.callServerEndpoint('insights', 'shutdown', 'void', {});
+    var retval =
+        await caller.callServerEndpoint('insights', 'shutdown', 'void', {});
+    return retval;
   }
 
+  /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'insights', 'checkHealth', 'ServerHealthResult', {});
+    return retval;
   }
 
+  /// Gets historical health check data. Returns data for the whole cluster.
   Future<ServerHealthResult> getHealthData(
     DateTime start,
     DateTime end,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('insights', 'getHealthData', 'ServerHealthResult', {
       'start': start,
       'end': end,
     });
+    return retval;
   }
 
+  /// Performs a hot reload of the server.
   Future<bool> hotReload() async {
-    return await caller.callServerEndpoint('insights', 'hotReload', 'bool', {});
+    var retval =
+        await caller.callServerEndpoint('insights', 'hotReload', 'bool', {});
+    return retval;
   }
 }
 

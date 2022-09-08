@@ -15,7 +15,6 @@ class LogSettings extends SerializableEntity {
   @override
   String get className => 'LogSettings';
 
-  int? id;
   late int logLevel;
   late bool logAllSessions;
   late bool logAllQueries;
@@ -28,7 +27,6 @@ class LogSettings extends SerializableEntity {
   late double slowQueryDuration;
 
   LogSettings({
-    this.id,
     required this.logLevel,
     required this.logAllSessions,
     required this.logAllQueries,
@@ -43,7 +41,6 @@ class LogSettings extends SerializableEntity {
 
   LogSettings.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     logLevel = _data['logLevel']!;
     logAllSessions = _data['logAllSessions']!;
     logAllQueries = _data['logAllQueries']!;
@@ -60,7 +57,6 @@ class LogSettings extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'logLevel': logLevel,
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,

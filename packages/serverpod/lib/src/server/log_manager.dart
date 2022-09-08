@@ -490,7 +490,6 @@ class LogManager {
       // Add to list
       sessionLog.add(
         SessionLogInfo(
-          id: entry.session.sessionLogs.temporarySessionId,
           sessionLogEntry: SessionLogEntry(
             serverId: Serverpod.instance!.serverId,
             time: entry.session.startTime,

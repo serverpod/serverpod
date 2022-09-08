@@ -15,14 +15,12 @@ class LogSettingsOverride extends SerializableEntity {
   @override
   String get className => 'LogSettingsOverride';
 
-  int? id;
   String? module;
   String? endpoint;
   String? method;
   late LogSettings logSettings;
 
   LogSettingsOverride({
-    this.id,
     this.module,
     this.endpoint,
     this.method,
@@ -31,7 +29,6 @@ class LogSettingsOverride extends SerializableEntity {
 
   LogSettingsOverride.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     module = _data['module'];
     endpoint = _data['endpoint'];
     method = _data['method'];
@@ -41,7 +38,6 @@ class LogSettingsOverride extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'module': module,
       'endpoint': endpoint,
       'method': method,

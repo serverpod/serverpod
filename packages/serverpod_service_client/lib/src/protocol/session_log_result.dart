@@ -15,17 +15,14 @@ class SessionLogResult extends SerializableEntity {
   @override
   String get className => 'SessionLogResult';
 
-  int? id;
   late List<SessionLogInfo> sessionLog;
 
   SessionLogResult({
-    this.id,
     required this.sessionLog,
   });
 
   SessionLogResult.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     sessionLog = _data['sessionLog']!
         .map<SessionLogInfo>((a) => SessionLogInfo.fromSerialization(a))
         ?.toList();
@@ -34,7 +31,6 @@ class SessionLogResult extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'sessionLog':
           sessionLog.map((SessionLogInfo a) => a.serialize()).toList(),
     });

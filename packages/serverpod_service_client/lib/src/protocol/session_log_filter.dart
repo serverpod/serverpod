@@ -15,7 +15,6 @@ class SessionLogFilter extends SerializableEntity {
   @override
   String get className => 'SessionLogFilter';
 
-  int? id;
   String? endpoint;
   String? method;
   String? futureCall;
@@ -25,7 +24,6 @@ class SessionLogFilter extends SerializableEntity {
   int? lastSessionLogId;
 
   SessionLogFilter({
-    this.id,
     this.endpoint,
     this.method,
     this.futureCall,
@@ -37,7 +35,6 @@ class SessionLogFilter extends SerializableEntity {
 
   SessionLogFilter.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     endpoint = _data['endpoint'];
     method = _data['method'];
     futureCall = _data['futureCall'];
@@ -50,7 +47,6 @@ class SessionLogFilter extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'endpoint': endpoint,
       'method': method,
       'futureCall': futureCall,

@@ -375,25 +375,15 @@ class ClassAnalyzer {
         if (uniqueNode == null) {
           unique = false;
         } else {
-          var uniqueStr = uniqueNode.value;
-          if (uniqueStr is! String) {
+          var uniqueVal = uniqueNode.value;
+          if (uniqueVal is! bool) {
             errorCollector.addError(SourceSpanException(
-              'The "unique" property must be of type String.',
+              'The "unique" property must be of type bool.',
               uniqueNode.span,
             ));
             continue;
           }
-          if (uniqueStr == 'true') {
-            unique = true;
-          } else if (uniqueStr == 'false') {
-            unique = false;
-          } else {
-            errorCollector.addError(SourceSpanException(
-              'The "unique" property must be either "true" or "false"',
-              uniqueNode.span,
-            ));
-            continue;
-          }
+          unique = uniqueVal;
         }
 
         var indexDefinition = IndexDefinition.parsed(

@@ -4,6 +4,8 @@ class StringValidators {
   static final _lowerCamelCaseTester =
       RegExp(r'^[a-z]+((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$');
   static final _lowerSnakeCaseTester = RegExp(r'^[a-z]+[a-z0-9_]*$');
+  static final _mixedSnakeCaseTester =
+      RegExp(r'^[a-z]+((\d)|([A-Z0-9_][a-z0-9_]+))*([A-Z])?$');
 
   static bool isValidFieldName(String name) =>
       _lowerCamelCaseTester.hasMatch(name);
@@ -15,5 +17,5 @@ class StringValidators {
       _lowerSnakeCaseTester.hasMatch(name);
 
   static bool isValidTableIndexName(String name) =>
-      _lowerSnakeCaseTester.hasMatch(name);
+      _mixedSnakeCaseTester.hasMatch(name);
 }
