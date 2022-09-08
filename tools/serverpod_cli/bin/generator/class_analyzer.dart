@@ -10,12 +10,11 @@ import 'config.dart';
 import 'protocol_definition.dart';
 import 'serverpod_error_collector.dart';
 
-List<ClassDefinition> performAnalyzeClasses({
+List<ProtocolFileDefinition> performAnalyzeClasses({
   bool verbose = true,
-  ServerpodErrorCollector? errorCollector,
+  required ServerpodErrorCollector errorCollector,
 }) {
-  var classDefinitions = <ClassDefinition>[];
-  errorCollector ??= ServerpodErrorCollector();
+  var classDefinitions = <ProtocolFileDefinition>[];
 
   // Get list of all files in protocol source directory.
   var sourceDir = Directory(config.protocolSourcePath);
@@ -66,7 +65,7 @@ class ClassAnalyzer {
     required this.errorCollector,
   });
 
-  ClassDefinition? analyze() {
+  ProtocolFileDefinition? analyze() {
     var yamlErrorCollector = ErrorCollector();
 
     var document = loadYamlDocument(
@@ -77,7 +76,7 @@ class ClassAnalyzer {
 
     errorCollector.addErrors(yamlErrorCollector.errors);
 
-    if (errorCollector.errors.isNotEmpty) {
+    if (yamlErrorCollector.errors.isNotEmpty) {
       return null;
     }
 
@@ -89,6 +88,28 @@ class ClassAnalyzer {
         'The top level object in the class yaml file must be a Map.',
         documentContents.span,
       ));
+      return null;
+    }
+
+    if (documentContents.nodes['class'] != null) {
+      return _analyzeClassFile(documentContents);
+    }
+    if (documentContents.nodes['enum'] != null) {
+      return _analyzeEnumFile(documentContents);
+    }
+
+    errorCollector.addError(SourceSpanException(
+      'No "class" or "enum" property is defined.',
+      documentContents.span,
+    ));
+    return null;
+  }
+
+  ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents) {
+    if (!_containsOnlyValidKeys(
+      documentContents,
+      {'class', 'table', 'fields', 'indexes'},
+    )) {
       return null;
     }
 
@@ -392,5 +413,123 @@ class ClassAnalyzer {
       fields: fields,
       indexes: indexes,
     );
+  }
+
+  ProtocolFileDefinition? _analyzeEnumFile(YamlMap documentContents) {
+    if (!_containsOnlyValidKeys(
+      documentContents,
+      {'enum', 'values'},
+    )) {
+      return null;
+    }
+
+    // Validate class name exists and is correct.
+    var classNameNode = documentContents.nodes['enum'];
+    if (classNameNode == null) {
+      errorCollector.addError(SourceSpanException(
+        'No "enum" property is defined.',
+        documentContents.span,
+      ));
+      return null;
+    }
+
+    var className = classNameNode.value;
+    if (className is! String) {
+      errorCollector.addError(SourceSpanException(
+        'The "enum" property must be a String.',
+        classNameNode.span,
+      ));
+      return null;
+    }
+
+    if (!StringValidators.isValidClassName(className)) {
+      errorCollector.addError(SourceSpanException(
+        'The "enum" property must be a valid class name (e.g. CamelCaseString).',
+        classNameNode.span,
+      ));
+      return null;
+    }
+
+    // Validate enum values.
+    var valuesNode = documentContents.nodes['values'];
+    if (valuesNode == null) {
+      errorCollector.addError(SourceSpanException(
+        'An enum must have a "values" property.',
+        documentContents.span,
+      ));
+      return null;
+    }
+
+    if (valuesNode is! YamlList) {
+      errorCollector.addError(SourceSpanException(
+        'The "values" property must be a List.',
+        valuesNode.span,
+      ));
+      return null;
+    }
+    var values = <String>[];
+    for (var valueNode in valuesNode.nodes) {
+      if (valueNode is! YamlScalar) {
+        errorCollector.addError(SourceSpanException(
+          'The list value must be of type String.',
+          valueNode.span,
+        ));
+        return null;
+      }
+
+      var value = valueNode.value;
+      if (value is! String) {
+        errorCollector.addError(SourceSpanException(
+          'The list value must be of type String.',
+          valueNode.span,
+        ));
+        return null;
+      }
+
+      if (!StringValidators.isValidFieldName(value)) {
+        errorCollector.addError(SourceSpanException(
+          'Enum values must be lowerCamelCase.',
+          valueNode.span,
+        ));
+        return null;
+      }
+
+      values.add(value);
+    }
+
+    return EnumDefinition(
+      fileName: outFileName,
+      className: className,
+      values: values,
+    );
+  }
+
+  bool _containsOnlyValidKeys(YamlMap documentMap, Set<String> validKeys) {
+    for (var keyNode in documentMap.nodes.keys) {
+      if (keyNode is! YamlScalar) {
+        errorCollector.addError(SourceSpanException(
+          'Key must be of type String.',
+          keyNode.span,
+        ));
+        return false;
+      }
+      var key = keyNode.value;
+      if (key is! String) {
+        errorCollector.addError(SourceSpanException(
+          'Key must be of type String.',
+          keyNode.span,
+        ));
+        return false;
+      }
+      if (!validKeys.contains(key)) {
+        errorCollector.addError(SourceSpanException(
+          'This key is not recognized. Valid keys are $validKeys',
+          keyNode.span,
+        ));
+        return false;
+      }
+    }
+
+    return true;
   }
 }

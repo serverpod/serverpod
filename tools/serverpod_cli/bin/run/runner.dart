@@ -3,7 +3,6 @@ import 'dart:io';
 
 import '../config_info/config_info.dart';
 import '../create/port_checker.dart';
-import '../generator/class_generator.dart';
 import '../generator/config.dart';
 import '../generator/dart_format.dart';
 import '../generator/protocol_analyzer.dart';
@@ -35,8 +34,8 @@ void performRun(bool verbose) async {
   if (!dockerConfigured || !mainPortAvailable || !servicePortAvailable) {
     var strIssue =
         'There are some issues with your setup that will prevent your Serverpod project from launching.';
-    var strIssueDocker =
-        'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the --no-run-docker flag added.';
+    // var strIssueDocker =
+    //     'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the --no-run-docker flag added.';
     var strIssueMainPort =
         'The public api port (${configInfo.config.apiServer.port}) is occupied by another application or you are running another instance of Serverpod.';
     var strIssueServicePort =
@@ -44,10 +43,10 @@ void performRun(bool verbose) async {
 
     printww(strIssue);
 
-    if (!dockerConfigured) {
-      printww('');
-      printww(strIssueDocker);
-    }
+    // if (!dockerConfigured) {
+    //   printww('');
+    //   printww(strIssueDocker);
+    // }
     if (!mainPortAvailable) {
       printww('');
       printww(strIssueMainPort);
@@ -69,7 +68,8 @@ void performRun(bool verbose) async {
 
   // Do an initial serverpod generate.
   printww('Spinning up serverpod generate (this can take a few seconds).');
-  performGenerateClasses(verbose);
+  // TODO: Fix!
+  // performGenerateClasses(verbose);
   await performGenerateProtocol(verbose);
   performDartFormat(verbose);
 
@@ -174,7 +174,8 @@ Future<void> _generateAndReload(
 
   if (generate) {
     try {
-      performGenerateClasses(verbose);
+      // TODO: Fix!
+      // performGenerateClasses(verbose);
     } catch (e, stackTrace) {
       print('Failed to generate classes: $e');
       print(stackTrace);

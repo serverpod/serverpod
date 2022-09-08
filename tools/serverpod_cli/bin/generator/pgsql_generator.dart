@@ -4,7 +4,7 @@ import 'class_generator_dart.dart';
 import 'protocol_definition.dart';
 
 class PgsqlGenerator {
-  final Set<ClassDefinition> classInfos;
+  final List<ProtocolFileDefinition> classInfos;
   final String outPath;
 
   PgsqlGenerator({
@@ -16,11 +16,13 @@ class PgsqlGenerator {
     var out = '';
 
     var tableInfoList = classInfos.toList();
-    tableInfoList.removeWhere((element) => element.tableName == null);
-    _sortClassInfos(tableInfoList);
+    tableInfoList.removeWhere(
+      (element) => (element is! ClassDefinition) || element.tableName == null,
+    );
+    _sortClassInfos(tableInfoList.cast());
 
     for (var tableInfo in tableInfoList) {
-      if (tableInfo.tableName != null) {
+      if (tableInfo is ClassDefinition && tableInfo.tableName != null) {
         out += _generatePgsql(tableInfo);
       }
     }

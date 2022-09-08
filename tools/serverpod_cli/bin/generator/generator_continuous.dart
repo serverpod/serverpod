@@ -1,6 +1,5 @@
 import 'package:watcher/watcher.dart';
 
-import 'class_generator.dart';
 import 'config.dart';
 import 'protocol_generator.dart';
 
@@ -20,7 +19,8 @@ Future<void> _performGenerateClassesContinuously(bool verbose) async {
     switch (event.type) {
       case ChangeType.ADD:
       case ChangeType.MODIFY:
-        performGenerateClasses(verbose);
+        // TODO: Fix!
+        // performGenerateClasses(verbose);
         break;
       case ChangeType.REMOVE:
         // TODO: Remove

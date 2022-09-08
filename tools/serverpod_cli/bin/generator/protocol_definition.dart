@@ -183,18 +183,36 @@ class IndexDefinition {
   });
 }
 
-class ClassDefinition {
-  final String className;
+abstract class ProtocolFileDefinition {
   final String fileName;
+  final String className;
+
+  ProtocolFileDefinition({
+    required this.fileName,
+    required this.className,
+  });
+}
+
+class ClassDefinition extends ProtocolFileDefinition {
   final String? tableName;
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
 
   ClassDefinition({
-    required this.className,
-    required this.fileName,
+    required super.fileName,
+    required super.className,
     required this.fields,
     this.tableName,
     this.indexes,
+  });
+}
+
+class EnumDefinition extends ProtocolFileDefinition {
+  List<String> values;
+
+  EnumDefinition({
+    required super.fileName,
+    required super.className,
+    required this.values,
   });
 }

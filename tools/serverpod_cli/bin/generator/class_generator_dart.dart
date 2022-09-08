@@ -1,461 +1,406 @@
 //import 'package:recase/recase.dart';
-import 'package:yaml/yaml.dart';
 
-import 'class_analyzer.dart';
 import 'class_generator.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'serverpod_error_collector.dart';
 
 class ClassGeneratorDart extends ClassGenerator {
   @override
   String get outputExtension => '.dart';
 
-  ClassGeneratorDart(
-      String inputPath, String outputPath, bool verbose, bool serverCode)
-      : super(inputPath, outputPath, verbose, serverCode);
+  ClassGeneratorDart({
+    required super.outputDirectoryPath,
+    required super.verbose,
+    required super.serverCode,
+    required super.classDefinitions,
+  });
 
   @override
-  String? generateFile(
-    String yamlStr,
-    String outFileName,
-    Set<ClassDefinition> classInfos,
-  ) {
-    var doc = loadYaml(yamlStr);
-    var out = '';
-
-    // Handle enums
-    try {
-      if (doc['enum'] != null) {
-        String enumName = doc['enum'];
-
-        // Add enum info to set
-        classInfos.add(ClassDefinition(
-          className: enumName,
-          fileName: outFileName,
-          fields: [],
-        ));
-
-        // Header
-        out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-        out += '/*   To generate run: "serverpod generate"    */\n';
-        out += '\n';
-        out += '// ignore_for_file: public_member_api_docs\n';
-        out += '// ignore_for_file: unnecessary_import\n';
-        out += '\n';
-
-        if (serverCode) {
-          out +=
-              'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-        } else {
-          out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-        }
-
-        out += 'class $enumName extends SerializableEntity {\n';
-        out += '  @override\n';
-        out += '  String get className => \'$enumName\';\n';
-        out += '\n';
-        out += '  late final int _index;\n';
-        out += '  int get index => _index;\n';
-        out += '\n';
-
-        // Internal constructor
-        out += '  $enumName._internal(this._index); \n';
-        out += '\n';
-
-        // Serialization
-        out +=
-            '  $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
-        out += '    var data = unwrapSerializationData(serialization);\n';
-        out += '    _index = data[\'index\'];\n';
-        out += '  }\n';
-        out += '\n';
-
-        out += '  @override\n';
-        out += '  Map<String, dynamic> serialize() {\n';
-        out += '    return wrapSerializationData({\n';
-        out += '      \'index\': _index,\n';
-        out += '    });\n';
-        out += '  }\n';
-
-        // Values
-        var i = 0;
-        for (String value in doc['values']) {
-          out += '  static final $value = $enumName._internal($i);\n';
-          i += 1;
-        }
-
-        out += '\n';
-
-        out += '  @override\n';
-        out += '  int get hashCode => _index.hashCode;\n';
-        out += '  @override\n';
-        out +=
-            '  bool operator == (other) => other is $enumName && other._index == _index;\n';
-
-        out += '\n';
-
-        out += '  static final values = <$enumName>[\n';
-        for (String value in doc['values']) {
-          out += '    $value,\n';
-        }
-        out += '  ];\n';
-
-        out += '\n';
-
-        out += '  String get name {\n';
-        for (String value in doc['values']) {
-          out += '    if (this == $value) return \'$value\';\n';
-        }
-        out += '    throw const FormatException();\n';
-        out += '  }\n';
-
-        out += '}\n';
-        return out;
-      }
-    } catch (e) {
-      print('Failed to parse $inputPath: $e');
-      return null;
+  String generateFile(ProtocolFileDefinition protocolFileDefinition) {
+    if (protocolFileDefinition is ClassDefinition) {
+      return _generateClassFile(protocolFileDefinition);
+    }
+    if (protocolFileDefinition is EnumDefinition) {
+      return _generateEnumFile(protocolFileDefinition);
     }
 
-    // Handle ordinary classes
-    try {
-      String? tableName = doc['table'];
-      var className = _expectString(doc, 'class');
-      var docFields = _expectMap(doc, 'fields');
-      var fields = <FieldDefinition>[];
+    throw Exception('Unsupported protocol file type.');
+  }
 
-      fields.add(FieldDefinition('id', 'int?'));
-      for (var docFieldName in docFields.keys) {
-        fields.add(FieldDefinition(docFieldName, docFields[docFieldName]));
+  // Handle ordinary classes
+  String _generateClassFile(ClassDefinition classDefinition) {
+    var out = '';
+
+    String? tableName = classDefinition.tableName;
+    var className = classDefinition.className;
+    var fields = classDefinition.fields;
+
+    // Find dependencies on other modules
+    var moduleDependencies = <String>{};
+    for (var field in fields) {
+      if (field.type.type.contains('.')) {
+        var nameComponents = field.type.type.split('.');
+        var moduleName = nameComponents[0];
+        moduleDependencies.add(moduleName);
       }
+    }
 
-      List<IndexDefinition>? indexes;
+    // Header
+    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+    out += '/*   To generate run: "serverpod generate"    */\n';
+    out += '\n';
 
-      if (doc['indexes'] != null) {
-        indexes = [];
-        var docIndexes = _expectMap(doc, 'indexes');
-        for (var indexName in docIndexes.keys) {
-          indexes.add(IndexDefinition(indexName, docIndexes[indexName]));
-        }
-      }
+    // Ignore camel case warnings
+    out += '// ignore_for_file: non_constant_identifier_names\n';
+    out += '// ignore_for_file: public_member_api_docs\n';
+    out += '// ignore_for_file: unused_import\n';
+    out += '// ignore_for_file: unnecessary_import\n';
+    out += '// ignore_for_file: overridden_fields\n';
+    out += '\n';
 
-      // Add class info to set
-      classInfos.add(ClassDefinition(
-        className: className,
-        tableName: tableName,
-        fileName: outFileName,
-        fields: fields,
-        indexes: indexes,
-      ));
-
-      // Find dependencies on other modules
-      var moduleDependencies = <String>{};
-      for (var field in fields) {
-        if (field.type.type.contains('.')) {
-          var nameComponents = field.type.type.split('.');
-          var moduleName = nameComponents[0];
-          moduleDependencies.add(moduleName);
-        }
-      }
-
-      // Header
-      out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-      out += '/*   To generate run: "serverpod generate"    */\n';
-      out += '\n';
-
-      // Ignore camel case warnings
-      out += '// ignore_for_file: non_constant_identifier_names\n';
-      out += '// ignore_for_file: public_member_api_docs\n';
-      out += '// ignore_for_file: unused_import\n';
-      out += '// ignore_for_file: unnecessary_import\n';
-      out += '// ignore_for_file: overridden_fields\n';
-      out += '\n';
-
-      if (serverCode) {
-        if (tableName != null) {
-          out += 'import \'package:serverpod/serverpod.dart\';\n';
-          out +=
-              'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-        } else {
-          out +=
-              'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-        }
-        for (var dependencyName in moduleDependencies) {
-          out +=
-              'import \'package:${dependencyName}_server/module.dart\' as $dependencyName;\n';
-        }
+    if (serverCode) {
+      if (tableName != null) {
+        out += 'import \'package:serverpod/serverpod.dart\';\n';
+        out +=
+            'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
       } else {
-        out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-        for (var dependencyName in moduleDependencies) {
-          out +=
-              'import \'package:${dependencyName}_client/module.dart\' as $dependencyName;\n';
-        }
+        out +=
+            'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
       }
-
-      out += 'import \'dart:typed_data\';\n';
-      out += 'import \'protocol.dart\';\n';
-      out += '\n';
-
-      // Row class definition
-      if (serverCode && tableName != null) {
-        out += 'class $className extends TableRow {\n';
-        out += '  @override\n';
-        out += '  String get className => \'$classPrefix$className\';\n';
-        out += '  @override\n';
-        out += '  String get tableName => \'$tableName\';\n';
-        out += '\n';
-        out += '  static final t = ${className}Table();\n';
-      } else {
-        out += 'class $className extends SerializableEntity {\n';
-        out += '  @override\n';
-        out += '  String get className => \'$classPrefix$className\';\n';
+      for (var dependencyName in moduleDependencies) {
+        out +=
+            'import \'package:${dependencyName}_server/module.dart\' as $dependencyName;\n';
       }
-
-      out += '\n';
-
-      // Fields
-      for (var field in fields) {
-        if (field.shouldIncludeField(serverCode)) {
-          if (field.name == 'id' && serverCode && tableName != null) {
-            out += '  @override\n';
-          }
-          out +=
-              '  ${field.type.nullable ? '' : 'late '}${field.type.type} ${field.name};\n';
-        }
+    } else {
+      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+      for (var dependencyName in moduleDependencies) {
+        out +=
+            'import \'package:${dependencyName}_client/module.dart\' as $dependencyName;\n';
       }
-      out += '\n';
+    }
 
-      // Default constructor
-      out += '  $className({\n';
-      for (var field in fields) {
-        if (field.shouldIncludeField(serverCode)) {
-          out +=
-              '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
-        }
-      }
-      out += '});\n';
-      out += '\n';
+    out += 'import \'dart:typed_data\';\n';
+    out += 'import \'protocol.dart\';\n';
+    out += '\n';
 
-      // Deserialization
-      out +=
-          '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
-      out += '    var _data = unwrapSerializationData(serialization);\n';
-      for (var field in fields) {
-        if (field.shouldIncludeField(serverCode)) {
-          out += '    ${field.name} = ${field.deserialization};\n';
-        }
-      }
-      out += '  }\n';
-      out += '\n';
-
-      // Serialization
+    // Row class definition
+    if (serverCode && tableName != null) {
+      out += 'class $className extends TableRow {\n';
       out += '  @override\n';
-      out += '  Map<String, dynamic> serialize() {\n';
+      out += '  String get className => \'$classPrefix$className\';\n';
+      out += '  @override\n';
+      out += '  String get tableName => \'$tableName\';\n';
+      out += '\n';
+      out += '  static final t = ${className}Table();\n';
+    } else {
+      out += 'class $className extends SerializableEntity {\n';
+      out += '  @override\n';
+      out += '  String get className => \'$classPrefix$className\';\n';
+    }
+
+    out += '\n';
+
+    // Fields
+    for (var field in fields) {
+      if (field.shouldIncludeField(serverCode)) {
+        if (field.name == 'id' && serverCode && tableName != null) {
+          out += '  @override\n';
+        }
+        out +=
+            '  ${field.type.nullable ? '' : 'late '}${field.type.type} ${field.name};\n';
+      }
+    }
+    out += '\n';
+
+    // Default constructor
+    out += '  $className({\n';
+    for (var field in fields) {
+      if (field.shouldIncludeField(serverCode)) {
+        out +=
+            '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
+      }
+    }
+    out += '});\n';
+    out += '\n';
+
+    // Deserialization
+    out +=
+        '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
+    out += '    var _data = unwrapSerializationData(serialization);\n';
+    for (var field in fields) {
+      if (field.shouldIncludeField(serverCode)) {
+        out += '    ${field.name} = ${field.deserialization};\n';
+      }
+    }
+    out += '  }\n';
+    out += '\n';
+
+    // Serialization
+    out += '  @override\n';
+    out += '  Map<String, dynamic> serialize() {\n';
+    out += '    return wrapSerializationData({\n';
+
+    for (var field in fields) {
+      if (field.shouldSerializeField(serverCode)) {
+        out += '      \'${field.name}\': ${field.serialization},\n';
+      }
+    }
+
+    out += '    });\n';
+    out += '  }\n';
+
+    // Serialization for database and everything
+    if (serverCode) {
+      if (tableName != null) {
+        out += '\n';
+        out += '  @override\n';
+        out += '  Map<String, dynamic> serializeForDatabase() {\n';
+        out += '    return wrapSerializationData({\n';
+
+        for (var field in fields) {
+          if (field.shouldSerializeFieldForDatabase(serverCode)) {
+            out += '      \'${field.name}\': ${field.serialization},\n';
+          }
+        }
+
+        out += '    });\n';
+        out += '  }\n';
+      }
+
+      out += '\n';
+      out += '  @override\n';
+      out += '  Map<String, dynamic> serializeAll() {\n';
       out += '    return wrapSerializationData({\n';
 
       for (var field in fields) {
-        if (field.shouldSerializeField(serverCode)) {
-          out += '      \'${field.name}\': ${field.serialization},\n';
-        }
+        out += '      \'${field.name}\': ${field.serialization},\n';
       }
 
       out += '    });\n';
       out += '  }\n';
 
-      // Serialization for database and everything
-      if (serverCode) {
-        if (tableName != null) {
-          out += '\n';
-          out += '  @override\n';
-          out += '  Map<String, dynamic> serializeForDatabase() {\n';
-          out += '    return wrapSerializationData({\n';
-
-          for (var field in fields) {
-            if (field.shouldSerializeFieldForDatabase(serverCode)) {
-              out += '      \'${field.name}\': ${field.serialization},\n';
-            }
-          }
-
-          out += '    });\n';
-          out += '  }\n';
-        }
-
+      if (tableName != null) {
+        // Column setter
         out += '\n';
         out += '  @override\n';
-        out += '  Map<String, dynamic> serializeAll() {\n';
-        out += '    return wrapSerializationData({\n';
+        out += '  void setColumn(String columnName, value) {\n';
+        out += '    switch (columnName) {\n';
 
         for (var field in fields) {
-          out += '      \'${field.name}\': ${field.serialization},\n';
+          if (field.shouldSerializeFieldForDatabase(serverCode)) {
+            out += '      case \'${field.name}\':\n';
+            out += '        ${field.name} = value;\n';
+            out += '        return;\n';
+          }
         }
 
-        out += '    });\n';
+        out += '      default:\n';
+        out += '        throw UnimplementedError();\n';
+        out += '    }\n';
         out += '  }\n';
 
-        if (tableName != null) {
-          // Column setter
-          out += '\n';
-          out += '  @override\n';
-          out += '  void setColumn(String columnName, value) {\n';
-          out += '    switch (columnName) {\n';
+        // find
+        out += '\n';
+        out +=
+            '  static Future<List<$className>> find(Session session, {${className}ExpressionBuilder? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
+        out +=
+            '    return session.db.find<$className>(where: where != null ? where($className.t) : null, limit: limit, offset: offset, orderBy: orderBy, orderByList: orderByList, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
+        out += '  }\n';
 
-          for (var field in fields) {
-            if (field.shouldSerializeFieldForDatabase(serverCode)) {
-              out += '      case \'${field.name}\':\n';
-              out += '        ${field.name} = value;\n';
-              out += '        return;\n';
-            }
-          }
+        // find single row
+        out += '\n';
+        out +=
+            '  static Future<$className?> findSingleRow(Session session, {${className}ExpressionBuilder? where, int? offset, Column? orderBy, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
+        out +=
+            '    return session.db.findSingleRow<$className>(where: where != null ? where($className.t) : null, offset: offset, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
+        out += '  }\n';
 
-          out += '      default:\n';
-          out += '        throw UnimplementedError();\n';
-          out += '    }\n';
-          out += '  }\n';
+        // findById
+        out += '\n';
+        out +=
+            '  static Future<$className?> findById(Session session, int id) async {\n';
+        out += '    return session.db.findById<$className>(id);\n';
+        out += '  }\n';
 
-          // find
-          out += '\n';
-          out +=
-              '  static Future<List<$className>> find(Session session, {${className}ExpressionBuilder? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.find<$className>(where: where != null ? where($className.t) : null, limit: limit, offset: offset, orderBy: orderBy, orderByList: orderByList, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
-          out += '  }\n';
+        // delete
+        out += '\n';
+        out +=
+            '  static Future<int> delete(Session session, {required ${className}ExpressionBuilder where, Transaction? transaction,}) async {\n';
+        out +=
+            '    return session.db.delete<$className>(where: where($className.t), transaction: transaction,);\n';
+        out += '  }\n';
 
-          // find single row
-          out += '\n';
-          out +=
-              '  static Future<$className?> findSingleRow(Session session, {${className}ExpressionBuilder? where, int? offset, Column? orderBy, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.findSingleRow<$className>(where: where != null ? where($className.t) : null, offset: offset, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
-          out += '  }\n';
+        // deleteRow
+        out += '\n';
+        out +=
+            '  static Future<bool> deleteRow(Session session, $className row, {Transaction? transaction,}) async {\n';
+        out +=
+            '    return session.db.deleteRow(row, transaction: transaction,);\n';
+        out += '  }\n';
 
-          // findById
-          out += '\n';
-          out +=
-              '  static Future<$className?> findById(Session session, int id) async {\n';
-          out += '    return session.db.findById<$className>(id);\n';
-          out += '  }\n';
+        // update
+        out += '\n';
+        out +=
+            '  static Future<bool> update(Session session, $className row, {Transaction? transaction,}) async {\n';
+        out +=
+            '    return session.db.update(row, transaction: transaction,);\n';
+        out += '  }\n';
 
-          // delete
-          out += '\n';
-          out +=
-              '  static Future<int> delete(Session session, {required ${className}ExpressionBuilder where, Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.delete<$className>(where: where($className.t), transaction: transaction,);\n';
-          out += '  }\n';
+        // insert
+        out += '\n';
+        out +=
+            '  static Future<void> insert(Session session, $className row, {Transaction? transaction,}) async {\n';
+        out += '    return session.db.insert(row, transaction: transaction);\n';
+        out += '  }\n';
 
-          // deleteRow
-          out += '\n';
-          out +=
-              '  static Future<bool> deleteRow(Session session, $className row, {Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.deleteRow(row, transaction: transaction,);\n';
-          out += '  }\n';
+        // count
+        out += '\n';
+        out +=
+            '  static Future<int> count(Session session, {${className}ExpressionBuilder? where, int? limit, bool useCache = true, Transaction? transaction,}) async {\n';
+        out +=
+            '    return session.db.count<$className>(where: where != null ? where($className.t) : null, limit: limit, useCache: useCache, transaction: transaction,);\n';
+        out += '  }\n';
+      }
+    }
 
-          // update
-          out += '\n';
-          out +=
-              '  static Future<bool> update(Session session, $className row, {Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.update(row, transaction: transaction,);\n';
-          out += '  }\n';
+    // End class
+    out += '}\n';
+    out += '\n';
 
-          // insert
-          out += '\n';
-          out +=
-              '  static Future<void> insert(Session session, $className row, {Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.insert(row, transaction: transaction);\n';
-          out += '  }\n';
+    if (serverCode && tableName != null) {
+      // Expression builder
+      out +=
+          'typedef ${className}ExpressionBuilder = Expression Function(${className}Table t);\n';
+      out += '\n';
 
-          // count
-          out += '\n';
+      // Table class definition
+      out += 'class ${className}Table extends Table {\n';
+
+      // Constructor
+      out += '  ${className}Table() : super(tableName: \'$tableName\');\n';
+      out += '\n';
+
+      out += '  @override\n';
+      out += '  String tableName = \'$tableName\';\n';
+
+      // Column descriptions
+      for (var field in fields) {
+        if (field.shouldSerializeFieldForDatabase(serverCode)) {
           out +=
-              '  static Future<int> count(Session session, {${className}ExpressionBuilder? where, int? limit, bool useCache = true, Transaction? transaction,}) async {\n';
-          out +=
-              '    return session.db.count<$className>(where: where != null ? where($className.t) : null, limit: limit, useCache: useCache, transaction: transaction,);\n';
-          out += '  }\n';
+              '  final ${field.name} = ${field.columnType}(\'${field.name}\');\n';
         }
       }
+      out += '\n';
+
+      // List of column values
+      out += '  @override\n';
+      out += '  List<Column> get columns => [\n';
+      for (var field in fields) {
+        if (field.shouldSerializeFieldForDatabase(serverCode)) {
+          out += '    ${field.name},\n';
+        }
+      }
+      out += '  ];\n';
 
       // End class
       out += '}\n';
+
       out += '\n';
 
-      if (serverCode && tableName != null) {
-        // Expression builder
-        out +=
-            'typedef ${className}ExpressionBuilder = Expression Function(${className}Table t);\n';
-        out += '\n';
-
-        // Table class definition
-        out += 'class ${className}Table extends Table {\n';
-
-        // Constructor
-        out += '  ${className}Table() : super(tableName: \'$tableName\');\n';
-        out += '\n';
-
-        out += '  @override\n';
-        out += '  String tableName = \'$tableName\';\n';
-
-        // Column descriptions
-        for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode)) {
-            out +=
-                '  final ${field.name} = ${field.columnType}(\'${field.name}\');\n';
-          }
-        }
-        out += '\n';
-
-        // List of column values
-        out += '  @override\n';
-        out += '  List<Column> get columns => [\n';
-        for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode)) {
-            out += '    ${field.name},\n';
-          }
-        }
-        out += '  ];\n';
-
-        // End class
-        out += '}\n';
-
-        out += '\n';
-
-        // Create instance of table
-        out += '@Deprecated(\'Use ${className}Table.t instead.\')\n';
-        out += '${className}Table t$className = ${className}Table();\n';
-      }
-    } catch (e) {
-      print('Failed to parse $inputPath: $e');
-      return null;
+      // Create instance of table
+      out += '@Deprecated(\'Use ${className}Table.t instead.\')\n';
+      out += '${className}Table t$className = ${className}Table();\n';
     }
 
     return out;
   }
 
-  String _expectString(dynamic doc, String field) {
-    String? value = doc[field];
-    if (value != null) {
-      return value;
-    } else {
-      print('Missing field (String) "$field"');
-      throw FormatException('Missing field (String) "$field"');
-    }
-  }
+  // Handle enums.
+  String _generateEnumFile(EnumDefinition enumDefinition) {
+    var out = '';
 
-  Map _expectMap(dynamic doc, String field) {
-    Map? map = doc[field];
-    if (map != null) {
-      return map;
+    String enumName = enumDefinition.className;
+
+    // Header
+    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+    out += '/*   To generate run: "serverpod generate"    */\n';
+    out += '\n';
+    out += '// ignore_for_file: public_member_api_docs\n';
+    out += '// ignore_for_file: unnecessary_import\n';
+    out += '\n';
+
+    if (serverCode) {
+      out +=
+          'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
     } else {
-      print('Missing field (Map) "$field"');
-      throw FormatException('Missing field (Map) "$field"');
+      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
     }
+
+    out += 'class $enumName extends SerializableEntity {\n';
+    out += '  @override\n';
+    out += '  String get className => \'$enumName\';\n';
+    out += '\n';
+    out += '  late final int _index;\n';
+    out += '  int get index => _index;\n';
+    out += '\n';
+
+    // Internal constructor
+    out += '  $enumName._internal(this._index); \n';
+    out += '\n';
+
+    // Serialization
+    out +=
+        '  $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
+    out += '    var data = unwrapSerializationData(serialization);\n';
+    out += '    _index = data[\'index\'];\n';
+    out += '  }\n';
+    out += '\n';
+
+    out += '  @override\n';
+    out += '  Map<String, dynamic> serialize() {\n';
+    out += '    return wrapSerializationData({\n';
+    out += '      \'index\': _index,\n';
+    out += '    });\n';
+    out += '  }\n';
+
+    // Values
+    var i = 0;
+    for (var value in enumDefinition.values) {
+      out += '  static final $value = $enumName._internal($i);\n';
+      i += 1;
+    }
+
+    out += '\n';
+
+    out += '  @override\n';
+    out += '  int get hashCode => _index.hashCode;\n';
+    out += '  @override\n';
+    out +=
+        '  bool operator == (other) => other is $enumName && other._index == _index;\n';
+
+    out += '\n';
+
+    out += '  static final values = <$enumName>[\n';
+    for (var value in enumDefinition.values) {
+      out += '    $value,\n';
+    }
+    out += '  ];\n';
+
+    out += '\n';
+
+    out += '  String get name {\n';
+    for (var value in enumDefinition.values) {
+      out += '    if (this == $value) return \'$value\';\n';
+    }
+    out += '    throw const FormatException();\n';
+    out += '  }\n';
+
+    out += '}\n';
+    return out;
   }
 
   @override
-  String generateFactory(Set<ClassDefinition> classInfos) {
+  String generateFactory(List<ProtocolFileDefinition> classInfos) {
     var out = '';
 
     // Header
@@ -481,13 +426,13 @@ class ClassGeneratorDart extends ClassGenerator {
 
     // Import generated files
     for (var classInfo in classInfos) {
-      out += 'import \'${classInfo.fileName}\';\n';
+      out += 'import \'${classInfo.fileName}.dart\';\n';
     }
     out += '\n';
 
     // Export generated files
     for (var classInfo in classInfos) {
-      out += 'export \'${classInfo.fileName}\';\n';
+      out += 'export \'${classInfo.fileName}.dart\';\n';
     }
     if (!serverCode) out += 'export \'client.dart\';\n';
     out += '\n';
@@ -527,7 +472,9 @@ class ClassGeneratorDart extends ClassGenerator {
     if (serverCode) {
       out += '\n';
       for (var classInfo in classInfos) {
-        if (classInfo.tableName == null) continue;
+        if (classInfo is! ClassDefinition || classInfo.tableName == null) {
+          continue;
+        }
         out +=
             '    tableClassMapping[\'${classInfo.tableName}\'] = \'$classPrefix${classInfo.className}\';\n';
         out +=
@@ -548,10 +495,6 @@ class ClassGeneratorDart extends ClassGenerator {
       return '${config.serverPackage}.';
     }
   }
-
-//  String _endpointClassName(String endpointName) {
-//    return '_Endpoint${ReCase(endpointName).pascalCase}';
-//  }
 }
 
 enum FieldScope {
@@ -563,7 +506,6 @@ enum FieldScope {
 class FieldDefinition {
   String name;
   late TypeDefinition type;
-  // bool nullable = true;
 
   String? get columnType {
     if (type.typeNonNullable == 'int') return 'ColumnInt';
@@ -745,7 +687,6 @@ class FieldDefinition {
       } else {
         return '_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData()! : ByteData.view((_data[\'$name\'] as Uint8List).buffer)';
       }
-      // return '(_data[\'$name\'] as String?)!.base64DecodedByteData()!';
     } else {
       if (type.nullable) {
         return '_data[\'$name\'] != null ? $type.fromSerialization(_data[\'$name\']) : null';

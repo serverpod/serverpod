@@ -1,93 +1,86 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
 import 'config.dart';
 import 'pgsql_generator.dart';
 import 'protocol_definition.dart';
 
-void performGenerateClasses(bool verbose) {
+void performGenerateClasses({
+  required bool verbose,
+  required List<ProtocolFileDefinition> classDefinitions,
+}) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
-  var serverGenerator = ClassGeneratorDart(config.protocolSourcePath,
-      config.generatedServerProtocolPath, verbose, true);
+  var serverGenerator = ClassGeneratorDart(
+    verbose: verbose,
+    outputDirectoryPath: config.generatedServerProtocolPath,
+    serverCode: true,
+    classDefinitions: classDefinitions,
+  );
   serverGenerator.generate();
 
   // Generate client side code
   if (verbose) print('Generating Dart client side code.');
-  var clientGenerator = ClassGeneratorDart(config.protocolSourcePath,
-      config.generatedClientProtocolPath, verbose, false);
+  var clientGenerator = ClassGeneratorDart(
+    verbose: verbose,
+    outputDirectoryPath: config.generatedClientProtocolPath,
+    serverCode: false,
+    classDefinitions: classDefinitions,
+  );
   clientGenerator.generate();
 }
 
 abstract class ClassGenerator {
-  final String outputPath;
-  final String inputPath;
+  final String outputDirectoryPath;
   final bool verbose;
   final bool serverCode;
-  final classInfos = <ClassDefinition>{};
+  final List<ProtocolFileDefinition> classDefinitions;
 
-  ClassGenerator(
-    this.inputPath,
-    this.outputPath,
-    this.verbose,
-    this.serverCode,
-  );
+  ClassGenerator({
+    required this.verbose,
+    required this.classDefinitions,
+    required this.outputDirectoryPath,
+    required this.serverCode,
+  });
 
   String get outputExtension;
 
   void generate() {
-    // Generate files for each yaml file
-    var dir = Directory(inputPath);
-    var list = dir.listSync();
-    list.sort((a, b) => a.path.compareTo(b.path));
-    for (var entity in list) {
-      if (entity is File && entity.path.endsWith('.yaml')) {
-        if (verbose) print('  - processing file: ${entity.path}');
+    for (var classDefinition in classDefinitions) {
+      var outputFile = File(p.join(
+        outputDirectoryPath,
+        '${classDefinition.fileName}$outputExtension',
+      ));
 
-        try {
-          var outFileName = _transformFileNameWithoutPath(entity.path);
-          var outFile = File(p.join(outputPath, outFileName));
+      try {
+        var out = generateFile(classDefinition);
 
-          // Read file
-          var yamlStr = entity.readAsStringSync();
-
-          // Generate the code
-          var out = generateFile(yamlStr, outFileName, classInfos);
-
-          // Save generated file
-          outFile.createSync();
-          outFile.writeAsStringSync(out ?? '');
-        } catch (e, stackTrace) {
-          print('Failed to generate ${entity.path}');
-          print('$e');
-          if (verbose) print('$stackTrace');
-        }
+        outputFile.createSync();
+        outputFile.writeAsStringSync(out);
+      } catch (e, stackTrace) {
+        print('Failed to generate ${outputFile.path}');
+        printInternalError(e, stackTrace);
       }
     }
 
     // Generate factory class
-    var outFile = File(p.join(outputPath, 'protocol$outputExtension'));
-    var out = generateFactory(classInfos);
+    var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
+    var out = generateFactory(classDefinitions);
     outFile.createSync();
-    outFile.writeAsStringSync(out ?? '');
+    outFile.writeAsStringSync(out);
 
     if (serverCode) {
       // Generate SQL statements
       var pgsqlGenerator = PgsqlGenerator(
-          classInfos: classInfos, outPath: 'generated/tables.pgsql');
+        classInfos: classDefinitions,
+        outPath: 'generated/tables.pgsql',
+      );
       pgsqlGenerator.generate();
     }
   }
 
-  String? generateFile(
-      String input, String outputFileName, Set<ClassDefinition> classNames);
+  String generateFile(ProtocolFileDefinition classDefinition);
 
-  String? generateFactory(Set<ClassDefinition> classNames);
-
-  String _transformFileNameWithoutPath(String path) {
-    var pathComponents = path.split(Platform.pathSeparator);
-    var fileName = pathComponents.last;
-    fileName = fileName.substring(0, fileName.length - 5) + outputExtension;
-    return fileName;
-  }
+  String generateFactory(List<ProtocolFileDefinition> classNames);
 }

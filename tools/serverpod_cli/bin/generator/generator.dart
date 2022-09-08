@@ -5,31 +5,38 @@ import 'dart_format.dart';
 import 'protocol_generator.dart';
 import 'serverpod_error_collector.dart';
 
-Future<void> performGenerate(bool verbose, bool format) async {
+Future<void> performGenerate(bool verbose, bool dartFormat) async {
   if (!config.load()) return;
 
   var errorCollector = ServerpodErrorCollector();
 
-  print('Loading protocol yaml files');
+  print('Loading protocol yaml files.');
   var classDefinitions = performAnalyzeClasses(
     verbose: verbose,
     errorCollector: errorCollector,
   );
 
-  print('ERRORS:');
-  for (var error in errorCollector.errors) {
-    print(error);
+  if (errorCollector.errors.isNotEmpty) {
+    print(
+        'Found ${errorCollector.errors.length} error${errorCollector.errors.length == 1 ? '' : 's'}');
+    print('');
+    for (var error in errorCollector.errors) {
+      print(error);
+      print('');
+    }
   }
-  print('END\n\n');
 
-  print('Generating classes');
-  performGenerateClasses(verbose);
+  print('Generating classes.');
+  performGenerateClasses(
+    verbose: verbose,
+    classDefinitions: classDefinitions,
+  );
 
-  print('Generating protocol');
+  print('Generating protocol.');
   await performGenerateProtocol(verbose);
 
-  if (format) {
-    print('Dart format');
+  if (dartFormat) {
+    print('Dart format.');
     performDartFormat(verbose);
   }
 
