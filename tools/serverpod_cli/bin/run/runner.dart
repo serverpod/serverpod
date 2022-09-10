@@ -7,6 +7,7 @@ import '../generator/config.dart';
 import '../generator/dart_format.dart';
 import '../generator/protocol_analyzer.dart';
 import '../generator/protocol_generator.dart';
+import '../generator/serverpod_error_collector.dart';
 import '../port_scanner/port_scanner.dart';
 import '../util/command_line_tools.dart';
 import '../util/print.dart';
@@ -70,7 +71,16 @@ void performRun(bool verbose) async {
   printww('Spinning up serverpod generate (this can take a few seconds).');
   // TODO: Fix!
   // performGenerateClasses(verbose);
-  await performGenerateProtocol(verbose);
+  var errorCollector = ServerpodErrorCollector();
+  var protocolDefinition = await performAnalyzeServerCode(
+    verbose: verbose,
+    errorCollector: errorCollector,
+  );
+  errorCollector.printErrors();
+  await performGenerateProtocol(
+    verbose: verbose,
+    protocolDefinition: protocolDefinition,
+  );
   performDartFormat(verbose);
 
   // Analyze the code
@@ -182,7 +192,16 @@ Future<void> _generateAndReload(
     }
 
     try {
-      await performGenerateProtocol(verbose);
+      var errorCollector = ServerpodErrorCollector();
+      var protocolDefinition = await performAnalyzeServerCode(
+        verbose: verbose,
+        errorCollector: errorCollector,
+      );
+      errorCollector.printErrors();
+      await performGenerateProtocol(
+        verbose: verbose,
+        protocolDefinition: protocolDefinition,
+      );
     } catch (e, stackTrace) {
       print('Failed to generate protocol: $e');
       print(stackTrace);

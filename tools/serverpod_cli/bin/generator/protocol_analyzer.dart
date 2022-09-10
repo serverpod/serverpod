@@ -7,9 +7,11 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:source_span/source_span.dart';
 
 import 'config.dart';
 import 'protocol_definition.dart';
+import 'serverpod_error_collector.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -22,15 +24,19 @@ const _excludedMethodNameSet = {
 
 ProtocolAnalyzer? _analyzer;
 
-Future<ProtocolDefinition> performAnalysis(
-  bool verbose, {
+Future<ProtocolDefinition> performAnalyzeServerCode({
+  required bool verbose,
+  required ServerpodErrorCollector errorCollector,
   bool requestNewAnalyzer = true,
 }) async {
   if (requestNewAnalyzer) {
     _analyzer = null;
   }
   _analyzer ??= ProtocolAnalyzer(config.endpointsSourcePath);
-  return await _analyzer!.analyze(verbose);
+  return await _analyzer!.analyze(
+    verbose: verbose,
+    errorCollector: errorCollector,
+  );
 }
 
 Future<List<String>> performAnalysisGetSevereErrors() async {
@@ -71,7 +77,10 @@ class ProtocolAnalyzer {
     return errorMessages;
   }
 
-  Future<ProtocolDefinition> analyze(bool verbose) async {
+  Future<ProtocolDefinition> analyze({
+    required bool verbose,
+    required ServerpodErrorCollector errorCollector,
+  }) async {
     var endpointDefs = <EndpointDefinition>[];
     var filePaths = <String>[];
 
@@ -124,7 +133,9 @@ class ProtocolAnalyzer {
                       param.type.getDisplayString(withNullability: true),
                       package,
                       _getInnerPackage(param.type),
+                      dartType: param.type,
                     ),
+                    dartParameter: param,
                   );
 
                   if (param.isRequiredPositional) {
@@ -152,6 +163,20 @@ class ProtocolAnalyzer {
                     }
                   }
 
+                  for (var parameter in paramDefs.sublist(1)) {
+                    _validateDartType(
+                      dartType: parameter.type.dartType,
+                      dartElement: parameter.dartParameter,
+                      errorCollector: errorCollector,
+                    );
+                  }
+
+                  _validateReturnType(
+                    dartType: method.returnType,
+                    dartElement: method,
+                    errorCollector: errorCollector,
+                  );
+
                   var methodDef = MethodDefinition(
                     name: method.name,
                     documentationComment: method.documentationComment,
@@ -163,6 +188,7 @@ class ProtocolAnalyzer {
                       package,
                       innerPackage,
                       stripFuture: true,
+                      dartType: method.returnType,
                     ),
                   );
                   methodDefs.add(methodDef);
@@ -181,10 +207,16 @@ class ProtocolAnalyzer {
         }
       }
     }
-    return ProtocolDefinition(
+
+    var protocolDefinition = ProtocolDefinition(
       endpoints: endpointDefs,
       filePaths: filePaths,
     );
+
+    // // Check validity of all types we've added previously.
+    // _validateTypes(protocolDefinition, errorCollector);
+
+    return protocolDefinition;
   }
 
   String? _getInnerPackage(DartType type) {
@@ -214,5 +246,191 @@ class ProtocolAnalyzer {
     }
 
     return endpointName;
+  }
+
+  void _validateReturnType({
+    required DartType dartType,
+    required Element dartElement,
+    required ServerpodErrorCollector errorCollector,
+  }) {
+    if (dartType is! InterfaceType) {
+      errorCollector.addError(SourceSpanException(
+        'This type is not supported as return type.',
+        dartElement.span,
+      ));
+      return;
+    }
+
+    if (!dartType.isDartAsyncFuture) {
+      errorCollector.addError(SourceSpanException(
+        'Return type must be a Future.',
+        dartElement.span,
+      ));
+      return;
+    }
+
+    var typeArguments = dartType.typeArguments;
+    if (typeArguments.length != 1) {
+      errorCollector.addError(SourceSpanException(
+        'Future must have a type defined. E.g. Future<String>.',
+        dartElement.span,
+      ));
+      return;
+    }
+    var innerType = typeArguments[0];
+
+    if (innerType.isDynamic) {
+      errorCollector.addError(SourceSpanException(
+        'Future must have a type defined. E.g. Future<String>.',
+        dartElement.span,
+      ));
+      return;
+    }
+
+    _validateDartType(
+      dartType: innerType,
+      dartElement: dartElement,
+      errorCollector: errorCollector,
+    );
+  }
+
+  // Check that the type is valid for use with Serverpod, otherwise add an error
+  // to the error collector.
+  void _validateDartType({
+    required DartType? dartType,
+    required Element? dartElement,
+    required ServerpodErrorCollector errorCollector,
+  }) {
+    // Only perform check if there is a declared Dart parameter and type.
+    if (dartElement == null || dartType == null) {
+      return;
+    }
+
+    if (dartType is! InterfaceType) {
+      errorCollector.addError(SourceSpanException(
+        'This type is not supported as an argument or return type.',
+        dartElement.span,
+      ));
+      return;
+    }
+
+    if (dartType.isDartCoreList) {
+      // Check for supported lists.
+      var typeArguments = dartType.typeArguments;
+      if (typeArguments.length != 1) {
+        errorCollector.addError(SourceSpanException(
+          'Lists in parameters must have a type defined. E.g. List<String>.',
+          dartElement.span,
+        ));
+        return;
+      }
+      if (typeArguments[0].isDynamic) {
+        errorCollector.addError(SourceSpanException(
+          'Lists in parameters must have a type defined. E.g. List<String>.',
+          dartElement.span,
+        ));
+        return;
+      } else if (_isSupportedBaseType(typeArguments[0])) {
+        return;
+      } else {
+        errorCollector.addError(SourceSpanException(
+          'This type of List is not supported.',
+          dartElement.span,
+        ));
+        return;
+      }
+    } else if (dartType.isDartCoreMap) {
+      // Check for supported maps.
+      var typeArguments = dartType.typeArguments;
+      if (typeArguments.length != 2) {
+        errorCollector.addError(SourceSpanException(
+          'Maps in parameters must have a type defined. E.g. Map<String, int>.',
+          dartElement.span,
+        ));
+        return;
+      }
+      if (!typeArguments[0].isDartCoreString ||
+          typeArguments[0].nullabilitySuffix != NullabilitySuffix.none) {
+        errorCollector.addError(SourceSpanException(
+          'Maps in parameters must have a non-nullable String as key. E.g. Map<String, int?>.',
+          dartElement.span,
+        ));
+        return;
+      }
+      if (typeArguments[1].isDynamic) {
+        errorCollector.addError(SourceSpanException(
+          'Maps in parameters must have a type defined. E.g. List<String, int?>.',
+          dartElement.span,
+        ));
+        return;
+      } else if (_isSupportedBaseType(typeArguments[1])) {
+        return;
+      } else {
+        errorCollector.addError(SourceSpanException(
+          'This type of Map is not supported.',
+          dartElement.span,
+        ));
+        return;
+      }
+    } else {
+      // Check base types.
+      if (_isSupportedBaseType(dartType)) {
+        return;
+      }
+    }
+
+    errorCollector.addError(SourceSpanException(
+      'This type is not supported as an argument or return type.',
+      dartElement.span,
+    ));
+  }
+}
+
+bool _isSupportedBaseType(DartType type) {
+  if (type is! InterfaceType) {
+    return false;
+  }
+
+  // Core types.
+  if (_isSupportedDartCoreType(type)) {
+    return true;
+  }
+
+  // Basic types.
+  var typeName = type.getDisplayString(withNullability: false);
+  if (typeName == 'DateTime' || typeName == 'ByteData') {
+    return true;
+  }
+
+  // Serializable objects.
+  for (var superType in type.allSupertypes) {
+    if (superType.getDisplayString(withNullability: false) ==
+        'SerializableEntity') {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool _isSupportedDartCoreType(DartType type) {
+  return type.isDartCoreBool ||
+      type.isDartCoreInt ||
+      type.isDartCoreDouble ||
+      type.isDartCoreString;
+}
+
+extension _DartElementSourceSpan on Element {
+  SourceSpan? get span {
+    var sourceString = source?.contents.data;
+    var offset = nameOffset;
+    var length = nameLength;
+
+    if (sourceString != null && offset != 0 && length != -1) {
+      var sourceFile = SourceFile.fromString(sourceString);
+      return sourceFile.span(offset, offset + length);
+    } else {
+      return null;
+    }
   }
 }

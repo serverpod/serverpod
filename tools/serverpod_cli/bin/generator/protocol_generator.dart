@@ -3,21 +3,14 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import 'config.dart';
-import 'protocol_analyzer.dart';
 import 'protocol_definition.dart';
 import 'protocol_generator_dart.dart';
 
-Future<void> performGenerateProtocol(
-  bool verbose, {
-  bool requestNewAnalyzer = true,
+Future<void> performGenerateProtocol({
+  required bool verbose,
+  required ProtocolDefinition protocolDefinition,
 }) async {
-  // Analyze the endpoint classes
-  if (verbose) print('Analyzing protocol');
-  var definition = await performAnalysis(
-    verbose,
-    requestNewAnalyzer: requestNewAnalyzer,
-  );
-  var generator = ProtocolGeneratorDart(protocolDefinition: definition);
+  var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
 
   // Generate code for the client
   if (verbose) print('Generating client endpoints');

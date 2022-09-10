@@ -1,3 +1,6 @@
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+
 import 'class_generator_dart.dart';
 import 'config.dart';
 
@@ -46,11 +49,13 @@ class ParameterDefinition {
   final String name;
   final TypeDefinition type;
   final bool required;
+  final ParameterElement? dartParameter;
 
   ParameterDefinition({
     required this.name,
     required this.type,
     required this.required,
+    this.dartParameter,
   });
 }
 
@@ -64,6 +69,7 @@ class TypeDefinition {
   late final String type;
   final String? package;
   final String? innerPackage;
+  final DartType? dartType;
 
   String get typePrefix {
     var prefix = '';
@@ -89,8 +95,13 @@ class TypeDefinition {
     return '$typeNonNullableWithPrefix${nullable ? '?' : ''}';
   }
 
-  TypeDefinition(String type, this.package, this.innerPackage,
-      {bool stripFuture = false}) {
+  TypeDefinition(
+    String type,
+    this.package,
+    this.innerPackage, {
+    bool stripFuture = false,
+    this.dartType,
+  }) {
     // Remove all spaces
     var trimmed = type.replaceAll(' ', '');
 
@@ -126,9 +137,9 @@ class TypeDefinition {
         throw const FormatException(
             'A Map requires a key type and a value type');
       }
-      if (mapComponents[0].trim() != 'String') {
-        throw const FormatException('Only String is allowed as Map keys');
-      }
+      // if (mapComponents[0].trim() != 'String') {
+      //   throw const FormatException('Only String is allowed as Map keys');
+      // }
       mapType = TypeDefinition(mapComponents[1], innerPackage, null);
     }
 
