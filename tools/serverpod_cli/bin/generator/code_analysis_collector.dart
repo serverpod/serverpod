@@ -5,6 +5,8 @@ import 'package:source_span/source_span.dart';
 class CodeAnalysisCollector {
   final List<SourceSpanException> errors = [];
 
+  final Set<File> generatedFiles = {};
+
   void addError(SourceSpanException error) {
     errors.add(error);
   }
@@ -36,5 +38,13 @@ class CodeAnalysisCollector {
 
   void clearErrors() {
     errors.clear();
+  }
+
+  void addGeneratedFile(File file) {
+    generatedFiles.add(file);
+  }
+
+  void clearGeneratedFiles() {
+    generatedFiles.clear();
   }
 }

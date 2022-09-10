@@ -80,6 +80,7 @@ void performRun(bool verbose) async {
   await performGenerateProtocol(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
+    collector: collector,
   );
   performDartFormat(verbose);
 
@@ -201,6 +202,7 @@ Future<void> _generateAndReload(
       await performGenerateProtocol(
         verbose: verbose,
         protocolDefinition: protocolDefinition,
+        collector: collector,
       );
     } catch (e, stackTrace) {
       print('Failed to generate protocol: $e');

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 import 'protocol_generator_dart.dart';
@@ -9,6 +10,7 @@ import 'protocol_generator_dart.dart';
 Future<void> performGenerateProtocol({
   required bool verbose,
   required ProtocolDefinition protocolDefinition,
+  required CodeAnalysisCollector collector,
 }) async {
   var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
 
@@ -22,6 +24,7 @@ Future<void> performGenerateProtocol({
   var outFile = File(filePath);
   outFile.createSync();
   outFile.writeAsStringSync(protocol);
+  collector.addGeneratedFile(outFile);
 
   // Generate server mappings with endpoint connectors
   if (verbose) print('Generating server endpoint dispatch');
@@ -34,6 +37,7 @@ Future<void> performGenerateProtocol({
   var endpointsFile = File(endpointsFilePath);
   endpointsFile.createSync();
   endpointsFile.writeAsStringSync(endpointDispatch);
+  collector.addGeneratedFile(endpointsFile);
 
   // Write endpoint definition
   var endpointDef = generator.generateEndpointDefinition();

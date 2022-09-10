@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
+import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'pgsql_generator.dart';
 import 'protocol_definition.dart';
@@ -9,6 +10,7 @@ import 'protocol_definition.dart';
 void performGenerateClasses({
   required bool verbose,
   required List<ProtocolFileDefinition> classDefinitions,
+  required CodeAnalysisCollector collector,
 }) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
@@ -18,7 +20,7 @@ void performGenerateClasses({
     serverCode: true,
     classDefinitions: classDefinitions,
   );
-  serverGenerator.generate();
+  serverGenerator.generate(collector: collector);
 
   // Generate client side code
   if (verbose) print('Generating Dart client side code.');
@@ -28,7 +30,7 @@ void performGenerateClasses({
     serverCode: false,
     classDefinitions: classDefinitions,
   );
-  clientGenerator.generate();
+  clientGenerator.generate(collector: collector);
 }
 
 abstract class ClassGenerator {
@@ -46,7 +48,7 @@ abstract class ClassGenerator {
 
   String get outputExtension;
 
-  void generate() {
+  void generate({required CodeAnalysisCollector collector}) {
     for (var classDefinition in classDefinitions) {
       var outputFile = File(p.join(
         outputDirectoryPath,
@@ -58,6 +60,8 @@ abstract class ClassGenerator {
 
         outputFile.createSync();
         outputFile.writeAsStringSync(out);
+
+        collector.addGeneratedFile(outputFile);
       } catch (e, stackTrace) {
         print('Failed to generate ${outputFile.path}');
         printInternalError(e, stackTrace);
@@ -69,6 +73,7 @@ abstract class ClassGenerator {
     var out = generateFactory(classDefinitions);
     outFile.createSync();
     outFile.writeAsStringSync(out);
+    collector.addGeneratedFile(outFile);
 
     if (serverCode) {
       // Generate SQL statements
