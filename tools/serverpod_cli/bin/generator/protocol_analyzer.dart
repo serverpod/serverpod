@@ -213,9 +213,6 @@ class ProtocolAnalyzer {
       filePaths: filePaths,
     );
 
-    // // Check validity of all types we've added previously.
-    // _validateTypes(protocolDefinition, errorCollector);
-
     return protocolDefinition;
   }
 
@@ -422,12 +419,16 @@ bool _isSupportedDartCoreType(DartType type) {
 
 extension _DartElementSourceSpan on Element {
   SourceSpan? get span {
-    var sourceString = source?.contents.data;
+    var sourceData = source?.contents.data;
+    var sourceUri = source?.uri;
     var offset = nameOffset;
     var length = nameLength;
 
-    if (sourceString != null && offset != 0 && length != -1) {
-      var sourceFile = SourceFile.fromString(sourceString);
+    if (sourceData != null && offset != 0 && length != -1) {
+      var sourceFile = SourceFile.fromString(
+        sourceData,
+        url: sourceUri,
+      );
       return sourceFile.span(offset, offset + length);
     } else {
       return null;
