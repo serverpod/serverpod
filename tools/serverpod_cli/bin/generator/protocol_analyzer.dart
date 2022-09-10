@@ -11,7 +11,7 @@ import 'package:source_span/source_span.dart';
 
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'serverpod_error_collector.dart';
+import 'code_analysis_collector.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -26,7 +26,7 @@ ProtocolAnalyzer? _analyzer;
 
 Future<ProtocolDefinition> performAnalyzeServerCode({
   required bool verbose,
-  required ServerpodErrorCollector errorCollector,
+  required CodeAnalysisCollector collector,
   bool requestNewAnalyzer = true,
 }) async {
   if (requestNewAnalyzer) {
@@ -35,7 +35,7 @@ Future<ProtocolDefinition> performAnalyzeServerCode({
   _analyzer ??= ProtocolAnalyzer(config.endpointsSourcePath);
   return await _analyzer!.analyze(
     verbose: verbose,
-    errorCollector: errorCollector,
+    collector: collector,
   );
 }
 
@@ -79,7 +79,7 @@ class ProtocolAnalyzer {
 
   Future<ProtocolDefinition> analyze({
     required bool verbose,
-    required ServerpodErrorCollector errorCollector,
+    required CodeAnalysisCollector collector,
   }) async {
     var endpointDefs = <EndpointDefinition>[];
     var filePaths = <String>[];
@@ -167,14 +167,14 @@ class ProtocolAnalyzer {
                     _validateDartType(
                       dartType: parameter.type.dartType,
                       dartElement: parameter.dartParameter,
-                      errorCollector: errorCollector,
+                      collector: collector,
                     );
                   }
 
                   _validateReturnType(
                     dartType: method.returnType,
                     dartElement: method,
-                    errorCollector: errorCollector,
+                    collector: collector,
                   );
 
                   var methodDef = MethodDefinition(
@@ -248,10 +248,10 @@ class ProtocolAnalyzer {
   void _validateReturnType({
     required DartType dartType,
     required Element dartElement,
-    required ServerpodErrorCollector errorCollector,
+    required CodeAnalysisCollector collector,
   }) {
     if (dartType is! InterfaceType) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'This type is not supported as return type.',
         dartElement.span,
       ));
@@ -259,7 +259,7 @@ class ProtocolAnalyzer {
     }
 
     if (!dartType.isDartAsyncFuture) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'Return type must be a Future.',
         dartElement.span,
       ));
@@ -268,7 +268,7 @@ class ProtocolAnalyzer {
 
     var typeArguments = dartType.typeArguments;
     if (typeArguments.length != 1) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
       ));
@@ -277,7 +277,7 @@ class ProtocolAnalyzer {
     var innerType = typeArguments[0];
 
     if (innerType.isDynamic) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
       ));
@@ -287,7 +287,7 @@ class ProtocolAnalyzer {
     _validateDartType(
       dartType: innerType,
       dartElement: dartElement,
-      errorCollector: errorCollector,
+      collector: collector,
     );
   }
 
@@ -296,7 +296,7 @@ class ProtocolAnalyzer {
   void _validateDartType({
     required DartType? dartType,
     required Element? dartElement,
-    required ServerpodErrorCollector errorCollector,
+    required CodeAnalysisCollector collector,
   }) {
     // Only perform check if there is a declared Dart parameter and type.
     if (dartElement == null || dartType == null) {
@@ -304,7 +304,7 @@ class ProtocolAnalyzer {
     }
 
     if (dartType is! InterfaceType) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'This type is not supported as an argument or return type.',
         dartElement.span,
       ));
@@ -315,14 +315,14 @@ class ProtocolAnalyzer {
       // Check for supported lists.
       var typeArguments = dartType.typeArguments;
       if (typeArguments.length != 1) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Lists in parameters must have a type defined. E.g. List<String>.',
           dartElement.span,
         ));
         return;
       }
       if (typeArguments[0].isDynamic) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Lists in parameters must have a type defined. E.g. List<String>.',
           dartElement.span,
         ));
@@ -330,7 +330,7 @@ class ProtocolAnalyzer {
       } else if (_isSupportedBaseType(typeArguments[0])) {
         return;
       } else {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'This type of List is not supported.',
           dartElement.span,
         ));
@@ -340,7 +340,7 @@ class ProtocolAnalyzer {
       // Check for supported maps.
       var typeArguments = dartType.typeArguments;
       if (typeArguments.length != 2) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Maps in parameters must have a type defined. E.g. Map<String, int>.',
           dartElement.span,
         ));
@@ -348,14 +348,14 @@ class ProtocolAnalyzer {
       }
       if (!typeArguments[0].isDartCoreString ||
           typeArguments[0].nullabilitySuffix != NullabilitySuffix.none) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Maps in parameters must have a non-nullable String as key. E.g. Map<String, int?>.',
           dartElement.span,
         ));
         return;
       }
       if (typeArguments[1].isDynamic) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Maps in parameters must have a type defined. E.g. List<String, int?>.',
           dartElement.span,
         ));
@@ -363,7 +363,7 @@ class ProtocolAnalyzer {
       } else if (_isSupportedBaseType(typeArguments[1])) {
         return;
       } else {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'This type of Map is not supported.',
           dartElement.span,
         ));
@@ -376,7 +376,7 @@ class ProtocolAnalyzer {
       }
     }
 
-    errorCollector.addError(SourceSpanException(
+    collector.addError(SourceSpanException(
       'This type is not supported as an argument or return type.',
       dartElement.span,
     ));

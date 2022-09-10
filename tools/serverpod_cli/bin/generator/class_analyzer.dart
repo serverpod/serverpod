@@ -8,11 +8,11 @@ import '../util/string_validators.dart';
 import 'class_generator_dart.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'serverpod_error_collector.dart';
+import 'code_analysis_collector.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
   bool verbose = true,
-  required ServerpodErrorCollector errorCollector,
+  required CodeAnalysisCollector collector,
 }) {
   var classDefinitions = <ProtocolFileDefinition>[];
 
@@ -34,7 +34,7 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
       yaml: yaml,
       sourceFileName: entity.path,
       outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
-      errorCollector: errorCollector,
+      collector: collector,
     );
     var classDefinition = analyzer.analyze();
     if (classDefinition != null) {
@@ -56,13 +56,13 @@ class ClassAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
-  final ServerpodErrorCollector errorCollector;
+  final CodeAnalysisCollector collector;
 
   ClassAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
-    required this.errorCollector,
+    required this.collector,
   });
 
   ProtocolFileDefinition? analyze() {
@@ -74,7 +74,7 @@ class ClassAnalyzer {
       errorListener: yamlErrorCollector,
     );
 
-    errorCollector.addErrors(yamlErrorCollector.errors);
+    collector.addErrors(yamlErrorCollector.errors);
 
     if (yamlErrorCollector.errors.isNotEmpty) {
       return null;
@@ -84,7 +84,7 @@ class ClassAnalyzer {
 
     // Validate document is a map.
     if (documentContents is! YamlMap) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The top level object in the class yaml file must be a Map.',
         documentContents.span,
       ));
@@ -98,7 +98,7 @@ class ClassAnalyzer {
       return _analyzeEnumFile(documentContents);
     }
 
-    errorCollector.addError(SourceSpanException(
+    collector.addError(SourceSpanException(
       'No "class" or "enum" property is defined.',
       documentContents.span,
     ));
@@ -116,7 +116,7 @@ class ClassAnalyzer {
     // Validate class name exists and is correct.
     var classNameNode = documentContents.nodes['class'];
     if (classNameNode == null) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'No "class" property is defined.',
         documentContents.span,
       ));
@@ -125,7 +125,7 @@ class ClassAnalyzer {
 
     var className = classNameNode.value;
     if (className is! String) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The "class" property must be a String.',
         classNameNode.span,
       ));
@@ -133,7 +133,7 @@ class ClassAnalyzer {
     }
 
     if (!StringValidators.isValidClassName(className)) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The "class" property must be a valid class name (e.g. CamelCaseString).',
         classNameNode.span,
       ));
@@ -146,14 +146,14 @@ class ClassAnalyzer {
     if (tableNameNode != null) {
       tableName = tableNameNode.value;
       if (tableName is! String) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'The "table" property must be a String.',
           tableNameNode.span,
         ));
         tableName = null;
       }
       if (tableName != null && !StringValidators.isValidTableName(tableName)) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'The "table" property must be lower_snake_case.',
           tableNameNode.span,
         ));
@@ -164,7 +164,7 @@ class ClassAnalyzer {
     // Validate fields map exists.
     var fieldsNode = documentContents.nodes['fields'];
     if (fieldsNode == null) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'No "fields" property is defined.',
         documentContents.span,
       ));
@@ -172,7 +172,7 @@ class ClassAnalyzer {
     }
 
     if (fieldsNode is! YamlMap) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The "fields" property must be a Map.',
         documentContents.span,
       ));
@@ -190,7 +190,7 @@ class ClassAnalyzer {
     for (var fieldNameNode in fieldsNode.nodes.keys) {
       // Validate field name.
       if (fieldNameNode is! YamlScalar) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Keys of "fields" Map must be of type String.',
           fieldNameNode.span,
         ));
@@ -198,14 +198,14 @@ class ClassAnalyzer {
       }
       var fieldName = fieldNameNode.value;
       if (fieldName is! String) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Keys of "fields" Map must be of type String.',
           fieldNameNode.span,
         ));
         continue;
       }
       if (!StringValidators.isValidFieldName(fieldName)) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
           fieldNameNode.span,
         ));
@@ -215,7 +215,7 @@ class ClassAnalyzer {
       // Field name checks out, let's validate the argument.
       var fieldDescriptionNode = fieldsNode.nodes[fieldNameNode];
       if (fieldDescriptionNode == null) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Field description is missing.',
           fieldNameNode.span,
         ));
@@ -224,7 +224,7 @@ class ClassAnalyzer {
 
       var fieldDescription = fieldDescriptionNode.value;
       if (fieldDescription is! String) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Field description must be of type String.',
           fieldDescriptionNode.span,
         ));
@@ -236,7 +236,7 @@ class ClassAnalyzer {
         fieldDefinition = FieldDefinition(fieldName, fieldDescription);
         fields.add(fieldDefinition);
       } catch (e) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Field description is invalid.',
           fieldDescriptionNode.span,
         ));
@@ -259,7 +259,7 @@ class ClassAnalyzer {
     var indexesNode = documentContents.nodes['indexes'];
     if (indexesNode != null) {
       if (indexesNode is! YamlMap) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'The "indexes" property must be a Map.',
           indexesNode.span,
         ));
@@ -272,7 +272,7 @@ class ClassAnalyzer {
       for (var indexNameNode in indexesNode.nodes.keys) {
         // Validate index name.
         if (indexNameNode is! YamlScalar) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'Keys of "indexes" Map must be of type String.',
             indexNameNode.span,
           ));
@@ -281,7 +281,7 @@ class ClassAnalyzer {
 
         var indexName = indexNameNode.value;
         if (indexName is! String) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'Keys of "indexes" Map must be of type String.',
             indexNameNode.span,
           ));
@@ -289,7 +289,7 @@ class ClassAnalyzer {
         }
 
         if (!StringValidators.isValidTableIndexName(indexName)) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'The index name must be in lower_snake_case.',
             indexNameNode.span,
           ));
@@ -299,14 +299,14 @@ class ClassAnalyzer {
         // Validate index description.
         var indexDescriptionNode = indexesNode.nodes[indexNameNode];
         if (indexDescriptionNode == null) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'The index is missing a description.',
             indexNameNode.span,
           ));
           continue;
         }
         if (indexDescriptionNode is! YamlMap) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'The index description mus be of type Map.',
             indexDescriptionNode.span,
           ));
@@ -316,7 +316,7 @@ class ClassAnalyzer {
         // Validate index fields.
         var fieldsNode = indexDescriptionNode.nodes['fields'];
         if (fieldsNode == null) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'The "fields" property must be defined for an index.',
             indexDescriptionNode.span,
           ));
@@ -324,7 +324,7 @@ class ClassAnalyzer {
         }
         var fieldsStr = fieldsNode.value;
         if (fieldsStr is! String) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'The "fields" property must be of type String.',
             fieldsNode.span,
           ));
@@ -334,7 +334,7 @@ class ClassAnalyzer {
         var fieldNames =
             fieldsStr.split(',').map((String str) => str.trim()).toList();
         if (fieldNames.isEmpty) {
-          errorCollector.addError(SourceSpanException(
+          collector.addError(SourceSpanException(
             'The "fields" property must be defined.',
             fieldsNode.span,
           ));
@@ -342,7 +342,7 @@ class ClassAnalyzer {
         }
         for (var fieldName in fieldNames) {
           if (!validDatabaseFieldNames.contains(fieldName)) {
-            errorCollector.addError(SourceSpanException(
+            collector.addError(SourceSpanException(
               'The field name "$fieldName" is not added to the class or has an api scope.',
               fieldsNode.span,
             ));
@@ -358,7 +358,7 @@ class ClassAnalyzer {
         } else {
           var typeStr = typeNode.value;
           if (typeStr is! String) {
-            errorCollector.addError(SourceSpanException(
+            collector.addError(SourceSpanException(
               'The "type" property must be of type String.',
               typeNode.span,
             ));
@@ -377,7 +377,7 @@ class ClassAnalyzer {
         } else {
           var uniqueVal = uniqueNode.value;
           if (uniqueVal is! bool) {
-            errorCollector.addError(SourceSpanException(
+            collector.addError(SourceSpanException(
               'The "unique" property must be of type bool.',
               uniqueNode.span,
             ));
@@ -416,7 +416,7 @@ class ClassAnalyzer {
     // Validate class name exists and is correct.
     var classNameNode = documentContents.nodes['enum'];
     if (classNameNode == null) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'No "enum" property is defined.',
         documentContents.span,
       ));
@@ -425,7 +425,7 @@ class ClassAnalyzer {
 
     var className = classNameNode.value;
     if (className is! String) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The "enum" property must be a String.',
         classNameNode.span,
       ));
@@ -433,7 +433,7 @@ class ClassAnalyzer {
     }
 
     if (!StringValidators.isValidClassName(className)) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The "enum" property must be a valid class name (e.g. CamelCaseString).',
         classNameNode.span,
       ));
@@ -443,7 +443,7 @@ class ClassAnalyzer {
     // Validate enum values.
     var valuesNode = documentContents.nodes['values'];
     if (valuesNode == null) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'An enum must have a "values" property.',
         documentContents.span,
       ));
@@ -451,7 +451,7 @@ class ClassAnalyzer {
     }
 
     if (valuesNode is! YamlList) {
-      errorCollector.addError(SourceSpanException(
+      collector.addError(SourceSpanException(
         'The "values" property must be a List.',
         valuesNode.span,
       ));
@@ -460,7 +460,7 @@ class ClassAnalyzer {
     var values = <String>[];
     for (var valueNode in valuesNode.nodes) {
       if (valueNode is! YamlScalar) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'The list value must be of type String.',
           valueNode.span,
         ));
@@ -469,7 +469,7 @@ class ClassAnalyzer {
 
       var value = valueNode.value;
       if (value is! String) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'The list value must be of type String.',
           valueNode.span,
         ));
@@ -477,7 +477,7 @@ class ClassAnalyzer {
       }
 
       if (!StringValidators.isValidFieldName(value)) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Enum values must be lowerCamelCase.',
           valueNode.span,
         ));
@@ -497,7 +497,7 @@ class ClassAnalyzer {
   bool _containsOnlyValidKeys(YamlMap documentMap, Set<String> validKeys) {
     for (var keyNode in documentMap.nodes.keys) {
       if (keyNode is! YamlScalar) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Key must be of type String.',
           keyNode.span,
         ));
@@ -505,14 +505,14 @@ class ClassAnalyzer {
       }
       var key = keyNode.value;
       if (key is! String) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'Key must be of type String.',
           keyNode.span,
         ));
         return false;
       }
       if (!validKeys.contains(key)) {
-        errorCollector.addError(SourceSpanException(
+        collector.addError(SourceSpanException(
           'This key is not recognized. Valid keys are $validKeys',
           keyNode.span,
         ));

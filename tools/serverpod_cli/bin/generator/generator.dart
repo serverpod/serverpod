@@ -4,20 +4,21 @@ import 'config.dart';
 import 'dart_format.dart';
 import 'protocol_analyzer.dart';
 import 'protocol_generator.dart';
-import 'serverpod_error_collector.dart';
+import 'code_analysis_collector.dart';
 
 Future<void> performGenerate(bool verbose, bool dartFormat) async {
   if (!config.load()) return;
 
-  var errorCollector = ServerpodErrorCollector();
+  var analysisCollector = CodeAnalysisCollector();
 
   print('Analyzing protocol yaml files.');
   var classDefinitions = performAnalyzeClasses(
     verbose: verbose,
-    errorCollector: errorCollector,
+    collector: analysisCollector,
   );
 
-  errorCollector.printErrors();
+  analysisCollector.printErrors();
+  analysisCollector.clearErrors();
 
   print('Generating classes.');
   performGenerateClasses(
@@ -26,14 +27,14 @@ Future<void> performGenerate(bool verbose, bool dartFormat) async {
   );
 
   print('Analyzing server code.');
-  errorCollector = ServerpodErrorCollector();
   var protocolDefinition = await performAnalyzeServerCode(
     verbose: verbose,
-    errorCollector: errorCollector,
+    collector: analysisCollector,
     requestNewAnalyzer: true,
   );
 
-  errorCollector.printErrors();
+  analysisCollector.printErrors();
+  analysisCollector.clearErrors();
 
   print('Generating protocol.');
   await performGenerateProtocol(

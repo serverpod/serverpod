@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:source_span/source_span.dart';
 
-class ServerpodErrorCollector {
+class CodeAnalysisCollector {
   final List<SourceSpanException> errors = [];
 
   void addError(SourceSpanException error) {
@@ -32,5 +32,9 @@ class ServerpodErrorCollector {
       return;
     }
     stdout.write(toString());
+  }
+
+  void clearErrors() {
+    errors.clear();
   }
 }
