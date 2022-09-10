@@ -1,5 +1,6 @@
 import 'class_analyzer.dart';
 import 'class_generator.dart';
+import 'code_cleaner.dart';
 import 'config.dart';
 import 'dart_format.dart';
 import 'protocol_analyzer.dart';
@@ -41,6 +42,12 @@ Future<void> performGenerate(bool verbose, bool dartFormat) async {
   await performGenerateProtocol(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
+    collector: collector,
+  );
+
+  print('Cleaning up old files.');
+  performRemoveOldFiles(
+    verbose: verbose,
     collector: collector,
   );
 
