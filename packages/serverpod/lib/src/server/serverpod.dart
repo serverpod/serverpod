@@ -349,7 +349,7 @@ class Serverpod {
       // Start future calls
       _futureCallManager.start();
 
-      // Start health check managager
+      // Start health check manager
       _healthCheckManager.start();
     }, (e, stackTrace) {
       // Last resort error handling
