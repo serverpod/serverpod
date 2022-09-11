@@ -350,7 +350,7 @@ class Serverpod {
       _futureCallManager.start();
 
       // Start health check manager
-      _healthCheckManager.start();
+      await _healthCheckManager.start();
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
