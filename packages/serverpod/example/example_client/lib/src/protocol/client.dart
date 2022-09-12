@@ -3,6 +3,8 @@
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:typed_data' as typed_data;
@@ -19,8 +21,9 @@ class _EndpointChannels extends EndpointRef {
   _EndpointChannels(EndpointCaller caller) : super(caller);
 
   Future<ChannelList> getChannels() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('channels', 'getChannels', 'ChannelList', {});
+    return retval;
   }
 }
 

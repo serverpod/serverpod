@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -15,7 +17,6 @@ class ObjectWithMaps extends SerializableEntity {
   @override
   String get className => 'ObjectWithMaps';
 
-  int? id;
   late Map<String, SimpleData> dataMap;
   late Map<String, int> intMap;
   late Map<String, String> stringMap;
@@ -28,7 +29,6 @@ class ObjectWithMaps extends SerializableEntity {
   late Map<String, ByteData?> nullableByteDataMap;
 
   ObjectWithMaps({
-    this.id,
     required this.dataMap,
     required this.intMap,
     required this.stringMap,
@@ -43,7 +43,6 @@ class ObjectWithMaps extends SerializableEntity {
 
   ObjectWithMaps.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     dataMap = _data['dataMap']!.map<String, SimpleData>(
         (String key, dynamic value) =>
             MapEntry(key, SimpleData.fromSerialization(value)));
@@ -71,7 +70,6 @@ class ObjectWithMaps extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'dataMap': dataMap.map<String, Map<String, dynamic>>(
           (String key, SimpleData value) => MapEntry(key, value.serialize())),
       'intMap': intMap,

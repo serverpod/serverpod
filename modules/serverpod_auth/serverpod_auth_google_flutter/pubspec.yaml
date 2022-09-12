@@ -21,7 +21,7 @@ dependencies:
   google_sign_in: ^5.2.1
 
 dev_dependencies:
-  lints: ^1.0.1
+  lints: ^2.0.0
   flutter_test:
     sdk: flutter
 

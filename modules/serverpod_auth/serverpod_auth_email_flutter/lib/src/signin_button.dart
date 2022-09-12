@@ -26,10 +26,11 @@ class SignInWithEmailButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SignInWithEmailButtonState createState() => _SignInWithEmailButtonState();
+  SignInWithEmailButtonState createState() => SignInWithEmailButtonState();
 }
 
-class _SignInWithEmailButtonState extends State<SignInWithEmailButton> {
+/// State for Sign in with email button.
+class SignInWithEmailButtonState extends State<SignInWithEmailButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(

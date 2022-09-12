@@ -22,10 +22,10 @@ class SignInWithEmailDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SignInWithEmailDialogState createState() => _SignInWithEmailDialogState();
+  SignInWithEmailDialogState createState() => SignInWithEmailDialogState();
 }
 
-class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
+class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -422,7 +422,9 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     // Pop dialog
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
     widget.onSignedIn();
   }
 
@@ -458,7 +460,9 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     // Pop dialog
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
     widget.onSignedIn();
   }
 
@@ -523,7 +527,9 @@ class _SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     // Pop dialog
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
     widget.onSignedIn();
   }
 

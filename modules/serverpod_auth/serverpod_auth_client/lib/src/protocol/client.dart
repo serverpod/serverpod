@@ -3,6 +3,8 @@
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:typed_data' as typed_data;
@@ -20,10 +22,11 @@ class _EndpointAdmin extends EndpointRef {
   Future<UserInfo?> getUserInfo(
     int userId,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.admin', 'getUserInfo', 'UserInfo', {
       'userId': userId,
     });
+    return retval;
   }
 }
 
@@ -38,10 +41,11 @@ class _EndpointApple extends EndpointRef {
   Future<AuthenticationResponse> authenticate(
     AppleAuthInfo authInfo,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.apple', 'authenticate', 'AuthenticationResponse', {
       'authInfo': authInfo,
     });
+    return retval;
   }
 }
 
@@ -58,11 +62,12 @@ class _EndpointEmail extends EndpointRef {
     String email,
     String password,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.email', 'authenticate', 'AuthenticationResponse', {
       'email': email,
       'password': password,
     });
+    return retval;
   }
 
   /// Changes a users password.
@@ -70,11 +75,12 @@ class _EndpointEmail extends EndpointRef {
     String oldPassword,
     String newPassword,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.email', 'changePassword', 'bool', {
       'oldPassword': oldPassword,
       'newPassword': newPassword,
     });
+    return retval;
   }
 
   /// Initiates a password reset and sends an email with the reset code to the
@@ -82,10 +88,11 @@ class _EndpointEmail extends EndpointRef {
   Future<bool> initiatePasswordReset(
     String email,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.email', 'initiatePasswordReset', 'bool', {
       'email': email,
     });
+    return retval;
   }
 
   /// Verifies a password reset code, if successful returns an
@@ -93,10 +100,11 @@ class _EndpointEmail extends EndpointRef {
   Future<EmailPasswordReset?> verifyEmailPasswordReset(
     String verificationCode,
   ) async {
-    return await caller.callServerEndpoint('serverpod_auth.email',
+    var retval = await caller.callServerEndpoint('serverpod_auth.email',
         'verifyEmailPasswordReset', 'EmailPasswordReset', {
       'verificationCode': verificationCode,
     });
+    return retval;
   }
 
   /// Resets a users password using the reset code.
@@ -104,11 +112,12 @@ class _EndpointEmail extends EndpointRef {
     String verificationCode,
     String password,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.email', 'resetPassword', 'bool', {
       'verificationCode': verificationCode,
       'password': password,
     });
+    return retval;
   }
 
   /// Starts the procedure for creating an account by sending an email with
@@ -118,12 +127,13 @@ class _EndpointEmail extends EndpointRef {
     String email,
     String password,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.email', 'createAccountRequest', 'bool', {
       'userName': userName,
       'email': email,
       'password': password,
     });
+    return retval;
   }
 
   /// Creates a new account using a verification code.
@@ -131,11 +141,12 @@ class _EndpointEmail extends EndpointRef {
     String email,
     String verificationCode,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.email', 'createAccount', 'UserInfo', {
       'email': email,
       'verificationCode': verificationCode,
     });
+    return retval;
   }
 }
 
@@ -150,10 +161,11 @@ class _EndpointFirebase extends EndpointRef {
   Future<AuthenticationResponse> authenticate(
     String idToken,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.firebase', 'authenticate', 'AuthenticationResponse', {
       'idToken': idToken,
     });
+    return retval;
   }
 }
 
@@ -169,21 +181,23 @@ class _EndpointGoogle extends EndpointRef {
     String authenticationCode,
     String? redirectUri,
   ) async {
-    return await caller.callServerEndpoint('serverpod_auth.google',
+    var retval = await caller.callServerEndpoint('serverpod_auth.google',
         'authenticateWithServerAuthCode', 'AuthenticationResponse', {
       'authenticationCode': authenticationCode,
       'redirectUri': redirectUri,
     });
+    return retval;
   }
 
   /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
     String idToken,
   ) async {
-    return await caller.callServerEndpoint('serverpod_auth.google',
+    var retval = await caller.callServerEndpoint('serverpod_auth.google',
         'authenticateWithIdToken', 'AuthenticationResponse', {
       'idToken': idToken,
     });
+    return retval;
   }
 }
 
@@ -196,27 +210,31 @@ class _EndpointStatus extends EndpointRef {
 
   /// Returns true if the client user is signed in.
   Future<bool> isSignedIn() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.status', 'isSignedIn', 'bool', {});
+    return retval;
   }
 
   /// Signs out a user.
   Future<void> signOut() async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.status', 'signOut', 'void', {});
+    return retval;
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
   /// not signed in with the server.
   Future<UserInfo?> getUserInfo() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.status', 'getUserInfo', 'UserInfo', {});
+    return retval;
   }
 
   /// Gets the server configuration.
   Future<UserSettingsConfig> getUserSettingsConfig() async {
-    return await caller.callServerEndpoint('serverpod_auth.status',
+    var retval = await caller.callServerEndpoint('serverpod_auth.status',
         'getUserSettingsConfig', 'UserSettingsConfig', {});
+    return retval;
   }
 }
 
@@ -230,28 +248,31 @@ class _EndpointUser extends EndpointRef {
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
   Future<bool> removeUserImage() async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_auth.user', 'removeUserImage', 'bool', {});
+    return retval;
   }
 
   /// Sets a new user image for the signed in user.
   Future<bool> setUserImage(
     typed_data.ByteData image,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.user', 'setUserImage', 'bool', {
       'image': image,
     });
+    return retval;
   }
 
   /// Changes the name of a user.
   Future<bool> changeUserName(
     String userName,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_auth.user', 'changeUserName', 'bool', {
       'userName': userName,
     });
+    return retval;
   }
 }
 

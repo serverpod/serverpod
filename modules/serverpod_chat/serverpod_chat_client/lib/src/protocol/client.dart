@@ -3,6 +3,8 @@
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:typed_data' as typed_data;
@@ -19,23 +21,25 @@ class _EndpointChat extends EndpointRef {
       createAttachmentUploadDescription(
     String fileName,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_chat.chat',
         'createAttachmentUploadDescription',
         'ChatMessageAttachmentUploadDescription', {
       'fileName': fileName,
     });
+    return retval;
   }
 
   Future<ChatMessageAttachment?> verifyAttachmentUpload(
     String fileName,
     String filePath,
   ) async {
-    return await caller.callServerEndpoint('serverpod_chat.chat',
+    var retval = await caller.callServerEndpoint('serverpod_chat.chat',
         'verifyAttachmentUpload', 'ChatMessageAttachment', {
       'fileName': fileName,
       'filePath': filePath,
     });
+    return retval;
   }
 }
 

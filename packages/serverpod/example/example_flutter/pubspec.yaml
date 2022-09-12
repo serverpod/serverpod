@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   example_client:
     path: ../example_client
+  firebase_core: ^1.22.0
+  flutterfire_ui: ^0.4.3
   serverpod_auth_google_flutter:
     path: ../../../../modules/serverpod_auth/serverpod_auth_google_flutter
   serverpod_auth_apple_flutter:
@@ -33,6 +35,8 @@ dependencies:
     path: ../../../../modules/serverpod_auth/serverpod_auth_email_flutter
   serverpod_auth_firebase_flutter:
     path: ../../../../modules/serverpod_auth/serverpod_auth_firebase_flutter
+  serverpod_auth_shared_flutter:
+    path: ../../../../modules/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_chat_flutter:
     path: ../../../../modules/serverpod_chat/serverpod_chat_flutter
 
@@ -45,7 +49,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

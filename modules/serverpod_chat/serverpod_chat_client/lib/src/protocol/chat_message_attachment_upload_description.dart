@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -16,12 +18,10 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
   String get className =>
       'serverpod_chat_server.ChatMessageAttachmentUploadDescription';
 
-  int? id;
   late String filePath;
   late String uploadDescription;
 
   ChatMessageAttachmentUploadDescription({
-    this.id,
     required this.filePath,
     required this.uploadDescription,
   });
@@ -29,7 +29,6 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
   ChatMessageAttachmentUploadDescription.fromSerialization(
       Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     filePath = _data['filePath']!;
     uploadDescription = _data['uploadDescription']!;
   }
@@ -37,7 +36,6 @@ class ChatMessageAttachmentUploadDescription extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'filePath': filePath,
       'uploadDescription': uploadDescription,
     });

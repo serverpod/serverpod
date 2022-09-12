@@ -56,6 +56,8 @@ class ClassGeneratorDart extends ClassGenerator {
     out += '// ignore_for_file: unused_import\n';
     out += '// ignore_for_file: unnecessary_import\n';
     out += '// ignore_for_file: overridden_fields\n';
+    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
+    out += '// ignore_for_file: depend_on_referenced_packages\n';
     out += '\n';
 
     if (serverCode) {
@@ -327,6 +329,8 @@ class ClassGeneratorDart extends ClassGenerator {
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
     out += '// ignore_for_file: unnecessary_import\n';
+    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
+    out += '// ignore_for_file: depend_on_referenced_packages\n';
     out += '\n';
 
     if (serverCode) {
@@ -409,6 +413,9 @@ class ClassGeneratorDart extends ClassGenerator {
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
     out += '// ignore_for_file: unnecessary_import\n';
+    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
+    out += '// ignore_for_file: library_private_types_in_public_api\n';
+    out += '// ignore_for_file: depend_on_referenced_packages\n';
     out += '\n';
 
     out += 'library protocol;\n';

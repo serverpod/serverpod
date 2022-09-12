@@ -16,7 +16,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_design_icons_flutter: 5.0.6996
+  material_design_icons_flutter: ">=5.0.6996 < 6.0.0"
   serverpod_auth_client: #^0.9.10
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^0.9.10
@@ -26,7 +26,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lints: ^1.0.1
+  lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

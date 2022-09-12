@@ -3,6 +3,8 @@
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unnecessary_import
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 

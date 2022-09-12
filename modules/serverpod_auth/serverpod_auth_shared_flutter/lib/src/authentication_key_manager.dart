@@ -24,7 +24,7 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   @override
   Future<String?> get() async {
     if (!_initialized) {
-      _authenticationKey = await _storage.getString(_prefsKey + '_$runMode');
+      _authenticationKey = await _storage.getString('${_prefsKey}_$runMode');
       _initialized = true;
     }
 
@@ -35,14 +35,14 @@ class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   Future<void> put(String key) async {
     _authenticationKey = key;
 
-    await _storage.setString(_prefsKey + '_$runMode', key);
+    await _storage.setString('${_prefsKey}_$runMode', key);
   }
 
   @override
   Future<void> remove() async {
     _authenticationKey = null;
 
-    await _storage.remove(_prefsKey + '_$runMode');
+    await _storage.remove('${_prefsKey}_$runMode');
   }
 }
 

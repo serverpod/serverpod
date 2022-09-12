@@ -19,13 +19,13 @@ Future<UserInfo?> signInWithGoogle(
 
   if (kDebugMode) print('serverpod_auth_google: GoogleSignIn');
 
-  var _googleSignIn = GoogleSignIn(
+  var googleSignIn = GoogleSignIn(
     scopes: scopes,
   );
 
   try {
     // Sign in with Google.
-    var result = await _googleSignIn.signIn();
+    var result = await googleSignIn.signIn();
     if (result == null) {
       if (kDebugMode) {
         print(
@@ -91,9 +91,9 @@ Future<UserInfo?> signInWithGoogle(
 
     // Authentication with server is complete, we can sign out from Google locally
     if (kDebugMode) print('serverpod_auth_google: Signing out from google');
-    await _googleSignIn.signOut();
+    await googleSignIn.signOut();
 
-    if (kDebugMode) await _googleSignIn.disconnect();
+    if (kDebugMode) await googleSignIn.disconnect();
 
     if (kDebugMode) {
       print(

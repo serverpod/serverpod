@@ -42,10 +42,11 @@ class SignInWithGoogleButton extends StatefulWidget {
   });
 
   @override
-  _SignInWithGoogleButtonState createState() => _SignInWithGoogleButtonState();
+  SignInWithGoogleButtonState createState() => SignInWithGoogleButtonState();
 }
 
-class _SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
+/// State for Sign in with Google button.
+class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(

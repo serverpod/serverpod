@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
@@ -15,7 +17,6 @@ class AppleAuthInfo extends SerializableEntity {
   @override
   String get className => 'serverpod_auth_server.AppleAuthInfo';
 
-  int? id;
   late String userIdentifier;
   String? email;
   late String fullName;
@@ -24,7 +25,6 @@ class AppleAuthInfo extends SerializableEntity {
   late String authorizationCode;
 
   AppleAuthInfo({
-    this.id,
     required this.userIdentifier,
     this.email,
     required this.fullName,
@@ -35,7 +35,6 @@ class AppleAuthInfo extends SerializableEntity {
 
   AppleAuthInfo.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     userIdentifier = _data['userIdentifier']!;
     email = _data['email'];
     fullName = _data['fullName']!;
@@ -47,7 +46,6 @@ class AppleAuthInfo extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'userIdentifier': userIdentifier,
       'email': email,
       'fullName': fullName,
@@ -60,7 +58,6 @@ class AppleAuthInfo extends SerializableEntity {
   @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
-      'id': id,
       'userIdentifier': userIdentifier,
       'email': email,
       'fullName': fullName,

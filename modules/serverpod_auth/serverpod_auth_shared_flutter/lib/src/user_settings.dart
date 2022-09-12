@@ -20,10 +20,11 @@ class UserSettings extends StatefulWidget {
   });
 
   @override
-  _UserSettingsState createState() => _UserSettingsState();
+  UserSettingsState createState() => UserSettingsState();
 }
 
-class _UserSettingsState extends State<UserSettings> {
+/// State for user settings display.
+class UserSettingsState extends State<UserSettings> {
   UserInfo? _userInfo;
 
   @override

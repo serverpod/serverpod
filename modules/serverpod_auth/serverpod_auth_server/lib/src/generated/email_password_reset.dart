@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
@@ -15,19 +17,16 @@ class EmailPasswordReset extends SerializableEntity {
   @override
   String get className => 'serverpod_auth_server.EmailPasswordReset';
 
-  int? id;
   late String userName;
   late String email;
 
   EmailPasswordReset({
-    this.id,
     required this.userName,
     required this.email,
   });
 
   EmailPasswordReset.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     userName = _data['userName']!;
     email = _data['email']!;
   }
@@ -35,7 +34,6 @@ class EmailPasswordReset extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'userName': userName,
       'email': email,
     });
@@ -44,7 +42,6 @@ class EmailPasswordReset extends SerializableEntity {
   @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
-      'id': id,
       'userName': userName,
       'email': email,
     });

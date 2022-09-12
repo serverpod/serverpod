@@ -18,4 +18,4 @@ dependencies:
   meta: ^1.8.0
 
 dev_dependencies:
-  lints: ^1.0.1
+  lints: ^2.0.0

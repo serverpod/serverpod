@@ -1,5 +1,5 @@
 import 'package:serverpod/src/serialization/serialization_manager.dart';
-import 'package:serverpod_postgres_pool/postgres_pool.dart';
+import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 

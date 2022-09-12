@@ -5,7 +5,7 @@ import 'dart:typed_data';
 extension Base64Enc on ByteData {
   /// Returns a base64 encoded string with the `base64:` prefix.
   String base64encodedString() {
-    return 'decode(\'' + base64Encode(buffer.asUint8List()) + '\', \'base64\')';
+    return 'decode(\'${base64Encode(buffer.asUint8List())}\', \'base64\')';
   }
 }
 

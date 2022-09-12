@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'dart:typed_data';
@@ -15,17 +17,14 @@ class ChannelList extends SerializableEntity {
   @override
   String get className => 'ChannelList';
 
-  int? id;
   late List<Channel> channels;
 
   ChannelList({
-    this.id,
     required this.channels,
   });
 
   ChannelList.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     channels = _data['channels']!
         .map<Channel>((a) => Channel.fromSerialization(a))
         ?.toList();
@@ -34,7 +33,6 @@ class ChannelList extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'channels': channels.map((Channel a) => a.serialize()).toList(),
     });
   }
@@ -42,7 +40,6 @@ class ChannelList extends SerializableEntity {
   @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
-      'id': id,
       'channels': channels.map((Channel a) => a.serialize()).toList(),
     });
   }

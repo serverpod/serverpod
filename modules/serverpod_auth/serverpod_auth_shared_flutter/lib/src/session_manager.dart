@@ -97,11 +97,11 @@ class SessionManager with ChangeNotifier {
   }
 
   Future<void> _loadSharedPrefs() async {
-    var version = await _storage
-        .getInt(_prefsKey + '_' + keyManager.runMode + '_version');
+    var version =
+        await _storage.getInt('${_prefsKey}_${keyManager.runMode}_version');
     if (version != _prefsVersion) return;
 
-    var json = await _storage.getString(_prefsKey + '_' + keyManager.runMode);
+    var json = await _storage.getString('${_prefsKey}_${keyManager.runMode}');
     if (json == null) return;
 
     _signedInUser = Protocol.instance
@@ -112,11 +112,11 @@ class SessionManager with ChangeNotifier {
 
   Future<void> _storeSharedPrefs() async {
     await _storage.setInt(
-        _prefsKey + '_' + keyManager.runMode + '_version', _prefsVersion);
+        '${_prefsKey}_${keyManager.runMode}_version', _prefsVersion);
     if (signedInUser == null) {
-      await _storage.remove(_prefsKey + '_' + keyManager.runMode);
+      await _storage.remove('${_prefsKey}_${keyManager.runMode}');
     } else {
-      await _storage.setString(_prefsKey + '_' + keyManager.runMode,
+      await _storage.setString('${_prefsKey}_${keyManager.runMode}',
           jsonEncode(signedInUser!.serialize()));
     }
   }

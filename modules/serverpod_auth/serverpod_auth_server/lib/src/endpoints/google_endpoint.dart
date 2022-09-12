@@ -206,8 +206,8 @@ class GoogleEndpoint extends Endpoint {
       if (userInfo?.id != null && image != null) {
         var url = image;
         if (url.endsWith('s100')) {
-          url = url.substring(0, url.length - 4) +
-              's${AuthConfig.current.userImageSize}';
+          url =
+              '${url.substring(0, url.length - 4)}s${AuthConfig.current.userImageSize}';
         }
         await UserImages.setUserImageFromUrl(
             session, userInfo!.id!, Uri.parse(url));

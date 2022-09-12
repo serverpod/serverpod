@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -15,7 +17,6 @@ class UserSettingsConfig extends SerializableEntity {
   @override
   String get className => 'serverpod_auth_server.UserSettingsConfig';
 
-  int? id;
   late bool canSeeUserName;
   late bool canSeeFullName;
   late bool canEditUserName;
@@ -23,7 +24,6 @@ class UserSettingsConfig extends SerializableEntity {
   late bool canEditUserImage;
 
   UserSettingsConfig({
-    this.id,
     required this.canSeeUserName,
     required this.canSeeFullName,
     required this.canEditUserName,
@@ -33,7 +33,6 @@ class UserSettingsConfig extends SerializableEntity {
 
   UserSettingsConfig.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     canSeeUserName = _data['canSeeUserName']!;
     canSeeFullName = _data['canSeeFullName']!;
     canEditUserName = _data['canEditUserName']!;
@@ -44,7 +43,6 @@ class UserSettingsConfig extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,
       'canEditUserName': canEditUserName,

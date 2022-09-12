@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
@@ -16,14 +18,12 @@ class ChatJoinedChannel extends SerializableEntity {
   @override
   String get className => 'serverpod_chat_server.ChatJoinedChannel';
 
-  int? id;
   late String channel;
   late ChatMessageChunk initialMessageChunk;
   late int lastReadMessageId;
   late serverpod_auth.UserInfo userInfo;
 
   ChatJoinedChannel({
-    this.id,
     required this.channel,
     required this.initialMessageChunk,
     required this.lastReadMessageId,
@@ -32,7 +32,6 @@ class ChatJoinedChannel extends SerializableEntity {
 
   ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     channel = _data['channel']!;
     initialMessageChunk =
         ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
@@ -43,7 +42,6 @@ class ChatJoinedChannel extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.serialize(),
       'lastReadMessageId': lastReadMessageId,
@@ -54,7 +52,6 @@ class ChatJoinedChannel extends SerializableEntity {
   @override
   Map<String, dynamic> serializeAll() {
     return wrapSerializationData({
-      'id': id,
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.serialize(),
       'lastReadMessageId': lastReadMessageId,

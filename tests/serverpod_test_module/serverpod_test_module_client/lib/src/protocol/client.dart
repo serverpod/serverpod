@@ -3,6 +3,8 @@
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:typed_data' as typed_data;
@@ -18,19 +20,21 @@ class _EndpointModule extends EndpointRef {
   Future<String> hello(
     String name,
   ) async {
-    return await caller
+    var retval = await caller
         .callServerEndpoint('serverpod_test_module.module', 'hello', 'String', {
       'name': name,
     });
+    return retval;
   }
 
   Future<ModuleClass> modifyModuleObject(
     ModuleClass object,
   ) async {
-    return await caller.callServerEndpoint(
+    var retval = await caller.callServerEndpoint(
         'serverpod_test_module.module', 'modifyModuleObject', 'ModuleClass', {
       'object': object,
     });
+    return retval;
   }
 }
 

@@ -18,6 +18,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     out += '\n';
     out += '// ignore_for_file: public_member_api_docs\n';
     out += '// ignore_for_file: unused_import\n';
+    out += '// ignore_for_file: library_private_types_in_public_api\n';
+    out += '// ignore_for_file: depend_on_referenced_packages\n';
     out += '\n';
 
     out += 'import \'dart:io\';\n';

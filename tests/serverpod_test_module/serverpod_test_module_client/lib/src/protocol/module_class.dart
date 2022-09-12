@@ -6,6 +6,8 @@
 // ignore_for_file: unused_import
 // ignore_for_file: unnecessary_import
 // ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: depend_on_referenced_packages
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'dart:typed_data';
@@ -15,19 +17,16 @@ class ModuleClass extends SerializableEntity {
   @override
   String get className => 'serverpod_test_module_server.ModuleClass';
 
-  int? id;
   late String name;
   late int data;
 
   ModuleClass({
-    this.id,
     required this.name,
     required this.data,
   });
 
   ModuleClass.fromSerialization(Map<String, dynamic> serialization) {
     var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
     name = _data['name']!;
     data = _data['data']!;
   }
@@ -35,7 +34,6 @@ class ModuleClass extends SerializableEntity {
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'id': id,
       'name': name,
       'data': data,
     });

@@ -28,10 +28,11 @@ class SignInWithAppleButton extends StatefulWidget {
   });
 
   @override
-  _SignInWithAppleButtonState createState() => _SignInWithAppleButtonState();
+  SignInWithAppleButtonState createState() => SignInWithAppleButtonState();
 }
 
-class _SignInWithAppleButtonState extends State<SignInWithAppleButton> {
+/// State for Sign in with Apple button.
+class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
