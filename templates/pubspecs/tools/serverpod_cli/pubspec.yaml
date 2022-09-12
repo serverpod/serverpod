@@ -17,6 +17,7 @@ dependencies:
   http: ^0.13.3
   intl: ^0.17.0
   recase: ^4.0.0
+  source_span: ^1.9.1
   super_string: ^1.0.3
   watcher: ^1.0.0
   analyzer: ^4.7.0
@@ -29,7 +30,7 @@ dependencies:
     path: ../../packages/serverpod_service_client
 
 dev_dependencies:
-  lints: ^1.0.1
+  lints: ^2.0.0
 
 executables:
   serverpod: serverpod_cli
