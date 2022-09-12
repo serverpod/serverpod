@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 //
 //  To add a future call to your server, you need to register it in the
 //  `server.dart` file. Schedule the call using the
-//  `session.server.futureCallWithDelay` or `session.server.futureCallAtTime`
+//  `session.serverpod.futureCallWithDelay` or `session.serverpod.futureCallAtTime`
 //  methods. You can optionally pass a serializable object together with the
 //  call.
 
