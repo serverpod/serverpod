@@ -11,7 +11,13 @@ import '../util/print.dart';
 import 'copier.dart';
 import 'port_checker.dart';
 
-const _defaultPorts = <int>[8080, 8081, 8090, 8091];
+const _defaultPorts = <String, int>{
+  'Serverpod API': 8080,
+  'Serverpod insights API': 8081,
+  'Serverpod Relic web server': 8082,
+  'PostgreSQL server': 8090,
+  'Redis server': 8091,
+};
 
 Future<void> performCreate(
   String name,
@@ -20,14 +26,16 @@ Future<void> performCreate(
   bool force,
 ) async {
   // Check we are set to create a new project
-  var portsAvailable = true;
-  for (var port in _defaultPorts) {
+  var usedPorts = <String, int>{};
+  for (var serverDescription in _defaultPorts.keys) {
+    var port = _defaultPorts[serverDescription]!;
+
     var available = await isNetworkPortAvailable(port);
     if (!available) {
-      portsAvailable = false;
-      break;
+      usedPorts[serverDescription] = port;
     }
   }
+  var portsAvailable = usedPorts.isEmpty;
 
   // Check that docker is installed
   var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
@@ -35,9 +43,9 @@ Future<void> performCreate(
 
   if (!portsAvailable || !dockerConfigured) {
     var strIssue =
-        'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create".';
+        'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create" and manually configure your Serverpod.';
     var strIssuePorts =
-        'By default your server will run on port 8080 and 8081 and Postgres and Redis will run on 8090 and 8091. One or more of these ports are currently in use. The most likely reason is that you have another Serverpod project running, but it can also be another service. You can either stop the other service and run this command again, or you can create the project with the -f flag added and manually configure the ports in the config/development.yaml and docker-compose.yaml files.';
+        'One or more network ports Serverpod want to use are not available. The most likely reason is that you have another Serverpod project running, but it can also be another service.';
     var strIssueDocker =
         'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the -f flag added.';
 
@@ -46,6 +54,12 @@ Future<void> performCreate(
     if (!portsAvailable) {
       printww('');
       printww(strIssuePorts);
+      printww('');
+      printww('Ports in use:');
+      for (var serverDescription in usedPorts.keys) {
+        var port = usedPorts[serverDescription]!;
+        print(' • $port: $serverDescription');
+      }
     }
     if (!dockerConfigured) {
       printww('');
@@ -340,31 +354,12 @@ Future<void> performCreate(
     await CommandLineTools.createTables(projectDir, name);
 
     printwwln('');
-    printwwln('=== SERVERPOD CREATED ===');
+    printwwln('SERVERPOD CREATED 🥳');
     printwwln('All setup. You are ready to rock!');
-    printwwln('Start your Serverpod server by running:');
-    stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
-    stdout.writeln('  \$ docker-compose up --build --detach');
-    stdout.writeln('  \$ serverpod run');
-    printww('');
-    printwwln('You can also start Serverpod manually by running:');
+    printwwln('Start your Serverpod by running:');
     stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
     stdout.writeln('  \$ docker-compose up --build --detach');
     stdout.writeln('  \$ dart bin/main.dart');
-    printww('');
-  }
-
-  if (Platform.isWindows) {
-    printwwln('');
-    printwwln('=== SERVERPOD CREATED ===');
-    printww('You are almost ready to rock!');
-    printwwln('To get going, you need to start Docker by running:');
-    stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
-    stdout.writeln('  \$ docker-compose up --build --detach');
-    printww('');
-    printwwln(
-        'Unfortunately `serverpod run` is not yet supported on Windows, but you should be able to start Serverpod by running:');
-    stdout.writeln('  \$ dart .\\bin\\main.dart');
     printww('');
   }
 }

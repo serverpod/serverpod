@@ -147,21 +147,27 @@ Future<void> _main(List<String> args) async {
 
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
+
+    // Version command.
     if (results.command!.name == cmdVersion) {
       printVersion();
       _analytics.cleanUp();
       return;
     }
+
+    // Create command.
     if (results.command!.name == cmdCreate) {
       var name = results.arguments.last;
       bool verbose = results.command!['verbose'];
       String template = results.command!['template'];
       bool force = results.command!['force'];
+
       if (name == 'server' || name == 'module' || name == 'create') {
         _printUsage(parser);
         _analytics.cleanUp();
         return;
       }
+
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
         await performCreate(name, verbose, template, force);
@@ -169,6 +175,8 @@ Future<void> _main(List<String> args) async {
         return;
       }
     }
+
+    // Generate command.
     if (results.command!.name == cmdGenerate) {
       // Always do a full generate.
       var verbose = results.command!['verbose'];
@@ -186,6 +194,9 @@ Future<void> _main(List<String> args) async {
       _analytics.cleanUp();
       return;
     }
+
+    // Run command.
+    // TODO: Fix in future version.
     if (results.command!.name == cmdRun) {
       if (Platform.isWindows) {
         printwwln(
@@ -202,6 +213,8 @@ Future<void> _main(List<String> args) async {
       _analytics.cleanUp();
       return;
     }
+
+    // Generate pubspecs command.
     if (results.command!.name == cmdGeneratePubspecs) {
       if (results.command!['version'] == 'X') {
         print('--version is not specified');
