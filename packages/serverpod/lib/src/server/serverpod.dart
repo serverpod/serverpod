@@ -349,8 +349,8 @@ class Serverpod {
       // Start future calls
       _futureCallManager.start();
 
-      // Start health check managager
-      _healthCheckManager.start();
+      // Start health check manager
+      await _healthCheckManager.start();
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?

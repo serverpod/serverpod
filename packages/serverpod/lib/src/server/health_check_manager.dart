@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:system_resources/system_resources.dart';
 
 /// Performs health checks on the server once a minute, typically this class
 /// is managed internally by Serverpod. Writes results to the database.
@@ -18,8 +19,9 @@ class HealthCheckManager {
   HealthCheckManager(this._pod);
 
   /// Starts the health check manager.
-  void start() {
+  Future<void> start() async {
     _running = true;
+    await SystemResources.init();
     _scheduleNextCheck();
   }
 
