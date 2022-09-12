@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -27,12 +28,19 @@ final runModes = <String>['development', 'staging', 'production'];
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
-  try {
-    await _main(args);
-  } catch (error, stackTrace) {
-    // Last resort error handling.
-    printInternalError(error, stackTrace);
-  }
+  await runZonedGuarded(
+    () async {
+      try {
+        await _main(args);
+      } catch (error, stackTrace) {
+        // Last resort error handling.
+        printInternalError(error, stackTrace);
+      }
+    },
+    (error, stackTrace) {
+      printInternalError(error, stackTrace);
+    },
+  );
 }
 
 Future<void> _main(List<String> args) async {
