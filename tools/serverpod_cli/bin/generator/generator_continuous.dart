@@ -1,6 +1,7 @@
 import 'package:watcher/watcher.dart';
 
 import 'config.dart';
+import 'generator.dart';
 
 void performGenerateContinuously(bool verbose) {
   if (!config.load()) return;
@@ -15,16 +16,13 @@ Future<void> _performGenerateClassesContinuously(bool verbose) async {
   var watcherClasses = DirectoryWatcher(config.protocolSourcePath);
   await for (WatchEvent event in watcherClasses.events) {
     print('File changed: $event');
-    switch (event.type) {
-      case ChangeType.ADD:
-      case ChangeType.MODIFY:
-        // TODO: Fix!
-        // performGenerateClasses(verbose);
-        break;
-      case ChangeType.REMOVE:
-        // TODO: Remove
-        break;
-    }
+    await performGenerate(
+      verbose: verbose,
+      changedFile: event.path,
+      requestNewAnalyzer: false,
+    );
+    print('Incremental code generation complete.');
+    print('');
   }
 }
 
@@ -32,17 +30,12 @@ Future<void> _performGenereateProtocolContinuously(bool verbose) async {
   var watcherEndpoints = DirectoryWatcher(config.endpointsSourcePath);
   await for (WatchEvent event in watcherEndpoints.events) {
     print('File changed: $event');
-    switch (event.type) {
-      case ChangeType.ADD:
-      case ChangeType.MODIFY:
-        if (event.path.endsWith('.dart')) {
-          // TODO: Fix!
-          // await performGenerateProtocol(verbose);
-        }
-        break;
-      case ChangeType.REMOVE:
-        // TODO: Remove
-        break;
-    }
+    await performGenerate(
+      verbose: verbose,
+      changedFile: event.path,
+      requestNewAnalyzer: false,
+    );
+    print('Incremental code generation complete.');
+    print('');
   }
 }

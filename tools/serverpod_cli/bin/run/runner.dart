@@ -75,6 +75,7 @@ void performRun(bool verbose) async {
   var protocolDefinition = await performAnalyzeServerCode(
     verbose: verbose,
     collector: collector,
+    changedFiles: {},
   );
   collector.printErrors();
   await performGenerateProtocol(
@@ -197,6 +198,7 @@ Future<void> _generateAndReload(
       var protocolDefinition = await performAnalyzeServerCode(
         verbose: verbose,
         collector: collector,
+        changedFiles: {},
       );
       collector.printErrors();
       await performGenerateProtocol(

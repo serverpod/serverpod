@@ -7,12 +7,21 @@ import 'protocol_analyzer.dart';
 import 'protocol_generator.dart';
 import 'code_analysis_collector.dart';
 
-Future<void> performGenerate(bool verbose, bool dartFormat) async {
+Future<void> performGenerate({
+  required bool verbose,
+  bool dartFormat = true,
+  bool requestNewAnalyzer = true,
+  String? changedFile,
+}) async {
   if (!config.load()) return;
+
+  print('Running serverpod generate.');
 
   var collector = CodeAnalysisCollector();
 
-  print('Analyzing protocol yaml files.');
+  if (verbose) {
+    print('Analyzing protocol yaml files.');
+  }
   var classDefinitions = performAnalyzeClasses(
     verbose: verbose,
     collector: collector,
@@ -21,40 +30,55 @@ Future<void> performGenerate(bool verbose, bool dartFormat) async {
   collector.printErrors();
   collector.clearErrors();
 
-  print('Generating classes.');
+  if (verbose) {
+    print('Generating classes.');
+  }
   performGenerateClasses(
     verbose: verbose,
     classDefinitions: classDefinitions,
     collector: collector,
   );
 
-  print('Analyzing server code.');
+  var changedFiles =
+      Set<String>.from(collector.generatedFiles.map((e) => e.path));
+  if (changedFile != null) {
+    changedFiles.add(changedFile);
+  }
+
+  if (verbose) {
+    print('Analyzing server code.');
+  }
   var protocolDefinition = await performAnalyzeServerCode(
     verbose: verbose,
     collector: collector,
-    requestNewAnalyzer: true,
+    requestNewAnalyzer: requestNewAnalyzer,
+    changedFiles: changedFiles,
   );
 
   collector.printErrors();
   collector.clearErrors();
 
-  print('Generating protocol.');
+  if (verbose) {
+    print('Generating protocol.');
+  }
   await performGenerateProtocol(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
     collector: collector,
   );
 
-  print('Cleaning up old files.');
+  if (verbose) {
+    print('Cleaning up old files.');
+  }
   performRemoveOldFiles(
     verbose: verbose,
     collector: collector,
   );
 
   if (dartFormat) {
-    print('Dart format.');
+    if (verbose) {
+      print('Dart format.');
+    }
     performDartFormat(verbose);
   }
-
-  print('Done.');
 }

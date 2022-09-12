@@ -28,11 +28,29 @@ Future<ProtocolDefinition> performAnalyzeServerCode({
   required bool verbose,
   required CodeAnalysisCollector collector,
   bool requestNewAnalyzer = true,
+  required Set<String> changedFiles,
 }) async {
+  // Invalidate the old analyzer if requested to do so.
   if (requestNewAnalyzer) {
     _analyzer = null;
   }
-  _analyzer ??= ProtocolAnalyzer(config.endpointsSourcePath);
+
+  // Attempt to use old analyzer or create a new one if no one exists.
+  if (_analyzer == null) {
+    _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
+  } else if (changedFiles.isNotEmpty) {
+    // Make sure that the analyzer is up-to-date with recent changes.
+    var contexts = _analyzer!.collection.contexts;
+    for (var context in contexts) {
+      for (var changedFile in changedFiles) {
+        var file = File(changedFile);
+        context.changeFile(file.absolute.path);
+      }
+      await context.applyPendingFileChanges();
+    }
+  }
+
+  // Perform the code analysis.
   return await _analyzer!.analyze(
     verbose: verbose,
     collector: collector,
@@ -275,6 +293,10 @@ class ProtocolAnalyzer {
       return;
     }
     var innerType = typeArguments[0];
+
+    if (innerType.isVoid) {
+      return;
+    }
 
     if (innerType.isDynamic) {
       collector.addError(SourceSpanException(

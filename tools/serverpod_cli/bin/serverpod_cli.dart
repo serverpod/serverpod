@@ -7,6 +7,7 @@ import 'analytics/analytics.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
+import 'generator/generator_continuous.dart';
 import 'internal_tools/generate_pubspecs.dart';
 import 'run/runner.dart';
 import 'shared/environment.dart';
@@ -91,14 +92,28 @@ void main(List<String> args) async {
 
   // "generate" command
   var generateParser = ArgParser();
-  generateParser.addFlag('verbose',
-      abbr: 'v', negatable: false, help: 'Output more detailed information');
+  generateParser.addFlag(
+    'verbose',
+    abbr: 'v',
+    negatable: false,
+    help: 'Output more detailed information',
+  );
+  generateParser.addFlag(
+    'watch',
+    abbr: 'w',
+    negatable: false,
+    help: 'Watch for changes and continuously generate code.',
+  );
   parser.addCommand(cmdGenerate, generateParser);
 
   // "run" command
   var runParser = ArgParser();
-  runParser.addFlag('verbose',
-      abbr: 'v', negatable: false, help: 'Output more detailed information');
+  runParser.addFlag(
+    'verbose',
+    abbr: 'v',
+    negatable: false,
+    help: 'Output more detailed information',
+  );
   // TODO: Fix Docker management
   // runParser.addFlag('run-docker', negatable: true, defaultsTo: true);
   parser.addCommand(cmdRun, runParser);
@@ -137,7 +152,19 @@ void main(List<String> args) async {
       }
     }
     if (results.command!.name == cmdGenerate) {
-      await performGenerate(results.command!['verbose'], true);
+      // Always do a full generate.
+      var verbose = results.command!['verbose'];
+      var watch = results.command!['watch'];
+
+      await performGenerate(
+        verbose: verbose,
+      );
+      if (watch) {
+        print('Initial code generation complete. Listening for changes.');
+        performGenerateContinuously(verbose);
+      } else {
+        print('Done.');
+      }
       _analytics.cleanUp();
       return;
     }
