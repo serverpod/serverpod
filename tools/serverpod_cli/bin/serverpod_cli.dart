@@ -12,6 +12,7 @@ import 'internal_tools/generate_pubspecs.dart';
 import 'run/runner.dart';
 import 'shared/environment.dart';
 import 'util/command_line_tools.dart';
+import 'util/internal_error.dart';
 import 'util/print.dart';
 import 'util/version.dart';
 
@@ -26,6 +27,15 @@ final runModes = <String>['development', 'staging', 'production'];
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
+  try {
+    await _main(args);
+  } catch (error, stackTrace) {
+    // Last resort error handling.
+    printInternalError(error, stackTrace);
+  }
+}
+
+Future<void> _main(List<String> args) async {
   if (Platform.isWindows) {
     print(
         'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
