@@ -344,7 +344,9 @@ class Serverpod {
 
       await server.start();
 
-      await webServer.start();
+      if (webServer.routes.isNotEmpty) {
+        await webServer.start();
+      }
 
       // Start future calls
       _futureCallManager.start();
