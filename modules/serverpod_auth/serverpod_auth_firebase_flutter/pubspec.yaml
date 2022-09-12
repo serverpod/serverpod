@@ -19,7 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutterfire_ui: ^0.4.3+6
-  material_design_icons_flutter: 5.0.6996
+  material_design_icons_flutter: ">=5.0.6996 < 6.0.0"
   serverpod_auth_client: #^0.9.11
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^0.9.11
