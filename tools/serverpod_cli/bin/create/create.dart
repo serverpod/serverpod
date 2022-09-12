@@ -87,15 +87,15 @@ Future<void> performCreate(
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
-  var serverDir = Directory(p.join(projectDir.path, name + '_server'));
+  var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
   if (verbose) print('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
-  var clientDir = Directory(p.join(projectDir.path, name + '_client'));
+  var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
   if (verbose) print('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
-    var flutterDir = Directory(p.join(projectDir.path, name + '_flutter'));
+    var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
     if (verbose) print('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 

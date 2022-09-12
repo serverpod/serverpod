@@ -81,7 +81,7 @@ abstract class ProtocolGenerator {
     out += 'import \'protocol.dart\';\n';
     out += '\n';
     for (var importPath in protocolDefinition.filePaths) {
-      var fileName = '../endpoints/' + p.basename(importPath);
+      var fileName = '../endpoints/${p.basename(importPath)}';
       out += 'import \'$fileName\';\n';
     }
     out += '\n';

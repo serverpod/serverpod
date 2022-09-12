@@ -30,7 +30,7 @@ class SourceFileWatcher {
   }
 
   bool _isPathInProtocol(String path) =>
-      (path.startsWith(config.protocolSourcePath + '/') ||
-          path.startsWith(config.endpointsSourcePath + '/')) &&
+      (path.startsWith('${config.protocolSourcePath}/') ||
+          path.startsWith('${config.endpointsSourcePath}/')) &&
       (path.endsWith('.dart') || path.endsWith('.yaml'));
 }

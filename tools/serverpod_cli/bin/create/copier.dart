@@ -51,7 +51,7 @@ class Copier {
 
     var dstFileName =
         _replace(p.join(relativePath, fileName), fileNameReplacements);
-    print('  ' + p.join(dstDir.path, relativePath, fileName));
+    print('  ${p.join(dstDir.path, relativePath, fileName)}');
 
     var dstFile = File(p.join(dstDir.path, dstFileName));
     var contents = srcFile.readAsStringSync();
