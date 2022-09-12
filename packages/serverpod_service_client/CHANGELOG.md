@@ -1,3 +1,12 @@
+## 0.9.11
+- Adds support for Map structures in serialized objects.
+- Adds support for passing maps and lists as parameters to endpoint methods.
+- Much improved error checks in code generation.
+- Adds continuous code generation with `serverpod generate --watch`.
+- Removes the `serverpod run` command in favor for continuous generation.
+- Updates dependencies to latest versions.
+- Cleans up `serverpod help` command.
+
 ## 0.9.10
 - Brings example code up-to-date with latest changes in Serverpod
 - Improved security for email sign in (limits sign in attempts based on a time period).
