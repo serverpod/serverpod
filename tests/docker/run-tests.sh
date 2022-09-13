@@ -10,8 +10,8 @@ echo "### Wait for test server"
 echo ""
 
 # We are all set to start the server
-echo "### Running tests"
-cd packages/serverpod
+echo "### Running integration tests"
+cd tests/serverpod_test_server
 dart pub get
 dart test test/authentication_test.dart
 # dart test test/cloud_storage_s3_test.dart
@@ -23,6 +23,10 @@ dart test test/redis_test.dart
 dart test test/serialization_test.dart
 dart test test/service_protocol_test.dart
 dart test test/websocket_test.dart
+
+echo "### Running unit tests"
+cd ../../packages/serverpod
+dart pub get
 
 
 # dart test test/authentication_test.dart

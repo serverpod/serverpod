@@ -2,8 +2,6 @@ packages/serverpod_serialization
 packages/serverpod_client
 packages/serverpod_service_client
 packages/serverpod_shared
-tests/serverpod_test_module/serverpod_test_module_client
-tests/serverpod_test_client
 packages/serverpod
 templates/serverpod_templates
 tools/serverpod_cli
