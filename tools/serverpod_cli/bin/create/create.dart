@@ -41,7 +41,7 @@ Future<void> performCreate(
   var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
       await CommandLineTools.isDockerRunning();
 
-  if (!portsAvailable || !dockerConfigured) {
+  if ((!portsAvailable || !dockerConfigured) && template == 'server') {
     var strIssue =
         'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create" and manually configure your Serverpod.';
     var strIssuePorts =
