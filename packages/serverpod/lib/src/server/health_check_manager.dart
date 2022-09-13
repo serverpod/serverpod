@@ -21,7 +21,13 @@ class HealthCheckManager {
   /// Starts the health check manager.
   Future<void> start() async {
     _running = true;
-    await SystemResources.init();
+    try {
+      await SystemResources.init();
+    } catch (e) {
+      stderr.writeln(
+        'CPU and memory usage metrics are not supported on this platform.',
+      );
+    }
     _scheduleNextCheck();
   }
 
@@ -44,9 +50,9 @@ class HealthCheckManager {
       for (var connectionInfo in result.connectionInfos) {
         await ServerHealthConnectionInfo.insert(session, connectionInfo);
       }
-    } catch (e, stackTrace) {
-      stderr.writeln('Exception in health check: $e');
-      stderr.write(stackTrace);
+    } catch (e) {
+      // TODO: Sometimes serverpod attempts to write duplicate health checks for
+      // the same time. Doesn't cause any harm, but would be nice to fix.
     }
 
     await session.close();

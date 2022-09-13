@@ -31,9 +31,9 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
   try {
     cpuLoad = SystemResources.cpuLoadAvg();
     memoryUsage = SystemResources.memUsage();
-  } catch (e, stackTrace) {
-    stderr.writeln('CPU health check failed: $e');
-    stderr.writeln(stackTrace);
+  } catch (e) {
+    // Health checks are not supported on this platform. A message should have
+    // been written to stderr when starting the health check monitor.
   }
 
   // Check database response time
@@ -107,15 +107,4 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
       )
     ],
   );
-
-//    ServerHealthMetric(
-//      name: 'serverpod_cpu',
-//      value: psUsage,
-//      isHealthy: psUsageHealthy,
-//    ),
-//    ServerHealthMetric(
-//      name: 'serverpod_memory',
-//      value: memUsage,
-//      isHealthy: memUsageHealthy,
-//    ),
 }
