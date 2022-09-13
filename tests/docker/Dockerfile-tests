@@ -7,9 +7,5 @@ WORKDIR /app
 # Copy the whole serverpod repo into the container.
 COPY . .
 
-# Install dependencies for serverpod.
-WORKDIR packages/serverpod
-RUN dart pub get
-
 # Setup database tables and start the server.
-CMD ["../../tests/docker/run-tests.sh"]
+CMD ["tests/docker/run-tests.sh"]

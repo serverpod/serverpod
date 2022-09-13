@@ -11,9 +11,9 @@ environment:
   sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
-  serverpod_client: #^0.9.11
+  serverpod_client:
     path: ../../packages/serverpod_client
-  serverpod_test_module_client: #^0.9.11
+  serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
-  serverpod_auth_client: #^0.9.11
+  serverpod_auth_client:
     path: ../../modules/serverpod_auth/serverpod_auth_client
