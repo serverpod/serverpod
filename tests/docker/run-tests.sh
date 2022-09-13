@@ -11,6 +11,8 @@ echo ""
 
 # We are all set to start the server
 echo "### Running tests"
+cd packages/serverpod
+dart pub get
 dart test test/authentication_test.dart
 # dart test test/cloud_storage_s3_test.dart
 dart test test/cloud_storage_test.dart
