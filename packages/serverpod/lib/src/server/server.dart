@@ -319,6 +319,17 @@ class Server {
       try {
         await for (String jsonData in webSocket) {
           var data = jsonDecode(jsonData) as Map;
+
+          // Handle control commands.
+          var command = data['command'] as String?;
+          if (command != null) {
+            if (command == 'ping') {
+              webSocket.add(jsonEncode({'command': 'pong'}));
+            }
+            continue;
+          }
+
+          // Handle messages passed to endpoints.
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map;
           var message = serializationManager.createEntityFromSerialization(

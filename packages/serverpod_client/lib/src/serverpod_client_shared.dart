@@ -116,6 +116,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// method shouldn't be called directly.
   void _handleRawWebSocketMessage(String message) {
     Map data = jsonDecode(message);
+
+    String? command = data['command'];
+    if (command != null) {
+      if (command == 'pong') {
+        // Do nothing.
+      }
+      return;
+    }
+
     String endpoint = data['endpoint'];
     Map objectData = data['object'];
     var entity = serializationManager
@@ -152,6 +161,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await _sendRawWebSocketMessage(serialization);
   }
 
+  Future<void> _sendControlCommandToStream(String command) async {
+    var data = {'command': command};
+    var serialization = jsonEncode(data);
+    await _sendRawWebSocketMessage(serialization);
+  }
+
   /// Closes all open connections to the server.
   void close() {
     _webSocket?.sink.close();
@@ -169,11 +184,19 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (_webSocket != null) return;
 
     try {
+      // Connect to the server.
       _firstMessageReceived = false;
       var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
+
+      // We are sending the ping message to the server, so that we are
+      // guaranteed to get a first message in return. This will verify that we
+      // have an open connection to the server.
+      await _sendControlCommandToStream('ping');
       unawaited(_listenToWebSocketStream());
 
+      // Time out and close the connection if we haven't got a pong response
+      // within the timeout period.
       _connectionTimer = Timer(webSocketTimeout, () async {
         if (!_firstMessageReceived) {
           await _webSocket?.sink.close();
@@ -186,6 +209,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _webSocket = null;
       _cancelConnectionTimer();
     }
+
+    // If everything is going according to plan, we are now connected to the
+    // server.
     _notifyWebSocketConnectionStatusListeners();
   }
 
