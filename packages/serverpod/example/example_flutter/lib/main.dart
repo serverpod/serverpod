@@ -77,7 +77,7 @@ class _SignInPageState extends State<_SignInPage> {
   @override
   void dispose() {
     super.dispose();
-    client.removeWebSocketConnectionStatusListener(_changedSessionStatus);
+    client.removeStreamingConnectionStatusListener(_changedSessionStatus);
   }
 
   @override
@@ -129,7 +129,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
     super.initState();
 
     // Starts listening to changes in the websocket connection.
-    client.addWebSocketConnectionStatusListener(_changedConnectionStatus);
+    client.addStreamingConnectionStatusListener(_changedConnectionStatus);
     _connect();
   }
 
@@ -138,7 +138,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
     super.dispose();
 
     // Stops listening to websocket connections.
-    client.removeWebSocketConnectionStatusListener(_changedConnectionStatus);
+    client.removeStreamingConnectionStatusListener(_changedConnectionStatus);
     _disposeChatControllers();
   }
 
@@ -166,7 +166,7 @@ class _ConnectionPageState extends State<_ConnectionPage> {
       _channels = channelList.channels;
 
       // Make sure that the web socket is connected.
-      await client.connectWebSocket();
+      await client.openStreamingConnection();
 
       // Setup ChatControllers for all the channels in the list.
       for (var channel in channelList.channels) {
@@ -233,17 +233,19 @@ class _ConnectionPageState extends State<_ConnectionPage> {
 
   // Attempt to reconnect to the server.
   void _reconnect() {
-    if (client.isWebSocketConnected) {
-      return;
+    if (client.streamingConnectionStatus ==
+        StreamingConnectionStatus.disconnected) {
+      _connect();
     }
-    _connect();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_connecting) {
       return const LoadingPage();
-    } else if (_channels == null || !client.isWebSocketConnected) {
+    } else if (_channels == null ||
+        client.streamingConnectionStatus ==
+            StreamingConnectionStatus.disconnected) {
       return DisconnectedPage(
         onReconnect: _reconnect,
       );

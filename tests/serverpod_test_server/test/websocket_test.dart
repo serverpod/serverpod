@@ -16,7 +16,7 @@ void main() {
 
   group('Basic websocket', () {
     test('Connect and send SimpleData', () async {
-      await client.connectWebSocket();
+      await client.openStreamingConnection();
 
       var nums = [42, 1337, 69];
 
@@ -78,7 +78,7 @@ void main() {
       // Restart streams
       client.close();
       await Future.delayed(const Duration(milliseconds: 100));
-      await client.connectWebSocket();
+      await client.openStreamingConnection();
     });
 
     test('Connect and send SimpleData while authenticated', () async {
@@ -105,17 +105,20 @@ void main() {
       // TODO: Make sure this always works correctly on all platforms.
       if (identical(0, 0.0)) {
         client.close();
-        await client.connectWebSocket();
+        await client.openStreamingConnection();
         await Future.delayed(const Duration(seconds: 1));
-        expect(client.isWebSocketConnected, true);
+        expect(client.streamingConnectionStatus,
+            StreamingConnectionStatus.connected);
 
         // We should still be connected after 3 seconds.
         await Future.delayed(const Duration(seconds: 2));
-        expect(client.isWebSocketConnected, true);
+        expect(client.streamingConnectionStatus,
+            StreamingConnectionStatus.connected);
 
-        // We should time out after 6 seconds if no messages are passed.
+        // We should still be connected after 6 seconds.
         await Future.delayed(const Duration(seconds: 3));
-        expect(client.isWebSocketConnected, false);
+        expect(client.streamingConnectionStatus,
+            StreamingConnectionStatus.connected);
       }
     });
   });

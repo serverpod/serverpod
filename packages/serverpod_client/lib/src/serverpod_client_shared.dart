@@ -14,11 +14,26 @@ typedef ServerpodClientErrorCallback = void Function(
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
+/// Status of the streaming connection.
+enum StreamingConnectionStatus {
+  /// Streming connection is live.
+  connected,
+
+  /// Streaming connection is connecting.
+  connecting,
+
+  /// Streaming connection is disconnected.
+  disconnected,
+
+  /// Streaming connection is waiting to make a new connection attempt.
+  waitingToRetry,
+}
+
 /// Superclass with shared methods for handling communication with the server.
 /// It's overridden i two different versions depending on if the dart:io library
 /// is available.
 abstract class ServerpodClientShared extends EndpointCaller {
-  /// Full host name of the Serverpod server. E.g. "https://example.com/"
+  /// Full url to the Serverpod server. E.g. "https://example.com/"
   final String host;
 
   WebSocketChannel? _webSocket;
@@ -86,7 +101,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Timeout when opening a web socket connection. If no message has been
   /// received within the timeout duration the socket will be closed.
-  final Duration webSocketTimeout;
+  final Duration streamingConnectionTimeout;
 
   bool _firstMessageReceived = false;
 
@@ -98,7 +113,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.errorHandler,
     this.authenticationKeyManager,
     this.logFailedCalls = true,
-    this.webSocketTimeout = const Duration(seconds: 5),
+    this.streamingConnectionTimeout = const Duration(seconds: 5),
   }) {
     assert(host.endsWith('/'),
         'host must end with a slash, eg: https://example.com/');
@@ -179,8 +194,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _connectionTimer = null;
   }
 
-  /// Open up a web socket connection to the server.
+  /// Open a streaming connection to the server.
+  @Deprecated('Renamed to openStreamingConnection')
   Future<void> connectWebSocket() async {
+    await openStreamingConnection();
+  }
+
+  /// Open a streaming connection to the server.
+  Future<void> openStreamingConnection() async {
     if (_webSocket != null) return;
 
     try {
@@ -197,7 +218,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
       // Time out and close the connection if we haven't got a pong response
       // within the timeout period.
-      _connectionTimer = Timer(webSocketTimeout, () async {
+      _connectionTimer = Timer(streamingConnectionTimeout, () async {
         if (!_firstMessageReceived) {
           await _webSocket?.sink.close();
           _webSocket = null;
@@ -215,7 +236,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _notifyWebSocketConnectionStatusListeners();
   }
 
+  /// Closes the streaming connection if it is open.
+  Future<void> closeStreamingConnection() async {
+    await _webSocket?.sink.close();
+    _webSocket = null;
+    _cancelConnectionTimer();
+  }
+
   /// Closes the current web socket connection (if open), then connects again.
+  @Deprecated('Use closeStreamingConnection / openStreamingConnection instead.')
   Future<void> reconnectWebSocket() async {
     if (_webSocket == null) return;
 
@@ -223,7 +252,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _webSocket = null;
     _cancelConnectionTimer();
 
-    await connectWebSocket();
+    await openStreamingConnection();
   }
 
   Future<void> _listenToWebSocketStream() async {
@@ -232,7 +261,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       await for (String message in _webSocket!.stream) {
         _handleRawWebSocketMessage(message);
-        _firstMessageReceived = true;
+        if (!_firstMessageReceived) {
+          _firstMessageReceived = true;
+          _notifyWebSocketConnectionStatusListeners();
+        }
       }
       _webSocket = null;
       _cancelConnectionTimer();
@@ -245,12 +277,25 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Adds a callback for when the [isWebSocketConnected] property is
   /// changed.
+  @Deprecated('Use addStreamingConnectionStatusListener instead.')
   void addWebSocketConnectionStatusListener(VoidCallback listener) {
+    addStreamingConnectionStatusListener(listener);
+  }
+
+  /// Removes a connection status listener.
+  @Deprecated('Use removeStreamingConnectionStatusListener instead.')
+  void removeWebSocketConnectionStatusListener(VoidCallback listener) {
+    removeStreamingConnectionStatusListener(listener);
+  }
+
+  /// Adds a callback for when the [streamingConnectionStatus] property is
+  /// changed.
+  void addStreamingConnectionStatusListener(VoidCallback listener) {
     _websocketConnectionStatusListeners.add(listener);
   }
 
   /// Removes a connection status listener.
-  void removeWebSocketConnectionStatusListener(VoidCallback listener) {
+  void removeStreamingConnectionStatusListener(VoidCallback listener) {
     _websocketConnectionStatusListeners.remove(listener);
   }
 
@@ -261,8 +306,23 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Returns true if the web socket is connected.
+  @Deprecated('Use streamingConnectionStatus instead.')
   bool get isWebSocketConnected {
     return _webSocket != null;
+  }
+
+  /// Returns the current status of the streaming connection. It can be one of
+  /// connected, connecting, or disconnected. Use the
+  /// [StreamingConnectionHandler] if you want to automatically reconnect if
+  /// the connection is lost.
+  StreamingConnectionStatus get streamingConnectionStatus {
+    if (_webSocket != null && _firstMessageReceived) {
+      return StreamingConnectionStatus.connected;
+    } else if (_webSocket != null) {
+      return StreamingConnectionStatus.connecting;
+    } else {
+      return StreamingConnectionStatus.disconnected;
+    }
   }
 }
 

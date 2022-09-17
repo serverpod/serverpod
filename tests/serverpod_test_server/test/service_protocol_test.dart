@@ -263,7 +263,7 @@ void main() {
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
-      await client.connectWebSocket();
+      await client.openStreamingConnection();
 
       for (var i = 0; i < 5; i += 1) {
         await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));

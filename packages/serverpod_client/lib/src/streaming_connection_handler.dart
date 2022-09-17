@@ -2,18 +2,6 @@ import 'dart:async';
 
 import 'serverpod_client_shared.dart';
 
-/// Status of the streaming connection.
-enum StreamingConnectionStatus {
-  /// Streming connection is live.
-  connected,
-
-  /// Streaming connection is disconnected.
-  disconnected,
-
-  /// Streaming connection is waiting to make a new connection attempt.
-  waitingToRetry,
-}
-
 /// Represents the state of the connection handler.
 class StreamingConnectionHandlerState {
   /// Time in seconds until next connection attempt. Only set if the connection
@@ -57,13 +45,14 @@ class StreamingConnectionHandler {
     required this.listener,
     this.retryEverySeconds = 5,
   }) {
-    _keepAlive = client.isWebSocketConnected;
-    client.addWebSocketConnectionStatusListener(_onConnectionStatusChanged);
+    _keepAlive = client.streamingConnectionStatus !=
+        StreamingConnectionStatus.disconnected;
+    client.addStreamingConnectionStatusListener(_onConnectionStatusChanged);
   }
 
   /// Disposes the connection handler, but does not close the connection.
   void dispose() {
-    client.addWebSocketConnectionStatusListener(_onConnectionStatusChanged);
+    client.addStreamingConnectionStatusListener(_onConnectionStatusChanged);
     _countdownTimer?.cancel();
     _countdownTimer = null;
   }
@@ -71,23 +60,31 @@ class StreamingConnectionHandler {
   /// Opens a web socket channel to the server and attempts to keep it alive.
   void connect() {
     _keepAlive = true;
-    if (!client.isWebSocketConnected) {
-      client.connectWebSocket();
+    if (client.streamingConnectionStatus ==
+        StreamingConnectionStatus.disconnected) {
+      client.openStreamingConnection();
     }
   }
 
-  /// Disconnects from the server. Note that this method will cancel all current
-  /// connections, not just the streaming connection.
-  void disconnect() {
+  /// Disconnects the streaming connection if it is open.
+  void close() {
     _keepAlive = false;
-    client.close();
+    client.closeStreamingConnection();
   }
 
   void _onConnectionStatusChanged() {
-    if (client.isWebSocketConnected) {
+    if (client.streamingConnectionStatus ==
+        StreamingConnectionStatus.connected) {
       _countdown = 0;
       listener(StreamingConnectionHandlerState._(
         status: StreamingConnectionStatus.connected,
+        retryInSeconds: null,
+      ));
+    } else if (client.streamingConnectionStatus ==
+        StreamingConnectionStatus.connecting) {
+      _countdown = 0;
+      listener(StreamingConnectionHandlerState._(
+        status: StreamingConnectionStatus.connecting,
         retryInSeconds: null,
       ));
     } else {
@@ -125,7 +122,7 @@ class StreamingConnectionHandler {
       ));
     } else {
       // Try to reconnect.
-      client.connectWebSocket();
+      client.openStreamingConnection();
     }
 
     _countdownTimer = Timer(const Duration(seconds: 1), _onCountDown);
@@ -133,9 +130,16 @@ class StreamingConnectionHandler {
 
   /// Returns the current status of the connection.
   StreamingConnectionHandlerState get status {
-    if (client.isWebSocketConnected) {
+    if (client.streamingConnectionStatus ==
+        StreamingConnectionStatus.connected) {
       return StreamingConnectionHandlerState._(
         status: StreamingConnectionStatus.connected,
+        retryInSeconds: null,
+      );
+    } else if (client.streamingConnectionStatus ==
+        StreamingConnectionStatus.connecting) {
+      return StreamingConnectionHandlerState._(
+        status: StreamingConnectionStatus.connecting,
         retryInSeconds: null,
       );
     } else {
