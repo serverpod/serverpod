@@ -9,16 +9,20 @@ class EmailAuthController {
   Future<UserInfo?> signIn(String email, String password) async {
     try {
       var serverResponse = await caller.email.authenticate(email, password);
-      if (!serverResponse.success) return null;
+      if (!serverResponse.success ||
+          serverResponse.userInfo == null ||
+          serverResponse.keyId == null ||
+          serverResponse.key == null) {
+        return null;
+      }
 
       // Authentication was successful, store the key.
       var sessionManager = await SessionManager.instance;
-      await sessionManager.keyManager.put(
-        '${serverResponse.keyId}:${serverResponse.key}',
+      sessionManager.registerSignedInUser(
+        serverResponse.userInfo!,
+        serverResponse.keyId!,
+        serverResponse.key!,
       );
-
-      // Store the user info in the session manager.
-      sessionManager.signedInUser = serverResponse.userInfo;
       return serverResponse.userInfo;
     } catch (e, stackTrace) {
       if (kDebugMode) {

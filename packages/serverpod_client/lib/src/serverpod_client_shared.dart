@@ -176,8 +176,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await _sendRawWebSocketMessage(serialization);
   }
 
-  Future<void> _sendControlCommandToStream(String command) async {
-    var data = {'command': command};
+  Future<void> _sendControlCommandToStream(
+    String command, [
+    Map<String, dynamic> args = const {},
+  ]) async {
+    var data = {'command': command, 'args': args};
     var serialization = jsonEncode(data);
     await _sendRawWebSocketMessage(serialization);
   }
@@ -323,6 +326,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } else {
       return StreamingConnectionStatus.disconnected;
     }
+  }
+
+  /// Updates the authentication key if the streaming connection is open.
+  Future<void> updateStreamingConnectionAuthenticationKey(
+    String? authKey,
+  ) async {
+    if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
+      return;
+    }
+    await _sendControlCommandToStream('auth', {'key': authKey});
   }
 }
 

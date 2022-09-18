@@ -81,13 +81,14 @@ Future<UserInfo?> signInWithGoogle(
       return null;
     }
 
-    // Authentication was successful, store the key.
-    var sessionManager = await SessionManager.instance;
-    await sessionManager.keyManager
-        .put('${serverResponse.keyId}:${serverResponse.key}');
-
     // Store the user info in the session manager.
-    sessionManager.signedInUser = serverResponse.userInfo;
+    var sessionManager = await SessionManager.instance;
+
+    await sessionManager.registerSignedInUser(
+      serverResponse.userInfo!,
+      serverResponse.keyId!,
+      serverResponse.key!,
+    );
 
     // Authentication with server is complete, we can sign out from Google locally
     if (kDebugMode) print('serverpod_auth_google: Signing out from google');

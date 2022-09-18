@@ -50,11 +50,36 @@ class SessionManager with ChangeNotifier {
   /// Returns information about the signed in user or null if no user is
   /// currently signed in.
   UserInfo? get signedInUser => _signedInUser;
+
+  @Deprecated('Use setSignedInUser instead.')
   set signedInUser(UserInfo? userInfo) {
     _signedInUser = userInfo;
+    // TODO: Avoid doing asynchronously.
+    keyManager.get().then((String? key) async {
+      await caller.client.updateStreamingConnectionAuthenticationKey(key);
+    });
     _storeSharedPrefs();
-    // TODO: Fix
-    // caller.client.reconnectWebSocket();
+    notifyListeners();
+  }
+
+  /// Registers the signed in user, updates the [keyManager], and upgrades the
+  /// streaming connection if it is open.
+  Future<void> registerSignedInUser(
+    UserInfo userInfo,
+    int authenticationKeyId,
+    String authenticationKey,
+  ) async {
+    _signedInUser = userInfo;
+    var key = '$authenticationKeyId:$authenticationKey';
+
+    // Store in key manager.
+    await keyManager.put(
+      key,
+    );
+    await _storeSharedPrefs();
+
+    // Update streaming connection, if it's open.
+    await caller.client.updateStreamingConnectionAuthenticationKey(key);
     notifyListeners();
   }
 
@@ -74,10 +99,11 @@ class SessionManager with ChangeNotifier {
 
     try {
       await caller.status.signOut();
-      // await caller.client.reconnectWebSocket();
-      // TODO: Fix
-      signedInUser = null;
+      await caller.client.updateStreamingConnectionAuthenticationKey(null);
+
+      _signedInUser = null;
       await keyManager.remove();
+
       notifyListeners();
       return true;
     } catch (e) {

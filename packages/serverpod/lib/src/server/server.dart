@@ -323,8 +323,13 @@ class Server {
           // Handle control commands.
           var command = data['command'] as String?;
           if (command != null) {
+            var args = data['args'] as Map;
+
             if (command == 'ping') {
               webSocket.add(jsonEncode({'command': 'pong'}));
+            } else if (command == 'auth') {
+              var authKey = args['key'] as String?;
+              session.updateAuthenticationKey(authKey);
             }
             continue;
           }

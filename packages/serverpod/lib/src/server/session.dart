@@ -309,6 +309,12 @@ class StreamingSession extends Session {
     // Get the the authentication key, if any
     _authenticationKey = queryParameters['auth'];
   }
+
+  /// Updates the authentication key for the streaming session.
+  @internal
+  void updateAuthenticationKey(String? authenticationKey) {
+    _authenticationKey = authenticationKey;
+  }
 }
 
 /// Created when a [FutureCall] is being made. It contains all data associated

@@ -40,13 +40,13 @@ Future<UserInfo?> signInWithFirebase({
                       return;
                     }
 
-                    // Authentication was successfult, store the key.
-                    var sessionManager = await SessionManager.instance;
-                    await sessionManager.keyManager
-                        .put('${serverResponse.keyId}:${serverResponse.key}');
-
                     // Store the user info in the session manager.
-                    sessionManager.signedInUser = serverResponse.userInfo;
+                    var sessionManager = await SessionManager.instance;
+                    await sessionManager.registerSignedInUser(
+                      serverResponse.userInfo!,
+                      serverResponse.keyId!,
+                      serverResponse.key!,
+                    );
 
                     completer.complete(serverResponse.userInfo);
                     return;

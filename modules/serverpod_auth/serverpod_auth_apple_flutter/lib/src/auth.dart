@@ -38,15 +38,20 @@ Future<UserInfo?> signInWithApple(Caller caller) async {
 
     // Authenticate with the Serverpod server.
     var serverResponse = await caller.apple.authenticate(authInfo);
-    if (!serverResponse.success) return null;
-
-    // Authentication was successful, store the key.
-    var sessionManager = await SessionManager.instance;
-    await sessionManager.keyManager
-        .put('${serverResponse.keyId}:${serverResponse.key}');
+    if (!serverResponse.success ||
+        serverResponse.userInfo == null ||
+        serverResponse.key == null ||
+        serverResponse.keyId == null) {
+      return null;
+    }
 
     // Store the user info in the session manager.
-    sessionManager.signedInUser = serverResponse.userInfo;
+    var sessionManager = await SessionManager.instance;
+    await sessionManager.registerSignedInUser(
+      serverResponse.userInfo!,
+      serverResponse.keyId!,
+      serverResponse.key!,
+    );
 
     // Return the user info.
     return serverResponse.userInfo;
