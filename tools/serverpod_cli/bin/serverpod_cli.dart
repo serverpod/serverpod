@@ -10,11 +10,9 @@ import 'downloads/resource_manager.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 import 'internal_tools/generate_pubspecs.dart';
-import 'run/runner.dart';
 import 'shared/environment.dart';
 import 'util/command_line_tools.dart';
 import 'util/internal_error.dart';
-import 'util/print.dart';
 import 'util/version.dart';
 
 const cmdCreate = 'create';
