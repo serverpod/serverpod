@@ -54,7 +54,7 @@ class ResourceManager {
   }
 
   String get packageDownloadUrl =>
-      'https://storage.googleapis.com/pub-packages/packages/serverpod_templates-$templateVersion.tar.gz';
+      'https://pub.dev/packages/serverpod_templates/versions/$templateVersion.tar.gz';
 
   bool get isTemplatesInstalled {
     if (!versionedDir.existsSync()) return false;

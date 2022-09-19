@@ -1,3 +1,6 @@
+## 0.9.13
+- Updates download path for template files.
+
 ## 0.9.12
 - Adds `connecting` state to streaming connections.
 - Refactors streaming connection method names to be more consistent (backwards compatible with deprecations).
