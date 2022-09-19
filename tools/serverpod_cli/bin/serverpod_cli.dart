@@ -142,7 +142,15 @@ Future<void> _main(List<String> args) async {
       defaultsTo: 'development', allowed: ['development', 'production']);
   parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
 
-  var results = parser.parse(args);
+  ArgResults results;
+  try {
+    results = parser.parse(args);
+  } catch (e) {
+    _analytics.track(event: 'invalid');
+    _printUsage(parser);
+    _analytics.cleanUp();
+    return;
+  }
 
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
