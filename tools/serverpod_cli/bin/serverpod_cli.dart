@@ -19,7 +19,7 @@ import 'util/version.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
-const cmdRun = 'run';
+// const cmdRun = 'run';
 const cmdGeneratePubspecs = 'generate-pubspecs';
 const cmdVersion = 'version';
 
@@ -125,16 +125,15 @@ Future<void> _main(List<String> args) async {
   parser.addCommand(cmdGenerate, generateParser);
 
   // "run" command
-  var runParser = ArgParser();
-  runParser.addFlag(
-    'verbose',
-    abbr: 'v',
-    negatable: false,
-    help: 'Output more detailed information',
-  );
-  // TODO: Fix Docker management
-  // runParser.addFlag('run-docker', negatable: true, defaultsTo: true);
-  parser.addCommand(cmdRun, runParser);
+  // var runParser = ArgParser();
+  // runParser.addFlag(
+  //   'verbose',
+  //   abbr: 'v',
+  //   negatable: false,
+  //   help: 'Output more detailed information',
+  // );
+  // // TODO: Fix Docker management
+  // parser.addCommand(cmdRun, runParser);
 
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
@@ -197,22 +196,22 @@ Future<void> _main(List<String> args) async {
 
     // Run command.
     // TODO: Fix in future version.
-    if (results.command!.name == cmdRun) {
-      if (Platform.isWindows) {
-        printwwln(
-            'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
-        stdout.writeln('  \$ docker-compose up --build --detach');
-        stdout.writeln('  \$ dart .\\bin\\main.dart');
-        printww('');
-      } else {
-        // TODO: Fix Docker management
-        performRun(
-          results.command!['verbose'],
-        );
-      }
-      _analytics.cleanUp();
-      return;
-    }
+    // if (results.command!.name == cmdRun) {
+    //   if (Platform.isWindows) {
+    //     printwwln(
+    //         'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
+    //     stdout.writeln('  \$ docker-compose up --build --detach');
+    //     stdout.writeln('  \$ dart .\\bin\\main.dart');
+    //     printww('');
+    //   } else {
+    //     // TODO: Fix Docker management
+    //     performRun(
+    //       results.command!['verbose'],
+    //     );
+    //   }
+    //   _analytics.cleanUp();
+    //   return;
+    // }
 
     // Generate pubspecs command.
     if (results.command!.name == cmdGeneratePubspecs) {
@@ -240,7 +239,7 @@ void _printUsage(ArgParser parser) {
   print('');
   _printCommandUsage(
     cmdVersion,
-    'Prints the active version of the serverpod CLI util.',
+    'Prints the active version of the Serverpod CLI.',
   );
   _printCommandUsage(
     cmdCreate,
@@ -249,14 +248,14 @@ void _printUsage(ArgParser parser) {
   );
   _printCommandUsage(
     cmdGenerate,
-    'Generate code from yaml files for server and clients',
+    'Generate code from yaml files for server and clients.',
     parser.commands[cmdGenerate]!,
   );
-  _printCommandUsage(
-    cmdRun,
-    'Run server in development mode. Code is generated continuously and server is hot reloaded when source files are edited.',
-    parser.commands[cmdGenerate]!,
-  );
+  // _printCommandUsage(
+  //   cmdRun,
+  //   'Run server in development mode. Code is generated continuously and server is hot reloaded when source files are edited.',
+  //   parser.commands[cmdGenerate]!,
+  // );
 }
 
 void _printCommandUsage(String name, String descr,
