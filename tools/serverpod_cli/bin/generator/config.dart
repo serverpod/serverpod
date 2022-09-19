@@ -71,6 +71,7 @@ class GeneratorConfig {
         p.join(clientPackagePath, 'lib', 'src', 'protocol');
 
     // Load module settings
+    modules = [];
     if (type == PackageType.server) {
       try {
         if (generatorConfig['modules'] != null) {
