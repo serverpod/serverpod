@@ -1,3 +1,13 @@
+## 0.9.12
+- Adds `connecting` state to streaming connections.
+- Refactors streaming connection method names to be more consistent (backwards compatible with deprecations).
+- Adds `StreamingConnectionHandler` to automatically reconnect to the server when streaming connection is lost.
+- Automatically upgrades streaming connections when a user is signed it (`serverpod_auth` module).
+- Better error handling when providing invalid commands to the CLI.
+- Moves tests to `serverpod_test_server`.
+- Fixes error on `serverpod create --template module ...`
+- Hides errors produced by health checks.
+
 ## 0.9.11
 - Adds support for Map structures in serialized objects.
 - Adds support for passing maps and lists as parameters to endpoint methods.
