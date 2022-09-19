@@ -6,6 +6,7 @@ authentication:
   - countUsers:
   - createUser:
   - authenticate:
+  - signOut:
 basicTypes:
   - testInt:
   - testDouble:

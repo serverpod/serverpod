@@ -60,4 +60,8 @@ class AuthenticationEndpoint extends Endpoint {
       return AuthenticationResponse(success: false);
     }
   }
+
+  Future<void> signOut(Session session) async {
+    await session.auth.signOutUser();
+  }
 }

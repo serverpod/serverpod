@@ -187,9 +187,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Closes all open connections to the server.
   void close() {
-    _webSocket?.sink.close();
-    _webSocket = null;
-    _cancelConnectionTimer();
+    closeStreamingConnection();
   }
 
   void _cancelConnectionTimer() {
@@ -232,6 +230,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } catch (e) {
       _webSocket = null;
       _cancelConnectionTimer();
+      rethrow;
     }
 
     // If everything is going according to plan, we are now connected to the
@@ -244,6 +243,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await _webSocket?.sink.close();
     _webSocket = null;
     _cancelConnectionTimer();
+
+    // Hack for dart:io version of websocket to get time to close the stream
+    // in _listenToWebSocket
+    await Future.delayed(const Duration(milliseconds: 100));
   }
 
   /// Closes the current web socket connection (if open), then connects again.
@@ -274,6 +277,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } catch (e) {
       _webSocket = null;
       _cancelConnectionTimer();
+      rethrow;
     }
     _notifyWebSocketConnectionStatusListeners();
   }

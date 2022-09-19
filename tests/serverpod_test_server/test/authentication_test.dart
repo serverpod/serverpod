@@ -72,6 +72,25 @@ void main() {
       var result = await client.signInRequired.testMethod();
       expect(result, equals(true));
     });
+
+    test('Sign out user', () async {
+      await client.authentication.signOut();
+
+      int? statusCode;
+      try {
+        await client.signInRequired.testMethod();
+      } catch (e) {
+        if (e is ServerpodClientException) {
+          statusCode = e.statusCode;
+        }
+      }
+
+      // Only perform the check for dart:io. On web -1 will be returned as
+      // failing status codes cannot be detected.
+      if (!identical(0, 0.0)) {
+        expect(statusCode, equals(403));
+      }
+    });
   });
 
   group('User creation', () {

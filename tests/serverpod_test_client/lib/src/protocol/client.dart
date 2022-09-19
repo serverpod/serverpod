@@ -85,6 +85,12 @@ class _EndpointAuthentication extends EndpointRef {
     });
     return retval;
   }
+
+  Future<void> signOut() async {
+    var retval = await caller
+        .callServerEndpoint('authentication', 'signOut', 'void', {});
+    return retval;
+  }
 }
 
 class _EndpointBasicTypes extends EndpointRef {

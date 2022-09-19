@@ -74,10 +74,11 @@ void main() {
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
+      expect(response.key, isNotNull);
+      expect(response.keyId, isNotNull);
 
       // Restart streams
-      client.close();
-      await Future.delayed(const Duration(milliseconds: 100));
+      await client.closeStreamingConnection();
       await client.openStreamingConnection();
     });
 
@@ -97,29 +98,83 @@ void main() {
         if (i == nums.length) break;
       }
     });
+
+    test('Upgrade streaming connection', () async {
+      // Make sure we are signed out.
+      await client.authentication.signOut();
+      await client.authenticationKeyManager!.remove();
+      await client.closeStreamingConnection();
+      client.signInRequired.resetStream();
+      await client.openStreamingConnection();
+
+      // This should be ignored by the server as user isn't authenticated.
+      await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Authenticate and upgrade stream.
+      var response =
+          await client.authentication.authenticate('test@foo.bar', 'password');
+      if (response.success) {
+        await client.authenticationKeyManager!
+            .put('${response.keyId}:${response.key}');
+      }
+      expect(response.success, equals(true));
+      expect(response.userInfo, isNotNull);
+      expect(response.key, isNotNull);
+      expect(response.keyId, isNotNull);
+
+      await client.updateStreamingConnectionAuthenticationKey(
+        '${response.keyId}:${response.key}',
+      );
+
+      var nums = [11, 22, 33];
+
+      for (var num in nums) {
+        await client.signInRequired.sendStreamMessage(SimpleData(num: num));
+      }
+
+      var i = 0;
+      await for (var message in client.signInRequired.stream) {
+        var simpleData = message as SimpleData;
+        expect(simpleData.num, nums[i]);
+
+        i += 1;
+        if (i == nums.length) break;
+      }
+    });
   });
 
-  group('Timeout', () {
-    test('5 second default timeout', () async {
-      // Only perform the check for web.
-      // TODO: Make sure this always works correctly on all platforms.
-      if (identical(0, 0.0)) {
-        client.close();
-        await client.openStreamingConnection();
-        await Future.delayed(const Duration(seconds: 1));
-        expect(client.streamingConnectionStatus,
-            StreamingConnectionStatus.connected);
+  group('Closing and reconnecting', () {
+    test('Close and reconnect', () async {
+      // Close and immediately reconnect.
+      await client.closeStreamingConnection();
+      await client.openStreamingConnection();
 
-        // We should still be connected after 3 seconds.
-        await Future.delayed(const Duration(seconds: 2));
-        expect(client.streamingConnectionStatus,
-            StreamingConnectionStatus.connected);
+      // Immediately after the connection call, we should be in a connecting
+      // state.
+      expect(
+        client.streamingConnectionStatus,
+        equals(StreamingConnectionStatus.connecting),
+      );
 
-        // We should still be connected after 6 seconds.
-        await Future.delayed(const Duration(seconds: 3));
-        expect(client.streamingConnectionStatus,
-            StreamingConnectionStatus.connected);
-      }
+      // We should be connected shortly after opening the stream.
+      await Future.delayed(const Duration(seconds: 1));
+      expect(client.streamingConnectionStatus,
+          StreamingConnectionStatus.connected);
+
+      // We should still be connected after 5 seconds.
+      await Future.delayed(const Duration(seconds: 5));
+      expect(client.streamingConnectionStatus,
+          StreamingConnectionStatus.connected);
+    });
+
+    test('Disconnect', () async {
+      await client.closeStreamingConnection();
+
+      expect(
+        client.streamingConnectionStatus,
+        StreamingConnectionStatus.disconnected,
+      );
     });
   });
 }

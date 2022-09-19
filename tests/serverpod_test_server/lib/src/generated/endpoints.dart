@@ -179,6 +179,16 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'signOut': MethodConnector(
+          name: 'signOut',
+          params: {},
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['authentication'] as AuthenticationEndpoint)
+                .signOut(
+              session,
+            );
+          },
+        ),
       },
     );
 
