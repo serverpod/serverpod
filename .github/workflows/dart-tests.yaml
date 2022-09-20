@@ -46,3 +46,14 @@ jobs:
 
       - name: Run single server tests
         run: util/run_tests_single_server
+
+  cli_tests:
+    name: CLI tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.0.5"
+      - name: Run CLI tests
+        run: util/run_tests_cli

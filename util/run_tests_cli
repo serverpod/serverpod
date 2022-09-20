@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_cli"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+tests/docker/tests_cli/run-tests.sh
