@@ -10,6 +10,9 @@ echo "### Installing CLI tools"
 
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
+export SERVERPOD_HOME=$(pwd)
+echo "### Serverpod home: $SERVERPOD_HOME"
+
 cd tools/serverpod_cli
 dart pub global activate -s path .
 cd ../..
@@ -24,7 +27,6 @@ cd temp
 
 echo "### Running serverpod create"
 # Configure Serverpod home directory (required for templates)
-export SERVERPOD_HOME="../.."
 
 # Create test project
 serverpod create cli_test
