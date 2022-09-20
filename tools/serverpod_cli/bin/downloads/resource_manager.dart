@@ -49,6 +49,7 @@ class ResourceManager {
     var userId = const Uuid().v4();
     try {
       var userIdFile = File(p.join(localCacheDirectory.path, uuidFilePath));
+      userIdFile.createSync(recursive: true);
       userIdFile.writeAsStringSync(userId);
     } finally {}
 
