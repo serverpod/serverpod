@@ -7,6 +7,7 @@ import 'package:colorize/colorize.dart';
 import 'analytics/analytics.dart';
 import 'create/create.dart';
 import 'downloads/resource_manager.dart';
+import 'generated/version.dart';
 import 'generator/generator.dart';
 import 'generator/generator_continuous.dart';
 import 'internal_tools/generate_pubspecs.dart';
@@ -65,6 +66,15 @@ Future<void> _main(List<String> args) async {
   }
 
   // Make sure all necessary downloads are installed
+  if (!productionMode) {
+    print(
+      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+    );
+    if (!resourceManager.isTemplatesInstalled) {
+      print('WARNING! Could not find templates.');
+    }
+  }
+
   if (!resourceManager.isTemplatesInstalled) {
     try {
       await resourceManager.installTemplates();
