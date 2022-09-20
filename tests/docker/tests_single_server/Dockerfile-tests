@@ -8,4 +8,4 @@ WORKDIR /app
 COPY . .
 
 # Setup database tables and start the server.
-CMD ["tests/docker/run-tests.sh"]
+CMD ["tests/docker/tests_single_server/run-tests.sh"]

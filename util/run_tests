@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -f tests/docker/docker-compose.yml ]; then
+if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/run_tests"
     exit 1

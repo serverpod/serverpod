@@ -1,14 +1,14 @@
 #!/bin/sh
 
-if [ ! -f tests/docker/docker-compose.yml ]; then
+if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/run_tests"
+    echo "I.e. util/run_tests_single_server"
     exit 1
 fi
 
 # Makes script exit on first non-zero error code
 set -e
 
-cd tests/docker
+cd tests/docker/tests_single_server
 
 docker-compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans
