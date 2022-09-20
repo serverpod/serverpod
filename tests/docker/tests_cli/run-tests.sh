@@ -13,6 +13,11 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 export SERVERPOD_HOME=$(pwd)
 echo "### Serverpod home: $SERVERPOD_HOME"
 
+# Verify that template directory exists
+TEMPLATE_DIR="$SERVERPOD_HOME/templates/serverpod_templates"
+echo "### Templates at: $TEMPLATE_DIR"
+test -d $TEMPLATE_DIR
+
 cd tools/serverpod_cli
 dart pub global activate -s path .
 cd ../..

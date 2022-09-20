@@ -24,8 +24,10 @@ class ResourceManager {
 
   Directory get localCacheDirectory =>
       Directory(p.join(homeDirectory.path, '.serverpod'));
+
   Directory get versionedDir =>
       Directory(p.join(localCacheDirectory.path, templateVersion));
+
   Directory get templateDirectory {
     if (productionMode) {
       return Directory(p.join(versionedDir.path, 'serverpod_template'));
@@ -57,7 +59,7 @@ class ResourceManager {
       'https://pub.dev/packages/serverpod_templates/versions/$templateVersion.tar.gz';
 
   bool get isTemplatesInstalled {
-    if (!versionedDir.existsSync()) return false;
+    if (!versionedDir.existsSync() && productionMode) return false;
 
     return templateDirectory.existsSync();
   }
