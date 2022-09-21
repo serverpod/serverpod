@@ -130,3 +130,17 @@ Sometimes more advanced tasks need to be performed on the database. For those oc
 ```dart
 var result = await session.db.query('SELECT * FROM mytable WHERE ...');
 ```
+
+### View
+View will consider as Table in Serverpod. You can use the same way to query data from view. But you can't insert, update or delete data from view. For now, you need to manually create your view in database and then declare in protocol how we declare the table.
+
+Example you have Company table that have OwnerId as FK on Person Table, now you need one view to show the company name and person name. You can create view in protocol like this:
+```yaml
+class: CompanyView
+table: company_view
+asView: true
+fields:
+  name: String
+  ownerName: String
+```
+The `asView` field when set to true then the generated code will treat this class as view and will not generate insert, update and delete method for this class. 
