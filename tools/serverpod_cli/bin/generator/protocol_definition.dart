@@ -206,6 +206,7 @@ abstract class ProtocolFileDefinition {
 
 class ClassDefinition extends ProtocolFileDefinition {
   final String? tableName;
+  final bool? viewTable;
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
 
@@ -214,6 +215,7 @@ class ClassDefinition extends ProtocolFileDefinition {
     required super.className,
     required this.fields,
     this.tableName,
+    this.viewTable,
     this.indexes,
   });
 }

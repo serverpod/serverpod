@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:yaml/yaml.dart';
-import 'package:yaml/src/error_listener.dart';
 import 'package:source_span/source_span.dart';
+import 'package:yaml/src/error_listener.dart';
+import 'package:yaml/yaml.dart';
 
 import '../util/string_validators.dart';
 import 'class_generator_dart.dart';
+import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'code_analysis_collector.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
   bool verbose = true,
@@ -108,7 +108,7 @@ class ClassAnalyzer {
   ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'fields', 'indexes'},
+      {'class', 'table', 'fields', 'indexes', 'asView'},
     )) {
       return null;
     }
@@ -158,6 +158,20 @@ class ClassAnalyzer {
           tableNameNode.span,
         ));
         tableName = null;
+      }
+    }
+
+    // Validate view name.
+    bool? asView;
+    var asViewNode = documentContents.nodes['asView'];
+    if (asViewNode != null) {
+      asView = asViewNode.value;
+      if (asView is! bool) {
+        collector.addError(SourceSpanException(
+          'The "asView" property must be a bool.',
+          asViewNode.span,
+        ));
+        asView = null;
       }
     }
 
@@ -399,6 +413,7 @@ class ClassAnalyzer {
     return ClassDefinition(
       className: className,
       tableName: tableName,
+      viewTable: asView,
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
