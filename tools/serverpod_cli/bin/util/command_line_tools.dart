@@ -90,6 +90,22 @@ class CommandLineTools {
     );
     print(result.stdout);
   }
+
+  static Future<void> cleanupForWindows(Directory dir, String name) async {
+    var serverPath = p.join(dir.path, '${name}_server');
+    print('Cleaning up');
+    try {
+      var result = await Process.run(
+        'rm',
+        ['setup-tables'],
+        workingDirectory: serverPath,
+      );
+      print(result.stdout);
+    } catch (e) {
+      print('Failed cleanup: $e');
+      print('serverPath: $serverPath');
+    }
+  }
 }
 
 class _CommandFormatter {
