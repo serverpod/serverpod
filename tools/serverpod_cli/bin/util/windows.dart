@@ -13,7 +13,15 @@ class WindowsUtil {
         continue;
       }
       var possibleCommandPath = p.join(path, command);
+
+      // Check name without extension.
       var possibleCommandFile = File(possibleCommandPath);
+      if (possibleCommandFile.existsSync()) {
+        return possibleCommandPath;
+      }
+
+      // Check name with bat extension.
+      possibleCommandFile = File('$possibleCommandPath.bat');
       if (possibleCommandFile.existsSync()) {
         return possibleCommandPath;
       }
