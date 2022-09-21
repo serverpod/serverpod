@@ -82,6 +82,13 @@ class CommandLineTools {
       workingDirectory: serverPath,
     );
     print(result.stdout);
+
+    result = await Process.run(
+      'rm',
+      ['setup-tables.cmd'],
+      workingDirectory: serverPath,
+    );
+    print(result.stdout);
   }
 }
 
