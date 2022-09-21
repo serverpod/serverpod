@@ -354,7 +354,9 @@ Future<void> performCreate(
     if (Platform.isWindows) {
       await CommandLineTools.cleanupForWindows(projectDir, name);
       printwwln('');
-      printwwln('SERVERPOD CREATED :D');
+      printww('====================');
+      printww('SERVERPOD CREATED :D');
+      printwwln('====================');
       printwwln('All setup. You are ready to rock!');
       printwwln('Start your Serverpod by running:');
       stdout.writeln('  \$ cd .\\${p.join(name, '${name}_server')}\\');
