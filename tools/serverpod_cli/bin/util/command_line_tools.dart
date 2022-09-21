@@ -94,16 +94,12 @@ class CommandLineTools {
   static Future<void> cleanupForWindows(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
     print('Cleaning up');
+    var file = File(p.join(serverPath, 'setup-tables'));
     try {
-      var result = await Process.run(
-        'rm',
-        ['setup-tables'],
-        workingDirectory: serverPath,
-      );
-      print(result.stdout);
+      await file.delete();
     } catch (e) {
       print('Failed cleanup: $e');
-      print('serverPath: $serverPath');
+      print('file: $file');
     }
   }
 }
