@@ -1,3 +1,8 @@
+## 0.9.14
+- Official support for Linux.
+- Improved support for Windows.
+- Adds tests for command line tools.
+
 ## 0.9.13
 - Updates download path for template files.
 
