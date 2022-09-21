@@ -70,6 +70,7 @@ Future<void> _main(List<String> args) async {
     print(
       'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
     );
+    print('SERVERPOD_HOME is set to $serverpodHome');
     if (!resourceManager.isTemplatesInstalled) {
       print('WARNING! Could not find templates.');
     }
