@@ -139,6 +139,7 @@ class WebServer {
     }
 
     // No matching patch found
+    request.response.statusCode = HttpStatus.notFound;
     await request.response.close();
     await session.close();
   }
