@@ -3,6 +3,20 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 
+// TODO: Add more content type mappings.
+final _contentTypeMapping = <String, ContentType>{
+  '.js': ContentType('text', 'javascript'),
+  '.json': ContentType('application', 'json'),
+  '.wsam': ContentType('application', 'wasm'),
+  '.css': ContentType('text', 'css'),
+  '.png': ContentType('image', 'png'),
+  '.jpg': ContentType('image', 'jpeg'),
+  '.svg': ContentType('image', 'svg+xml'),
+  '.ttf': ContentType('application', 'x-font-ttf'),
+  '.woff': ContentType('application', 'x-font-woff'),
+  '.mp3': ContentType('audio', 'mpeg'),
+};
+
 /// Route for serving a directory of static files.
 class RouteStaticDirectory extends Route {
   /// The path to the directory to serve relative to the web/ directory.
@@ -45,30 +59,14 @@ class RouteStaticDirectory extends Route {
         path = p.join(dir, base + extension);
       }
 
-      // TODO: Correctly set headers for more types
+      // Set content type.
       extension = extension.toLowerCase();
-      if (extension == '.js') {
-        request.response.headers.contentType =
-            ContentType('text', 'javascript');
-      } else if (extension == '.css') {
-        request.response.headers.contentType = ContentType('text', 'css');
-      } else if (extension == '.png') {
-        request.response.headers.contentType = ContentType('image', 'png');
-      } else if (extension == '.jpg') {
-        request.response.headers.contentType = ContentType('image', 'jpeg');
-      } else if (extension == '.svg') {
-        request.response.headers.contentType = ContentType('image', 'svg+xml');
-      } else if (extension == '.ttf') {
-        request.response.headers.contentType =
-            ContentType('application', 'x-font-ttf');
-      } else if (extension == '.woff') {
-        request.response.headers.contentType =
-            ContentType('application', 'x-font-woff');
-      } else if (extension == '.mp3') {
-        request.response.headers.contentType = ContentType('audio', 'mpeg');
+      var contentType = _contentTypeMapping[extension];
+      if (contentType != null) {
+        request.response.headers.contentType = contentType;
       }
 
-      // Enforce strong cache control
+      // Enforce strong cache control.
       request.response.headers.set('Cache-Control', 'max-age=31536000');
 
       var filePath = path.startsWith('/') ? path.substring(1) : path;
@@ -78,6 +76,7 @@ class RouteStaticDirectory extends Route {
       request.response.add(fileContents);
       return true;
     } catch (e) {
+      // Couldn't find or load file.
       return false;
     }
   }
