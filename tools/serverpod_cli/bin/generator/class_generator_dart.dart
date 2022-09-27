@@ -340,63 +340,42 @@ class ClassGeneratorDart extends ClassGenerator {
       out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
     }
 
-    out += 'class $enumName extends SerializableEntity {\n';
-    out += '  @override\n';
-    out += '  String get className => \'$enumName\';\n';
-    out += '\n';
-    out += '  late final int _index;\n';
-    out += '  int get index => _index;\n';
-    out += '\n';
+    out += 'enum $enumName with SerializableEntity {\n';
+    for (var value in enumDefinition.values) {
+      out += '  $value,\n';
+    }
+    out += ';\n';
 
-    // Internal constructor
-    out += '  $enumName._internal(this._index); \n';
+    out += '  static String get _className => \'$enumName\';\n';
+    out += '\n';
+    out += '  @override\n';
+    out += '  String get className => _className;\n';
     out += '\n';
 
     // Serialization
     out +=
-        '  $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
-    out += '    var data = unwrapSerializationData(serialization);\n';
-    out += '    _index = data[\'index\'];\n';
+        '  factory $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
+    out +=
+        '    var data = SerializableEntity.unwrapSerializationDataForClassName(_className, serialization);\n';
+    out += '    switch (data[\'index\']) {\n';
+    var i = 0;
+    for (var value in enumDefinition.values) {
+      out += '      case $i:\n';
+      out += '        return $enumName.$value;\n';
+      i += 1;
+    }
+    out += '      default:\n';
+    out +=
+        '        throw Exception(\'Invalid \$_className index \$data[\\\'index\\\']\');\n';
+    out += '    }\n';
     out += '  }\n';
     out += '\n';
 
     out += '  @override\n';
     out += '  Map<String, dynamic> serialize() {\n';
     out += '    return wrapSerializationData({\n';
-    out += '      \'index\': _index,\n';
+    out += '      \'index\': index,\n';
     out += '    });\n';
-    out += '  }\n';
-
-    // Values
-    var i = 0;
-    for (var value in enumDefinition.values) {
-      out += '  static final $value = $enumName._internal($i);\n';
-      i += 1;
-    }
-
-    out += '\n';
-
-    out += '  @override\n';
-    out += '  int get hashCode => _index.hashCode;\n';
-    out += '  @override\n';
-    out +=
-        '  bool operator == (other) => other is $enumName && other._index == _index;\n';
-
-    out += '\n';
-
-    out += '  static final values = <$enumName>[\n';
-    for (var value in enumDefinition.values) {
-      out += '    $value,\n';
-    }
-    out += '  ];\n';
-
-    out += '\n';
-
-    out += '  String get name {\n';
-    for (var value in enumDefinition.values) {
-      out += '    if (this == $value) return \'$value\';\n';
-    }
-    out += '    throw const FormatException();\n';
     out += '  }\n';
 
     out += '}\n';
