@@ -8,51 +8,40 @@
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-class AuthenticationFailReason extends SerializableEntity {
+enum AuthenticationFailReason with SerializableEntity {
+  invalidCredentials,
+  userCreationDenied,
+  internalError,
+  tooManyFailedAttempts,
+  ;
+
+  static String get _className => 'AuthenticationFailReason';
+
   @override
-  String get className => 'AuthenticationFailReason';
+  String get className => _className;
 
-  late final int _index;
-  int get index => _index;
-
-  AuthenticationFailReason._internal(this._index);
-
-  AuthenticationFailReason.fromSerialization(
+  factory AuthenticationFailReason.fromSerialization(
       Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
-    _index = data['index'];
+    var data = SerializableEntity.unwrapSerializationDataForClassName(
+        _className, serialization);
+    switch (data['index']) {
+      case 0:
+        return AuthenticationFailReason.invalidCredentials;
+      case 1:
+        return AuthenticationFailReason.userCreationDenied;
+      case 2:
+        return AuthenticationFailReason.internalError;
+      case 3:
+        return AuthenticationFailReason.tooManyFailedAttempts;
+      default:
+        throw Exception('Invalid $_className index $data[\'index\']');
+    }
   }
 
   @override
   Map<String, dynamic> serialize() {
     return wrapSerializationData({
-      'index': _index,
+      'index': index,
     });
-  }
-
-  static final invalidCredentials = AuthenticationFailReason._internal(0);
-  static final userCreationDenied = AuthenticationFailReason._internal(1);
-  static final internalError = AuthenticationFailReason._internal(2);
-  static final tooManyFailedAttempts = AuthenticationFailReason._internal(3);
-
-  @override
-  int get hashCode => _index.hashCode;
-  @override
-  bool operator ==(other) =>
-      other is AuthenticationFailReason && other._index == _index;
-
-  static final values = <AuthenticationFailReason>[
-    invalidCredentials,
-    userCreationDenied,
-    internalError,
-    tooManyFailedAttempts,
-  ];
-
-  String get name {
-    if (this == invalidCredentials) return 'invalidCredentials';
-    if (this == userCreationDenied) return 'userCreationDenied';
-    if (this == internalError) return 'internalError';
-    if (this == tooManyFailedAttempts) return 'tooManyFailedAttempts';
-    throw const FormatException();
   }
 }
