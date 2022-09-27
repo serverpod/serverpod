@@ -277,7 +277,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } catch (e) {
       _webSocket = null;
       _cancelConnectionTimer();
-      rethrow;
     }
     _notifyWebSocketConnectionStatusListeners();
   }
