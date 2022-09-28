@@ -143,7 +143,7 @@ class Serverpod {
         logFailedSessions: true,
         logFailedQueries: true,
         logStreamingSessionsContinuously: true,
-        logLevel: internal.LogLevel.warning.index,
+        logLevel: internal.LogLevel.info.index,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
       ),
