@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.0.5"
+          flutter-version: "3.3.2"
       - name: Setup Firebase dummy file
         run: mv packages/serverpod/example/example_flutter/lib/firebase_options_dummy.dart packages/serverpod/example/example_flutter/lib/firebase_options.dart
       - name: Install dependencies
@@ -54,6 +54,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.0.5"
+          flutter-version: "3.3.2"
       - name: Run CLI tests
         run: util/run_tests_cli
