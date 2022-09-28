@@ -3,6 +3,8 @@
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: unused_import
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:typed_data' as typed_data;
@@ -18,9 +20,10 @@ class _EndpointExample extends EndpointRef {
   Future<String> hello(
     String name,
   ) async {
-    return await caller.callServerEndpoint('example', 'hello', 'String', {
+    var retval = await caller.callServerEndpoint('example', 'hello', 'String', {
       'name': name,
     });
+    return retval;
   }
 }
 
