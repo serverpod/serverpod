@@ -176,7 +176,7 @@ class Server {
       return;
     } else if (uri.path == '/websocket') {
       var webSocket = await WebSocketTransformer.upgrade(request);
-      webSocket.pingInterval = const Duration(minutes: 1);
+      webSocket.pingInterval = const Duration(seconds: 30);
       unawaited(_handleWebsocket(webSocket, request));
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
