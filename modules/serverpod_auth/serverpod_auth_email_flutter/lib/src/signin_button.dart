@@ -36,8 +36,8 @@ class SignInWithEmailButtonState extends State<SignInWithEmailButton> {
     return ElevatedButton.icon(
       style: widget.style ??
           ElevatedButton.styleFrom(
-            primary: Colors.lightBlue,
-            onPrimary: Colors.white,
+            backgroundColor: Colors.lightBlue,
+            foregroundColor: Colors.white,
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16),
           ),

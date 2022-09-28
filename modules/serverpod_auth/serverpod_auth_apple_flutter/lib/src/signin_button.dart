@@ -38,8 +38,8 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
     return ElevatedButton.icon(
       style: widget.style ??
           ElevatedButton.styleFrom(
-            primary: Colors.black,
-            onPrimary: Colors.white,
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16),
           ),

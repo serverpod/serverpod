@@ -38,8 +38,8 @@ class SignInWithFirebaseButton extends StatelessWidget {
     return ElevatedButton.icon(
       style: style ??
           ElevatedButton.styleFrom(
-            primary: Colors.blue[900],
-            onPrimary: Colors.white,
+            backgroundColor: Colors.blue[900],
+            foregroundColor: Colors.white,
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16),
           ),

@@ -263,7 +263,9 @@ void main() {
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
-      await client.openStreamingConnection();
+      await client.openStreamingConnection(
+        disconnectOnLostInternetConnection: false,
+      );
 
       for (var i = 0; i < 5; i += 1) {
         await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));

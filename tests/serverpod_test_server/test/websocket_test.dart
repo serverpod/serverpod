@@ -16,7 +16,9 @@ void main() {
 
   group('Basic websocket', () {
     test('Connect and send SimpleData', () async {
-      await client.openStreamingConnection();
+      await client.openStreamingConnection(
+        disconnectOnLostInternetConnection: false,
+      );
 
       var nums = [42, 1337, 69];
 
@@ -79,7 +81,9 @@ void main() {
 
       // Restart streams
       await client.closeStreamingConnection();
-      await client.openStreamingConnection();
+      await client.openStreamingConnection(
+        disconnectOnLostInternetConnection: false,
+      );
     });
 
     test('Connect and send SimpleData while authenticated', () async {
@@ -105,7 +109,9 @@ void main() {
       await client.authenticationKeyManager!.remove();
       await client.closeStreamingConnection();
       client.signInRequired.resetStream();
-      await client.openStreamingConnection();
+      await client.openStreamingConnection(
+        disconnectOnLostInternetConnection: false,
+      );
 
       // This should be ignored by the server as user isn't authenticated.
       await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
@@ -148,7 +154,9 @@ void main() {
     test('Close and reconnect', () async {
       // Close and immediately reconnect.
       await client.closeStreamingConnection();
-      await client.openStreamingConnection();
+      await client.openStreamingConnection(
+        disconnectOnLostInternetConnection: false,
+      );
 
       // Immediately after the connection call, we should be in a connecting
       // state.

@@ -52,8 +52,8 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
     return ElevatedButton.icon(
       style: widget.style ??
           ElevatedButton.styleFrom(
-            primary: Colors.white,
-            onPrimary: Colors.grey[700],
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.grey[700],
             alignment: widget.alignment,
             padding: const EdgeInsets.symmetric(horizontal: 16),
           ),
