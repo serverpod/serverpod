@@ -1,3 +1,7 @@
+## 0.9.16
+- Changes default log level to `info`.
+- Fixes issue with `serverpod create` command and updates template files with correct Flutter dependencies.
+
 ## 0.9.15
 - Correctly sets 404 return code if no route is matched in Relic web server.
 - Templates are updated to use latest version of flutter_lints.
