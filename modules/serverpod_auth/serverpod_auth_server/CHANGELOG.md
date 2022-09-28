@@ -1,3 +1,8 @@
+## 0.9.15
+- Correctly sets 404 return code if no route is matched in Relic web server.
+- Templates are updated to use latest version of flutter_lints.
+- Adds connectivity monitor for streaming connections, which improves their reliability.
+
 ## 0.9.14
 - Official support for Linux.
 - Improved support for Windows.
