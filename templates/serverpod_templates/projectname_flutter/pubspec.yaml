@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  serverpod_flutter: #^VERSION
+    path: ../../../packages/serverpod_flutter
   projectname_client:
     path: ../projectname_client
 

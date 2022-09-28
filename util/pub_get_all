@@ -44,6 +44,10 @@ echo "\nserverpod_shared"
 cd $BASE/packages/serverpod_shared
 dart pub get
 
+echo "\nserverpod_flutter"
+cd $BASE/packages/serverpod_flutter
+dart pub get
+
 # Tests
 
 echo "\nserverpod_test_client"

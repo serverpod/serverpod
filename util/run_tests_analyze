@@ -15,6 +15,7 @@ dart analyze --fatal-infos packages/serverpod_client
 dart analyze --fatal-infos packages/serverpod_serialization
 dart analyze --fatal-infos packages/serverpod_service_client
 dart analyze --fatal-infos packages/serverpod_shared
+dart analyze --fatal-infos packages/serverpod_flutter
 
 dart analyze --fatal-infos tests/serverpod_test_server
 dart analyze --fatal-infos tests/serverpod_test_client
