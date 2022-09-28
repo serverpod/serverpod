@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
-import 'auth_key_manager.dart';
-import 'serverpod_client_exception.dart';
 
 /// Method called when errors occur in communication with the server.
 typedef ServerpodClientErrorCallback = void Function(
@@ -41,6 +38,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Timer? _connectionTimer;
 
   final List<VoidCallback> _websocketConnectionStatusListeners = [];
+
+  // StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  bool _disconnectOnLostInternetConnection = false;
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
@@ -104,6 +104,26 @@ abstract class ServerpodClientShared extends EndpointCaller {
   final Duration streamingConnectionTimeout;
 
   bool _firstMessageReceived = false;
+
+  ConnectivityMonitor? _connectivityMonitor;
+
+  /// Set a connectivity monitor to better manage streaming connections. You
+  /// can find the FlutterConnectivityMonitor in the serverpod_flutter package.
+  ConnectivityMonitor? get connectivityMonitor => _connectivityMonitor;
+
+  set connectivityMonitor(ConnectivityMonitor? monitor) {
+    _connectivityMonitor?.removeListener(_connectivityChanged);
+    monitor?.addListener(_connectivityChanged);
+    _connectivityMonitor = monitor;
+  }
+
+  void _connectivityChanged(bool connected) {
+    if (!connected) {
+      if (_disconnectOnLostInternetConnection && _webSocket != null) {
+        closeStreamingConnection();
+      }
+    }
+  }
 
   /// Creates a new ServerpodClient.
   ServerpodClientShared(
@@ -202,8 +222,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Open a streaming connection to the server.
-  Future<void> openStreamingConnection() async {
+  Future<void> openStreamingConnection({
+    bool disconnectOnLostInternetConnection = true,
+  }) async {
     if (_webSocket != null) return;
+    if (disconnectOnLostInternetConnection) {
+      assert(
+        _connectivityMonitor != null,
+        'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor propery.',
+      );
+    }
+    _disconnectOnLostInternetConnection = disconnectOnLostInternetConnection;
 
     try {
       // Connect to the server.

@@ -62,7 +62,7 @@ class StreamingConnectionHandler {
     _keepAlive = true;
     if (client.streamingConnectionStatus ==
         StreamingConnectionStatus.disconnected) {
-      client.openStreamingConnection();
+      client.openStreamingConnection(disconnectOnLostInternetConnection: true);
     }
   }
 
