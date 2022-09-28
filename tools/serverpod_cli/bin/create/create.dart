@@ -234,7 +234,9 @@ Future<void> performCreate(
           replacement: '.gitignore',
         ),
       ],
-      removePrefixes: [],
+      removePrefixes: [
+        'path: ../../../packages/serverpod_flutter',
+      ],
       ignoreFileNames: [
         'pubspec.lock',
         'ios',
