@@ -1,3 +1,6 @@
+## 0.9.17
+- Reliability fix for FlutterConnectivityMonitor on web platform.
+
 ## 0.9.16
 - Changes default log level to `info`.
 - Fixes issue with `serverpod create` command and updates template files with correct Flutter dependencies.
