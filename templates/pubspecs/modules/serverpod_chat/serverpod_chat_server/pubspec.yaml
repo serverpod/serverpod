@@ -14,6 +14,8 @@ dependencies:
     path: ../../../packages/serverpod
   serverpod_auth_server: #^VERSION
     path: ../../serverpod_auth/serverpod_auth_server
+  serverpod_serialization: #^VERSION
+    path: ../../../packages/serverpod_serialization/
   http: ^0.13.5
   image: ^3.0.2
   path: ^1.8.2
