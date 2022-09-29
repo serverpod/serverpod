@@ -4,6 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import '../aws_s3_client/client/client.dart';
 import '../aws_s3_upload/aws_s3_upload.dart';
 
+/// Concrete implementation of S3 cloud storage for use with Serverpod.
 class S3CloudStorage extends CloudStorage {
   final String _awsAccessKeyId;
   final String _awsSecretKey;
@@ -14,6 +15,7 @@ class S3CloudStorage extends CloudStorage {
 
   late final AwsS3Client _s3Client;
 
+  /// Creates a new [S3CloudStorage] reference.
   S3CloudStorage({
     required Serverpod serverpod,
     required String storageId,
@@ -67,6 +69,7 @@ class S3CloudStorage extends CloudStorage {
     if (response.statusCode == 200) {
       return ByteData.view(response.bodyBytes.buffer);
     }
+    return null;
   }
 
   @override
@@ -77,6 +80,7 @@ class S3CloudStorage extends CloudStorage {
     if (await fileExists(session: session, path: path)) {
       return Uri.parse('https://$publicHost/$path');
     }
+    return null;
   }
 
   @override

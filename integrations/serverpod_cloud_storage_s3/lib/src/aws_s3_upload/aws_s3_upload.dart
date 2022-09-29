@@ -67,6 +67,7 @@ class AwsS3Uploader {
       print(e);
       return null;
     }
+    return null;
   }
 
   /// Upload a file, returning the file's public URL on success.
@@ -131,6 +132,7 @@ class AwsS3Uploader {
       print(e);
       return null;
     }
+    return null;
   }
 
   static Future<String?> getDirectUploadDescription({

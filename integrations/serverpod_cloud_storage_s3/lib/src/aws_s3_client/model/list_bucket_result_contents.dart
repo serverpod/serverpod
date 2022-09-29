@@ -12,7 +12,7 @@ part 'list_bucket_result_contents.g.dart';
 abstract class Contents implements Built<Contents, ContentsBuilder> {
   Contents._();
 
-  factory Contents([updates(ContentsBuilder b)?]) = _$Contents;
+  factory Contents([Function(ContentsBuilder b)? updates]) = _$Contents;
 
   @BuiltValueField(wireName: 'Key')
   String? get key;

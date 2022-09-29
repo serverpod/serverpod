@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: library_private_types_in_public_api, no_leading_underscores_for_local_identifiers
+
 part of 'list_bucket_result_parker.dart';
 
 // **************************************************************************
