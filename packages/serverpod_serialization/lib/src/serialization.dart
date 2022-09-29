@@ -34,13 +34,19 @@ abstract class SerializableEntity {
     };
   }
 
-  /// Unwraps class information, and only returns the data part.
-  Map<String, dynamic> unwrapSerializationData(
-      Map<String, dynamic> serialization) {
+  /// Unwraps class information after checking the class name, and only returns the data part.
+  static Map<String, dynamic> unwrapSerializationDataForClassName(
+      String className, Map<String, dynamic> serialization) {
     if (serialization['class'] != className) throw const FormatException();
     if (serialization['data'] == null) throw const FormatException();
 
     return serialization['data'];
+  }
+
+  /// Unwraps class information, and only returns the data part.
+  Map<String, dynamic> unwrapSerializationData(
+      Map<String, dynamic> serialization) {
+    return unwrapSerializationDataForClassName(className, serialization);
   }
 
   @override

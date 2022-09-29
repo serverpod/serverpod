@@ -15,6 +15,19 @@ class BasicDatabase extends Endpoint {
     return types;
   }
 
+  Future<int?> storeObjectWithEnum(
+    Session session,
+    ObjectWithEnum object,
+  ) async {
+    await ObjectWithEnum.insert(session, object);
+    return object.id;
+  }
+
+  Future<ObjectWithEnum?> getObjectWithEnum(Session session, int id) async {
+    var object = await ObjectWithEnum.findById(session, id);
+    return object;
+  }
+
   Future<int?> getTypesRawQuery(Session session, int id) async {
     var query = 'SELECT * FROM types WHERE id = $id';
     var result = await session.db.query(query);

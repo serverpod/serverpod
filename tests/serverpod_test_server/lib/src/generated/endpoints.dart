@@ -531,6 +531,33 @@ class Endpoints extends EndpointDispatch {
             );
           },
         ),
+        'storeObjectWithEnum': MethodConnector(
+          name: 'storeObjectWithEnum',
+          params: {
+            'object': ParameterDescription(
+                name: 'object', type: ObjectWithEnum, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .storeObjectWithEnum(
+              session,
+              params['object'],
+            );
+          },
+        ),
+        'getObjectWithEnum': MethodConnector(
+          name: 'getObjectWithEnum',
+          params: {
+            'id': ParameterDescription(name: 'id', type: int, nullable: false),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['basicDatabase'] as BasicDatabase)
+                .getObjectWithEnum(
+              session,
+              params['id'],
+            );
+          },
+        ),
         'getTypesRawQuery': MethodConnector(
           name: 'getTypesRawQuery',
           params: {

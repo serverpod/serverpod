@@ -8,31 +8,27 @@
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-enum AuthenticationFailReason with SerializableEntity {
-  invalidCredentials,
-  userCreationDenied,
-  internalError,
-  tooManyFailedAttempts,
+enum TestEnum with SerializableEntity {
+  one,
+  two,
+  three,
   ;
 
-  static String get _className => 'AuthenticationFailReason';
+  static String get _className => 'TestEnum';
 
   @override
   String get className => _className;
 
-  factory AuthenticationFailReason.fromSerialization(
-      Map<String, dynamic> serialization) {
+  factory TestEnum.fromSerialization(Map<String, dynamic> serialization) {
     var data = SerializableEntity.unwrapSerializationDataForClassName(
         _className, serialization);
     switch (data['index']) {
       case 0:
-        return AuthenticationFailReason.invalidCredentials;
+        return TestEnum.one;
       case 1:
-        return AuthenticationFailReason.userCreationDenied;
+        return TestEnum.two;
       case 2:
-        return AuthenticationFailReason.internalError;
-      case 3:
-        return AuthenticationFailReason.tooManyFailedAttempts;
+        return TestEnum.three;
       default:
         throw Exception('Invalid $_className index $data[\'index\']');
     }

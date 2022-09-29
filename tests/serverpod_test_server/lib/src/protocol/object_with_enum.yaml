@@ -1,0 +1,7 @@
+class: ObjectWithEnum
+table: object_with_enum
+fields:
+  testEnum: TestEnum
+  nullableEnum: TestEnum?
+  enumList: List<TestEnum>
+  nullableEnumList: List<TestEnum?>

@@ -669,6 +669,23 @@ void main() {
       }
     });
 
+    test('Write and read enums', () async {
+      var object = ObjectWithEnum(
+        testEnum: TestEnum.two,
+        nullableEnum: null,
+        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
+        nullableEnumList: [TestEnum.one, null, TestEnum.three],
+      );
+
+      var objectId = await client.basicDatabase.storeObjectWithEnum(object);
+      expect(objectId, isNotNull);
+
+      var returnedObject =
+          await client.basicDatabase.getObjectWithEnum(objectId!);
+      expect(returnedObject, isNotNull);
+      expect(returnedObject!.testEnum, equals(TestEnum.two));
+    });
+
     test('Raw query', () async {
       var types = Types();
 
