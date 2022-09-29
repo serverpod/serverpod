@@ -7,30 +7,54 @@ import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:serverpod_auth_client/module.dart' as auth;
 
+/// Callback for when a message is received from the server. If [addedByUser] is
+/// true, the message was added by the current user.
 typedef ChatControllerReceivedMessageCallback = void Function(
     ChatMessage message, bool addedByUser);
 
+/// Handles all interaction with a chat channel.
 class ChatController {
+  /// The identifiying channel name of chat this controller is handling.
   late final String channel;
+
+  /// Reference to the module.
   final Caller module;
+
+  /// The [SessionManager] handling authentication.
   final SessionManager sessionManager;
+
+  /// True if the chat is ephemeral and shouldn't be saved to the database.
   final bool ephemeral;
+
+  /// Name of an autheticated user.
   final String? unauthenticatedUserName;
 
+  /// Reference to the dispatch that handles multiple chat channels.
   late final ChatDispatch dispatch;
 
+  /// List of received chat messages.
   final messages = <ChatMessage>[];
 
   bool _joinedChannel = false;
+
+  /// True if the user has joined this channel.
   bool get joinedChannel => _joinedChannel;
 
   bool _joinFailed = false;
+
+  /// True if the user failed to join this channel.
   bool get joinFailed => _joinFailed;
 
   String? _joinFailedReason;
+
+  /// A description of the reason we were not allowed to join this channel.
+  /// Only set if [joinFailed] is true.
   String? get joinFailedReason => _joinFailedReason;
 
   bool _hasOlderMessages = true;
+
+  /// True if there are older messages than the ones that we have received so
+  /// far.
   bool get hasOlderMessages => _hasOlderMessages;
 
   int _clientMessageId = 0;
@@ -43,7 +67,10 @@ class ChatController {
   final _unreadMessagesListeners = <VoidCallback>{};
   final _connectionStatusListeners = <VoidCallback>{};
 
+  /// The [scrollOffset] of a connected scroll view.
   double scrollOffset = 0;
+
+  /// We have scrolled to the bottom of the chat.
   bool scrollAtBottom = true;
 
   int _lastReadMessage = 0;
@@ -55,8 +82,11 @@ class ChatController {
   auth.UserInfo? _joinedAsUserInfo;
 
   @visibleForTesting
+
+  /// True if we have received a [UserInfo] for the current user.
   bool get hasUserInfo => _joinedAsUserInfo != null;
 
+  /// Creates a new [ChatController].
   ChatController({
     required String channel,
     required this.module,
@@ -77,6 +107,7 @@ class ChatController {
     );
   }
 
+  /// Disposes the [ChatController] when it is no longer used.
   void dispose() {
     dispatch.removeListener(channel);
     _receivedMessageListeners.clear();
@@ -136,6 +167,7 @@ class ChatController {
     }
   }
 
+  /// Sends a chat message with optional [attachments].
   void postMessage(String message, [List<ChatMessageAttachment>? attachments]) {
     if (!sessionManager.isSignedIn && unauthenticatedUserName == null) {
       return;
@@ -152,7 +184,7 @@ class ChatController {
     );
 
     // Post dummy message
-    final dummy = ChatMessage(
+    var dummy = ChatMessage(
       channel: channel,
       message: message,
       time: DateTime.now().toUtc(),
@@ -169,8 +201,9 @@ class ChatController {
     _clientMessageId += 1;
   }
 
+  /// Marks last message as read.
   void markLastMessageRead() {
-    final messageId = _getLastMessageId();
+    var messageId = _getLastMessageId();
     if (messageId == null) {
       return;
     }
@@ -194,7 +227,7 @@ class ChatController {
 
   bool _unreadMessagesLast = false;
   void _updateUnreadMessages() {
-    final hasUnread = hasUnreadMessages;
+    var hasUnread = hasUnreadMessages;
     if (_unreadMessagesLast != hasUnread) {
       _unreadMessagesLast = hasUnread;
       _notifyUnreadMessagesListeners();
@@ -204,7 +237,7 @@ class ChatController {
   int? _getLastMessageId() {
     int? lastMessageId;
 
-    for (final message in messages.reversed) {
+    for (var message in messages.reversed) {
       if (message.sender != _joinedAsUserInfo!.id! && message.id != null) {
         lastMessageId = message.id!;
         break;
@@ -214,6 +247,7 @@ class ChatController {
     return lastMessageId;
   }
 
+  /// True if there are unread messages.
   bool get hasUnreadMessages {
     // Find last message that user didn't send
     int? lastMessageId = _getLastMessageId();
@@ -224,6 +258,7 @@ class ChatController {
     return lastMessageId != _lastReadMessage;
   }
 
+  /// Request a new chunk of messages.
   void requestNextMessageChunk() {
     if (!_hasOlderMessages ||
         !sessionManager.isSignedIn ||
@@ -245,28 +280,32 @@ class ChatController {
 
   // Listeners for received messages
 
+  /// Adds a listener for received messages.
   void addMessageReceivedListener(
       ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.add(listener);
   }
 
+  /// Removes a listener for received messages.
   void removeMessageReceivedListener(
       ChatControllerReceivedMessageCallback listener) {
     _receivedMessageListeners.remove(listener);
   }
 
   void _notifyMessageListeners(ChatMessage message, bool addedByUser) {
-    for (final listener in _receivedMessageListeners) {
+    for (var listener in _receivedMessageListeners) {
       listener(message, addedByUser);
     }
   }
 
   // Listeners for updated messages
 
+  /// Adds a listener for updates messages.
   void addMessageUpdatedListener(VoidCallback listener) {
     _messageUpdatedListeners.add(listener);
   }
 
+  /// Removes a listener for updated messages.
   void removeMessageUpdatedListener(VoidCallback listener) {
     _messageUpdatedListeners.remove(listener);
   }
@@ -279,10 +318,12 @@ class ChatController {
 
   // Listeners for recevied message chunks
 
+  /// Adds a listener for received chunks of messages.
   void addReceivedMessageChunkListener(VoidCallback listener) {
     _receivedMessageChunkListeners.add(listener);
   }
 
+  /// Removes a listener for received chunks of messages.
   void removeReceivedMessageChunkListener(VoidCallback listener) {
     _receivedMessageChunkListeners.remove(listener);
   }
@@ -295,10 +336,12 @@ class ChatController {
 
   // Listeners for unread messages
 
+  /// Adds a listener for unread messages.
   void addUnreadMessagesListener(VoidCallback listener) {
     _unreadMessagesListeners.add(listener);
   }
 
+  /// Removes a listener for unread messages.
   void removeUnreadMessagesListener(VoidCallback listener) {
     _unreadMessagesListeners.remove(listener);
   }
@@ -311,10 +354,12 @@ class ChatController {
 
   // Listeners for connection status
 
+  /// Adds a listener for connection status.
   void addConnectionStatusListener(VoidCallback listener) {
     _connectionStatusListeners.add(listener);
   }
 
+  /// Removes a listener for connection status.
   void removeConnectionStatusListener(VoidCallback listener) {
     _connectionStatusListeners.remove(listener);
   }

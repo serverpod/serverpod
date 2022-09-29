@@ -5,16 +5,24 @@ import 'package:serverpod_chat_flutter/src/chat_tile.dart';
 
 const _offsetForRequestingNextChunk = 100.0;
 
+/// Builds a new chat tile. By default the [DefaultChatTile] is used.
 typedef ChatTileBuilder = Widget Function(
     BuildContext context, ChatMessage message, ChatMessage? previous);
 
+/// A [ChatView] displays a scrollable list of chat messages associated with the
+/// [controller]. The messages are rendered using the [tileBuilder]. To create
+/// a custom look for the chat messages, provide a custom [ChatTileBuilder].
 class ChatView extends StatefulWidget {
+  /// The [ChatController] associated with this chat view.
   final ChatController controller;
+
+  /// A builder used to render the individual chat messages.
   final ChatTileBuilder? tileBuilder;
 
   /// Optional widget to be shown on top of the oldest chat message
   final Widget? leading;
 
+  /// Creates a new [ChatView].
   const ChatView({
     Key? key,
     required this.controller,
@@ -23,10 +31,10 @@ class ChatView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ChatViewState createState() => _ChatViewState();
+  ChatViewState createState() => ChatViewState();
 }
 
-class _ChatViewState extends State<ChatView>
+class ChatViewState extends State<ChatView>
     with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final AnimationController _fadeInAnimation;
@@ -111,7 +119,7 @@ class _ChatViewState extends State<ChatView>
     _distanceToBottomBeforeMessageChunk =
         _scrollController.position.maxScrollExtent - _scrollController.offset;
     setState(() {});
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent -
           _distanceToBottomBeforeMessageChunk!);
       _distanceToBottomBeforeMessageChunk = null;
@@ -141,7 +149,7 @@ class _ChatViewState extends State<ChatView>
   @override
   Widget build(BuildContext context) {
     if (_messageAdded) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_offset == _maxExtent || _messageAddedByUser) {
           _scrollToBottom();
           _messageAddedByUser = false;
@@ -160,7 +168,7 @@ class _ChatViewState extends State<ChatView>
         // Start the fade in when we know we are at the bottom.
         _fadeIn();
       }
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         widget.controller.markLastMessageRead();
 
         _scrollController.jumpTo(
@@ -173,7 +181,7 @@ class _ChatViewState extends State<ChatView>
         _scrollController.offset ==
             _scrollController.position.maxScrollExtent) {
       // we are already at the bottom, mark messages as read
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         widget.controller.markLastMessageRead();
       });
     }
@@ -188,7 +196,7 @@ class _ChatViewState extends State<ChatView>
             if (_scrollController.hasClients &&
                 _scrollController.offset ==
                     _scrollController.position.maxScrollExtent) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 _scrollController
                     .jumpTo(_scrollController.position.maxScrollExtent);
               });
@@ -217,7 +225,7 @@ class _ChatViewState extends State<ChatView>
   }
 
   Widget _chatItemBuilder(BuildContext context, int item) {
-    final leading = widget.leading;
+    var leading = widget.leading;
     if (leading != null && !widget.controller.hasOlderMessages) {
       // If we have a leading widget, show that on top
       if (item == 0) {
@@ -237,8 +245,7 @@ class _ChatViewState extends State<ChatView>
 
     // Explicit type match, else this gets promoted to a dynamic `Function()`
     // ignore: omit_local_variable_types
-    final ChatTileBuilder tileBuilder =
-        widget.tileBuilder ?? _defaultTileBuilder;
+    ChatTileBuilder tileBuilder = widget.tileBuilder ?? _defaultTileBuilder;
     return tileBuilder(context, message, previous);
   }
 

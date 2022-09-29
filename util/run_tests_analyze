@@ -30,6 +30,10 @@ dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_google_flutter
 dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_email_flutter
 dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_firebase_flutter
 
+dart analyze --fatal-infos modules/serverpod_chat/serverpod_chat_server
+dart analyze --fatal-infos modules/serverpod_chat/serverpod_chat_client
+dart analyze --fatal-infos modules/serverpod_chat/serverpod_chat_flutter
+
 dart analyze --fatal-infos templates/serverpod_templates/projectname_flutter
 dart analyze --fatal-infos templates/serverpod_templates/projectname_client
 dart analyze --fatal-infos templates/serverpod_templates/projectname_server

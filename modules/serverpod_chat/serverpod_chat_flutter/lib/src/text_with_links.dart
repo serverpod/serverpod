@@ -2,12 +2,23 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// A [Text] widget with tappable links. The [text] is parsed and url links are
+/// styled and made tappable. On tap, they will open the url in the default
+/// browser.
 class TextWithLinks extends StatefulWidget {
+  /// The text to render.
   final String text;
+
+  /// Color of the links.
   final Color linkColor;
+
+  /// Style of the text.
   final TextStyle style;
+
+  /// If true, the text will be selectable.
   final bool selectable;
 
+  /// Creates a new [TextWithLinks].
   const TextWithLinks(
     this.text, {
     required this.linkColor,
@@ -17,17 +28,18 @@ class TextWithLinks extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TextWithLinksState createState() => _TextWithLinksState();
+  TextWithLinksState createState() => TextWithLinksState();
 }
 
-class _TextWithLinksState extends State<TextWithLinks> {
+class TextWithLinksState extends State<TextWithLinks> {
   @override
   Widget build(BuildContext context) {
     var textSpan = _buildTextSpanForText(widget.text, widget.style);
-    if (widget.selectable)
+    if (widget.selectable) {
       return SelectableText.rich(textSpan);
-    else
+    } else {
       return RichText(text: textSpan);
+    }
   }
 
   final List<GestureRecognizer> _recognizers = <GestureRecognizer>[];
@@ -40,9 +52,11 @@ class _TextWithLinksState extends State<TextWithLinks> {
 
   void _disposeRecognizers() {
     if (_recognizers.isEmpty) return;
-    final localRecognizers = List<GestureRecognizer>.from(_recognizers);
+    var localRecognizers = List<GestureRecognizer>.from(_recognizers);
     _recognizers.clear();
-    for (var recognizer in localRecognizers) recognizer.dispose();
+    for (var recognizer in localRecognizers) {
+      recognizer.dispose();
+    }
   }
 
   TextSpan _buildTextSpanForText(String text, TextStyle style) {
@@ -69,10 +83,9 @@ class _TextWithLinksState extends State<TextWithLinks> {
       // Add link
       var href = text.substring(m.start, m.end);
 
-      final recognizer = TapGestureRecognizer()
+      var recognizer = TapGestureRecognizer()
         ..onTap = () {
-          print('Tapped: $href');
-          launch(href);
+          launchUrl(Uri.parse(href));
         };
       _recognizers.add(recognizer);
 

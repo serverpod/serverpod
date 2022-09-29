@@ -1,10 +1,9 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
-publish_to: none
+# TEMPLATE
+PUBLISH_TO
 
 name: serverpod_chat_flutter
 description: Flutter widgets for the Serverpod chat module.
-version: 0.9.17
+version: VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -20,11 +19,11 @@ dependencies:
   intl: ^0.17.0
   url_launcher: ^6.0.17
   path: ^1.8.2
-  serverpod_auth_client: #^0.9.17
+  serverpod_auth_client: #^VERSION
     path: ../../serverpod_auth/serverpod_auth_client
-  serverpod_chat_client: #^0.9.17
+  serverpod_chat_client: #^VERSION
     path: ../serverpod_chat_client
-  serverpod_auth_shared_flutter: #^0.9.17
+  serverpod_auth_shared_flutter: #^VERSION
     path: ../../serverpod_auth/serverpod_auth_shared_flutter
 
 dev_dependencies:

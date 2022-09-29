@@ -11,6 +11,7 @@ import 'package:serverpod_auth_server/module.dart';
 import '../business/config.dart';
 import '../generated/protocol.dart';
 
+/// Connect to the chat endpoint to send and receive chat messages.
 class ChatEndpoint extends Endpoint {
   static const _channelPrefix = 'serverpod_chat.';
   static const _ephemeralChannelPrefix = 'ephemeral.';
@@ -19,9 +20,6 @@ class ChatEndpoint extends Endpoint {
 
   static int _tempUserId = -1;
 
-  // @override
-  // bool get requireLogin => true;
-
   @override
   Future<void> streamOpened(StreamingSession session) async {
     var userId = await session.auth.authenticatedUserId;
@@ -29,18 +27,18 @@ class ChatEndpoint extends Endpoint {
     if (userId != null) {
       setUserObject(
           session,
-          ChatSessionInfo(
+          _ChatSessionInfo(
             userInfo: await Users.findUserByUserId(session, userId),
           ));
     } else {
-      setUserObject(session, ChatSessionInfo());
+      setUserObject(session, _ChatSessionInfo());
     }
   }
 
   @override
   Future<void> handleStreamMessage(
       StreamingSession session, SerializableEntity message) async {
-    var chatSession = getUserObject(session) as ChatSessionInfo;
+    var chatSession = getUserObject(session) as _ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
       // TODO: Check if unauthenticated users is ok
@@ -86,9 +84,10 @@ class ChatEndpoint extends Endpoint {
       }
 
       // Setup a listener that passes on messages from the subscribed channel
-      var messageListener = (SerializableEntity message) {
+      void messageListener(SerializableEntity message) {
         sendStreamMessage(session, message);
-      };
+      }
+
       session.messages
           .addListener(_channelPrefix + message.channel, messageListener);
       chatSession.messageListeners[message.channel] = messageListener;
@@ -132,8 +131,9 @@ class ChatEndpoint extends Endpoint {
         attachments: message.attachments,
       );
 
-      if (!_isEphemeralChannel(message.channel))
+      if (!_isEphemeralChannel(message.channel)) {
         await session.db.insert(chatMessage);
+      }
 
       session.messages.postMessage(
         _channelPrefix + message.channel,
@@ -252,6 +252,7 @@ class ChatEndpoint extends Endpoint {
     }
   }
 
+  /// Creates a description for uploading an attachment.
   Future<ChatMessageAttachmentUploadDescription?>
       createAttachmentUploadDescription(
           Session session, String fileName) async {
@@ -268,6 +269,7 @@ class ChatEndpoint extends Endpoint {
         filePath: filePath, uploadDescription: uploadDescription);
   }
 
+  /// Verifies that an attachment has been uploaded.
   Future<ChatMessageAttachment?> verifyAttachmentUpload(
       Session session, String fileName, String filePath) async {
     var success = await session.storage
@@ -292,8 +294,9 @@ class ChatEndpoint extends Endpoint {
         var bytes = response.bodyBytes;
         var image = decodeImage(bytes);
         if (image != null) {
-          if (image.width > maxImageWidth)
+          if (image.width > maxImageWidth) {
             image = copyResize(image, width: maxImageWidth);
+          }
           var thumbPath = _generateAttachmentFilePath(userId, fileName);
           var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
           var byteData = ByteData.view(encodedBytes.buffer);
@@ -307,9 +310,8 @@ class ChatEndpoint extends Endpoint {
           }
         }
       }
-    } catch (e, stackTrace) {
-      print('Failed to create attachment: $e');
-      print('$stackTrace');
+    } catch (e) {
+      rethrow;
     }
 
     if (success && url != null) {
@@ -322,6 +324,7 @@ class ChatEndpoint extends Endpoint {
         previewImage: thumbUrl?.toString(),
       );
     }
+    return null;
   }
 
   String _generateAttachmentFilePath(int userId, String fileName) {
@@ -341,11 +344,11 @@ class ChatEndpoint extends Endpoint {
   }
 }
 
-class ChatSessionInfo {
+class _ChatSessionInfo {
   final messageListeners = <String, MessageCentralListenerCallback>{};
   UserInfo? userInfo;
 
-  ChatSessionInfo({
+  _ChatSessionInfo({
     this.userInfo,
   });
 }
