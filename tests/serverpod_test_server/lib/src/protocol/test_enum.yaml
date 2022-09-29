@@ -1,0 +1,5 @@
+enum: TestEnum
+values:
+  - one
+  - two
+  - three

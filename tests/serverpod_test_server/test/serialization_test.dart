@@ -59,6 +59,28 @@ void main() {
       }
     });
 
+    test('Object with enum', () {
+      var object = ObjectWithEnum(
+        testEnum: TestEnum.one,
+        nullableEnum: null,
+        nullableEnumList: [TestEnum.one, null, TestEnum.three],
+        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
+      );
+      var s = protocol.serializeEntity(object)!;
+      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s))
+          as ObjectWithEnum;
+      expect(unpacked.testEnum, equals(TestEnum.one));
+      expect(unpacked.nullableEnum, isNull);
+      expect(unpacked.nullableEnumList.length, equals(3));
+      expect(unpacked.nullableEnumList[0], equals(TestEnum.one));
+      expect(unpacked.nullableEnumList[1], isNull);
+      expect(unpacked.nullableEnumList[2], equals(TestEnum.three));
+      expect(unpacked.enumList.length, equals(3));
+      expect(unpacked.enumList[0], equals(TestEnum.one));
+      expect(unpacked.enumList[1], equals(TestEnum.two));
+      expect(unpacked.enumList[2], equals(TestEnum.three));
+    });
+
     test('Nullability with null types', () {
       var nullability = Nullability(
         anInt: 42,

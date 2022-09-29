@@ -34,6 +34,8 @@ s3CloudStorage:
 basicDatabase:
   - storeTypes:
   - getTypes:
+  - storeObjectWithEnum:
+  - getObjectWithEnum:
   - getTypesRawQuery:
   - countTypesRows:
   - deleteAllInTypes:

@@ -350,6 +350,26 @@ class _EndpointBasicDatabase extends EndpointRef {
     return retval;
   }
 
+  Future<int?> storeObjectWithEnum(
+    ObjectWithEnum object,
+  ) async {
+    var retval = await caller
+        .callServerEndpoint('basicDatabase', 'storeObjectWithEnum', 'int', {
+      'object': object,
+    });
+    return retval;
+  }
+
+  Future<ObjectWithEnum?> getObjectWithEnum(
+    int id,
+  ) async {
+    var retval = await caller.callServerEndpoint(
+        'basicDatabase', 'getObjectWithEnum', 'ObjectWithEnum', {
+      'id': id,
+    });
+    return retval;
+  }
+
   Future<int?> getTypesRawQuery(
     int id,
   ) async {

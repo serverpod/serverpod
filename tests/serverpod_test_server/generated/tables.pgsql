@@ -13,6 +13,22 @@ ALTER TABLE ONLY object_field_scopes
 
 
 --
+-- Class ObjectWithEnum as table object_with_enum
+--
+
+CREATE TABLE object_with_enum (
+  "id" serial,
+  "testEnum" json NOT NULL,
+  "nullableEnum" json,
+  "enumList" json NOT NULL,
+  "nullableEnumList" json NOT NULL
+);
+
+ALTER TABLE ONLY object_with_enum
+  ADD CONSTRAINT object_with_enum_pkey PRIMARY KEY (id);
+
+
+--
 -- Class ObjectWithObject as table object_with_object
 --
 
