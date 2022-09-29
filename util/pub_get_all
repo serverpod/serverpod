@@ -131,3 +131,9 @@ dart pub get
 echo "\nserverpod_chat_flutter"
 cd $BASE/modules/serverpod_chat/serverpod_chat_flutter
 dart pub get
+
+# Integrations
+
+echo "\nserverpod_cloud_storage_s3"
+cd $BASE/integrations/serverpod_cloud_storage_s3
+dart pub get

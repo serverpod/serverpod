@@ -16,3 +16,4 @@ modules/serverpod_auth/serverpod_auth_firebase_flutter
 modules/serverpod_chat/serverpod_chat_server
 modules/serverpod_chat/serverpod_chat_client
 modules/serverpod_chat/serverpod_chat_flutter
+integrations/serverpod_cloud_storage_s3
