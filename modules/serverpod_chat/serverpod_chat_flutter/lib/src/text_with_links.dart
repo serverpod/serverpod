@@ -31,6 +31,7 @@ class TextWithLinks extends StatefulWidget {
   TextWithLinksState createState() => TextWithLinksState();
 }
 
+/// The state of [TextWithLinks].
 class TextWithLinksState extends State<TextWithLinks> {
   @override
   Widget build(BuildContext context) {

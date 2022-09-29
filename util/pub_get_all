@@ -117,3 +117,17 @@ dart pub get
 echo "\nserverpod_auth_firebase_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_firebase_flutter
 dart pub get
+
+# Chat module
+
+echo "\nserverpod_chat_server"
+cd $BASE/modules/serverpod_chat/serverpod_chat_server
+dart pub get
+
+echo "\nserverpod_chat_client"
+cd $BASE/modules/serverpod_chat/serverpod_chat_client
+dart pub get
+
+echo "\nserverpod_chat_flutter"
+cd $BASE/modules/serverpod_chat/serverpod_chat_flutter
+dart pub get

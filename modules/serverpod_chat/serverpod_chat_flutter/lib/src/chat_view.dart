@@ -34,6 +34,7 @@ class ChatView extends StatefulWidget {
   ChatViewState createState() => ChatViewState();
 }
 
+/// The state of the [ChatView].
 class ChatViewState extends State<ChatView>
     with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
