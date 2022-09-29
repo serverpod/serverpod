@@ -1,3 +1,6 @@
+## 0.9.18
+- Adds chat module to published packages.
+
 ## 0.9.17
 - Reliability fix for FlutterConnectivityMonitor on web platform.
 
