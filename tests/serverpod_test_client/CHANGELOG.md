@@ -1,3 +1,6 @@
+## 0.9.19
+- Adds support for storing and reading binary ByteData to/from the database.
+
 ## 0.9.18
 - Adds chat module to published packages.
 
