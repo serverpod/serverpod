@@ -11,6 +11,15 @@ class ValueEncoder extends PostgresTextEncoder {
     if (value is ByteData) {
       var encoded = base64Encode(value.buffer.asUint8List());
       return 'decode(\'$encoded\', \'base64\')';
+    } else if (value is String &&
+        value.startsWith('decode(\'') &&
+        value.endsWith('\', \'base64\')')) {
+      // TODO:
+      // This is a bit of a hack to get ByteData working. Strings that starts
+      // with `convert('` and ends with `', 'base64') will be incorrectly
+      // encoded to base64. Best would be to find a better way to detect when we
+      // are trying to store a ByteData.
+      return value;
     }
     return super.convert(value, escapeStrings: escapeStrings);
   }

@@ -226,11 +226,12 @@ Current type was $T''');
       if (value is DateTime) {
         data[columnName] = value.toIso8601String();
       } else if (value is Uint8List) {
-        throw (UnimplementedError('Binary storage is not yet supported.'));
-
-        // TODO: It seems like the Postgres driver is returning incorrect data
-        // var byteData = ByteData.view(value.buffer);
-        // data[columnName] = byteData.base64encodedString();
+        var byteData = ByteData.view(
+          value.buffer,
+          value.offsetInBytes,
+          value.length,
+        );
+        data[columnName] = byteData.base64encodedString();
       } else {
         data[columnName] = value;
       }
@@ -351,19 +352,7 @@ Current type was $T''');
 
       String value;
       var unformattedValue = data[column];
-      // TODO: Support binary stores in the database
-      // if (unformattedValue is String && unformattedValue.startsWith('decode(\'')/* && unformattedValue.endsWith('\', \'base64\')') */) {
-      //   // TODO:
-      //   // This is a bit of a hack since strings that starts with
-      //   // `convert('` and ends with `', 'base64') will be incorrectly encoded
-      //   // to base64. Best would be to find a better way to detect when we are
-      //   // trying to store a ByteData.
-      //   print('DETECTED BINARY');
-      //   value = data[column];
-      // }
-      // else {
-      //   value = DatabaseConfig.encoder.convert(unformattedValue);
-      // }
+
       value = DatabasePoolManager.encoder.convert(unformattedValue);
 
       columnsList.add('"$column"');
