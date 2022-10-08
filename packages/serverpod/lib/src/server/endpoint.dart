@@ -90,10 +90,18 @@ abstract class Endpoint {
 
     var data = {
       'endpoint': '$prefix$name',
-      'object': message.serialize(),
+      'object': {
+        'className': message.className,
+        'data': message,
+      },
     };
 
-    var payload = jsonEncode(data);
+    var payload = SerializationManager.serializeToJson(data);
     session.webSocket.add(payload);
   }
+
+  ///
+  String? getStreamClassNameFromMessage(SerializableEntity message) {}
+
+  Type? getMessageTypeFrom(String name) {}
 }

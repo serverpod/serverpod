@@ -224,7 +224,7 @@ class MethodCallSession extends Session {
   final String body;
 
   /// Query parameters of the server call.
-  late final Map<String, String> queryParameters;
+  late final Map<String, dynamic> queryParameters;
 
   /// The name of the called [Endpoint].
   final String endpointName;
@@ -249,9 +249,9 @@ class MethodCallSession extends Session {
           enableLogging: enableLogging,
         ) {
     // Read query parameters
-    var queryParameters = <String, String>{};
+    var queryParameters = <String, dynamic>{};
     if (body != '' && body != 'null') {
-      queryParameters = jsonDecode(body).cast<String, String>();
+      queryParameters = jsonDecode(body).cast<String, dynamic>();
     }
 
     // Add query parameters from uri
@@ -527,9 +527,9 @@ class MessageCentralAccess {
 
   /// Posts a [message] to a named channel. If local is set to true, the message
   /// will never leave the server and only local listeners will receive it.
-  void postMessage(
+  void postMessage<T extends SerializableEntity>(
     String channelName,
-    SerializableEntity message, {
+    T message, {
     bool local = false,
   }) {
     _session.server.messageCentral.postMessage(

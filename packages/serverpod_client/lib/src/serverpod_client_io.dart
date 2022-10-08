@@ -60,11 +60,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args) async {
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
-    String? data;
     try {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
@@ -80,13 +79,13 @@ abstract class ServerpodClient extends ServerpodClientShared {
       await request.flush();
 
       var response = await request.close(); // done instead of close() ?
-      data = await _readResponse(response);
+      var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
-        throw (ServerpodClientException(data!, response.statusCode));
+        throw (ServerpodClientException(data, response.statusCode));
       }
 
-      return parseData(data!, returnTypeName, serializationManager);
+      return parseData(data, T, serializationManager);
     } catch (e, stackTrace) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
@@ -95,14 +94,16 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       if (errorHandler != null) {
         errorHandler!(e, stackTrace);
+        //TODO: decide what should be done here
+        rethrow;
       } else {
         rethrow;
       }
     }
   }
 
-  Future<dynamic> _readResponse(HttpClientResponse response) {
-    var completer = Completer();
+  Future<String> _readResponse(HttpClientResponse response) {
+    var completer = Completer<String>();
     var contents = StringBuffer();
     response.transform(const Utf8Decoder()).listen((String data) {
       contents.write(data);

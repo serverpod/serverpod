@@ -22,7 +22,7 @@ abstract class Cache {
 
   /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
   /// matching object can be found, null is returned.
-  Future<SerializableEntity?> get(String key);
+  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]);
 
   /// Removes a single object from the cache if it matches the [key].
   Future<void> invalidateKey(String key);

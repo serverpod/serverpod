@@ -25,7 +25,7 @@ class LocalCache extends Cache {
     var entry = _CacheEntry(
       key: key,
       group: group,
-      serializedObject: object.serializeAll(),
+      serializedObject: object.allToJson(),
       lifetime: lifetime,
     );
 
@@ -65,18 +65,17 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<SerializableEntity?> get(String key) async {
+  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
     var entry = _entries[key];
+
     if (entry == null) return null;
 
-    if (entry.expirationTime != null &&
-        entry.expirationTime!.compareTo(DateTime.now()) < 0) {
+    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
       await invalidateKey(key);
       return null;
     }
 
-    return serializationManager
-        .createEntityFromSerialization(entry.serializedObject);
+    return serializationManager.deserializeJson<T>(entry.serializedObject, t);
   }
 
   @override
@@ -148,7 +147,7 @@ class LocalCache extends Cache {
 class _CacheEntry {
   final String key;
   final String? group;
-  final Map<String, dynamic> serializedObject;
+  final dynamic serializedObject;
   final DateTime creationTime;
   final Duration? lifetime;
   DateTime? get expirationTime =>

@@ -107,7 +107,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findById<T>(
+  Future<T?> findById<T extends TableRow>(
     int id, {
     required Session session,
     Transaction? transaction,
@@ -122,7 +122,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> find<T>({
+  Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
     int? offset,
@@ -175,7 +175,7 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow(tableName, rawRow[tableName]));
+        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -187,7 +187,7 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findSingleRow<T>({
+  Future<T?> findSingleRow<T extends TableRow>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -214,10 +214,8 @@ Current type was $T''');
     }
   }
 
-  TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
-    String? className = poolManager.tableClassMapping[tableName];
-    if (className == null) return null;
-
+  T? _formatTableRow<T extends TableRow>(
+      String tableName, Map<String, dynamic>? rawRow) {
     var data = <String, dynamic>{};
 
     for (var columnName in rawRow!.keys) {
@@ -237,14 +235,11 @@ Current type was $T''');
       }
     }
 
-    var serialization = <String, dynamic>{'data': data, 'class': className};
-
-    return poolManager.serializationManager
-        .createEntityFromSerialization(serialization) as TableRow?;
+    return poolManager.serializationManager.deserializeJson<T>(data);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count<T>({
+  Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
     bool useCache = true,
@@ -295,7 +290,7 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase()['data'];
+    Map data = row.serializeForDatabase();
 
     int? id = data['id'];
 
@@ -338,7 +333,7 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase()['data'];
+    Map data = row.serializeForDatabase();
 
     var columnsList = <String>[];
     var valueList = <String>[];

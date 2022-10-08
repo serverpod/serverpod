@@ -41,8 +41,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args) async {
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
     String? data;
@@ -62,7 +62,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
         throw (ServerpodClientException(data, response.statusCode));
       }
 
-      return parseData(data, returnTypeName, serializationManager);
+      return parseData(data, T, serializationManager);
     } catch (e, stackTrace) {
       if (e is http.ClientException) {
         var message = data ?? 'Unknown server response code. ($e)';
@@ -76,6 +76,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       if (errorHandler != null) {
         errorHandler!(e, stackTrace);
+        //TODO: decide what should be done here
+        rethrow;
       } else {
         rethrow;
       }

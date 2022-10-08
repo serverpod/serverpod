@@ -3,162 +3,205 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 import 'bytedata_base64_ext.dart';
 
 /// The constructor takes JSON structure and turns it into a decoded
 /// [SerializableEntity].
-typedef constructor = SerializableEntity Function(
-    Map<String, dynamic> serialization);
+typedef constructor<T> = T Function(
+    dynamic jsonSerialization, SerializationManager serializationManager);
 
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
 abstract class SerializableEntity {
-  /// Returns the class name of this entity.
-  String get className;
-
   /// Returns a serialized JSON structure of the entity, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
-  Map<String, dynamic> serialize();
+  dynamic toJson();
 
   /// Returns a serialized JSON structure of the entity which also includes
   /// fields used by the database.
-  Map<String, dynamic> serializeAll() => serialize();
-
-  /// Wraps the serialized data to combine it with its class name, if the
-  /// decoded type isn't known ahead of time.
-  Map<String, dynamic> wrapSerializationData(Map<String, dynamic> data) {
-    return {
-      'class': className,
-      'data': data,
-    };
-  }
-
-  /// Unwraps class information after checking the class name, and only returns the data part.
-  static Map<String, dynamic> unwrapSerializationDataForClassName(
-      String className, Map<String, dynamic> serialization) {
-    if (serialization['class'] != className) throw const FormatException();
-    if (serialization['data'] == null) throw const FormatException();
-
-    return serialization['data'];
-  }
-
-  /// Unwraps class information, and only returns the data part.
-  Map<String, dynamic> unwrapSerializationData(
-      Map<String, dynamic> serialization) {
-    return unwrapSerializationDataForClassName(className, serialization);
-  }
+  dynamic allToJson() => toJson();
 
   @override
   String toString() {
-    return jsonEncode(serialize());
+    return SerializationManager.serializeToJson(this);
   }
+
+  /// The unique className, used to wrap the serialization when sending
+  /// through stream endpoint.
+  String get className;
+
+  // /// Creates a new instance of this objects class from an json serialization.
+  // SerializableEntity createNewFromJsonSerialization(dynamic data);
 }
+
+/// Get the type provided as an generic. Useful for getting a nullable type.
+Type getType<T>() => T;
 
 /// The [SerializationManager] is responsible for creating objects from a
 /// serialization, but also for serializing objects. This class is typically
-/// overriden by generated code.
+/// extended by generated code.
 abstract class SerializationManager {
-  /// Maps names of classes with constructors.
-  Map<String, constructor> get constructors;
-
-  /// Creates an object from a serialization.
-  SerializableEntity? createEntityFromSerialization(
-      Map<String, dynamic>? serialization) {
-    if (serialization == null) return null;
-    String? className = serialization['class'];
-    if (className == null) return null;
-    if (constructors[className] != null) {
-      return constructors[className]!(serialization);
-    }
-    return null;
+  /// Adds the "dart native" types to the constructors.
+  SerializationManager() {
+    _appendConstructors({
+      //TODO: all the "dart native" types should be listed here
+      DateTime: (jsonSerialization, _) => DateTime.parse(jsonSerialization),
+      getType<DateTime?>(): (jsonSerialization, _) =>
+          DateTime.tryParse(jsonSerialization),
+      ByteData: (jsonSerialization, _) =>
+          (jsonSerialization as String).base64DecodedByteData()!,
+      getType<ByteData?>(): (jsonSerialization, _) =>
+          (jsonSerialization as String?)?.base64DecodedByteData(),
+    });
   }
 
-  /// Serializes a [SerializableEntity].
-  String? serializeEntity(dynamic entity) {
-    if (entity == null) {
-      return null;
-    } else if (entity is String) {
-      return jsonEncode(entity);
-    } else if (entity is DateTime) {
-      return entity.toIso8601String();
-    } else if (entity is ByteData) {
-      return entity.base64encodedString();
-    } else if (entity is int ||
-        entity is bool ||
-        entity is double ||
-        entity is SerializableEntity) {
-      return '$entity';
-    } else if (entity is List<int> ||
-        entity is List<int?> ||
-        entity is List<double> ||
-        entity is List<double?> ||
-        entity is List<bool> ||
-        entity is List<bool?> ||
-        entity is List<String> ||
-        entity is List<String?>) {
-      return jsonEncode(entity);
-    } else if (entity is List<DateTime> || entity is List<DateTime?>) {
-      return jsonEncode(
-        (entity as List)
-            .map((e) => (e as DateTime?)?.toIso8601String())
-            .toList(),
-      );
-    } else if (entity is List<ByteData> || entity is List<ByteData?>) {
-      return jsonEncode(
-        (entity as List)
-            .map((e) => (e as ByteData?)?.base64encodedString())
-            .toList(),
-      );
-    } else if (entity is List) {
-      return jsonEncode(
-        entity
-            .cast<SerializableEntity?>()
-            .map((e) => e == null ? null : '$e')
-            .toList(),
-      );
-    } else if (entity is Map<String, int> ||
-        entity is Map<String, int?> ||
-        entity is Map<String, double> ||
-        entity is Map<String, double?> ||
-        entity is Map<String, bool> ||
-        entity is Map<String, bool?> ||
-        entity is Map<String, String> ||
-        entity is Map<String, String?>) {
-      return jsonEncode(entity);
-    } else if (entity is Map<String, DateTime> ||
-        entity is Map<String, DateTime?>) {
-      return jsonEncode(
-        (entity as Map).map(
-          (k, v) => MapEntry(k, (v as DateTime?)?.toIso8601String()),
-        ),
-      );
-    } else if (entity is Map<String, ByteData> ||
-        entity is Map<String, ByteData?>) {
-      return jsonEncode(
-        (entity as Map).map(
-          (k, v) => MapEntry(k, (v as ByteData?)?.base64encodedString()),
-        ),
-      );
-    } else if (entity is Map) {
-      return jsonEncode(entity.cast<String, SerializableEntity?>().map(
-            (k, v) => MapEntry(k, v == null ? null : '$v'),
-          ));
-    } else {
-      throw FormatException('Unknown entity type ${entity.runtimeType}');
-    }
+  /// Maps types of classes with constructors.
+  Map<Type, constructor> get constructors;
+
+  /// Maps classNames to [Type]s.
+  Map<String, Type> get classNameTypeMapping;
+
+  /// Deserialize the provided json [String] to an object of type [t] or [T].
+  T deserializeJsonString<T>(String data, [Type? t]) {
+    return deserializeJson<T>(data, t);
   }
+
+  /// Deserialize the provided json [data] to an object of type [t] or [T].
+  T deserializeJson<T>(dynamic data, [Type? t]) {
+    //TODO: handle missing constructor
+    return constructors[t ?? T]?.call(data, this);
+  }
+
+  /// Deserialize the provided json [data] by using the className stored in the [data].
+  SerializableEntity? deserializeJsonByClassName(Map<String, dynamic> data) {
+    //TODO: handle missing type mapping
+    return deserializeJson(data['data'], classNameTypeMapping['className']);
+  }
+
+  /// Serialize the provided [object] to an Json [String].
+  static String serializeToJson(Object? object) {
+    return jsonEncode(
+      object,
+      toEncodable: (nonEncodable) {
+        //TODO: all the "dart native" types should be listed here
+        if (nonEncodable is DateTime) {
+          return nonEncodable.toIso8601String();
+        } else if (nonEncodable is ByteData) {
+          return nonEncodable.base64encodedString();
+        } else {
+          return (nonEncodable as dynamic)?.toJson();
+        }
+      },
+    );
+  }
+
+  // /// Creates an object from a serialization.
+  // SerializableEntity? createEntityFromSerialization(
+  //     Map<String, dynamic>? serialization) {
+  //   if (serialization == null) return null;
+  //   String? className = serialization['class'];
+  //   if (className == null) return null;
+  //   if (constructors[className] != null) {
+  //     return constructors[className]!(serialization);
+  //   }
+  //   return null;
+  // }
+
+  // /// Serializes a [SerializableEntity].
+  // String? serializeEntity(dynamic entity) {
+  //   if (entity == null) {
+  //     return null;
+  //   } else if (entity is String) {
+  //     return jsonEncode(entity);
+  //   } else if (entity is DateTime) {
+  //     return entity.toIso8601String();
+  //   } else if (entity is ByteData) {
+  //     return entity.base64encodedString();
+  //   } else if (entity is int ||
+  //       entity is bool ||
+  //       entity is double ||
+  //       entity is SerializableEntity) {
+  //     return '$entity';
+  //   } else if (entity is List<int> ||
+  //       entity is List<int?> ||
+  //       entity is List<double> ||
+  //       entity is List<double?> ||
+  //       entity is List<bool> ||
+  //       entity is List<bool?> ||
+  //       entity is List<String> ||
+  //       entity is List<String?>) {
+  //     return jsonEncode(entity);
+  //   } else if (entity is List<DateTime> || entity is List<DateTime?>) {
+  //     return jsonEncode(
+  //       (entity as List)
+  //           .map((e) => (e as DateTime?)?.toIso8601String())
+  //           .toList(),
+  //     );
+  //   } else if (entity is List<ByteData> || entity is List<ByteData?>) {
+  //     return jsonEncode(
+  //       (entity as List)
+  //           .map((e) => (e as ByteData?)?.base64encodedString())
+  //           .toList(),
+  //     );
+  //   } else if (entity is List) {
+  //     return jsonEncode(
+  //       entity
+  //           .cast<SerializableEntity?>()
+  //           .map((e) => e == null ? null : '$e')
+  //           .toList(),
+  //     );
+  //   } else if (entity is Map<String, int> ||
+  //       entity is Map<String, int?> ||
+  //       entity is Map<String, double> ||
+  //       entity is Map<String, double?> ||
+  //       entity is Map<String, bool> ||
+  //       entity is Map<String, bool?> ||
+  //       entity is Map<String, String> ||
+  //       entity is Map<String, String?>) {
+  //     return jsonEncode(entity);
+  //   } else if (entity is Map<String, DateTime> ||
+  //       entity is Map<String, DateTime?>) {
+  //     return jsonEncode(
+  //       (entity as Map).map(
+  //         (k, v) => MapEntry(k, (v as DateTime?)?.toIso8601String()),
+  //       ),
+  //     );
+  //   } else if (entity is Map<String, ByteData> ||
+  //       entity is Map<String, ByteData?>) {
+  //     return jsonEncode(
+  //       (entity as Map).map(
+  //         (k, v) => MapEntry(k, (v as ByteData?)?.base64encodedString()),
+  //       ),
+  //     );
+  //   } else if (entity is Map) {
+  //     return jsonEncode(entity.cast<String, SerializableEntity?>().map(
+  //           (k, v) => MapEntry(k, v == null ? null : '$v'),
+  //         ));
+  //   } else {
+  //     throw FormatException('Unknown entity type ${entity.runtimeType}');
+  //   }
+  // }
 
   /// Merges two serialization managers into one. This is useful if the
   /// managers are generated from different modules or packages. Typically,
   /// only used internally by Serverpod.
   void merge(SerializationManager other) {
     _appendConstructors(other.constructors);
+    _appendClassNameTypeMappings(other.classNameTypeMapping);
   }
 
-  void _appendConstructors(Map<String, constructor> map) {
+  void _appendConstructors(Map<Type, constructor> map) {
+    for (var classType in map.keys) {
+      constructors[classType] = map[classType]!;
+    }
+  }
+
+  void _appendClassNameTypeMappings(Map<String, Type> map) {
     for (var className in map.keys) {
-      constructors[className] = map[className]!;
+      classNameTypeMapping[className] = map[className]!;
     }
   }
 }

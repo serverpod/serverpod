@@ -264,7 +264,7 @@ class Server {
         }
       } else {
         var serializedEntity =
-            serializationManager.serializeEntity(result.returnValue);
+            SerializationManager.serializeToJson(result.returnValue);
         request.response.write(serializedEntity);
       }
       await request.response.close();
@@ -336,11 +336,7 @@ class Server {
 
           // Handle messages passed to endpoints.
           var endpointName = data['endpoint'] as String;
-          var serialization = data['object'] as Map;
-          var message = serializationManager.createEntityFromSerialization(
-              serialization.cast<String, dynamic>());
-
-          if (message == null) throw Exception('Streamed message was null');
+          var serialization = data['object'] as Map<String, dynamic>;
 
           var endpointConnector = endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null) {
@@ -356,8 +352,16 @@ class Server {
             dynamic messageError;
             StackTrace? messageStackTrace;
 
+            SerializableEntity? message;
             try {
               session.sessionLogs.currentEndpoint = endpointName;
+
+              message =
+                  serializationManager.deserializeJsonByClassName(serialization)
+                      as SerializableEntity?;
+
+              if (message == null) throw Exception('Streamed message was null');
+
               await endpointConnector.endpoint
                   .handleStreamMessage(session, message);
             } catch (e, s) {
@@ -389,7 +393,7 @@ class Server {
                 serverId: serverId,
                 messageId: session.currentMessageId,
                 endpoint: endpointName,
-                messageName: message.className,
+                messageName: serialization['className'],
                 duration: duration,
                 order: session.sessionLogs.currentLogOrderId,
                 error: messageError?.toString(),

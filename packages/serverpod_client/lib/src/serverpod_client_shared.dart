@@ -161,9 +161,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
 
     String endpoint = data['endpoint'];
-    Map objectData = data['object'];
-    var entity = serializationManager
-        .createEntityFromSerialization(objectData.cast<String, dynamic>());
+    Map<String, dynamic> objectData = data['object'];
+    var entity = serializationManager.deserializeJsonByClassName(objectData);
     if (entity == null) {
       throw const ServerpodClientException('serializable entity is null', 0);
     }
@@ -186,13 +185,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   Future<void> _sendSerializableObjectToStream(
       String endpoint, SerializableEntity message) async {
-    var objectData = message.serialize();
     var data = {
       'endpoint': endpoint,
-      'object': objectData,
+      'object': {
+        'className': message.className,
+        'data': message,
+      },
     };
 
-    var serialization = jsonEncode(data);
+    var serialization = SerializationManager.serializeToJson(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -201,7 +202,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map<String, dynamic> args = const {},
   ]) async {
     var data = {'command': command, 'args': args};
-    var serialization = jsonEncode(data);
+    var serialization = SerializationManager.serializeToJson(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -381,9 +382,9 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
   ModuleEndpointCaller(this.client);
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args) {
-    return client.callServerEndpoint(endpoint, method, returnTypeName, args);
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) {
+    return client.callServerEndpoint<T>(endpoint, method, args);
   }
 }
 
@@ -395,8 +396,8 @@ abstract class EndpointCaller {
 
   /// Calls a server endpoint method by its name, passing arguments in a map.
   /// Typically, this method is called by generated code.
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args);
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args);
 }
 
 /// This class connects endpoints on the server with the client, it also
