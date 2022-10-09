@@ -13,7 +13,7 @@ abstract class TableRow extends SerializableEntity {
 
   /// Will create a serialization of with the fields that are stored in the
   /// database only.
-  Map<String, dynamic> serializeForDatabase();
+  dynamic toJsonForDatabase();
 
   /// Sets the value of a column by its name. Used in communication with the
   /// database.

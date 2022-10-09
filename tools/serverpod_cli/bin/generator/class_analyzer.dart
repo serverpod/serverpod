@@ -9,6 +9,7 @@ import 'class_generator_dart.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 import 'code_analysis_collector.dart';
+import 'types.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
   bool verbose = true,
@@ -184,7 +185,10 @@ class ClassAnalyzer {
 
     // Add default id field, if object has database table.
     if (tableName != null) {
-      fields.add(FieldDefinition('id', 'int?'));
+      fields.add(FieldDefinition(
+          name: 'id',
+          type: TypeDefinition.int.asNullable,
+          scope: FieldScope.all));
     }
 
     for (var fieldNameNode in fieldsNode.nodes.keys) {
@@ -231,9 +235,63 @@ class ClassAnalyzer {
         continue;
       }
 
-      FieldDefinition fieldDefinition;
       try {
-        fieldDefinition = FieldDefinition(fieldName, fieldDescription);
+        fieldDescription = fieldDescription.replaceAll(' ', '');
+        var typeResult = _analyzeType(fieldDescription);
+
+        var fieldOptions =
+            fieldDescription.substring(typeResult.parsedPosition).split(',');
+
+        if (fieldOptions
+                .where((option) => option == 'database' || option == 'api')
+                .length >
+            1) {
+          collector.addError(SourceSpanException(
+            'The field scope (database or api) must at most be set once.',
+            fieldDescriptionNode.span,
+          ));
+          continue;
+        }
+
+        var scope = fieldOptions.any((option) => option == 'database')
+            ? FieldScope.database
+            : fieldOptions.any((option) => option == 'api')
+                ? FieldScope.api
+                : FieldScope.all;
+
+        if (fieldOptions.where((option) => option.startsWith('parent')).length >
+            1) {
+          collector.addError(SourceSpanException(
+            'Only one parent must be set.',
+            fieldDescriptionNode.span,
+          ));
+          continue;
+        }
+
+        var parentTable = fieldOptions
+            .whereType<String?>()
+            .firstWhere(
+              (option) => option?.startsWith('parent=') ?? false,
+              orElse: () => null,
+            )
+            ?.substring(7);
+
+        if (parentTable != null &&
+            !StringValidators.isValidTableIndexName(parentTable)) {
+          collector.addError(SourceSpanException(
+            '$tableName is no valid parent name.',
+            fieldDescriptionNode.span,
+          ));
+          continue;
+        }
+
+        var fieldDefinition = FieldDefinition(
+          name: fieldName,
+          scope: scope,
+          type: typeResult.type,
+          parentTable: parentTable,
+        );
+
         fields.add(fieldDefinition);
       } catch (e) {
         collector.addError(SourceSpanException(
@@ -522,4 +580,61 @@ class ClassAnalyzer {
 
     return true;
   }
+}
+
+/// Analyze the type at the start of [input].
+/// [input] must not contain spaces.
+/// Returns a [_TypeResult] containing the type,
+/// as well as the position of the last parsed character.
+/// So when calling with "List<List<String?>?>,database",
+/// the position will point at the ','.
+_TypeResult _analyzeType(String input) {
+  String classname = '';
+  for (var i = 0; i < input.length; i++) {
+    switch (input[i]) {
+      case '<':
+        var generics = <TypeDefinition>[];
+        while (true) {
+          i++;
+          var result = _analyzeType(input.substring(i));
+          generics.add(result.type);
+          i += result.parsedPosition;
+          if (input[i] == '>') {
+            var nullable = (i + 1 < input.length) && input[i + 1] == '?';
+            return _TypeResult(
+                i + 1,
+                TypeDefinition.mixedUrlAndClassName(
+                  mixed: classname,
+                  nullable: nullable,
+                  generics: generics,
+                ));
+          } else if (i >= input.length - 1) {
+            throw 'INVALID TYPE';
+          }
+        }
+      case '>':
+      case ',':
+        return _TypeResult(
+            i,
+            TypeDefinition.mixedUrlAndClassName(
+                mixed: classname, nullable: false));
+      case '?':
+        return _TypeResult(
+            i + 1,
+            TypeDefinition.mixedUrlAndClassName(
+                mixed: classname, nullable: true));
+      default:
+        classname += input[i];
+        break;
+    }
+  }
+  return _TypeResult(input.length - 1,
+      TypeDefinition.mixedUrlAndClassName(mixed: classname, nullable: false));
+}
+
+class _TypeResult {
+  final int parsedPosition;
+  final TypeDefinition type;
+
+  const _TypeResult(this.parsedPosition, this.type);
 }

@@ -11,216 +11,221 @@ Future<void> performGenerateProtocol({
   required bool verbose,
   required ProtocolDefinition protocolDefinition,
   required CodeAnalysisCollector collector,
-}) async {
-  var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
+}) async {}
+// Future<void> performGenerateProtocol({
+//   required bool verbose,
+//   required ProtocolDefinition protocolDefinition,
+//   required CodeAnalysisCollector collector,
+// }) async {
+//   var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
 
-  // Generate code for the client
-  if (verbose) print('Generating client endpoints');
-  var protocol = generator.generateClientEndpointCalls();
-  if (verbose) print(protocol);
+//   // Generate code for the client
+//   if (verbose) print('Generating client endpoints');
+//   var protocol = generator.generateClientEndpointCalls();
+//   if (verbose) print(protocol);
 
-  var filePath = p.join(config.generatedClientProtocolPath, 'client.dart');
-  if (verbose) print('Writing: $filePath');
-  var outFile = File(filePath);
-  outFile.createSync();
-  outFile.writeAsStringSync(protocol);
-  collector.addGeneratedFile(outFile);
+//   var filePath = p.join(config.generatedClientProtocolPath, 'client.dart');
+//   if (verbose) print('Writing: $filePath');
+//   var outFile = File(filePath);
+//   outFile.createSync();
+//   outFile.writeAsStringSync(protocol);
+//   collector.addGeneratedFile(outFile);
 
-  // Generate server mappings with endpoint connectors
-  if (verbose) print('Generating server endpoint dispatch');
-  var endpointDispatch = generator.generateServerEndpointDispatch();
-  if (verbose) print(endpointDispatch);
+//   // Generate server mappings with endpoint connectors
+//   if (verbose) print('Generating server endpoint dispatch');
+//   var endpointDispatch = generator.generateServerEndpointDispatch();
+//   if (verbose) print(endpointDispatch);
 
-  var endpointsFilePath =
-      p.join(config.generatedServerProtocolPath, 'endpoints.dart');
-  if (verbose) print('Writing: $endpointsFilePath');
-  var endpointsFile = File(endpointsFilePath);
-  endpointsFile.createSync();
-  endpointsFile.writeAsStringSync(endpointDispatch);
-  collector.addGeneratedFile(endpointsFile);
+//   var endpointsFilePath =
+//       p.join(config.generatedServerProtocolPath, 'endpoints.dart');
+//   if (verbose) print('Writing: $endpointsFilePath');
+//   var endpointsFile = File(endpointsFilePath);
+//   endpointsFile.createSync();
+//   endpointsFile.writeAsStringSync(endpointDispatch);
+//   collector.addGeneratedFile(endpointsFile);
 
-  // Write endpoint definition
-  var endpointDef = generator.generateEndpointDefinition();
-  var endpointDefPath = p.join('generated', 'protocol.yaml');
-  if (verbose) print('Writing: $endpointDefPath');
-  var endpointsDefFile = File(endpointDefPath);
-  endpointsDefFile.createSync();
-  endpointsDefFile.writeAsStringSync(endpointDef);
-}
+//   // Write endpoint definition
+//   var endpointDef = generator.generateEndpointDefinition();
+//   var endpointDefPath = p.join('generated', 'protocol.yaml');
+//   if (verbose) print('Writing: $endpointDefPath');
+//   var endpointsDefFile = File(endpointDefPath);
+//   endpointsDefFile.createSync();
+//   endpointsDefFile.writeAsStringSync(endpointDef);
+// }
 
-abstract class ProtocolGenerator {
-  final ProtocolDefinition protocolDefinition;
+// abstract class ProtocolGenerator {
+//   final ProtocolDefinition protocolDefinition;
 
-  ProtocolGenerator({required this.protocolDefinition});
+//   ProtocolGenerator({required this.protocolDefinition});
 
-  String generateServerEndpointDispatch() {
-    var hasModules = config.modules.isNotEmpty;
+//   String generateServerEndpointDispatch() {
+//     var hasModules = config.modules.isNotEmpty;
 
-    var out = '';
+//     var out = '';
 
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: unused_import\n';
-    out += '\n';
+//     // Header
+//     out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
+//     out += '/*   To generate run: "serverpod generate"    */\n';
+//     out += '\n';
+//     out += '// ignore_for_file: public_member_api_docs\n';
+//     out += '// ignore_for_file: unnecessary_import\n';
+//     out += '// ignore_for_file: unused_import\n';
+//     out += '\n';
 
-    // Imports
-    out += 'import \'dart:typed_data\' as typed_data;\n';
-    out += 'import \'package:serverpod/serverpod.dart\';\n';
-    out += '\n';
-    if (hasModules) {
-      for (var module in config.modules) {
-        out +=
-            'import \'package:${module.serverPackage}/module.dart\' as ${module.name};\n';
-      }
-      out += '\n';
-    }
-    out += 'import \'protocol.dart\';\n';
-    out += '\n';
-    for (var importPath in protocolDefinition.filePaths) {
-      var fileName = '../endpoints/${p.basename(importPath)}';
-      out += 'import \'$fileName\';\n';
-    }
-    out += '\n';
+//     // Imports
+//     out += 'import \'dart:typed_data\' as typed_data;\n';
+//     out += 'import \'package:serverpod/serverpod.dart\';\n';
+//     out += '\n';
+//     if (hasModules) {
+//       for (var module in config.modules) {
+//         out +=
+//             'import \'package:${module.serverPackage}/module.dart\' as ${module.name};\n';
+//       }
+//       out += '\n';
+//     }
+//     out += 'import \'protocol.dart\';\n';
+//     out += '\n';
+//     for (var importPath in protocolDefinition.filePaths) {
+//       var fileName = '../endpoints/${p.basename(importPath)}';
+//       out += 'import \'$fileName\';\n';
+//     }
+//     out += '\n';
 
-    // Endpoint class
-    out += 'class Endpoints extends EndpointDispatch {\n';
+//     // Endpoint class
+//     out += 'class Endpoints extends EndpointDispatch {\n';
 
-    // Init method
-    out += '  @override\n';
-    out += '  void initializeEndpoints(Server server) {\n';
+//     // Init method
+//     out += '  @override\n';
+//     out += '  void initializeEndpoints(Server server) {\n';
 
-    // Endpoints lookup map
-    var moduleName =
-        config.type == PackageType.server ? 'null' : '\'${config.name}\'';
-    out += '    var endpoints = <String, Endpoint>{\n';
-    for (var endpoint in protocolDefinition.endpoints) {
-      out +=
-          '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\', $moduleName),\n';
-    }
-    out += '    };\n';
+//     // Endpoints lookup map
+//     var moduleName =
+//         config.type == PackageType.server ? 'null' : '\'${config.name}\'';
+//     out += '    var endpoints = <String, Endpoint>{\n';
+//     for (var endpoint in protocolDefinition.endpoints) {
+//       out +=
+//           '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\', $moduleName),\n';
+//     }
+//     out += '    };\n';
 
-    // Connectors
-    for (var endpoint in protocolDefinition.endpoints) {
-      out += '\n';
-      out += '    connectors[\'${endpoint.name}\'] = EndpointConnector(\n';
-      out += '      name: \'${endpoint.name}\',\n';
-      out += '      endpoint: endpoints[\'${endpoint.name}\']!,\n';
-      out += '      methodConnectors: {\n';
-      for (var method in endpoint.methods) {
-        out += '        \'${method.name}\': MethodConnector(\n';
-        out += '          name: \'${method.name}\',\n';
-        out += '          params: {\n';
-        for (var param in [
-          ...method.parameters,
-          ...method.parametersPositional,
-          ...method.parametersNamed,
-        ]) {
-          out +=
-              '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typeNonNullableWithPrefix}, nullable: ${param.type.nullable}),\n';
-        }
-        out += '          },\n';
-        out +=
-            '          call: (Session session, Map<String, dynamic> params) async {\n';
-        out +=
-            '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
-        for (var param in [
-          ...method.parameters,
-          ...method.parametersPositional
-        ]) {
-          if (param.type.isTypedList) {
-            if (param.type.nullable) {
-              out += '(params[\'${param.name}\'] as List?)?.cast(),';
-            } else {
-              out += '(params[\'${param.name}\'] as List).cast(),';
-            }
-          } else if (param.type.isTypedMap) {
-            if (param.type.nullable) {
-              out += '(params[\'${param.name}\'] as Map?)?.cast(),';
-            } else {
-              out += '(params[\'${param.name}\'] as Map).cast(),';
-            }
-          } else {
-            out += 'params[\'${param.name}\'],';
-          }
-        }
-        if (method.parametersNamed.isNotEmpty) {
-          for (var param in method.parametersNamed) {
-            if (param.type.isTypedList) {
-              if (param.type.nullable) {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as List?)?.cast(),';
-              } else {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as List).cast(),';
-              }
-            } else if (param.type.isTypedMap) {
-              if (param.type.nullable) {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as Map?)?.cast(),';
-              } else {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as Map).cast(),';
-              }
-            } else {
-              out += '${param.name}: params[\'${param.name}\'],';
-            }
-          }
-        }
-        out += ');\n';
-        out += '          },\n';
-        out += '        ),\n';
-      }
-      out += '      },\n';
-      out += '    );\n';
-    }
+//     // Connectors
+//     for (var endpoint in protocolDefinition.endpoints) {
+//       out += '\n';
+//       out += '    connectors[\'${endpoint.name}\'] = EndpointConnector(\n';
+//       out += '      name: \'${endpoint.name}\',\n';
+//       out += '      endpoint: endpoints[\'${endpoint.name}\']!,\n';
+//       out += '      methodConnectors: {\n';
+//       for (var method in endpoint.methods) {
+//         out += '        \'${method.name}\': MethodConnector(\n';
+//         out += '          name: \'${method.name}\',\n';
+//         out += '          params: {\n';
+//         for (var param in [
+//           ...method.parameters,
+//           ...method.parametersPositional,
+//           ...method.parametersNamed,
+//         ]) {
+//           out +=
+//               '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type.typeNonNullableWithPrefix}, nullable: ${param.type.nullable}),\n';
+//         }
+//         out += '          },\n';
+//         out +=
+//             '          call: (Session session, Map<String, dynamic> params) async {\n';
+//         out +=
+//             '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
+//         for (var param in [
+//           ...method.parameters,
+//           ...method.parametersPositional
+//         ]) {
+//           if (param.type.isTypedList) {
+//             if (param.type.nullable) {
+//               out += '(params[\'${param.name}\'] as List?)?.cast(),';
+//             } else {
+//               out += '(params[\'${param.name}\'] as List).cast(),';
+//             }
+//           } else if (param.type.isTypedMap) {
+//             if (param.type.nullable) {
+//               out += '(params[\'${param.name}\'] as Map?)?.cast(),';
+//             } else {
+//               out += '(params[\'${param.name}\'] as Map).cast(),';
+//             }
+//           } else {
+//             out += 'params[\'${param.name}\'],';
+//           }
+//         }
+//         if (method.parametersNamed.isNotEmpty) {
+//           for (var param in method.parametersNamed) {
+//             if (param.type.isTypedList) {
+//               if (param.type.nullable) {
+//                 out +=
+//                     '${param.name}: (params[\'${param.name}\'] as List?)?.cast(),';
+//               } else {
+//                 out +=
+//                     '${param.name}: (params[\'${param.name}\'] as List).cast(),';
+//               }
+//             } else if (param.type.isTypedMap) {
+//               if (param.type.nullable) {
+//                 out +=
+//                     '${param.name}: (params[\'${param.name}\'] as Map?)?.cast(),';
+//               } else {
+//                 out +=
+//                     '${param.name}: (params[\'${param.name}\'] as Map).cast(),';
+//               }
+//             } else {
+//               out += '${param.name}: params[\'${param.name}\'],';
+//             }
+//           }
+//         }
+//         out += ');\n';
+//         out += '          },\n';
+//         out += '        ),\n';
+//       }
+//       out += '      },\n';
+//       out += '    );\n';
+//     }
 
-    // Hook up modules
-    if (hasModules) {
-      out += '\n';
-      for (var module in config.modules) {
-        out +=
-            '    modules[\'${module.name}\'] = ${module.name}.Endpoints()..initializeEndpoints(server);\n';
-      }
-    }
+//     // Hook up modules
+//     if (hasModules) {
+//       out += '\n';
+//       for (var module in config.modules) {
+//         out +=
+//             '    modules[\'${module.name}\'] = ${module.name}.Endpoints()..initializeEndpoints(server);\n';
+//       }
+//     }
 
-    // End init method
-    out += '  }\n';
+//     // End init method
+//     out += '  }\n';
 
-    // Register modules
-    out += '\n';
-    out += '  @override\n';
-    out += '  void registerModules(Serverpod pod) {\n';
-    for (var module in config.modules) {
-      out +=
-          '    pod.registerModule(${module.name}.Protocol(), \'${module.nickname}\');\n';
-    }
-    out += '  }\n';
+//     // Register modules
+//     out += '\n';
+//     out += '  @override\n';
+//     out += '  void registerModules(Serverpod pod) {\n';
+//     for (var module in config.modules) {
+//       out +=
+//           '    pod.registerModule(${module.name}.Protocol(), \'${module.nickname}\');\n';
+//     }
+//     out += '  }\n';
 
-    // Endpoint class end
-    out += '}\n';
+//     // Endpoint class end
+//     out += '}\n';
 
-    out += '\n';
+//     out += '\n';
 
-    return out;
-  }
+//     return out;
+//   }
 
-  String generateClientEndpointCalls();
+//   String generateClientEndpointCalls();
 
-  String generateEndpointDefinition() {
-    // TODO: Also output parameter and return type data
+//   String generateEndpointDefinition() {
+//     // TODO: Also output parameter and return type data
 
-    var out = '';
-    for (var endpoint in protocolDefinition.endpoints) {
-      out += '${endpoint.name}:\n';
-      for (var method in endpoint.methods) {
-        out += '  - ${method.name}:\n';
-      }
-    }
+//     var out = '';
+//     for (var endpoint in protocolDefinition.endpoints) {
+//       out += '${endpoint.name}:\n';
+//       for (var method in endpoint.methods) {
+//         out += '  - ${method.name}:\n';
+//       }
+//     }
 
-    return out;
-  }
-}
+//     return out;
+//   }
+// }

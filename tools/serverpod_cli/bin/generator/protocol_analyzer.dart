@@ -12,6 +12,7 @@ import 'package:source_span/source_span.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 import 'code_analysis_collector.dart';
+import 'types.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -147,12 +148,7 @@ class ProtocolAnalyzer {
                         (param.isNamed &&
                             param.type.nullabilitySuffix ==
                                 NullabilitySuffix.none),
-                    type: TypeDefinition(
-                      param.type.getDisplayString(withNullability: true),
-                      package,
-                      _getInnerPackage(param.type),
-                      dartType: param.type,
-                    ),
+                    type: TypeDefinition.fromDartType(param.type),
                     dartParameter: param,
                   );
 
@@ -166,7 +162,7 @@ class ProtocolAnalyzer {
                 }
 
                 if (paramDefs.isNotEmpty &&
-                    paramDefs[0].type.type == 'Session' &&
+                    paramDefs[0].type.className == 'Session' &&
                     method.returnType.isDartAsyncFuture) {
                   String? package;
                   String? innerPackage;
@@ -201,13 +197,8 @@ class ProtocolAnalyzer {
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
-                    returnType: TypeDefinition(
-                      method.returnType.getDisplayString(withNullability: true),
-                      package,
-                      innerPackage,
-                      stripFuture: true,
-                      dartType: method.returnType,
-                    ),
+                    returnType: TypeDefinition.fromDartType(method.returnType)
+                        .stripFuture(),
                   );
                   methodDefs.add(methodDef);
                 }
