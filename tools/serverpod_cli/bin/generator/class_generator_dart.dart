@@ -109,6 +109,8 @@ class ClassGeneratorDart extends ClassGenerator {
           // Deserialization
           classBuilder.methods.add(Method((m) {
             m.static = true;
+            m.returns = refer(className);
+            m.name = 'fromJson';
             m.requiredParameters.addAll([
               Parameter((p) {
                 p.name = 'jsonSerialization';
