@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
 import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
@@ -59,7 +61,8 @@ abstract class ClassGenerator {
         var out = generateFile(classDefinition);
 
         outputFile.createSync();
-        outputFile.writeAsStringSync(out);
+        outputFile.writeAsStringSync(DartFormatter().format(
+            '${out.accept(DartEmitter.scoped(useNullSafetySyntax: true))}'));
 
         collector.addGeneratedFile(outputFile);
       } catch (e, stackTrace) {
@@ -85,7 +88,7 @@ abstract class ClassGenerator {
     }
   }
 
-  String generateFile(ProtocolFileDefinition classDefinition);
+  Library generateFile(ProtocolFileDefinition classDefinition);
 
   String generateFactory(List<ProtocolFileDefinition> classNames);
 }

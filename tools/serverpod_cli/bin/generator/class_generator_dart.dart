@@ -20,7 +20,7 @@ class ClassGeneratorDart extends ClassGenerator {
   });
 
   @override
-  String generateFile(ProtocolFileDefinition protocolFileDefinition) {
+  Library generateFile(ProtocolFileDefinition protocolFileDefinition) {
     if (protocolFileDefinition is ClassDefinition) {
       return _generateClassFile(protocolFileDefinition);
     }
@@ -32,7 +32,7 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   // Handle ordinary classes
-  String _generateClassFile(ClassDefinition classDefinition) {
+  Library _generateClassFile(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
@@ -270,73 +270,63 @@ class ClassGeneratorDart extends ClassGenerator {
       },
     );
 
-    return DartFormatter().format(
-        '${library.accept(DartEmitter.scoped(useNullSafetySyntax: true))}');
+    return library;
   }
 
   // Handle enums.
-  String _generateEnumFile(EnumDefinition enumDefinition) {
-    var out = '';
-
+  Library _generateEnumFile(EnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
 
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
-    out += '// ignore_for_file: depend_on_referenced_packages\n';
-    out += '\n';
+    var library = Library((library) {
+      library.body.add(
+        Enum((e) {
+          e.name = enumName;
+          e.mixins.add(refer('SerializableEntity',
+              'package:serverpod_serialization/serverpod_serialization.dart'));
+          e.values.addAll([
+            for (var value in enumDefinition.values)
+              EnumValue((v) {
+                v.name = value;
+              })
+          ]);
+          e.methods.add(Method(
+            (m) => m
+              ..name = 'className'
+              ..annotations.add(refer('override'))
+              ..type = MethodType.getter
+              ..returns = refer('String')
+              ..lambda = true
+              ..body = literalString(enumName).code,
+          ));
 
-    if (serverCode) {
-      out +=
-          'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-    } else {
-      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-    }
+          e.methods.add(Method((m) => m
+            ..static = true
+            ..returns = refer('$enumName?')
+            ..name = 'fromJson'
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'index'
+              ..type = refer('int')))
+            ..body = (BlockBuilder()
+                  ..statements.addAll([
+                    const Code('switch(index){'),
+                    for (int i = 0; i < enumDefinition.values.length; i++)
+                      Code('case $i: return ${enumDefinition.values[i]};'),
+                    const Code('default: return null;'),
+                    const Code('}'),
+                  ]))
+                .build()));
 
-    out += 'enum $enumName with SerializableEntity {\n';
-    for (var value in enumDefinition.values) {
-      out += '  $value,\n';
-    }
-    out += ';\n';
-
-    out += '  static String get _className => \'$enumName\';\n';
-    out += '\n';
-    out += '  @override\n';
-    out += '  String get className => _className;\n';
-    out += '\n';
-
-    // Serialization
-    out +=
-        '  factory $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
-    out +=
-        '    var data = SerializableEntity.unwrapSerializationDataForClassName(_className, serialization);\n';
-    out += '    switch (data[\'index\']) {\n';
-    var i = 0;
-    for (var value in enumDefinition.values) {
-      out += '      case $i:\n';
-      out += '        return $enumName.$value;\n';
-      i += 1;
-    }
-    out += '      default:\n';
-    out +=
-        '        throw Exception(\'Invalid \$_className index \$data[\\\'index\\\']\');\n';
-    out += '    }\n';
-    out += '  }\n';
-    out += '\n';
-
-    out += '  @override\n';
-    out += '  Map<String, dynamic> serialize() {\n';
-    out += '    return wrapSerializationData({\n';
-    out += '      \'index\': index,\n';
-    out += '    });\n';
-    out += '  }\n';
-
-    out += '}\n';
-    return out;
+          e.methods.add(Method(
+            (m) => m
+              ..returns = refer('int')
+              ..name = 'toJson'
+              ..lambda = true
+              ..body = refer('index').code,
+          ));
+        }),
+      );
+    });
+    return library;
   }
 
   @override
