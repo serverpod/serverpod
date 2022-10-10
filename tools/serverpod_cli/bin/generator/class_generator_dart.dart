@@ -1,7 +1,6 @@
 //import 'package:recase/recase.dart';
 
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 
 import 'class_generator.dart';
 import 'config.dart';
@@ -210,15 +209,458 @@ class ClassGeneratorDart extends ClassGenerator {
 
             if (tableName != null) {
               // Column setter
-              //TODO: setColumn
-              //TODO: find
-              //TODO: findSingleRow
-              //TODO: findById
-              //TODO: delete
-              //TODO: deleteRow
-              //TODO: update
-              //TODO: insert
-              //TODO: count
+              classBuilder.methods.add(Method((m) => m
+                ..annotations.add(refer('override'))
+                ..name = 'setColumn'
+                ..returns = refer('void')
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..name = 'columnName'
+                    ..type = refer('String')),
+                  Parameter((p) => p..name = 'value'),
+                ])
+                ..body = Block.of([
+                  const Code('switch(columnName){'),
+                  for (var field in fields)
+                    if (field.shouldSerializeFieldForDatabase(serverCode))
+                      Block.of([
+                        Code('case \'${field.name}\':'),
+                        refer(field.name).assign(refer('value')).statement,
+                        refer('').returned.statement,
+                      ]),
+                  const Code('default:'),
+                  refer('UnimplementedError').call([]).thrown.statement,
+                  const Code('}'),
+                ])));
+
+              //find
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'find'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(TypeReference(
+                      (r) => r
+                        ..symbol = 'List'
+                        ..types.add(
+                          TypeReference(
+                            (r) => r..symbol = className,
+                          ),
+                        ),
+                    )),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = '${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'limit'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'offset'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Column'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'orderBy'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((t) => t
+                      ..symbol = 'List'
+                      ..isNullable = true
+                      ..types.add(
+                          refer('Order', 'package:serverpod/serverpod.dart')))
+                    ..name = 'orderByList'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'orderDescending'
+                    ..defaultTo = const Code('false')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'useCache'
+                    ..defaultTo = const Code('true')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('find')
+                    .call([], {
+                      'where': refer('where')
+                          .notEqualTo(refer('null'))
+                          .conditional(
+                              refer('where')
+                                  .call([refer(className).property('t')]),
+                              refer('null')),
+                      'limit': refer('limit'),
+                      'offset': refer('offset'),
+                      'orderBy': refer('orderBy'),
+                      'orderByList': refer('orderByList'),
+                      'orderDescending': refer('orderDescending'),
+                      'useCache': refer('useCache'),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+
+              //find single row
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'findSingleRow'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(TypeReference(
+                      (r) => r
+                        ..symbol = className
+                        ..isNullable = true,
+                    )),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = '${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'offset'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Column'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'orderBy'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'orderDescending'
+                    ..defaultTo = const Code('false')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'useCache'
+                    ..defaultTo = const Code('true')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('findSingleRow')
+                    .call([], {
+                      'where': refer('where')
+                          .notEqualTo(refer('null'))
+                          .conditional(
+                              refer('where')
+                                  .call([refer(className).property('t')]),
+                              refer('null')),
+                      'offset': refer('offset'),
+                      'orderBy': refer('orderBy'),
+                      'orderDescending': refer('orderDescending'),
+                      'useCache': refer('useCache'),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+
+              //findById
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'findById'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(TypeReference(
+                      (r) => r
+                        ..symbol = className
+                        ..isNullable = true,
+                    )),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer('int')
+                    ..name = 'id'),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('findById')
+                    .call([refer('id')], {}, [refer(className)])
+                    .returned
+                    .statement));
+
+              //delete
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'delete'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('int')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..required = true
+                    ..type = refer('${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('delete')
+                    .call([], {
+                      'where':
+                          refer('where').call([refer(className).property('t')]),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+
+              //deleteRow
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'deleteRow'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('bool')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('deleteRow')
+                    .call([
+                      refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              //update
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'update'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('bool')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('update')
+                    .call([
+                      refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              //insert
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'insert'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('void')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('insert')
+                    .call([
+                      refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              //count
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'count'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('int')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = '${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'limit'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'useCache'
+                    ..defaultTo = const Code('true')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('count')
+                    .call([], {
+                      'where': refer('where')
+                          .notEqualTo(refer('null'))
+                          .conditional(
+                              refer('where')
+                                  .call([refer(className).property('t')]),
+                              refer('null')),
+                      'limit': refer('limit'),
+                      'useCache': refer('useCache'),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
             }
           }
         }));
