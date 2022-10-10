@@ -79,12 +79,9 @@ class ClassGeneratorDart extends ClassGenerator {
 
           // Fields
           for (var field in fields) {
-            if (field.shouldIncludeField(serverCode)) {
+            if (field.shouldIncludeField(serverCode) &&
+                !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
-                f.late = field.type.nullable;
-                if (field.name == 'id' && serverCode && tableName != null) {
-                  f.annotations.add(refer('override'));
-                }
                 f.type = field.type.reference(serverCode);
                 f.name = field.name;
               }));
@@ -95,13 +92,28 @@ class ClassGeneratorDart extends ClassGenerator {
           classBuilder.constructors.add(Constructor((c) {
             for (var field in fields) {
               if (field.shouldIncludeField(serverCode)) {
-                c.optionalParameters.add(Parameter((p) {
-                  p.named = true;
-                  p.required = !field.type.nullable;
-                  p.toThis = true;
-                  p.name = field.name;
-                }));
+                if (field.name == 'id' && serverCode && tableName != null) {
+                  c.optionalParameters.add(Parameter((p) {
+                    p.named = true;
+                    p.name = 'id';
+                    p.type = TypeReference(
+                      (t) => t
+                        ..symbol = 'int'
+                        ..isNullable = true,
+                    );
+                  }));
+                } else {
+                  c.optionalParameters.add(Parameter((p) {
+                    p.named = true;
+                    p.required = !field.type.nullable;
+                    p.toThis = true;
+                    p.name = field.name;
+                  }));
+                }
               }
+            }
+            if (serverCode && tableName != null) {
+              c.initializers.add(refer('super').call([refer('id')]).code);
             }
           }));
 
