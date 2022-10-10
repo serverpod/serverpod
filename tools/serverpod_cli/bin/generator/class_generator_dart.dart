@@ -106,11 +106,10 @@ class ClassGeneratorDart extends ClassGenerator {
           }));
 
           // Deserialization
-          classBuilder.methods.add(Method((m) {
-            m.static = true;
-            m.returns = refer(className);
-            m.name = 'fromJson';
-            m.requiredParameters.addAll([
+          classBuilder.constructors.add(Constructor((c) {
+            c.factory = true;
+            c.name = 'fromJson';
+            c.requiredParameters.addAll([
               Parameter((p) {
                 p.name = 'jsonSerialization';
                 p.type = refer('Map<String,dynamic>');
@@ -121,7 +120,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     'package:serverpod_serialization/serverpod_serialization.dart');
               }),
             ]);
-            m.body = refer(className)
+            c.body = refer(className)
                 .call([], {
                   for (var field in fields)
                     if (field.shouldIncludeField(serverCode))
