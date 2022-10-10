@@ -156,17 +156,18 @@ class ClassGeneratorDart extends ClassGenerator {
           // Serialization
           classBuilder.methods.add(Method(
             (m) {
-              m.returns = refer('dynamic');
+              m.returns = refer('Map<String,dynamic>');
               m.name = 'toJson';
               m.annotations.add(refer('override'));
 
-              m.body = literalMap({
-                for (var field in fields)
-                  if (field.shouldSerializeField(serverCode))
-                    literalString(field.name): refer(field.name)
-              }, refer('String'), refer('dynamic'))
-                  .returned
-                  .statement;
+              m.body = literalMap(
+                {
+                  for (var field in fields)
+                    if (field.shouldSerializeField(serverCode))
+                      literalString(field.name): refer(field.name)
+                },
+                //  refer('String'), refer('dynamic')
+              ).returned.statement;
             },
           ));
 
@@ -175,33 +176,35 @@ class ClassGeneratorDart extends ClassGenerator {
             if (tableName != null) {
               classBuilder.methods.add(Method(
                 (m) {
-                  m.returns = refer('dynamic');
+                  m.returns = refer('Map<String,dynamic>');
                   m.name = 'toJsonForDatabase';
                   m.annotations.add(refer('override'));
 
-                  m.body = literalMap({
-                    for (var field in fields)
-                      if (field.shouldSerializeFieldForDatabase(serverCode))
-                        literalString(field.name): refer(field.name)
-                  }, refer('String'), refer('dynamic'))
-                      .returned
-                      .statement;
+                  m.body = literalMap(
+                    {
+                      for (var field in fields)
+                        if (field.shouldSerializeFieldForDatabase(serverCode))
+                          literalString(field.name): refer(field.name)
+                    },
+                    // refer('String'), refer('dynamic')
+                  ).returned.statement;
                 },
               ));
             }
 
             classBuilder.methods.add(Method(
               (m) {
-                m.returns = refer('dynamic');
+                m.returns = refer('Map<String,dynamic>');
                 m.name = 'allToJson';
                 m.annotations.add(refer('override'));
 
-                m.body = literalMap({
-                  for (var field in fields)
-                    literalString(field.name): refer(field.name)
-                }, refer('String'), refer('dynamic'))
-                    .returned
-                    .statement;
+                m.body = literalMap(
+                  {
+                    for (var field in fields)
+                      literalString(field.name): refer(field.name)
+                  },
+                  //  refer('String'), refer('dynamic')
+                ).returned.statement;
               },
             ));
 
