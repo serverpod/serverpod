@@ -785,6 +785,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
           e.methods.add(Method(
             (m) => m
+              ..annotations.add(refer('override'))
               ..returns = refer('int')
               ..name = 'toJson'
               ..lambda = true
