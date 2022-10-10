@@ -122,21 +122,35 @@ class ClassGeneratorDart extends ClassGenerator {
                     'package:serverpod_serialization/serverpod_serialization.dart');
               }),
             ]);
-
-            m.body = Block((b) {
-              for (var field in fields) {
-                if (field.shouldIncludeField(serverCode)) {
-                  b.addExpression(refer(field.name).assign(
-                      refer('serializationManager')
+            m.body = refer(className)
+                .call([], {
+                  for (var field in fields)
+                    if (field.shouldIncludeField(serverCode))
+                      field.name: refer('serializationManager')
                           .property('deserializeJson')
                           .call([
-                    refer('jsonSerialization').index(refer(field.name))
-                  ], {}, [
-                    field.type.reference(serverCode)
-                  ])));
-                }
-              }
-            });
+                        refer('jsonSerialization')
+                            .index(literalString(field.name))
+                      ], {}, [
+                        field.type.reference(serverCode)
+                      ])
+                })
+                .returned
+                .statement;
+            // m.body = Block((b) {
+            //   for (var field in fields) {
+            //     if (field.shouldIncludeField(serverCode)) {
+            //       b.addExpression(refer(field.name).assign(
+            //           refer('serializationManager')
+            //               .property('deserializeJson')
+            //               .call([
+            //         refer('jsonSerialization').index(refer(field.name))
+            //       ], {}, [
+            //         field.type.reference(serverCode)
+            //       ])));
+            //     }
+            //   }
+            // });
           }));
 
           // Serialization
