@@ -683,11 +683,6 @@ class ClassGeneratorDart extends ClassGenerator {
               constructor.initializers.add(refer('super')
                   .call([], {'tableName': literalString(tableName)}).code);
             }));
-            c.fields.add(Field((f) => f
-              ..annotations.add(refer('override'))
-              ..name = 'tableName'
-              ..type = refer('String')
-              ..assignment = literalString(tableName).code));
 
             // Column descriptions
             for (var field in fields) {
