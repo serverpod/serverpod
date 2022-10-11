@@ -1,5 +1,7 @@
 //import 'package:recase/recase.dart';
 
+import 'dart:io';
+import 'package:path/path.dart' as p;
 import 'class_generator.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
@@ -82,7 +84,9 @@ class ClassGeneratorDart extends ClassGenerator {
     }
 
     out += 'import \'dart:typed_data\';\n';
-    out += 'import \'protocol.dart\';\n';
+    var sDir = classDefinition.subDir?.split(Platform.pathSeparator) ?? [];
+    sDir = sDir.map((e) => '..').toList();
+    out += 'import \'${sDir.isEmpty ? '.' : p.joinAll(sDir)}/protocol.dart\';\n';
     out += '\n';
 
     // Row class definition
@@ -412,13 +416,15 @@ class ClassGeneratorDart extends ClassGenerator {
 
     // Import generated files
     for (var classInfo in classInfos) {
-      out += 'import \'${classInfo.fileName}.dart\';\n';
+      out +=
+          'import \'${classInfo.subDir ?? '.'}/${classInfo.fileName}.dart\';\n';
     }
     out += '\n';
 
     // Export generated files
     for (var classInfo in classInfos) {
-      out += 'export \'${classInfo.fileName}.dart\';\n';
+      out +=
+          'export \'${classInfo.subDir ?? '.'}/${classInfo.fileName}.dart\';\n';
     }
     if (!serverCode) out += 'export \'client.dart\';\n';
     out += '\n';

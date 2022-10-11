@@ -22,7 +22,7 @@ Future<void> performGenerateProtocol({
   var filePath = p.join(config.generatedClientProtocolPath, 'client.dart');
   if (verbose) print('Writing: $filePath');
   var outFile = File(filePath);
-  outFile.createSync();
+  outFile.createSync(recursive: true);
   outFile.writeAsStringSync(protocol);
   collector.addGeneratedFile(outFile);
 
@@ -35,7 +35,7 @@ Future<void> performGenerateProtocol({
       p.join(config.generatedServerProtocolPath, 'endpoints.dart');
   if (verbose) print('Writing: $endpointsFilePath');
   var endpointsFile = File(endpointsFilePath);
-  endpointsFile.createSync();
+  endpointsFile.createSync(recursive: true);
   endpointsFile.writeAsStringSync(endpointDispatch);
   collector.addGeneratedFile(endpointsFile);
 
@@ -44,7 +44,7 @@ Future<void> performGenerateProtocol({
   var endpointDefPath = p.join('generated', 'protocol.yaml');
   if (verbose) print('Writing: $endpointDefPath');
   var endpointsDefFile = File(endpointDefPath);
-  endpointsDefFile.createSync();
+  endpointsDefFile.createSync(recursive: true);
   endpointsDefFile.writeAsStringSync(endpointDef);
 }
 
