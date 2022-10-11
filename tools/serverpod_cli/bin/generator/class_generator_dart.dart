@@ -7,6 +7,12 @@ import 'config.dart';
 import 'protocol_definition.dart';
 import 'types.dart';
 
+String serverPodUrl(bool serverCode) {
+  return serverCode
+      ? 'package:serverpod/serverpod.dart'
+      : 'package:serverpod_client/serverpod_client.dart';
+}
+
 class ClassGeneratorDart extends ClassGenerator {
   @override
   String get outputExtension => '.dart';
@@ -801,10 +807,6 @@ class ClassGeneratorDart extends ClassGenerator {
   Library generateFactory(List<ProtocolFileDefinition> classInfos) {
     var library = LibraryBuilder();
 
-    var serverpodUrl = serverCode
-        ? 'package:serverpod/serverpod.dart'
-        : 'package:serverpod_client/serverpod_client.dart';
-
     library.name = 'protocol';
 
     // exports
@@ -844,20 +846,20 @@ class ClassGeneratorDart extends ClassGenerator {
             ..symbol = 'Map'
             ..types.addAll([
               refer('Type'),
-              refer('constructor', serverpodUrl),
+              refer('constructor', serverPodUrl(serverCode)),
             ]))
           ..name = 'constructors'
           ..assignment = literalMap({
             //TODO: Add types from endpoints
             for (var classInfo in classInfos)
               refer(classInfo.className, '${classInfo.fileName}.dart'): Code.scope((a) =>
-                  '(jsonSerialization,${a(refer('SerializationManager', serverpodUrl))}'
+                  '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
                   ' serializationManager)=>'
                   '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
                   '.fromJson(jsonSerialization'
                   '${classInfo is ClassDefinition ? ',serializationManager' : ''})'),
             for (var classInfo in classInfos)
-              refer('getType', serverpodUrl).call([], {}, [
+              refer('getType', serverPodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
                     ..symbol = classInfo.className
@@ -865,14 +867,20 @@ class ClassGeneratorDart extends ClassGenerator {
                     ..isNullable = true,
                 )
               ]).code: Code.scope((a) =>
-                  '(jsonSerialization,${a(refer('SerializationManager', serverpodUrl))}'
+                  '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
                   ' serializationManager)=>'
                   'jsonSerialization!=null?'
                   '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
                   '.fromJson(jsonSerialization'
                   '${classInfo is ClassDefinition ? ',serializationManager' : ''})'
                   ':null'),
-          }).code,
+          }..addEntries([
+                  for (var classInfo in classInfos)
+                    if (classInfo is ClassDefinition)
+                      for (var field in classInfo.fields)
+                        ...field.type.generateListSetMapConstructors(serverCode)
+                ]))
+              .code,
       ),
       Field(
         (f) => f

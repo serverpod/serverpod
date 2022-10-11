@@ -1,6 +1,9 @@
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+
+import 'class_generator_dart.dart';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -73,15 +76,16 @@ class TypeDefinition {
             t.url =
                 'package:$moduleName${serverCode ? '_server' : '_client'}/module.dart';
           } else if (url == 'serverpod') {
-            t.url = serverCode
-                ? 'package:serverpod/protocol.dart'
-                : 'package:serverpod_service_client/serverpod_service_client.dart';
+            t.url = serverPodUrl(serverCode);
+          } else if (url == 'protocol') {
+            t.url = 'protocol.dart';
           } else {
             t.url = url;
           }
           t.isNullable = nullable;
           t.symbol = className;
           t.types.addAll(generics.map((e) => e.reference(serverCode)));
+          // print('$className ${t.types.build()}');
         },
       );
 
@@ -116,6 +120,84 @@ class TypeDefinition {
     } else {
       //TODO: better error
       throw 'Not a Future';
+    }
+  }
+
+  /// Generates the constructors for List and Map types
+  List<MapEntry<Expression, Code>> generateListSetMapConstructors(
+      bool serverCode) {
+    // print('constructors');
+    if ((className == 'List' || className == 'Set') && generics.length == 1) {
+      return [
+        MapEntry(
+          nullable
+              ? refer('getType', serverPodUrl(serverCode))
+                  .call([], {}, [reference(serverCode)])
+              : reference(serverCode),
+          Block.of([
+            Code.scope((a) =>
+                '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
+                ' serializationManager)=>'),
+            nullable
+                ? Block.of([
+                    // using Code.scope only sets the generic to List
+                    Code('jsonSerialization!=null?'
+                        '${className == 'Set' ? 'Set.of(' : ''}'
+                        '(jsonSerialization as List).map((e) =>'
+                        'serializationManager.deserializeJson<'),
+                    generics.first.reference(serverCode).code,
+                    Code('>(e))${className == 'Set' ? ')' : ''}'
+                        ':null')
+                  ])
+                : Block.of([
+                    Code('${className == 'Set' ? 'Set.of(' : ''}'
+                        '(jsonSerialization as List).map((e) =>'
+                        'serializationManager.deserializeJson<'),
+                    generics.first.reference(serverCode).code,
+                    Code('>(e))${className == 'Set' ? ')' : ''}'),
+                  ])
+          ]),
+        ),
+        ...generics.first.generateListSetMapConstructors(serverCode),
+      ];
+    } else if (className == 'Map' && generics.length == 2) {
+      return [
+        MapEntry(
+          nullable
+              ? refer('getType', serverPodUrl(serverCode))
+                  .call([], {}, [reference(serverCode)])
+              : reference(serverCode),
+          Block.of([
+            Code.scope((a) =>
+                '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
+                ' serializationManager)=>'),
+            nullable
+                ? Block.of([
+                    // using Code.scope only sets the generic to List
+                    const Code('jsonSerialization!=null?'
+                        '(jsonSerialization as Map).map((k,v) =>'
+                        'MapEntry(serializationManager.deserializeJson<'),
+                    generics.first.reference(serverCode).code,
+                    const Code('>(k),serializationManager.deserializeJson<'),
+                    generics[1].reference(serverCode).code,
+                    const Code('>(v)))' ':null')
+                  ])
+                : Block.of([
+                    // using Code.scope only sets the generic to List
+                    const Code('(jsonSerialization as Map).map((k,v) =>'
+                        'MapEntry(serializationManager.deserializeJson<'),
+                    generics.first.reference(serverCode).code,
+                    const Code('>(k),serializationManager.deserializeJson<'),
+                    generics[1].reference(serverCode).code,
+                    const Code('>(v)))')
+                  ])
+          ]),
+        ),
+        ...generics.first.generateListSetMapConstructors(serverCode),
+        ...generics[1].generateListSetMapConstructors(serverCode),
+      ];
+    } else {
+      return [];
     }
   }
 }
