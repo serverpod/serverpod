@@ -126,7 +126,6 @@ class TypeDefinition {
   /// Generates the constructors for List and Map types
   List<MapEntry<Expression, Code>> generateListSetMapConstructors(
       bool serverCode) {
-    // print('constructors');
     if ((className == 'List' || className == 'Set') && generics.length == 1) {
       return [
         MapEntry(
