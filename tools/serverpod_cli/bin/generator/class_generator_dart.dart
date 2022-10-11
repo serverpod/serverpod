@@ -879,6 +879,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields)
                         ...field.type.generateListSetMapConstructors(serverCode)
+                  //TODO: add types found in endpoints
                 ]))
               .code,
       ),
