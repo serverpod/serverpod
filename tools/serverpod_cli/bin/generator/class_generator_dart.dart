@@ -798,95 +798,100 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   @override
-  String generateFactory(List<ProtocolFileDefinition> classInfos) {
-    var out = '';
+  Library generateFactory(List<ProtocolFileDefinition> classInfos) {
+    var library = LibraryBuilder();
 
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
-    out += '// ignore_for_file: library_private_types_in_public_api\n';
-    out += '// ignore_for_file: depend_on_referenced_packages\n';
-    out += '\n';
+    var serverpodUrl = serverCode
+        ? 'package:serverpod/serverpod.dart'
+        : 'package:serverpod_client/serverpod_client.dart';
 
-    out += 'library protocol;\n';
-    out += '\n';
+    library.name = 'protocol';
 
-    out += '// ignore: unused_import\n';
-    out += 'import \'dart:typed_data\';\n';
-    if (serverCode) {
-      out += 'import \'package:serverpod/serverpod.dart\';\n';
-    } else {
-      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
+    // exports
+    library.directives.addAll([
+      for (var classInfo in classInfos)
+        Directive.export('${classInfo.fileName}.dart')
+    ]);
+    if (!serverCode) {
+      Directive.export('client.dart');
     }
 
-    out += '\n';
+    var protocol = ClassBuilder();
 
-    // Import generated files
-    for (var classInfo in classInfos) {
-      out += 'import \'${classInfo.fileName}.dart\';\n';
-    }
-    out += '\n';
+    protocol
+      ..name = 'Protocol'
+      ..extend = serverCode
+          ? refer(
+              'SerializationManagerServer', 'package:serverpod/serverpod.dart')
+          : refer('SerializationManager',
+              'package:serverpod_client/serverpod_client.dart');
 
-    // Export generated files
-    for (var classInfo in classInfos) {
-      out += 'export \'${classInfo.fileName}.dart\';\n';
-    }
-    if (!serverCode) out += 'export \'client.dart\';\n';
-    out += '\n';
+    protocol.fields.add(Field(
+      (f) => f
+        ..static = true
+        ..modifier = FieldModifier.final$
+        ..type = refer('Protocol')
+        ..name = 'instance'
+        ..assignment = refer('Protocol').newInstance([]).code,
+    ));
 
-    // Fields
-    var extendedClass =
-        serverCode ? 'SerializationManagerServer' : 'SerializationManager';
+    protocol.fields.addAll([
+      Field(
+        (f) => f
+          ..annotations.add(refer('override'))
+          ..modifier = FieldModifier.final$
+          ..type = TypeReference((t) => t
+            ..symbol = 'Map'
+            ..types.addAll([
+              refer('Type'),
+              refer('constructor', serverpodUrl),
+            ]))
+          ..name = 'constructors'
+          ..assignment = literalMap({
+            //TODO: Add types from endpoints
+            for (var classInfo in classInfos)
+              refer(classInfo.className, '${classInfo.fileName}.dart'): Code.scope((a) =>
+                  '(jsonSerialization,${a(refer('SerializationManager', serverpodUrl))}'
+                  ' serializationManager)=>'
+                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                  '.fromJson(jsonSerialization'
+                  '${classInfo is ClassDefinition ? ',serializationManager' : ''})'),
+            for (var classInfo in classInfos)
+              refer('getType', serverpodUrl).call([], {}, [
+                TypeReference(
+                  (b) => b
+                    ..symbol = classInfo.className
+                    ..url = '${classInfo.fileName}.dart'
+                    ..isNullable = true,
+                )
+              ]).code: Code.scope((a) =>
+                  '(jsonSerialization,${a(refer('SerializationManager', serverpodUrl))}'
+                  ' serializationManager)=>'
+                  'jsonSerialization!=null?'
+                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                  '.fromJson(jsonSerialization'
+                  '${classInfo is ClassDefinition ? ',serializationManager' : ''})'
+                  ':null'),
+          }).code,
+      ),
+      Field(
+        (f) => f
+          ..annotations.add(refer('override'))
+          ..modifier = FieldModifier.final$
+          ..type = TypeReference((t) => t
+            ..symbol = 'Map'
+            ..types.addAll([
+              refer('String'),
+              refer('Type'),
+            ]))
+          ..name = 'classNameTypeMapping'
+          ..assignment = literalMap({}).code,
+      ),
+    ]);
 
-    out += 'class Protocol extends $extendedClass {\n';
-    out += '  static final Protocol instance = Protocol();\n';
-    out += '\n';
+    library.body.add(protocol.build());
 
-    out += '  final Map<String, constructor> _constructors = {};\n';
-    out += '  @override\n';
-    out += '  Map<String, constructor> get constructors => _constructors;\n';
-    out += '\n';
-    if (serverCode) {
-      out += '  final Map<String,String> _tableClassMapping = {};\n';
-      out += '  @override\n';
-      out +=
-          '  Map<String,String> get tableClassMapping => _tableClassMapping;\n';
-      out += '\n';
-      out += '  final Map<Type, Table> _typeTableMapping = {};\n';
-      out += '  @override\n';
-      out += '  Map<Type, Table> get typeTableMapping => _typeTableMapping;\n';
-      out += '\n';
-    }
-
-    // Constructor
-    out += '  Protocol() {\n';
-
-    for (var classInfo in classInfos) {
-      out +=
-          '    constructors[\'$classPrefix${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
-    }
-
-    if (serverCode) {
-      out += '\n';
-      for (var classInfo in classInfos) {
-        if (classInfo is! ClassDefinition || classInfo.tableName == null) {
-          continue;
-        }
-        out +=
-            '    tableClassMapping[\'${classInfo.tableName}\'] = \'$classPrefix${classInfo.className}\';\n';
-        out +=
-            '    typeTableMapping[${classInfo.className}] = ${classInfo.className}.t;\n';
-      }
-    }
-
-    out += '  }\n';
-    out += '}\n';
-
-    return out;
+    return library.build();
   }
 
   String get classPrefix {

@@ -61,8 +61,7 @@ abstract class ClassGenerator {
         var out = generateFile(classDefinition);
 
         outputFile.createSync();
-        outputFile.writeAsStringSync(DartFormatter().format(
-            '${out.accept(DartEmitter.scoped(useNullSafetySyntax: true))}'));
+        outputFile.writeAsStringSync(_generateCode(out));
 
         collector.addGeneratedFile(outputFile);
       } catch (e, stackTrace) {
@@ -75,7 +74,7 @@ abstract class ClassGenerator {
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
     var out = generateFactory(classDefinitions);
     outFile.createSync();
-    outFile.writeAsStringSync(out);
+    outFile.writeAsStringSync(_generateCode(out));
     collector.addGeneratedFile(outFile);
 
     if (serverCode) {
@@ -90,5 +89,10 @@ abstract class ClassGenerator {
 
   Library generateFile(ProtocolFileDefinition classDefinition);
 
-  String generateFactory(List<ProtocolFileDefinition> classNames);
+  Library generateFactory(List<ProtocolFileDefinition> classNames);
+
+  String _generateCode(Spec spec) {
+    return DartFormatter().format(
+        '${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}');
+  }
 }
