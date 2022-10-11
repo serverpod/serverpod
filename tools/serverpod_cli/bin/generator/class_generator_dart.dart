@@ -86,7 +86,8 @@ class ClassGeneratorDart extends ClassGenerator {
     out += 'import \'dart:typed_data\';\n';
     var sDir = classDefinition.subDir?.split(Platform.pathSeparator) ?? [];
     sDir = sDir.map((e) => '..').toList();
-    out += 'import \'${sDir.isEmpty ? '.' : p.joinAll(sDir)}/protocol.dart\';\n';
+    out +=
+        'import \'${sDir.isEmpty ? '.' : p.joinAll(sDir)}/protocol.dart\';\n';
     out += '\n';
 
     // Row class definition
