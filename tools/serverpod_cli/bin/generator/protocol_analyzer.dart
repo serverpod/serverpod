@@ -197,8 +197,7 @@ class ProtocolAnalyzer {
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
-                    returnType: TypeDefinition.fromDartType(method.returnType)
-                        .stripFuture(),
+                    returnType: TypeDefinition.fromDartType(method.returnType),
                   );
                   methodDefs.add(methodDef);
                 }

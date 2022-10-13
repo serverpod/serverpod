@@ -6,6 +6,7 @@ import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
+import 'generator.dart';
 import 'pgsql_generator.dart';
 import 'protocol_definition.dart';
 
@@ -61,7 +62,7 @@ abstract class ClassGenerator {
         var out = generateFile(classDefinition);
 
         outputFile.createSync();
-        outputFile.writeAsStringSync(_generateCode(out));
+        outputFile.writeAsStringSync(generateCode(out));
 
         collector.addGeneratedFile(outputFile);
       } catch (e, stackTrace) {
@@ -74,7 +75,7 @@ abstract class ClassGenerator {
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
     var out = generateFactory(classDefinitions);
     outFile.createSync();
-    outFile.writeAsStringSync(_generateCode(out));
+    outFile.writeAsStringSync(generateCode(out));
     collector.addGeneratedFile(outFile);
 
     if (serverCode) {
@@ -90,9 +91,4 @@ abstract class ClassGenerator {
   Library generateFile(ProtocolFileDefinition classDefinition);
 
   Library generateFactory(List<ProtocolFileDefinition> classNames);
-
-  String _generateCode(Spec spec) {
-    return DartFormatter().format(
-        '${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}');
-  }
 }

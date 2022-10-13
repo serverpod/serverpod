@@ -1,3 +1,6 @@
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
+
 import 'class_analyzer.dart';
 import 'class_generator.dart';
 import 'code_cleaner.dart';
@@ -81,4 +84,9 @@ Future<void> performGenerate({
     }
     performDartFormat(verbose);
   }
+}
+
+String generateCode(Spec spec) {
+  return DartFormatter()
+      .format('${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}');
 }
