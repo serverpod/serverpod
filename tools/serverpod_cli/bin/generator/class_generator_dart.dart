@@ -896,6 +896,55 @@ class ClassGeneratorDart extends ClassGenerator {
           ..name = 'classNameTypeMapping'
           ..assignment = literalMap({}).code,
       ),
+      Field(
+        (f) => f
+          ..modifier = FieldModifier.final$
+          ..type = TypeReference((t) => t
+            ..symbol = 'Map'
+            ..types.addAll([
+              refer('String'),
+              refer('String'),
+            ]))
+          ..name = '_tableClassMapping'
+          ..assignment = literalMap({}).code,
+      ),
+      Field(
+        (f) => f
+          ..modifier = FieldModifier.final$
+          ..type = TypeReference((t) => t
+            ..symbol = 'Map'
+            ..types.addAll([
+              refer('Type'),
+              refer('Table', 'package:serverpod/serverpod.dart'),
+            ]))
+          ..name = '_typeTableMapping'
+          ..assignment = literalMap({}).code,
+      ),
+    ]);
+
+    protocol.methods.addAll([
+      Method((m) => m
+        ..name = 'tableClassMapping'
+        ..type = MethodType.getter
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('String'),
+            refer('String'),
+          ]))
+        ..body = refer('_tableClassMapping').returned.statement),
+      Method((m) => m
+        ..name = 'typeTableMapping'
+        ..type = MethodType.getter
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('Type'),
+            refer('Table', 'package:serverpod/serverpod.dart'),
+          ]))
+        ..body = refer('_typeTableMapping').returned.statement),
     ]);
 
     library.body.add(protocol.build());
