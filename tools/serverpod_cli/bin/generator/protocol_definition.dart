@@ -17,6 +17,7 @@ class EndpointDefinition {
   final String name;
   final String? documentationComment;
   final String className;
+  final String fileName;
   final List<MethodDefinition> methods;
 
   EndpointDefinition({
@@ -24,6 +25,7 @@ class EndpointDefinition {
     required this.documentationComment,
     required this.methods,
     required this.className,
+    required this.fileName,
   });
 }
 

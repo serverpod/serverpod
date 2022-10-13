@@ -208,6 +208,7 @@ class ProtocolAnalyzer {
                 documentationComment: classDocumentationComment,
                 className: className,
                 methods: methodDefs,
+                fileName: filePath,
               );
               endpointDefs.add(endpointDef);
             }

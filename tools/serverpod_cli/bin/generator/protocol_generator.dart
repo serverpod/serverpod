@@ -3,17 +3,12 @@ import 'dart:io';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
+import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'generator.dart';
 import 'protocol_definition.dart';
 import 'protocol_generator_dart.dart';
-
-// Future<void> performGenerateProtocol({
-//   required bool verbose,
-//   required ProtocolDefinition protocolDefinition,
-//   required CodeAnalysisCollector collector,
-// }) async {}
 
 Future<void> performGenerateProtocol({
   required bool verbose,
@@ -36,7 +31,8 @@ Future<void> performGenerateProtocol({
 
   // Generate server mappings with endpoint connectors
   if (verbose) print('Generating server endpoint dispatch');
-  var endpointDispatch = generator.generateServerEndpointDispatch();
+  var endpointDispatch =
+      generateCode(generator.generateServerEndpointDispatch());
   if (verbose) print(endpointDispatch);
 
   var endpointsFilePath =
@@ -61,159 +57,132 @@ abstract class ProtocolGenerator {
 
   ProtocolGenerator({required this.protocolDefinition});
 
-  String generateServerEndpointDispatch() {
-    var hasModules = config.modules.isNotEmpty;
+  Library generateServerEndpointDispatch() {
+    var library = LibraryBuilder();
 
-    var out = '';
-
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: unused_import\n';
-    out += '\n';
-
-    // Imports
-    out += 'import \'dart:typed_data\' as typed_data;\n';
-    out += 'import \'package:serverpod/serverpod.dart\';\n';
-    out += '\n';
-    if (hasModules) {
-      for (var module in config.modules) {
-        out +=
-            'import \'package:${module.serverPackage}/module.dart\' as ${module.name};\n';
-      }
-      out += '\n';
-    }
-    out += 'import \'protocol.dart\';\n';
-    out += '\n';
-    for (var importPath in protocolDefinition.filePaths) {
-      var fileName = '../endpoints/${p.basename(importPath)}';
-      out += 'import \'$fileName\';\n';
-    }
-    out += '\n';
+    String endpointPath(EndpointDefinition endpoint) =>
+        '../endpoints/${p.basename(endpoint.fileName)}';
 
     // Endpoint class
-    out += 'class Endpoints extends EndpointDispatch {\n';
+    library.body.add(Class((c) => c
+      ..name = 'Endpoints'
+      ..extend = refer('EndpointDispatch', serverPodUrl(true))
+      // Init method
+      ..methods.add(Method.returnsVoid((m) => m
+        ..name = 'initializeEndpoints'
+        ..annotations.add(refer('override'))
+        ..requiredParameters.add(Parameter(((p) => p
+          ..name = 'server'
+          ..type = refer('Server', serverPodUrl(true)))))
+        ..body = Block.of([
+          // Endpoints lookup map
+          refer('var endpoints')
+              .assign(literalMap({
+                for (var endpoint in protocolDefinition.endpoints)
+                  endpoint.name:
+                      refer(endpoint.className, endpointPath(endpoint)).call([])
+              }, refer('String'), refer('Endpoint', serverPodUrl(true))))
+              .statement,
+          // Connectors
+          for (var endpoint in protocolDefinition.endpoints)
+            refer('connectors')
+                .index(literalString(endpoint.name))
+                .assign(
+                    refer('EndpointConnector', serverPodUrl(true)).call([], {
+                  'name': literalString(endpoint.name),
+                  'endpoint': refer('endpoints')
+                      .index(literalString(endpoint.name))
+                      .nullChecked,
+                  'methodConnectors': literalMap({
+                    for (var method in endpoint.methods)
+                      literalString(method.name):
+                          refer('MethodConnector', serverPodUrl(true))
+                              .call([], {
+                        'name': literalString(method.name),
+                        'params': literalMap({
+                          for (var param in [
+                            ...method.parameters,
+                            ...method.parametersPositional,
+                            ...method.parametersNamed,
+                          ])
+                            literalString(param.name): refer(
+                                    'ParameterDescription', serverPodUrl(true))
+                                .call([], {
+                              'name': literalString(param.name),
+                              'type': param.type.reference(true),
+                              'nullable': literalBool(param.type.nullable),
+                            })
+                        }),
+                        'call': Method(
+                          (m) => m
+                            ..requiredParameters.addAll([
+                              Parameter((p) => p
+                                ..name = 'session'
+                                ..type = refer('Session', serverPodUrl(true))),
+                              Parameter((p) => p
+                                ..name = 'params'
+                                ..type = TypeReference((t) => t
+                                  ..symbol = 'Map'
+                                  ..types.addAll([
+                                    refer('String'),
+                                    refer('dynamic'),
+                                  ])))
+                            ])
+                            ..modifier = MethodModifier.async
+                            ..body = refer('endpoints')
+                                .index(literalString(endpoint.name))
+                                .asA(refer(
+                                    endpoint.className, endpointPath(endpoint)))
+                                .property(method.name)
+                                .call([
+                              refer('session'),
+                              for (var param in [
+                                ...method.parameters,
+                                ...method.parametersPositional
+                              ])
+                                refer('params')
+                                    .index(literalString(param.name)),
+                            ], {
+                              for (var param in [...method.parametersNamed])
+                                param.name: refer('params')
+                                    .index(literalString(param.name)),
+                            }).code,
+                        ).closure,
+                      }),
+                  })
+                }))
+                .statement,
+          // Hook up modules
+          for (var module in config.modules)
+            refer('modules')
+                .index(literalString(module.name))
+                .assign(refer('Endpoints',
+                        'package:${module.serverPackage}/module.dart')
+                    .call([])
+                    .cascade('initializeEndpoints')
+                    .call([refer('server')]))
+                .statement,
+        ])))
+      ..methods.add(Method.returnsVoid(
+        (m) => m
+          ..name = 'registerModules'
+          ..annotations.add(refer('override'))
+          ..requiredParameters.add(Parameter(
+            (p) => p
+              ..name = 'pod'
+              ..type = refer('Serverpod', serverPodUrl(true)),
+          ))
+          ..body = Block.of([
+            for (var module in config.modules)
+              refer('pod').property('registerModule').call([
+                refer('Protocol', 'package:${module.serverPackage}/module.dart')
+                    .call([]),
+                literalString(module.nickname),
+              ]).statement,
+          ]),
+      ))));
 
-    // Init method
-    out += '  @override\n';
-    out += '  void initializeEndpoints(Server server) {\n';
-
-    // Endpoints lookup map
-    var moduleName =
-        config.type == PackageType.server ? 'null' : '\'${config.name}\'';
-    out += '    var endpoints = <String, Endpoint>{\n';
-    for (var endpoint in protocolDefinition.endpoints) {
-      out +=
-          '      \'${endpoint.name}\': ${endpoint.className}()..initialize(server, \'${endpoint.name}\', $moduleName),\n';
-    }
-    out += '    };\n';
-
-    // Connectors
-    for (var endpoint in protocolDefinition.endpoints) {
-      out += '\n';
-      out += '    connectors[\'${endpoint.name}\'] = EndpointConnector(\n';
-      out += '      name: \'${endpoint.name}\',\n';
-      out += '      endpoint: endpoints[\'${endpoint.name}\']!,\n';
-      out += '      methodConnectors: {\n';
-      for (var method in endpoint.methods) {
-        out += '        \'${method.name}\': MethodConnector(\n';
-        out += '          name: \'${method.name}\',\n';
-        out += '          params: {\n';
-        for (var param in [
-          ...method.parameters,
-          ...method.parametersPositional,
-          ...method.parametersNamed,
-        ]) {
-          out +=
-              '            \'${param.name}\': ParameterDescription(name: \'${param.name}\', type: ${param.type /*.typeNonNullableWithPrefix*/}, nullable: ${param.type.nullable}),\n';
-        }
-        out += '          },\n';
-        out +=
-            '          call: (Session session, Map<String, dynamic> params) async {\n';
-        out +=
-            '            return (endpoints[\'${endpoint.name}\'] as ${endpoint.className}).${method.name}(session,';
-        for (var param in [
-          ...method.parameters,
-          ...method.parametersPositional
-        ]) {
-          if (false /*param.type.isTypedList*/) {
-            if (param.type.nullable) {
-              out += '(params[\'${param.name}\'] as List?)?.cast(),';
-            } else {
-              out += '(params[\'${param.name}\'] as List).cast(),';
-            }
-          } else if (false /*param.type.isTypedMap*/) {
-            if (param.type.nullable) {
-              out += '(params[\'${param.name}\'] as Map?)?.cast(),';
-            } else {
-              out += '(params[\'${param.name}\'] as Map).cast(),';
-            }
-          } else {
-            out += 'params[\'${param.name}\'],';
-          }
-        }
-        if (method.parametersNamed.isNotEmpty) {
-          for (var param in method.parametersNamed) {
-            if (false /*param.type.isTypedList*/) {
-              if (param.type.nullable) {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as List?)?.cast(),';
-              } else {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as List).cast(),';
-              }
-            } else if (false /*param.type.isTypedMap*/) {
-              if (param.type.nullable) {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as Map?)?.cast(),';
-              } else {
-                out +=
-                    '${param.name}: (params[\'${param.name}\'] as Map).cast(),';
-              }
-            } else {
-              out += '${param.name}: params[\'${param.name}\'],';
-            }
-          }
-        }
-        out += ');\n';
-        out += '          },\n';
-        out += '        ),\n';
-      }
-      out += '      },\n';
-      out += '    );\n';
-    }
-
-    // Hook up modules
-    if (hasModules) {
-      out += '\n';
-      for (var module in config.modules) {
-        out +=
-            '    modules[\'${module.name}\'] = ${module.name}.Endpoints()..initializeEndpoints(server);\n';
-      }
-    }
-
-    // End init method
-    out += '  }\n';
-
-    // Register modules
-    out += '\n';
-    out += '  @override\n';
-    out += '  void registerModules(Serverpod pod) {\n';
-    for (var module in config.modules) {
-      out +=
-          '    pod.registerModule(${module.name}.Protocol(), \'${module.nickname}\');\n';
-    }
-    out += '  }\n';
-
-    // Endpoint class end
-    out += '}\n';
-
-    out += '\n';
-
-    return out;
+    return library.build();
   }
 
   Library generateClientEndpointCalls();
