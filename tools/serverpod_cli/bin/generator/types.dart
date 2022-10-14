@@ -70,7 +70,7 @@ class TypeDefinition {
       TypeDefinition(className: className, url: url, nullable: true);
 
   /// Generate a [TypeReference] from this definition.
-  TypeReference reference([bool serverCode = true]) => TypeReference(
+  TypeReference reference(bool serverCode) => TypeReference(
         (t) {
           if (url?.startsWith('module:') ?? false) {
             var moduleName = url?.substring(7);
@@ -80,11 +80,10 @@ class TypeDefinition {
             t.url = serverPodUrl(serverCode);
           } else if (url == 'protocol') {
             t.url = 'protocol.dart';
-          } else if ((url?.startsWith('package:serverpod/src/generated') ??
-                  false) &&
-              !serverCode) {
-            t.url =
-                'package:serverpod_service_client/src/protocol/${url!.split('/').last}';
+          } else if (url != null &&
+              !serverCode &&
+              url!.contains('src/generated/')) {
+            t.url = url!.split('/').last;
           } else {
             t.url = url;
           }
