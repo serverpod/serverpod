@@ -811,11 +811,9 @@ class ClassGeneratorDart extends ClassGenerator {
     // exports
     library.directives.addAll([
       for (var classInfo in classInfos)
-        Directive.export('${classInfo.fileName}.dart')
+        Directive.export('${classInfo.fileName}.dart'),
+      if (!serverCode) Directive.export('client.dart'),
     ]);
-    if (!serverCode) {
-      Directive.export('client.dart');
-    }
 
     var protocol = ClassBuilder();
 
