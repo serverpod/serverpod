@@ -290,7 +290,7 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase();
+    Map data = row.toJsonForDatabase();
 
     int? id = data['id'];
 
@@ -333,7 +333,7 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase();
+    Map data = row.toJsonForDatabase();
 
     var columnsList = <String>[];
     var valueList = <String>[];

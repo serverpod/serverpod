@@ -109,7 +109,8 @@ abstract class ProtocolGenerator {
                                     'ParameterDescription', serverPodUrl(true))
                                 .call([], {
                               'name': literalString(param.name),
-                              'type': param.type.reference(true),
+                              'type': refer('getType', serverPodUrl(true))
+                                  .call([], {}, [param.type.reference(true)]),
                               'nullable': literalBool(param.type.nullable),
                             })
                         }),

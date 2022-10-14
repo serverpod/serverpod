@@ -50,9 +50,11 @@ class TypeDefinition {
     var generics = (type is ParameterizedType)
         ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
         : <TypeDefinition>[];
+    print(type.element2?.librarySource?.uri);
     var url = type.element2?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
-    var className = type.element2!.displayName;
+
+    var className = !type.isVoid ? type.element2!.displayName : 'void';
     return TypeDefinition(
       className: className,
       nullable: nullable,
@@ -79,13 +81,17 @@ class TypeDefinition {
             t.url = serverPodUrl(serverCode);
           } else if (url == 'protocol') {
             t.url = 'protocol.dart';
+          } else if ((url?.startsWith('package:serverpod/src/generated') ??
+                  false) &&
+              !serverCode) {
+            t.url =
+                'package:serverpod_service_client/src/protocol/${url!.split('/').last}';
           } else {
             t.url = url;
           }
           t.isNullable = nullable;
           t.symbol = className;
           t.types.addAll(generics.map((e) => e.reference(serverCode)));
-          // print('$className ${t.types.build()}');
         },
       );
 

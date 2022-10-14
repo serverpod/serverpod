@@ -686,8 +686,7 @@ class ClassGeneratorDart extends ClassGenerator {
           // Expression builder
           library.body.add(FunctionType(
             (f) {
-              f.returnType =
-                  refer('Expression', 'package:serverpod/serverpod.dart');
+              f.returnType = refer('Expression', serverPodUrl(serverCode));
               f.requiredParameters.add(refer('${className}Table'));
             },
           ).toTypeDef('${className}ExpressionBuilder'));
@@ -695,7 +694,7 @@ class ClassGeneratorDart extends ClassGenerator {
           // Table class definition
           library.body.add(Class((c) {
             c.name = '${className}Table';
-            c.extend = refer('Table', 'package:serverpod/serverpod.dart');
+            c.extend = refer('Table', serverPodUrl(serverCode));
             c.constructors.add(Constructor((constructor) {
               constructor.initializers.add(refer('super')
                   .call([], {'tableName': literalString(tableName)}).code);
@@ -896,56 +895,60 @@ class ClassGeneratorDart extends ClassGenerator {
           ..name = 'classNameTypeMapping'
           ..assignment = literalMap({}).code,
       ),
-      Field(
-        (f) => f
-          ..modifier = FieldModifier.final$
-          ..type = TypeReference((t) => t
+      if (serverCode)
+        Field(
+          (f) => f
+            ..modifier = FieldModifier.final$
+            ..type = TypeReference((t) => t
+              ..symbol = 'Map'
+              ..types.addAll([
+                refer('String'),
+                refer('String'),
+              ]))
+            ..name = '_tableClassMapping'
+            ..assignment = literalMap({}).code,
+        ),
+      if (serverCode)
+        Field(
+          (f) => f
+            ..modifier = FieldModifier.final$
+            ..type = TypeReference((t) => t
+              ..symbol = 'Map'
+              ..types.addAll([
+                refer('Type'),
+                refer('Table', serverPodUrl(serverCode)),
+              ]))
+            ..name = '_typeTableMapping'
+            ..assignment = literalMap({}).code,
+        ),
+    ]);
+
+    if (serverCode) {
+      protocol.methods.addAll([
+        Method((m) => m
+          ..name = 'tableClassMapping'
+          ..type = MethodType.getter
+          ..annotations.add(refer('override'))
+          ..returns = TypeReference((t) => t
             ..symbol = 'Map'
             ..types.addAll([
               refer('String'),
               refer('String'),
             ]))
-          ..name = '_tableClassMapping'
-          ..assignment = literalMap({}).code,
-      ),
-      Field(
-        (f) => f
-          ..modifier = FieldModifier.final$
-          ..type = TypeReference((t) => t
+          ..body = refer('_tableClassMapping').returned.statement),
+        Method((m) => m
+          ..name = 'typeTableMapping'
+          ..type = MethodType.getter
+          ..annotations.add(refer('override'))
+          ..returns = TypeReference((t) => t
             ..symbol = 'Map'
             ..types.addAll([
               refer('Type'),
-              refer('Table', 'package:serverpod/serverpod.dart'),
+              refer('Table', serverPodUrl(serverCode)),
             ]))
-          ..name = '_typeTableMapping'
-          ..assignment = literalMap({}).code,
-      ),
-    ]);
-
-    protocol.methods.addAll([
-      Method((m) => m
-        ..name = 'tableClassMapping'
-        ..type = MethodType.getter
-        ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('String'),
-            refer('String'),
-          ]))
-        ..body = refer('_tableClassMapping').returned.statement),
-      Method((m) => m
-        ..name = 'typeTableMapping'
-        ..type = MethodType.getter
-        ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('Type'),
-            refer('Table', 'package:serverpod/serverpod.dart'),
-          ]))
-        ..body = refer('_typeTableMapping').returned.statement),
-    ]);
+          ..body = refer('_typeTableMapping').returned.statement),
+      ]);
+    }
 
     library.body.add(protocol.build());
 

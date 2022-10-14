@@ -88,7 +88,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                     literalString(parameterDef.name): refer(parameterDef.name),
                 })
               ], {}, [
-                methodDef.returnType.generics.first.reference()
+                methodDef.returnType.generics.first.reference(false)
               ]).code,
           ));
         }
