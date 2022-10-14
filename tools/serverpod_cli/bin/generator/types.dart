@@ -50,7 +50,6 @@ class TypeDefinition {
     var generics = (type is ParameterizedType)
         ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
         : <TypeDefinition>[];
-    print(type.element2?.librarySource?.uri);
     var url = type.element2?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
