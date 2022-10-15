@@ -22,6 +22,7 @@ class ClassGeneratorDart extends ClassGenerator {
     required super.verbose,
     required super.serverCode,
     required super.classDefinitions,
+    required super.protocolDefinition,
   });
 
   @override
@@ -803,8 +804,11 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   @override
-  Library generateFactory(List<ProtocolFileDefinition> classInfos) {
+  Library generateFactory(List<ProtocolFileDefinition> classInfos,
+      ProtocolDefinition protocolDefinition) {
     var library = LibraryBuilder();
+
+    library.body.add(const Code('// ignore_for_file: equal_keys_in_map\n'));
 
     library.name = 'protocol';
 
@@ -847,7 +851,6 @@ class ClassGeneratorDart extends ClassGenerator {
             ]))
           ..name = 'constructors'
           ..assignment = literalMap({
-            //TODO: Add types from endpoints
             for (var classInfo in classInfos)
               refer(classInfo.className, '${classInfo.fileName}.dart'): Code.scope((a) =>
                   '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
@@ -875,8 +878,23 @@ class ClassGeneratorDart extends ClassGenerator {
                   for (var classInfo in classInfos)
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields)
-                        ...field.type.generateListSetMapConstructors(serverCode)
-                  //TODO: add types found in endpoints
+                        ...field.type
+                            .generateListSetMapConstructors(serverCode),
+                  for (var endPoint in protocolDefinition.endpoints)
+                    for (var method in endPoint.methods) ...[
+                      ...method.returnType
+                          .stripFuture()
+                          .generateListSetMapConstructors(serverCode),
+                      for (var parameter in method.parameters)
+                        ...parameter.type
+                            .generateListSetMapConstructors(serverCode),
+                      for (var parameter in method.parametersPositional)
+                        ...parameter.type
+                            .generateListSetMapConstructors(serverCode),
+                      for (var parameter in method.parametersNamed)
+                        ...parameter.type
+                            .generateListSetMapConstructors(serverCode),
+                    ]
                 ]))
               .code,
       ),

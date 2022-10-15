@@ -33,15 +33,6 @@ Future<void> performGenerate({
   collector.printErrors();
   collector.clearErrors();
 
-  if (verbose) {
-    print('Generating classes.');
-  }
-  performGenerateClasses(
-    verbose: verbose,
-    classDefinitions: classDefinitions,
-    collector: collector,
-  );
-
   var changedFiles =
       Set<String>.from(collector.generatedFiles.map((e) => e.path));
   if (changedFile != null) {
@@ -56,6 +47,16 @@ Future<void> performGenerate({
     collector: collector,
     requestNewAnalyzer: requestNewAnalyzer,
     changedFiles: changedFiles,
+  );
+
+  if (verbose) {
+    print('Generating classes.');
+  }
+  performGenerateClasses(
+    verbose: verbose,
+    classDefinitions: classDefinitions,
+    collector: collector,
+    protocolDefinition: protocolDefinition,
   );
 
   collector.printErrors();

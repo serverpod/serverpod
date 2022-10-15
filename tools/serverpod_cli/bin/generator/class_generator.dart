@@ -14,6 +14,7 @@ void performGenerateClasses({
   required bool verbose,
   required List<ProtocolFileDefinition> classDefinitions,
   required CodeAnalysisCollector collector,
+  required ProtocolDefinition protocolDefinition,
 }) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
@@ -22,6 +23,7 @@ void performGenerateClasses({
     outputDirectoryPath: config.generatedServerProtocolPath,
     serverCode: true,
     classDefinitions: classDefinitions,
+    protocolDefinition: protocolDefinition,
   );
   serverGenerator.generate(collector: collector);
 
@@ -32,6 +34,7 @@ void performGenerateClasses({
     outputDirectoryPath: config.generatedClientProtocolPath,
     serverCode: false,
     classDefinitions: classDefinitions,
+    protocolDefinition: protocolDefinition,
   );
   clientGenerator.generate(collector: collector);
 }
@@ -41,12 +44,14 @@ abstract class ClassGenerator {
   final bool verbose;
   final bool serverCode;
   final List<ProtocolFileDefinition> classDefinitions;
+  final ProtocolDefinition protocolDefinition;
 
   ClassGenerator({
     required this.verbose,
     required this.classDefinitions,
     required this.outputDirectoryPath,
     required this.serverCode,
+    required this.protocolDefinition,
   });
 
   String get outputExtension;
@@ -73,7 +78,7 @@ abstract class ClassGenerator {
 
     // Generate factory class
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
-    var out = generateFactory(classDefinitions);
+    var out = generateFactory(classDefinitions, protocolDefinition);
     outFile.createSync();
     outFile.writeAsStringSync(generateCode(out));
     collector.addGeneratedFile(outFile);
@@ -90,5 +95,6 @@ abstract class ClassGenerator {
 
   Library generateFile(ProtocolFileDefinition classDefinition);
 
-  Library generateFactory(List<ProtocolFileDefinition> classNames);
+  Library generateFactory(List<ProtocolFileDefinition> classNames,
+      ProtocolDefinition protocolDefinition);
 }
