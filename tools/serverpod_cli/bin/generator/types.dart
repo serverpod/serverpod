@@ -4,6 +4,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 
 import 'class_generator_dart.dart';
+import 'config.dart';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -76,16 +77,35 @@ class TypeDefinition {
         (t) {
           if (url?.startsWith('module:') ?? false) {
             var moduleName = url?.substring(7);
+            var module = config.modules.cast<ModuleConfig?>().firstWhere(
+                  (m) => m?.nickname == moduleName,
+                  orElse: () => null,
+                );
+            if (module == null) {
+              //TODO: add to collector
+              throw 'Module with nickname $moduleName not found in config!';
+            }
             t.url =
-                'package:$moduleName${serverCode ? '_server' : '_client'}/module.dart';
+                'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
           } else if (url == 'serverpod') {
             t.url = serverPodUrl(serverCode);
           } else if (url == 'protocol') {
             t.url = 'protocol.dart';
-          } else if (url != null &&
-              !serverCode &&
-              url!.contains('src/generated/')) {
-            t.url = url!.split('/').last;
+          } else if (!serverCode &&
+              (url?.startsWith('package:${config.serverPackage}') ?? false)) {
+            t.url = url
+                ?.replaceFirst('package:${config.serverPackage}',
+                    'package:${config.clientPackage}')
+                .replaceFirst('src/generated/', 'src/protocol/');
+          } else if (!serverCode &&
+              config.modules.any((m) =>
+                  url?.startsWith('package:${m.serverPackage}') ?? false)) {
+            var module = config.modules.firstWhere(
+                (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
+            t.url = url!.contains('/src/generated/')
+                ? 'package:${module.clientPackage}/module.dart'
+                : url?.replaceFirst('package:${module.serverPackage}',
+                    'package:${module.clientPackage}');
           } else {
             t.url = url;
           }

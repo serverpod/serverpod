@@ -15,6 +15,7 @@ class GeneratorConfig {
   late PackageType type;
 
   late String serverPackage;
+  late String clientPackage;
 
   final String libSourcePath = 'lib';
   final String protocolSourcePath = p.join('lib', 'src', 'protocol');
@@ -67,22 +68,29 @@ class GeneratorConfig {
           'Option "client_package_path" is required in config/generator.yaml');
     }
     clientPackagePath = generatorConfig['client_package_path'];
+    try {
+      var file = File(p.join(clientPackagePath, 'pubspec.yaml'));
+      var yamlStr = file.readAsStringSync();
+      clientPackage = loadYaml(yamlStr)['name'];
+    } catch (_) {
+      print(
+          'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
+      return false;
+    }
     generatedClientProtocolPath =
         p.join(clientPackagePath, 'lib', 'src', 'protocol');
 
     // Load module settings
     modules = [];
-    if (type == PackageType.server) {
-      try {
-        if (generatorConfig['modules'] != null) {
-          Map modulesData = generatorConfig['modules'];
-          for (var package in modulesData.keys) {
-            modules.add(ModuleConfig._withMap(package, modulesData[package]));
-          }
+    try {
+      if (generatorConfig['modules'] != null) {
+        Map modulesData = generatorConfig['modules'];
+        for (var package in modulesData.keys) {
+          modules.add(ModuleConfig._withMap(package, modulesData[package]));
         }
-      } catch (e) {
-        throw const FormatException('Failed to load module config');
       }
+    } catch (e) {
+      throw const FormatException('Failed to load module config');
     }
 
     // print(this);
