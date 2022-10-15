@@ -41,3 +41,14 @@ serverpod generate
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
 serverpod generate
+
+
+# Tests
+
+echo "\ntests/serverpod_test_server"
+cd $BASE/tests/serverpod_test_server
+serverpod generate
+
+echo "\ntests/serverpod_test_module/serverpod_test_module_server"
+cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
+serverpod generate
