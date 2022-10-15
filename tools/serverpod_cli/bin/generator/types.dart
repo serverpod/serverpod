@@ -37,7 +37,9 @@ class TypeDefinition {
   }) {
     var parts = mixed.split(':');
     var classname = parts.last;
-    var url = (parts..removeLast()).join(':');
+    var url = mixed != 'ByteData'
+        ? (parts..removeLast()).join(':')
+        : 'dart:typed_data';
 
     return TypeDefinition(
         className: classname,
