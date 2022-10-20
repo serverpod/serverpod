@@ -11,7 +11,10 @@
 # characters.
 project_name = "awsname"
 
-# The region where to deploy the server.
+# The region where to deploy the server. If you change the region you will also
+# need to update the instance_ami variable (see below) and update the region in
+# the .github/workflows/deployment-aws.yml file. In some cases you will also
+# need to update your instance_type.
 aws_region = "us-west-2"
 
 # Enabling Redis may incur additional costs. You will also need to enable Redis
@@ -48,8 +51,10 @@ use_top_domain_for_web = false
 
 # The definition of the server instances to deploy. Note that if you change the
 # region, you will have to change the AMI as they are bound to specific regions.
-# Serverpod is tested with Amazon Linux 2 Kernel 5.x (You can find the AMI ids 
+# Serverpod is tested with Amazon Linux 2 Kernel 5.x (You can find the AMI ids
 # for a specifc region under EC2 > AMI Catalog in your AWS console.)
+# Note: For some regions the t2.micro is not available. If so, consult the AWS
+# documentation to find another instance type that suits your needs.
 instance_type                = "t2.micro"
 instance_ami                 = "ami-0ca285d4c2cda3300"
 autoscaling_min_size         = 1
