@@ -9,7 +9,14 @@ import 'package:serverpod_auth_server/module.dart' as _i3;
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{'chat': _i2.ChatEndpoint()};
+    var endpoints = <String, _i1.Endpoint>{
+      'chat': _i2.ChatEndpoint()
+        ..initialize(
+          server,
+          'chat',
+          'serverpod_chat',
+        )
+    };
     connectors['chat'] = _i1.EndpointConnector(
       name: 'chat',
       endpoint: endpoints['chat']!,

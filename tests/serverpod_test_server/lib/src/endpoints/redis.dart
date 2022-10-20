@@ -23,7 +23,7 @@ class RedisEndpoint extends Endpoint {
   }
 
   Future<SimpleData?> getSimpleData(Session session, String key) async {
-    return (await session.caches.global.get(key)) as SimpleData?;
+    return (await session.caches.global.get<SimpleData>(key));
   }
 
   Future<void> deleteSimpleData(Session session, String key) async {

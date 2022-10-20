@@ -80,7 +80,16 @@ abstract class ProtocolGenerator {
               .assign(literalMap({
                 for (var endpoint in protocolDefinition.endpoints)
                   endpoint.name:
-                      refer(endpoint.className, endpointPath(endpoint)).call([])
+                      refer(endpoint.className, endpointPath(endpoint))
+                          .call([])
+                          .cascade('initialize')
+                          .call([
+                            refer('server'),
+                            literalString(endpoint.name),
+                            config.type == PackageType.server
+                                ? refer('null')
+                                : literalString(config.name)
+                          ])
               }, refer('String'), refer('Endpoint', serverPodUrl(true))))
               .statement,
           // Connectors

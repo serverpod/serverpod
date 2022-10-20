@@ -60,7 +60,7 @@ class Users {
     UserInfo? userInfo;
 
     if (useCache) {
-      userInfo = await session.caches.local.get(cacheKey) as UserInfo?;
+      userInfo = await session.caches.local.get<UserInfo>(cacheKey);
       if (userInfo != null) return userInfo;
     }
 

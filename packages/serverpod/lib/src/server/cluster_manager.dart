@@ -14,8 +14,8 @@ class ClusterManager {
   /// Gets information about the server cluster this server is running within.
   /// The information can be up to two minutes old.
   Future<ClusterInfo> get getClusterInfo async {
-    var info = await _server.caches.localPrio.get(_clusterInfoCacheKey)
-        as ClusterInfo?;
+    var info =
+        await _server.caches.localPrio.get<ClusterInfo>(_clusterInfoCacheKey);
     if (info != null) {
       return info;
     }

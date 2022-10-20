@@ -43,28 +43,138 @@ class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'asyncTasks': _i2.AsyncTasksEndpoint(),
-      'authentication': _i3.AuthenticationEndpoint(),
-      'basicTypes': _i4.BasicTypesEndpoint(),
-      'cloudStorage': _i5.CloudStorageEndpoint(),
-      's3CloudStorage': _i6.S3CloudStorageEndpoint(),
-      'basicDatabase': _i7.BasicDatabase(),
-      'transactionsDatabase': _i8.TransactionsDatabaseEndpoint(),
-      'failedCalls': _i9.FailedCallsEndpoint(),
-      'fieldScopes': _i10.FieldScopesEndpoint(),
-      'futureCalls': _i11.FutureCallsEndpoint(),
-      'listParameters': _i12.ListParametersEndpoint(),
-      'logging': _i13.LoggingEndpoint(),
-      'loggingDisabled': _i14.LoggingDisabledEndpoint(),
-      'mapParameters': _i15.MapParametersEndpoint(),
-      'moduleSerialization': _i16.ModuleSerializationEndpoint(),
-      'namedParameters': _i17.NamedParametersEndpoint(),
-      'optionalParameters': _i18.OptionalParametersEndpoint(),
-      'redis': _i19.RedisEndpoint(),
-      'signInRequired': _i20.SignInRequiredEndpoint(),
-      'simple': _i21.SimpleEndpoint(),
-      'streaming': _i22.StreamingEndpoint(),
-      'streamingLogging': _i23.StreamingLoggingEndpoint(),
+      'asyncTasks': _i2.AsyncTasksEndpoint()
+        ..initialize(
+          server,
+          'asyncTasks',
+          null,
+        ),
+      'authentication': _i3.AuthenticationEndpoint()
+        ..initialize(
+          server,
+          'authentication',
+          null,
+        ),
+      'basicTypes': _i4.BasicTypesEndpoint()
+        ..initialize(
+          server,
+          'basicTypes',
+          null,
+        ),
+      'cloudStorage': _i5.CloudStorageEndpoint()
+        ..initialize(
+          server,
+          'cloudStorage',
+          null,
+        ),
+      's3CloudStorage': _i6.S3CloudStorageEndpoint()
+        ..initialize(
+          server,
+          's3CloudStorage',
+          null,
+        ),
+      'basicDatabase': _i7.BasicDatabase()
+        ..initialize(
+          server,
+          'basicDatabase',
+          null,
+        ),
+      'transactionsDatabase': _i8.TransactionsDatabaseEndpoint()
+        ..initialize(
+          server,
+          'transactionsDatabase',
+          null,
+        ),
+      'failedCalls': _i9.FailedCallsEndpoint()
+        ..initialize(
+          server,
+          'failedCalls',
+          null,
+        ),
+      'fieldScopes': _i10.FieldScopesEndpoint()
+        ..initialize(
+          server,
+          'fieldScopes',
+          null,
+        ),
+      'futureCalls': _i11.FutureCallsEndpoint()
+        ..initialize(
+          server,
+          'futureCalls',
+          null,
+        ),
+      'listParameters': _i12.ListParametersEndpoint()
+        ..initialize(
+          server,
+          'listParameters',
+          null,
+        ),
+      'logging': _i13.LoggingEndpoint()
+        ..initialize(
+          server,
+          'logging',
+          null,
+        ),
+      'loggingDisabled': _i14.LoggingDisabledEndpoint()
+        ..initialize(
+          server,
+          'loggingDisabled',
+          null,
+        ),
+      'mapParameters': _i15.MapParametersEndpoint()
+        ..initialize(
+          server,
+          'mapParameters',
+          null,
+        ),
+      'moduleSerialization': _i16.ModuleSerializationEndpoint()
+        ..initialize(
+          server,
+          'moduleSerialization',
+          null,
+        ),
+      'namedParameters': _i17.NamedParametersEndpoint()
+        ..initialize(
+          server,
+          'namedParameters',
+          null,
+        ),
+      'optionalParameters': _i18.OptionalParametersEndpoint()
+        ..initialize(
+          server,
+          'optionalParameters',
+          null,
+        ),
+      'redis': _i19.RedisEndpoint()
+        ..initialize(
+          server,
+          'redis',
+          null,
+        ),
+      'signInRequired': _i20.SignInRequiredEndpoint()
+        ..initialize(
+          server,
+          'signInRequired',
+          null,
+        ),
+      'simple': _i21.SimpleEndpoint()
+        ..initialize(
+          server,
+          'simple',
+          null,
+        ),
+      'streaming': _i22.StreamingEndpoint()
+        ..initialize(
+          server,
+          'streaming',
+          null,
+        ),
+      'streamingLogging': _i23.StreamingLoggingEndpoint()
+        ..initialize(
+          server,
+          'streamingLogging',
+          null,
+        ),
     };
     connectors['asyncTasks'] = _i1.EndpointConnector(
       name: 'asyncTasks',

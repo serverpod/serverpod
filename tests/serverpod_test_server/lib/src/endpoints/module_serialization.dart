@@ -13,7 +13,7 @@ class ModuleSerializationEndpoint extends Endpoint {
     try {
       var s = SerializationManager.serializeToJson(moduleClass);
       var unpacked =
-          pod.serializationManager.deserializeJson<module.ModuleClass>(s);
+          pod.serializationManager.deserializeJsonString<module.ModuleClass>(s);
       return (unpacked.data == 42 && unpacked.name == 'foo');
     } catch (e, stackTrace) {
       stdout.writeln(

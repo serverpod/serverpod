@@ -10,7 +10,14 @@ import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{'insights': _i2.InsightsEndpoint()};
+    var endpoints = <String, _i1.Endpoint>{
+      'insights': _i2.InsightsEndpoint()
+        ..initialize(
+          server,
+          'insights',
+          null,
+        )
+    };
     connectors['insights'] = _i1.EndpointConnector(
       name: 'insights',
       endpoint: endpoints['insights']!,

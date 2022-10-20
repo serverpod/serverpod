@@ -12,8 +12,18 @@ class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'module': _i2.ModuleEndpoint(),
-      'streaming': _i3.StreamingEndpoint(),
+      'module': _i2.ModuleEndpoint()
+        ..initialize(
+          server,
+          'module',
+          'serverpod_test_module',
+        ),
+      'streaming': _i3.StreamingEndpoint()
+        ..initialize(
+          server,
+          'streaming',
+          'serverpod_test_module',
+        ),
     };
     connectors['module'] = _i1.EndpointConnector(
       name: 'module',

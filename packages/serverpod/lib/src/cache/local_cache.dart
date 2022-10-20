@@ -30,7 +30,7 @@ class LocalCache extends Cache {
     );
 
     // Remove old entry
-    if (await get(key) != null) await invalidateKey(key);
+    if (await hasCached(key)) await invalidateKey(key);
 
     // Insert
     _keyList.insert(0, _KeyListKey(key, entry.creationTime));
@@ -62,6 +62,20 @@ class LocalCache extends Cache {
     var groupKeys = _groups[group]!;
     groupKeys.remove(key);
     if (groupKeys.isEmpty) _groups.remove(group);
+  }
+
+  @override
+  Future<bool> hasCached(String key) async {
+    var entry = _entries[key];
+
+    if (entry == null) return false;
+
+    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
+      await invalidateKey(key);
+      return false;
+    }
+
+    return true;
   }
 
   @override

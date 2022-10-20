@@ -18,13 +18,48 @@ class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'admin': _i2.AdminEndpoint(),
-      'apple': _i3.AppleEndpoint(),
-      'email': _i4.EmailEndpoint(),
-      'firebase': _i5.FirebaseEndpoint(),
-      'google': _i6.GoogleEndpoint(),
-      'status': _i7.StatusEndpoint(),
-      'user': _i8.UserEndpoint(),
+      'admin': _i2.AdminEndpoint()
+        ..initialize(
+          server,
+          'admin',
+          'serverpod_auth',
+        ),
+      'apple': _i3.AppleEndpoint()
+        ..initialize(
+          server,
+          'apple',
+          'serverpod_auth',
+        ),
+      'email': _i4.EmailEndpoint()
+        ..initialize(
+          server,
+          'email',
+          'serverpod_auth',
+        ),
+      'firebase': _i5.FirebaseEndpoint()
+        ..initialize(
+          server,
+          'firebase',
+          'serverpod_auth',
+        ),
+      'google': _i6.GoogleEndpoint()
+        ..initialize(
+          server,
+          'google',
+          'serverpod_auth',
+        ),
+      'status': _i7.StatusEndpoint()
+        ..initialize(
+          server,
+          'status',
+          'serverpod_auth',
+        ),
+      'user': _i8.UserEndpoint()
+        ..initialize(
+          server,
+          'user',
+          'serverpod_auth',
+        ),
     };
     connectors['admin'] = _i1.EndpointConnector(
       name: 'admin',

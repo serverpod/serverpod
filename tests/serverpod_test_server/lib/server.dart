@@ -21,12 +21,12 @@ void run(List<String> args) async {
 
   // Add S3 storage
   pod.addCloudStorage(s3.S3CloudStorage(
-    serverpod: pod,
-    storageId: 's3',
-    public: true,
-    region: 'us-west-2',
-    bucket: 'serverpod-test-storage',
-  ));
+      serverpod: pod,
+      storageId: 's3',
+      public: true,
+      region: '',
+      bucket: 'serverpod-test-storage',
+      publicHost: 'localhost:9000'));
 
   // Callbacks for auth
   auth.AuthConfig.set(auth.AuthConfig(

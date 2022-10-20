@@ -8,7 +8,14 @@ import '../endpoints/module_endpoint.dart' as _i2;
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{'module': _i2.ModuleEndpoint()};
+    var endpoints = <String, _i1.Endpoint>{
+      'module': _i2.ModuleEndpoint()
+        ..initialize(
+          server,
+          'module',
+          'modulename',
+        )
+    };
     connectors['module'] = _i1.EndpointConnector(
       name: 'module',
       endpoint: endpoints['module']!,

@@ -30,6 +30,17 @@ class RedisCache extends GlobalCache {
   }
 
   @override
+  Future<bool> hasCached(String key) async {
+    assert(
+      redisController != null,
+      'Redis needs to be enabled to use this method',
+    );
+    var data = await redisController!.get(key);
+
+    return data != null;
+  }
+
+  @override
   Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
     assert(
       redisController != null,
@@ -40,7 +51,7 @@ class RedisCache extends GlobalCache {
       return null;
     }
 
-    return serializationManager.deserializeJson<T>(data, t);
+    return serializationManager.deserializeJsonString<T>(data, t);
   }
 
   @override

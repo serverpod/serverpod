@@ -10,7 +10,14 @@ import 'package:serverpod_chat_server/module.dart' as _i4;
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{'channels': _i2.ChannelsEndpoint()};
+    var endpoints = <String, _i1.Endpoint>{
+      'channels': _i2.ChannelsEndpoint()
+        ..initialize(
+          server,
+          'channels',
+          null,
+        )
+    };
     connectors['channels'] = _i1.EndpointConnector(
       name: 'channels',
       endpoint: endpoints['channels']!,
