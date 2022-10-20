@@ -36,15 +36,19 @@ cloudfront_certificate_arn = "<YOUR CERTIFICATE ARN IN US-EAST-1>"
 # Subdomains for different services. Default values are recommended, but you
 # may want to change the subdomain_web to www if you are using the top domain
 # for the web server.
-subdomain_database         = "database"
-subdomain_redis            = "redis"
-subdomain_api              = "api"
-subdomain_insights         = "insights"
-subdomain_web              = "app"
-subdomain_storage          = "storage"
+subdomain_database = "database"
+subdomain_redis    = "redis"
+subdomain_api      = "api"
+subdomain_insights = "insights"
+subdomain_web      = "app"
+subdomain_storage  = "storage"
+
+subdomain_database_staging = "database-staging"
+subdomain_redis_staging    = "redis-staging"
 subdomain_api_staging      = "api-staging"
 subdomain_insights_staging = "insights-staging"
 subdomain_web_staging      = "app-staging"
+subdomain_storage_staging  = "storage-staging"
 
 # Set to true if you want to use the top domain for the web server.
 use_top_domain_for_web = false
@@ -77,6 +81,8 @@ staging_autoscaling_desired_capacity = 1
 
 # The deployment bucket name needs to be unique and can only contain lower case
 # letters and dashes (no underscored allowed).
-deployment_bucket_name      = "awsname-deployment-randomawsid"
-public_storage_bucket_name  = "awsname-public-storage-randomawsid"
-private_storage_bucket_name = "awsname-private-storage-randomawsid"
+deployment_bucket_name              = "awsname-deployment-randomawsid"
+public_storage_bucket_name          = "awsname-public-storage-randomawsid"
+private_storage_bucket_name         = "awsname-private-storage-randomawsid"
+public_storage_bucket_name_staging  = "awsname-public-storage-staging-randomawsid"
+private_storage_bucket_name_staging = "awsname-private-storage-staging-randomawsid"
