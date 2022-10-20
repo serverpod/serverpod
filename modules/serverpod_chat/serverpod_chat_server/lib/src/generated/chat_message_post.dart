@@ -1,27 +1,11 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class ChatMessagePost extends SerializableEntity {
-  @override
-  String get className => 'serverpod_chat_server.ChatMessagePost';
-
-  late String channel;
-  late String message;
-  late int clientMessageId;
-  List<ChatMessageAttachment>? attachments;
-
+class ChatMessagePost extends _i1.SerializableEntity {
   ChatMessagePost({
     required this.channel,
     required this.message,
@@ -29,36 +13,49 @@ class ChatMessagePost extends SerializableEntity {
     this.attachments,
   });
 
-  ChatMessagePost.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    channel = _data['channel']!;
-    message = _data['message']!;
-    clientMessageId = _data['clientMessageId']!;
-    attachments = _data['attachments']
-        ?.map<ChatMessageAttachment>(
-            (a) => ChatMessageAttachment.fromSerialization(a))
-        ?.toList();
+  factory ChatMessagePost.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ChatMessagePost(
+      channel: serializationManager
+          .deserializeJson<String>(jsonSerialization['channel']),
+      message: serializationManager
+          .deserializeJson<String>(jsonSerialization['message']),
+      clientMessageId: serializationManager
+          .deserializeJson<int>(jsonSerialization['clientMessageId']),
+      attachments: serializationManager.deserializeJson<
+          List<_i2.ChatMessageAttachment>?>(jsonSerialization['attachments']),
+    );
   }
 
+  String channel;
+
+  String message;
+
+  int clientMessageId;
+
+  List<_i2.ChatMessageAttachment>? attachments;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'serverpod_chat_server.ChatMessagePost';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      'attachments':
-          attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
-    });
+      'attachments': attachments,
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      'attachments':
-          attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
-    });
+      'attachments': attachments,
+    };
   }
 }

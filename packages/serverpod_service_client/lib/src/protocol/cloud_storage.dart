@@ -1,30 +1,11 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'dart:typed_data' as _i2;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class CloudStorageEntry extends SerializableEntity {
-  @override
-  String get className => 'CloudStorageEntry';
-
-  int? id;
-  late String storageId;
-  late String path;
-  late DateTime addedTime;
-  DateTime? expiration;
-  late ByteData byteData;
-  late bool verified;
-
+class CloudStorageEntry extends _i1.SerializableEntity {
   CloudStorageEntry({
     this.id,
     required this.storageId,
@@ -35,31 +16,53 @@ class CloudStorageEntry extends SerializableEntity {
     required this.verified,
   });
 
-  CloudStorageEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    storageId = _data['storageId']!;
-    path = _data['path']!;
-    addedTime = DateTime.tryParse(_data['addedTime'])!;
-    expiration = _data['expiration'] != null
-        ? DateTime.tryParse(_data['expiration'])
-        : null;
-    byteData = _data['byteData'] is String
-        ? (_data['byteData'] as String).base64DecodedByteData()!
-        : ByteData.view((_data['byteData'] as Uint8List).buffer);
-    verified = _data['verified']!;
+  factory CloudStorageEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return CloudStorageEntry(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      storageId: serializationManager
+          .deserializeJson<String>(jsonSerialization['storageId']),
+      path: serializationManager
+          .deserializeJson<String>(jsonSerialization['path']),
+      addedTime: serializationManager
+          .deserializeJson<DateTime>(jsonSerialization['addedTime']),
+      expiration: serializationManager
+          .deserializeJson<DateTime?>(jsonSerialization['expiration']),
+      byteData: serializationManager
+          .deserializeJson<_i2.ByteData>(jsonSerialization['byteData']),
+      verified: serializationManager
+          .deserializeJson<bool>(jsonSerialization['verified']),
+    );
   }
 
+  int? id;
+
+  String storageId;
+
+  String path;
+
+  DateTime addedTime;
+
+  DateTime? expiration;
+
+  _i2.ByteData byteData;
+
+  bool verified;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'CloudStorageEntry';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime.toUtc().toIso8601String(),
-      'expiration': expiration?.toUtc().toIso8601String(),
-      'byteData': byteData.base64encodedString(),
+      'addedTime': addedTime,
+      'expiration': expiration,
+      'byteData': byteData,
       'verified': verified,
-    });
+    };
   }
 }

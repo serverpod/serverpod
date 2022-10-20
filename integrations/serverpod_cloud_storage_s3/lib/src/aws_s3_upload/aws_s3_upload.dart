@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:serverpod/serverpod.dart';
 
 import 'policy.dart';
 
@@ -202,7 +203,7 @@ class AwsS3Uploader {
       },
     };
 
-    return jsonEncode(uploadDescriptionData);
+    return SerializationManager.serializeToJson(uploadDescriptionData);
 
     // try {
     //   final res = await req.send();

@@ -1,41 +1,37 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class ReadWriteTestEntry extends SerializableEntity {
-  @override
-  String get className => 'ReadWriteTestEntry';
-
-  int? id;
-  late int number;
-
+class ReadWriteTestEntry extends _i1.SerializableEntity {
   ReadWriteTestEntry({
     this.id,
     required this.number,
   });
 
-  ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    number = _data['number']!;
+  factory ReadWriteTestEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ReadWriteTestEntry(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      number: serializationManager
+          .deserializeJson<int>(jsonSerialization['number']),
+    );
   }
 
+  int? id;
+
+  int number;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'ReadWriteTestEntry';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'number': number,
-    });
+    };
   }
 }

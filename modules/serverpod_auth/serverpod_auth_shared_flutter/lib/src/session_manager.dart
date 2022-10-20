@@ -132,8 +132,8 @@ class SessionManager with ChangeNotifier {
     var json = await _storage.getString('${_prefsKey}_${keyManager.runMode}');
     if (json == null) return;
 
-    _signedInUser = Protocol.instance
-        .createEntityFromSerialization(jsonDecode(json)) as UserInfo;
+    _signedInUser =
+        Protocol.instance.deserializeJson<UserInfo>(jsonDecode(json));
 
     notifyListeners();
   }
@@ -145,7 +145,7 @@ class SessionManager with ChangeNotifier {
       await _storage.remove('${_prefsKey}_${keyManager.runMode}');
     } else {
       await _storage.setString('${_prefsKey}_${keyManager.runMode}',
-          jsonEncode(signedInUser!.serialize()));
+          SerializationManager.serializeToJson(signedInUser));
     }
   }
 

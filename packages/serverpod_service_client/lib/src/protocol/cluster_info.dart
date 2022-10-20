@@ -1,39 +1,29 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+class ClusterInfo extends _i1.SerializableEntity {
+  ClusterInfo({required this.servers});
 
-class ClusterInfo extends SerializableEntity {
-  @override
-  String get className => 'ClusterInfo';
-
-  late List<ClusterServerInfo> servers;
-
-  ClusterInfo({
-    required this.servers,
-  });
-
-  ClusterInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    servers = _data['servers']!
-        .map<ClusterServerInfo>((a) => ClusterServerInfo.fromSerialization(a))
-        ?.toList();
+  factory ClusterInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ClusterInfo(
+        servers:
+            serializationManager.deserializeJson<List<_i2.ClusterServerInfo>>(
+                jsonSerialization['servers']));
   }
 
+  List<_i2.ClusterServerInfo> servers;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'servers': servers.map((ClusterServerInfo a) => a.serialize()).toList(),
-    });
+  String get className => 'ClusterInfo';
+  @override
+  Map<String, dynamic> toJson() {
+    return {'servers': servers};
   }
 }

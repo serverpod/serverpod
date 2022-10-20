@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 import 'package:serverpod/src/server/session.dart';
@@ -128,7 +129,7 @@ class DatabaseCloudStorage extends CloudStorage {
       'type': 'binary',
     };
 
-    return jsonEncode(uploadDescriptionData);
+    return SerializationManager.serializeToJson(uploadDescriptionData);
   }
 
   @override

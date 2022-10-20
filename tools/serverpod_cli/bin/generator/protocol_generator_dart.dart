@@ -72,7 +72,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                     ..type = parameterDef.type.reference(false)),
                 for (var parameterDef in namedParameters)
                   Parameter((p) => p
-                    ..named = false
+                    ..named = true
+                    ..required = parameterDef.required
                     ..name = parameterDef.name
                     ..type = parameterDef.type.reference(false))
               ])
@@ -187,6 +188,11 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
             ..initializers.add(refer('super').call([refer('client')]).code);
         }
         c.body = Block.of([
+          for (var endpointDef in protocolDefinition.endpoints)
+            refer(endpointDef.name)
+                .assign(refer(_endpointClassName(endpointDef.name))
+                    .call([refer('this')]))
+                .statement,
           if (hasModules)
             refer('modules')
                 .assign(refer('_Modules').call([refer('this')]))

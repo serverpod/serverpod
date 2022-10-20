@@ -1,4 +1,5 @@
 import 'package:mustache_template/mustache.dart';
+import 'package:serverpod/serverpod.dart';
 import 'dart:convert';
 
 import 'templates.dart';
@@ -70,7 +71,7 @@ class WidgetJson extends AbstractWidget {
 
   @override
   String toString() {
-    return jsonEncode(object);
+    return SerializationManager.serializeToJson(object);
   }
 }
 

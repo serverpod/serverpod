@@ -21,9 +21,9 @@ class DatabasePoolManager {
   /// Postgresql connection pool created from configuration.
   PgPool get pool => _pgPool;
 
-  /// Maps tables to classes, used internally by the server when communicating
-  /// with the database.
-  final Map<String, String> tableClassMapping; // = <String, String>{};
+  // /// Maps tables to classes, used internally by the server when communicating
+  // /// with the database.
+  // final Map<String, String> tableClassMapping; // = <String, String>{};
 
   /// The encoder used to encode objects for storing in the database.
   static final ValueEncoder encoder = ValueEncoder();
@@ -33,7 +33,9 @@ class DatabasePoolManager {
   DatabasePoolManager(
     SerializationManagerServer serializationManager,
     this.config,
-  ) : tableClassMapping = serializationManager.tableClassMapping {
+  )
+  // : tableClassMapping = serializationManager.tableClassMapping
+  {
     _serializationManager = serializationManager;
 
     var poolSettings = PgPoolSettings();

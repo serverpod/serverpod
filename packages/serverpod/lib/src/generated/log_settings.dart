@@ -1,33 +1,10 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class LogSettings extends SerializableEntity {
-  @override
-  String get className => 'LogSettings';
-
-  late int logLevel;
-  late bool logAllSessions;
-  late bool logAllQueries;
-  late bool logSlowSessions;
-  late bool logStreamingSessionsContinuously;
-  late bool logSlowQueries;
-  late bool logFailedSessions;
-  late bool logFailedQueries;
-  late double slowSessionDuration;
-  late double slowQueryDuration;
-
+class LogSettings extends _i1.SerializableEntity {
   LogSettings({
     required this.logLevel,
     required this.logAllSessions,
@@ -41,24 +18,60 @@ class LogSettings extends SerializableEntity {
     required this.slowQueryDuration,
   });
 
-  LogSettings.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    logLevel = _data['logLevel']!;
-    logAllSessions = _data['logAllSessions']!;
-    logAllQueries = _data['logAllQueries']!;
-    logSlowSessions = _data['logSlowSessions']!;
-    logStreamingSessionsContinuously =
-        _data['logStreamingSessionsContinuously']!;
-    logSlowQueries = _data['logSlowQueries']!;
-    logFailedSessions = _data['logFailedSessions']!;
-    logFailedQueries = _data['logFailedQueries']!;
-    slowSessionDuration = _data['slowSessionDuration']!;
-    slowQueryDuration = _data['slowQueryDuration']!;
+  factory LogSettings.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return LogSettings(
+      logLevel: serializationManager
+          .deserializeJson<int>(jsonSerialization['logLevel']),
+      logAllSessions: serializationManager
+          .deserializeJson<bool>(jsonSerialization['logAllSessions']),
+      logAllQueries: serializationManager
+          .deserializeJson<bool>(jsonSerialization['logAllQueries']),
+      logSlowSessions: serializationManager
+          .deserializeJson<bool>(jsonSerialization['logSlowSessions']),
+      logStreamingSessionsContinuously:
+          serializationManager.deserializeJson<bool>(
+              jsonSerialization['logStreamingSessionsContinuously']),
+      logSlowQueries: serializationManager
+          .deserializeJson<bool>(jsonSerialization['logSlowQueries']),
+      logFailedSessions: serializationManager
+          .deserializeJson<bool>(jsonSerialization['logFailedSessions']),
+      logFailedQueries: serializationManager
+          .deserializeJson<bool>(jsonSerialization['logFailedQueries']),
+      slowSessionDuration: serializationManager
+          .deserializeJson<double>(jsonSerialization['slowSessionDuration']),
+      slowQueryDuration: serializationManager
+          .deserializeJson<double>(jsonSerialization['slowQueryDuration']),
+    );
   }
 
+  int logLevel;
+
+  bool logAllSessions;
+
+  bool logAllQueries;
+
+  bool logSlowSessions;
+
+  bool logStreamingSessionsContinuously;
+
+  bool logSlowQueries;
+
+  bool logFailedSessions;
+
+  bool logFailedQueries;
+
+  double slowSessionDuration;
+
+  double slowQueryDuration;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'LogSettings';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'logLevel': logLevel,
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
@@ -69,12 +82,12 @@ class LogSettings extends SerializableEntity {
       'logFailedQueries': logFailedQueries,
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'logLevel': logLevel,
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
@@ -85,6 +98,6 @@ class LogSettings extends SerializableEntity {
       'logFailedQueries': logFailedQueries,
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
-    });
+    };
   }
 }

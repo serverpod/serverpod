@@ -1,52 +1,46 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class ModuleClass extends SerializableEntity {
-  @override
-  String get className => 'MODULENAME_server.ModuleClass';
-
-  int? id;
-  late String name;
-  late int data;
-
+class ModuleClass extends _i1.SerializableEntity {
   ModuleClass({
-    this.id,
     required this.name,
     required this.data,
   });
 
-  ModuleClass.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    name = _data['name']!;
-    data = _data['data']!;
+  factory ModuleClass.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ModuleClass(
+      name: serializationManager
+          .deserializeJson<String>(jsonSerialization['name']),
+      data:
+          serializationManager.deserializeJson<int>(jsonSerialization['data']),
+    );
+  }
+
+  String name;
+
+  int data;
+
+  @override
+  String get className => 'modulename_server.ModuleClass';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'data': data,
+    };
   }
 
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'id': id,
+  Map<String, dynamic> allToJson() {
+    return {
       'name': name,
       'data': data,
-    });
-  }
-
-  @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
-      'id': id,
-      'name': name,
-      'data': data,
-    });
+    };
   }
 }

@@ -85,7 +85,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
         throw (ServerpodClientException(data, response.statusCode));
       }
 
-      return parseData(data, T, serializationManager);
+      if (T == getType<void>()) {
+        return returnVoid() as T;
+      } else {
+        return parseData(data, T, serializationManager);
+      }
     } catch (e, stackTrace) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
@@ -107,7 +111,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
     var contents = StringBuffer();
     response.transform(const Utf8Decoder()).listen((String data) {
       contents.write(data);
-    }, onDone: () => completer.complete(contents.toString()));
+    }, onDone: () //
+        {
+      // var test = contents.isEmpty ? '' : .toString();
+      return completer.complete(contents.toString());
+    });
     return completer.future;
   }
 

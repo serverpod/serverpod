@@ -1,27 +1,10 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class ChatReadMessage extends SerializableEntity {
-  @override
-  String get className => 'serverpod_chat_server.ChatReadMessage';
-
-  int? id;
-  late String channel;
-  late int userId;
-  late int lastReadMessageId;
-
+class ChatReadMessage extends _i1.SerializableEntity {
   ChatReadMessage({
     this.id,
     required this.channel,
@@ -29,21 +12,38 @@ class ChatReadMessage extends SerializableEntity {
     required this.lastReadMessageId,
   });
 
-  ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    channel = _data['channel']!;
-    userId = _data['userId']!;
-    lastReadMessageId = _data['lastReadMessageId']!;
+  factory ChatReadMessage.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ChatReadMessage(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      channel: serializationManager
+          .deserializeJson<String>(jsonSerialization['channel']),
+      userId: serializationManager
+          .deserializeJson<int>(jsonSerialization['userId']),
+      lastReadMessageId: serializationManager
+          .deserializeJson<int>(jsonSerialization['lastReadMessageId']),
+    );
   }
 
+  int? id;
+
+  String channel;
+
+  int userId;
+
+  int lastReadMessageId;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'serverpod_chat_server.ChatReadMessage';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
-    });
+    };
   }
 }

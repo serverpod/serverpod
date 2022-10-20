@@ -214,6 +214,7 @@ Current type was $T''');
     }
   }
 
+  //TODO: is this still needed?
   T? _formatTableRow<T extends TableRow>(
       String tableName, Map<String, dynamic>? rawRow) {
     var data = <String, dynamic>{};
@@ -299,10 +300,6 @@ Current type was $T''');
     for (var column in data.keys as Iterable<String>) {
       if (column == 'id') continue;
 
-      if (data[column] is Map || data[column] is List) {
-        data[column] = jsonEncode(data[column]);
-      }
-
       var value = DatabasePoolManager.encoder.convert(data[column]);
 
       updatesList.add('"$column" = $value');
@@ -341,14 +338,9 @@ Current type was $T''');
     for (var column in data.keys as Iterable<String>) {
       if (column == 'id') continue;
 
-      if (data[column] is Map || data[column] is List) {
-        data[column] = jsonEncode(data[column]);
-      }
+      dynamic unformattedValue = data[column];
 
-      String value;
-      var unformattedValue = data[column];
-
-      value = DatabasePoolManager.encoder.convert(unformattedValue);
+      String value = DatabasePoolManager.encoder.convert(unformattedValue);
 
       columnsList.add('"$column"');
       valueList.add(value);

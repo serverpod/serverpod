@@ -1,27 +1,10 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class EmailReset extends SerializableEntity {
-  @override
-  String get className => 'serverpod_auth_server.EmailReset';
-
-  int? id;
-  late int userId;
-  late String verificationCode;
-  late DateTime expiration;
-
+class EmailReset extends _i1.SerializableEntity {
   EmailReset({
     this.id,
     required this.userId,
@@ -29,21 +12,38 @@ class EmailReset extends SerializableEntity {
     required this.expiration,
   });
 
-  EmailReset.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    userId = _data['userId']!;
-    verificationCode = _data['verificationCode']!;
-    expiration = DateTime.tryParse(_data['expiration'])!;
+  factory EmailReset.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return EmailReset(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      userId: serializationManager
+          .deserializeJson<int>(jsonSerialization['userId']),
+      verificationCode: serializationManager
+          .deserializeJson<String>(jsonSerialization['verificationCode']),
+      expiration: serializationManager
+          .deserializeJson<DateTime>(jsonSerialization['expiration']),
+    );
   }
 
+  int? id;
+
+  int userId;
+
+  String verificationCode;
+
+  DateTime expiration;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'serverpod_auth_server.EmailReset';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
-      'expiration': expiration.toUtc().toIso8601String(),
-    });
+      'expiration': expiration,
+    };
   }
 }

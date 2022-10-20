@@ -3,10 +3,11 @@ import 'package:serverpod_test_module_client/module.dart';
 import 'package:test/test.dart';
 
 import 'authentication_test.dart';
+import 'config.dart';
 
 void main() {
   var client = Client(
-    'http://serverpod_test_server:8080/',
+    serverUrl,
     authenticationKeyManager: TestAuthKeyManager(),
   );
 

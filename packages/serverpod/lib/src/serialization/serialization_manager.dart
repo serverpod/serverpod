@@ -5,8 +5,8 @@ import 'package:serverpod/serverpod.dart';
 /// overriden by generated code. [SerializationManagerServer] is an extension to
 /// also handle [Table]s.
 abstract class SerializationManagerServer extends SerializationManager {
-  /// Maps database table names to class names.
-  Map<String, String> get tableClassMapping;
+  // /// Maps database table names to class names.
+  // Map<String, String> get tableClassMapping;
 
   /// Maps [Type]s to subclasses of [Table].
   Map<Type, Table> get typeTableMapping;
@@ -15,14 +15,14 @@ abstract class SerializationManagerServer extends SerializationManager {
   void merge(SerializationManager other) {
     super.merge(other);
     if (other is SerializationManagerServer) {
-      _appendTableClassMapping(other.tableClassMapping);
+      // _appendTableClassMapping(other.tableClassMapping);
       _appendTypeTableMapping(other.typeTableMapping);
     }
   }
 
   void _appendTableClassMapping(Map<String, String> map) {
     for (var tableName in map.keys) {
-      tableClassMapping[tableName] = map[tableName]!;
+      // tableClassMapping[tableName] = map[tableName]!;
     }
   }
 

@@ -1,39 +1,28 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+class LogResult extends _i1.SerializableEntity {
+  LogResult({required this.entries});
 
-class LogResult extends SerializableEntity {
-  @override
-  String get className => 'LogResult';
-
-  late List<LogEntry> entries;
-
-  LogResult({
-    required this.entries,
-  });
-
-  LogResult.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    entries = _data['entries']!
-        .map<LogEntry>((a) => LogEntry.fromSerialization(a))
-        ?.toList();
+  factory LogResult.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return LogResult(
+        entries: serializationManager
+            .deserializeJson<List<_i2.LogEntry>>(jsonSerialization['entries']));
   }
 
+  List<_i2.LogEntry> entries;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'entries': entries.map((LogEntry a) => a.serialize()).toList(),
-    });
+  String get className => 'LogResult';
+  @override
+  Map<String, dynamic> toJson() {
+    return {'entries': entries};
   }
 }

@@ -111,7 +111,7 @@ class Users {
     await session.db.update(userInfo);
 
     // Update all authentication keys too.
-    var json = jsonEncode(scopeStrs);
+    var json = SerializationManager.serializeToJson(scopeStrs);
     await session.db.query(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 

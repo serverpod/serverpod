@@ -1,74 +1,72 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+class MethodInfo extends _i1.TableRow {
+  MethodInfo({
+    int? id,
+    required this.endpoint,
+    required this.method,
+  }) : super(id);
 
-class MethodInfo extends TableRow {
+  factory MethodInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i2.SerializationManager serializationManager,
+  ) {
+    return MethodInfo(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      endpoint: serializationManager
+          .deserializeJson<String>(jsonSerialization['endpoint']),
+      method: serializationManager
+          .deserializeJson<String>(jsonSerialization['method']),
+    );
+  }
+
+  static final t = MethodInfoTable();
+
+  String endpoint;
+
+  String method;
+
   @override
   String get className => 'MethodInfo';
   @override
   String get tableName => 'serverpod_method';
-
-  static final t = MethodInfoTable();
-
   @override
-  int? id;
-  late String endpoint;
-  late String method;
-
-  MethodInfo({
-    this.id,
-    required this.endpoint,
-    required this.method,
-  });
-
-  MethodInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    endpoint = _data['endpoint']!;
-    method = _data['method']!;
-  }
-
-  @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'endpoint': endpoint,
       'method': method,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'endpoint': endpoint,
       'method': method,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'endpoint': endpoint,
       'method': method,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -85,15 +83,15 @@ class MethodInfo extends TableRow {
   }
 
   static Future<List<MethodInfo>> find(
-    Session session, {
+    _i1.Session session, {
     MethodInfoExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<MethodInfo>(
       where: where != null ? where(MethodInfo.t) : null,
@@ -108,13 +106,13 @@ class MethodInfo extends TableRow {
   }
 
   static Future<MethodInfo?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     MethodInfoExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<MethodInfo>(
       where: where != null ? where(MethodInfo.t) : null,
@@ -126,14 +124,17 @@ class MethodInfo extends TableRow {
     );
   }
 
-  static Future<MethodInfo?> findById(Session session, int id) async {
+  static Future<MethodInfo?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<MethodInfo>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required MethodInfoExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MethodInfo>(
       where: where(MethodInfo.t),
@@ -142,9 +143,9 @@ class MethodInfo extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     MethodInfo row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -153,9 +154,9 @@ class MethodInfo extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     MethodInfo row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -164,19 +165,22 @@ class MethodInfo extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     MethodInfo row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     MethodInfoExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<MethodInfo>(
       where: where != null ? where(MethodInfo.t) : null,
@@ -187,19 +191,19 @@ class MethodInfo extends TableRow {
   }
 }
 
-typedef MethodInfoExpressionBuilder = Expression Function(MethodInfoTable t);
+typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
 
-class MethodInfoTable extends Table {
+class MethodInfoTable extends _i1.Table {
   MethodInfoTable() : super(tableName: 'serverpod_method');
 
-  @override
-  String tableName = 'serverpod_method';
-  final id = ColumnInt('id');
-  final endpoint = ColumnString('endpoint');
-  final method = ColumnString('method');
+  final id = _i1.ColumnInt('id');
+
+  final endpoint = _i1.ColumnString('endpoint');
+
+  final method = _i1.ColumnString('method');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         endpoint,
         method,

@@ -18,16 +18,15 @@ void main() {
   group('Serializations', () {
     test('Simple data', () {
       var data = SimpleData(num: 42);
-      var s = jsonEncode(data.serialize());
-      var unpacked = SimpleData.fromSerialization(jsonDecode(s));
+      var s = SerializationManager.serializeToJson(data);
+      var unpacked = SimpleData.fromJson(jsonDecode(s), protocol);
       expect(unpacked.num, equals(42));
     });
 
     test('Basic types with null values', () {
       var types = Types();
-      var s = protocol.serializeEntity(types)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var s = SerializationManager.serializeToJson(types);
+      var unpacked = protocol.deserializeJson<Types>(jsonDecode(s));
       expect(unpacked.aBool, isNull);
       expect(unpacked.anInt, isNull);
       expect(unpacked.aString, isNull);
@@ -45,9 +44,8 @@ void main() {
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
       );
-      var s = protocol.serializeEntity(types)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var s = SerializationManager.serializeToJson(types);
+      var unpacked = protocol.deserializeJson<Types>(jsonDecode(s));
       expect(unpacked.aBool, equals(true));
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aString, equals('42'));
@@ -66,9 +64,8 @@ void main() {
         nullableEnumList: [TestEnum.one, null, TestEnum.three],
         enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
       );
-      var s = protocol.serializeEntity(object)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s))
-          as ObjectWithEnum;
+      var s = SerializationManager.serializeToJson(object);
+      var unpacked = protocol.deserializeJson<ObjectWithEnum>(jsonDecode(s));
       expect(unpacked.testEnum, equals(TestEnum.one));
       expect(unpacked.nullableEnum, isNull);
       expect(unpacked.nullableEnumList.length, equals(3));
@@ -102,9 +99,8 @@ void main() {
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
       );
 
-      var s = protocol.serializeEntity(nullability)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var s = SerializationManager.serializeToJson(nullability);
+      var unpacked = protocol.deserializeJson<Nullability>(jsonDecode(s));
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aBool, equals(true));
@@ -202,9 +198,8 @@ void main() {
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
       );
 
-      var s = protocol.serializeEntity(nullability)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var s = SerializationManager.serializeToJson(nullability);
+      var unpacked = protocol.deserializeJson<Nullability>(jsonDecode(s));
       expect(unpacked.aNullableInt, equals(42));
       expect(unpacked.aNullableDouble, equals(42.42));
       expect(unpacked.aNullableBool, equals(true));
@@ -284,9 +279,8 @@ void main() {
         },
       );
 
-      var s = protocol.serializeEntity(maps)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s))
-          as ObjectWithMaps;
+      var s = SerializationManager.serializeToJson(maps);
+      var unpacked = protocol.deserializeJson<ObjectWithMaps>(jsonDecode(s));
       expect(unpacked.dataMap['0']!.num, equals(0));
       expect(unpacked.dataMap['1']!.num, equals(1));
       expect(unpacked.dataMap['2']!.num, equals(2));

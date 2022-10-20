@@ -1,34 +1,10 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class UserInfo extends SerializableEntity {
-  @override
-  String get className => 'serverpod_auth_server.UserInfo';
-
-  int? id;
-  late String userIdentifier;
-  late String userName;
-  String? fullName;
-  String? email;
-  late DateTime created;
-  String? imageUrl;
-  late List<String> scopeNames;
-  late bool active;
-  late bool blocked;
-  DateTime? suspendedUntil;
-
+class UserInfo extends _i1.SerializableEntity {
   UserInfo({
     this.id,
     required this.userIdentifier,
@@ -43,37 +19,73 @@ class UserInfo extends SerializableEntity {
     this.suspendedUntil,
   });
 
-  UserInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    userIdentifier = _data['userIdentifier']!;
-    userName = _data['userName']!;
-    fullName = _data['fullName'];
-    email = _data['email'];
-    created = DateTime.tryParse(_data['created'])!;
-    imageUrl = _data['imageUrl'];
-    scopeNames = _data['scopeNames']!.cast<String>();
-    active = _data['active']!;
-    blocked = _data['blocked']!;
-    suspendedUntil = _data['suspendedUntil'] != null
-        ? DateTime.tryParse(_data['suspendedUntil'])
-        : null;
+  factory UserInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return UserInfo(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      userIdentifier: serializationManager
+          .deserializeJson<String>(jsonSerialization['userIdentifier']),
+      userName: serializationManager
+          .deserializeJson<String>(jsonSerialization['userName']),
+      fullName: serializationManager
+          .deserializeJson<String?>(jsonSerialization['fullName']),
+      email: serializationManager
+          .deserializeJson<String?>(jsonSerialization['email']),
+      created: serializationManager
+          .deserializeJson<DateTime>(jsonSerialization['created']),
+      imageUrl: serializationManager
+          .deserializeJson<String?>(jsonSerialization['imageUrl']),
+      scopeNames: serializationManager
+          .deserializeJson<List<String>>(jsonSerialization['scopeNames']),
+      active: serializationManager
+          .deserializeJson<bool>(jsonSerialization['active']),
+      blocked: serializationManager
+          .deserializeJson<bool>(jsonSerialization['blocked']),
+      suspendedUntil: serializationManager
+          .deserializeJson<DateTime?>(jsonSerialization['suspendedUntil']),
+    );
   }
 
+  int? id;
+
+  String userIdentifier;
+
+  String userName;
+
+  String? fullName;
+
+  String? email;
+
+  DateTime created;
+
+  String? imageUrl;
+
+  List<String> scopeNames;
+
+  bool active;
+
+  bool blocked;
+
+  DateTime? suspendedUntil;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'serverpod_auth_server.UserInfo';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
       'fullName': fullName,
       'email': email,
-      'created': created.toUtc().toIso8601String(),
+      'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
-    });
+      'suspendedUntil': suspendedUntil,
+    };
   }
 }

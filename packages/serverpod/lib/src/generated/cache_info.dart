@@ -1,54 +1,53 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class CacheInfo extends SerializableEntity {
-  @override
-  String get className => 'CacheInfo';
-
-  late int numEntries;
-  late int maxEntries;
-  List<String>? keys;
-
+class CacheInfo extends _i1.SerializableEntity {
   CacheInfo({
     required this.numEntries,
     required this.maxEntries,
     this.keys,
   });
 
-  CacheInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    numEntries = _data['numEntries']!;
-    maxEntries = _data['maxEntries']!;
-    keys = _data['keys']?.cast<String>();
+  factory CacheInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return CacheInfo(
+      numEntries: serializationManager
+          .deserializeJson<int>(jsonSerialization['numEntries']),
+      maxEntries: serializationManager
+          .deserializeJson<int>(jsonSerialization['maxEntries']),
+      keys: serializationManager
+          .deserializeJson<List<String>?>(jsonSerialization['keys']),
+    );
   }
 
+  int numEntries;
+
+  int maxEntries;
+
+  List<String>? keys;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'CacheInfo';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
       'keys': keys,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
       'keys': keys,
-    });
+    };
   }
 }

@@ -35,7 +35,9 @@ class FutureCallManager {
     String? identifier,
   ) async {
     String? serialization;
-    if (object != null) serialization = jsonEncode(object.allToJson());
+    if (object != null) {
+      serialization = SerializationManager.serializeToJson(object.allToJson());
+    }
 
     var entry = FutureCallEntry(
       name: name,

@@ -1,34 +1,10 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class QueryLogEntry extends SerializableEntity {
-  @override
-  String get className => 'QueryLogEntry';
-
-  int? id;
-  late String serverId;
-  late int sessionLogId;
-  int? messageId;
-  late String query;
-  late double duration;
-  int? numRows;
-  String? error;
-  String? stackTrace;
-  late bool slow;
-  late int order;
-
+class QueryLogEntry extends _i1.SerializableEntity {
   QueryLogEntry({
     this.id,
     required this.serverId,
@@ -43,24 +19,62 @@ class QueryLogEntry extends SerializableEntity {
     required this.order,
   });
 
-  QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    serverId = _data['serverId']!;
-    sessionLogId = _data['sessionLogId']!;
-    messageId = _data['messageId'];
-    query = _data['query']!;
-    duration = _data['duration']!;
-    numRows = _data['numRows'];
-    error = _data['error'];
-    stackTrace = _data['stackTrace'];
-    slow = _data['slow']!;
-    order = _data['order']!;
+  factory QueryLogEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return QueryLogEntry(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      serverId: serializationManager
+          .deserializeJson<String>(jsonSerialization['serverId']),
+      sessionLogId: serializationManager
+          .deserializeJson<int>(jsonSerialization['sessionLogId']),
+      messageId: serializationManager
+          .deserializeJson<int?>(jsonSerialization['messageId']),
+      query: serializationManager
+          .deserializeJson<String>(jsonSerialization['query']),
+      duration: serializationManager
+          .deserializeJson<double>(jsonSerialization['duration']),
+      numRows: serializationManager
+          .deserializeJson<int?>(jsonSerialization['numRows']),
+      error: serializationManager
+          .deserializeJson<String?>(jsonSerialization['error']),
+      stackTrace: serializationManager
+          .deserializeJson<String?>(jsonSerialization['stackTrace']),
+      slow:
+          serializationManager.deserializeJson<bool>(jsonSerialization['slow']),
+      order:
+          serializationManager.deserializeJson<int>(jsonSerialization['order']),
+    );
   }
 
+  int? id;
+
+  String serverId;
+
+  int sessionLogId;
+
+  int? messageId;
+
+  String query;
+
+  double duration;
+
+  int? numRows;
+
+  String? error;
+
+  String? stackTrace;
+
+  bool slow;
+
+  int order;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'QueryLogEntry';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -72,6 +86,6 @@ class QueryLogEntry extends SerializableEntity {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 }

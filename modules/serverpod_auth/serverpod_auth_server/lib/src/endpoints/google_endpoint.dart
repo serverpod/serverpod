@@ -81,11 +81,13 @@ class GoogleEndpoint extends Endpoint {
       if (token == null) {
         token = GoogleRefreshToken(
           userId: userInfo.id!,
-          refreshToken: jsonEncode(authClient.credentials.toJson()),
+          refreshToken: SerializationManager.serializeToJson(
+              authClient.credentials.toJson()),
         );
         await GoogleRefreshToken.insert(session, token);
       } else {
-        token.refreshToken = jsonEncode(authClient.credentials.toJson());
+        token.refreshToken = SerializationManager.serializeToJson(
+            authClient.credentials.toJson());
         await GoogleRefreshToken.update(session, token);
       }
     }

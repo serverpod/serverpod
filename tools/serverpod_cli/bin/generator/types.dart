@@ -57,6 +57,7 @@ class TypeDefinition {
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
     var className = !type.isVoid ? type.element2!.displayName : 'void';
+
     return TypeDefinition(
       className: className,
       nullable: nullable,
@@ -75,6 +76,7 @@ class TypeDefinition {
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(bool serverCode) => TypeReference(
         (t) {
+          // print(url);
           if (url?.startsWith('module:') ?? false) {
             var moduleName = url?.substring(7);
             var module = config.modules.cast<ModuleConfig?>().firstWhere(
@@ -166,20 +168,19 @@ class TypeDefinition {
             nullable
                 ? Block.of([
                     // using Code.scope only sets the generic to List
-                    Code('jsonSerialization!=null?'
-                        '${className == 'Set' ? 'Set.of(' : ''}'
+                    const Code('jsonSerialization!=null?'
                         '(jsonSerialization as List).map((e) =>'
                         'serializationManager.deserializeJson<'),
                     generics.first.reference(serverCode).code,
-                    Code('>(e))${className == 'Set' ? ')' : ''}'
+                    Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
                         ':null')
                   ])
                 : Block.of([
-                    Code('${className == 'Set' ? 'Set.of(' : ''}'
-                        '(jsonSerialization as List).map((e) =>'
+                    const Code('(jsonSerialization as List).map((e) =>'
                         'serializationManager.deserializeJson<'),
                     generics.first.reference(serverCode).code,
-                    Code('>(e))${className == 'Set' ? ')' : ''}'),
+                    Code(
+                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'),
                   ])
           ]),
         ),
@@ -196,26 +197,53 @@ class TypeDefinition {
             Code.scope((a) =>
                 '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
                 ' serializationManager)=>'),
-            nullable
-                ? Block.of([
-                    // using Code.scope only sets the generic to List
-                    const Code('jsonSerialization!=null?'
-                        '(jsonSerialization as Map).map((k,v) =>'
-                        'MapEntry(serializationManager.deserializeJson<'),
-                    generics.first.reference(serverCode).code,
-                    const Code('>(k),serializationManager.deserializeJson<'),
-                    generics[1].reference(serverCode).code,
-                    const Code('>(v)))' ':null')
-                  ])
-                : Block.of([
-                    // using Code.scope only sets the generic to List
-                    const Code('(jsonSerialization as Map).map((k,v) =>'
-                        'MapEntry(serializationManager.deserializeJson<'),
-                    generics.first.reference(serverCode).code,
-                    const Code('>(k),serializationManager.deserializeJson<'),
-                    generics[1].reference(serverCode).code,
-                    const Code('>(v)))')
-                  ])
+            generics.first.className == 'String'
+                ? nullable
+                    ? Block.of([
+                        // using Code.scope only sets the generic to List
+                        const Code('jsonSerialization!=null?'
+                            '(jsonSerialization as Map).map((k,v) =>'
+                            'MapEntry(serializationManager.deserializeJson<'),
+                        generics.first.reference(serverCode).code,
+                        const Code(
+                            '>(k),serializationManager.deserializeJson<'),
+                        generics[1].reference(serverCode).code,
+                        const Code('>(v)))' ':null')
+                      ])
+                    : Block.of([
+                        // using Code.scope only sets the generic to List
+                        const Code('(jsonSerialization as Map).map((k,v) =>'
+                            'MapEntry(serializationManager.deserializeJson<'),
+                        generics.first.reference(serverCode).code,
+                        const Code(
+                            '>(k),serializationManager.deserializeJson<'),
+                        generics[1].reference(serverCode).code,
+                        const Code('>(v)))')
+                      ])
+                : // Key is not String -> stored as list of map entries
+                nullable
+                    ? Block.of([
+                        // using Code.scope only sets the generic to List
+                        const Code('jsonSerialization!=null?'
+                            'Map.fromEntries((jsonSerialization as List).map((e) =>'
+                            'MapEntry(serializationManager.deserializeJson<'),
+                        generics.first.reference(serverCode).code,
+                        const Code(
+                            '>(e[\'k\']),serializationManager.deserializeJson<'),
+                        generics[1].reference(serverCode).code,
+                        const Code('>(e[\'v\']))))' ':null')
+                      ])
+                    : Block.of([
+                        // using Code.scope only sets the generic to List
+                        const Code(
+                            'Map.fromEntries((jsonSerialization as List).map((e) =>'
+                            'MapEntry(serializationManager.deserializeJson<'),
+                        generics.first.reference(serverCode).code,
+                        const Code(
+                            '>(e[\'k\']),serializationManager.deserializeJson<'),
+                        generics[1].reference(serverCode).code,
+                        const Code('>(e[\'v\']))))')
+                      ])
           ]),
         ),
         ...generics.first.generateListSetMapConstructors(serverCode),

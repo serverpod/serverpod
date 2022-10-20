@@ -3,4 +3,4 @@ fields:
   channel: String
   message: String
   clientMessageId: int
-  attachments: List<ChatMessageAttachment>?
+  attachments: List<protocol:ChatMessageAttachment>?

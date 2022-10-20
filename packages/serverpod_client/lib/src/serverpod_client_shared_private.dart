@@ -18,3 +18,5 @@ dynamic parseData(
 ) {
   return serializationManager.deserializeJsonString(data, returnType);
 }
+
+void returnVoid() {}

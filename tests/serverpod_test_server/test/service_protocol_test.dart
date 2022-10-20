@@ -3,15 +3,17 @@ import 'package:serverpod_service_client/serverpod_service_client.dart'
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
+import 'config.dart';
+
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
   await client.basicDatabase.createSimpleTestData(100);
 }
 
 void main() {
-  var client = Client('http://serverpod_test_server:8080/');
+  var client = Client(serverUrl);
   var serviceClient = service.Client(
-    'http://serverpod_test_server:8081/',
+    serviceServerUrl,
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 

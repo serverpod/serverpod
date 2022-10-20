@@ -1,42 +1,13 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class MessageLogEntry extends TableRow {
-  @override
-  String get className => 'MessageLogEntry';
-  @override
-  String get tableName => 'serverpod_message_log';
-
-  static final t = MessageLogEntryTable();
-
-  @override
-  int? id;
-  late int sessionLogId;
-  late String serverId;
-  late int messageId;
-  late String endpoint;
-  late String messageName;
-  late double duration;
-  String? error;
-  String? stackTrace;
-  late bool slow;
-  late int order;
-
+class MessageLogEntry extends _i1.TableRow {
   MessageLogEntry({
-    this.id,
+    int? id,
     required this.sessionLogId,
     required this.serverId,
     required this.messageId,
@@ -47,26 +18,66 @@ class MessageLogEntry extends TableRow {
     this.stackTrace,
     required this.slow,
     required this.order,
-  });
+  }) : super(id);
 
-  MessageLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    sessionLogId = _data['sessionLogId']!;
-    serverId = _data['serverId']!;
-    messageId = _data['messageId']!;
-    endpoint = _data['endpoint']!;
-    messageName = _data['messageName']!;
-    duration = _data['duration']!;
-    error = _data['error'];
-    stackTrace = _data['stackTrace'];
-    slow = _data['slow']!;
-    order = _data['order']!;
+  factory MessageLogEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i2.SerializationManager serializationManager,
+  ) {
+    return MessageLogEntry(
+      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      sessionLogId: serializationManager
+          .deserializeJson<int>(jsonSerialization['sessionLogId']),
+      serverId: serializationManager
+          .deserializeJson<String>(jsonSerialization['serverId']),
+      messageId: serializationManager
+          .deserializeJson<int>(jsonSerialization['messageId']),
+      endpoint: serializationManager
+          .deserializeJson<String>(jsonSerialization['endpoint']),
+      messageName: serializationManager
+          .deserializeJson<String>(jsonSerialization['messageName']),
+      duration: serializationManager
+          .deserializeJson<double>(jsonSerialization['duration']),
+      error: serializationManager
+          .deserializeJson<String?>(jsonSerialization['error']),
+      stackTrace: serializationManager
+          .deserializeJson<String?>(jsonSerialization['stackTrace']),
+      slow:
+          serializationManager.deserializeJson<bool>(jsonSerialization['slow']),
+      order:
+          serializationManager.deserializeJson<int>(jsonSerialization['order']),
+    );
   }
 
+  static final t = MessageLogEntryTable();
+
+  int sessionLogId;
+
+  String serverId;
+
+  int messageId;
+
+  String endpoint;
+
+  String messageName;
+
+  double duration;
+
+  String? error;
+
+  String? stackTrace;
+
+  bool slow;
+
+  int order;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'MessageLogEntry';
+  @override
+  String get tableName => 'serverpod_message_log';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -78,12 +89,12 @@ class MessageLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -95,12 +106,12 @@ class MessageLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -112,11 +123,14 @@ class MessageLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -157,15 +171,15 @@ class MessageLogEntry extends TableRow {
   }
 
   static Future<List<MessageLogEntry>> find(
-    Session session, {
+    _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<MessageLogEntry>(
       where: where != null ? where(MessageLogEntry.t) : null,
@@ -180,13 +194,13 @@ class MessageLogEntry extends TableRow {
   }
 
   static Future<MessageLogEntry?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<MessageLogEntry>(
       where: where != null ? where(MessageLogEntry.t) : null,
@@ -198,14 +212,17 @@ class MessageLogEntry extends TableRow {
     );
   }
 
-  static Future<MessageLogEntry?> findById(Session session, int id) async {
+  static Future<MessageLogEntry?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<MessageLogEntry>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required MessageLogEntryExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MessageLogEntry>(
       where: where(MessageLogEntry.t),
@@ -214,9 +231,9 @@ class MessageLogEntry extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     MessageLogEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -225,9 +242,9 @@ class MessageLogEntry extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     MessageLogEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -236,19 +253,22 @@ class MessageLogEntry extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     MessageLogEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<MessageLogEntry>(
       where: where != null ? where(MessageLogEntry.t) : null,
@@ -259,28 +279,36 @@ class MessageLogEntry extends TableRow {
   }
 }
 
-typedef MessageLogEntryExpressionBuilder = Expression Function(
-    MessageLogEntryTable t);
+typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
+    MessageLogEntryTable);
 
-class MessageLogEntryTable extends Table {
+class MessageLogEntryTable extends _i1.Table {
   MessageLogEntryTable() : super(tableName: 'serverpod_message_log');
 
-  @override
-  String tableName = 'serverpod_message_log';
-  final id = ColumnInt('id');
-  final sessionLogId = ColumnInt('sessionLogId');
-  final serverId = ColumnString('serverId');
-  final messageId = ColumnInt('messageId');
-  final endpoint = ColumnString('endpoint');
-  final messageName = ColumnString('messageName');
-  final duration = ColumnDouble('duration');
-  final error = ColumnString('error');
-  final stackTrace = ColumnString('stackTrace');
-  final slow = ColumnBool('slow');
-  final order = ColumnInt('order');
+  final id = _i1.ColumnInt('id');
+
+  final sessionLogId = _i1.ColumnInt('sessionLogId');
+
+  final serverId = _i1.ColumnString('serverId');
+
+  final messageId = _i1.ColumnInt('messageId');
+
+  final endpoint = _i1.ColumnString('endpoint');
+
+  final messageName = _i1.ColumnString('messageName');
+
+  final duration = _i1.ColumnDouble('duration');
+
+  final error = _i1.ColumnString('error');
+
+  final stackTrace = _i1.ColumnString('stackTrace');
+
+  final slow = _i1.ColumnBool('slow');
+
+  final order = _i1.ColumnInt('order');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         sessionLogId,
         serverId,

@@ -1,57 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'dart:typed_data' as _i2;
+import 'protocol.dart' as _i3;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class Nullability extends SerializableEntity {
-  @override
-  String get className => 'Nullability';
-
-  late int anInt;
-  int? aNullableInt;
-  late double aDouble;
-  double? aNullableDouble;
-  late bool aBool;
-  bool? aNullableBool;
-  late String aString;
-  String? aNullableString;
-  late DateTime aDateTime;
-  DateTime? aNullableDateTime;
-  late ByteData aByteData;
-  ByteData? aNullableByteData;
-  late SimpleData anObject;
-  SimpleData? aNullableObject;
-  late List<int> anIntList;
-  List<int>? aNullableIntList;
-  late List<int?> aListWithNullableInts;
-  List<int?>? aNullableListWithNullableInts;
-  late List<SimpleData> anObjectList;
-  List<SimpleData>? aNullableObjectList;
-  late List<SimpleData?> aListWithNullableObjects;
-  List<SimpleData?>? aNullableListWithNullableObjects;
-  late List<DateTime> aDateTimeList;
-  List<DateTime>? aNullableDateTimeList;
-  late List<DateTime?> aListWithNullableDateTimes;
-  List<DateTime?>? aNullableListWithNullableDateTimes;
-  late List<ByteData> aByteDataList;
-  List<ByteData>? aNullableByteDataList;
-  late List<ByteData?> aListWithNullableByteDatas;
-  List<ByteData?>? aNullableListWithNullableByteDatas;
-  late Map<String, int> anIntMap;
-  Map<String, int>? aNullableIntMap;
-  late Map<String, int?> aMapWithNullableInts;
-  Map<String, int?>? aNullableMapWithNullableInts;
-
+class Nullability extends _i1.SerializableEntity {
   Nullability({
     required this.anInt,
     this.aNullableInt,
@@ -89,87 +44,167 @@ class Nullability extends SerializableEntity {
     this.aNullableMapWithNullableInts,
   });
 
-  Nullability.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    anInt = _data['anInt']!;
-    aNullableInt = _data['aNullableInt'];
-    aDouble = _data['aDouble']!;
-    aNullableDouble = _data['aNullableDouble'];
-    aBool = _data['aBool']!;
-    aNullableBool = _data['aNullableBool'];
-    aString = _data['aString']!;
-    aNullableString = _data['aNullableString'];
-    aDateTime = DateTime.tryParse(_data['aDateTime'])!;
-    aNullableDateTime = _data['aNullableDateTime'] != null
-        ? DateTime.tryParse(_data['aNullableDateTime'])
-        : null;
-    aByteData = _data['aByteData'] is String
-        ? (_data['aByteData'] as String).base64DecodedByteData()!
-        : ByteData.view((_data['aByteData'] as Uint8List).buffer);
-    aNullableByteData = _data['aNullableByteData'] == null
-        ? null
-        : (_data['aNullableByteData'] is String
-            ? (_data['aNullableByteData'] as String).base64DecodedByteData()
-            : ByteData.view((_data['aNullableByteData'] as Uint8List).buffer));
-    anObject = SimpleData.fromSerialization(_data['anObject']);
-    aNullableObject = _data['aNullableObject'] != null
-        ? SimpleData?.fromSerialization(_data['aNullableObject'])
-        : null;
-    anIntList = _data['anIntList']!.cast<int>();
-    aNullableIntList = _data['aNullableIntList']?.cast<int>();
-    aListWithNullableInts = _data['aListWithNullableInts']!.cast<int?>();
-    aNullableListWithNullableInts =
-        _data['aNullableListWithNullableInts']?.cast<int?>();
-    anObjectList = _data['anObjectList']!
-        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    aNullableObjectList = _data['aNullableObjectList']
-        ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    aListWithNullableObjects = _data['aListWithNullableObjects']!
-        .map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
-    aNullableListWithNullableObjects = _data['aNullableListWithNullableObjects']
-        ?.map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
-    aDateTimeList = _data['aDateTimeList']!
-        .map<DateTime>((a) => DateTime.tryParse(a)!)
-        .toList();
-    aNullableDateTimeList = _data['aNullableDateTimeList']
-        ?.map<DateTime>((a) => DateTime.tryParse(a)!)
-        .toList();
-    aListWithNullableDateTimes = _data['aListWithNullableDateTimes']!
-        .map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null)
-        .toList();
-    aNullableListWithNullableDateTimes =
-        _data['aNullableListWithNullableDateTimes']
-            ?.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null)
-            .toList();
-    aByteDataList = _data['aByteDataList']!
-        .map<ByteData>((a) => (a as String).base64DecodedByteData()!)
-        .toList();
-    aNullableByteDataList = _data['aNullableByteDataList']
-        ?.map<ByteData>((a) => (a as String).base64DecodedByteData()!)
-        .toList();
-    aListWithNullableByteDatas = _data['aListWithNullableByteDatas']!
-        .map<ByteData?>((a) => (a as String?)?.base64DecodedByteData())
-        .toList();
-    aNullableListWithNullableByteDatas =
-        _data['aNullableListWithNullableByteDatas']
-            ?.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData())
-            .toList();
-    anIntMap = _data['anIntMap']!.cast<String, int>();
-    aNullableIntMap = _data['aNullableIntMap']?.cast<String, int>();
-    aMapWithNullableInts = _data['aMapWithNullableInts']!.cast<String, int?>();
-    aNullableMapWithNullableInts =
-        _data['aNullableMapWithNullableInts']?.cast<String, int?>();
+  factory Nullability.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return Nullability(
+      anInt:
+          serializationManager.deserializeJson<int>(jsonSerialization['anInt']),
+      aNullableInt: serializationManager
+          .deserializeJson<int?>(jsonSerialization['aNullableInt']),
+      aDouble: serializationManager
+          .deserializeJson<double>(jsonSerialization['aDouble']),
+      aNullableDouble: serializationManager
+          .deserializeJson<double?>(jsonSerialization['aNullableDouble']),
+      aBool: serializationManager
+          .deserializeJson<bool>(jsonSerialization['aBool']),
+      aNullableBool: serializationManager
+          .deserializeJson<bool?>(jsonSerialization['aNullableBool']),
+      aString: serializationManager
+          .deserializeJson<String>(jsonSerialization['aString']),
+      aNullableString: serializationManager
+          .deserializeJson<String?>(jsonSerialization['aNullableString']),
+      aDateTime: serializationManager
+          .deserializeJson<DateTime>(jsonSerialization['aDateTime']),
+      aNullableDateTime: serializationManager
+          .deserializeJson<DateTime?>(jsonSerialization['aNullableDateTime']),
+      aByteData: serializationManager
+          .deserializeJson<_i2.ByteData>(jsonSerialization['aByteData']),
+      aNullableByteData: serializationManager.deserializeJson<_i2.ByteData?>(
+          jsonSerialization['aNullableByteData']),
+      anObject: serializationManager
+          .deserializeJson<_i3.SimpleData>(jsonSerialization['anObject']),
+      aNullableObject: serializationManager.deserializeJson<_i3.SimpleData?>(
+          jsonSerialization['aNullableObject']),
+      anIntList: serializationManager
+          .deserializeJson<List<int>>(jsonSerialization['anIntList']),
+      aNullableIntList: serializationManager
+          .deserializeJson<List<int>?>(jsonSerialization['aNullableIntList']),
+      aListWithNullableInts: serializationManager.deserializeJson<List<int?>>(
+          jsonSerialization['aListWithNullableInts']),
+      aNullableListWithNullableInts:
+          serializationManager.deserializeJson<List<int?>?>(
+              jsonSerialization['aNullableListWithNullableInts']),
+      anObjectList: serializationManager.deserializeJson<List<_i3.SimpleData>>(
+          jsonSerialization['anObjectList']),
+      aNullableObjectList:
+          serializationManager.deserializeJson<List<_i3.SimpleData>?>(
+              jsonSerialization['aNullableObjectList']),
+      aListWithNullableObjects:
+          serializationManager.deserializeJson<List<_i3.SimpleData?>>(
+              jsonSerialization['aListWithNullableObjects']),
+      aNullableListWithNullableObjects:
+          serializationManager.deserializeJson<List<_i3.SimpleData?>?>(
+              jsonSerialization['aNullableListWithNullableObjects']),
+      aDateTimeList: serializationManager
+          .deserializeJson<List<DateTime>>(jsonSerialization['aDateTimeList']),
+      aNullableDateTimeList:
+          serializationManager.deserializeJson<List<DateTime>?>(
+              jsonSerialization['aNullableDateTimeList']),
+      aListWithNullableDateTimes:
+          serializationManager.deserializeJson<List<DateTime?>>(
+              jsonSerialization['aListWithNullableDateTimes']),
+      aNullableListWithNullableDateTimes:
+          serializationManager.deserializeJson<List<DateTime?>?>(
+              jsonSerialization['aNullableListWithNullableDateTimes']),
+      aByteDataList: serializationManager.deserializeJson<List<_i2.ByteData>>(
+          jsonSerialization['aByteDataList']),
+      aNullableByteDataList:
+          serializationManager.deserializeJson<List<_i2.ByteData>?>(
+              jsonSerialization['aNullableByteDataList']),
+      aListWithNullableByteDatas:
+          serializationManager.deserializeJson<List<_i2.ByteData?>>(
+              jsonSerialization['aListWithNullableByteDatas']),
+      aNullableListWithNullableByteDatas:
+          serializationManager.deserializeJson<List<_i2.ByteData?>?>(
+              jsonSerialization['aNullableListWithNullableByteDatas']),
+      anIntMap: serializationManager
+          .deserializeJson<Map<String, int>>(jsonSerialization['anIntMap']),
+      aNullableIntMap: serializationManager.deserializeJson<Map<String, int>?>(
+          jsonSerialization['aNullableIntMap']),
+      aMapWithNullableInts:
+          serializationManager.deserializeJson<Map<String, int?>>(
+              jsonSerialization['aMapWithNullableInts']),
+      aNullableMapWithNullableInts:
+          serializationManager.deserializeJson<Map<String, int?>?>(
+              jsonSerialization['aNullableMapWithNullableInts']),
+    );
   }
 
+  int anInt;
+
+  int? aNullableInt;
+
+  double aDouble;
+
+  double? aNullableDouble;
+
+  bool aBool;
+
+  bool? aNullableBool;
+
+  String aString;
+
+  String? aNullableString;
+
+  DateTime aDateTime;
+
+  DateTime? aNullableDateTime;
+
+  _i2.ByteData aByteData;
+
+  _i2.ByteData? aNullableByteData;
+
+  _i3.SimpleData anObject;
+
+  _i3.SimpleData? aNullableObject;
+
+  List<int> anIntList;
+
+  List<int>? aNullableIntList;
+
+  List<int?> aListWithNullableInts;
+
+  List<int?>? aNullableListWithNullableInts;
+
+  List<_i3.SimpleData> anObjectList;
+
+  List<_i3.SimpleData>? aNullableObjectList;
+
+  List<_i3.SimpleData?> aListWithNullableObjects;
+
+  List<_i3.SimpleData?>? aNullableListWithNullableObjects;
+
+  List<DateTime> aDateTimeList;
+
+  List<DateTime>? aNullableDateTimeList;
+
+  List<DateTime?> aListWithNullableDateTimes;
+
+  List<DateTime?>? aNullableListWithNullableDateTimes;
+
+  List<_i2.ByteData> aByteDataList;
+
+  List<_i2.ByteData>? aNullableByteDataList;
+
+  List<_i2.ByteData?> aListWithNullableByteDatas;
+
+  List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
+
+  Map<String, int> anIntMap;
+
+  Map<String, int>? aNullableIntMap;
+
+  Map<String, int?> aMapWithNullableInts;
+
+  Map<String, int?>? aNullableMapWithNullableInts;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'Nullability';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'anInt': anInt,
       'aNullableInt': aNullableInt,
       'aDouble': aDouble,
@@ -178,52 +213,32 @@ class Nullability extends SerializableEntity {
       'aNullableBool': aNullableBool,
       'aString': aString,
       'aNullableString': aNullableString,
-      'aDateTime': aDateTime.toUtc().toIso8601String(),
-      'aNullableDateTime': aNullableDateTime?.toUtc().toIso8601String(),
-      'aByteData': aByteData.base64encodedString(),
-      'aNullableByteData': aNullableByteData?.base64encodedString(),
-      'anObject': anObject.serialize(),
-      'aNullableObject': aNullableObject?.serialize(),
+      'aDateTime': aDateTime,
+      'aNullableDateTime': aNullableDateTime,
+      'aByteData': aByteData,
+      'aNullableByteData': aNullableByteData,
+      'anObject': anObject,
+      'aNullableObject': aNullableObject,
       'anIntList': anIntList,
       'aNullableIntList': aNullableIntList,
       'aListWithNullableInts': aListWithNullableInts,
       'aNullableListWithNullableInts': aNullableListWithNullableInts,
-      'anObjectList':
-          anObjectList.map((SimpleData a) => a.serialize()).toList(),
-      'aNullableObjectList':
-          aNullableObjectList?.map((SimpleData a) => a.serialize()).toList(),
-      'aListWithNullableObjects': aListWithNullableObjects
-          .map((SimpleData? a) => a?.serialize())
-          .toList(),
-      'aNullableListWithNullableObjects': aNullableListWithNullableObjects
-          ?.map((SimpleData? a) => a?.serialize())
-          .toList(),
-      'aDateTimeList':
-          aDateTimeList.map<String>((a) => a.toIso8601String()).toList(),
-      'aNullableDateTimeList': aNullableDateTimeList
-          ?.map<String>((a) => a.toIso8601String())
-          .toList(),
-      'aListWithNullableDateTimes': aListWithNullableDateTimes
-          .map<String?>((a) => a?.toIso8601String())
-          .toList(),
-      'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes
-          ?.map<String?>((a) => a?.toIso8601String())
-          .toList(),
-      'aByteDataList':
-          aByteDataList.map<String>((a) => a.base64encodedString()).toList(),
-      'aNullableByteDataList': aNullableByteDataList
-          ?.map<String>((a) => a.base64encodedString())
-          .toList(),
-      'aListWithNullableByteDatas': aListWithNullableByteDatas
-          .map<String?>((a) => a?.base64encodedString())
-          .toList(),
-      'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas
-          ?.map<String?>((a) => a?.base64encodedString())
-          .toList(),
+      'anObjectList': anObjectList,
+      'aNullableObjectList': aNullableObjectList,
+      'aListWithNullableObjects': aListWithNullableObjects,
+      'aNullableListWithNullableObjects': aNullableListWithNullableObjects,
+      'aDateTimeList': aDateTimeList,
+      'aNullableDateTimeList': aNullableDateTimeList,
+      'aListWithNullableDateTimes': aListWithNullableDateTimes,
+      'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes,
+      'aByteDataList': aByteDataList,
+      'aNullableByteDataList': aNullableByteDataList,
+      'aListWithNullableByteDatas': aListWithNullableByteDatas,
+      'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas,
       'anIntMap': anIntMap,
       'aNullableIntMap': aNullableIntMap,
       'aMapWithNullableInts': aMapWithNullableInts,
       'aNullableMapWithNullableInts': aNullableMapWithNullableInts,
-    });
+    };
   }
 }

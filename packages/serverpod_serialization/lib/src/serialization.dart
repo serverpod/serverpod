@@ -48,9 +48,24 @@ abstract class SerializationManager {
   SerializationManager() {
     _appendConstructors({
       //TODO: all the "dart native" types should be listed here
-      DateTime: (jsonSerialization, _) => DateTime.parse(jsonSerialization),
+      int: (jsonSerialization, serializationManager) => jsonSerialization,
+      getType<int?>(): (jsonSerialization, serializationManager) =>
+          jsonSerialization,
+      double: (jsonSerialization, serializationManager) => jsonSerialization,
+      getType<double?>(): (jsonSerialization, serializationManager) =>
+          jsonSerialization,
+      String: (jsonSerialization, serializationManager) => jsonSerialization,
+      getType<String?>(): (jsonSerialization, serializationManager) =>
+          jsonSerialization,
+      bool: (jsonSerialization, serializationManager) => jsonSerialization,
+      getType<bool?>(): (jsonSerialization, serializationManager) =>
+          jsonSerialization,
+      //TODO: decide if default should be utc or local
+      DateTime: (jsonSerialization, _) =>
+          DateTime.parse(jsonSerialization).toUtc(),
+      //TODO: decide if default should be utc or local
       getType<DateTime?>(): (jsonSerialization, _) =>
-          DateTime.tryParse(jsonSerialization),
+          DateTime.tryParse(jsonSerialization ?? '')?.toUtc(),
       ByteData: (jsonSerialization, _) =>
           (jsonSerialization as String).base64DecodedByteData()!,
       getType<ByteData?>(): (jsonSerialization, _) =>
@@ -66,7 +81,7 @@ abstract class SerializationManager {
 
   /// Deserialize the provided json [String] to an object of type [t] or [T].
   T deserializeJsonString<T>(String data, [Type? t]) {
-    return deserializeJson<T>(data, t);
+    return deserializeJson<T>(jsonDecode(data), t);
   }
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
@@ -83,14 +98,19 @@ abstract class SerializationManager {
 
   /// Serialize the provided [object] to an Json [String].
   static String serializeToJson(Object? object) {
+    // This is the only time [jsonEncode] should be used in the project.
     return jsonEncode(
       object,
       toEncodable: (nonEncodable) {
         //TODO: all the "dart native" types should be listed here
         if (nonEncodable is DateTime) {
-          return nonEncodable.toIso8601String();
+          return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {
           return nonEncodable.base64encodedString();
+        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
+          return nonEncodable.entries
+              .map((e) => {'k': e.key, 'v': e.value})
+              .toList();
         } else {
           return (nonEncodable as dynamic)?.toJson();
         }
@@ -204,4 +224,8 @@ abstract class SerializationManager {
       classNameTypeMapping[className] = map[className]!;
     }
   }
+}
+
+extension<K, V> on Map<K, V> {
+  Type get keyType => K;
 }

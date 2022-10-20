@@ -194,6 +194,7 @@ class ClassGeneratorDart extends ClassGenerator {
               classBuilder.methods.add(Method(
                 (m) {
                   m.returns = refer('Map<String,dynamic>');
+                  //TODO: better name
                   m.name = 'toJsonForDatabase';
                   m.annotations.add(refer('override'));
 
@@ -202,6 +203,12 @@ class ClassGeneratorDart extends ClassGenerator {
                       for (var field in fields)
                         if (field.shouldSerializeFieldForDatabase(serverCode))
                           literalString(field.name): refer(field.name)
+
+                      // literalString(field.name): refer(
+                      //         'SerializationManager',
+                      //         'package:serverpod/serverpod.dart')
+                      //     .property('serializeToJson')
+                      //     .call([refer(field.name)])
                     },
                     // refer('String'), refer('dynamic')
                   ).returned.statement;
@@ -911,22 +918,27 @@ class ClassGeneratorDart extends ClassGenerator {
           ..name = 'classNameTypeMapping'
           ..assignment = literalMap({}).code,
       ),
+      // if (serverCode)
+      //   Field(
+      //     (f) => f
+      //       ..modifier = FieldModifier.final$
+      //       ..type = TypeReference((t) => t
+      //         ..symbol = 'Map'
+      //         ..types.addAll([
+      //           refer('String'),
+      //           refer('String'),
+      //         ]))
+      //       ..name = '_tableClassMapping'
+      //       ..assignment = literalMap({
+      //         for (var classInfo in classInfos)
+      //           if (classInfo is ClassDefinition && classInfo.tableName != null)
+      //             classInfo.tableName: classInfo.className,
+      //       }).code,
+      //   ),
       if (serverCode)
         Field(
           (f) => f
-            ..modifier = FieldModifier.final$
-            ..type = TypeReference((t) => t
-              ..symbol = 'Map'
-              ..types.addAll([
-                refer('String'),
-                refer('String'),
-              ]))
-            ..name = '_tableClassMapping'
-            ..assignment = literalMap({}).code,
-        ),
-      if (serverCode)
-        Field(
-          (f) => f
+            ..name = '_typeTableMapping'
             ..modifier = FieldModifier.final$
             ..type = TypeReference((t) => t
               ..symbol = 'Map'
@@ -934,24 +946,29 @@ class ClassGeneratorDart extends ClassGenerator {
                 refer('Type'),
                 refer('Table', serverPodUrl(serverCode)),
               ]))
-            ..name = '_typeTableMapping'
-            ..assignment = literalMap({}).code,
+            ..assignment = literalMap({
+              for (var classInfo in classInfos)
+                if (classInfo is ClassDefinition && classInfo.tableName != null)
+                  refer(classInfo.className, '${classInfo.fileName}.dart'):
+                      refer(classInfo.className, '${classInfo.fileName}.dart')
+                          .property('t'),
+            }).code,
         ),
     ]);
 
     if (serverCode) {
       protocol.methods.addAll([
-        Method((m) => m
-          ..name = 'tableClassMapping'
-          ..type = MethodType.getter
-          ..annotations.add(refer('override'))
-          ..returns = TypeReference((t) => t
-            ..symbol = 'Map'
-            ..types.addAll([
-              refer('String'),
-              refer('String'),
-            ]))
-          ..body = refer('_tableClassMapping').returned.statement),
+        // Method((m) => m
+        //   ..name = 'tableClassMapping'
+        //   ..type = MethodType.getter
+        //   ..annotations.add(refer('override'))
+        //   ..returns = TypeReference((t) => t
+        //     ..symbol = 'Map'
+        //     ..types.addAll([
+        //       refer('String'),
+        //       refer('String'),
+        //     ]))
+        //   ..body = refer('_tableClassMapping').returned.statement),
         Method((m) => m
           ..name = 'typeTableMapping'
           ..type = MethodType.getter

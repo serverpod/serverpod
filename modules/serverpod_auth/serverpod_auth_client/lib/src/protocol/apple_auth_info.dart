@@ -1,29 +1,10 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class AppleAuthInfo extends SerializableEntity {
-  @override
-  String get className => 'serverpod_auth_server.AppleAuthInfo';
-
-  late String userIdentifier;
-  String? email;
-  late String fullName;
-  late String nickname;
-  late String identityToken;
-  late String authorizationCode;
-
+class AppleAuthInfo extends _i1.SerializableEntity {
   AppleAuthInfo({
     required this.userIdentifier,
     this.email,
@@ -33,25 +14,49 @@ class AppleAuthInfo extends SerializableEntity {
     required this.authorizationCode,
   });
 
-  AppleAuthInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    userIdentifier = _data['userIdentifier']!;
-    email = _data['email'];
-    fullName = _data['fullName']!;
-    nickname = _data['nickname']!;
-    identityToken = _data['identityToken']!;
-    authorizationCode = _data['authorizationCode']!;
+  factory AppleAuthInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return AppleAuthInfo(
+      userIdentifier: serializationManager
+          .deserializeJson<String>(jsonSerialization['userIdentifier']),
+      email: serializationManager
+          .deserializeJson<String?>(jsonSerialization['email']),
+      fullName: serializationManager
+          .deserializeJson<String>(jsonSerialization['fullName']),
+      nickname: serializationManager
+          .deserializeJson<String>(jsonSerialization['nickname']),
+      identityToken: serializationManager
+          .deserializeJson<String>(jsonSerialization['identityToken']),
+      authorizationCode: serializationManager
+          .deserializeJson<String>(jsonSerialization['authorizationCode']),
+    );
   }
 
+  String userIdentifier;
+
+  String? email;
+
+  String fullName;
+
+  String nickname;
+
+  String identityToken;
+
+  String authorizationCode;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'serverpod_auth_server.AppleAuthInfo';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'userIdentifier': userIdentifier,
       'email': email,
       'fullName': fullName,
       'nickname': nickname,
       'identityToken': identityToken,
       'authorizationCode': authorizationCode,
-    });
+    };
   }
 }

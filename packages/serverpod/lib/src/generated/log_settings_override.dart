@@ -1,27 +1,11 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
-
-class LogSettingsOverride extends SerializableEntity {
-  @override
-  String get className => 'LogSettingsOverride';
-
-  String? module;
-  String? endpoint;
-  String? method;
-  late LogSettings logSettings;
-
+class LogSettingsOverride extends _i1.SerializableEntity {
   LogSettingsOverride({
     this.module,
     this.endpoint,
@@ -29,31 +13,49 @@ class LogSettingsOverride extends SerializableEntity {
     required this.logSettings,
   });
 
-  LogSettingsOverride.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    module = _data['module'];
-    endpoint = _data['endpoint'];
-    method = _data['method'];
-    logSettings = LogSettings.fromSerialization(_data['logSettings']);
+  factory LogSettingsOverride.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return LogSettingsOverride(
+      module: serializationManager
+          .deserializeJson<String?>(jsonSerialization['module']),
+      endpoint: serializationManager
+          .deserializeJson<String?>(jsonSerialization['endpoint']),
+      method: serializationManager
+          .deserializeJson<String?>(jsonSerialization['method']),
+      logSettings: serializationManager
+          .deserializeJson<_i2.LogSettings>(jsonSerialization['logSettings']),
+    );
   }
 
+  String? module;
+
+  String? endpoint;
+
+  String? method;
+
+  _i2.LogSettings logSettings;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get className => 'LogSettingsOverride';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'module': module,
       'endpoint': endpoint,
       'method': method,
-      'logSettings': logSettings.serialize(),
-    });
+      'logSettings': logSettings,
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'module': module,
       'endpoint': endpoint,
       'method': method,
-      'logSettings': logSettings.serialize(),
-    });
+      'logSettings': logSettings,
+    };
   }
 }

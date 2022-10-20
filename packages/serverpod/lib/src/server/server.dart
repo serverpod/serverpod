@@ -326,7 +326,8 @@ class Server {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              webSocket.add(jsonEncode({'command': 'pong'}));
+              webSocket.add(
+                  SerializationManager.serializeToJson({'command': 'pong'}));
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
               session.updateAuthenticationKey(authKey);

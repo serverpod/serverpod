@@ -1,30 +1,21 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: depend_on_referenced_packages
+library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
-library protocol;
-
-// ignore: unused_import
-import 'dart:typed_data';
-import 'package:serverpod/serverpod.dart';
-
-import 'chat_join_channel.dart';
-import 'chat_join_channel_failed.dart';
-import 'chat_joined_channel.dart';
-import 'chat_leave_channel.dart';
-import 'chat_message.dart';
-import 'chat_message_attachment.dart';
-import 'chat_message_attachment_upload_description.dart';
-import 'chat_message_chunk.dart';
-import 'chat_message_post.dart';
-import 'chat_read_message.dart';
-import 'chat_request_message_chunk.dart';
-
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'chat_join_channel.dart' as _i2;
+import 'chat_join_channel_failed.dart' as _i3;
+import 'chat_joined_channel.dart' as _i4;
+import 'chat_leave_channel.dart' as _i5;
+import 'chat_message.dart' as _i6;
+import 'chat_message_attachment.dart' as _i7;
+import 'chat_message_attachment_upload_description.dart' as _i8;
+import 'chat_message_chunk.dart' as _i9;
+import 'chat_message_post.dart' as _i10;
+import 'chat_read_message.dart' as _i11;
+import 'chat_request_message_chunk.dart' as _i12;
+import 'protocol.dart' as _i13;
 export 'chat_join_channel.dart';
 export 'chat_join_channel_failed.dart';
 export 'chat_joined_channel.dart';
@@ -35,65 +26,149 @@ export 'chat_message_attachment_upload_description.dart';
 export 'chat_message_chunk.dart';
 export 'chat_message_post.dart';
 export 'chat_read_message.dart';
-export 'chat_request_message_chunk.dart';
+export 'chat_request_message_chunk.dart'; // ignore_for_file: equal_keys_in_map
 
-class Protocol extends SerializationManagerServer {
+class Protocol extends _i1.SerializationManagerServer {
   static final Protocol instance = Protocol();
 
-  final Map<String, constructor> _constructors = {};
   @override
-  Map<String, constructor> get constructors => _constructors;
+  final Map<Type, _i1.constructor> constructors = {
+    _i2.ChatJoinChannel: (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        _i2.ChatJoinChannel.fromJson(jsonSerialization, serializationManager),
+    _i3.ChatJoinChannelFailed:
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            _i3.ChatJoinChannelFailed.fromJson(
+                jsonSerialization, serializationManager),
+    _i4.ChatJoinedChannel: (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        _i4.ChatJoinedChannel.fromJson(jsonSerialization, serializationManager),
+    _i5.ChatLeaveChannel: (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        _i5.ChatLeaveChannel.fromJson(jsonSerialization, serializationManager),
+    _i6.ChatMessage:
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            _i6.ChatMessage.fromJson(jsonSerialization, serializationManager),
+    _i7.ChatMessageAttachment:
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            _i7.ChatMessageAttachment.fromJson(
+                jsonSerialization, serializationManager),
+    _i8.ChatMessageAttachmentUploadDescription:
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            _i8.ChatMessageAttachmentUploadDescription.fromJson(
+                jsonSerialization, serializationManager),
+    _i9.ChatMessageChunk: (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        _i9.ChatMessageChunk.fromJson(jsonSerialization, serializationManager),
+    _i10.ChatMessagePost: (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        _i10.ChatMessagePost.fromJson(jsonSerialization, serializationManager),
+    _i11.ChatReadMessage: (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        _i11.ChatReadMessage.fromJson(jsonSerialization, serializationManager),
+    _i12.ChatRequestMessageChunk:
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            _i12.ChatRequestMessageChunk.fromJson(
+                jsonSerialization, serializationManager),
+    _i1.getType<_i2.ChatJoinChannel?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i2.ChatJoinChannel.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i3.ChatJoinChannelFailed?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i3.ChatJoinChannelFailed.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i4.ChatJoinedChannel?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i4.ChatJoinedChannel.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i5.ChatLeaveChannel?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i5.ChatLeaveChannel.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i6.ChatMessage?>(): (jsonSerialization,
+            _i1.SerializationManager serializationManager) =>
+        jsonSerialization != null
+            ? _i6.ChatMessage.fromJson(jsonSerialization, serializationManager)
+            : null,
+    _i1.getType<_i7.ChatMessageAttachment?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i7.ChatMessageAttachment.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i8.ChatMessageAttachmentUploadDescription?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i8.ChatMessageAttachmentUploadDescription.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i9.ChatMessageChunk?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i9.ChatMessageChunk.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i10.ChatMessagePost?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i10.ChatMessagePost.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i11.ChatReadMessage?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i11.ChatReadMessage.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<_i12.ChatRequestMessageChunk?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? _i12.ChatRequestMessageChunk.fromJson(
+                    jsonSerialization, serializationManager)
+                : null,
+    _i1.getType<List<_i13.ChatMessageAttachment>?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? (jsonSerialization as List)
+                    .map((e) => serializationManager
+                        .deserializeJson<_i13.ChatMessageAttachment>(e))
+                    .toList()
+                : null,
+    List<_i13.ChatMessage>:
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            (jsonSerialization as List)
+                .map((e) =>
+                    serializationManager.deserializeJson<_i13.ChatMessage>(e))
+                .toList(),
+    _i1.getType<List<_i13.ChatMessageAttachment>?>():
+        (jsonSerialization, _i1.SerializationManager serializationManager) =>
+            jsonSerialization != null
+                ? (jsonSerialization as List)
+                    .map((e) => serializationManager
+                        .deserializeJson<_i13.ChatMessageAttachment>(e))
+                    .toList()
+                : null,
+  };
 
-  final Map<String, String> _tableClassMapping = {};
   @override
-  Map<String, String> get tableClassMapping => _tableClassMapping;
+  final Map<String, Type> classNameTypeMapping = {};
 
-  final Map<Type, Table> _typeTableMapping = {};
+  final Map<Type, _i1.Table> _typeTableMapping = {
+    _i6.ChatMessage: _i6.ChatMessage.t,
+    _i11.ChatReadMessage: _i11.ChatReadMessage.t,
+  };
+
   @override
-  Map<Type, Table> get typeTableMapping => _typeTableMapping;
-
-  Protocol() {
-    constructors['serverpod_chat_server.ChatJoinChannel'] =
-        (Map<String, dynamic> serialization) =>
-            ChatJoinChannel.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatJoinChannelFailed'] =
-        (Map<String, dynamic> serialization) =>
-            ChatJoinChannelFailed.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatJoinedChannel'] =
-        (Map<String, dynamic> serialization) =>
-            ChatJoinedChannel.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatLeaveChannel'] =
-        (Map<String, dynamic> serialization) =>
-            ChatLeaveChannel.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatMessage'] =
-        (Map<String, dynamic> serialization) =>
-            ChatMessage.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatMessageAttachment'] =
-        (Map<String, dynamic> serialization) =>
-            ChatMessageAttachment.fromSerialization(serialization);
-    constructors[
-            'serverpod_chat_server.ChatMessageAttachmentUploadDescription'] =
-        (Map<String, dynamic> serialization) =>
-            ChatMessageAttachmentUploadDescription.fromSerialization(
-                serialization);
-    constructors['serverpod_chat_server.ChatMessageChunk'] =
-        (Map<String, dynamic> serialization) =>
-            ChatMessageChunk.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatMessagePost'] =
-        (Map<String, dynamic> serialization) =>
-            ChatMessagePost.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatReadMessage'] =
-        (Map<String, dynamic> serialization) =>
-            ChatReadMessage.fromSerialization(serialization);
-    constructors['serverpod_chat_server.ChatRequestMessageChunk'] =
-        (Map<String, dynamic> serialization) =>
-            ChatRequestMessageChunk.fromSerialization(serialization);
-
-    tableClassMapping['serverpod_chat_message'] =
-        'serverpod_chat_server.ChatMessage';
-    typeTableMapping[ChatMessage] = ChatMessage.t;
-    tableClassMapping['serverpod_chat_read_message'] =
-        'serverpod_chat_server.ChatReadMessage';
-    typeTableMapping[ChatReadMessage] = ChatReadMessage.t;
+  Map<Type, _i1.Table> get typeTableMapping {
+    return _typeTableMapping;
   }
 }
