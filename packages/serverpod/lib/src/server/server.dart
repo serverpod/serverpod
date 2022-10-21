@@ -357,9 +357,8 @@ class Server {
             try {
               session.sessionLogs.currentEndpoint = endpointName;
 
-              message =
-                  serializationManager.deserializeJsonByClassName(serialization)
-                      as SerializableEntity?;
+              message = serializationManager
+                  .deserializeJsonByClassName(serialization);
 
               if (message == null) throw Exception('Streamed message was null');
 

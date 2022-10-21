@@ -1,10 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'protocol.dart' as _i3;
+import 'protocol.dart' as _i2;
 
 class ObjectWithEnum extends _i1.TableRow {
   ObjectWithEnum({
@@ -17,31 +19,31 @@ class ObjectWithEnum extends _i1.TableRow {
 
   factory ObjectWithEnum.fromJson(
     Map<String, dynamic> jsonSerialization,
-    _i2.SerializationManager serializationManager,
+    _i1.SerializationManager serializationManager,
   ) {
     return ObjectWithEnum(
       id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
       testEnum: serializationManager
-          .deserializeJson<_i3.TestEnum>(jsonSerialization['testEnum']),
+          .deserializeJson<_i2.TestEnum>(jsonSerialization['testEnum']),
       nullableEnum: serializationManager
-          .deserializeJson<_i3.TestEnum?>(jsonSerialization['nullableEnum']),
+          .deserializeJson<_i2.TestEnum?>(jsonSerialization['nullableEnum']),
       enumList: serializationManager
-          .deserializeJson<List<_i3.TestEnum>>(jsonSerialization['enumList']),
+          .deserializeJson<List<_i2.TestEnum>>(jsonSerialization['enumList']),
       nullableEnumList:
-          serializationManager.deserializeJson<List<_i3.TestEnum?>>(
+          serializationManager.deserializeJson<List<_i2.TestEnum?>>(
               jsonSerialization['nullableEnumList']),
     );
   }
 
   static final t = ObjectWithEnumTable();
 
-  _i3.TestEnum testEnum;
+  _i2.TestEnum testEnum;
 
-  _i3.TestEnum? nullableEnum;
+  _i2.TestEnum? nullableEnum;
 
-  List<_i3.TestEnum> enumList;
+  List<_i2.TestEnum> enumList;
 
-  List<_i3.TestEnum?> nullableEnumList;
+  List<_i2.TestEnum?> nullableEnumList;
 
   @override
   String get className => 'ObjectWithEnum';

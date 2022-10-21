@@ -1,10 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'dart:typed_data' as _i3;
+import 'dart:typed_data' as _i2;
 
 class Types extends _i1.TableRow {
   Types({
@@ -19,7 +21,7 @@ class Types extends _i1.TableRow {
 
   factory Types.fromJson(
     Map<String, dynamic> jsonSerialization,
-    _i2.SerializationManager serializationManager,
+    _i1.SerializationManager serializationManager,
   ) {
     return Types(
       id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
@@ -34,7 +36,7 @@ class Types extends _i1.TableRow {
       aString: serializationManager
           .deserializeJson<String?>(jsonSerialization['aString']),
       aByteData: serializationManager
-          .deserializeJson<_i3.ByteData?>(jsonSerialization['aByteData']),
+          .deserializeJson<_i2.ByteData?>(jsonSerialization['aByteData']),
     );
   }
 
@@ -50,7 +52,7 @@ class Types extends _i1.TableRow {
 
   String? aString;
 
-  _i3.ByteData? aByteData;
+  _i2.ByteData? aByteData;
 
   @override
   String get className => 'Types';

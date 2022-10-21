@@ -1,10 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'dart:typed_data' as _i3;
+import 'dart:typed_data' as _i2;
 
 class CloudStorageEntry extends _i1.TableRow {
   CloudStorageEntry({
@@ -19,7 +21,7 @@ class CloudStorageEntry extends _i1.TableRow {
 
   factory CloudStorageEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
-    _i2.SerializationManager serializationManager,
+    _i1.SerializationManager serializationManager,
   ) {
     return CloudStorageEntry(
       id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
@@ -32,7 +34,7 @@ class CloudStorageEntry extends _i1.TableRow {
       expiration: serializationManager
           .deserializeJson<DateTime?>(jsonSerialization['expiration']),
       byteData: serializationManager
-          .deserializeJson<_i3.ByteData>(jsonSerialization['byteData']),
+          .deserializeJson<_i2.ByteData>(jsonSerialization['byteData']),
       verified: serializationManager
           .deserializeJson<bool>(jsonSerialization['verified']),
     );
@@ -48,7 +50,7 @@ class CloudStorageEntry extends _i1.TableRow {
 
   DateTime? expiration;
 
-  _i3.ByteData byteData;
+  _i2.ByteData byteData;
 
   bool verified;
 

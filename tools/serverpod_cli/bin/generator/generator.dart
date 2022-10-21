@@ -1,5 +1,4 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 
 import 'class_analyzer.dart';
 import 'class_generator.dart';
@@ -88,9 +87,12 @@ Future<void> performGenerate({
 }
 
 String generateCode(Spec spec) {
-  return '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n'
-      '/*   To generate run: "serverpod generate"    */\n'
-      '\n'
-      // '${DartFormatter().format('${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}')}';
-      '${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}';
+  return '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
+${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}
+''';
 }

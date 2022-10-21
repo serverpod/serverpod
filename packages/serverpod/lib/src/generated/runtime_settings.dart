@@ -1,10 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'protocol.dart' as _i3;
+import 'protocol.dart' as _i2;
 
 class RuntimeSettings extends _i1.TableRow {
   RuntimeSettings({
@@ -17,14 +19,14 @@ class RuntimeSettings extends _i1.TableRow {
 
   factory RuntimeSettings.fromJson(
     Map<String, dynamic> jsonSerialization,
-    _i2.SerializationManager serializationManager,
+    _i1.SerializationManager serializationManager,
   ) {
     return RuntimeSettings(
       id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
       logSettings: serializationManager
-          .deserializeJson<_i3.LogSettings>(jsonSerialization['logSettings']),
+          .deserializeJson<_i2.LogSettings>(jsonSerialization['logSettings']),
       logSettingsOverrides:
-          serializationManager.deserializeJson<List<_i3.LogSettingsOverride>>(
+          serializationManager.deserializeJson<List<_i2.LogSettingsOverride>>(
               jsonSerialization['logSettingsOverrides']),
       logServiceCalls: serializationManager
           .deserializeJson<bool>(jsonSerialization['logServiceCalls']),
@@ -35,9 +37,9 @@ class RuntimeSettings extends _i1.TableRow {
 
   static final t = RuntimeSettingsTable();
 
-  _i3.LogSettings logSettings;
+  _i2.LogSettings logSettings;
 
-  List<_i3.LogSettingsOverride> logSettingsOverrides;
+  List<_i2.LogSettingsOverride> logSettingsOverrides;
 
   bool logServiceCalls;
 

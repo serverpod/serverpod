@@ -1,0 +1,1 @@
+This implementation assumes there are no classes extending a (generated) SerializableEntity class.

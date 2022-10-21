@@ -30,8 +30,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         endpoint
           ..docs.add(endpointDef.documentationComment ?? '')
           ..name = endpointClassName
-          ..extend = refer(
-              'EndpointRef', 'package:serverpod_client/serverpod_client.dart');
+          ..extend = refer('EndpointRef', serverPodUrl(false));
 
         endpoint.methods.add(Method((m) => m
           ..annotations.add(refer('override'))

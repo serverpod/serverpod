@@ -109,7 +109,8 @@ class ChatEndpoint extends Endpoint {
       // Remove listener for a subscribed channel
       var listener = chatSession.messageListeners[message.channel];
       if (listener != null) {
-        session.messages.removeListener(message.className, listener);
+        session.messages
+            .removeListener(_channelPrefix + message.channel, listener);
         chatSession.messageListeners.remove(message.channel);
       }
     } else if (message is ChatMessagePost) {

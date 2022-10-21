@@ -80,8 +80,8 @@ class ClassGeneratorDart extends ClassGenerator {
                 ..body = Code('\'$tableName\''),
             ));
           } else {
-            classBuilder.extend = refer('SerializableEntity',
-                'package:serverpod_serialization/serverpod_serialization.dart');
+            classBuilder.extend =
+                refer('SerializableEntity', serverPodUrl(serverCode));
           }
 
           // Fields
@@ -135,8 +135,8 @@ class ClassGeneratorDart extends ClassGenerator {
               }),
               Parameter((p) {
                 p.name = 'serializationManager';
-                p.type = refer('SerializationManager',
-                    'package:serverpod_serialization/serverpod_serialization.dart');
+                p.type =
+                    refer('SerializationManager', serverPodUrl(serverCode));
               }),
             ]);
             c.body = refer(className)
@@ -761,8 +761,7 @@ class ClassGeneratorDart extends ClassGenerator {
       library.body.add(
         Enum((e) {
           e.name = enumName;
-          e.mixins.add(refer('SerializableEntity',
-              'package:serverpod_serialization/serverpod_serialization.dart'));
+          e.mixins.add(refer('SerializableEntity', serverPodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {
@@ -831,10 +830,8 @@ class ClassGeneratorDart extends ClassGenerator {
     protocol
       ..name = 'Protocol'
       ..extend = serverCode
-          ? refer(
-              'SerializationManagerServer', 'package:serverpod/serverpod.dart')
-          : refer('SerializationManager',
-              'package:serverpod_client/serverpod_client.dart');
+          ? refer('SerializationManagerServer', serverPodUrl(true))
+          : refer('SerializationManager', serverPodUrl(false));
 
     protocol.fields.add(Field(
       (f) => f

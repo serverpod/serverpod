@@ -139,8 +139,6 @@ class ProtocolAnalyzer {
                 var paramNamedDefs = <ParameterDefinition>[];
                 var parameters = method.parameters;
                 for (var param in parameters) {
-                  var package =
-                      param.type.element2?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
                     required: param.isRequiredPositional ||
@@ -164,19 +162,6 @@ class ProtocolAnalyzer {
                 if (paramDefs.isNotEmpty &&
                     paramDefs[0].type.className == 'Session' &&
                     method.returnType.isDartAsyncFuture) {
-                  String? package;
-                  String? innerPackage;
-                  var returnType = method.returnType;
-                  if (returnType is InterfaceType) {
-                    var interfaceType = returnType;
-                    if (interfaceType.typeArguments.length == 1) {
-                      package = interfaceType.typeArguments[0].element2
-                          ?.librarySource?.uri.pathSegments[0];
-                      innerPackage =
-                          _getInnerPackage(interfaceType.typeArguments[0]);
-                    }
-                  }
-
                   _validateReturnType(
                     dartType: method.returnType,
                     dartElement: method,
@@ -215,23 +200,6 @@ class ProtocolAnalyzer {
     );
 
     return protocolDefinition;
-  }
-
-  String? _getInnerPackage(DartType type) {
-    if (type.isDartCoreList) {
-      type as InterfaceType;
-      if (type.typeArguments.length == 1) {
-        return type
-            .typeArguments[0].element2?.librarySource?.uri.pathSegments[0];
-      }
-    } else if (type.isDartCoreMap) {
-      type as InterfaceType;
-      if (type.typeArguments.length == 2) {
-        return type
-            .typeArguments[1].element2?.librarySource?.uri.pathSegments[0];
-      }
-    }
-    return null;
   }
 
   String _formatEndpointName(String className) {

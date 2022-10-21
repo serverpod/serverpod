@@ -1,10 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'protocol.dart' as _i3;
+import 'protocol.dart' as _i2;
 
 class ObjectWithObject extends _i1.TableRow {
   ObjectWithObject({
@@ -19,41 +21,41 @@ class ObjectWithObject extends _i1.TableRow {
 
   factory ObjectWithObject.fromJson(
     Map<String, dynamic> jsonSerialization,
-    _i2.SerializationManager serializationManager,
+    _i1.SerializationManager serializationManager,
   ) {
     return ObjectWithObject(
       id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
       data: serializationManager
-          .deserializeJson<_i3.SimpleData>(jsonSerialization['data']),
+          .deserializeJson<_i2.SimpleData>(jsonSerialization['data']),
       nullableData: serializationManager
-          .deserializeJson<_i3.SimpleData?>(jsonSerialization['nullableData']),
+          .deserializeJson<_i2.SimpleData?>(jsonSerialization['nullableData']),
       dataList: serializationManager
-          .deserializeJson<List<_i3.SimpleData>>(jsonSerialization['dataList']),
+          .deserializeJson<List<_i2.SimpleData>>(jsonSerialization['dataList']),
       nullableDataList:
-          serializationManager.deserializeJson<List<_i3.SimpleData>?>(
+          serializationManager.deserializeJson<List<_i2.SimpleData>?>(
               jsonSerialization['nullableDataList']),
       listWithNullableData:
-          serializationManager.deserializeJson<List<_i3.SimpleData?>>(
+          serializationManager.deserializeJson<List<_i2.SimpleData?>>(
               jsonSerialization['listWithNullableData']),
       nullableListWithNullableData:
-          serializationManager.deserializeJson<List<_i3.SimpleData?>?>(
+          serializationManager.deserializeJson<List<_i2.SimpleData?>?>(
               jsonSerialization['nullableListWithNullableData']),
     );
   }
 
   static final t = ObjectWithObjectTable();
 
-  _i3.SimpleData data;
+  _i2.SimpleData data;
 
-  _i3.SimpleData? nullableData;
+  _i2.SimpleData? nullableData;
 
-  List<_i3.SimpleData> dataList;
+  List<_i2.SimpleData> dataList;
 
-  List<_i3.SimpleData>? nullableDataList;
+  List<_i2.SimpleData>? nullableDataList;
 
-  List<_i3.SimpleData?> listWithNullableData;
+  List<_i2.SimpleData?> listWithNullableData;
 
-  List<_i3.SimpleData?>? nullableListWithNullableData;
+  List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
   String get className => 'ObjectWithObject';

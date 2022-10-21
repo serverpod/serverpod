@@ -19,4 +19,5 @@ dynamic parseData(
   return serializationManager.deserializeJsonString(data, returnType);
 }
 
+/// A helper method, that just 'returns' void.
 void returnVoid() {}

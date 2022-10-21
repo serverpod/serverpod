@@ -1,4 +1,3 @@
-import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
@@ -78,6 +77,7 @@ class TypeDefinition {
         (t) {
           // print(url);
           if (url?.startsWith('module:') ?? false) {
+            // module:nickname: reference
             var moduleName = url?.substring(7);
             var module = config.modules.cast<ModuleConfig?>().firstWhere(
                   (m) => m?.nickname == moduleName,
@@ -90,24 +90,29 @@ class TypeDefinition {
             t.url =
                 'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
           } else if (url == 'serverpod') {
+            // serverpod: reference
             t.url = serverPodUrl(serverCode);
           } else if (url == 'protocol') {
+            // protocol: reference
             t.url = 'protocol.dart';
           } else if (!serverCode &&
               (url?.startsWith('package:${config.serverPackage}') ?? false)) {
+            // import from the server package
             t.url = url
                 ?.replaceFirst('package:${config.serverPackage}',
                     'package:${config.clientPackage}')
                 .replaceFirst('src/generated/', 'src/protocol/');
-          } else if (!serverCode &&
-              config.modules.any((m) =>
-                  url?.startsWith('package:${m.serverPackage}') ?? false)) {
+          } else if (config.modules.any(
+              (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
+            // endpoint definition references from an module
             var module = config.modules.firstWhere(
                 (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
             t.url = url!.contains('/src/generated/')
-                ? 'package:${module.clientPackage}/module.dart'
-                : url?.replaceFirst('package:${module.serverPackage}',
-                    'package:${module.clientPackage}');
+                ? 'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart'
+                : serverCode
+                    ? url
+                    : url?.replaceFirst('package:${module.serverPackage}',
+                        'package:${module.clientPackage}');
           } else {
             t.url = url;
           }

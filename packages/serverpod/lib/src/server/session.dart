@@ -505,12 +505,12 @@ class MessageCentralAccess {
 
   /// Adds a listener to a named channel. Whenever a message is posted using
   /// [postMessage], the [listener] will be notified.
-  void addListener(
+  void addListener<T extends SerializableEntity>(
     String channelName,
-    MessageCentralListenerCallback listener, {
+    MessageCentralListenerCallback<T> listener, {
     bool local = false,
   }) {
-    _session.server.messageCentral.addListener(
+    _session.server.messageCentral.addListener<T>(
       _session,
       channelName,
       listener,

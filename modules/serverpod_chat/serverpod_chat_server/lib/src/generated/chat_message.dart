@@ -1,11 +1,13 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
-import 'protocol.dart' as _i4;
+import 'package:serverpod_auth_server/module.dart' as _i2;
+import 'protocol.dart' as _i3;
 
 class ChatMessage extends _i1.TableRow {
   ChatMessage({
@@ -23,7 +25,7 @@ class ChatMessage extends _i1.TableRow {
 
   factory ChatMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
-    _i2.SerializationManager serializationManager,
+    _i1.SerializationManager serializationManager,
   ) {
     return ChatMessage(
       id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
@@ -36,7 +38,7 @@ class ChatMessage extends _i1.TableRow {
       sender: serializationManager
           .deserializeJson<int>(jsonSerialization['sender']),
       senderInfo: serializationManager
-          .deserializeJson<_i3.UserInfo?>(jsonSerialization['senderInfo']),
+          .deserializeJson<_i2.UserInfo?>(jsonSerialization['senderInfo']),
       removed: serializationManager
           .deserializeJson<bool>(jsonSerialization['removed']),
       clientMessageId: serializationManager
@@ -44,7 +46,7 @@ class ChatMessage extends _i1.TableRow {
       sent: serializationManager
           .deserializeJson<bool?>(jsonSerialization['sent']),
       attachments: serializationManager.deserializeJson<
-          List<_i4.ChatMessageAttachment>?>(jsonSerialization['attachments']),
+          List<_i3.ChatMessageAttachment>?>(jsonSerialization['attachments']),
     );
   }
 
@@ -58,7 +60,7 @@ class ChatMessage extends _i1.TableRow {
 
   int sender;
 
-  _i3.UserInfo? senderInfo;
+  _i2.UserInfo? senderInfo;
 
   bool removed;
 
@@ -66,7 +68,7 @@ class ChatMessage extends _i1.TableRow {
 
   bool? sent;
 
-  List<_i4.ChatMessageAttachment>? attachments;
+  List<_i3.ChatMessageAttachment>? attachments;
 
   @override
   String get className => 'serverpod_chat_server.ChatMessage';

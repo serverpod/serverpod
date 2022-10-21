@@ -1,6 +1,9 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/async_tasks.dart' as _i2;
@@ -34,10 +37,8 @@ import 'package:serverpod_test_server/src/generated/object_with_object.dart'
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i28;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i29;
-import 'package:serverpod_test_module_server/src/generated/module_class.dart'
-    as _i30;
-import 'package:serverpod_test_module_server/module.dart' as _i31;
-import 'package:serverpod_auth_server/module.dart' as _i32;
+import 'package:serverpod_test_module_server/module.dart' as _i30;
+import 'package:serverpod_auth_server/module.dart' as _i31;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -2342,19 +2343,19 @@ class Endpoints extends _i1.EndpointDispatch {
       endpoint: endpoints['streamingLogging']!,
       methodConnectors: {},
     );
-    modules['serverpod_test_module'] = _i31.Endpoints()
+    modules['serverpod_test_module'] = _i30.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i32.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i31.Endpoints()..initializeEndpoints(server);
   }
 
   @override
   void registerModules(_i1.Serverpod pod) {
     pod.registerModule(
-      _i31.Protocol(),
+      _i30.Protocol(),
       'module',
     );
     pod.registerModule(
-      _i32.Protocol(),
+      _i31.Protocol(),
       'auth',
     );
   }
