@@ -32,9 +32,6 @@ abstract class SerializableEntity {
   /// The unique className, used to wrap the serialization when sending
   /// through stream endpoint.
   String get className;
-
-  // /// Creates a new instance of this objects class from an json serialization.
-  // SerializableEntity createNewFromJsonSerialization(dynamic data);
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.
@@ -215,13 +212,13 @@ abstract class SerializationManager {
 
   void _appendConstructors(Map<Type, constructor> map) {
     for (var classType in map.keys) {
-      constructors[classType] = map[classType]!;
+      constructors.putIfAbsent(classType, () => map[classType]!);
     }
   }
 
   void _appendClassNameTypeMappings(Map<String, Type> map) {
     for (var className in map.keys) {
-      classNameTypeMapping[className] = map[className]!;
+      classNameTypeMapping.putIfAbsent(className, () => map[className]!);
     }
   }
 }

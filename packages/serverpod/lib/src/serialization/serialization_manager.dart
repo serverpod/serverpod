@@ -20,15 +20,15 @@ abstract class SerializationManagerServer extends SerializationManager {
     }
   }
 
-  void _appendTableClassMapping(Map<String, String> map) {
-    for (var tableName in map.keys) {
-      // tableClassMapping[tableName] = map[tableName]!;
-    }
-  }
+  // void _appendTableClassMapping(Map<String, String> map) {
+  //   for (var tableName in map.keys) {
+  //     // tableClassMapping[tableName] = map[tableName]!;
+  //   }
+  // }
 
   void _appendTypeTableMapping(Map<Type, Table> map) {
     for (var type in map.keys) {
-      typeTableMapping[type] = map[type]!;
+      typeTableMapping.putIfAbsent(type, () => map[type]!);
     }
   }
 }
