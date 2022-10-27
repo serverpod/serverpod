@@ -139,8 +139,6 @@ class GeneratorConfig {
           'Failed to load \'extraConstructors\' config');
     }
 
-    // print(this);
-
     return true;
   }
 

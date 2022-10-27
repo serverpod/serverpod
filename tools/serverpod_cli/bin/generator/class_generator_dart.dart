@@ -1,5 +1,3 @@
-//import 'package:recase/recase.dart';
-
 import 'package:code_builder/code_builder.dart';
 
 import 'class_generator.dart';
@@ -143,20 +141,6 @@ class ClassGeneratorDart extends ClassGenerator {
                 })
                 .returned
                 .statement;
-            // m.body = Block((b) {
-            //   for (var field in fields) {
-            //     if (field.shouldIncludeField(serverCode)) {
-            //       b.addExpression(refer(field.name).assign(
-            //           refer('serializationManager')
-            //               .property('deserializeJson')
-            //               .call([
-            //         refer('jsonSerialization').index(refer(field.name))
-            //       ], {}, [
-            //         field.type.reference(serverCode)
-            //       ])));
-            //     }
-            //   }
-            // });
           }));
 
           // Serialization
@@ -172,7 +156,6 @@ class ClassGeneratorDart extends ClassGenerator {
                     if (field.shouldSerializeField(serverCode))
                       literalString(field.name): refer(field.name)
                 },
-                //  refer('String'), refer('dynamic')
               ).returned.statement;
             },
           ));
@@ -192,14 +175,7 @@ class ClassGeneratorDart extends ClassGenerator {
                       for (var field in fields)
                         if (field.shouldSerializeFieldForDatabase(serverCode))
                           literalString(field.name): refer(field.name)
-
-                      // literalString(field.name): refer(
-                      //         'SerializationManager',
-                      //         'package:serverpod/serverpod.dart')
-                      //     .property('serializeToJson')
-                      //     .call([refer(field.name)])
                     },
-                    // refer('String'), refer('dynamic')
                   ).returned.statement;
                 },
               ));
@@ -832,31 +808,12 @@ class ClassGeneratorDart extends ClassGenerator {
           ]))
         ..modifier = FieldModifier.final$
         ..assignment = literalMap({}).code),
-
       Field((f) => f
         ..name = '_instance'
         ..static = true
         ..type = refer('Protocol')
         ..modifier = FieldModifier.final$
         ..assignment = const Code('Protocol._()')),
-
-      // if (serverCode)
-      //   Field(
-      //     (f) => f
-      //       ..modifier = FieldModifier.final$
-      //       ..type = TypeReference((t) => t
-      //         ..symbol = 'Map'
-      //         ..types.addAll([
-      //           refer('String'),
-      //           refer('String'),
-      //         ]))
-      //       ..name = '_tableClassMapping'
-      //       ..assignment = literalMap({
-      //         for (var classInfo in classInfos)
-      //           if (classInfo is ClassDefinition && classInfo.tableName != null)
-      //             classInfo.tableName: classInfo.className,
-      //       }).code,
-      //   ),
     ]);
     protocol.methods.addAll([
       Method((m) => m
@@ -1006,55 +963,6 @@ class ClassGeneratorDart extends ClassGenerator {
             ]),
         ),
     ]);
-
-    // protocol.methods.add(
-    //   Method((m) => m
-    //     ..annotations.add(refer('override'))
-    //     ..returns = refer('Type')
-    //     ..name = 'getTypeFromClassName'
-    //     ..requiredParameters.add(Parameter((p) => p
-    //       ..type = refer('String')
-    //       ..name = 'className'))
-    //     ..body = Block.of([Code('var moduleName = className')])),
-    // );
-    // protocol.methods.add(
-    //   Method((m) => m
-    //     ..static = true
-    //     ..returns = refer('Type?')
-    //     //TODO: better name?
-    //     ..name = 'staticGetTypeFromClassName'
-    //     ..requiredParameters.add(Parameter((p) => p
-    //       ..type = refer('String')
-    //       ..name = 'className'))
-    //     ..body = Block.of([
-    //       const Code('switch(className){'),
-    //       for (var classInfo in classInfos)
-    //         Code.scope((a) =>
-    //             'case \'${classInfo.className}\':return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))};'),
-    //       const Code('}'),
-    //       const Code(
-    //           'var moduleName=className.contains(\'.\') ? className.split(\'.\').first : null;'),
-    //       const Code('if(moduleName != null){'),
-    //       const Code('switch(moduleName){'),
-    //       for (var module in config.modules)
-    //         Code.scope((a) =>
-    //             'case \'${module.nickname}\':return ${a(refer('Protocol', module.url(serverCode)))}.staticGetTypeFromClassName(className.substring(moduleName.length+1));'),
-    //       const Code('}'),
-    //       const Code('}'),
-    //       const Code('return null;'),
-    //     ])),
-    // );
-    // protocol.methods.add(
-    //   Method((m) => m
-    //     ..annotations.add(refer('override'))
-    //     ..returns = refer('Type?')
-    //     ..name = 'getTypeFromClassName'
-    //     ..requiredParameters.add(Parameter((p) => p
-    //       ..type = refer('String')
-    //       ..name = 'className'))
-    //     ..body = refer('staticGetTypeFromClassName')
-    //         .call([refer('className')]).statement),
-    // );
 
     library.body.add(protocol.build());
 

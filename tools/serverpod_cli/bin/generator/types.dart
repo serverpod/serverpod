@@ -82,7 +82,6 @@ class TypeDefinition {
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(bool serverCode) => TypeReference(
         (t) {
-          // print(url);
           if (url?.startsWith('module:') ?? false) {
             // module:nickname: reference
             var moduleName = url?.substring(7);
