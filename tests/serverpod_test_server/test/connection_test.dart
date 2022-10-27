@@ -778,12 +778,19 @@ void main() {
     });
 
     test('Write and read enums', () async {
-      var object = ObjectWithEnum(
-        testEnum: TestEnum.two,
-        nullableEnum: null,
-        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
-        nullableEnumList: [TestEnum.one, null, TestEnum.three],
-      );
+      var object =
+          ObjectWithEnum(testEnum: TestEnum.two, nullableEnum: null, enumList: [
+        TestEnum.one,
+        TestEnum.two,
+        TestEnum.three
+      ], nullableEnumList: [
+        TestEnum.one,
+        null,
+        TestEnum.three
+      ], enumListList: [
+        [TestEnum.one, TestEnum.two],
+        [TestEnum.two, TestEnum.one]
+      ]);
 
       var objectId = await client.basicDatabase.storeObjectWithEnum(object);
       expect(objectId, isNotNull);
@@ -792,6 +799,13 @@ void main() {
           await client.basicDatabase.getObjectWithEnum(objectId!);
       expect(returnedObject, isNotNull);
       expect(returnedObject!.testEnum, equals(TestEnum.two));
+      expect(returnedObject.enumListList.length, equals(2));
+      expect(returnedObject.enumListList[0].length, equals(2));
+      expect(returnedObject.enumListList[0][0], equals(TestEnum.one));
+      expect(returnedObject.enumListList[0][1], equals(TestEnum.two));
+      expect(returnedObject.enumListList[1].length, equals(2));
+      expect(returnedObject.enumListList[1][0], equals(TestEnum.two));
+      expect(returnedObject.enumListList[1][1], equals(TestEnum.one));
     });
 
     test('Raw query', () async {

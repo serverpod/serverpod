@@ -21,6 +21,7 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     required this.nullableStringMap,
     required this.nullableDateTimeMap,
     required this.nullableByteDataMap,
+    required this.intIntMap,
   });
 
   factory ObjectWithMaps.fromJson(
@@ -54,6 +55,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       nullableByteDataMap:
           serializationManager.deserializeJson<Map<String, _i3.ByteData?>>(
               jsonSerialization['nullableByteDataMap']),
+      intIntMap: serializationManager
+          .deserializeJson<Map<int, int>>(jsonSerialization['intIntMap']),
     );
   }
 
@@ -77,6 +80,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<String, _i3.ByteData?> nullableByteDataMap;
 
+  Map<int, int> intIntMap;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -90,6 +95,7 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'nullableStringMap': nullableStringMap,
       'nullableDateTimeMap': nullableDateTimeMap,
       'nullableByteDataMap': nullableByteDataMap,
+      'intIntMap': intIntMap,
     };
   }
 }

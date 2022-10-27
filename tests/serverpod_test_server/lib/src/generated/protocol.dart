@@ -226,6 +226,11 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserializeJson<_i11.TestEnum?>(e))
           .toList() as dynamic;
     }
+    if (t == List<List<_i11.TestEnum>>) {
+      return (data as List)
+          .map((e) => deserializeJson<List<_i11.TestEnum>>(e))
+          .toList() as dynamic;
+    }
     if (t == Map<String, _i11.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
               deserializeJson<String>(k), deserializeJson<_i11.SimpleData>(v)))
@@ -263,6 +268,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == Map<String, _i12.ByteData?>) {
       return (data as Map).map((k, v) => MapEntry(
               deserializeJson<String>(k), deserializeJson<_i12.ByteData?>(v)))
+          as dynamic;
+    }
+    if (t == Map<int, int>) {
+      return Map.fromEntries((data as List).map((e) => MapEntry(
+              deserializeJson<int>(e['k']), deserializeJson<int>(e['v']))))
           as dynamic;
     }
     if (t == _i1.getType<List<_i11.SimpleData>?>()) {

@@ -59,11 +59,22 @@ void main() {
 
     test('Object with enum', () {
       var object = ObjectWithEnum(
-        testEnum: TestEnum.one,
-        nullableEnum: null,
-        nullableEnumList: [TestEnum.one, null, TestEnum.three],
-        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
-      );
+          testEnum: TestEnum.one,
+          nullableEnum: null,
+          nullableEnumList: [
+            TestEnum.one,
+            null,
+            TestEnum.three
+          ],
+          enumList: [
+            TestEnum.one,
+            TestEnum.two,
+            TestEnum.three
+          ],
+          enumListList: [
+            [TestEnum.one, TestEnum.two],
+            [TestEnum.two, TestEnum.one]
+          ]);
       var s = SerializationManager.serializeToJson(object);
       var unpacked = protocol.deserializeJson<ObjectWithEnum>(jsonDecode(s));
       expect(unpacked.testEnum, equals(TestEnum.one));
@@ -76,6 +87,13 @@ void main() {
       expect(unpacked.enumList[0], equals(TestEnum.one));
       expect(unpacked.enumList[1], equals(TestEnum.two));
       expect(unpacked.enumList[2], equals(TestEnum.three));
+      expect(unpacked.enumListList.length, equals(2));
+      expect(unpacked.enumListList[0].length, equals(2));
+      expect(unpacked.enumListList[0][0], equals(TestEnum.one));
+      expect(unpacked.enumListList[0][1], equals(TestEnum.two));
+      expect(unpacked.enumListList[1].length, equals(2));
+      expect(unpacked.enumListList[1][0], equals(TestEnum.two));
+      expect(unpacked.enumListList[1][1], equals(TestEnum.one));
     });
 
     test('Nullability with null types', () {
@@ -244,40 +262,49 @@ void main() {
     });
 
     test('Map types', () {
-      var maps = ObjectWithMaps(
-        dataMap: {
-          '0': SimpleData(num: 0),
-          '1': SimpleData(num: 1),
-          '2': SimpleData(num: 2),
-        },
-        intMap: {'0': 0, '1': 1, '2': 2},
-        stringMap: {'0': 'String 0', '1': 'String 1', '2': 'String 2'},
-        dateTimeMap: {
-          '2020': DateTime(2020),
-          '2021': DateTime(2021),
-          '2022': DateTime(2022),
-        },
-        byteDataMap: {
-          '0': createByteData(),
-          '1': createByteData(),
-        },
-        nullableDataMap: {
-          '0': SimpleData(num: 0),
-          '1': null,
-          '2': SimpleData(num: 2),
-        },
-        nullableIntMap: {'0': 0, '1': null, '2': 2},
-        nullableStringMap: {'0': 'null', '1': null, '2': 'String 2'},
-        nullableDateTimeMap: {
-          '2020': DateTime(2020),
-          '2021': null,
-          '2022': DateTime(2022),
-        },
-        nullableByteDataMap: {
-          '0': createByteData(),
-          '1': null,
-        },
-      );
+      var maps = ObjectWithMaps(dataMap: {
+        '0': SimpleData(num: 0),
+        '1': SimpleData(num: 1),
+        '2': SimpleData(num: 2),
+      }, intMap: {
+        '0': 0,
+        '1': 1,
+        '2': 2
+      }, stringMap: {
+        '0': 'String 0',
+        '1': 'String 1',
+        '2': 'String 2'
+      }, dateTimeMap: {
+        '2020': DateTime(2020),
+        '2021': DateTime(2021),
+        '2022': DateTime(2022),
+      }, byteDataMap: {
+        '0': createByteData(),
+        '1': createByteData(),
+      }, nullableDataMap: {
+        '0': SimpleData(num: 0),
+        '1': null,
+        '2': SimpleData(num: 2),
+      }, nullableIntMap: {
+        '0': 0,
+        '1': null,
+        '2': 2
+      }, nullableStringMap: {
+        '0': 'null',
+        '1': null,
+        '2': 'String 2'
+      }, nullableDateTimeMap: {
+        '2020': DateTime(2020),
+        '2021': null,
+        '2022': DateTime(2022),
+      }, nullableByteDataMap: {
+        '0': createByteData(),
+        '1': null,
+      }, intIntMap: {
+        1: 1,
+        2: 4,
+        3: 9
+      });
 
       var s = SerializationManager.serializeToJson(maps);
       var unpacked = protocol.deserializeJson<ObjectWithMaps>(jsonDecode(s));
@@ -318,6 +345,11 @@ void main() {
 
       expect(unpacked.nullableByteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.nullableByteDataMap['1'], isNull);
+
+      expect(unpacked.intIntMap.length, equals(3));
+      expect(unpacked.intIntMap[1], equals(1));
+      expect(unpacked.intIntMap[2], equals(4));
+      expect(unpacked.intIntMap[3], equals(9));
     });
   });
 }

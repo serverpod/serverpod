@@ -15,6 +15,7 @@ class ObjectWithEnum extends _i1.SerializableEntity {
     this.nullableEnum,
     required this.enumList,
     required this.nullableEnumList,
+    required this.enumListList,
   });
 
   factory ObjectWithEnum.fromJson(
@@ -32,6 +33,9 @@ class ObjectWithEnum extends _i1.SerializableEntity {
       nullableEnumList:
           serializationManager.deserializeJson<List<_i2.TestEnum?>>(
               jsonSerialization['nullableEnumList']),
+      enumListList:
+          serializationManager.deserializeJson<List<List<_i2.TestEnum>>>(
+              jsonSerialization['enumListList']),
     );
   }
 
@@ -45,6 +49,8 @@ class ObjectWithEnum extends _i1.SerializableEntity {
 
   List<_i2.TestEnum?> nullableEnumList;
 
+  List<List<_i2.TestEnum>> enumListList;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -53,6 +59,7 @@ class ObjectWithEnum extends _i1.SerializableEntity {
       'nullableEnum': nullableEnum,
       'enumList': enumList,
       'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
     };
   }
 }

@@ -10,3 +10,4 @@ fields:
   nullableStringMap: Map<String, String?>
   nullableDateTimeMap: Map<String, DateTime?>
   nullableByteDataMap: Map<String, ByteData?>
+  intIntMap: Map<int, int>

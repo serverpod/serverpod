@@ -21,7 +21,8 @@ CREATE TABLE object_with_enum (
   "testEnum" json NOT NULL,
   "nullableEnum" json,
   "enumList" json NOT NULL,
-  "nullableEnumList" json NOT NULL
+  "nullableEnumList" json NOT NULL,
+  "enumListList" json NOT NULL
 );
 
 ALTER TABLE ONLY object_with_enum

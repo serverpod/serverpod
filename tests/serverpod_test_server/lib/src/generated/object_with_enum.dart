@@ -15,6 +15,7 @@ class ObjectWithEnum extends _i1.TableRow {
     this.nullableEnum,
     required this.enumList,
     required this.nullableEnumList,
+    required this.enumListList,
   }) : super(id);
 
   factory ObjectWithEnum.fromJson(
@@ -32,6 +33,9 @@ class ObjectWithEnum extends _i1.TableRow {
       nullableEnumList:
           serializationManager.deserializeJson<List<_i2.TestEnum?>>(
               jsonSerialization['nullableEnumList']),
+      enumListList:
+          serializationManager.deserializeJson<List<List<_i2.TestEnum>>>(
+              jsonSerialization['enumListList']),
     );
   }
 
@@ -45,6 +49,8 @@ class ObjectWithEnum extends _i1.TableRow {
 
   List<_i2.TestEnum?> nullableEnumList;
 
+  List<List<_i2.TestEnum>> enumListList;
+
   @override
   String get tableName => 'object_with_enum';
   @override
@@ -55,6 +61,7 @@ class ObjectWithEnum extends _i1.TableRow {
       'nullableEnum': nullableEnum,
       'enumList': enumList,
       'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
     };
   }
 
@@ -66,6 +73,7 @@ class ObjectWithEnum extends _i1.TableRow {
       'nullableEnum': nullableEnum,
       'enumList': enumList,
       'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
     };
   }
 
@@ -77,6 +85,7 @@ class ObjectWithEnum extends _i1.TableRow {
       'nullableEnum': nullableEnum,
       'enumList': enumList,
       'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
     };
   }
 
@@ -100,6 +109,9 @@ class ObjectWithEnum extends _i1.TableRow {
         return;
       case 'nullableEnumList':
         nullableEnumList = value;
+        return;
+      case 'enumListList':
+        enumListList = value;
         return;
       default:
         throw UnimplementedError();
@@ -231,6 +243,8 @@ class ObjectWithEnumTable extends _i1.Table {
 
   final nullableEnumList = _i1.ColumnSerializable('nullableEnumList');
 
+  final enumListList = _i1.ColumnSerializable('enumListList');
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -238,6 +252,7 @@ class ObjectWithEnumTable extends _i1.Table {
         nullableEnum,
         enumList,
         nullableEnumList,
+        enumListList,
       ];
 }
 

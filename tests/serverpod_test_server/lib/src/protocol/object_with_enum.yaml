@@ -5,3 +5,4 @@ fields:
   nullableEnum: protocol:TestEnum?
   enumList: List<protocol:TestEnum>
   nullableEnumList: List<protocol:TestEnum?>
+  enumListList: List<List<protocol:TestEnum>>
