@@ -37,8 +37,9 @@ import 'package:serverpod_test_server/src/generated/object_with_object.dart'
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i28;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i29;
-import 'package:serverpod_test_module_server/module.dart' as _i30;
-import 'package:serverpod_auth_server/module.dart' as _i31;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i30;
+import 'package:serverpod_test_module_server/module.dart' as _i31;
+import 'package:serverpod_auth_server/module.dart' as _i32;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -1810,6 +1811,25 @@ class Endpoints extends _i1.EndpointDispatch {
             params['map'],
           ),
         ),
+        'returnEnumIntMap': _i1.MethodConnector(
+          name: 'returnEnumIntMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<_i30.TestEnum, int>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i15.MapParametersEndpoint)
+                  .returnEnumIntMap(
+            session,
+            params['map'],
+          ),
+        ),
         'returnDoubleMap': _i1.MethodConnector(
           name: 'returnDoubleMap',
           params: {
@@ -2098,7 +2118,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i30.ModuleClass>(),
+              type: _i1.getType<_i31.ModuleClass>(),
               nullable: false,
             )
           },
@@ -2438,8 +2458,8 @@ class Endpoints extends _i1.EndpointDispatch {
       endpoint: endpoints['streamingLogging']!,
       methodConnectors: {},
     );
-    modules['serverpod_test_module'] = _i30.Endpoints()
+    modules['serverpod_test_module'] = _i31.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i31.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i32.Endpoints()..initializeEndpoints(server);
   }
 }

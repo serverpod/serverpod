@@ -97,6 +97,7 @@ mapParameters:
   - returnIntMapNullableInts:
   - returnNullableIntMapNullableInts:
   - returnIntIntMap:
+  - returnEnumIntMap:
   - returnDoubleMap:
   - returnDoubleMapNullableDoubles:
   - returnBoolMap:

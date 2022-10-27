@@ -42,6 +42,13 @@ class MapParametersEndpoint extends Endpoint {
     return map;
   }
 
+  Future<Map<TestEnum, int>> returnEnumIntMap(
+    Session session,
+    Map<TestEnum, int> map,
+  ) async {
+    return map;
+  }
+
   Future<Map<String, double>> returnDoubleMap(
     Session session,
     Map<String, double> map,

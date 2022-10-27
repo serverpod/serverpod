@@ -19,9 +19,10 @@ import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
 import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i9;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i10;
-import 'package:serverpod_test_module_client/module.dart' as _i11;
-import 'dart:io' as _i12;
-import 'protocol.dart' as _i13;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i11;
+import 'package:serverpod_test_module_client/module.dart' as _i12;
+import 'dart:io' as _i13;
+import 'protocol.dart' as _i14;
 
 class _EndpointAsyncTasks extends _i1.EndpointRef {
   _EndpointAsyncTasks(_i1.EndpointCaller caller) : super(caller);
@@ -772,6 +773,14 @@ class _EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
+  _i2.Future<Map<_i11.TestEnum, int>> returnEnumIntMap(
+          Map<_i11.TestEnum, int> map) =>
+      caller.callServerEndpoint<Map<_i11.TestEnum, int>>(
+        'mapParameters',
+        'returnEnumIntMap',
+        {'map': map},
+      );
+
   _i2.Future<Map<String, double>> returnDoubleMap(Map<String, double> map) =>
       caller.callServerEndpoint<Map<String, double>>(
         'mapParameters',
@@ -896,8 +905,8 @@ class _EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i11.ModuleClass> modifyModuleObject(_i11.ModuleClass object) =>
-      caller.callServerEndpoint<_i11.ModuleClass>(
+  _i2.Future<_i12.ModuleClass> modifyModuleObject(_i12.ModuleClass object) =>
+      caller.callServerEndpoint<_i12.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
@@ -1100,11 +1109,11 @@ class _EndpointStreamingLogging extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    module = _i11.Caller(client);
+    module = _i12.Caller(client);
     auth = _i3.Caller(client);
   }
 
-  late final _i11.Caller module;
+  late final _i12.Caller module;
 
   late final _i3.Caller auth;
 }
@@ -1112,12 +1121,12 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i12.SecurityContext? context,
+    _i13.SecurityContext? context,
     _i1.ServerpodClientErrorCallback? errorHandler,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i13.Protocol(),
+          _i14.Protocol(),
           context: context,
           errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
