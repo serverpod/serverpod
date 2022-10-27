@@ -519,10 +519,10 @@ class MessageCentralAccess {
   }
 
   /// Removes a listener from a named channel.
-  void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
+  void removeListener<T extends SerializableEntity>(
+      String channelName, MessageCentralListenerCallback<T> listener) {
     _session.server.messageCentral
-        .removeListener(_session, channelName, listener);
+        .removeListener<T>(_session, channelName, listener);
   }
 
   /// Posts a [message] to a named channel. If local is set to true, the message

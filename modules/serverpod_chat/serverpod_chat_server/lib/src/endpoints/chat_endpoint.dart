@@ -84,7 +84,7 @@ class ChatEndpoint extends Endpoint {
       }
 
       // Setup a listener that passes on messages from the subscribed channel
-      void messageListener(SerializableEntity message) {
+      void messageListener(ChatMessage message) {
         sendStreamMessage(session, message);
       }
 
@@ -346,7 +346,8 @@ class ChatEndpoint extends Endpoint {
 }
 
 class _ChatSessionInfo {
-  final messageListeners = <String, MessageCentralListenerCallback>{};
+  final messageListeners =
+      <String, MessageCentralListenerCallback<ChatMessage>>{};
   UserInfo? userInfo;
 
   _ChatSessionInfo({

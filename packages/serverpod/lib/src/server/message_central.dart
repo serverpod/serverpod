@@ -120,8 +120,8 @@ class MessageCentral {
   }
 
   /// Removes a listener from a named channel.
-  void removeListener(Session session, String channelName,
-      MessageCentralListenerCallback listener) {
+  void removeListener<T extends SerializableEntity>(Session session,
+      String channelName, MessageCentralListenerCallback<T> listener) {
     var channel = _channels[channelName];
     if (channel != null) {
       channel.callbacks.removeWhere(
