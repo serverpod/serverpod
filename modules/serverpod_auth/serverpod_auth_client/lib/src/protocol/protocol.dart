@@ -49,7 +49,7 @@ class Protocol extends _i1.SerializationManager {
   ]) {
     t ??= T;
     if (customConstructors.containsKey(t)) {
-      return customConstructors[t] as T;
+      return customConstructors[t]!(data, this) as T;
     }
     if (t == _i2.AppleAuthInfo) {
       return _i2.AppleAuthInfo.fromJson(data, this) as T;

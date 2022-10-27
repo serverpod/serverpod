@@ -77,7 +77,7 @@ class Protocol extends _i1.SerializationManagerServer {
   ]) {
     t ??= T;
     if (customConstructors.containsKey(t)) {
-      return customConstructors[t] as T;
+      return customConstructors[t]!(data, this) as T;
     }
     if (t == _i2.AuthKey) {
       return _i2.AuthKey.fromJson(data, this) as T;
