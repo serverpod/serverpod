@@ -464,6 +464,11 @@ class Protocol extends _i1.SerializationManager {
           deserializeJson<_i14.TestEnum>(e['k']),
           deserializeJson<int>(e['v'])))) as dynamic;
     }
+    if (t == Map<String, _i14.TestEnum>) {
+      return (data as Map).map((k, v) => MapEntry(
+              deserializeJson<String>(k), deserializeJson<_i14.TestEnum>(v)))
+          as dynamic;
+    }
     if (t == Map<String, double>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserializeJson<String>(k), deserializeJson<double>(v)))

@@ -781,6 +781,14 @@ class _EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
+  _i2.Future<Map<String, _i11.TestEnum>> returnEnumMap(
+          Map<String, _i11.TestEnum> map) =>
+      caller.callServerEndpoint<Map<String, _i11.TestEnum>>(
+        'mapParameters',
+        'returnEnumMap',
+        {'map': map},
+      );
+
   _i2.Future<Map<String, double>> returnDoubleMap(Map<String, double> map) =>
       caller.callServerEndpoint<Map<String, double>>(
         'mapParameters',

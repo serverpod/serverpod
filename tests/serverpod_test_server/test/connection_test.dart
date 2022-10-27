@@ -435,6 +435,18 @@ void main() {
       expect(result[TestEnum.three], equals(3));
     });
 
+    test('Map<String, TestEnum> parameter and return type', () async {
+      var result = await client.mapParameters.returnEnumMap({
+        'one': TestEnum.one,
+        'two': TestEnum.two,
+        'three': TestEnum.three,
+      });
+      expect(result.length, equals(3));
+      expect(result['one'], equals(TestEnum.one));
+      expect(result['two'], equals(TestEnum.two));
+      expect(result['three'], equals(TestEnum.three));
+    });
+
     test('Map<String, double> parameter and return type', () async {
       var result = await client.mapParameters.returnDoubleMap({
         '0': 0.0,
