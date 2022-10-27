@@ -345,6 +345,26 @@ void main() {
       expect(result['2'], equals(2));
     });
 
+    test('Map<String, Map<String, int>> parameter and return type', () async {
+      var result = await client.mapParameters.returnNestedIntMap({
+        'a': {
+          '0': 0,
+          '1': 1,
+        },
+        'b': {
+          '2': 2,
+          '3': 3,
+        },
+      });
+      expect(result.length, equals(2));
+      expect(result['a']!.length, equals(2));
+      expect(result['a']!['0'], equals(0));
+      expect(result['a']!['1'], equals(1));
+      expect(result['b']!.length, equals(2));
+      expect(result['b']!['2'], equals(2));
+      expect(result['b']!['3'], equals(3));
+    });
+
     test('Map<String, int>? parameter and return type', () async {
       var result = await client.mapParameters.returnIntMapNullable({
         '0': 0,

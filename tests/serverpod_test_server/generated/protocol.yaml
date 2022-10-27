@@ -93,6 +93,7 @@ loggingDisabled:
 mapParameters:
   - returnIntMap:
   - returnIntMapNullable:
+  - returnNestedIntMap:
   - returnIntMapNullableInts:
   - returnNullableIntMapNullableInts:
   - returnDoubleMap:

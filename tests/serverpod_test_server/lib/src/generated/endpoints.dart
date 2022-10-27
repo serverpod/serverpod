@@ -1734,6 +1734,25 @@ class Endpoints extends _i1.EndpointDispatch {
             params['map'],
           ),
         ),
+        'returnNestedIntMap': _i1.MethodConnector(
+          name: 'returnNestedIntMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, Map<String, int>>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i15.MapParametersEndpoint)
+                  .returnNestedIntMap(
+            session,
+            params['map'],
+          ),
+        ),
         'returnIntMapNullableInts': _i1.MethodConnector(
           name: 'returnIntMapNullableInts',
           params: {

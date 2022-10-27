@@ -741,6 +741,14 @@ class _EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
+  _i2.Future<Map<String, Map<String, int>>> returnNestedIntMap(
+          Map<String, Map<String, int>> map) =>
+      caller.callServerEndpoint<Map<String, Map<String, int>>>(
+        'mapParameters',
+        'returnNestedIntMap',
+        {'map': map},
+      );
+
   _i2.Future<Map<String, int?>> returnIntMapNullableInts(
           Map<String, int?> map) =>
       caller.callServerEndpoint<Map<String, int?>>(

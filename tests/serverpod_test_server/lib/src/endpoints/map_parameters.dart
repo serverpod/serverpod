@@ -16,6 +16,11 @@ class MapParametersEndpoint extends Endpoint {
     return map;
   }
 
+  Future<Map<String, Map<String, int>>> returnNestedIntMap(
+      Session session, Map<String, Map<String, int>> map) async {
+    return map;
+  }
+
   Future<Map<String, int?>> returnIntMapNullableInts(
     Session session,
     Map<String, int?> map,

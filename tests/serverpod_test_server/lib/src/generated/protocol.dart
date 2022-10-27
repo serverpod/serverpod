@@ -431,6 +431,11 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserializeJson<String>(k), deserializeJson<int>(v)))
           : null) as dynamic;
     }
+    if (t == Map<String, Map<String, int>>) {
+      return (data as Map).map((k, v) => MapEntry(
+              deserializeJson<String>(k), deserializeJson<Map<String, int>>(v)))
+          as dynamic;
+    }
     if (t == Map<String, int?>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserializeJson<String>(k), deserializeJson<int?>(v)))
