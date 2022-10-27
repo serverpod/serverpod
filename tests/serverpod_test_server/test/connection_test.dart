@@ -425,14 +425,14 @@ void main() {
 
     test('Map<TestEnum, int> parameter and return type', () async {
       var result = await client.mapParameters.returnEnumIntMap({
-        TestEnum.one: 0,
-        TestEnum.two: 1,
-        TestEnum.three: 2,
+        TestEnum.one: 1,
+        TestEnum.two: 2,
+        TestEnum.three: 3,
       });
       expect(result.length, equals(3));
-      expect(result[TestEnum.one], equals(0));
-      expect(result[TestEnum.two], equals(1));
-      expect(result[TestEnum.three], equals(2));
+      expect(result[TestEnum.one], equals(1));
+      expect(result[TestEnum.two], equals(2));
+      expect(result[TestEnum.three], equals(3));
     });
 
     test('Map<String, double> parameter and return type', () async {
