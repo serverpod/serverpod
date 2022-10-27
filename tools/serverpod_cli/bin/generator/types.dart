@@ -20,12 +20,16 @@ class TypeDefinition {
 
   final DartType? dartType;
 
+  /// True if this type references a custom class.
+  final bool customClass;
+
   const TypeDefinition({
     required this.className,
     this.generics = const [],
     required this.nullable,
     this.url,
     this.dartType,
+    this.customClass = false,
   });
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
@@ -34,6 +38,7 @@ class TypeDefinition {
     required String mixed,
     List<TypeDefinition> generics = const [],
     required bool nullable,
+    bool customClass = false,
   }) {
     var parts = mixed.split(':');
     var classname = parts.last;
@@ -42,10 +47,12 @@ class TypeDefinition {
         : 'dart:typed_data';
 
     return TypeDefinition(
-        className: classname,
-        nullable: nullable,
-        generics: generics,
-        url: url.isNotEmpty ? url : null);
+      className: classname,
+      nullable: nullable,
+      generics: generics,
+      url: url.isNotEmpty ? url : null,
+      customClass: customClass,
+    );
   }
 
   factory TypeDefinition.fromDartType(DartType type) {
@@ -92,6 +99,11 @@ class TypeDefinition {
           } else if (url == 'serverpod') {
             // serverpod: reference
             t.url = serverPodUrl(serverCode);
+          } else if (url?.startsWith('project:') ?? false) {
+            // project:path:reference
+            var split = url!.split(':');
+            t.url =
+                'package:${serverCode ? config.serverPackage : config.clientPackage}/${split[1]}';
           } else if (url == 'protocol') {
             // protocol: reference
             t.url = 'protocol.dart';
@@ -242,6 +254,19 @@ class TypeDefinition {
         ...generics.first.generateDeserialization(serverCode),
         ...generics[1].generateDeserialization(serverCode),
       ];
+    } else if (customClass) {
+      return [
+        MapEntry(
+            nullable
+                ? refer('getType', serverPodUrl(serverCode))
+                    .call([], {}, [reference(serverCode)])
+                : reference(serverCode),
+            Code.scope((a) => nullable
+                ? '(data!=null?'
+                    '${a(reference(serverCode))}.fromJson(data,this)'
+                    ':null)as T'
+                : '${a(reference(serverCode))}.fromJson(data,this) as T'))
+      ];
     } else {
       return [];
     }
@@ -254,7 +279,9 @@ class TypeDefinition {
 /// as well as the position of the last parsed character.
 /// So when calling with "List<List<String?>?>,database",
 /// the position will point at the ','.
-TypeParseResult parseAndAnalyzeType(String input) {
+/// If [analyzingCustomConstructors] is true, the root element might be marked as [TypeDefinition.customClass].
+TypeParseResult parseAndAnalyzeType(String input,
+    {bool analyzingCustomConstructors = false}) {
   String classname = '';
   for (var i = 0; i < input.length; i++) {
     switch (input[i]) {
@@ -283,19 +310,27 @@ TypeParseResult parseAndAnalyzeType(String input) {
         return TypeParseResult(
             i,
             TypeDefinition.mixedUrlAndClassName(
-                mixed: classname, nullable: false));
+                mixed: classname,
+                nullable: false,
+                customClass: analyzingCustomConstructors));
       case '?':
         return TypeParseResult(
             i + 1,
             TypeDefinition.mixedUrlAndClassName(
-                mixed: classname, nullable: true));
+                mixed: classname,
+                nullable: true,
+                customClass: analyzingCustomConstructors));
       default:
         classname += input[i];
         break;
     }
   }
-  return TypeParseResult(input.length - 1,
-      TypeDefinition.mixedUrlAndClassName(mixed: classname, nullable: false));
+  return TypeParseResult(
+      input.length - 1,
+      TypeDefinition.mixedUrlAndClassName(
+          mixed: classname,
+          nullable: false,
+          customClass: analyzingCustomConstructors));
 }
 
 class TypeParseResult {

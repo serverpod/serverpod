@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_client/src/custom_classes.dart';
 import 'package:test/test.dart';
 
 import 'config.dart';
@@ -21,7 +22,9 @@ ByteData createByteData() {
 void main() {
   var client = Client(serverUrl);
 
-  setUp(() {});
+  setUp(() {
+    Protocol().registerCustomConstructors();
+  });
 
   group('Calls', () {
     test('Named parameters basic call', () async {
@@ -631,6 +634,46 @@ void main() {
 
       result = await client.mapParameters
           .returnNullableSimpleDataMapNullableSimpleData(null);
+      expect(result, isNull);
+    });
+
+    test('CustomClass parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClass(const CustomClass('customClassText'));
+
+      expect(result, isNotNull);
+      expect(result.value, 'customClassText');
+    });
+
+    test('CustomClass? parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClassNullable(const CustomClass('customClassText'));
+
+      expect(result, isNotNull);
+      expect(result!.value, 'customClassText');
+
+      result = await client.customTypes.returnCustomClassNullable(null);
+
+      expect(result, isNull);
+    });
+
+    test('CustomClass2 parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClass2(const CustomClass2('text'));
+
+      expect(result, isNotNull);
+      expect(result.value, 'text');
+    });
+
+    test('CustomClass2? parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClass2Nullable(const CustomClass2('text'));
+
+      expect(result, isNotNull);
+      expect(result!.value, 'text');
+
+      result = await client.customTypes.returnCustomClass2Nullable(null);
+
       expect(result, isNull);
     });
   });

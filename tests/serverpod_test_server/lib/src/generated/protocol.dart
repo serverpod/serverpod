@@ -20,9 +20,10 @@ import 'protocol.dart' as _i11;
 import 'dart:typed_data' as _i12;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i13;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i14;
-import 'package:serverpod_test_module_server/module.dart' as _i15;
-import 'package:serverpod_auth_server/module.dart' as _i16;
-import 'package:serverpod/protocol.dart' as _i17;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i15;
+import 'package:serverpod_test_module_server/module.dart' as _i16;
+import 'package:serverpod_auth_server/module.dart' as _i17;
+import 'package:serverpod/protocol.dart' as _i18;
 export 'nullability.dart';
 export 'object_field_scopes.dart';
 export 'object_with_enum.dart';
@@ -49,7 +50,7 @@ class Protocol extends _i1.SerializationManagerServer {
   ]) {
     t ??= T;
     if (customConstructors.containsKey(t)) {
-      return customConstructors[t] as T;
+      return customConstructors[t]!(data, this) as T;
     }
     if (t == _i2.Nullability) {
       return _i2.Nullability.fromJson(data, this) as T;
@@ -562,14 +563,20 @@ class Protocol extends _i1.SerializationManagerServer {
               deserializeJson<String>(k), deserializeJson<_i13.SimpleData?>(v)))
           : null) as dynamic;
     }
-    try {
-      return _i15.Protocol().deserializeJson<T>(data, t);
-    } catch (_) {}
+    if (t == _i15.CustomClass) {
+      return _i15.CustomClass.fromJson(data, this) as T;
+    }
+    if (t == _i1.getType<_i15.CustomClass?>()) {
+      return (data != null ? _i15.CustomClass.fromJson(data, this) : null) as T;
+    }
     try {
       return _i16.Protocol().deserializeJson<T>(data, t);
     } catch (_) {}
     try {
       return _i17.Protocol().deserializeJson<T>(data, t);
+    } catch (_) {}
+    try {
+      return _i18.Protocol().deserializeJson<T>(data, t);
     } catch (_) {}
     return super.deserializeJson<T>(data, t);
   }
@@ -577,11 +584,11 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i15.Protocol().getClassNameForObject(data);
+    className = _i16.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
-    className = _i16.Protocol().getClassNameForObject(data);
+    className = _i17.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -619,11 +626,11 @@ class Protocol extends _i1.SerializationManagerServer {
   dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
-      return _i15.Protocol().deserializeJsonByClassName(data);
+      return _i16.Protocol().deserializeJsonByClassName(data);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i16.Protocol().deserializeJsonByClassName(data);
+      return _i17.Protocol().deserializeJsonByClassName(data);
     }
     if (data['className'] == 'Nullability') {
       return deserializeJson<_i2.Nullability>(data['data']);
@@ -658,12 +665,6 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   _i1.Table? getTableForType(Type t) {
     {
-      var table = _i15.Protocol().getTableForType(t);
-      if (table != null) {
-        return table;
-      }
-    }
-    {
       var table = _i16.Protocol().getTableForType(t);
       if (table != null) {
         return table;
@@ -671,6 +672,12 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     {
       var table = _i17.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i18.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }

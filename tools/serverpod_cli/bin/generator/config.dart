@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
+import '../serverpod_cli.dart';
 import 'types.dart';
 
 var config = GeneratorConfig();
@@ -113,13 +114,16 @@ class GeneratorConfig {
     try {
       if (generatorConfig['extraConstructors'] != null) {
         for (String name in generatorConfig['extraConstructors']) {
-          extraConstructors.add(parseAndAnalyzeType(name).type);
+          extraConstructors.add(
+              parseAndAnalyzeType(name, analyzingCustomConstructors: true)
+                  .type);
         }
       }
     } catch (e) {
       throw const FormatException(
           'Failed to load \'extraConstructors\' config');
     }
+    extraConstructors.map((e) => e.nullable);
 
     // Load extra classNames
     extraClassNames = {};

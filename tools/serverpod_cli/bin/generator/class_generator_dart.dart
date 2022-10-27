@@ -873,7 +873,7 @@ class ClassGeneratorDart extends ClassGenerator {
         ..body = Block.of([
           const Code('t ??= T;'),
           const Code(
-              'if(customConstructors.containsKey(t)){return customConstructors[t] as T;}'),
+              'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
             for (var classInfo in classInfos)
               refer(classInfo.className, '${classInfo.fileName}.dart'):

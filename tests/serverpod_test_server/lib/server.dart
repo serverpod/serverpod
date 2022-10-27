@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
+import 'package:serverpod_test_server/src/custom_classes.dart';
 import 'package:serverpod_test_server/src/web/routes/root.dart';
 
 import 'src/futureCalls/test_call.dart';
@@ -15,6 +16,12 @@ void run(List<String> args) async {
     Protocol(),
     Endpoints(),
   );
+
+  Protocol.customConstructors[CustomClass2] =
+      (data, serializationManager) => CustomClass2(data['text']);
+  Protocol.customConstructors[getType<CustomClass2?>()] =
+      (data, serializationManager) =>
+          data == null ? null : CustomClass2(data['text']);
 
   // Add future calls
   pod.registerFutureCall(TestCall(), 'testCall');
