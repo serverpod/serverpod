@@ -96,6 +96,7 @@ mapParameters:
   - returnNestedIntMap:
   - returnIntMapNullableInts:
   - returnNullableIntMapNullableInts:
+  - returnIntIntMap:
   - returnDoubleMap:
   - returnDoubleMapNullableDoubles:
   - returnBoolMap:

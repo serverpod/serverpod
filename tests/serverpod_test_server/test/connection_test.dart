@@ -411,6 +411,18 @@ void main() {
       expect(result, isNull);
     });
 
+    test('Map<int, int> parameter and return type', () async {
+      var result = await client.mapParameters.returnIntIntMap({
+        0: 0,
+        10: 1,
+        20: 2,
+      });
+      expect(result.length, equals(3));
+      expect(result[0], equals(0));
+      expect(result[10], equals(1));
+      expect(result[20], equals(2));
+    });
+
     test('Map<String, double> parameter and return type', () async {
       var result = await client.mapParameters.returnDoubleMap({
         '0': 0.0,

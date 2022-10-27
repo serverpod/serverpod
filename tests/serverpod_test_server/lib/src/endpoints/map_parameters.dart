@@ -35,6 +35,13 @@ class MapParametersEndpoint extends Endpoint {
     return map;
   }
 
+  Future<Map<int, int>> returnIntIntMap(
+    Session session,
+    Map<int, int> map,
+  ) async {
+    return map;
+  }
+
   Future<Map<String, double>> returnDoubleMap(
     Session session,
     Map<String, double> map,

@@ -765,6 +765,13 @@ class _EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
+  _i2.Future<Map<int, int>> returnIntIntMap(Map<int, int> map) =>
+      caller.callServerEndpoint<Map<int, int>>(
+        'mapParameters',
+        'returnIntIntMap',
+        {'map': map},
+      );
+
   _i2.Future<Map<String, double>> returnDoubleMap(Map<String, double> map) =>
       caller.callServerEndpoint<Map<String, double>>(
         'mapParameters',
