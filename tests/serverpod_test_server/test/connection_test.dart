@@ -639,7 +639,7 @@ void main() {
 
     test('CustomClass parameter and return type', () async {
       var result = await client.customTypes
-          .returnCustomClass(const CustomClass('customClassText'));
+          .returnCustomClass(CustomClass('customClassText'));
 
       expect(result, isNotNull);
       expect(result.value, 'customClassText');
@@ -647,7 +647,7 @@ void main() {
 
     test('CustomClass? parameter and return type', () async {
       var result = await client.customTypes
-          .returnCustomClassNullable(const CustomClass('customClassText'));
+          .returnCustomClassNullable(CustomClass('customClassText'));
 
       expect(result, isNotNull);
       expect(result!.value, 'customClassText');

@@ -592,6 +592,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (className != null) {
       return 'serverpod_auth.$className';
     }
+    if (data is _i15.CustomClass) {
+      return 'customClass';
+    }
     if (data is _i2.Nullability) {
       return 'Nullability';
     }
@@ -631,6 +634,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i17.Protocol().deserializeJsonByClassName(data);
+    }
+    if (data['className'] == 'customClass') {
+      return deserializeJson<_i15.CustomClass>(data['data']);
     }
     if (data['className'] == 'Nullability') {
       return deserializeJson<_i2.Nullability>(data['data']);

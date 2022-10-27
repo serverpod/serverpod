@@ -129,9 +129,9 @@ class GeneratorConfig {
     extraClassNames = {};
     try {
       if (generatorConfig['extraClassNames'] != null) {
-        for (MapEntry<String, String> config
-            in generatorConfig['extraClassNames']) {
-          extraClassNames[config.key] = parseAndAnalyzeType(config.value).type;
+        for (var config in generatorConfig['extraClassNames']) {
+          extraClassNames.addAll((config as YamlMap).map(
+              (key, value) => MapEntry(key, parseAndAnalyzeType(value).type)));
         }
       }
     } catch (e) {

@@ -1,11 +1,12 @@
 // ignore: depend_on_referenced_packages
 import 'package:serverpod_client/serverpod_client.dart';
 
-class CustomClass {
+class CustomClass extends SerializableEntity {
   final String value;
 
-  const CustomClass(this.value);
+  CustomClass(this.value);
 
+  @override
   String toJson() => value;
 
   static CustomClass fromJson(

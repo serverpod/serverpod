@@ -11,3 +11,6 @@ modules:
 extraConstructors:
   - project:src/custom_classes.dart:CustomClass
   - project:src/custom_classes.dart:CustomClass?
+
+extraClassNames:
+  - customClass: project:src/custom_classes.dart:CustomClass

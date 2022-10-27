@@ -37,9 +37,6 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
-  // /// Maps classNames to [Type]s.
-  // Map<String, Type> classNameTypeMapping;
-
   /// Deserialize the provided json [String] to an object of type [t] or [T].
   T deserializeJsonString<T>(String data, [Type? t]) {
     return deserializeJson<T>(jsonDecode(data), t);

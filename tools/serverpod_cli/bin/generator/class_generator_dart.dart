@@ -904,6 +904,9 @@ class ClassGeneratorDart extends ClassGenerator {
               Code(
                   'if(className != null){return \'${module.name}.\$className\';}'),
             ]),
+          for (var extraClassName in config.extraClassNames.entries)
+            Code.scope((a) =>
+                'if(data is ${a(extraClassName.value.reference(serverCode))}) {return \'${extraClassName.key}\';}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}) {return \'${classInfo.className}\';}'),
@@ -925,6 +928,10 @@ class ClassGeneratorDart extends ClassGenerator {
                   'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeJsonByClassName(data);'),
               const Code('}'),
             ]),
+          for (var extraClassName in config.extraClassNames.entries)
+            Code.scope((a) =>
+                'if(data[\'className\'] == \'${extraClassName.key}\'){'
+                'return deserializeJson<${a(extraClassName.value.reference(serverCode))}>(data[\'data\']);}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
