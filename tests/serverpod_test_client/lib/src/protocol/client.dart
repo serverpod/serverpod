@@ -522,6 +522,13 @@ class _EndpointListParameters extends _i1.EndpointRef {
         {'list': list},
       );
 
+  _i2.Future<List<List<int>>> returnIntListList(List<List<int>> list) =>
+      caller.callServerEndpoint<List<List<int>>>(
+        'listParameters',
+        'returnIntListList',
+        {'list': list},
+      );
+
   _i2.Future<List<int>?> returnIntListNullable(List<int>? list) =>
       caller.callServerEndpoint<List<int>?>(
         'listParameters',

@@ -64,6 +64,7 @@ futureCalls:
   - makeFutureCall:
 listParameters:
   - returnIntList:
+  - returnIntListList:
   - returnIntListNullable:
   - returnIntListNullableInts:
   - returnNullableIntListNullableInts:

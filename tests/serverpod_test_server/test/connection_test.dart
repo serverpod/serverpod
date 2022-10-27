@@ -76,6 +76,22 @@ void main() {
       expect(result[2], equals(2));
     });
 
+    test('List<List<int>> parameter and return type', () async {
+      var result = await client.listParameters.returnIntListList([
+        [0, 1, 2],
+        [3, 4, 5]
+      ]);
+      expect(result.length, equals(2));
+      expect(result[0].length, equals(3));
+      expect(result[0][0], equals(0));
+      expect(result[0][1], equals(1));
+      expect(result[0][2], equals(2));
+      expect(result[1].length, equals(3));
+      expect(result[1][0], equals(3));
+      expect(result[1][1], equals(4));
+      expect(result[1][2], equals(5));
+    });
+
     test('List<int>? parameter and return type', () async {
       var result = await client.listParameters.returnIntListNullable([0, 1, 2]);
       expect(result, isNotNull);
