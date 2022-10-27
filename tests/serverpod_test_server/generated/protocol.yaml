@@ -66,6 +66,8 @@ listParameters:
   - returnIntList:
   - returnIntListList:
   - returnIntListNullable:
+  - returnIntListNullableList:
+  - returnIntListListNullable:
   - returnIntListNullableInts:
   - returnNullableIntListNullableInts:
   - returnDoubleList:

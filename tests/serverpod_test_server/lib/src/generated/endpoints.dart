@@ -1258,6 +1258,44 @@ class Endpoints extends _i1.EndpointDispatch {
             params['list'],
           ),
         ),
+        'returnIntListNullableList': _i1.MethodConnector(
+          name: 'returnIntListNullableList',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<List<int>?>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i12.ListParametersEndpoint)
+                  .returnIntListNullableList(
+            session,
+            params['list'],
+          ),
+        ),
+        'returnIntListListNullable': _i1.MethodConnector(
+          name: 'returnIntListListNullable',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<List<int>>?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i12.ListParametersEndpoint)
+                  .returnIntListListNullable(
+            session,
+            params['list'],
+          ),
+        ),
         'returnIntListNullableInts': _i1.MethodConnector(
           name: 'returnIntListNullableInts',
           params: {
