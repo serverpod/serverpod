@@ -12,8 +12,6 @@ enum TestEnum with _i1.SerializableEntity {
   two,
   three;
 
-  @override
-  String get className => 'TestEnum';
   static TestEnum? fromJson(int index) {
     switch (index) {
       case 0:

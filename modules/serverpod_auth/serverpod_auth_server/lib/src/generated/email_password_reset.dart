@@ -30,8 +30,6 @@ class EmailPasswordReset extends _i1.SerializableEntity {
   String email;
 
   @override
-  String get className => 'serverpod_auth_server.EmailPasswordReset';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'userName': userName,

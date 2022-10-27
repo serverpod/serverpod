@@ -28,8 +28,6 @@ class SimpleData extends _i1.TableRow {
   int num;
 
   @override
-  String get className => 'SimpleData';
-  @override
   String get tableName => 'simple_data';
   @override
   Map<String, dynamic> toJson() {

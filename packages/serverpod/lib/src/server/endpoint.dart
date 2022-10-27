@@ -89,7 +89,7 @@ abstract class Endpoint {
     var data = {
       'endpoint': '$prefix$name',
       'object': {
-        'className': message.className,
+        'className': server.serializationManager.getClassNameForObject(message),
         'data': message,
       },
     };
@@ -97,9 +97,4 @@ abstract class Endpoint {
     var payload = SerializationManager.serializeToJson(data);
     session.webSocket.add(payload);
   }
-
-  ///
-  String? getStreamClassNameFromMessage(SerializableEntity message) {}
-
-  Type? getMessageTypeFrom(String name) {}
 }

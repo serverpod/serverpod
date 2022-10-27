@@ -46,8 +46,6 @@ class ObjectWithEnum extends _i1.TableRow {
   List<_i2.TestEnum?> nullableEnumList;
 
   @override
-  String get className => 'ObjectWithEnum';
-  @override
   String get tableName => 'object_with_enum';
   @override
   Map<String, dynamic> toJson() {

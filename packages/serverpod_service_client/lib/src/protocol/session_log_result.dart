@@ -24,8 +24,6 @@ class SessionLogResult extends _i1.SerializableEntity {
   List<_i2.SessionLogInfo> sessionLog;
 
   @override
-  String get className => 'SessionLogResult';
-  @override
   Map<String, dynamic> toJson() {
     return {'sessionLog': sessionLog};
   }

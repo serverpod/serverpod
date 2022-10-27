@@ -46,8 +46,6 @@ class RuntimeSettings extends _i1.SerializableEntity {
   bool logMalformedCalls;
 
   @override
-  String get className => 'RuntimeSettings';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

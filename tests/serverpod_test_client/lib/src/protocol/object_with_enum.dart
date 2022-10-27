@@ -46,8 +46,6 @@ class ObjectWithEnum extends _i1.SerializableEntity {
   List<_i2.TestEnum?> nullableEnumList;
 
   @override
-  String get className => 'ObjectWithEnum';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

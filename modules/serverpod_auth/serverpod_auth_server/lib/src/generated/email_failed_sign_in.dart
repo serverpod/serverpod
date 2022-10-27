@@ -39,8 +39,6 @@ class EmailFailedSignIn extends _i1.TableRow {
   String ipAddress;
 
   @override
-  String get className => 'serverpod_auth_server.EmailFailedSignIn';
-  @override
   String get tableName => 'serverpod_email_failed_sign_in';
   @override
   Map<String, dynamic> toJson() {

@@ -46,15 +46,13 @@ class Client extends _i1.ServerpodClient {
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i7.Protocol.instance,
+          _i7.Protocol(),
           context: context,
           errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
         ) {
     channels = _EndpointChannels(this);
     modules = _Modules(this);
-    registerModuleProtocol(_i4.Protocol());
-    registerModuleProtocol(_i5.Protocol());
   }
 
   late final _EndpointChannels channels;

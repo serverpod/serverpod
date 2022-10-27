@@ -22,8 +22,6 @@ class ClusterServerInfo extends _i1.SerializableEntity {
   String serverId;
 
   @override
-  String get className => 'ClusterServerInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {'serverId': serverId};
   }

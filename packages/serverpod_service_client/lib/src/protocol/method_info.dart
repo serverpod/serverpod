@@ -34,8 +34,6 @@ class MethodInfo extends _i1.SerializableEntity {
   String method;
 
   @override
-  String get className => 'MethodInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

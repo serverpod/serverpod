@@ -49,8 +49,6 @@ class ServerHealthMetric extends _i1.SerializableEntity {
   double value;
 
   @override
-  String get className => 'ServerHealthMetric';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

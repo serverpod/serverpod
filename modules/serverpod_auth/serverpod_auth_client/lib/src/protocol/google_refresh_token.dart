@@ -34,8 +34,6 @@ class GoogleRefreshToken extends _i1.SerializableEntity {
   String refreshToken;
 
   @override
-  String get className => 'serverpod_auth_server.GoogleRefreshToken';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

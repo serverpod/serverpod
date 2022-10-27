@@ -28,8 +28,6 @@ class SimpleData extends _i1.SerializableEntity {
   int num;
 
   @override
-  String get className => 'SimpleData';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

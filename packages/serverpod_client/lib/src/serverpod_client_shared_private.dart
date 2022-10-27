@@ -11,12 +11,12 @@ String formatArgs(
 }
 
 /// Deserializes data sent from the server based on the return type.
-dynamic parseData(
+T parseData<T>(
   String data,
   Type returnType,
   SerializationManager serializationManager,
 ) {
-  return serializationManager.deserializeJsonString(data, returnType);
+  return serializationManager.deserializeJsonString<T>(data, returnType);
 }
 
 /// A helper method, that just 'returns' void.

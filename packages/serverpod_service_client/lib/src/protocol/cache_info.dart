@@ -35,8 +35,6 @@ class CacheInfo extends _i1.SerializableEntity {
   List<String>? keys;
 
   @override
-  String get className => 'CacheInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'numEntries': numEntries,

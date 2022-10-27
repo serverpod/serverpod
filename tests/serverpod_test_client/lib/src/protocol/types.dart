@@ -55,8 +55,6 @@ class Types extends _i1.SerializableEntity {
   _i2.ByteData? aByteData;
 
   @override
-  String get className => 'Types';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -22,8 +22,6 @@ class ChatLeaveChannel extends _i1.SerializableEntity {
   String channel;
 
   @override
-  String get className => 'serverpod_chat_server.ChatLeaveChannel';
-  @override
   Map<String, dynamic> toJson() {
     return {'channel': channel};
   }

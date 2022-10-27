@@ -49,8 +49,6 @@ class AuthKey extends _i1.TableRow {
   String method;
 
   @override
-  String get className => 'AuthKey';
-  @override
   String get tableName => 'serverpod_auth_key';
   @override
   Map<String, dynamic> toJson() {

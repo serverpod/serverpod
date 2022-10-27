@@ -89,8 +89,6 @@ class SessionLogEntry extends _i1.TableRow {
   DateTime touched;
 
   @override
-  String get className => 'SessionLogEntry';
-  @override
   String get tableName => 'serverpod_session_log';
   @override
   Map<String, dynamic> toJson() {

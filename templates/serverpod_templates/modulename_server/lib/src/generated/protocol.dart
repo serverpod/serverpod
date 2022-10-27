@@ -8,30 +8,65 @@ library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixe
 
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'module_class.dart' as _i2;
+import 'package:serverpod/protocol.dart' as _i3;
 export 'module_class.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManagerServer {
-  static final Protocol instance = Protocol();
+  Protocol._();
+
+  factory Protocol() => _instance;
+
+  static final Map<Type, _i1.constructor> customConstructors = {};
+
+  static final Protocol _instance = Protocol._();
 
   @override
-  final Map<Type, _i1.constructor> constructors = {
-    _i2.ModuleClass:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i2.ModuleClass.fromJson(jsonSerialization, serializationManager),
-    _i1.getType<_i2.ModuleClass?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i2.ModuleClass.fromJson(jsonSerialization, serializationManager)
-            : null,
-  };
+  T deserializeJson<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+    if (customConstructors.containsKey(t)) {
+      return customConstructors[t] as T;
+    }
+    if (t == _i2.ModuleClass) {
+      return _i2.ModuleClass.fromJson(data, this) as T;
+    }
+    if (t == _i1.getType<_i2.ModuleClass?>()) {
+      return (data != null ? _i2.ModuleClass.fromJson(data, this) : null) as T;
+    }
+    try {
+      return _i3.Protocol().deserializeJson<T>(data, t);
+    } catch (_) {}
+    return super.deserializeJson<T>(data, t);
+  }
 
   @override
-  final Map<String, Type> classNameTypeMapping = {};
-
-  final Map<Type, _i1.Table> _typeTableMapping = {};
+  String? getClassNameForObject(Object data) {
+    if (data is _i2.ModuleClass) {
+      return 'ModuleClass';
+    }
+    return super.getClassNameForObject(data);
+  }
 
   @override
-  Map<Type, _i1.Table> get typeTableMapping {
-    return _typeTableMapping;
+  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'ModuleClass') {
+      return deserializeJson<_i2.ModuleClass>(data['data']);
+    }
+    return super.deserializeJsonByClassName(data);
+  }
+
+  @override
+  _i1.Table? getTableForType(Type t) {
+    {
+      var table = _i3.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    switch (t) {
+    }
+    return null;
   }
 }

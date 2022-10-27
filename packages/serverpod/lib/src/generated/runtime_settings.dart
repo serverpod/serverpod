@@ -46,8 +46,6 @@ class RuntimeSettings extends _i1.TableRow {
   bool logMalformedCalls;
 
   @override
-  String get className => 'RuntimeSettings';
-  @override
   String get tableName => 'serverpod_runtime_settings';
   @override
   Map<String, dynamic> toJson() {

@@ -30,8 +30,6 @@ class ChatJoinChannel extends _i1.SerializableEntity {
   String? userName;
 
   @override
-  String get className => 'serverpod_chat_server.ChatJoinChannel';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,

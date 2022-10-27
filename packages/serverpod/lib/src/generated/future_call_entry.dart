@@ -49,8 +49,6 @@ class FutureCallEntry extends _i1.TableRow {
   String? identifier;
 
   @override
-  String get className => 'FutureCallEntry';
-  @override
   String get tableName => 'serverpod_future_call';
   @override
   Map<String, dynamic> toJson() {

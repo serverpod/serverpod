@@ -76,7 +76,4 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {},
     );
   }
-
-  @override
-  void registerModules(_i1.Serverpod pod) {}
 }

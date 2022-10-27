@@ -57,7 +57,7 @@ void main() {
       unawaited(client.redis.listenToChannel('test').then((value) {
         retrieved = value;
       }));
-
+      await Future.delayed(const Duration(seconds: 1));
       await client.redis.postToChannel('test', data);
       var channelCount = await client.redis.countSubscribedChannels();
       expect(channelCount, equals(1));

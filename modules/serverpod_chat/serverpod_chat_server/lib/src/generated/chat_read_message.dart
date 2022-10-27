@@ -39,8 +39,6 @@ class ChatReadMessage extends _i1.TableRow {
   int lastReadMessageId;
 
   @override
-  String get className => 'serverpod_chat_server.ChatReadMessage';
-  @override
   String get tableName => 'serverpod_chat_read_message';
   @override
   Map<String, dynamic> toJson() {

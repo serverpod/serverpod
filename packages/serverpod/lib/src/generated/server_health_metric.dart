@@ -49,8 +49,6 @@ class ServerHealthMetric extends _i1.TableRow {
   double value;
 
   @override
-  String get className => 'ServerHealthMetric';
-  @override
   String get tableName => 'serverpod_health_metric';
   @override
   Map<String, dynamic> toJson() {

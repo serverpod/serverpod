@@ -34,8 +34,6 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
   String? api;
 
   @override
-  String get className => 'ObjectFieldScopes';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -58,8 +58,6 @@ class ObjectWithObject extends _i1.TableRow {
   List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
-  String get className => 'ObjectWithObject';
-  @override
   String get tableName => 'object_with_object';
   @override
   Map<String, dynamic> toJson() {

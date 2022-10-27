@@ -55,8 +55,6 @@ class CloudStorageEntry extends _i1.SerializableEntity {
   bool verified;
 
   @override
-  String get className => 'CloudStorageEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

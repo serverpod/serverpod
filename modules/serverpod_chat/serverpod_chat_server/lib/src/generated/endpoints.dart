@@ -71,12 +71,4 @@ class Endpoints extends _i1.EndpointDispatch {
     );
     modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
   }
-
-  @override
-  void registerModules(_i1.Serverpod pod) {
-    pod.registerModule(
-      _i3.Protocol(),
-      'auth',
-    );
-  }
 }

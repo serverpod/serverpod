@@ -36,8 +36,6 @@ class ChatMessageChunk extends _i1.SerializableEntity {
   bool hasOlderMessages;
 
   @override
-  String get className => 'serverpod_chat_server.ChatMessageChunk';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,

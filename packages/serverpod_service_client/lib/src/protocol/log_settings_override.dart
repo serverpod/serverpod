@@ -41,8 +41,6 @@ class LogSettingsOverride extends _i1.SerializableEntity {
   _i2.LogSettings logSettings;
 
   @override
-  String get className => 'LogSettingsOverride';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'module': module,

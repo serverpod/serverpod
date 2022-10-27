@@ -13,8 +13,6 @@ enum AuthenticationFailReason with _i1.SerializableEntity {
   internalError,
   tooManyFailedAttempts;
 
-  @override
-  String get className => 'AuthenticationFailReason';
   static AuthenticationFailReason? fromJson(int index) {
     switch (index) {
       case 0:

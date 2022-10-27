@@ -31,7 +31,7 @@ class Client extends _i1.ServerpodClient {
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i4.Protocol.instance,
+          _i4.Protocol(),
           context: context,
           errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,

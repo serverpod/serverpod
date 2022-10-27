@@ -55,8 +55,6 @@ class Types extends _i1.TableRow {
   _i2.ByteData? aByteData;
 
   @override
-  String get className => 'Types';
-  @override
   String get tableName => 'types';
   @override
   Map<String, dynamic> toJson() {

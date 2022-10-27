@@ -34,125 +34,193 @@ export 'user_settings_config.dart';
 export 'client.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManager {
-  static final Protocol instance = Protocol();
+  Protocol._();
+
+  factory Protocol() => _instance;
+
+  static final Map<Type, _i1.constructor> customConstructors = {};
+
+  static final Protocol _instance = Protocol._();
 
   @override
-  final Map<Type, _i1.constructor> constructors = {
-    _i2.AppleAuthInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i2.AppleAuthInfo.fromJson(jsonSerialization, serializationManager),
-    _i3.AuthenticationFailReason:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i3.AuthenticationFailReason.fromJson(jsonSerialization),
-    _i4.AuthenticationResponse:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i4.AuthenticationResponse.fromJson(
-                jsonSerialization, serializationManager),
-    _i5.EmailAuth:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i5.EmailAuth.fromJson(jsonSerialization, serializationManager),
-    _i6.EmailCreateAccountRequest:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i6.EmailCreateAccountRequest.fromJson(
-                jsonSerialization, serializationManager),
-    _i7.EmailFailedSignIn: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i7.EmailFailedSignIn.fromJson(jsonSerialization, serializationManager),
-    _i8.EmailPasswordReset:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i8.EmailPasswordReset.fromJson(
-                jsonSerialization, serializationManager),
-    _i9.EmailReset:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i9.EmailReset.fromJson(jsonSerialization, serializationManager),
-    _i10.GoogleRefreshToken:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i10.GoogleRefreshToken.fromJson(
-                jsonSerialization, serializationManager),
-    _i11.UserImage:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i11.UserImage.fromJson(jsonSerialization, serializationManager),
-    _i12.UserInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i12.UserInfo.fromJson(jsonSerialization, serializationManager),
-    _i13.UserSettingsConfig:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i13.UserSettingsConfig.fromJson(
-                jsonSerialization, serializationManager),
-    _i1.getType<_i2.AppleAuthInfo?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i2.AppleAuthInfo.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i3.AuthenticationFailReason?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i3.AuthenticationFailReason.fromJson(jsonSerialization)
-                : null,
-    _i1.getType<_i4.AuthenticationResponse?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i4.AuthenticationResponse.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i5.EmailAuth?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i5.EmailAuth.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i6.EmailCreateAccountRequest?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i6.EmailCreateAccountRequest.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i7.EmailFailedSignIn?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i7.EmailFailedSignIn.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i8.EmailPasswordReset?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i8.EmailPasswordReset.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i9.EmailReset?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i9.EmailReset.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i10.GoogleRefreshToken?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i10.GoogleRefreshToken.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i11.UserImage?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i11.UserImage.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i12.UserInfo?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i12.UserInfo.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i13.UserSettingsConfig?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i13.UserSettingsConfig.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    List<String>:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            (jsonSerialization as List)
-                .map((e) => serializationManager.deserializeJson<String>(e))
-                .toList(),
-  };
+  T deserializeJson<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+    if (customConstructors.containsKey(t)) {
+      return customConstructors[t] as T;
+    }
+    if (t == _i2.AppleAuthInfo) {
+      return _i2.AppleAuthInfo.fromJson(data, this) as T;
+    }
+    if (t == _i3.AuthenticationFailReason) {
+      return _i3.AuthenticationFailReason.fromJson(data) as T;
+    }
+    if (t == _i4.AuthenticationResponse) {
+      return _i4.AuthenticationResponse.fromJson(data, this) as T;
+    }
+    if (t == _i5.EmailAuth) {
+      return _i5.EmailAuth.fromJson(data, this) as T;
+    }
+    if (t == _i6.EmailCreateAccountRequest) {
+      return _i6.EmailCreateAccountRequest.fromJson(data, this) as T;
+    }
+    if (t == _i7.EmailFailedSignIn) {
+      return _i7.EmailFailedSignIn.fromJson(data, this) as T;
+    }
+    if (t == _i8.EmailPasswordReset) {
+      return _i8.EmailPasswordReset.fromJson(data, this) as T;
+    }
+    if (t == _i9.EmailReset) {
+      return _i9.EmailReset.fromJson(data, this) as T;
+    }
+    if (t == _i10.GoogleRefreshToken) {
+      return _i10.GoogleRefreshToken.fromJson(data, this) as T;
+    }
+    if (t == _i11.UserImage) {
+      return _i11.UserImage.fromJson(data, this) as T;
+    }
+    if (t == _i12.UserInfo) {
+      return _i12.UserInfo.fromJson(data, this) as T;
+    }
+    if (t == _i13.UserSettingsConfig) {
+      return _i13.UserSettingsConfig.fromJson(data, this) as T;
+    }
+    if (t == _i1.getType<_i2.AppleAuthInfo?>()) {
+      return (data != null ? _i2.AppleAuthInfo.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i3.AuthenticationFailReason?>()) {
+      return (data != null ? _i3.AuthenticationFailReason.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i4.AuthenticationResponse?>()) {
+      return (data != null
+          ? _i4.AuthenticationResponse.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i5.EmailAuth?>()) {
+      return (data != null ? _i5.EmailAuth.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i6.EmailCreateAccountRequest?>()) {
+      return (data != null
+          ? _i6.EmailCreateAccountRequest.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i7.EmailFailedSignIn?>()) {
+      return (data != null ? _i7.EmailFailedSignIn.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i8.EmailPasswordReset?>()) {
+      return (data != null ? _i8.EmailPasswordReset.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i9.EmailReset?>()) {
+      return (data != null ? _i9.EmailReset.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i10.GoogleRefreshToken?>()) {
+      return (data != null
+          ? _i10.GoogleRefreshToken.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i11.UserImage?>()) {
+      return (data != null ? _i11.UserImage.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i12.UserInfo?>()) {
+      return (data != null ? _i12.UserInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i13.UserSettingsConfig?>()) {
+      return (data != null
+          ? _i13.UserSettingsConfig.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserializeJson<String>(e)).toList()
+          as dynamic;
+    }
+    return super.deserializeJson<T>(data, t);
+  }
 
   @override
-  final Map<String, Type> classNameTypeMapping = {};
+  String? getClassNameForObject(Object data) {
+    if (data is _i2.AppleAuthInfo) {
+      return 'AppleAuthInfo';
+    }
+    if (data is _i3.AuthenticationFailReason) {
+      return 'AuthenticationFailReason';
+    }
+    if (data is _i4.AuthenticationResponse) {
+      return 'AuthenticationResponse';
+    }
+    if (data is _i5.EmailAuth) {
+      return 'EmailAuth';
+    }
+    if (data is _i6.EmailCreateAccountRequest) {
+      return 'EmailCreateAccountRequest';
+    }
+    if (data is _i7.EmailFailedSignIn) {
+      return 'EmailFailedSignIn';
+    }
+    if (data is _i8.EmailPasswordReset) {
+      return 'EmailPasswordReset';
+    }
+    if (data is _i9.EmailReset) {
+      return 'EmailReset';
+    }
+    if (data is _i10.GoogleRefreshToken) {
+      return 'GoogleRefreshToken';
+    }
+    if (data is _i11.UserImage) {
+      return 'UserImage';
+    }
+    if (data is _i12.UserInfo) {
+      return 'UserInfo';
+    }
+    if (data is _i13.UserSettingsConfig) {
+      return 'UserSettingsConfig';
+    }
+    return super.getClassNameForObject(data);
+  }
+
+  @override
+  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'AppleAuthInfo') {
+      return deserializeJson<_i2.AppleAuthInfo>(data['data']);
+    }
+    if (data['className'] == 'AuthenticationFailReason') {
+      return deserializeJson<_i3.AuthenticationFailReason>(data['data']);
+    }
+    if (data['className'] == 'AuthenticationResponse') {
+      return deserializeJson<_i4.AuthenticationResponse>(data['data']);
+    }
+    if (data['className'] == 'EmailAuth') {
+      return deserializeJson<_i5.EmailAuth>(data['data']);
+    }
+    if (data['className'] == 'EmailCreateAccountRequest') {
+      return deserializeJson<_i6.EmailCreateAccountRequest>(data['data']);
+    }
+    if (data['className'] == 'EmailFailedSignIn') {
+      return deserializeJson<_i7.EmailFailedSignIn>(data['data']);
+    }
+    if (data['className'] == 'EmailPasswordReset') {
+      return deserializeJson<_i8.EmailPasswordReset>(data['data']);
+    }
+    if (data['className'] == 'EmailReset') {
+      return deserializeJson<_i9.EmailReset>(data['data']);
+    }
+    if (data['className'] == 'GoogleRefreshToken') {
+      return deserializeJson<_i10.GoogleRefreshToken>(data['data']);
+    }
+    if (data['className'] == 'UserImage') {
+      return deserializeJson<_i11.UserImage>(data['data']);
+    }
+    if (data['className'] == 'UserInfo') {
+      return deserializeJson<_i12.UserInfo>(data['data']);
+    }
+    if (data['className'] == 'UserSettingsConfig') {
+      return deserializeJson<_i13.UserSettingsConfig>(data['data']);
+    }
+    return super.deserializeJsonByClassName(data);
+  }
 }

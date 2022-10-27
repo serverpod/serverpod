@@ -30,8 +30,6 @@ class Example extends _i1.SerializableEntity {
   int data;
 
   @override
-  String get className => 'Example';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,

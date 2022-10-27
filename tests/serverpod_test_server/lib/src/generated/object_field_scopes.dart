@@ -39,8 +39,6 @@ class ObjectFieldScopes extends _i1.TableRow {
   String? database;
 
   @override
-  String get className => 'ObjectFieldScopes';
-  @override
   String get tableName => 'object_field_scopes';
   @override
   Map<String, dynamic> toJson() {

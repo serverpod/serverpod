@@ -47,8 +47,6 @@ class AuthenticationResponse extends _i1.SerializableEntity {
   _i2.AuthenticationFailReason? failReason;
 
   @override
-  String get className => 'serverpod_auth_server.AuthenticationResponse';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'success': success,

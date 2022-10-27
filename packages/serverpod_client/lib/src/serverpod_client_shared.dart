@@ -141,12 +141,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must include protocol, eg: https://example.com/');
   }
 
-  /// Registers a module with the client. This is typically done from
-  /// generated code.
-  void registerModuleProtocol(SerializationManager protocol) {
-    serializationManager.merge(protocol);
-  }
-
   /// Handles a message received from the WebSocket stream. Typically, this
   /// method shouldn't be called directly.
   void _handleRawWebSocketMessage(String message) {
@@ -188,7 +182,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     var data = {
       'endpoint': endpoint,
       'object': {
-        'className': message.className,
+        'className': serializationManager.getClassNameForObject(message),
         'data': message,
       },
     };

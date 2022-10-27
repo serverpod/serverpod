@@ -39,8 +39,6 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
   String ipAddress;
 
   @override
-  String get className => 'serverpod_auth_server.EmailFailedSignIn';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

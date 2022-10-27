@@ -132,8 +132,7 @@ class SessionManager with ChangeNotifier {
     var json = await _storage.getString('${_prefsKey}_${keyManager.runMode}');
     if (json == null) return;
 
-    _signedInUser =
-        Protocol.instance.deserializeJson<UserInfo>(jsonDecode(json));
+    _signedInUser = Protocol().deserializeJson<UserInfo>(jsonDecode(json));
 
     notifyListeners();
   }

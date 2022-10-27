@@ -172,25 +172,7 @@ abstract class ProtocolGenerator {
                     .cascade('initializeEndpoints')
                     .call([refer('server')]))
                 .statement,
-        ])))
-      ..methods.add(Method.returnsVoid(
-        (m) => m
-          ..name = 'registerModules'
-          ..annotations.add(refer('override'))
-          ..requiredParameters.add(Parameter(
-            (p) => p
-              ..name = 'pod'
-              ..type = refer('Serverpod', serverPodUrl(true)),
-          ))
-          ..body = Block.of([
-            for (var module in config.modules)
-              refer('pod').property('registerModule').call([
-                refer('Protocol', 'package:${module.serverPackage}/module.dart')
-                    .call([]),
-                literalString(module.nickname),
-              ]).statement,
-          ]),
-      ))));
+        ])))));
 
     return library.build();
   }

@@ -44,8 +44,6 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
   String authKey;
 
   @override
-  String get className => 'CloudStorageDirectUploadEntry';
-  @override
   String get tableName => 'serverpod_cloud_storage_direct_upload';
   @override
   Map<String, dynamic> toJson() {

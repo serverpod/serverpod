@@ -157,8 +157,7 @@ class TypeDefinition {
   }
 
   /// Generates the constructors for List and Map types
-  List<MapEntry<Expression, Code>> generateListSetMapConstructors(
-      bool serverCode) {
+  List<MapEntry<Expression, Code>> generateDeserialization(bool serverCode) {
     if ((className == 'List' || className == 'Set') && generics.length == 1) {
       return [
         MapEntry(
@@ -167,29 +166,26 @@ class TypeDefinition {
                   .call([], {}, [reference(serverCode)])
               : reference(serverCode),
           Block.of([
-            Code.scope((a) =>
-                '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
-                ' serializationManager)=>'),
             nullable
                 ? Block.of([
                     // using Code.scope only sets the generic to List
-                    const Code('jsonSerialization!=null?'
-                        '(jsonSerialization as List).map((e) =>'
-                        'serializationManager.deserializeJson<'),
+                    const Code('(data!=null?'
+                        '(data as List).map((e) =>'
+                        'deserializeJson<'),
                     generics.first.reference(serverCode).code,
                     Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                        ':null')
+                        ':null) as dynamic')
                   ])
                 : Block.of([
-                    const Code('(jsonSerialization as List).map((e) =>'
-                        'serializationManager.deserializeJson<'),
+                    const Code('(data as List).map((e) =>'
+                        'deserializeJson<'),
                     generics.first.reference(serverCode).code,
                     Code(
-                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'),
+                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as dynamic'),
                   ])
           ]),
         ),
-        ...generics.first.generateListSetMapConstructors(serverCode),
+        ...generics.first.generateDeserialization(serverCode),
       ];
     } else if (className == 'Map' && generics.length == 2) {
       return [
@@ -199,63 +195,112 @@ class TypeDefinition {
                   .call([], {}, [reference(serverCode)])
               : reference(serverCode),
           Block.of([
-            Code.scope((a) =>
-                '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
-                ' serializationManager)=>'),
             generics.first.className == 'String'
                 ? nullable
                     ? Block.of([
                         // using Code.scope only sets the generic to List
-                        const Code('jsonSerialization!=null?'
-                            '(jsonSerialization as Map).map((k,v) =>'
-                            'MapEntry(serializationManager.deserializeJson<'),
+                        const Code('(data!=null?'
+                            '(data as Map).map((k,v) =>'
+                            'MapEntry(deserializeJson<'),
                         generics.first.reference(serverCode).code,
-                        const Code(
-                            '>(k),serializationManager.deserializeJson<'),
+                        const Code('>(k),deserializeJson<'),
                         generics[1].reference(serverCode).code,
-                        const Code('>(v)))' ':null')
+                        const Code('>(v)))' ':null) as dynamic')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
-                        const Code('(jsonSerialization as Map).map((k,v) =>'
-                            'MapEntry(serializationManager.deserializeJson<'),
+                        const Code('(data as Map).map((k,v) =>'
+                            'MapEntry(deserializeJson<'),
                         generics.first.reference(serverCode).code,
-                        const Code(
-                            '>(k),serializationManager.deserializeJson<'),
+                        const Code('>(k),deserializeJson<'),
                         generics[1].reference(serverCode).code,
-                        const Code('>(v)))')
+                        const Code('>(v))) as dynamic')
                       ])
                 : // Key is not String -> stored as list of map entries
                 nullable
                     ? Block.of([
                         // using Code.scope only sets the generic to List
-                        const Code('jsonSerialization!=null?'
-                            'Map.fromEntries((jsonSerialization as List).map((e) =>'
-                            'MapEntry(serializationManager.deserializeJson<'),
+                        const Code('(data!=null?'
+                            'Map.fromEntries((data as List).map((e) =>'
+                            'MapEntry(deserializeJson<'),
                         generics.first.reference(serverCode).code,
-                        const Code(
-                            '>(e[\'k\']),serializationManager.deserializeJson<'),
+                        const Code('>(e[\'k\']),deserializeJson<'),
                         generics[1].reference(serverCode).code,
-                        const Code('>(e[\'v\']))))' ':null')
+                        const Code('>(e[\'v\']))))' ':null) as dynamic')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
-                        const Code(
-                            'Map.fromEntries((jsonSerialization as List).map((e) =>'
-                            'MapEntry(serializationManager.deserializeJson<'),
+                        const Code('Map.fromEntries((data as List).map((e) =>'
+                            'MapEntry(deserializeJson<'),
                         generics.first.reference(serverCode).code,
-                        const Code(
-                            '>(e[\'k\']),serializationManager.deserializeJson<'),
+                        const Code('>(e[\'k\']),deserializeJson<'),
                         generics[1].reference(serverCode).code,
-                        const Code('>(e[\'v\']))))')
+                        const Code('>(e[\'v\'])))) as dynamic')
                       ])
           ]),
         ),
-        ...generics.first.generateListSetMapConstructors(serverCode),
-        ...generics[1].generateListSetMapConstructors(serverCode),
+        ...generics.first.generateDeserialization(serverCode),
+        ...generics[1].generateDeserialization(serverCode),
       ];
     } else {
       return [];
     }
   }
+}
+
+/// Analyze the type at the start of [input].
+/// [input] must not contain spaces.
+/// Returns a [_TypeResult] containing the type,
+/// as well as the position of the last parsed character.
+/// So when calling with "List<List<String?>?>,database",
+/// the position will point at the ','.
+TypeParseResult parseAndAnalyzeType(String input) {
+  String classname = '';
+  for (var i = 0; i < input.length; i++) {
+    switch (input[i]) {
+      case '<':
+        var generics = <TypeDefinition>[];
+        while (true) {
+          i++;
+          var result = parseAndAnalyzeType(input.substring(i));
+          generics.add(result.type);
+          i += result.parsedPosition;
+          if (input[i] == '>') {
+            var nullable = (i + 1 < input.length) && input[i + 1] == '?';
+            return TypeParseResult(
+                i + 1,
+                TypeDefinition.mixedUrlAndClassName(
+                  mixed: classname,
+                  nullable: nullable,
+                  generics: generics,
+                ));
+          } else if (i >= input.length - 1) {
+            throw 'INVALID TYPE';
+          }
+        }
+      case '>':
+      case ',':
+        return TypeParseResult(
+            i,
+            TypeDefinition.mixedUrlAndClassName(
+                mixed: classname, nullable: false));
+      case '?':
+        return TypeParseResult(
+            i + 1,
+            TypeDefinition.mixedUrlAndClassName(
+                mixed: classname, nullable: true));
+      default:
+        classname += input[i];
+        break;
+    }
+  }
+  return TypeParseResult(input.length - 1,
+      TypeDefinition.mixedUrlAndClassName(mixed: classname, nullable: false));
+}
+
+class TypeParseResult {
+  final int parsedPosition;
+  final TypeDefinition type;
+
+  const TypeParseResult(this.parsedPosition, this.type);
 }

@@ -49,8 +49,6 @@ class AuthKey extends _i1.SerializableEntity {
   String method;
 
   @override
-  String get className => 'AuthKey';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

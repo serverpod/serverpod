@@ -14,8 +14,6 @@ enum LogLevel with _i1.SerializableEntity {
   error,
   fatal;
 
-  @override
-  String get className => 'LogLevel';
   static LogLevel? fromJson(int index) {
     switch (index) {
       case 0:

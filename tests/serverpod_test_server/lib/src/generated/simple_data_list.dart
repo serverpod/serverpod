@@ -23,8 +23,6 @@ class SimpleDataList extends _i1.SerializableEntity {
   List<_i2.SimpleData> rows;
 
   @override
-  String get className => 'SimpleDataList';
-  @override
   Map<String, dynamic> toJson() {
     return {'rows': rows};
   }

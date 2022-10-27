@@ -58,8 +58,6 @@ class ObjectWithObject extends _i1.SerializableEntity {
   List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
-  String get className => 'ObjectWithObject';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

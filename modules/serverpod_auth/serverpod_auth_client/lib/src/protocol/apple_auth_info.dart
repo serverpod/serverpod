@@ -50,8 +50,6 @@ class AppleAuthInfo extends _i1.SerializableEntity {
   String authorizationCode;
 
   @override
-  String get className => 'serverpod_auth_server.AppleAuthInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'userIdentifier': userIdentifier,

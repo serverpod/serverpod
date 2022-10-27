@@ -44,8 +44,6 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   String authKey;
 
   @override
-  String get className => 'CloudStorageDirectUploadEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

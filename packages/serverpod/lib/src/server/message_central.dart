@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Support for server clusters.
@@ -48,6 +46,7 @@ class MessageCentral {
       // Handle internally in this server instance
       var channel = _channels[channelName];
       if (channel == null) return;
+
       //TODO: Decide if we want to throw or return here...
       if (message.runtimeType != channel.messageType) return;
 
@@ -112,9 +111,8 @@ class MessageCentral {
     var channel = _channels[channelName];
     if (channel == null) return;
 
-    var serialization = jsonDecode(message);
     var messageObj = Serverpod.instance!.serializationManager
-        .deserializeJson(serialization, channel.messageType);
+        .deserializeJsonString(message, channel.messageType);
     if (messageObj == null) {
       return;
     }
@@ -154,7 +152,9 @@ class MessageCentral {
     if (channelNames == null) return;
 
     for (var channelName in channelNames) {
-      for (var sessionBoundCallback in _channels[channelName]?.callbacks ??
+      var sessionBoundCallbacks = _channels[channelName]?.callbacks.toSet();
+
+      for (var sessionBoundCallback in sessionBoundCallbacks ??
           <_SessionBoundMessageCentralListenerCallback>{}) {
         _removeListener(session, channelName, sessionBoundCallback._callback);
       }
@@ -166,7 +166,8 @@ class MessageCentral {
   void _removeListener(
     Session session,
     String channelName,
-    MessageCentralListenerCallback listener,
+    // An explicit type can't be used here
+    dynamic listener,
   ) {
     var channel = _channels[channelName];
     if (channel != null) {

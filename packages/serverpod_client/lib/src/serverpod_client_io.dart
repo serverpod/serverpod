@@ -88,7 +88,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       if (T == getType<void>()) {
         return returnVoid() as T;
       } else {
-        return parseData(data, T, serializationManager);
+        return parseData<T>(data, T, serializationManager);
       }
     } catch (e, stackTrace) {
       if (logFailedCalls) {

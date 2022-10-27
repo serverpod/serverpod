@@ -28,10 +28,6 @@ abstract class SerializableEntity {
   String toString() {
     return SerializationManager.serializeToJson(this);
   }
-
-  /// The unique className, used to wrap the serialization when sending
-  /// through stream endpoint.
-  String get className;
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.
@@ -41,40 +37,8 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
-  /// Adds the "dart native" types to the constructors.
-  SerializationManager() {
-    _appendConstructors({
-      //TODO: all the "dart native" types should be listed here
-      int: (jsonSerialization, serializationManager) => jsonSerialization,
-      getType<int?>(): (jsonSerialization, serializationManager) =>
-          jsonSerialization,
-      double: (jsonSerialization, serializationManager) => jsonSerialization,
-      getType<double?>(): (jsonSerialization, serializationManager) =>
-          jsonSerialization,
-      String: (jsonSerialization, serializationManager) => jsonSerialization,
-      getType<String?>(): (jsonSerialization, serializationManager) =>
-          jsonSerialization,
-      bool: (jsonSerialization, serializationManager) => jsonSerialization,
-      getType<bool?>(): (jsonSerialization, serializationManager) =>
-          jsonSerialization,
-      //TODO: decide if default should be utc or local
-      DateTime: (jsonSerialization, _) =>
-          DateTime.parse(jsonSerialization).toUtc(),
-      //TODO: decide if default should be utc or local
-      getType<DateTime?>(): (jsonSerialization, _) =>
-          DateTime.tryParse(jsonSerialization ?? '')?.toUtc(),
-      ByteData: (jsonSerialization, _) =>
-          (jsonSerialization as String).base64DecodedByteData()!,
-      getType<ByteData?>(): (jsonSerialization, _) =>
-          (jsonSerialization as String?)?.base64DecodedByteData(),
-    });
-  }
-
-  /// Maps types of classes with constructors.
-  Map<Type, constructor> get constructors;
-
-  /// Maps classNames to [Type]s.
-  Map<String, Type> get classNameTypeMapping;
+  // /// Maps classNames to [Type]s.
+  // Map<String, Type> classNameTypeMapping;
 
   /// Deserialize the provided json [String] to an object of type [t] or [T].
   T deserializeJsonString<T>(String data, [Type? t]) {
@@ -83,14 +47,68 @@ abstract class SerializationManager {
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserializeJson<T>(dynamic data, [Type? t]) {
+    t ??= T;
+
+    //TODO: all the "dart native" types should be listed here
+    if (t == int || t == getType<int?>()) {
+      return data;
+    } else if (t == double || t == getType<double?>()) {
+      return data;
+    } else if (t == String || t == getType<String?>()) {
+      return data;
+    } else if (t == bool || t == getType<bool?>()) {
+      return data;
+    } else if (t == DateTime) {
+      //TODO: decide if DateTime should be deserialized to utc on the server side
+      return DateTime.parse(data).toLocal() as T;
+    } else if (t == getType<DateTime?>()) {
+      //TODO: decide if DateTime should be deserialized to utc on the server side
+      return DateTime.tryParse(data ?? '')?.toLocal() as T;
+    } else if (t == ByteData) {
+      return (data as String).base64DecodedByteData()! as T;
+    } else if (t == getType<ByteData?>()) {
+      return (data as String?)?.base64DecodedByteData() as T;
+    }
+
     //TODO: handle missing constructor
-    return constructors[t ?? T]?.call(data, this);
+    throw 'Unknown Type $t';
+  }
+
+  /// Get the className for the provided object.
+  String? getClassNameForObject(Object data) {
+    if (data is int) {
+      return 'int';
+    } else if (data is double) {
+      return 'double';
+    } else if (data is String) {
+      return 'String';
+    } else if (data is bool) {
+      return 'bool';
+    } else if (data is DateTime) {
+      return 'DateTime';
+    } else if (data is ByteData) {
+      return 'ByteData';
+    }
+    return null;
   }
 
   /// Deserialize the provided json [data] by using the className stored in the [data].
-  SerializableEntity? deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+    switch (data['className']) {
+      case 'int':
+        return deserializeJson<int>(data['data']);
+      case 'double':
+        return deserializeJson<double>(data['data']);
+      case 'String':
+        return deserializeJson<String>(data['data']);
+      case 'bool':
+        return deserializeJson<bool>(data['data']);
+      case 'DateTime':
+        return deserializeJson<DateTime>(data['data']);
+      case 'ByteData':
+        return deserializeJson<ByteData>(data['data']);
+    }
     //TODO: handle missing type mapping
-    return deserializeJson(data['data'], classNameTypeMapping['className']);
   }
 
   /// Serialize the provided [object] to an Json [String].
@@ -202,25 +220,27 @@ abstract class SerializationManager {
   //   }
   // }
 
-  /// Merges two serialization managers into one. This is useful if the
-  /// managers are generated from different modules or packages. Typically,
-  /// only used internally by Serverpod.
-  void merge(SerializationManager other) {
-    _appendConstructors(other.constructors);
-    _appendClassNameTypeMappings(other.classNameTypeMapping);
-  }
+  // /// Merges two serialization managers into one. This is useful if the
+  // /// managers are generated from different modules or packages. Typically,
+  // /// only used internally by Serverpod.
+  // void merge(SerializationManager other, String classNamePrefix) {
+  //   _appendConstructors(other.constructors);
+  //   _appendClassNameTypeMappings(other.classNameTypeMapping, classNamePrefix);
+  // }
 
-  void _appendConstructors(Map<Type, constructor> map) {
-    for (var classType in map.keys) {
-      constructors.putIfAbsent(classType, () => map[classType]!);
-    }
-  }
+  // void _appendConstructors(Map<Type, constructor> map) {
+  //   for (var classType in map.keys) {
+  //     constructors.putIfAbsent(classType, () => map[classType]!);
+  //   }
+  // }
 
-  void _appendClassNameTypeMappings(Map<String, Type> map) {
-    for (var className in map.keys) {
-      classNameTypeMapping.putIfAbsent(className, () => map[className]!);
-    }
-  }
+  // void _appendClassNameTypeMappings(
+  //     Map<String, Type> map, String classNamePrefix) {
+  //   for (var className in map.keys) {
+  //     classNameTypeMapping.putIfAbsent(
+  //         '$classNamePrefix$className', () => map[className]!);
+  //   }
+  // }
 }
 
 extension<K, V> on Map<K, V> {

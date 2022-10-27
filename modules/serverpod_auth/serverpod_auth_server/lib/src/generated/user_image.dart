@@ -39,8 +39,6 @@ class UserImage extends _i1.TableRow {
   String url;
 
   @override
-  String get className => 'serverpod_auth_server.UserImage';
-  @override
   String get tableName => 'serverpod_user_image';
   @override
   Map<String, dynamic> toJson() {

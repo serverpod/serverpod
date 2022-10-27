@@ -23,8 +23,6 @@ class ChannelList extends _i1.SerializableEntity {
   List<_i2.Channel> channels;
 
   @override
-  String get className => 'ChannelList';
-  @override
   Map<String, dynamic> toJson() {
     return {'channels': channels};
   }

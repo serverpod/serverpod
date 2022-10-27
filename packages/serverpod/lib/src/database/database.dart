@@ -142,7 +142,7 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<int> delete<T>({
+  Future<int> delete<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {
@@ -157,7 +157,7 @@ class Database {
 
   /// Deletes all rows matching the [where] expression, returns all deleted
   /// rows.
-  Future<List<T>> deleteAndReturn<T>({
+  Future<List<T>> deleteAndReturn<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {

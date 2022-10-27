@@ -30,8 +30,6 @@ class ModuleClass extends _i1.SerializableEntity {
   int data;
 
   @override
-  String get className => 'modulename_server.ModuleClass';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,

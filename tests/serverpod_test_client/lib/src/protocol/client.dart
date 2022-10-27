@@ -1079,7 +1079,7 @@ class Client extends _i1.ServerpodClient {
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i13.Protocol.instance,
+          _i13.Protocol(),
           context: context,
           errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
@@ -1107,8 +1107,6 @@ class Client extends _i1.ServerpodClient {
     streaming = _EndpointStreaming(this);
     streamingLogging = _EndpointStreamingLogging(this);
     modules = _Modules(this);
-    registerModuleProtocol(_i11.Protocol());
-    registerModuleProtocol(_i3.Protocol());
   }
 
   late final _EndpointAsyncTasks asyncTasks;

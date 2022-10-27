@@ -48,17 +48,6 @@ class ClassGeneratorDart extends ClassGenerator {
         library.body.add(Class((classBuilder) {
           classBuilder.name = className;
 
-          // add className getter
-          classBuilder.methods.add(Method(
-            (m) => m
-              ..name = 'className'
-              ..annotations.add(refer('override'))
-              ..type = MethodType.getter
-              ..returns = refer('String')
-              ..lambda = true
-              ..body = Code('\'$classPrefix$className\''),
-          ));
-
           if (serverCode && tableName != null) {
             classBuilder.extend =
                 refer('TableRow', 'package:serverpod/serverpod.dart');
@@ -768,15 +757,6 @@ class ClassGeneratorDart extends ClassGenerator {
                 v.name = value;
               })
           ]);
-          e.methods.add(Method(
-            (m) => m
-              ..name = 'className'
-              ..annotations.add(refer('override'))
-              ..type = MethodType.getter
-              ..returns = refer('String')
-              ..lambda = true
-              ..body = literalString(enumName).code,
-          ));
 
           e.methods.add(Method((m) => m
             ..static = true
@@ -833,88 +813,33 @@ class ClassGeneratorDart extends ClassGenerator {
           ? refer('SerializationManagerServer', serverPodUrl(true))
           : refer('SerializationManager', serverPodUrl(false));
 
-    protocol.fields.add(Field(
-      (f) => f
-        ..static = true
-        ..modifier = FieldModifier.final$
-        ..type = refer('Protocol')
-        ..name = 'instance'
-        ..assignment = refer('Protocol').newInstance([]).code,
-    ));
+    protocol.constructors.addAll([
+      Constructor((c) => c..name = '_'),
+      Constructor((c) => c
+        ..factory = true
+        ..body = refer('_instance').code),
+    ]);
 
     protocol.fields.addAll([
-      Field(
-        (f) => f
-          ..annotations.add(refer('override'))
-          ..modifier = FieldModifier.final$
-          ..type = TypeReference((t) => t
-            ..symbol = 'Map'
-            ..types.addAll([
-              refer('Type'),
-              refer('constructor', serverPodUrl(serverCode)),
-            ]))
-          ..name = 'constructors'
-          ..assignment = literalMap({
-            for (var classInfo in classInfos)
-              refer(classInfo.className, '${classInfo.fileName}.dart'): Code.scope((a) =>
-                  '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
-                  ' serializationManager)=>'
-                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
-                  '.fromJson(jsonSerialization'
-                  '${classInfo is ClassDefinition ? ',serializationManager' : ''})'),
-            for (var classInfo in classInfos)
-              refer('getType', serverPodUrl(serverCode)).call([], {}, [
-                TypeReference(
-                  (b) => b
-                    ..symbol = classInfo.className
-                    ..url = '${classInfo.fileName}.dart'
-                    ..isNullable = true,
-                )
-              ]).code: Code.scope((a) =>
-                  '(jsonSerialization,${a(refer('SerializationManager', serverPodUrl(serverCode)))}'
-                  ' serializationManager)=>'
-                  'jsonSerialization!=null?'
-                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
-                  '.fromJson(jsonSerialization'
-                  '${classInfo is ClassDefinition ? ',serializationManager' : ''})'
-                  ':null'),
-          }..addEntries([
-                  for (var classInfo in classInfos)
-                    if (classInfo is ClassDefinition)
-                      for (var field in classInfo.fields)
-                        ...field.type
-                            .generateListSetMapConstructors(serverCode),
-                  for (var endPoint in protocolDefinition.endpoints)
-                    for (var method in endPoint.methods) ...[
-                      ...method.returnType
-                          .stripFuture()
-                          .generateListSetMapConstructors(serverCode),
-                      for (var parameter in method.parameters)
-                        ...parameter.type
-                            .generateListSetMapConstructors(serverCode),
-                      for (var parameter in method.parametersPositional)
-                        ...parameter.type
-                            .generateListSetMapConstructors(serverCode),
-                      for (var parameter in method.parametersNamed)
-                        ...parameter.type
-                            .generateListSetMapConstructors(serverCode),
-                    ]
-                ]))
-              .code,
-      ),
-      Field(
-        (f) => f
-          ..annotations.add(refer('override'))
-          ..modifier = FieldModifier.final$
-          ..type = TypeReference((t) => t
-            ..symbol = 'Map'
-            ..types.addAll([
-              refer('String'),
-              refer('Type'),
-            ]))
-          ..name = 'classNameTypeMapping'
-          ..assignment = literalMap({}).code,
-      ),
+      Field((f) => f
+        ..name = 'customConstructors'
+        ..static = true
+        ..type = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('Type'),
+            refer('constructor', serverPodUrl(serverCode)),
+          ]))
+        ..modifier = FieldModifier.final$
+        ..assignment = literalMap({}).code),
+
+      Field((f) => f
+        ..name = '_instance'
+        ..static = true
+        ..type = refer('Protocol')
+        ..modifier = FieldModifier.final$
+        ..assignment = const Code('Protocol._()')),
+
       // if (serverCode)
       //   Field(
       //     (f) => f
@@ -932,53 +857,204 @@ class ClassGeneratorDart extends ClassGenerator {
       //             classInfo.tableName: classInfo.className,
       //       }).code,
       //   ),
+    ]);
+    protocol.methods.addAll([
+      Method((m) => m
+        ..annotations.add(refer('override'))
+        ..name = 'deserializeJson'
+        ..returns = refer('T')
+        ..types.add(refer('T'))
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'data'
+          ..type = refer('dynamic')))
+        ..optionalParameters.add(Parameter((p) => p
+          ..name = 't'
+          ..type = refer('Type?')))
+        ..body = Block.of([
+          const Code('t ??= T;'),
+          const Code(
+              'if(customConstructors.containsKey(t)){return customConstructors[t] as T;}'),
+          ...(<Expression, Code>{
+            for (var classInfo in classInfos)
+              refer(classInfo.className, '${classInfo.fileName}.dart'):
+                  Code.scope((a) =>
+                      '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                      '.fromJson(data'
+                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
+            for (var classInfo in classInfos)
+              refer('getType', serverPodUrl(serverCode)).call([], {}, [
+                TypeReference(
+                  (b) => b
+                    ..symbol = classInfo.className
+                    ..url = '${classInfo.fileName}.dart'
+                    ..isNullable = true,
+                )
+              ]): Code.scope((a) => '(data!=null?'
+                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                  '.fromJson(data'
+                  '${classInfo is ClassDefinition ? ',this' : ''})'
+                  ':null)as T'),
+          }..addEntries([
+                  for (var classInfo in classInfos)
+                    if (classInfo is ClassDefinition)
+                      for (var field in classInfo.fields)
+                        ...field.type.generateDeserialization(serverCode),
+                  for (var endPoint in protocolDefinition.endpoints)
+                    for (var method in endPoint.methods) ...[
+                      ...method.returnType
+                          .stripFuture()
+                          .generateDeserialization(serverCode),
+                      for (var parameter in method.parameters)
+                        ...parameter.type.generateDeserialization(serverCode),
+                      for (var parameter in method.parametersPositional)
+                        ...parameter.type.generateDeserialization(serverCode),
+                      for (var parameter in method.parametersNamed)
+                        ...parameter.type.generateDeserialization(serverCode),
+                    ],
+                  for (var extraConstructor in config.extraConstructors)
+                    ...extraConstructor.generateDeserialization(serverCode)
+                ]))
+              .entries
+              .map((e) => Block.of([
+                    const Code('if(t=='),
+                    e.key.code,
+                    const Code('){return '),
+                    e.value,
+                    const Code(';}'),
+                  ])),
+          for (var module in config.modules)
+            Code.scope((a) =>
+                'try{return ${a(refer('Protocol', module.url(serverCode)))}().deserializeJson<T>(data,t);}catch(_){}'),
+          if (config.name != 'serverpod' &&
+              (serverCode || config.clientDependsOnServiceClient))
+            Code.scope((a) =>
+                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserializeJson<T>(data,t);}catch(_){}'),
+          const Code('return super.deserializeJson<T>(data,t);'),
+        ])),
+      Method((m) => m
+        ..annotations.add(refer('override'))
+        ..name = 'getClassNameForObject'
+        ..returns = refer('String?')
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'data'
+          ..type = refer('Object')))
+        ..body = Block.of([
+          if (config.modules.isNotEmpty) const Code('String? className;'),
+          for (var module in config.modules)
+            Block.of([
+              Code.scope((a) =>
+                  'className = ${a(refer('Protocol', module.url(serverCode)))}().getClassNameForObject(data);'),
+              Code(
+                  'if(className != null){return \'${module.name}.\$className\';}'),
+            ]),
+          for (var classInfo in classInfos)
+            Code.scope((a) =>
+                'if(data is ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}) {return \'${classInfo.className}\';}'),
+          const Code('return super.getClassNameForObject(data);'),
+        ])),
+      Method((m) => m
+        ..annotations.add(refer('override'))
+        ..name = 'deserializeJsonByClassName'
+        ..returns = refer('dynamic')
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'data'
+          ..type = refer('Map<String,dynamic>')))
+        ..body = Block.of([
+          for (var module in config.modules)
+            Block.of([
+              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
+                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
+              Code.scope((a) =>
+                  'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeJsonByClassName(data);'),
+              const Code('}'),
+            ]),
+          for (var classInfo in classInfos)
+            Code.scope((a) =>
+                'if(data[\'className\'] == \'${classInfo.className}\'){'
+                'return deserializeJson<${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}>(data[\'data\']);}'),
+          const Code('return super.deserializeJsonByClassName(data);'),
+        ])),
       if (serverCode)
-        Field(
-          (f) => f
-            ..name = '_typeTableMapping'
-            ..modifier = FieldModifier.final$
-            ..type = TypeReference((t) => t
-              ..symbol = 'Map'
-              ..types.addAll([
-                refer('Type'),
-                refer('Table', serverPodUrl(serverCode)),
-              ]))
-            ..assignment = literalMap({
+        Method(
+          (m) => m
+            ..name = 'getTableForType'
+            ..annotations.add(refer('override'))
+            ..returns = TypeReference((t) => t
+              ..symbol = 'Table'
+              ..url = serverPodUrl(serverCode)
+              ..isNullable = true)
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 't'
+              ..type = refer('Type')))
+            ..body = Block.of([
+              for (var module in config.modules)
+                Code.scope((a) =>
+                    '{var table = ${a(refer('Protocol', module.url(serverCode)))}().getTableForType(t);'
+                    'if(table!=null) {return table;}}'),
+              if (config.name != 'serverpod' &&
+                  (serverCode || config.clientDependsOnServiceClient))
+                Code.scope((a) =>
+                    '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
+                    'if(table!=null) {return table;}}'),
+              const Code('switch(t){'),
               for (var classInfo in classInfos)
                 if (classInfo is ClassDefinition && classInfo.tableName != null)
-                  refer(classInfo.className, '${classInfo.fileName}.dart'):
-                      refer(classInfo.className, '${classInfo.fileName}.dart')
-                          .property('t'),
-            }).code,
+                  Code.scope((a) =>
+                      'case ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}:'
+                      'return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}.t;'),
+              const Code('}return null;'),
+            ]),
         ),
     ]);
 
-    if (serverCode) {
-      protocol.methods.addAll([
-        // Method((m) => m
-        //   ..name = 'tableClassMapping'
-        //   ..type = MethodType.getter
-        //   ..annotations.add(refer('override'))
-        //   ..returns = TypeReference((t) => t
-        //     ..symbol = 'Map'
-        //     ..types.addAll([
-        //       refer('String'),
-        //       refer('String'),
-        //     ]))
-        //   ..body = refer('_tableClassMapping').returned.statement),
-        Method((m) => m
-          ..name = 'typeTableMapping'
-          ..type = MethodType.getter
-          ..annotations.add(refer('override'))
-          ..returns = TypeReference((t) => t
-            ..symbol = 'Map'
-            ..types.addAll([
-              refer('Type'),
-              refer('Table', serverPodUrl(serverCode)),
-            ]))
-          ..body = refer('_typeTableMapping').returned.statement),
-      ]);
-    }
+    // protocol.methods.add(
+    //   Method((m) => m
+    //     ..annotations.add(refer('override'))
+    //     ..returns = refer('Type')
+    //     ..name = 'getTypeFromClassName'
+    //     ..requiredParameters.add(Parameter((p) => p
+    //       ..type = refer('String')
+    //       ..name = 'className'))
+    //     ..body = Block.of([Code('var moduleName = className')])),
+    // );
+    // protocol.methods.add(
+    //   Method((m) => m
+    //     ..static = true
+    //     ..returns = refer('Type?')
+    //     //TODO: better name?
+    //     ..name = 'staticGetTypeFromClassName'
+    //     ..requiredParameters.add(Parameter((p) => p
+    //       ..type = refer('String')
+    //       ..name = 'className'))
+    //     ..body = Block.of([
+    //       const Code('switch(className){'),
+    //       for (var classInfo in classInfos)
+    //         Code.scope((a) =>
+    //             'case \'${classInfo.className}\':return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))};'),
+    //       const Code('}'),
+    //       const Code(
+    //           'var moduleName=className.contains(\'.\') ? className.split(\'.\').first : null;'),
+    //       const Code('if(moduleName != null){'),
+    //       const Code('switch(moduleName){'),
+    //       for (var module in config.modules)
+    //         Code.scope((a) =>
+    //             'case \'${module.nickname}\':return ${a(refer('Protocol', module.url(serverCode)))}.staticGetTypeFromClassName(className.substring(moduleName.length+1));'),
+    //       const Code('}'),
+    //       const Code('}'),
+    //       const Code('return null;'),
+    //     ])),
+    // );
+    // protocol.methods.add(
+    //   Method((m) => m
+    //     ..annotations.add(refer('override'))
+    //     ..returns = refer('Type?')
+    //     ..name = 'getTypeFromClassName'
+    //     ..requiredParameters.add(Parameter((p) => p
+    //       ..type = refer('String')
+    //       ..name = 'className'))
+    //     ..body = refer('staticGetTypeFromClassName')
+    //         .call([refer('className')]).statement),
+    // );
 
     library.body.add(protocol.build());
 

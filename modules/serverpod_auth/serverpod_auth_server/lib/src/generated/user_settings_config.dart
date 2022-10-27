@@ -45,8 +45,6 @@ class UserSettingsConfig extends _i1.SerializableEntity {
   bool canEditUserImage;
 
   @override
-  String get className => 'serverpod_auth_server.UserSettingsConfig';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'canSeeUserName': canSeeUserName,

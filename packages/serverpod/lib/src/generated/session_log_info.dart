@@ -42,8 +42,6 @@ class SessionLogInfo extends _i1.SerializableEntity {
   List<_i2.MessageLogEntry> messages;
 
   @override
-  String get className => 'SessionLogInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'sessionLogEntry': sessionLogEntry,

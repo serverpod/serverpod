@@ -29,8 +29,6 @@ class ReadWriteTestEntry extends _i1.TableRow {
   int number;
 
   @override
-  String get className => 'ReadWriteTestEntry';
-  @override
   String get tableName => 'serverpod_readwrite_test';
   @override
   Map<String, dynamic> toJson() {

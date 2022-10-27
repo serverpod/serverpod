@@ -204,8 +204,6 @@ class Nullability extends _i1.SerializableEntity {
   Map<String, int?>? aNullableMapWithNullableInts;
 
   @override
-  String get className => 'Nullability';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'anInt': anInt,

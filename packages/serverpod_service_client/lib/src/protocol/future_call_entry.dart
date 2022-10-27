@@ -49,8 +49,6 @@ class FutureCallEntry extends _i1.SerializableEntity {
   String? identifier;
 
   @override
-  String get className => 'FutureCallEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

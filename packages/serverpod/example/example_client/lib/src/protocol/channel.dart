@@ -34,8 +34,6 @@ class Channel extends _i1.SerializableEntity {
   String channel;
 
   @override
-  String get className => 'Channel';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

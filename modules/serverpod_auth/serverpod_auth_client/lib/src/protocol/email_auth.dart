@@ -39,8 +39,6 @@ class EmailAuth extends _i1.SerializableEntity {
   String hash;
 
   @override
-  String get className => 'serverpod_auth_server.EmailAuth';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

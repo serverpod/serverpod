@@ -54,8 +54,6 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
   int idle;
 
   @override
-  String get className => 'ServerHealthConnectionInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

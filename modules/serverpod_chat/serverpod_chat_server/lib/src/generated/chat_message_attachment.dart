@@ -50,8 +50,6 @@ class ChatMessageAttachment extends _i1.SerializableEntity {
   int? previewHeight;
 
   @override
-  String get className => 'serverpod_chat_server.ChatMessageAttachment';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'fileName': fileName,

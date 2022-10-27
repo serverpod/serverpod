@@ -33,8 +33,6 @@ class ServerHealthResult extends _i1.SerializableEntity {
   List<_i2.ServerHealthConnectionInfo> connectionInfos;
 
   @override
-  String get className => 'ServerHealthResult';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'metrics': metrics,

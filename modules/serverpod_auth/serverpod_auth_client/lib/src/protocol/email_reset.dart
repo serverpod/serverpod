@@ -39,8 +39,6 @@ class EmailReset extends _i1.SerializableEntity {
   DateTime expiration;
 
   @override
-  String get className => 'serverpod_auth_server.EmailReset';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

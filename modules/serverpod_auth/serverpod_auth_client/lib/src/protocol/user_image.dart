@@ -39,8 +39,6 @@ class UserImage extends _i1.SerializableEntity {
   String url;
 
   @override
-  String get className => 'serverpod_auth_server.UserImage';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

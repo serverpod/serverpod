@@ -55,8 +55,6 @@ class SessionLogFilter extends _i1.SerializableEntity {
   int? lastSessionLogId;
 
   @override
-  String get className => 'SessionLogFilter';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'endpoint': endpoint,

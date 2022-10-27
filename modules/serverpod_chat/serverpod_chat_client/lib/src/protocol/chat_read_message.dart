@@ -39,8 +39,6 @@ class ChatReadMessage extends _i1.SerializableEntity {
   int lastReadMessageId;
 
   @override
-  String get className => 'serverpod_chat_server.ChatReadMessage';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

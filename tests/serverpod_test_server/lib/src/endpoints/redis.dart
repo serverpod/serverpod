@@ -34,8 +34,8 @@ class RedisEndpoint extends Endpoint {
 
   Future<SimpleData?> listenToChannel(Session session, String channel) async {
     SimpleData? data;
-    session.messages.addListener(channel, (message) {
-      data = message as SimpleData?;
+    session.messages.addListener<SimpleData>(channel, (message) {
+      data = message;
     });
     await Future.delayed(const Duration(seconds: 2));
     return data;

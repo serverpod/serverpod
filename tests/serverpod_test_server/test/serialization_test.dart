@@ -50,7 +50,7 @@ void main() {
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aString, equals('42'));
       expect(unpacked.aDouble, equals(42.42));
-      expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aDateTime, equals(DateTime.utc(1976).toLocal()));
       expect(unpacked.aByteData!.lengthInBytes, equals(256));
       for (var i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
@@ -105,7 +105,7 @@ void main() {
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aBool, equals(true));
       expect(unpacked.aString, equals('foo'));
-      expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aDateTime, equals(DateTime.utc(1976).toLocal()));
       expect(unpacked.aByteData.lengthInBytes, equals(256));
       expect(unpacked.anObject.num, equals(42));
 
@@ -204,7 +204,7 @@ void main() {
       expect(unpacked.aNullableDouble, equals(42.42));
       expect(unpacked.aNullableBool, equals(true));
       expect(unpacked.aNullableString, equals('foo'));
-      expect(unpacked.aNullableDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aNullableDateTime, equals(DateTime.utc(1976).toLocal()));
       expect(unpacked.aNullableByteData!.lengthInBytes, equals(256));
       expect(unpacked.aNullableObject!.num, equals(42));
 

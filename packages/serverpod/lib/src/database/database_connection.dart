@@ -134,7 +134,7 @@ class DatabaseConnection {
     Transaction? transaction,
   }) async {
     assert(orderByList == null || orderBy == null);
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.find<MyTableClass>(where: ...);
@@ -247,7 +247,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. numRows = await session.db.count<MyTableClass>();
@@ -384,12 +384,12 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete<T>({
+  Future<int> delete<T extends TableRow>({
     required Expression where,
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
@@ -417,12 +417,12 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> deleteAndReturn<T>({
+  Future<List<T>> deleteAndReturn<T extends TableRow>({
     required Expression where,
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.deleteAndReturn<MyTableClass>(where: ...);
@@ -447,7 +447,7 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow(tableName, rawRow[tableName]));
+        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);

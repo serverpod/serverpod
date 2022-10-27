@@ -8,27 +8,29 @@ abstract class SerializationManagerServer extends SerializationManager {
   // /// Maps database table names to class names.
   // Map<String, String> get tableClassMapping;
 
+  // Map<Type, Table> get typeTableMapping;
+
   /// Maps [Type]s to subclasses of [Table].
-  Map<Type, Table> get typeTableMapping;
+  Table? getTableForType(Type t);
 
-  @override
-  void merge(SerializationManager other) {
-    super.merge(other);
-    if (other is SerializationManagerServer) {
-      // _appendTableClassMapping(other.tableClassMapping);
-      _appendTypeTableMapping(other.typeTableMapping);
-    }
-  }
-
-  // void _appendTableClassMapping(Map<String, String> map) {
-  //   for (var tableName in map.keys) {
-  //     // tableClassMapping[tableName] = map[tableName]!;
+  // // @override
+  // void merge(SerializationManager other, String classNamePrefix) {
+  //   // super.merge(other, classNamePrefix);
+  //   if (other is SerializationManagerServer) {
+  //     // _appendTableClassMapping(other.tableClassMapping);
+  //     _appendTypeTableMapping(other.typeTableMapping);
   //   }
   // }
 
-  void _appendTypeTableMapping(Map<Type, Table> map) {
-    for (var type in map.keys) {
-      typeTableMapping.putIfAbsent(type, () => map[type]!);
-    }
-  }
+  // // void _appendTableClassMapping(Map<String, String> map) {
+  // //   for (var tableName in map.keys) {
+  // //     // tableClassMapping[tableName] = map[tableName]!;
+  // //   }
+  // // }
+
+  // void _appendTypeTableMapping(Map<Type, Table> map) {
+  //   for (var type in map.keys) {
+  //     typeTableMapping.putIfAbsent(type, () => map[type]!);
+  //   }
+  // }
 }

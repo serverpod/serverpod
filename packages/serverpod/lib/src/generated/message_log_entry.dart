@@ -74,8 +74,6 @@ class MessageLogEntry extends _i1.TableRow {
   int order;
 
   @override
-  String get className => 'MessageLogEntry';
-  @override
   String get tableName => 'serverpod_message_log';
   @override
   Map<String, dynamic> toJson() {

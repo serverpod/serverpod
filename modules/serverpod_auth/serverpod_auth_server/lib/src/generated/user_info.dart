@@ -74,8 +74,6 @@ class UserInfo extends _i1.TableRow {
   DateTime? suspendedUntil;
 
   @override
-  String get className => 'serverpod_auth_server.UserInfo';
-  @override
   String get tableName => 'serverpod_user_info';
   @override
   Map<String, dynamic> toJson() {

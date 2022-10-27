@@ -17,9 +17,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     var hasModules =
         config.modules.isNotEmpty && config.type == PackageType.server;
 
-    String moduleUri(ModuleConfig module) =>
-        'package:${module.clientPackage}/module.dart';
-
     var modulePrefix =
         config.type == PackageType.server ? '' : '${config.name}.';
 
@@ -105,7 +102,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                 ..late = true
                 ..modifier = FieldModifier.final$
                 ..name = module.nickname
-                ..type = refer('Caller', moduleUri(module))),
+                ..type = refer('Caller', module.url(false))),
           ])
           ..constructors.add(
             Constructor((c) => c
@@ -115,7 +112,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
               ..body = Block.of([
                 for (var module in config.modules)
                   refer(module.nickname)
-                      .assign(refer('Caller', moduleUri(module))
+                      .assign(refer('Caller', module.url(false))
                           .call([refer('client')]))
                       .statement,
               ])),
@@ -173,7 +170,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
             ])
             ..initializers.add(refer('super').call([
               refer('host'),
-              refer('Protocol', 'protocol.dart').property('instance')
+              refer('Protocol', 'protocol.dart').call([])
             ], {
               'context': refer('context'),
               'errorHandler': refer('errorHandler'),
@@ -196,10 +193,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
             refer('modules')
                 .assign(refer('_Modules').call([refer('this')]))
                 .statement,
-          if (hasModules)
-            for (var module in config.modules)
-              refer('registerModuleProtocol').call(
-                  [refer('Protocol', moduleUri(module)).call([])]).statement
         ]);
       }))
       ..methods.addAll([

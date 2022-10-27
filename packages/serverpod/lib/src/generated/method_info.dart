@@ -34,8 +34,6 @@ class MethodInfo extends _i1.TableRow {
   String method;
 
   @override
-  String get className => 'MethodInfo';
-  @override
   String get tableName => 'serverpod_method';
   @override
   Map<String, dynamic> toJson() {

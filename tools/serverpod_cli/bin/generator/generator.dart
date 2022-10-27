@@ -95,4 +95,9 @@ String generateCode(Spec spec) {
 
 ${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}
 ''';
+  // return '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n'
+  //     '/*   To generate run: "serverpod generate"    */\n'
+  //     '\n'
+  //     // '${DartFormatter().format('${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}')}';
+  //     '${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}';
 }

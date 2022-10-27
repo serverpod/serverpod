@@ -30,9 +30,6 @@ class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
   String uploadDescription;
 
   @override
-  String get className =>
-      'serverpod_chat_server.ChatMessageAttachmentUploadDescription';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'filePath': filePath,

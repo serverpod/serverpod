@@ -71,8 +71,6 @@ class ChatMessage extends _i1.TableRow {
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
-  String get className => 'serverpod_chat_server.ChatMessage';
-  @override
   String get tableName => 'serverpod_chat_message';
   @override
   Map<String, dynamic> toJson() {

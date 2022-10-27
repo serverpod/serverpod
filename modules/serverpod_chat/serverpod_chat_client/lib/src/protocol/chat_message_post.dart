@@ -41,8 +41,6 @@ class ChatMessagePost extends _i1.SerializableEntity {
   List<_i2.ChatMessageAttachment>? attachments;
 
   @override
-  String get className => 'serverpod_chat_server.ChatMessagePost';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,

@@ -36,8 +36,6 @@ class CachesInfo extends _i1.SerializableEntity {
   _i2.CacheInfo global;
 
   @override
-  String get className => 'CachesInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'local': local,

@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -66,7 +65,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       if (T == getType<void>()) {
         return returnVoid() as T;
       } else {
-        return parseData(jsonDecode(data), T, serializationManager);
+        return parseData<T>(data, T, serializationManager);
       }
     } catch (e, stackTrace) {
       if (e is http.ClientException) {

@@ -22,8 +22,6 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   String data;
 
   @override
-  String get className => 'DistributedCacheEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {'data': data};
   }

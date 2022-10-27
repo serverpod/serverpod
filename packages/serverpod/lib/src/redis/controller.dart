@@ -298,6 +298,7 @@ class RedisController {
       var result = await _command!.send_object(
         ['PUBLISH', channel, message],
       );
+      //TODO: fix: result seems to be a counter. (https://redis.io/commands/publish/#return)
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();

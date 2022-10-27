@@ -74,8 +74,6 @@ class UserInfo extends _i1.SerializableEntity {
   DateTime? suspendedUntil;
 
   @override
-  String get className => 'serverpod_auth_server.UserInfo';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

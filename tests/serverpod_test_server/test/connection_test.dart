@@ -178,9 +178,9 @@ void main() {
         DateTime.utc(2022),
       ]);
       expect(result.length, equals(3));
-      expect(result[0], equals(DateTime.utc(2020)));
-      expect(result[1], equals(DateTime.utc(2021)));
-      expect(result[2], equals(DateTime.utc(2022)));
+      expect(result[0], equals(DateTime.utc(2020).toLocal()));
+      expect(result[1], equals(DateTime.utc(2021).toLocal()));
+      expect(result[2], equals(DateTime.utc(2022).toLocal()));
     });
 
     test('List<DateTime?> parameter and return type', () async {
@@ -192,9 +192,9 @@ void main() {
       ]);
       expect(result, isNotNull);
       expect(result.length, equals(3));
-      expect(result[0], equals(DateTime.utc(2020)));
+      expect(result[0], equals(DateTime.utc(2020).toLocal()));
       expect(result[1], isNull);
-      expect(result[2], equals(DateTime.utc(2022)));
+      expect(result[2], equals(DateTime.utc(2022).toLocal()));
     });
 
     test('List<ByteData> parameter and return type', () async {
@@ -423,9 +423,9 @@ void main() {
         '2022': DateTime.utc(2022),
       });
       expect(result.length, equals(3));
-      expect(result['2020'], equals(DateTime.utc(2020)));
-      expect(result['2021'], equals(DateTime.utc(2021)));
-      expect(result['2022'], equals(DateTime.utc(2022)));
+      expect(result['2020'], equals(DateTime.utc(2020).toLocal()));
+      expect(result['2021'], equals(DateTime.utc(2021).toLocal()));
+      expect(result['2022'], equals(DateTime.utc(2022).toLocal()));
     });
 
     test('Map<String, DateTime?> parameter and return type', () async {
@@ -437,9 +437,9 @@ void main() {
       });
       expect(result, isNotNull);
       expect(result.length, equals(3));
-      expect(result['2020'], equals(DateTime.utc(2020)));
+      expect(result['2020'], equals(DateTime.utc(2020).toLocal()));
       expect(result['2021'], isNull);
-      expect(result['2022'], equals(DateTime.utc(2022)));
+      expect(result['2022'], equals(DateTime.utc(2022).toLocal()));
     });
 
     test('Map<String, ByteData> parameter and return type', () async {

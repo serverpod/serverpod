@@ -44,8 +44,6 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
   String verificationCode;
 
   @override
-  String get className => 'serverpod_auth_server.EmailCreateAccountRequest';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

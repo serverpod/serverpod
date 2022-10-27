@@ -62,324 +62,451 @@ export 'session_log_info.dart';
 export 'session_log_result.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManagerServer {
-  static final Protocol instance = Protocol();
+  Protocol._();
+
+  factory Protocol() => _instance;
+
+  static final Map<Type, _i1.constructor> customConstructors = {};
+
+  static final Protocol _instance = Protocol._();
 
   @override
-  final Map<Type, _i1.constructor> constructors = {
-    _i2.AuthKey:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i2.AuthKey.fromJson(jsonSerialization, serializationManager),
-    _i3.CacheInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i3.CacheInfo.fromJson(jsonSerialization, serializationManager),
-    _i4.CachesInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i4.CachesInfo.fromJson(jsonSerialization, serializationManager),
-    _i5.CloudStorageEntry: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i5.CloudStorageEntry.fromJson(jsonSerialization, serializationManager),
-    _i6.CloudStorageDirectUploadEntry:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i6.CloudStorageDirectUploadEntry.fromJson(
-                jsonSerialization, serializationManager),
-    _i7.ClusterInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i7.ClusterInfo.fromJson(jsonSerialization, serializationManager),
-    _i8.ClusterServerInfo: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i8.ClusterServerInfo.fromJson(jsonSerialization, serializationManager),
-    _i9.DistributedCacheEntry:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i9.DistributedCacheEntry.fromJson(
-                jsonSerialization, serializationManager),
-    _i10.FutureCallEntry: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i10.FutureCallEntry.fromJson(jsonSerialization, serializationManager),
-    _i11.LogEntry:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i11.LogEntry.fromJson(jsonSerialization, serializationManager),
-    _i12.LogLevel:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i12.LogLevel.fromJson(jsonSerialization),
-    _i13.LogResult:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i13.LogResult.fromJson(jsonSerialization, serializationManager),
-    _i14.LogSettings:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i14.LogSettings.fromJson(jsonSerialization, serializationManager),
-    _i15.LogSettingsOverride:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i15.LogSettingsOverride.fromJson(
-                jsonSerialization, serializationManager),
-    _i16.MessageLogEntry: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i16.MessageLogEntry.fromJson(jsonSerialization, serializationManager),
-    _i17.MethodInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i17.MethodInfo.fromJson(jsonSerialization, serializationManager),
-    _i18.QueryLogEntry: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i18.QueryLogEntry.fromJson(jsonSerialization, serializationManager),
-    _i19.ReadWriteTestEntry:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i19.ReadWriteTestEntry.fromJson(
-                jsonSerialization, serializationManager),
-    _i20.RuntimeSettings: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i20.RuntimeSettings.fromJson(jsonSerialization, serializationManager),
-    _i21.ServerHealthConnectionInfo:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i21.ServerHealthConnectionInfo.fromJson(
-                jsonSerialization, serializationManager),
-    _i22.ServerHealthMetric:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i22.ServerHealthMetric.fromJson(
-                jsonSerialization, serializationManager),
-    _i23.ServerHealthResult:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i23.ServerHealthResult.fromJson(
-                jsonSerialization, serializationManager),
-    _i24.SessionLogEntry: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i24.SessionLogEntry.fromJson(jsonSerialization, serializationManager),
-    _i25.SessionLogFilter: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i25.SessionLogFilter.fromJson(jsonSerialization, serializationManager),
-    _i26.SessionLogInfo: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i26.SessionLogInfo.fromJson(jsonSerialization, serializationManager),
-    _i27.SessionLogResult: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        _i27.SessionLogResult.fromJson(jsonSerialization, serializationManager),
-    _i1.getType<_i2.AuthKey?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i2.AuthKey.fromJson(jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i3.CacheInfo?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i3.CacheInfo.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i4.CachesInfo?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i4.CachesInfo.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i5.CloudStorageEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i5.CloudStorageEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i6.CloudStorageDirectUploadEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i6.CloudStorageDirectUploadEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i7.ClusterInfo?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i7.ClusterInfo.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i8.ClusterServerInfo?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i8.ClusterServerInfo.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i9.DistributedCacheEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i9.DistributedCacheEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i10.FutureCallEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i10.FutureCallEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i11.LogEntry?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i11.LogEntry.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i12.LogLevel?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i12.LogLevel.fromJson(jsonSerialization)
-                : null,
-    _i1.getType<_i13.LogResult?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i13.LogResult.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i14.LogSettings?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i14.LogSettings.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i15.LogSettingsOverride?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i15.LogSettingsOverride.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i16.MessageLogEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i16.MessageLogEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i17.MethodInfo?>(): (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        jsonSerialization != null
-            ? _i17.MethodInfo.fromJson(jsonSerialization, serializationManager)
-            : null,
-    _i1.getType<_i18.QueryLogEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i18.QueryLogEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i19.ReadWriteTestEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i19.ReadWriteTestEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i20.RuntimeSettings?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i20.RuntimeSettings.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i21.ServerHealthConnectionInfo?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i21.ServerHealthConnectionInfo.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i22.ServerHealthMetric?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i22.ServerHealthMetric.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i23.ServerHealthResult?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i23.ServerHealthResult.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i24.SessionLogEntry?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i24.SessionLogEntry.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i25.SessionLogFilter?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i25.SessionLogFilter.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i26.SessionLogInfo?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i26.SessionLogInfo.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    _i1.getType<_i27.SessionLogResult?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i27.SessionLogResult.fromJson(
-                    jsonSerialization, serializationManager)
-                : null,
-    List<String>:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            (jsonSerialization as List)
-                .map((e) => serializationManager.deserializeJson<String>(e))
-                .toList(),
-    _i1.getType<List<String>?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? (jsonSerialization as List)
-                    .map((e) => serializationManager.deserializeJson<String>(e))
-                    .toList()
-                : null,
-    List<_i28.ClusterServerInfo>: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        (jsonSerialization as List)
-            .map((e) =>
-                serializationManager.deserializeJson<_i28.ClusterServerInfo>(e))
-            .toList(),
-    List<_i28.LogEntry>: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        (jsonSerialization as List)
-            .map((e) => serializationManager.deserializeJson<_i28.LogEntry>(e))
-            .toList(),
-    List<_i28.LogSettingsOverride>:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            (jsonSerialization as List)
-                .map((e) => serializationManager
-                    .deserializeJson<_i28.LogSettingsOverride>(e))
-                .toList(),
-    List<_i28.ServerHealthMetric>:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            (jsonSerialization as List)
-                .map((e) => serializationManager
-                    .deserializeJson<_i28.ServerHealthMetric>(e))
-                .toList(),
-    List<_i28.ServerHealthConnectionInfo>:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            (jsonSerialization as List)
-                .map((e) => serializationManager
-                    .deserializeJson<_i28.ServerHealthConnectionInfo>(e))
-                .toList(),
-    List<_i28.QueryLogEntry>:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            (jsonSerialization as List)
-                .map((e) =>
-                    serializationManager.deserializeJson<_i28.QueryLogEntry>(e))
-                .toList(),
-    List<_i28.MessageLogEntry>: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        (jsonSerialization as List)
-            .map((e) =>
-                serializationManager.deserializeJson<_i28.MessageLogEntry>(e))
-            .toList(),
-    List<_i28.SessionLogInfo>: (jsonSerialization,
-            _i1.SerializationManager serializationManager) =>
-        (jsonSerialization as List)
-            .map((e) =>
-                serializationManager.deserializeJson<_i28.SessionLogInfo>(e))
-            .toList(),
-  };
+  T deserializeJson<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+    if (customConstructors.containsKey(t)) {
+      return customConstructors[t] as T;
+    }
+    if (t == _i2.AuthKey) {
+      return _i2.AuthKey.fromJson(data, this) as T;
+    }
+    if (t == _i3.CacheInfo) {
+      return _i3.CacheInfo.fromJson(data, this) as T;
+    }
+    if (t == _i4.CachesInfo) {
+      return _i4.CachesInfo.fromJson(data, this) as T;
+    }
+    if (t == _i5.CloudStorageEntry) {
+      return _i5.CloudStorageEntry.fromJson(data, this) as T;
+    }
+    if (t == _i6.CloudStorageDirectUploadEntry) {
+      return _i6.CloudStorageDirectUploadEntry.fromJson(data, this) as T;
+    }
+    if (t == _i7.ClusterInfo) {
+      return _i7.ClusterInfo.fromJson(data, this) as T;
+    }
+    if (t == _i8.ClusterServerInfo) {
+      return _i8.ClusterServerInfo.fromJson(data, this) as T;
+    }
+    if (t == _i9.DistributedCacheEntry) {
+      return _i9.DistributedCacheEntry.fromJson(data, this) as T;
+    }
+    if (t == _i10.FutureCallEntry) {
+      return _i10.FutureCallEntry.fromJson(data, this) as T;
+    }
+    if (t == _i11.LogEntry) {
+      return _i11.LogEntry.fromJson(data, this) as T;
+    }
+    if (t == _i12.LogLevel) {
+      return _i12.LogLevel.fromJson(data) as T;
+    }
+    if (t == _i13.LogResult) {
+      return _i13.LogResult.fromJson(data, this) as T;
+    }
+    if (t == _i14.LogSettings) {
+      return _i14.LogSettings.fromJson(data, this) as T;
+    }
+    if (t == _i15.LogSettingsOverride) {
+      return _i15.LogSettingsOverride.fromJson(data, this) as T;
+    }
+    if (t == _i16.MessageLogEntry) {
+      return _i16.MessageLogEntry.fromJson(data, this) as T;
+    }
+    if (t == _i17.MethodInfo) {
+      return _i17.MethodInfo.fromJson(data, this) as T;
+    }
+    if (t == _i18.QueryLogEntry) {
+      return _i18.QueryLogEntry.fromJson(data, this) as T;
+    }
+    if (t == _i19.ReadWriteTestEntry) {
+      return _i19.ReadWriteTestEntry.fromJson(data, this) as T;
+    }
+    if (t == _i20.RuntimeSettings) {
+      return _i20.RuntimeSettings.fromJson(data, this) as T;
+    }
+    if (t == _i21.ServerHealthConnectionInfo) {
+      return _i21.ServerHealthConnectionInfo.fromJson(data, this) as T;
+    }
+    if (t == _i22.ServerHealthMetric) {
+      return _i22.ServerHealthMetric.fromJson(data, this) as T;
+    }
+    if (t == _i23.ServerHealthResult) {
+      return _i23.ServerHealthResult.fromJson(data, this) as T;
+    }
+    if (t == _i24.SessionLogEntry) {
+      return _i24.SessionLogEntry.fromJson(data, this) as T;
+    }
+    if (t == _i25.SessionLogFilter) {
+      return _i25.SessionLogFilter.fromJson(data, this) as T;
+    }
+    if (t == _i26.SessionLogInfo) {
+      return _i26.SessionLogInfo.fromJson(data, this) as T;
+    }
+    if (t == _i27.SessionLogResult) {
+      return _i27.SessionLogResult.fromJson(data, this) as T;
+    }
+    if (t == _i1.getType<_i2.AuthKey?>()) {
+      return (data != null ? _i2.AuthKey.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i3.CacheInfo?>()) {
+      return (data != null ? _i3.CacheInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i4.CachesInfo?>()) {
+      return (data != null ? _i4.CachesInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i5.CloudStorageEntry?>()) {
+      return (data != null ? _i5.CloudStorageEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i6.CloudStorageDirectUploadEntry?>()) {
+      return (data != null
+          ? _i6.CloudStorageDirectUploadEntry.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i7.ClusterInfo?>()) {
+      return (data != null ? _i7.ClusterInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i8.ClusterServerInfo?>()) {
+      return (data != null ? _i8.ClusterServerInfo.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i9.DistributedCacheEntry?>()) {
+      return (data != null
+          ? _i9.DistributedCacheEntry.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i10.FutureCallEntry?>()) {
+      return (data != null ? _i10.FutureCallEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i11.LogEntry?>()) {
+      return (data != null ? _i11.LogEntry.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i12.LogLevel?>()) {
+      return (data != null ? _i12.LogLevel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i13.LogResult?>()) {
+      return (data != null ? _i13.LogResult.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i14.LogSettings?>()) {
+      return (data != null ? _i14.LogSettings.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i15.LogSettingsOverride?>()) {
+      return (data != null
+          ? _i15.LogSettingsOverride.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i16.MessageLogEntry?>()) {
+      return (data != null ? _i16.MessageLogEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i17.MethodInfo?>()) {
+      return (data != null ? _i17.MethodInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i18.QueryLogEntry?>()) {
+      return (data != null ? _i18.QueryLogEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i19.ReadWriteTestEntry?>()) {
+      return (data != null
+          ? _i19.ReadWriteTestEntry.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i20.RuntimeSettings?>()) {
+      return (data != null ? _i20.RuntimeSettings.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i21.ServerHealthConnectionInfo?>()) {
+      return (data != null
+          ? _i21.ServerHealthConnectionInfo.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i22.ServerHealthMetric?>()) {
+      return (data != null
+          ? _i22.ServerHealthMetric.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i23.ServerHealthResult?>()) {
+      return (data != null
+          ? _i23.ServerHealthResult.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i24.SessionLogEntry?>()) {
+      return (data != null ? _i24.SessionLogEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i25.SessionLogFilter?>()) {
+      return (data != null ? _i25.SessionLogFilter.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i26.SessionLogInfo?>()) {
+      return (data != null ? _i26.SessionLogInfo.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i27.SessionLogResult?>()) {
+      return (data != null ? _i27.SessionLogResult.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserializeJson<String>(e)).toList()
+          as dynamic;
+    }
+    if (t == _i1.getType<List<String>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserializeJson<String>(e)).toList()
+          : null) as dynamic;
+    }
+    if (t == List<_i28.ClusterServerInfo>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.ClusterServerInfo>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.LogEntry>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.LogEntry>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.LogSettingsOverride>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.LogSettingsOverride>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.ServerHealthMetric>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.ServerHealthMetric>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.ServerHealthConnectionInfo>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.ServerHealthConnectionInfo>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.QueryLogEntry>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.QueryLogEntry>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.MessageLogEntry>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.MessageLogEntry>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i28.SessionLogInfo>) {
+      return (data as List)
+          .map((e) => deserializeJson<_i28.SessionLogInfo>(e))
+          .toList() as dynamic;
+    }
+    return super.deserializeJson<T>(data, t);
+  }
 
   @override
-  final Map<String, Type> classNameTypeMapping = {};
-
-  final Map<Type, _i1.Table> _typeTableMapping = {
-    _i2.AuthKey: _i2.AuthKey.t,
-    _i5.CloudStorageEntry: _i5.CloudStorageEntry.t,
-    _i6.CloudStorageDirectUploadEntry: _i6.CloudStorageDirectUploadEntry.t,
-    _i10.FutureCallEntry: _i10.FutureCallEntry.t,
-    _i11.LogEntry: _i11.LogEntry.t,
-    _i16.MessageLogEntry: _i16.MessageLogEntry.t,
-    _i17.MethodInfo: _i17.MethodInfo.t,
-    _i18.QueryLogEntry: _i18.QueryLogEntry.t,
-    _i19.ReadWriteTestEntry: _i19.ReadWriteTestEntry.t,
-    _i20.RuntimeSettings: _i20.RuntimeSettings.t,
-    _i21.ServerHealthConnectionInfo: _i21.ServerHealthConnectionInfo.t,
-    _i22.ServerHealthMetric: _i22.ServerHealthMetric.t,
-    _i24.SessionLogEntry: _i24.SessionLogEntry.t,
-  };
+  String? getClassNameForObject(Object data) {
+    if (data is _i2.AuthKey) {
+      return 'AuthKey';
+    }
+    if (data is _i3.CacheInfo) {
+      return 'CacheInfo';
+    }
+    if (data is _i4.CachesInfo) {
+      return 'CachesInfo';
+    }
+    if (data is _i5.CloudStorageEntry) {
+      return 'CloudStorageEntry';
+    }
+    if (data is _i6.CloudStorageDirectUploadEntry) {
+      return 'CloudStorageDirectUploadEntry';
+    }
+    if (data is _i7.ClusterInfo) {
+      return 'ClusterInfo';
+    }
+    if (data is _i8.ClusterServerInfo) {
+      return 'ClusterServerInfo';
+    }
+    if (data is _i9.DistributedCacheEntry) {
+      return 'DistributedCacheEntry';
+    }
+    if (data is _i10.FutureCallEntry) {
+      return 'FutureCallEntry';
+    }
+    if (data is _i11.LogEntry) {
+      return 'LogEntry';
+    }
+    if (data is _i12.LogLevel) {
+      return 'LogLevel';
+    }
+    if (data is _i13.LogResult) {
+      return 'LogResult';
+    }
+    if (data is _i14.LogSettings) {
+      return 'LogSettings';
+    }
+    if (data is _i15.LogSettingsOverride) {
+      return 'LogSettingsOverride';
+    }
+    if (data is _i16.MessageLogEntry) {
+      return 'MessageLogEntry';
+    }
+    if (data is _i17.MethodInfo) {
+      return 'MethodInfo';
+    }
+    if (data is _i18.QueryLogEntry) {
+      return 'QueryLogEntry';
+    }
+    if (data is _i19.ReadWriteTestEntry) {
+      return 'ReadWriteTestEntry';
+    }
+    if (data is _i20.RuntimeSettings) {
+      return 'RuntimeSettings';
+    }
+    if (data is _i21.ServerHealthConnectionInfo) {
+      return 'ServerHealthConnectionInfo';
+    }
+    if (data is _i22.ServerHealthMetric) {
+      return 'ServerHealthMetric';
+    }
+    if (data is _i23.ServerHealthResult) {
+      return 'ServerHealthResult';
+    }
+    if (data is _i24.SessionLogEntry) {
+      return 'SessionLogEntry';
+    }
+    if (data is _i25.SessionLogFilter) {
+      return 'SessionLogFilter';
+    }
+    if (data is _i26.SessionLogInfo) {
+      return 'SessionLogInfo';
+    }
+    if (data is _i27.SessionLogResult) {
+      return 'SessionLogResult';
+    }
+    return super.getClassNameForObject(data);
+  }
 
   @override
-  Map<Type, _i1.Table> get typeTableMapping {
-    return _typeTableMapping;
+  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'AuthKey') {
+      return deserializeJson<_i2.AuthKey>(data['data']);
+    }
+    if (data['className'] == 'CacheInfo') {
+      return deserializeJson<_i3.CacheInfo>(data['data']);
+    }
+    if (data['className'] == 'CachesInfo') {
+      return deserializeJson<_i4.CachesInfo>(data['data']);
+    }
+    if (data['className'] == 'CloudStorageEntry') {
+      return deserializeJson<_i5.CloudStorageEntry>(data['data']);
+    }
+    if (data['className'] == 'CloudStorageDirectUploadEntry') {
+      return deserializeJson<_i6.CloudStorageDirectUploadEntry>(data['data']);
+    }
+    if (data['className'] == 'ClusterInfo') {
+      return deserializeJson<_i7.ClusterInfo>(data['data']);
+    }
+    if (data['className'] == 'ClusterServerInfo') {
+      return deserializeJson<_i8.ClusterServerInfo>(data['data']);
+    }
+    if (data['className'] == 'DistributedCacheEntry') {
+      return deserializeJson<_i9.DistributedCacheEntry>(data['data']);
+    }
+    if (data['className'] == 'FutureCallEntry') {
+      return deserializeJson<_i10.FutureCallEntry>(data['data']);
+    }
+    if (data['className'] == 'LogEntry') {
+      return deserializeJson<_i11.LogEntry>(data['data']);
+    }
+    if (data['className'] == 'LogLevel') {
+      return deserializeJson<_i12.LogLevel>(data['data']);
+    }
+    if (data['className'] == 'LogResult') {
+      return deserializeJson<_i13.LogResult>(data['data']);
+    }
+    if (data['className'] == 'LogSettings') {
+      return deserializeJson<_i14.LogSettings>(data['data']);
+    }
+    if (data['className'] == 'LogSettingsOverride') {
+      return deserializeJson<_i15.LogSettingsOverride>(data['data']);
+    }
+    if (data['className'] == 'MessageLogEntry') {
+      return deserializeJson<_i16.MessageLogEntry>(data['data']);
+    }
+    if (data['className'] == 'MethodInfo') {
+      return deserializeJson<_i17.MethodInfo>(data['data']);
+    }
+    if (data['className'] == 'QueryLogEntry') {
+      return deserializeJson<_i18.QueryLogEntry>(data['data']);
+    }
+    if (data['className'] == 'ReadWriteTestEntry') {
+      return deserializeJson<_i19.ReadWriteTestEntry>(data['data']);
+    }
+    if (data['className'] == 'RuntimeSettings') {
+      return deserializeJson<_i20.RuntimeSettings>(data['data']);
+    }
+    if (data['className'] == 'ServerHealthConnectionInfo') {
+      return deserializeJson<_i21.ServerHealthConnectionInfo>(data['data']);
+    }
+    if (data['className'] == 'ServerHealthMetric') {
+      return deserializeJson<_i22.ServerHealthMetric>(data['data']);
+    }
+    if (data['className'] == 'ServerHealthResult') {
+      return deserializeJson<_i23.ServerHealthResult>(data['data']);
+    }
+    if (data['className'] == 'SessionLogEntry') {
+      return deserializeJson<_i24.SessionLogEntry>(data['data']);
+    }
+    if (data['className'] == 'SessionLogFilter') {
+      return deserializeJson<_i25.SessionLogFilter>(data['data']);
+    }
+    if (data['className'] == 'SessionLogInfo') {
+      return deserializeJson<_i26.SessionLogInfo>(data['data']);
+    }
+    if (data['className'] == 'SessionLogResult') {
+      return deserializeJson<_i27.SessionLogResult>(data['data']);
+    }
+    return super.deserializeJsonByClassName(data);
+  }
+
+  @override
+  _i1.Table? getTableForType(Type t) {
+    switch (t) {
+      case _i2.AuthKey:
+        return _i2.AuthKey.t;
+      case _i5.CloudStorageEntry:
+        return _i5.CloudStorageEntry.t;
+      case _i6.CloudStorageDirectUploadEntry:
+        return _i6.CloudStorageDirectUploadEntry.t;
+      case _i10.FutureCallEntry:
+        return _i10.FutureCallEntry.t;
+      case _i11.LogEntry:
+        return _i11.LogEntry.t;
+      case _i16.MessageLogEntry:
+        return _i16.MessageLogEntry.t;
+      case _i17.MethodInfo:
+        return _i17.MethodInfo.t;
+      case _i18.QueryLogEntry:
+        return _i18.QueryLogEntry.t;
+      case _i19.ReadWriteTestEntry:
+        return _i19.ReadWriteTestEntry.t;
+      case _i20.RuntimeSettings:
+        return _i20.RuntimeSettings.t;
+      case _i21.ServerHealthConnectionInfo:
+        return _i21.ServerHealthConnectionInfo.t;
+      case _i22.ServerHealthMetric:
+        return _i22.ServerHealthMetric.t;
+      case _i24.SessionLogEntry:
+        return _i24.SessionLogEntry.t;
+    }
+    return null;
   }
 }

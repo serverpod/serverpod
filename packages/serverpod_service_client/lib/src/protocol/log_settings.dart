@@ -71,8 +71,6 @@ class LogSettings extends _i1.SerializableEntity {
   double slowQueryDuration;
 
   @override
-  String get className => 'LogSettings';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'logLevel': logLevel,

@@ -74,8 +74,6 @@ class QueryLogEntry extends _i1.SerializableEntity {
   int order;
 
   @override
-  String get className => 'QueryLogEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

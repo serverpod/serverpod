@@ -29,8 +29,6 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
   int number;
 
   @override
-  String get className => 'ReadWriteTestEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

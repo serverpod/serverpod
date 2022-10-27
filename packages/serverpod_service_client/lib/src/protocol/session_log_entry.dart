@@ -89,8 +89,6 @@ class SessionLogEntry extends _i1.SerializableEntity {
   DateTime touched;
 
   @override
-  String get className => 'SessionLogEntry';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

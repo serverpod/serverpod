@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -109,10 +108,10 @@ class FutureCallManager {
           continue;
         }
 
-        SerializableEntity? object;
+        dynamic object;
         if (entry.serializedObject != null) {
-          Map? data = jsonDecode(entry.serializedObject!);
-          object = _serializationManager.deserializeJson(data, call.dataType);
+          object = _serializationManager.deserializeJsonString(
+              entry.serializedObject!, call.dataType);
         }
 
         var futureCallSession = FutureCallSession(

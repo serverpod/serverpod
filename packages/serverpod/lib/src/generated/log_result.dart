@@ -23,8 +23,6 @@ class LogResult extends _i1.SerializableEntity {
   List<_i2.LogEntry> entries;
 
   @override
-  String get className => 'LogResult';
-  @override
   Map<String, dynamic> toJson() {
     return {'entries': entries};
   }

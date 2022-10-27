@@ -5,7 +5,6 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
 import 'server.dart';
-import 'serverpod.dart';
 import 'session.dart';
 
 /// The [EndpointDispatch] is responsible for directing requests to the [Server]
@@ -20,9 +19,6 @@ abstract class EndpointDispatch {
 
   /// Initializes all endpoints that are connected to the dispatch.
   void initializeEndpoints(Server server);
-
-  /// Registers any modules with the dispatch.
-  void registerModules(Serverpod pod);
 
   /// Finds an [EndpointConnector] by its name. If the connector is in a module,
   /// a period should separate the module name from the endpoint name.

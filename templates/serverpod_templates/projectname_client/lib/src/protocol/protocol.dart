@@ -12,20 +12,45 @@ export 'example_class.dart';
 export 'client.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManager {
-  static final Protocol instance = Protocol();
+  Protocol._();
+
+  factory Protocol() => _instance;
+
+  static final Map<Type, _i1.constructor> customConstructors = {};
+
+  static final Protocol _instance = Protocol._();
 
   @override
-  final Map<Type, _i1.constructor> constructors = {
-    _i2.Example:
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            _i2.Example.fromJson(jsonSerialization, serializationManager),
-    _i1.getType<_i2.Example?>():
-        (jsonSerialization, _i1.SerializationManager serializationManager) =>
-            jsonSerialization != null
-                ? _i2.Example.fromJson(jsonSerialization, serializationManager)
-                : null,
-  };
+  T deserializeJson<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+    if (customConstructors.containsKey(t)) {
+      return customConstructors[t] as T;
+    }
+    if (t == _i2.Example) {
+      return _i2.Example.fromJson(data, this) as T;
+    }
+    if (t == _i1.getType<_i2.Example?>()) {
+      return (data != null ? _i2.Example.fromJson(data, this) : null) as T;
+    }
+    return super.deserializeJson<T>(data, t);
+  }
 
   @override
-  final Map<String, Type> classNameTypeMapping = {};
+  String? getClassNameForObject(Object data) {
+    if (data is _i2.Example) {
+      return 'Example';
+    }
+    return super.getClassNameForObject(data);
+  }
+
+  @override
+  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'Example') {
+      return deserializeJson<_i2.Example>(data['data']);
+    }
+    return super.deserializeJsonByClassName(data);
+  }
 }

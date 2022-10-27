@@ -186,7 +186,4 @@ class Endpoints extends _i1.EndpointDispatch {
       },
     );
   }
-
-  @override
-  void registerModules(_i1.Serverpod pod) {}
 }

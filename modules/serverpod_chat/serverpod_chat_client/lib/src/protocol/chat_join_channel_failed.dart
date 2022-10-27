@@ -30,8 +30,6 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
   String reason;
 
   @override
-  String get className => 'serverpod_chat_server.ChatJoinChannelFailed';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,

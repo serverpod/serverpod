@@ -78,8 +78,6 @@ class ObjectWithMaps extends _i1.SerializableEntity {
   Map<String, _i3.ByteData?> nullableByteDataMap;
 
   @override
-  String get className => 'ObjectWithMaps';
-  @override
   Map<String, dynamic> toJson() {
     return {
       'dataMap': dataMap,

@@ -237,7 +237,7 @@ class ClassAnalyzer {
 
       try {
         fieldDescription = fieldDescription.replaceAll(' ', '');
-        var typeResult = _analyzeType(fieldDescription);
+        var typeResult = parseAndAnalyzeType(fieldDescription);
 
         var fieldOptions =
             fieldDescription.substring(typeResult.parsedPosition).split(',');
@@ -580,61 +580,4 @@ class ClassAnalyzer {
 
     return true;
   }
-}
-
-/// Analyze the type at the start of [input].
-/// [input] must not contain spaces.
-/// Returns a [_TypeResult] containing the type,
-/// as well as the position of the last parsed character.
-/// So when calling with "List<List<String?>?>,database",
-/// the position will point at the ','.
-_TypeResult _analyzeType(String input) {
-  String classname = '';
-  for (var i = 0; i < input.length; i++) {
-    switch (input[i]) {
-      case '<':
-        var generics = <TypeDefinition>[];
-        while (true) {
-          i++;
-          var result = _analyzeType(input.substring(i));
-          generics.add(result.type);
-          i += result.parsedPosition;
-          if (input[i] == '>') {
-            var nullable = (i + 1 < input.length) && input[i + 1] == '?';
-            return _TypeResult(
-                i + 1,
-                TypeDefinition.mixedUrlAndClassName(
-                  mixed: classname,
-                  nullable: nullable,
-                  generics: generics,
-                ));
-          } else if (i >= input.length - 1) {
-            throw 'INVALID TYPE';
-          }
-        }
-      case '>':
-      case ',':
-        return _TypeResult(
-            i,
-            TypeDefinition.mixedUrlAndClassName(
-                mixed: classname, nullable: false));
-      case '?':
-        return _TypeResult(
-            i + 1,
-            TypeDefinition.mixedUrlAndClassName(
-                mixed: classname, nullable: true));
-      default:
-        classname += input[i];
-        break;
-    }
-  }
-  return _TypeResult(input.length - 1,
-      TypeDefinition.mixedUrlAndClassName(mixed: classname, nullable: false));
-}
-
-class _TypeResult {
-  final int parsedPosition;
-  final TypeDefinition type;
-
-  const _TypeResult(this.parsedPosition, this.type);
 }
