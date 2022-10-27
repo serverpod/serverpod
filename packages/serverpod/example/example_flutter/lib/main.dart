@@ -1,5 +1,5 @@
 import 'package:example_client/example_client.dart';
-import 'package:example_flutter/firebase_options_dummy.dart';
+import 'package:example_flutter/firebase_options.dart';
 import 'package:example_flutter/src/disconnected_page.dart';
 import 'package:example_flutter/src/loading_page.dart';
 import 'package:example_flutter/src/main_page.dart';
