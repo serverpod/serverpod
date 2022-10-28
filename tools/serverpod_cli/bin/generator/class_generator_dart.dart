@@ -963,7 +963,8 @@ class ClassGeneratorDart extends ClassGenerator {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              if (classInfos.isNotEmpty)
+              if (classInfos.any((classInfo) =>
+                  classInfo is ClassDefinition && classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
                   for (var classInfo in classInfos)

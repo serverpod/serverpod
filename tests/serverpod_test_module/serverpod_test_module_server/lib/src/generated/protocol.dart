@@ -65,9 +65,6 @@ class Protocol extends _i1.SerializationManagerServer {
         return table;
       }
     }
-    switch (t) {
-      
-    }
     return null;
   }
 }
