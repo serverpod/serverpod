@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
-import '../serverpod_cli.dart';
 import 'types.dart';
 
 var config = GeneratorConfig();
