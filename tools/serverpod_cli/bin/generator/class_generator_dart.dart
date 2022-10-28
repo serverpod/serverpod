@@ -963,13 +963,18 @@ class ClassGeneratorDart extends ClassGenerator {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              const Code('switch(t){'),
-              for (var classInfo in classInfos)
-                if (classInfo is ClassDefinition && classInfo.tableName != null)
-                  Code.scope((a) =>
-                      'case ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}:'
-                      'return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}.t;'),
-              const Code('}return null;'),
+              if (classInfos.isNotEmpty)
+                Block.of([
+                  const Code('switch(t){'),
+                  for (var classInfo in classInfos)
+                    if (classInfo is ClassDefinition &&
+                        classInfo.tableName != null)
+                      Code.scope((a) =>
+                          'case ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}:'
+                          'return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}.t;'),
+                  const Code('}'),
+                ]),
+              const Code('return null;'),
             ]),
         ),
     ]);
