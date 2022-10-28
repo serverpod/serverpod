@@ -6,6 +6,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'protocol.dart' as _i2;
 
 class LogEntry extends _i1.TableRow {
   LogEntry({
@@ -39,7 +40,7 @@ class LogEntry extends _i1.TableRow {
       time: serializationManager
           .deserializeJson<DateTime>(jsonSerialization['time']),
       logLevel: serializationManager
-          .deserializeJson<int>(jsonSerialization['logLevel']),
+          .deserializeJson<_i2.LogLevel>(jsonSerialization['logLevel']),
       message: serializationManager
           .deserializeJson<String>(jsonSerialization['message']),
       error: serializationManager
@@ -63,7 +64,7 @@ class LogEntry extends _i1.TableRow {
 
   DateTime time;
 
-  int logLevel;
+  _i2.LogLevel logLevel;
 
   String message;
 
@@ -296,7 +297,7 @@ class LogEntryTable extends _i1.Table {
 
   final time = _i1.ColumnDateTime('time');
 
-  final logLevel = _i1.ColumnInt('logLevel');
+  final logLevel = _i1.ColumnEnum<_i2.LogLevel>('logLevel');
 
   final message = _i1.ColumnString('message');
 

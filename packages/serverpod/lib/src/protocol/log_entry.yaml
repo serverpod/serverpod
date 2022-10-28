@@ -6,7 +6,7 @@ fields:
   reference: String?
   serverId: String
   time: DateTime
-  logLevel: int
+  logLevel: protocol:LogLevel
   message: String
   error: String?
   stackTrace: String?

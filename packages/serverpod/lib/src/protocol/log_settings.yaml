@@ -1,6 +1,6 @@
 class: LogSettings
 fields:
-  logLevel: int
+  logLevel: protocol:LogLevel
   logAllSessions: bool
   logAllQueries: bool
   logSlowSessions: bool

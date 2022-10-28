@@ -6,6 +6,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'protocol.dart' as _i2;
 
 class LogSettings extends _i1.SerializableEntity {
   LogSettings({
@@ -27,7 +28,7 @@ class LogSettings extends _i1.SerializableEntity {
   ) {
     return LogSettings(
       logLevel: serializationManager
-          .deserializeJson<int>(jsonSerialization['logLevel']),
+          .deserializeJson<_i2.LogLevel>(jsonSerialization['logLevel']),
       logAllSessions: serializationManager
           .deserializeJson<bool>(jsonSerialization['logAllSessions']),
       logAllQueries: serializationManager
@@ -50,7 +51,7 @@ class LogSettings extends _i1.SerializableEntity {
     );
   }
 
-  int logLevel;
+  _i2.LogLevel logLevel;
 
   bool logAllSessions;
 

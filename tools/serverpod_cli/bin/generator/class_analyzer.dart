@@ -43,6 +43,20 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
     }
   }
 
+  // Detect enum fields
+  for (var classDefinition in classDefinitions) {
+    if (classDefinition is ClassDefinition) {
+      for (var fieldDefinition in classDefinition.fields) {
+        if (fieldDefinition.type.url == 'protocol' &&
+            classDefinitions
+                .whereType<EnumDefinition>()
+                .any((e) => e.className == fieldDefinition.type.className)) {
+          fieldDefinition.type.isEnum = true;
+        }
+      }
+    }
+  }
+
   return classDefinitions;
 }
 
@@ -285,10 +299,13 @@ class ClassAnalyzer {
           continue;
         }
 
+        var isEnum =
+            fieldOptions.whereType<String?>().any((option) => option == 'enum');
+
         var fieldDefinition = FieldDefinition(
           name: fieldName,
           scope: scope,
-          type: typeResult.type,
+          type: typeResult.type..isEnum = isEnum,
           parentTable: parentTable,
         );
 

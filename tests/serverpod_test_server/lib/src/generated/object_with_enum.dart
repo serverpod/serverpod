@@ -235,9 +235,9 @@ class ObjectWithEnumTable extends _i1.Table {
 
   final id = _i1.ColumnInt('id');
 
-  final testEnum = _i1.ColumnSerializable('testEnum');
+  final testEnum = _i1.ColumnEnum<_i2.TestEnum>('testEnum');
 
-  final nullableEnum = _i1.ColumnSerializable('nullableEnum');
+  final nullableEnum = _i1.ColumnEnum<_i2.TestEnum>('nullableEnum');
 
   final enumList = _i1.ColumnSerializable('enumList');
 

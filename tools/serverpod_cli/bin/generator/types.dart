@@ -23,13 +23,16 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  const TypeDefinition({
+  bool isEnum;
+
+  TypeDefinition({
     required this.className,
     this.generics = const [],
     required this.nullable,
     this.url,
     this.dartType,
     this.customClass = false,
+    this.isEnum = false,
   });
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
@@ -73,14 +76,20 @@ class TypeDefinition {
     );
   }
 
-  static const TypeDefinition int =
-      TypeDefinition(className: 'int', nullable: false);
+  static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
 
-  TypeDefinition get asNullable =>
-      TypeDefinition(className: className, url: url, nullable: true);
+  TypeDefinition get asNullable => TypeDefinition(
+        className: className,
+        url: url,
+        nullable: true,
+        customClass: customClass,
+        dartType: dartType,
+        generics: generics,
+        isEnum: isEnum,
+      );
 
   /// Generate a [TypeReference] from this definition.
-  TypeReference reference(bool serverCode) => TypeReference(
+  TypeReference reference(bool serverCode, [bool? nullable]) => TypeReference(
         (t) {
           if (url?.startsWith('module:') ?? false) {
             // module:nickname: reference
@@ -127,7 +136,7 @@ class TypeDefinition {
           } else {
             t.url = url;
           }
-          t.isNullable = nullable;
+          t.isNullable = nullable ?? this.nullable;
           t.symbol = className;
           t.types.addAll(generics.map((e) => e.reference(serverCode)));
         },
@@ -135,10 +144,9 @@ class TypeDefinition {
 
   String get databaseType {
     //TODO: add all suported types here
-    //TODO: enums as int
     if (className == 'String') return 'text';
     if (className == 'bool') return 'boolean';
-    if (className == 'int') return 'integer';
+    if (className == 'int' || isEnum) return 'integer';
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
@@ -148,8 +156,8 @@ class TypeDefinition {
 
   String get columnType {
     //TODO: add all suported types here
-    //TODO: enums as int
     if (className == 'int') return 'ColumnInt';
+    if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
     if (className == 'bool') return 'ColumnBool';
     if (className == 'String') return 'ColumnString';

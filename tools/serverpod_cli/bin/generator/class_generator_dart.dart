@@ -679,9 +679,12 @@ class ClassGeneratorDart extends ClassGenerator {
                 c.fields.add(Field((f) => f
                   ..modifier = FieldModifier.final$
                   ..name = field.name
-                  ..assignment = refer(field.type.columnType,
-                          'package:serverpod/serverpod.dart')
-                      .call([literalString(field.name)]).code));
+                  ..assignment = TypeReference((t) => t
+                    ..symbol = field.type.columnType
+                    ..url = 'package:serverpod/serverpod.dart'
+                    ..types.addAll(field.type.isEnum
+                        ? [field.type.reference(serverCode, false)]
+                        : [])).call([literalString(field.name)]).code));
               }
             }
 
@@ -998,11 +1001,12 @@ class FieldDefinition {
   final FieldScope scope;
   final String? parentTable;
 
-  const FieldDefinition(
-      {required this.name,
-      required this.type,
-      required this.scope,
-      this.parentTable});
+  FieldDefinition({
+    required this.name,
+    required this.type,
+    required this.scope,
+    this.parentTable,
+  });
 
   bool shouldIncludeField(bool serverCode) {
     if (serverCode) return true;

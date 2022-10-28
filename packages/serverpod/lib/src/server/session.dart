@@ -172,7 +172,7 @@ abstract class Session {
       sessionLogId: sessionLogs.temporarySessionId,
       serverId: server.serverId,
       messageId: messageId,
-      logLevel: (level ?? LogLevel.info).index,
+      logLevel: level ?? LogLevel.info,
       message: message,
       time: DateTime.now(),
       error: exception != null ? '$exception' : null,
@@ -183,8 +183,7 @@ abstract class Session {
     sessionLogs.currentLogOrderId += 1;
 
     if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln(
-          '${LogLevel.values[entry.logLevel].name.toUpperCase()}: ${entry.message}');
+      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
     }

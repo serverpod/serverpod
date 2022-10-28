@@ -18,8 +18,8 @@ ALTER TABLE ONLY object_field_scopes
 
 CREATE TABLE object_with_enum (
   "id" serial,
-  "testEnum" json NOT NULL,
-  "nullableEnum" json,
+  "testEnum" integer NOT NULL,
+  "nullableEnum" integer,
   "enumList" json NOT NULL,
   "nullableEnumList" json NOT NULL,
   "enumListList" json NOT NULL
