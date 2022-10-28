@@ -36,7 +36,6 @@ class GeneratorConfig {
 
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
-  //TODO: use it
   Map<String, TypeDefinition> extraClassNames = {};
 
   bool load([String dir = '']) {
