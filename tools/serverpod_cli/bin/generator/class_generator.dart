@@ -14,6 +14,7 @@ void performGenerateClasses({
   required List<ProtocolFileDefinition> classDefinitions,
   required CodeAnalysisCollector collector,
   required ProtocolDefinition protocolDefinition,
+  required CodeGenerator codeGenerator,
 }) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
@@ -24,7 +25,7 @@ void performGenerateClasses({
     classDefinitions: classDefinitions,
     protocolDefinition: protocolDefinition,
   );
-  serverGenerator.generate(collector: collector);
+  serverGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 
   // Generate client side code
   if (verbose) print('Generating Dart client side code.');
@@ -35,7 +36,7 @@ void performGenerateClasses({
     classDefinitions: classDefinitions,
     protocolDefinition: protocolDefinition,
   );
-  clientGenerator.generate(collector: collector);
+  clientGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 }
 
 abstract class ClassGenerator {
@@ -55,7 +56,10 @@ abstract class ClassGenerator {
 
   String get outputExtension;
 
-  void generate({required CodeAnalysisCollector collector}) {
+  void generate({
+    required CodeAnalysisCollector collector,
+    required CodeGenerator codeGenerator,
+  }) {
     for (var classDefinition in classDefinitions) {
       var outputFile = File(p.join(
         outputDirectoryPath,
@@ -66,7 +70,7 @@ abstract class ClassGenerator {
         var out = generateFile(classDefinition);
 
         outputFile.createSync();
-        outputFile.writeAsStringSync(generateCode(out));
+        outputFile.writeAsStringSync(codeGenerator(out));
 
         collector.addGeneratedFile(outputFile);
       } catch (e, stackTrace) {
@@ -79,7 +83,7 @@ abstract class ClassGenerator {
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
     var out = generateFactory(classDefinitions, protocolDefinition);
     outFile.createSync();
-    outFile.writeAsStringSync(generateCode(out));
+    outFile.writeAsStringSync(codeGenerator(out));
     collector.addGeneratedFile(outFile);
 
     if (serverCode) {

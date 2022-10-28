@@ -1,10 +1,10 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
 
 import 'class_analyzer.dart';
 import 'class_generator.dart';
 import 'code_cleaner.dart';
 import 'config.dart';
-import 'dart_format.dart';
 import 'protocol_analyzer.dart';
 import 'protocol_generator.dart';
 import 'code_analysis_collector.dart';
@@ -16,6 +16,8 @@ Future<void> performGenerate({
   String? changedFile,
 }) async {
   if (!config.load()) return;
+
+  String generator(spec) => generateCode(spec, dartFormat);
 
   print('Running serverpod generate.');
 
@@ -56,6 +58,7 @@ Future<void> performGenerate({
     classDefinitions: classDefinitions,
     collector: collector,
     protocolDefinition: protocolDefinition,
+    codeGenerator: generator,
   );
 
   collector.printErrors();
@@ -68,6 +71,7 @@ Future<void> performGenerate({
     verbose: verbose,
     protocolDefinition: protocolDefinition,
     collector: collector,
+    codeGenerator: generator,
   );
 
   if (verbose) {
@@ -77,17 +81,12 @@ Future<void> performGenerate({
     verbose: verbose,
     collector: collector,
   );
-
-  if (dartFormat) {
-    if (verbose) {
-      print('Dart format.');
-    }
-    performDartFormat(verbose);
-  }
 }
 
-String generateCode(Spec spec) {
-  return '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+typedef CodeGenerator = String Function(Spec spec);
+
+String generateCode(Spec spec, bool dartFormat) {
+  String code = '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: library_private_types_in_public_api
@@ -95,9 +94,10 @@ String generateCode(Spec spec) {
 
 ${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}
 ''';
-  // return '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n'
-  //     '/*   To generate run: "serverpod generate"    */\n'
-  //     '\n'
-  //     // '${DartFormatter().format('${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}')}';
-  //     '${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}';
+  try {
+    return dartFormat ? DartFormatter().format(code) : code;
+  } on FormatterException catch (e) {
+    print(e);
+  }
+  return code;
 }

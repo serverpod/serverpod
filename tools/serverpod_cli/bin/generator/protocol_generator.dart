@@ -14,6 +14,7 @@ Future<void> performGenerateProtocol({
   required bool verbose,
   required ProtocolDefinition protocolDefinition,
   required CodeAnalysisCollector collector,
+  required CodeGenerator codeGenerator,
 }) async {
   var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
 
@@ -26,13 +27,13 @@ Future<void> performGenerateProtocol({
   if (verbose) print('Writing: $filePath');
   var outFile = File(filePath);
   outFile.createSync();
-  outFile.writeAsStringSync(generateCode(protocol));
+  outFile.writeAsStringSync(codeGenerator(protocol));
   collector.addGeneratedFile(outFile);
 
   // Generate server mappings with endpoint connectors
   if (verbose) print('Generating server endpoint dispatch');
   var endpointDispatch =
-      generateCode(generator.generateServerEndpointDispatch());
+      codeGenerator(generator.generateServerEndpointDispatch());
   if (verbose) print(endpointDispatch);
 
   var endpointsFilePath =
