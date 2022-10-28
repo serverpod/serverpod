@@ -3,5 +3,5 @@ fields:
   success: bool
   key: String?
   keyId: int?
-  userInfo: protocol:UserInfo?
-  failReason: protocol:AuthenticationFailReason?
+  userInfo: UserInfo?
+  failReason: AuthenticationFailReason?

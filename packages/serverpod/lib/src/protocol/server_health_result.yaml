@@ -1,4 +1,4 @@
 class: ServerHealthResult
 fields:
-  metrics: List<protocol:ServerHealthMetric>
-  connectionInfos: List<protocol:ServerHealthConnectionInfo>
+  metrics: List<ServerHealthMetric>
+  connectionInfos: List<ServerHealthConnectionInfo>

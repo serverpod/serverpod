@@ -1,5 +1,5 @@
 class: ChatMessageChunk
 fields:
   channel: String
-  messages: List<protocol:ChatMessage>
+  messages: List<ChatMessage>
   hasOlderMessages: bool

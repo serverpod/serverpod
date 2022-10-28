@@ -1,5 +1,5 @@
 class: CachesInfo
 fields:
-  local: protocol:CacheInfo
-  localPrio: protocol:CacheInfo
-  global: protocol:CacheInfo
+  local: CacheInfo
+  localPrio: CacheInfo
+  global: CacheInfo

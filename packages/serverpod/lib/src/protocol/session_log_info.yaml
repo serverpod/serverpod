@@ -1,6 +1,6 @@
 class: SessionLogInfo
 fields:
-  sessionLogEntry: protocol:SessionLogEntry
-  queries: List<protocol:QueryLogEntry>
-  logs: List<protocol:LogEntry>
-  messages: List<protocol:MessageLogEntry>
+  sessionLogEntry: SessionLogEntry
+  queries: List<QueryLogEntry>
+  logs: List<LogEntry>
+  messages: List<MessageLogEntry>

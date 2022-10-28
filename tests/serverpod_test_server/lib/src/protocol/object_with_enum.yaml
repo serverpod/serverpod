@@ -1,8 +1,8 @@
 class: ObjectWithEnum
 table: object_with_enum
 fields:
-  testEnum: protocol:TestEnum
-  nullableEnum: protocol:TestEnum?
-  enumList: List<protocol:TestEnum>
-  nullableEnumList: List<protocol:TestEnum?>
-  enumListList: List<List<protocol:TestEnum>>
+  testEnum: TestEnum
+  nullableEnum: TestEnum?
+  enumList: List<TestEnum>
+  nullableEnumList: List<TestEnum?>
+  enumListList: List<List<TestEnum>>

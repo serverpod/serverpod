@@ -9,7 +9,7 @@ fields:
   removed: bool
   clientMessageId: int?, api
   sent: bool?, api
-  attachments: List<protocol:ChatMessageAttachment>?
+  attachments: List<ChatMessageAttachment>?
 indexes:
   serverpod_chat_message_channel_idx:
     fields: channel

@@ -3,4 +3,4 @@ fields:
   module: String?
   endpoint: String?
   method: String?
-  logSettings: protocol:LogSettings
+  logSettings: LogSettings

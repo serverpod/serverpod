@@ -1,6 +1,6 @@
 class: ChatJoinedChannel
 fields:
   channel: String
-  initialMessageChunk: protocol:ChatMessageChunk
+  initialMessageChunk: ChatMessageChunk
   lastReadMessageId: int
   userInfo: module:auth:UserInfo

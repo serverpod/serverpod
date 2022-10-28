@@ -18,18 +18,18 @@ fields:
   aByteData: ByteData
   aNullableByteData: ByteData?
 
-  anObject: protocol:SimpleData
-  aNullableObject: protocol:SimpleData?
+  anObject: SimpleData
+  aNullableObject: SimpleData?
 
   anIntList: List<int>
   aNullableIntList: List<int>?
   aListWithNullableInts: List<int?>
   aNullableListWithNullableInts: List<int?>?
 
-  anObjectList: List<protocol:SimpleData>
-  aNullableObjectList: List<protocol:SimpleData>?
-  aListWithNullableObjects: List<protocol:SimpleData?>
-  aNullableListWithNullableObjects: List<protocol:SimpleData?>?
+  anObjectList: List<SimpleData>
+  aNullableObjectList: List<SimpleData>?
+  aListWithNullableObjects: List<SimpleData?>
+  aNullableListWithNullableObjects: List<SimpleData?>?
 
   aDateTimeList: List<DateTime>
   aNullableDateTimeList: List<DateTime>?

@@ -996,7 +996,7 @@ enum FieldScope {
 
 class FieldDefinition {
   final String name;
-  final TypeDefinition type;
+  TypeDefinition type;
 
   final FieldScope scope;
   final String? parentTable;

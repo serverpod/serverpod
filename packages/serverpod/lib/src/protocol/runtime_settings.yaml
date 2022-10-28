@@ -1,7 +1,7 @@
 class: RuntimeSettings
 table: serverpod_runtime_settings
 fields:
-  logSettings: protocol:LogSettings
-  logSettingsOverrides: List<protocol:LogSettingsOverride>
+  logSettings: LogSettings
+  logSettingsOverrides: List<LogSettingsOverride>
   logServiceCalls: bool
   logMalformedCalls: bool
