@@ -41,14 +41,19 @@ class MessageCentral {
     String channelName,
     SerializableEntity message, {
     bool local = false,
+    bool ignoreTypeIncompatibility = false,
   }) {
     if (local) {
       // Handle internally in this server instance
       var channel = _channels[channelName];
       if (channel == null) return;
 
-      //TODO: Decide if we want to throw or return here...
-      if (message.runtimeType != channel.messageType) return;
+      assert(
+          ignoreTypeIncompatibility ||
+              message.runtimeType == channel.messageType,
+          'The channel $channelName handles ${channel.messageType} messages.\n'
+          'So a message of type ${message.runtimeType} should not be added to this channel.\n'
+          'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
 
       for (var sessionCallback in channel.callbacks) {
         sessionCallback(message);
@@ -83,11 +88,16 @@ class MessageCentral {
     String channelName,
     MessageCentralListenerCallback<T> listener, {
     bool local = false,
+    bool ignoreTypeIncompatibility = false,
   }) {
     // Find or create channel
     var channel = _getChannel<T>(channelName);
-    //TODO: Decide if we want to throw or return here...
-    if (T != channel.messageType) return;
+
+    assert(
+        ignoreTypeIncompatibility || T == channel.messageType,
+        'The channel $channelName handles ${channel.messageType} messages.\n'
+        'So a listener for messages of type $T should not be added to this channel.\n'
+        'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
 
     channel.callbacks
         .add(_SessionBoundMessageCentralListenerCallback(session, listener));
