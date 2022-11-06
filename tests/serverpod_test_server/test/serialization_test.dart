@@ -50,7 +50,7 @@ void main() {
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aString, equals('42'));
       expect(unpacked.aDouble, equals(42.42));
-      expect(unpacked.aDateTime, equals(DateTime.utc(1976).toLocal()));
+      expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aByteData!.lengthInBytes, equals(256));
       for (var i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
@@ -123,7 +123,7 @@ void main() {
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aBool, equals(true));
       expect(unpacked.aString, equals('foo'));
-      expect(unpacked.aDateTime, equals(DateTime.utc(1976).toLocal()));
+      expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aByteData.lengthInBytes, equals(256));
       expect(unpacked.anObject.num, equals(42));
 
@@ -222,7 +222,7 @@ void main() {
       expect(unpacked.aNullableDouble, equals(42.42));
       expect(unpacked.aNullableBool, equals(true));
       expect(unpacked.aNullableString, equals('foo'));
-      expect(unpacked.aNullableDateTime, equals(DateTime.utc(1976).toLocal()));
+      expect(unpacked.aNullableDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aNullableByteData!.lengthInBytes, equals(256));
       expect(unpacked.aNullableObject!.num, equals(42));
 
@@ -275,9 +275,9 @@ void main() {
         '1': 'String 1',
         '2': 'String 2'
       }, dateTimeMap: {
-        '2020': DateTime(2020),
-        '2021': DateTime(2021),
-        '2022': DateTime(2022),
+        '2020': DateTime.utc(2020),
+        '2021': DateTime.utc(2021),
+        '2022': DateTime.utc(2022),
       }, byteDataMap: {
         '0': createByteData(),
         '1': createByteData(),
@@ -294,9 +294,9 @@ void main() {
         '1': null,
         '2': 'String 2'
       }, nullableDateTimeMap: {
-        '2020': DateTime(2020),
+        '2020': DateTime.utc(2020),
         '2021': null,
-        '2022': DateTime(2022),
+        '2022': DateTime.utc(2022),
       }, nullableByteDataMap: {
         '0': createByteData(),
         '1': null,
@@ -320,9 +320,9 @@ void main() {
       expect(unpacked.stringMap['1'], equals('String 1'));
       expect(unpacked.stringMap['2'], equals('String 2'));
 
-      expect(unpacked.dateTimeMap['2020'], equals(DateTime(2020)));
-      expect(unpacked.dateTimeMap['2021'], equals(DateTime(2021)));
-      expect(unpacked.dateTimeMap['2022'], equals(DateTime(2022)));
+      expect(unpacked.dateTimeMap['2020'], equals(DateTime.utc(2020)));
+      expect(unpacked.dateTimeMap['2021'], equals(DateTime.utc(2021)));
+      expect(unpacked.dateTimeMap['2022'], equals(DateTime.utc(2022)));
 
       expect(unpacked.byteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.byteDataMap['1']!.lengthInBytes, equals(256));
@@ -339,9 +339,9 @@ void main() {
       expect(unpacked.nullableStringMap['1'], isNull);
       expect(unpacked.nullableStringMap['2'], equals('String 2'));
 
-      expect(unpacked.nullableDateTimeMap['2020'], equals(DateTime(2020)));
+      expect(unpacked.nullableDateTimeMap['2020'], equals(DateTime.utc(2020)));
       expect(unpacked.nullableDateTimeMap['2021'], isNull);
-      expect(unpacked.nullableDateTimeMap['2022'], equals(DateTime(2022)));
+      expect(unpacked.nullableDateTimeMap['2022'], equals(DateTime.utc(2022)));
 
       expect(unpacked.nullableByteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.nullableByteDataMap['1'], isNull);

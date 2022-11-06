@@ -231,9 +231,9 @@ void main() {
         DateTime.utc(2022),
       ]);
       expect(result.length, equals(3));
-      expect(result[0], equals(DateTime.utc(2020).toLocal()));
-      expect(result[1], equals(DateTime.utc(2021).toLocal()));
-      expect(result[2], equals(DateTime.utc(2022).toLocal()));
+      expect(result[0], equals(DateTime.utc(2020)));
+      expect(result[1], equals(DateTime.utc(2021)));
+      expect(result[2], equals(DateTime.utc(2022)));
     });
 
     test('List<DateTime?> parameter and return type', () async {
@@ -245,9 +245,9 @@ void main() {
       ]);
       expect(result, isNotNull);
       expect(result.length, equals(3));
-      expect(result[0], equals(DateTime.utc(2020).toLocal()));
+      expect(result[0], equals(DateTime.utc(2020)));
       expect(result[1], isNull);
-      expect(result[2], equals(DateTime.utc(2022).toLocal()));
+      expect(result[2], equals(DateTime.utc(2022)));
     });
 
     test('List<ByteData> parameter and return type', () async {
@@ -532,9 +532,9 @@ void main() {
         '2022': DateTime.utc(2022),
       });
       expect(result.length, equals(3));
-      expect(result['2020'], equals(DateTime.utc(2020).toLocal()));
-      expect(result['2021'], equals(DateTime.utc(2021).toLocal()));
-      expect(result['2022'], equals(DateTime.utc(2022).toLocal()));
+      expect(result['2020'], equals(DateTime.utc(2020)));
+      expect(result['2021'], equals(DateTime.utc(2021)));
+      expect(result['2022'], equals(DateTime.utc(2022)));
     });
 
     test('Map<String, DateTime?> parameter and return type', () async {
@@ -546,9 +546,9 @@ void main() {
       });
       expect(result, isNotNull);
       expect(result.length, equals(3));
-      expect(result['2020'], equals(DateTime.utc(2020).toLocal()));
+      expect(result['2020'], equals(DateTime.utc(2020)));
       expect(result['2021'], isNull);
-      expect(result['2022'], equals(DateTime.utc(2022).toLocal()));
+      expect(result['2022'], equals(DateTime.utc(2022)));
     });
 
     test('Map<String, ByteData> parameter and return type', () async {
@@ -679,7 +679,7 @@ void main() {
   });
 
   group('Basic types', () {
-    var dateTime = DateTime(1976, 9, 10, 2, 10);
+    var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
 
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
@@ -735,7 +735,7 @@ void main() {
 
     test('Type DateTime', () async {
       var result = await client.basicTypes.testDateTime(dateTime);
-      expect(result!.toLocal(), equals(dateTime));
+      expect(result!, equals(dateTime));
     });
 
     test('Type null DateTime', () async {
@@ -756,7 +756,7 @@ void main() {
 
   group('Database', () {
     test('Write and read', () async {
-      var dateTime = DateTime(1976, 9, 10, 2, 10);
+      var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
 
       // TODO: Support ByteData in database store
       var types = Types(
@@ -788,7 +788,7 @@ void main() {
         expect(storedTypes.anInt, equals(42));
         expect(storedTypes.aDouble, equals(1.5));
         expect(storedTypes.aString, equals('Foo'));
-        expect(storedTypes.aDateTime?.toLocal(), equals(dateTime));
+        expect(storedTypes.aDateTime, equals(dateTime));
         // expect(storedTypes.aByteData!.lengthInBytes, equals(256));
       }
     });

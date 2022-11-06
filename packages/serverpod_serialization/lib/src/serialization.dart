@@ -57,10 +57,10 @@ abstract class SerializationManager {
       return data;
     } else if (t == DateTime) {
       //TODO: decide if DateTime should be deserialized to utc on the server side
-      return DateTime.parse(data).toLocal() as T;
+      return DateTime.parse(data).toUtc() as T;
     } else if (t == getType<DateTime?>()) {
       //TODO: decide if DateTime should be deserialized to utc on the server side
-      return DateTime.tryParse(data ?? '')?.toLocal() as T;
+      return DateTime.tryParse(data ?? '')?.toUtc() as T;
     } else if (t == ByteData) {
       return (data as String).base64DecodedByteData()! as T;
     } else if (t == getType<ByteData?>()) {
