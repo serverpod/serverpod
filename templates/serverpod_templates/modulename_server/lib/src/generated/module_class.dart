@@ -18,10 +18,8 @@ class ModuleClass extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ModuleClass(
-      name: serializationManager
-          .deserialize<String>(jsonSerialization['name']),
-      data:
-          serializationManager.deserialize<int>(jsonSerialization['data']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      data: serializationManager.deserialize<int>(jsonSerialization['data']),
     );
   }
 
