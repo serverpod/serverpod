@@ -6,14 +6,14 @@ import 'session.dart';
 /// Superclass of a [FutureCall], override the [invoke] method to create a
 /// custom [FutureCall]. The call also needs to be registered with the top
 /// [ServerPod] object before starting the [Server].
-abstract class FutureCall<DataType extends SerializableEntity?> {
+abstract class FutureCall<T extends SerializableEntity?> {
   late String _name;
 
   /// The name of the call.
   String get name => _name;
 
   /// The type of the data provided by when calling [invoke].
-  Type get dataType => DataType;
+  Type get dataType => T;
 
   late Server _server;
 
@@ -28,5 +28,5 @@ abstract class FutureCall<DataType extends SerializableEntity?> {
   }
 
   /// Override this method to do any custom work in a [FutureCall].
-  Future<void> invoke(Session session, DataType object);
+  Future<void> invoke(Session session, T object);
 }
