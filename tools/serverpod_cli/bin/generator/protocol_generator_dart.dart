@@ -120,116 +120,121 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
       );
     }
 
-    library.body.add(Class((c) => c
-      ..name = config.type == PackageType.server ? 'Client' : 'Caller'
-      ..extend = config.type == PackageType.server
-          ? refer('ServerpodClient', serverpodUrl(false))
-          : refer('ModuleEndpointCaller', serverpodUrl(false))
-      ..fields.addAll([
-        for (var endpointDef in protocolDefinition.endpoints)
-          Field((f) => f
-            ..late = true
-            ..modifier = FieldModifier.final$
-            ..name = endpointDef.name
-            ..type = refer(_endpointClassName(endpointDef.name))),
-        if (hasModules)
-          Field((f) => f
-            ..late = true
-            ..modifier = FieldModifier.final$
-            ..name = 'modules'
-            ..type = refer('_Modules')),
-      ])
-      ..constructors.add(Constructor((c) {
-        if (config.type == PackageType.server) {
-          c
-            ..requiredParameters.add(Parameter((p) => p
-              ..type = refer('String')
-              ..name = 'host'))
-            ..optionalParameters.addAll([
-              Parameter((p) => p
-                ..name = 'context'
-                ..named = true
-                ..type = TypeReference((t) => t
-                  ..symbol = 'SecurityContext'
-                  ..url = 'dart:io'
-                  ..isNullable = true)),
-              Parameter((p) => p
-                ..name = 'errorHandler'
-                ..named = true
-                ..type = TypeReference((t) => t
-                  ..symbol = 'ServerpodClientErrorCallback'
-                  ..url = serverpodUrl(false)
-                  ..isNullable = true)),
-              Parameter((p) => p
-                ..name = 'authenticationKeyManager'
-                ..named = true
-                ..type = TypeReference((t) => t
-                  ..symbol = 'AuthenticationKeyManager'
-                  ..url = serverpodUrl(false)
-                  ..isNullable = true)),
-            ])
-            ..initializers.add(refer('super').call([
-              refer('host'),
-              refer('Protocol', 'protocol.dart').call([])
-            ], {
-              'context': refer('context'),
-              'errorHandler': refer('errorHandler'),
-              'authenticationKeyManager': refer('authenticationKeyManager'),
-            }).code);
-        } else {
-          c
-            ..requiredParameters.add(Parameter((p) => p
-              ..type = refer('ServerpodClientShared', serverpodUrl(false))
-              ..name = 'client'))
-            ..initializers.add(refer('super').call([refer('client')]).code);
-        }
-        c.body = Block.of([
-          for (var endpointDef in protocolDefinition.endpoints)
-            refer(endpointDef.name)
-                .assign(refer(_endpointClassName(endpointDef.name))
-                    .call([refer('this')]))
-                .statement,
-          if (hasModules)
-            refer('modules')
-                .assign(refer('_Modules').call([refer('this')]))
-                .statement,
-        ]);
-      }))
-      ..methods.addAll([
-        Method(
-          (m) => m
-            ..name = 'endpointRefLookup'
-            ..annotations.add(refer('override'))
-            ..type = MethodType.getter
-            ..returns = TypeReference((t) => t
-              ..symbol = 'Map'
-              ..types.addAll([
-                refer('String'),
-                refer('EndpointRef', serverpodUrl(false)),
-              ]))
-            ..body = literalMap({
+    library.body.add(
+      Class(
+        (c) => c
+          ..name = config.type == PackageType.server ? 'Client' : 'Caller'
+          ..extend = config.type == PackageType.server
+              ? refer('ServerpodClient', serverpodUrl(false))
+              : refer('ModuleEndpointCaller', serverpodUrl(false))
+          ..fields.addAll([
+            for (var endpointDef in protocolDefinition.endpoints)
+              Field((f) => f
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..name = endpointDef.name
+                ..type = refer(_endpointClassName(endpointDef.name))),
+            if (hasModules)
+              Field((f) => f
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..name = 'modules'
+                ..type = refer('_Modules')),
+          ])
+          ..constructors.add(Constructor((c) {
+            if (config.type == PackageType.server) {
+              c
+                ..requiredParameters.add(Parameter((p) => p
+                  ..type = refer('String')
+                  ..name = 'host'))
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..name = 'context'
+                    ..named = true
+                    ..type = TypeReference((t) => t
+                      ..symbol = 'SecurityContext'
+                      ..url = 'dart:io'
+                      ..isNullable = true)),
+                  Parameter((p) => p
+                    ..name = 'errorHandler'
+                    ..named = true
+                    ..type = TypeReference((t) => t
+                      ..symbol = 'ServerpodClientErrorCallback'
+                      ..url = serverpodUrl(false)
+                      ..isNullable = true)),
+                  Parameter((p) => p
+                    ..name = 'authenticationKeyManager'
+                    ..named = true
+                    ..type = TypeReference((t) => t
+                      ..symbol = 'AuthenticationKeyManager'
+                      ..url = serverpodUrl(false)
+                      ..isNullable = true)),
+                ])
+                ..initializers.add(refer('super').call([
+                  refer('host'),
+                  refer('Protocol', 'protocol.dart').call([])
+                ], {
+                  'context': refer('context'),
+                  'errorHandler': refer('errorHandler'),
+                  'authenticationKeyManager': refer('authenticationKeyManager'),
+                }).code);
+            } else {
+              c
+                ..requiredParameters.add(Parameter((p) => p
+                  ..type = refer('ServerpodClientShared', serverpodUrl(false))
+                  ..name = 'client'))
+                ..initializers.add(refer('super').call([refer('client')]).code);
+            }
+            c.body = Block.of([
               for (var endpointDef in protocolDefinition.endpoints)
-                '$modulePrefix${endpointDef.name}': refer(endpointDef.name)
-            }).code,
-        ),
-        if (config.type == PackageType.server)
-          Method(
-            (m) => m
-              ..name = 'moduleLookup'
-              ..annotations.add(refer('override'))
-              ..type = MethodType.getter
-              ..returns = TypeReference((t) => t
-                ..symbol = 'Map'
-                ..types.addAll([
-                  refer('String'),
-                  refer('ModuleEndpointCaller', serverpodUrl(false)),
-                ]))
-              ..body = literalMap({
-                for (var module in config.modules)
-                  module.nickname: refer('modules').property(module.nickname),
-              }).code,
-          ),
-      ])));
+                refer(endpointDef.name)
+                    .assign(refer(_endpointClassName(endpointDef.name))
+                        .call([refer('this')]))
+                    .statement,
+              if (hasModules)
+                refer('modules')
+                    .assign(refer('_Modules').call([refer('this')]))
+                    .statement,
+            ]);
+          }))
+          ..methods.addAll([
+            Method(
+              (m) => m
+                ..name = 'endpointRefLookup'
+                ..annotations.add(refer('override'))
+                ..type = MethodType.getter
+                ..returns = TypeReference((t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    refer('String'),
+                    refer('EndpointRef', serverpodUrl(false)),
+                  ]))
+                ..body = literalMap({
+                  for (var endpointDef in protocolDefinition.endpoints)
+                    '$modulePrefix${endpointDef.name}': refer(endpointDef.name)
+                }).code,
+            ),
+            if (config.type == PackageType.server)
+              Method(
+                (m) => m
+                  ..name = 'moduleLookup'
+                  ..annotations.add(refer('override'))
+                  ..type = MethodType.getter
+                  ..returns = TypeReference((t) => t
+                    ..symbol = 'Map'
+                    ..types.addAll([
+                      refer('String'),
+                      refer('ModuleEndpointCaller', serverpodUrl(false)),
+                    ]))
+                  ..body = literalMap({
+                    for (var module in config.modules)
+                      module.nickname:
+                          refer('modules').property(module.nickname),
+                  }).code,
+              ),
+          ]),
+      ),
+    );
 
     return library.build();
   }
