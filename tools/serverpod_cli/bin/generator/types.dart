@@ -89,58 +89,60 @@ class TypeDefinition {
       );
 
   /// Generate a [TypeReference] from this definition.
-  TypeReference reference(bool serverCode, [bool? nullable]) => TypeReference(
-        (t) {
-          if (url?.startsWith('module:') ?? false) {
-            // module:nickname: reference
-            var moduleName = url?.substring(7);
-            var module = config.modules.cast<ModuleConfig?>().firstWhere(
-                  (m) => m?.nickname == moduleName,
-                  orElse: () => null,
-                );
-            if (module == null) {
-              //TODO: add to collector
-              throw 'Module with nickname $moduleName not found in config!';
-            }
-            t.url =
-                'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
-          } else if (url == 'serverpod') {
-            // serverpod: reference
-            t.url = serverpodUrl(serverCode);
-          } else if (url?.startsWith('project:') ?? false) {
-            // project:path:reference
-            var split = url!.split(':');
-            t.url =
-                'package:${serverCode ? config.serverPackage : config.clientPackage}/${split[1]}';
-          } else if (url == 'protocol') {
-            // protocol: reference
-            t.url = 'protocol.dart';
-          } else if (!serverCode &&
-              (url?.startsWith('package:${config.serverPackage}') ?? false)) {
-            // import from the server package
-            t.url = url
-                ?.replaceFirst('package:${config.serverPackage}',
-                    'package:${config.clientPackage}')
-                .replaceFirst('src/generated/', 'src/protocol/');
-          } else if (config.modules.any(
-              (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
-            // endpoint definition references from an module
-            var module = config.modules.firstWhere(
-                (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
-            t.url = url!.contains('/src/generated/')
-                ? 'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart'
-                : serverCode
-                    ? url
-                    : url?.replaceFirst('package:${module.serverPackage}',
-                        'package:${module.clientPackage}');
-          } else {
-            t.url = url;
+  TypeReference reference(bool serverCode, [bool? nullable]) {
+    return TypeReference(
+      (t) {
+        if (url?.startsWith('module:') ?? false) {
+          // module:nickname: reference
+          var moduleName = url?.substring(7);
+          var module = config.modules.cast<ModuleConfig?>().firstWhere(
+                (m) => m?.nickname == moduleName,
+                orElse: () => null,
+              );
+          if (module == null) {
+            //TODO: add to collector
+            throw 'Module with nickname $moduleName not found in config!';
           }
-          t.isNullable = nullable ?? this.nullable;
-          t.symbol = className;
-          t.types.addAll(generics.map((e) => e.reference(serverCode)));
-        },
-      );
+          t.url =
+              'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
+        } else if (url == 'serverpod') {
+          // serverpod: reference
+          t.url = serverpodUrl(serverCode);
+        } else if (url?.startsWith('project:') ?? false) {
+          // project:path:reference
+          var split = url!.split(':');
+          t.url =
+              'package:${serverCode ? config.serverPackage : config.clientPackage}/${split[1]}';
+        } else if (url == 'protocol') {
+          // protocol: reference
+          t.url = 'protocol.dart';
+        } else if (!serverCode &&
+            (url?.startsWith('package:${config.serverPackage}') ?? false)) {
+          // import from the server package
+          t.url = url
+              ?.replaceFirst('package:${config.serverPackage}',
+                  'package:${config.clientPackage}')
+              .replaceFirst('src/generated/', 'src/protocol/');
+        } else if (config.modules.any(
+            (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
+          // endpoint definition references from an module
+          var module = config.modules.firstWhere(
+              (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
+          t.url = url!.contains('/src/generated/')
+              ? 'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart'
+              : serverCode
+                  ? url
+                  : url?.replaceFirst('package:${module.serverPackage}',
+                      'package:${module.clientPackage}');
+        } else {
+          t.url = url;
+        }
+        t.isNullable = nullable ?? this.nullable;
+        t.symbol = className;
+        t.types.addAll(generics.map((e) => e.reference(serverCode)));
+      },
+    );
+  }
 
   String get databaseType {
     //TODO: add all suported types here
