@@ -174,8 +174,8 @@ class TypeDefinition {
     if (dartType?.isDartAsyncFuture ?? className == 'Future') {
       return generics.first;
     } else {
-      //TODO: better error
-      throw 'Not a Future';
+      throw FormatException(
+          '$this is not a Future, so Future cant be stripped.');
     }
   }
 
@@ -299,6 +299,14 @@ class TypeDefinition {
             url == null && classDefinitions.any((c) => c.className == className)
                 ? 'protocol'
                 : url);
+  }
+
+  @override
+  String toString() {
+    var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
+    var nullableString = nullable ? '?' : '';
+    var urlString = url != null ? '$url:' : '';
+    return '$urlString$className$genericsString$nullableString';
   }
 }
 
