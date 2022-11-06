@@ -223,7 +223,7 @@ class ClassGeneratorDart extends ClassGenerator {
                   const Code('}'),
                 ])));
 
-              //find
+              // find
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'find'
@@ -322,7 +322,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //find single row
+              // find single row
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'findSingleRow'
@@ -401,7 +401,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //findById
+              // findById
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'findById'
@@ -431,7 +431,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //delete
+              // delete
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'delete'
@@ -474,7 +474,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //deleteRow
+              // deleteRow
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'deleteRow'
@@ -513,7 +513,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //update
+              // update
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'update'
@@ -552,7 +552,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //insert
+              // insert
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'insert'
