@@ -211,7 +211,6 @@ class Serverpod {
     this.healthCheckHandler,
   }) {
     _internalSerializationManager = internal.Protocol();
-    // serializationManager.merge(_internalSerializationManager);
 
     // Create a temporary log manager with default settings, until we have loaded settings from the database.
     _logManager = LogManager(_defaultRuntimeSettings);
