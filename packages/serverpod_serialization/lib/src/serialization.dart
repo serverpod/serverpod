@@ -105,7 +105,7 @@ abstract class SerializationManager {
       case 'ByteData':
         return deserialize<ByteData>(data['data']);
     }
-    //TODO: handle missing type mapping
+    throw TypeError();
   }
 
   /// Serialize the provided [object] to an Json [String].
