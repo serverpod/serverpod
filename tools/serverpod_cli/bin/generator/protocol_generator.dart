@@ -67,14 +67,14 @@ abstract class ProtocolGenerator {
     // Endpoint class
     library.body.add(Class((c) => c
       ..name = 'Endpoints'
-      ..extend = refer('EndpointDispatch', serverPodUrl(true))
+      ..extend = refer('EndpointDispatch', serverpodUrl(true))
       // Init method
       ..methods.add(Method.returnsVoid((m) => m
         ..name = 'initializeEndpoints'
         ..annotations.add(refer('override'))
         ..requiredParameters.add(Parameter(((p) => p
           ..name = 'server'
-          ..type = refer('Server', serverPodUrl(true)))))
+          ..type = refer('Server', serverpodUrl(true)))))
         ..body = Block.of([
           // Endpoints lookup map
           refer('var endpoints')
@@ -91,14 +91,14 @@ abstract class ProtocolGenerator {
                                 ? refer('null')
                                 : literalString(config.name)
                           ])
-              }, refer('String'), refer('Endpoint', serverPodUrl(true))))
+              }, refer('String'), refer('Endpoint', serverpodUrl(true))))
               .statement,
           // Connectors
           for (var endpoint in protocolDefinition.endpoints)
             refer('connectors')
                 .index(literalString(endpoint.name))
                 .assign(
-                    refer('EndpointConnector', serverPodUrl(true)).call([], {
+                    refer('EndpointConnector', serverpodUrl(true)).call([], {
                   'name': literalString(endpoint.name),
                   'endpoint': refer('endpoints')
                       .index(literalString(endpoint.name))
@@ -106,7 +106,7 @@ abstract class ProtocolGenerator {
                   'methodConnectors': literalMap({
                     for (var method in endpoint.methods)
                       literalString(method.name):
-                          refer('MethodConnector', serverPodUrl(true))
+                          refer('MethodConnector', serverpodUrl(true))
                               .call([], {
                         'name': literalString(method.name),
                         'params': literalMap({
@@ -116,10 +116,10 @@ abstract class ProtocolGenerator {
                             ...method.parametersNamed,
                           ])
                             literalString(param.name): refer(
-                                    'ParameterDescription', serverPodUrl(true))
+                                    'ParameterDescription', serverpodUrl(true))
                                 .call([], {
                               'name': literalString(param.name),
-                              'type': refer('getType', serverPodUrl(true))
+                              'type': refer('getType', serverpodUrl(true))
                                   .call([], {}, [param.type.reference(true)]),
                               'nullable': literalBool(param.type.nullable),
                             })
@@ -129,7 +129,7 @@ abstract class ProtocolGenerator {
                             ..requiredParameters.addAll([
                               Parameter((p) => p
                                 ..name = 'session'
-                                ..type = refer('Session', serverPodUrl(true))),
+                                ..type = refer('Session', serverpodUrl(true))),
                               Parameter((p) => p
                                 ..name = 'params'
                                 ..type = TypeReference((t) => t

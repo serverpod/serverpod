@@ -106,7 +106,7 @@ class TypeDefinition {
                 'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
           } else if (url == 'serverpod') {
             // serverpod: reference
-            t.url = serverPodUrl(serverCode);
+            t.url = serverpodUrl(serverCode);
           } else if (url?.startsWith('project:') ?? false) {
             // project:path:reference
             var split = url!.split(':');
@@ -181,7 +181,7 @@ class TypeDefinition {
       return [
         MapEntry(
           nullable
-              ? refer('getType', serverPodUrl(serverCode))
+              ? refer('getType', serverpodUrl(serverCode))
                   .call([], {}, [reference(serverCode)])
               : reference(serverCode),
           Block.of([
@@ -210,7 +210,7 @@ class TypeDefinition {
       return [
         MapEntry(
           nullable
-              ? refer('getType', serverPodUrl(serverCode))
+              ? refer('getType', serverpodUrl(serverCode))
                   .call([], {}, [reference(serverCode)])
               : reference(serverCode),
           Block.of([
@@ -265,7 +265,7 @@ class TypeDefinition {
       return [
         MapEntry(
             nullable
-                ? refer('getType', serverPodUrl(serverCode))
+                ? refer('getType', serverpodUrl(serverCode))
                     .call([], {}, [reference(serverCode)])
                 : reference(serverCode),
             Code.scope((a) => nullable

@@ -27,7 +27,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         endpoint
           ..docs.add(endpointDef.documentationComment ?? '')
           ..name = endpointClassName
-          ..extend = refer('EndpointRef', serverPodUrl(false));
+          ..extend = refer('EndpointRef', serverpodUrl(false));
 
         endpoint.methods.add(Method((m) => m
           ..annotations.add(refer('override'))
@@ -123,8 +123,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     library.body.add(Class((c) => c
       ..name = config.type == PackageType.server ? 'Client' : 'Caller'
       ..extend = config.type == PackageType.server
-          ? refer('ServerpodClient', serverPodUrl(false))
-          : refer('ModuleEndpointCaller', serverPodUrl(false))
+          ? refer('ServerpodClient', serverpodUrl(false))
+          : refer('ModuleEndpointCaller', serverpodUrl(false))
       ..fields.addAll([
         for (var endpointDef in protocolDefinition.endpoints)
           Field((f) => f
@@ -158,14 +158,14 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                 ..named = true
                 ..type = TypeReference((t) => t
                   ..symbol = 'ServerpodClientErrorCallback'
-                  ..url = serverPodUrl(false)
+                  ..url = serverpodUrl(false)
                   ..isNullable = true)),
               Parameter((p) => p
                 ..name = 'authenticationKeyManager'
                 ..named = true
                 ..type = TypeReference((t) => t
                   ..symbol = 'AuthenticationKeyManager'
-                  ..url = serverPodUrl(false)
+                  ..url = serverpodUrl(false)
                   ..isNullable = true)),
             ])
             ..initializers.add(refer('super').call([
@@ -179,7 +179,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
         } else {
           c
             ..requiredParameters.add(Parameter((p) => p
-              ..type = refer('ServerpodClientShared', serverPodUrl(false))
+              ..type = refer('ServerpodClientShared', serverpodUrl(false))
               ..name = 'client'))
             ..initializers.add(refer('super').call([refer('client')]).code);
         }
@@ -205,7 +205,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
               ..symbol = 'Map'
               ..types.addAll([
                 refer('String'),
-                refer('EndpointRef', serverPodUrl(false)),
+                refer('EndpointRef', serverpodUrl(false)),
               ]))
             ..body = literalMap({
               for (var endpointDef in protocolDefinition.endpoints)
@@ -222,7 +222,7 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                 ..symbol = 'Map'
                 ..types.addAll([
                   refer('String'),
-                  refer('ModuleEndpointCaller', serverPodUrl(false)),
+                  refer('ModuleEndpointCaller', serverpodUrl(false)),
                 ]))
               ..body = literalMap({
                 for (var module in config.modules)

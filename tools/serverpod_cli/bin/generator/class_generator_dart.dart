@@ -5,7 +5,7 @@ import 'config.dart';
 import 'protocol_definition.dart';
 import 'types.dart';
 
-String serverPodUrl(bool serverCode) {
+String serverpodUrl(bool serverCode) {
   return serverCode
       ? 'package:serverpod/serverpod.dart'
       : 'package:serverpod_client/serverpod_client.dart';
@@ -68,7 +68,7 @@ class ClassGeneratorDart extends ClassGenerator {
             ));
           } else {
             classBuilder.extend =
-                refer('SerializableEntity', serverPodUrl(serverCode));
+                refer('SerializableEntity', serverpodUrl(serverCode));
           }
 
           // Fields
@@ -123,7 +123,7 @@ class ClassGeneratorDart extends ClassGenerator {
               Parameter((p) {
                 p.name = 'serializationManager';
                 p.type =
-                    refer('SerializationManager', serverPodUrl(serverCode));
+                    refer('SerializationManager', serverpodUrl(serverCode));
               }),
             ]);
             c.body = refer(className)
@@ -659,7 +659,7 @@ class ClassGeneratorDart extends ClassGenerator {
           // Expression builder
           library.body.add(FunctionType(
             (f) {
-              f.returnType = refer('Expression', serverPodUrl(serverCode));
+              f.returnType = refer('Expression', serverpodUrl(serverCode));
               f.requiredParameters.add(refer('${className}Table'));
             },
           ).toTypeDef('${className}ExpressionBuilder'));
@@ -667,7 +667,7 @@ class ClassGeneratorDart extends ClassGenerator {
           // Table class definition
           library.body.add(Class((c) {
             c.name = '${className}Table';
-            c.extend = refer('Table', serverPodUrl(serverCode));
+            c.extend = refer('Table', serverpodUrl(serverCode));
             c.constructors.add(Constructor((constructor) {
               constructor.initializers.add(refer('super')
                   .call([], {'tableName': literalString(tableName)}).code);
@@ -729,7 +729,7 @@ class ClassGeneratorDart extends ClassGenerator {
       library.body.add(
         Enum((e) {
           e.name = enumName;
-          e.mixins.add(refer('SerializableEntity', serverPodUrl(serverCode)));
+          e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {
@@ -789,8 +789,8 @@ class ClassGeneratorDart extends ClassGenerator {
     protocol
       ..name = 'Protocol'
       ..extend = serverCode
-          ? refer('SerializationManagerServer', serverPodUrl(true))
-          : refer('SerializationManager', serverPodUrl(false));
+          ? refer('SerializationManagerServer', serverpodUrl(true))
+          : refer('SerializationManager', serverpodUrl(false));
 
     protocol.constructors.addAll([
       Constructor((c) => c..name = '_'),
@@ -807,7 +807,7 @@ class ClassGeneratorDart extends ClassGenerator {
           ..symbol = 'Map'
           ..types.addAll([
             refer('Type'),
-            refer('constructor', serverPodUrl(serverCode)),
+            refer('constructor', serverpodUrl(serverCode)),
           ]))
         ..modifier = FieldModifier.final$
         ..assignment = literalMap({}).code),
@@ -842,7 +842,7 @@ class ClassGeneratorDart extends ClassGenerator {
                       '.fromJson(data'
                       '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
             for (var classInfo in classInfos)
-              refer('getType', serverPodUrl(serverCode)).call([], {}, [
+              refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
                     ..symbol = classInfo.className
@@ -948,7 +948,7 @@ class ClassGeneratorDart extends ClassGenerator {
             ..annotations.add(refer('override'))
             ..returns = TypeReference((t) => t
               ..symbol = 'Table'
-              ..url = serverPodUrl(serverCode)
+              ..url = serverpodUrl(serverCode)
               ..isNullable = true)
             ..requiredParameters.add(Parameter((p) => p
               ..name = 't'
