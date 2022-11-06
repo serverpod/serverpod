@@ -29,9 +29,7 @@ class DatabasePoolManager {
   DatabasePoolManager(
     SerializationManagerServer serializationManager,
     this.config,
-  )
-  // : tableClassMapping = serializationManager.tableClassMapping
-  {
+  ) {
     _serializationManager = serializationManager;
 
     var poolSettings = PgPoolSettings();
