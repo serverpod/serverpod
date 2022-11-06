@@ -6,15 +6,14 @@ import 'package:serverpod/serverpod.dart';
 typedef MessageCentralListenerCallback<T extends SerializableEntity> = void
     Function(T message);
 
-class _SessionBoundMessageCentralListenerCallback<
-    T extends SerializableEntity> {
+class _SessionBoundMessageCentralListenerCallback {
   final Session session;
-  final void Function(T) _callback;
+  final dynamic _callback;
 
   const _SessionBoundMessageCentralListenerCallback(
       this.session, this._callback);
 
-  void call(T data) {
+  void call(SerializableEntity data) {
     _callback(data);
   }
 }
@@ -101,7 +100,7 @@ class MessageCentral {
         'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
 
     channel.callbacks
-        .add(_SessionBoundMessageCentralListenerCallback<T>(session, listener));
+        .add(_SessionBoundMessageCentralListenerCallback(session, listener));
 
     var subscribedChannels = _sessionToChannelNamesLookup[session];
     if (subscribedChannels == null) {
@@ -174,10 +173,11 @@ class MessageCentral {
     _sessionToChannelNamesLookup.remove(session);
   }
 
-  void _removeListener<T extends SerializableEntity>(
+  void _removeListener(
     Session session,
     String channelName,
-    void Function(T) listener,
+    // An explicit type can't be used here
+    dynamic listener,
   ) {
     var channel = _channels[channelName];
     if (channel != null) {
