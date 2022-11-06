@@ -22,16 +22,14 @@ class AuthenticationResponse extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return AuthenticationResponse(
-      success: serializationManager
-          .deserializeJson<bool>(jsonSerialization['success']),
-      key: serializationManager
-          .deserializeJson<String?>(jsonSerialization['key']),
-      keyId: serializationManager
-          .deserializeJson<int?>(jsonSerialization['keyId']),
+      success:
+          serializationManager.deserialize<bool>(jsonSerialization['success']),
+      key: serializationManager.deserialize<String?>(jsonSerialization['key']),
+      keyId: serializationManager.deserialize<int?>(jsonSerialization['keyId']),
       userInfo: serializationManager
-          .deserializeJson<_i2.UserInfo?>(jsonSerialization['userInfo']),
+          .deserialize<_i2.UserInfo?>(jsonSerialization['userInfo']),
       failReason:
-          serializationManager.deserializeJson<_i2.AuthenticationFailReason?>(
+          serializationManager.deserialize<_i2.AuthenticationFailReason?>(
               jsonSerialization['failReason']),
     );
   }

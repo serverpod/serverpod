@@ -19,11 +19,10 @@ class Channel extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return Channel(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      name: serializationManager
-          .deserializeJson<String>(jsonSerialization['name']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
+          .deserialize<String>(jsonSerialization['channel']),
     );
   }
 

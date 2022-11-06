@@ -19,9 +19,9 @@ class EmailPasswordReset extends _i1.SerializableEntity {
   ) {
     return EmailPasswordReset(
       userName: serializationManager
-          .deserializeJson<String>(jsonSerialization['userName']),
-      email: serializationManager
-          .deserializeJson<String>(jsonSerialization['email']),
+          .deserialize<String>(jsonSerialization['userName']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
     );
   }
 

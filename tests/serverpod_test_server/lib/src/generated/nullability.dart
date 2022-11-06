@@ -52,85 +52,81 @@ class Nullability extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return Nullability(
-      anInt:
-          serializationManager.deserializeJson<int>(jsonSerialization['anInt']),
+      anInt: serializationManager.deserialize<int>(jsonSerialization['anInt']),
       aNullableInt: serializationManager
-          .deserializeJson<int?>(jsonSerialization['aNullableInt']),
+          .deserialize<int?>(jsonSerialization['aNullableInt']),
       aDouble: serializationManager
-          .deserializeJson<double>(jsonSerialization['aDouble']),
+          .deserialize<double>(jsonSerialization['aDouble']),
       aNullableDouble: serializationManager
-          .deserializeJson<double?>(jsonSerialization['aNullableDouble']),
-      aBool: serializationManager
-          .deserializeJson<bool>(jsonSerialization['aBool']),
+          .deserialize<double?>(jsonSerialization['aNullableDouble']),
+      aBool: serializationManager.deserialize<bool>(jsonSerialization['aBool']),
       aNullableBool: serializationManager
-          .deserializeJson<bool?>(jsonSerialization['aNullableBool']),
+          .deserialize<bool?>(jsonSerialization['aNullableBool']),
       aString: serializationManager
-          .deserializeJson<String>(jsonSerialization['aString']),
+          .deserialize<String>(jsonSerialization['aString']),
       aNullableString: serializationManager
-          .deserializeJson<String?>(jsonSerialization['aNullableString']),
+          .deserialize<String?>(jsonSerialization['aNullableString']),
       aDateTime: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['aDateTime']),
+          .deserialize<DateTime>(jsonSerialization['aDateTime']),
       aNullableDateTime: serializationManager
-          .deserializeJson<DateTime?>(jsonSerialization['aNullableDateTime']),
+          .deserialize<DateTime?>(jsonSerialization['aNullableDateTime']),
       aByteData: serializationManager
-          .deserializeJson<_i2.ByteData>(jsonSerialization['aByteData']),
-      aNullableByteData: serializationManager.deserializeJson<_i2.ByteData?>(
-          jsonSerialization['aNullableByteData']),
+          .deserialize<_i2.ByteData>(jsonSerialization['aByteData']),
+      aNullableByteData: serializationManager
+          .deserialize<_i2.ByteData?>(jsonSerialization['aNullableByteData']),
       anObject: serializationManager
-          .deserializeJson<_i3.SimpleData>(jsonSerialization['anObject']),
-      aNullableObject: serializationManager.deserializeJson<_i3.SimpleData?>(
-          jsonSerialization['aNullableObject']),
+          .deserialize<_i3.SimpleData>(jsonSerialization['anObject']),
+      aNullableObject: serializationManager
+          .deserialize<_i3.SimpleData?>(jsonSerialization['aNullableObject']),
       anIntList: serializationManager
-          .deserializeJson<List<int>>(jsonSerialization['anIntList']),
+          .deserialize<List<int>>(jsonSerialization['anIntList']),
       aNullableIntList: serializationManager
-          .deserializeJson<List<int>?>(jsonSerialization['aNullableIntList']),
-      aListWithNullableInts: serializationManager.deserializeJson<List<int?>>(
-          jsonSerialization['aListWithNullableInts']),
+          .deserialize<List<int>?>(jsonSerialization['aNullableIntList']),
+      aListWithNullableInts: serializationManager
+          .deserialize<List<int?>>(jsonSerialization['aListWithNullableInts']),
       aNullableListWithNullableInts:
-          serializationManager.deserializeJson<List<int?>?>(
+          serializationManager.deserialize<List<int?>?>(
               jsonSerialization['aNullableListWithNullableInts']),
-      anObjectList: serializationManager.deserializeJson<List<_i3.SimpleData>>(
-          jsonSerialization['anObjectList']),
+      anObjectList: serializationManager
+          .deserialize<List<_i3.SimpleData>>(jsonSerialization['anObjectList']),
       aNullableObjectList:
-          serializationManager.deserializeJson<List<_i3.SimpleData>?>(
+          serializationManager.deserialize<List<_i3.SimpleData>?>(
               jsonSerialization['aNullableObjectList']),
       aListWithNullableObjects:
-          serializationManager.deserializeJson<List<_i3.SimpleData?>>(
+          serializationManager.deserialize<List<_i3.SimpleData?>>(
               jsonSerialization['aListWithNullableObjects']),
       aNullableListWithNullableObjects:
-          serializationManager.deserializeJson<List<_i3.SimpleData?>?>(
+          serializationManager.deserialize<List<_i3.SimpleData?>?>(
               jsonSerialization['aNullableListWithNullableObjects']),
       aDateTimeList: serializationManager
-          .deserializeJson<List<DateTime>>(jsonSerialization['aDateTimeList']),
-      aNullableDateTimeList:
-          serializationManager.deserializeJson<List<DateTime>?>(
-              jsonSerialization['aNullableDateTimeList']),
+          .deserialize<List<DateTime>>(jsonSerialization['aDateTimeList']),
+      aNullableDateTimeList: serializationManager.deserialize<List<DateTime>?>(
+          jsonSerialization['aNullableDateTimeList']),
       aListWithNullableDateTimes:
-          serializationManager.deserializeJson<List<DateTime?>>(
+          serializationManager.deserialize<List<DateTime?>>(
               jsonSerialization['aListWithNullableDateTimes']),
       aNullableListWithNullableDateTimes:
-          serializationManager.deserializeJson<List<DateTime?>?>(
+          serializationManager.deserialize<List<DateTime?>?>(
               jsonSerialization['aNullableListWithNullableDateTimes']),
-      aByteDataList: serializationManager.deserializeJson<List<_i2.ByteData>>(
-          jsonSerialization['aByteDataList']),
+      aByteDataList: serializationManager
+          .deserialize<List<_i2.ByteData>>(jsonSerialization['aByteDataList']),
       aNullableByteDataList:
-          serializationManager.deserializeJson<List<_i2.ByteData>?>(
+          serializationManager.deserialize<List<_i2.ByteData>?>(
               jsonSerialization['aNullableByteDataList']),
       aListWithNullableByteDatas:
-          serializationManager.deserializeJson<List<_i2.ByteData?>>(
+          serializationManager.deserialize<List<_i2.ByteData?>>(
               jsonSerialization['aListWithNullableByteDatas']),
       aNullableListWithNullableByteDatas:
-          serializationManager.deserializeJson<List<_i2.ByteData?>?>(
+          serializationManager.deserialize<List<_i2.ByteData?>?>(
               jsonSerialization['aNullableListWithNullableByteDatas']),
       anIntMap: serializationManager
-          .deserializeJson<Map<String, int>>(jsonSerialization['anIntMap']),
-      aNullableIntMap: serializationManager.deserializeJson<Map<String, int>?>(
-          jsonSerialization['aNullableIntMap']),
-      aMapWithNullableInts:
-          serializationManager.deserializeJson<Map<String, int?>>(
-              jsonSerialization['aMapWithNullableInts']),
+          .deserialize<Map<String, int>>(jsonSerialization['anIntMap']),
+      aNullableIntMap: serializationManager
+          .deserialize<Map<String, int>?>(jsonSerialization['aNullableIntMap']),
+      aMapWithNullableInts: serializationManager.deserialize<Map<String, int?>>(
+          jsonSerialization['aMapWithNullableInts']),
       aNullableMapWithNullableInts:
-          serializationManager.deserializeJson<Map<String, int?>?>(
+          serializationManager.deserialize<Map<String, int?>?>(
               jsonSerialization['aNullableMapWithNullableInts']),
     );
   }

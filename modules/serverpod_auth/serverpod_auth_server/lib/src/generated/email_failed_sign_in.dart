@@ -20,13 +20,13 @@ class EmailFailedSignIn extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return EmailFailedSignIn(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      email: serializationManager
-          .deserializeJson<String>(jsonSerialization['email']),
-      time: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['time']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
       ipAddress: serializationManager
-          .deserializeJson<String>(jsonSerialization['ipAddress']),
+          .deserialize<String>(jsonSerialization['ipAddress']),
     );
   }
 

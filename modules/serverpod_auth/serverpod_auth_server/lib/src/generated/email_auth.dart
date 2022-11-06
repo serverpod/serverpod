@@ -20,13 +20,12 @@ class EmailAuth extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return EmailAuth(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      userId: serializationManager
-          .deserializeJson<int>(jsonSerialization['userId']),
-      email: serializationManager
-          .deserializeJson<String>(jsonSerialization['email']),
-      hash: serializationManager
-          .deserializeJson<String>(jsonSerialization['hash']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
+      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
     );
   }
 

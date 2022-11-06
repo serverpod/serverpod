@@ -26,7 +26,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   @override
-  T deserializeJson<T>(
+  T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
@@ -47,19 +47,19 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i3.ChannelList.fromJson(data, this) : null) as T;
     }
     if (t == List<_i4.Channel>) {
-      return (data as List).map((e) => deserializeJson<_i4.Channel>(e)).toList()
+      return (data as List).map((e) => deserialize<_i4.Channel>(e)).toList()
           as dynamic;
     }
     try {
-      return _i5.Protocol().deserializeJson<T>(data, t);
+      return _i5.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
-      return _i6.Protocol().deserializeJson<T>(data, t);
+      return _i6.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
-      return _i7.Protocol().deserializeJson<T>(data, t);
+      return _i7.Protocol().deserialize<T>(data, t);
     } catch (_) {}
-    return super.deserializeJson<T>(data, t);
+    return super.deserialize<T>(data, t);
   }
 
   @override
@@ -83,22 +83,22 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i5.Protocol().deserializeJsonByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_chat.')) {
       data['className'] = data['className'].substring(15);
-      return _i6.Protocol().deserializeJsonByClassName(data);
+      return _i6.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'Channel') {
-      return deserializeJson<_i2.Channel>(data['data']);
+      return deserialize<_i2.Channel>(data['data']);
     }
     if (data['className'] == 'ChannelList') {
-      return deserializeJson<_i3.ChannelList>(data['data']);
+      return deserialize<_i3.ChannelList>(data['data']);
     }
-    return super.deserializeJsonByClassName(data);
+    return super.deserializeByClassName(data);
   }
 
   @override

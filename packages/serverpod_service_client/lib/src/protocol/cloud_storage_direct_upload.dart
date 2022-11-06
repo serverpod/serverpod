@@ -21,15 +21,14 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return CloudStorageDirectUploadEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       storageId: serializationManager
-          .deserializeJson<String>(jsonSerialization['storageId']),
-      path: serializationManager
-          .deserializeJson<String>(jsonSerialization['path']),
+          .deserialize<String>(jsonSerialization['storageId']),
+      path: serializationManager.deserialize<String>(jsonSerialization['path']),
       expiration: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['expiration']),
+          .deserialize<DateTime>(jsonSerialization['expiration']),
       authKey: serializationManager
-          .deserializeJson<String>(jsonSerialization['authKey']),
+          .deserialize<String>(jsonSerialization['authKey']),
     );
   }
 

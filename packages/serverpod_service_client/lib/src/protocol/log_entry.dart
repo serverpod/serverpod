@@ -28,27 +28,26 @@ class LogEntry extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return LogEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       sessionLogId: serializationManager
-          .deserializeJson<int>(jsonSerialization['sessionLogId']),
+          .deserialize<int>(jsonSerialization['sessionLogId']),
       messageId: serializationManager
-          .deserializeJson<int?>(jsonSerialization['messageId']),
+          .deserialize<int?>(jsonSerialization['messageId']),
       reference: serializationManager
-          .deserializeJson<String?>(jsonSerialization['reference']),
+          .deserialize<String?>(jsonSerialization['reference']),
       serverId: serializationManager
-          .deserializeJson<String>(jsonSerialization['serverId']),
-      time: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['time']),
+          .deserialize<String>(jsonSerialization['serverId']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
       logLevel: serializationManager
-          .deserializeJson<_i2.LogLevel>(jsonSerialization['logLevel']),
+          .deserialize<_i2.LogLevel>(jsonSerialization['logLevel']),
       message: serializationManager
-          .deserializeJson<String>(jsonSerialization['message']),
-      error: serializationManager
-          .deserializeJson<String?>(jsonSerialization['error']),
+          .deserialize<String>(jsonSerialization['message']),
+      error:
+          serializationManager.deserialize<String?>(jsonSerialization['error']),
       stackTrace: serializationManager
-          .deserializeJson<String?>(jsonSerialization['stackTrace']),
-      order:
-          serializationManager.deserializeJson<int>(jsonSerialization['order']),
+          .deserialize<String?>(jsonSerialization['stackTrace']),
+      order: serializationManager.deserialize<int>(jsonSerialization['order']),
     );
   }
 

@@ -22,17 +22,16 @@ class ServerHealthMetric extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return ServerHealthMetric(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      name: serializationManager
-          .deserializeJson<String>(jsonSerialization['name']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
       serverId: serializationManager
-          .deserializeJson<String>(jsonSerialization['serverId']),
+          .deserialize<String>(jsonSerialization['serverId']),
       timestamp: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['timestamp']),
+          .deserialize<DateTime>(jsonSerialization['timestamp']),
       isHealthy: serializationManager
-          .deserializeJson<bool>(jsonSerialization['isHealthy']),
-      value: serializationManager
-          .deserializeJson<double>(jsonSerialization['value']),
+          .deserialize<bool>(jsonSerialization['isHealthy']),
+      value:
+          serializationManager.deserialize<double>(jsonSerialization['value']),
     );
   }
 

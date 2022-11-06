@@ -156,7 +156,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     String endpoint = data['endpoint'];
     Map<String, dynamic> objectData = data['object'];
-    var entity = serializationManager.deserializeJsonByClassName(objectData);
+    var entity = serializationManager.deserializeByClassName(objectData);
     if (entity == null) {
       throw const ServerpodClientException('serializable entity is null', 0);
     }
@@ -187,7 +187,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       },
     };
 
-    var serialization = SerializationManager.serializeToJson(data);
+    var serialization = SerializationManager.serialize(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -196,7 +196,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map<String, dynamic> args = const {},
   ]) async {
     var data = {'command': command, 'args': args};
-    var serialization = SerializationManager.serializeToJson(data);
+    var serialization = SerializationManager.serialize(data);
     await _sendRawWebSocketMessage(serialization);
   }
 

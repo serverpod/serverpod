@@ -22,13 +22,13 @@ class LogSettingsOverride extends _i1.SerializableEntity {
   ) {
     return LogSettingsOverride(
       module: serializationManager
-          .deserializeJson<String?>(jsonSerialization['module']),
+          .deserialize<String?>(jsonSerialization['module']),
       endpoint: serializationManager
-          .deserializeJson<String?>(jsonSerialization['endpoint']),
+          .deserialize<String?>(jsonSerialization['endpoint']),
       method: serializationManager
-          .deserializeJson<String?>(jsonSerialization['method']),
+          .deserialize<String?>(jsonSerialization['method']),
       logSettings: serializationManager
-          .deserializeJson<_i2.LogSettings>(jsonSerialization['logSettings']),
+          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
     );
   }
 

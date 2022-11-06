@@ -22,17 +22,15 @@ class AuthKey extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return AuthKey(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      userId: serializationManager
-          .deserializeJson<int>(jsonSerialization['userId']),
-      hash: serializationManager
-          .deserializeJson<String>(jsonSerialization['hash']),
-      key: serializationManager
-          .deserializeJson<String?>(jsonSerialization['key']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
+      key: serializationManager.deserialize<String?>(jsonSerialization['key']),
       scopeNames: serializationManager
-          .deserializeJson<List<String>>(jsonSerialization['scopeNames']),
-      method: serializationManager
-          .deserializeJson<String>(jsonSerialization['method']),
+          .deserialize<List<String>>(jsonSerialization['scopeNames']),
+      method:
+          serializationManager.deserialize<String>(jsonSerialization['method']),
     );
   }
 

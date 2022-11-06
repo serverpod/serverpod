@@ -27,27 +27,27 @@ class UserInfo extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return UserInfo(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       userIdentifier: serializationManager
-          .deserializeJson<String>(jsonSerialization['userIdentifier']),
+          .deserialize<String>(jsonSerialization['userIdentifier']),
       userName: serializationManager
-          .deserializeJson<String>(jsonSerialization['userName']),
+          .deserialize<String>(jsonSerialization['userName']),
       fullName: serializationManager
-          .deserializeJson<String?>(jsonSerialization['fullName']),
-      email: serializationManager
-          .deserializeJson<String?>(jsonSerialization['email']),
+          .deserialize<String?>(jsonSerialization['fullName']),
+      email:
+          serializationManager.deserialize<String?>(jsonSerialization['email']),
       created: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['created']),
+          .deserialize<DateTime>(jsonSerialization['created']),
       imageUrl: serializationManager
-          .deserializeJson<String?>(jsonSerialization['imageUrl']),
+          .deserialize<String?>(jsonSerialization['imageUrl']),
       scopeNames: serializationManager
-          .deserializeJson<List<String>>(jsonSerialization['scopeNames']),
-      active: serializationManager
-          .deserializeJson<bool>(jsonSerialization['active']),
-      blocked: serializationManager
-          .deserializeJson<bool>(jsonSerialization['blocked']),
+          .deserialize<List<String>>(jsonSerialization['scopeNames']),
+      active:
+          serializationManager.deserialize<bool>(jsonSerialization['active']),
+      blocked:
+          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
       suspendedUntil: serializationManager
-          .deserializeJson<DateTime?>(jsonSerialization['suspendedUntil']),
+          .deserialize<DateTime?>(jsonSerialization['suspendedUntil']),
     );
   }
 

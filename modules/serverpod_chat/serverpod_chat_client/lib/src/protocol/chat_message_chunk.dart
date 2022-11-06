@@ -21,11 +21,11 @@ class ChatMessageChunk extends _i1.SerializableEntity {
   ) {
     return ChatMessageChunk(
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
-      messages: serializationManager.deserializeJson<List<_i2.ChatMessage>>(
-          jsonSerialization['messages']),
+          .deserialize<String>(jsonSerialization['channel']),
+      messages: serializationManager
+          .deserialize<List<_i2.ChatMessage>>(jsonSerialization['messages']),
       hasOlderMessages: serializationManager
-          .deserializeJson<bool>(jsonSerialization['hasOlderMessages']),
+          .deserialize<bool>(jsonSerialization['hasOlderMessages']),
     );
   }
 

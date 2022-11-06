@@ -29,34 +29,31 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ObjectWithMaps(
-      dataMap:
-          serializationManager.deserializeJson<Map<String, _i2.SimpleData>>(
-              jsonSerialization['dataMap']),
+      dataMap: serializationManager.deserialize<Map<String, _i2.SimpleData>>(
+          jsonSerialization['dataMap']),
       intMap: serializationManager
-          .deserializeJson<Map<String, int>>(jsonSerialization['intMap']),
+          .deserialize<Map<String, int>>(jsonSerialization['intMap']),
       stringMap: serializationManager
-          .deserializeJson<Map<String, String>>(jsonSerialization['stringMap']),
-      dateTimeMap: serializationManager.deserializeJson<Map<String, DateTime>>(
-          jsonSerialization['dateTimeMap']),
-      byteDataMap:
-          serializationManager.deserializeJson<Map<String, _i3.ByteData>>(
-              jsonSerialization['byteDataMap']),
+          .deserialize<Map<String, String>>(jsonSerialization['stringMap']),
+      dateTimeMap: serializationManager
+          .deserialize<Map<String, DateTime>>(jsonSerialization['dateTimeMap']),
+      byteDataMap: serializationManager.deserialize<Map<String, _i3.ByteData>>(
+          jsonSerialization['byteDataMap']),
       nullableDataMap:
-          serializationManager.deserializeJson<Map<String, _i2.SimpleData?>>(
+          serializationManager.deserialize<Map<String, _i2.SimpleData?>>(
               jsonSerialization['nullableDataMap']),
-      nullableIntMap: serializationManager.deserializeJson<Map<String, int?>>(
-          jsonSerialization['nullableIntMap']),
-      nullableStringMap:
-          serializationManager.deserializeJson<Map<String, String?>>(
-              jsonSerialization['nullableStringMap']),
+      nullableIntMap: serializationManager
+          .deserialize<Map<String, int?>>(jsonSerialization['nullableIntMap']),
+      nullableStringMap: serializationManager.deserialize<Map<String, String?>>(
+          jsonSerialization['nullableStringMap']),
       nullableDateTimeMap:
-          serializationManager.deserializeJson<Map<String, DateTime?>>(
+          serializationManager.deserialize<Map<String, DateTime?>>(
               jsonSerialization['nullableDateTimeMap']),
       nullableByteDataMap:
-          serializationManager.deserializeJson<Map<String, _i3.ByteData?>>(
+          serializationManager.deserialize<Map<String, _i3.ByteData?>>(
               jsonSerialization['nullableByteDataMap']),
       intIntMap: serializationManager
-          .deserializeJson<Map<int, int>>(jsonSerialization['intIntMap']),
+          .deserialize<Map<int, int>>(jsonSerialization['intIntMap']),
     );
   }
 

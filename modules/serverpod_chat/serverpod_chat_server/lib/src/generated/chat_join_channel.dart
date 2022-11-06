@@ -19,9 +19,9 @@ class ChatJoinChannel extends _i1.SerializableEntity {
   ) {
     return ChatJoinChannel(
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
+          .deserialize<String>(jsonSerialization['channel']),
       userName: serializationManager
-          .deserializeJson<String?>(jsonSerialization['userName']),
+          .deserialize<String?>(jsonSerialization['userName']),
     );
   }
 

@@ -23,17 +23,17 @@ class AppleAuthInfo extends _i1.SerializableEntity {
   ) {
     return AppleAuthInfo(
       userIdentifier: serializationManager
-          .deserializeJson<String>(jsonSerialization['userIdentifier']),
-      email: serializationManager
-          .deserializeJson<String?>(jsonSerialization['email']),
+          .deserialize<String>(jsonSerialization['userIdentifier']),
+      email:
+          serializationManager.deserialize<String?>(jsonSerialization['email']),
       fullName: serializationManager
-          .deserializeJson<String>(jsonSerialization['fullName']),
+          .deserialize<String>(jsonSerialization['fullName']),
       nickname: serializationManager
-          .deserializeJson<String>(jsonSerialization['nickname']),
+          .deserialize<String>(jsonSerialization['nickname']),
       identityToken: serializationManager
-          .deserializeJson<String>(jsonSerialization['identityToken']),
+          .deserialize<String>(jsonSerialization['identityToken']),
       authorizationCode: serializationManager
-          .deserializeJson<String>(jsonSerialization['authorizationCode']),
+          .deserialize<String>(jsonSerialization['authorizationCode']),
     );
   }
 

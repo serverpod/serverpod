@@ -20,13 +20,13 @@ class ChatReadMessage extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return ChatReadMessage(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
-      userId: serializationManager
-          .deserializeJson<int>(jsonSerialization['userId']),
+          .deserialize<String>(jsonSerialization['channel']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
       lastReadMessageId: serializationManager
-          .deserializeJson<int>(jsonSerialization['lastReadMessageId']),
+          .deserialize<int>(jsonSerialization['lastReadMessageId']),
     );
   }
 

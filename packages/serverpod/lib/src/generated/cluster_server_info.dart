@@ -16,7 +16,7 @@ class ClusterServerInfo extends _i1.SerializableEntity {
   ) {
     return ClusterServerInfo(
         serverId: serializationManager
-            .deserializeJson<String>(jsonSerialization['serverId']));
+            .deserialize<String>(jsonSerialization['serverId']));
   }
 
   String serverId;

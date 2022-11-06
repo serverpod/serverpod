@@ -202,7 +202,7 @@ class AwsS3Uploader {
       },
     };
 
-    return SerializationManager.serializeToJson(uploadDescriptionData);
+    return SerializationManager.serialize(uploadDescriptionData);
 
     // try {
     //   final res = await req.send();

@@ -16,9 +16,8 @@ class ClusterInfo extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ClusterInfo(
-        servers:
-            serializationManager.deserializeJson<List<_i2.ClusterServerInfo>>(
-                jsonSerialization['servers']));
+        servers: serializationManager.deserialize<List<_i2.ClusterServerInfo>>(
+            jsonSerialization['servers']));
   }
 
   List<_i2.ClusterServerInfo> servers;

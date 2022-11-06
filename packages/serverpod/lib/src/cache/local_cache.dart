@@ -89,7 +89,7 @@ class LocalCache extends Cache {
       return null;
     }
 
-    return serializationManager.deserializeJson<T>(entry.serializedObject, t);
+    return serializationManager.deserialize<T>(entry.serializedObject, t);
   }
 
   @override

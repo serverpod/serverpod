@@ -27,27 +27,25 @@ class MessageLogEntry extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return MessageLogEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       sessionLogId: serializationManager
-          .deserializeJson<int>(jsonSerialization['sessionLogId']),
+          .deserialize<int>(jsonSerialization['sessionLogId']),
       serverId: serializationManager
-          .deserializeJson<String>(jsonSerialization['serverId']),
-      messageId: serializationManager
-          .deserializeJson<int>(jsonSerialization['messageId']),
+          .deserialize<String>(jsonSerialization['serverId']),
+      messageId:
+          serializationManager.deserialize<int>(jsonSerialization['messageId']),
       endpoint: serializationManager
-          .deserializeJson<String>(jsonSerialization['endpoint']),
+          .deserialize<String>(jsonSerialization['endpoint']),
       messageName: serializationManager
-          .deserializeJson<String>(jsonSerialization['messageName']),
+          .deserialize<String>(jsonSerialization['messageName']),
       duration: serializationManager
-          .deserializeJson<double>(jsonSerialization['duration']),
-      error: serializationManager
-          .deserializeJson<String?>(jsonSerialization['error']),
+          .deserialize<double>(jsonSerialization['duration']),
+      error:
+          serializationManager.deserialize<String?>(jsonSerialization['error']),
       stackTrace: serializationManager
-          .deserializeJson<String?>(jsonSerialization['stackTrace']),
-      slow:
-          serializationManager.deserializeJson<bool>(jsonSerialization['slow']),
-      order:
-          serializationManager.deserializeJson<int>(jsonSerialization['order']),
+          .deserialize<String?>(jsonSerialization['stackTrace']),
+      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
+      order: serializationManager.deserialize<int>(jsonSerialization['order']),
     );
   }
 

@@ -72,7 +72,7 @@ class Protocol extends _i1.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   @override
-  T deserializeJson<T>(
+  T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
@@ -261,55 +261,54 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     if (t == List<String>) {
-      return (data as List).map((e) => deserializeJson<String>(e)).toList()
+      return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserializeJson<String>(e)).toList()
+          ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as dynamic;
     }
     if (t == List<_i28.ClusterServerInfo>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.ClusterServerInfo>(e))
+          .map((e) => deserialize<_i28.ClusterServerInfo>(e))
           .toList() as dynamic;
     }
     if (t == List<_i28.LogEntry>) {
-      return (data as List)
-          .map((e) => deserializeJson<_i28.LogEntry>(e))
-          .toList() as dynamic;
+      return (data as List).map((e) => deserialize<_i28.LogEntry>(e)).toList()
+          as dynamic;
     }
     if (t == List<_i28.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.LogSettingsOverride>(e))
+          .map((e) => deserialize<_i28.LogSettingsOverride>(e))
           .toList() as dynamic;
     }
     if (t == List<_i28.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.ServerHealthMetric>(e))
+          .map((e) => deserialize<_i28.ServerHealthMetric>(e))
           .toList() as dynamic;
     }
     if (t == List<_i28.ServerHealthConnectionInfo>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.ServerHealthConnectionInfo>(e))
+          .map((e) => deserialize<_i28.ServerHealthConnectionInfo>(e))
           .toList() as dynamic;
     }
     if (t == List<_i28.QueryLogEntry>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.QueryLogEntry>(e))
+          .map((e) => deserialize<_i28.QueryLogEntry>(e))
           .toList() as dynamic;
     }
     if (t == List<_i28.MessageLogEntry>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.MessageLogEntry>(e))
+          .map((e) => deserialize<_i28.MessageLogEntry>(e))
           .toList() as dynamic;
     }
     if (t == List<_i28.SessionLogInfo>) {
       return (data as List)
-          .map((e) => deserializeJson<_i28.SessionLogInfo>(e))
+          .map((e) => deserialize<_i28.SessionLogInfo>(e))
           .toList() as dynamic;
     }
-    return super.deserializeJson<T>(data, t);
+    return super.deserialize<T>(data, t);
   }
 
   @override
@@ -396,85 +395,85 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == 'AuthKey') {
-      return deserializeJson<_i2.AuthKey>(data['data']);
+      return deserialize<_i2.AuthKey>(data['data']);
     }
     if (data['className'] == 'CacheInfo') {
-      return deserializeJson<_i3.CacheInfo>(data['data']);
+      return deserialize<_i3.CacheInfo>(data['data']);
     }
     if (data['className'] == 'CachesInfo') {
-      return deserializeJson<_i4.CachesInfo>(data['data']);
+      return deserialize<_i4.CachesInfo>(data['data']);
     }
     if (data['className'] == 'CloudStorageEntry') {
-      return deserializeJson<_i5.CloudStorageEntry>(data['data']);
+      return deserialize<_i5.CloudStorageEntry>(data['data']);
     }
     if (data['className'] == 'CloudStorageDirectUploadEntry') {
-      return deserializeJson<_i6.CloudStorageDirectUploadEntry>(data['data']);
+      return deserialize<_i6.CloudStorageDirectUploadEntry>(data['data']);
     }
     if (data['className'] == 'ClusterInfo') {
-      return deserializeJson<_i7.ClusterInfo>(data['data']);
+      return deserialize<_i7.ClusterInfo>(data['data']);
     }
     if (data['className'] == 'ClusterServerInfo') {
-      return deserializeJson<_i8.ClusterServerInfo>(data['data']);
+      return deserialize<_i8.ClusterServerInfo>(data['data']);
     }
     if (data['className'] == 'DistributedCacheEntry') {
-      return deserializeJson<_i9.DistributedCacheEntry>(data['data']);
+      return deserialize<_i9.DistributedCacheEntry>(data['data']);
     }
     if (data['className'] == 'FutureCallEntry') {
-      return deserializeJson<_i10.FutureCallEntry>(data['data']);
+      return deserialize<_i10.FutureCallEntry>(data['data']);
     }
     if (data['className'] == 'LogEntry') {
-      return deserializeJson<_i11.LogEntry>(data['data']);
+      return deserialize<_i11.LogEntry>(data['data']);
     }
     if (data['className'] == 'LogLevel') {
-      return deserializeJson<_i12.LogLevel>(data['data']);
+      return deserialize<_i12.LogLevel>(data['data']);
     }
     if (data['className'] == 'LogResult') {
-      return deserializeJson<_i13.LogResult>(data['data']);
+      return deserialize<_i13.LogResult>(data['data']);
     }
     if (data['className'] == 'LogSettings') {
-      return deserializeJson<_i14.LogSettings>(data['data']);
+      return deserialize<_i14.LogSettings>(data['data']);
     }
     if (data['className'] == 'LogSettingsOverride') {
-      return deserializeJson<_i15.LogSettingsOverride>(data['data']);
+      return deserialize<_i15.LogSettingsOverride>(data['data']);
     }
     if (data['className'] == 'MessageLogEntry') {
-      return deserializeJson<_i16.MessageLogEntry>(data['data']);
+      return deserialize<_i16.MessageLogEntry>(data['data']);
     }
     if (data['className'] == 'MethodInfo') {
-      return deserializeJson<_i17.MethodInfo>(data['data']);
+      return deserialize<_i17.MethodInfo>(data['data']);
     }
     if (data['className'] == 'QueryLogEntry') {
-      return deserializeJson<_i18.QueryLogEntry>(data['data']);
+      return deserialize<_i18.QueryLogEntry>(data['data']);
     }
     if (data['className'] == 'ReadWriteTestEntry') {
-      return deserializeJson<_i19.ReadWriteTestEntry>(data['data']);
+      return deserialize<_i19.ReadWriteTestEntry>(data['data']);
     }
     if (data['className'] == 'RuntimeSettings') {
-      return deserializeJson<_i20.RuntimeSettings>(data['data']);
+      return deserialize<_i20.RuntimeSettings>(data['data']);
     }
     if (data['className'] == 'ServerHealthConnectionInfo') {
-      return deserializeJson<_i21.ServerHealthConnectionInfo>(data['data']);
+      return deserialize<_i21.ServerHealthConnectionInfo>(data['data']);
     }
     if (data['className'] == 'ServerHealthMetric') {
-      return deserializeJson<_i22.ServerHealthMetric>(data['data']);
+      return deserialize<_i22.ServerHealthMetric>(data['data']);
     }
     if (data['className'] == 'ServerHealthResult') {
-      return deserializeJson<_i23.ServerHealthResult>(data['data']);
+      return deserialize<_i23.ServerHealthResult>(data['data']);
     }
     if (data['className'] == 'SessionLogEntry') {
-      return deserializeJson<_i24.SessionLogEntry>(data['data']);
+      return deserialize<_i24.SessionLogEntry>(data['data']);
     }
     if (data['className'] == 'SessionLogFilter') {
-      return deserializeJson<_i25.SessionLogFilter>(data['data']);
+      return deserialize<_i25.SessionLogFilter>(data['data']);
     }
     if (data['className'] == 'SessionLogInfo') {
-      return deserializeJson<_i26.SessionLogInfo>(data['data']);
+      return deserialize<_i26.SessionLogInfo>(data['data']);
     }
     if (data['className'] == 'SessionLogResult') {
-      return deserializeJson<_i27.SessionLogResult>(data['data']);
+      return deserialize<_i27.SessionLogResult>(data['data']);
     }
-    return super.deserializeJsonByClassName(data);
+    return super.deserializeByClassName(data);
   }
 }

@@ -22,17 +22,16 @@ class FutureCallEntry extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return FutureCallEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      name: serializationManager
-          .deserializeJson<String>(jsonSerialization['name']),
-      time: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['time']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
       serializedObject: serializationManager
-          .deserializeJson<String?>(jsonSerialization['serializedObject']),
+          .deserialize<String?>(jsonSerialization['serializedObject']),
       serverId: serializationManager
-          .deserializeJson<String>(jsonSerialization['serverId']),
+          .deserialize<String>(jsonSerialization['serverId']),
       identifier: serializationManager
-          .deserializeJson<String?>(jsonSerialization['identifier']),
+          .deserialize<String?>(jsonSerialization['identifier']),
     );
   }
 

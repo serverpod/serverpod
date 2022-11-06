@@ -17,7 +17,7 @@ class LogResult extends _i1.SerializableEntity {
   ) {
     return LogResult(
         entries: serializationManager
-            .deserializeJson<List<_i2.LogEntry>>(jsonSerialization['entries']));
+            .deserialize<List<_i2.LogEntry>>(jsonSerialization['entries']));
   }
 
   List<_i2.LogEntry> entries;

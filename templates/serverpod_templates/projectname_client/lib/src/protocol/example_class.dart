@@ -19,9 +19,9 @@ class Example extends _i1.SerializableEntity {
   ) {
     return Example(
       name: serializationManager
-          .deserializeJson<String>(jsonSerialization['name']),
+          .deserialize<String>(jsonSerialization['name']),
       data:
-          serializationManager.deserializeJson<int>(jsonSerialization['data']),
+          serializationManager.deserialize<int>(jsonSerialization['data']),
     );
   }
 

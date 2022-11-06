@@ -22,15 +22,15 @@ class UserSettingsConfig extends _i1.SerializableEntity {
   ) {
     return UserSettingsConfig(
       canSeeUserName: serializationManager
-          .deserializeJson<bool>(jsonSerialization['canSeeUserName']),
+          .deserialize<bool>(jsonSerialization['canSeeUserName']),
       canSeeFullName: serializationManager
-          .deserializeJson<bool>(jsonSerialization['canSeeFullName']),
+          .deserialize<bool>(jsonSerialization['canSeeFullName']),
       canEditUserName: serializationManager
-          .deserializeJson<bool>(jsonSerialization['canEditUserName']),
+          .deserialize<bool>(jsonSerialization['canEditUserName']),
       canEditFullName: serializationManager
-          .deserializeJson<bool>(jsonSerialization['canEditFullName']),
+          .deserialize<bool>(jsonSerialization['canEditFullName']),
       canEditUserImage: serializationManager
-          .deserializeJson<bool>(jsonSerialization['canEditUserImage']),
+          .deserialize<bool>(jsonSerialization['canEditUserImage']),
     );
   }
 

@@ -17,7 +17,7 @@ class SimpleDataList extends _i1.SerializableEntity {
   ) {
     return SimpleDataList(
         rows: serializationManager
-            .deserializeJson<List<_i2.SimpleData>>(jsonSerialization['rows']));
+            .deserialize<List<_i2.SimpleData>>(jsonSerialization['rows']));
   }
 
   List<_i2.SimpleData> rows;

@@ -19,11 +19,11 @@ class GoogleRefreshToken extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return GoogleRefreshToken(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      userId: serializationManager
-          .deserializeJson<int>(jsonSerialization['userId']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
       refreshToken: serializationManager
-          .deserializeJson<String>(jsonSerialization['refreshToken']),
+          .deserialize<String>(jsonSerialization['refreshToken']),
     );
   }
 

@@ -26,7 +26,7 @@ abstract class SerializableEntity {
 
   @override
   String toString() {
-    return SerializationManager.serializeToJson(this);
+    return SerializationManager.serialize(this);
   }
 }
 
@@ -38,12 +38,12 @@ Type getType<T>() => T;
 /// extended by generated code.
 abstract class SerializationManager {
   /// Deserialize the provided json [String] to an object of type [t] or [T].
-  T deserializeJsonString<T>(String data, [Type? t]) {
-    return deserializeJson<T>(jsonDecode(data), t);
+  T deserializeString<T>(String data, [Type? t]) {
+    return deserialize<T>(jsonDecode(data), t);
   }
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
-  T deserializeJson<T>(dynamic data, [Type? t]) {
+  T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
     //TODO: all the "dart native" types should be listed here
@@ -90,26 +90,26 @@ abstract class SerializationManager {
   }
 
   /// Deserialize the provided json [data] by using the className stored in the [data].
-  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
     switch (data['className']) {
       case 'int':
-        return deserializeJson<int>(data['data']);
+        return deserialize<int>(data['data']);
       case 'double':
-        return deserializeJson<double>(data['data']);
+        return deserialize<double>(data['data']);
       case 'String':
-        return deserializeJson<String>(data['data']);
+        return deserialize<String>(data['data']);
       case 'bool':
-        return deserializeJson<bool>(data['data']);
+        return deserialize<bool>(data['data']);
       case 'DateTime':
-        return deserializeJson<DateTime>(data['data']);
+        return deserialize<DateTime>(data['data']);
       case 'ByteData':
-        return deserializeJson<ByteData>(data['data']);
+        return deserialize<ByteData>(data['data']);
     }
     //TODO: handle missing type mapping
   }
 
   /// Serialize the provided [object] to an Json [String].
-  static String serializeToJson(Object? object) {
+  static String serialize(Object? object) {
     // This is the only time [jsonEncode] should be used in the project.
     return jsonEncode(
       object,

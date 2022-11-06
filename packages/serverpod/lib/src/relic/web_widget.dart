@@ -69,7 +69,7 @@ class WidgetJson extends AbstractWidget {
 
   @override
   String toString() {
-    return SerializationManager.serializeToJson(object);
+    return SerializationManager.serialize(object);
   }
 }
 

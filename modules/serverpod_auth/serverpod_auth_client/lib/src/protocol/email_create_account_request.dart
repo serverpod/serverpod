@@ -21,15 +21,14 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return EmailCreateAccountRequest(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       userName: serializationManager
-          .deserializeJson<String>(jsonSerialization['userName']),
-      email: serializationManager
-          .deserializeJson<String>(jsonSerialization['email']),
-      hash: serializationManager
-          .deserializeJson<String>(jsonSerialization['hash']),
+          .deserialize<String>(jsonSerialization['userName']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
+      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
       verificationCode: serializationManager
-          .deserializeJson<String>(jsonSerialization['verificationCode']),
+          .deserialize<String>(jsonSerialization['verificationCode']),
     );
   }
 

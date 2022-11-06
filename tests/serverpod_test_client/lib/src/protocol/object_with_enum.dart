@@ -23,19 +23,17 @@ class ObjectWithEnum extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ObjectWithEnum(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       testEnum: serializationManager
-          .deserializeJson<_i2.TestEnum>(jsonSerialization['testEnum']),
+          .deserialize<_i2.TestEnum>(jsonSerialization['testEnum']),
       nullableEnum: serializationManager
-          .deserializeJson<_i2.TestEnum?>(jsonSerialization['nullableEnum']),
+          .deserialize<_i2.TestEnum?>(jsonSerialization['nullableEnum']),
       enumList: serializationManager
-          .deserializeJson<List<_i2.TestEnum>>(jsonSerialization['enumList']),
-      nullableEnumList:
-          serializationManager.deserializeJson<List<_i2.TestEnum?>>(
-              jsonSerialization['nullableEnumList']),
-      enumListList:
-          serializationManager.deserializeJson<List<List<_i2.TestEnum>>>(
-              jsonSerialization['enumListList']),
+          .deserialize<List<_i2.TestEnum>>(jsonSerialization['enumList']),
+      nullableEnumList: serializationManager.deserialize<List<_i2.TestEnum?>>(
+          jsonSerialization['nullableEnumList']),
+      enumListList: serializationManager.deserialize<List<List<_i2.TestEnum>>>(
+          jsonSerialization['enumListList']),
     );
   }
 

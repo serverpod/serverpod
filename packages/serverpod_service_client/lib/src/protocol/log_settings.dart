@@ -28,26 +28,25 @@ class LogSettings extends _i1.SerializableEntity {
   ) {
     return LogSettings(
       logLevel: serializationManager
-          .deserializeJson<_i2.LogLevel>(jsonSerialization['logLevel']),
+          .deserialize<_i2.LogLevel>(jsonSerialization['logLevel']),
       logAllSessions: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logAllSessions']),
+          .deserialize<bool>(jsonSerialization['logAllSessions']),
       logAllQueries: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logAllQueries']),
+          .deserialize<bool>(jsonSerialization['logAllQueries']),
       logSlowSessions: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logSlowSessions']),
-      logStreamingSessionsContinuously:
-          serializationManager.deserializeJson<bool>(
-              jsonSerialization['logStreamingSessionsContinuously']),
+          .deserialize<bool>(jsonSerialization['logSlowSessions']),
+      logStreamingSessionsContinuously: serializationManager.deserialize<bool>(
+          jsonSerialization['logStreamingSessionsContinuously']),
       logSlowQueries: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logSlowQueries']),
+          .deserialize<bool>(jsonSerialization['logSlowQueries']),
       logFailedSessions: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logFailedSessions']),
+          .deserialize<bool>(jsonSerialization['logFailedSessions']),
       logFailedQueries: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logFailedQueries']),
+          .deserialize<bool>(jsonSerialization['logFailedQueries']),
       slowSessionDuration: serializationManager
-          .deserializeJson<double>(jsonSerialization['slowSessionDuration']),
+          .deserialize<double>(jsonSerialization['slowSessionDuration']),
       slowQueryDuration: serializationManager
-          .deserializeJson<double>(jsonSerialization['slowQueryDuration']),
+          .deserialize<double>(jsonSerialization['slowQueryDuration']),
     );
   }
 

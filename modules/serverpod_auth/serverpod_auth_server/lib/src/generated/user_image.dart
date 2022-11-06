@@ -20,13 +20,12 @@ class UserImage extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return UserImage(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      userId: serializationManager
-          .deserializeJson<int>(jsonSerialization['userId']),
-      version: serializationManager
-          .deserializeJson<int>(jsonSerialization['version']),
-      url: serializationManager
-          .deserializeJson<String>(jsonSerialization['url']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      version:
+          serializationManager.deserialize<int>(jsonSerialization['version']),
+      url: serializationManager.deserialize<String>(jsonSerialization['url']),
     );
   }
 

@@ -94,7 +94,7 @@ abstract class Endpoint {
       },
     };
 
-    var payload = SerializationManager.serializeToJson(data);
+    var payload = SerializationManager.serialize(data);
     session.webSocket.add(payload);
   }
 }

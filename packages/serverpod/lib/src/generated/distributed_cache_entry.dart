@@ -16,7 +16,7 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   ) {
     return DistributedCacheEntry(
         data: serializationManager
-            .deserializeJson<String>(jsonSerialization['data']));
+            .deserialize<String>(jsonSerialization['data']));
   }
 
   String data;

@@ -35,7 +35,7 @@ class FutureCallManager {
   ) async {
     String? serialization;
     if (object != null) {
-      serialization = SerializationManager.serializeToJson(object.allToJson());
+      serialization = SerializationManager.serialize(object.allToJson());
     }
 
     var entry = FutureCallEntry(
@@ -110,7 +110,7 @@ class FutureCallManager {
 
         dynamic object;
         if (entry.serializedObject != null) {
-          object = _serializationManager.deserializeJsonString(
+          object = _serializationManager.deserializeString(
               entry.serializedObject!, call.dataType);
         }
 

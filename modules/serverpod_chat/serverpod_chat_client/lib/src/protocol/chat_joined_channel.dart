@@ -23,14 +23,14 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
   ) {
     return ChatJoinedChannel(
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
+          .deserialize<String>(jsonSerialization['channel']),
       initialMessageChunk:
-          serializationManager.deserializeJson<_i2.ChatMessageChunk>(
+          serializationManager.deserialize<_i2.ChatMessageChunk>(
               jsonSerialization['initialMessageChunk']),
       lastReadMessageId: serializationManager
-          .deserializeJson<int>(jsonSerialization['lastReadMessageId']),
+          .deserialize<int>(jsonSerialization['lastReadMessageId']),
       userInfo: serializationManager
-          .deserializeJson<_i3.UserInfo>(jsonSerialization['userInfo']),
+          .deserialize<_i3.UserInfo>(jsonSerialization['userInfo']),
     );
   }
 

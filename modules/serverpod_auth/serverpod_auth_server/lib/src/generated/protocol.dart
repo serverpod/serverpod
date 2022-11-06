@@ -43,7 +43,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   @override
-  T deserializeJson<T>(
+  T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
@@ -136,13 +136,13 @@ class Protocol extends _i1.SerializationManagerServer {
           : null) as T;
     }
     if (t == List<String>) {
-      return (data as List).map((e) => deserializeJson<String>(e)).toList()
+      return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
     try {
-      return _i14.Protocol().deserializeJson<T>(data, t);
+      return _i14.Protocol().deserialize<T>(data, t);
     } catch (_) {}
-    return super.deserializeJson<T>(data, t);
+    return super.deserialize<T>(data, t);
   }
 
   @override
@@ -187,44 +187,44 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == 'AppleAuthInfo') {
-      return deserializeJson<_i2.AppleAuthInfo>(data['data']);
+      return deserialize<_i2.AppleAuthInfo>(data['data']);
     }
     if (data['className'] == 'AuthenticationFailReason') {
-      return deserializeJson<_i3.AuthenticationFailReason>(data['data']);
+      return deserialize<_i3.AuthenticationFailReason>(data['data']);
     }
     if (data['className'] == 'AuthenticationResponse') {
-      return deserializeJson<_i4.AuthenticationResponse>(data['data']);
+      return deserialize<_i4.AuthenticationResponse>(data['data']);
     }
     if (data['className'] == 'EmailAuth') {
-      return deserializeJson<_i5.EmailAuth>(data['data']);
+      return deserialize<_i5.EmailAuth>(data['data']);
     }
     if (data['className'] == 'EmailCreateAccountRequest') {
-      return deserializeJson<_i6.EmailCreateAccountRequest>(data['data']);
+      return deserialize<_i6.EmailCreateAccountRequest>(data['data']);
     }
     if (data['className'] == 'EmailFailedSignIn') {
-      return deserializeJson<_i7.EmailFailedSignIn>(data['data']);
+      return deserialize<_i7.EmailFailedSignIn>(data['data']);
     }
     if (data['className'] == 'EmailPasswordReset') {
-      return deserializeJson<_i8.EmailPasswordReset>(data['data']);
+      return deserialize<_i8.EmailPasswordReset>(data['data']);
     }
     if (data['className'] == 'EmailReset') {
-      return deserializeJson<_i9.EmailReset>(data['data']);
+      return deserialize<_i9.EmailReset>(data['data']);
     }
     if (data['className'] == 'GoogleRefreshToken') {
-      return deserializeJson<_i10.GoogleRefreshToken>(data['data']);
+      return deserialize<_i10.GoogleRefreshToken>(data['data']);
     }
     if (data['className'] == 'UserImage') {
-      return deserializeJson<_i11.UserImage>(data['data']);
+      return deserialize<_i11.UserImage>(data['data']);
     }
     if (data['className'] == 'UserInfo') {
-      return deserializeJson<_i12.UserInfo>(data['data']);
+      return deserialize<_i12.UserInfo>(data['data']);
     }
     if (data['className'] == 'UserSettingsConfig') {
-      return deserializeJson<_i13.UserSettingsConfig>(data['data']);
+      return deserialize<_i13.UserSettingsConfig>(data['data']);
     }
-    return super.deserializeJsonByClassName(data);
+    return super.deserializeByClassName(data);
   }
 
   @override

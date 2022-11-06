@@ -23,19 +23,17 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ServerHealthConnectionInfo(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       serverId: serializationManager
-          .deserializeJson<String>(jsonSerialization['serverId']),
-      type:
-          serializationManager.deserializeJson<int>(jsonSerialization['type']),
+          .deserialize<String>(jsonSerialization['serverId']),
+      type: serializationManager.deserialize<int>(jsonSerialization['type']),
       timestamp: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['timestamp']),
-      active: serializationManager
-          .deserializeJson<int>(jsonSerialization['active']),
-      closing: serializationManager
-          .deserializeJson<int>(jsonSerialization['closing']),
-      idle:
-          serializationManager.deserializeJson<int>(jsonSerialization['idle']),
+          .deserialize<DateTime>(jsonSerialization['timestamp']),
+      active:
+          serializationManager.deserialize<int>(jsonSerialization['active']),
+      closing:
+          serializationManager.deserialize<int>(jsonSerialization['closing']),
+      idle: serializationManager.deserialize<int>(jsonSerialization['idle']),
     );
   }
 

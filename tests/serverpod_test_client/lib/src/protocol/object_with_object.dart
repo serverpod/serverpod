@@ -24,21 +24,20 @@ class ObjectWithObject extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ObjectWithObject(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       data: serializationManager
-          .deserializeJson<_i2.SimpleData>(jsonSerialization['data']),
+          .deserialize<_i2.SimpleData>(jsonSerialization['data']),
       nullableData: serializationManager
-          .deserializeJson<_i2.SimpleData?>(jsonSerialization['nullableData']),
+          .deserialize<_i2.SimpleData?>(jsonSerialization['nullableData']),
       dataList: serializationManager
-          .deserializeJson<List<_i2.SimpleData>>(jsonSerialization['dataList']),
-      nullableDataList:
-          serializationManager.deserializeJson<List<_i2.SimpleData>?>(
-              jsonSerialization['nullableDataList']),
+          .deserialize<List<_i2.SimpleData>>(jsonSerialization['dataList']),
+      nullableDataList: serializationManager.deserialize<List<_i2.SimpleData>?>(
+          jsonSerialization['nullableDataList']),
       listWithNullableData:
-          serializationManager.deserializeJson<List<_i2.SimpleData?>>(
+          serializationManager.deserialize<List<_i2.SimpleData?>>(
               jsonSerialization['listWithNullableData']),
       nullableListWithNullableData:
-          serializationManager.deserializeJson<List<_i2.SimpleData?>?>(
+          serializationManager.deserialize<List<_i2.SimpleData?>?>(
               jsonSerialization['nullableListWithNullableData']),
     );
   }

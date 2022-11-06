@@ -17,7 +17,7 @@ class ChannelList extends _i1.SerializableEntity {
   ) {
     return ChannelList(
         channels: serializationManager
-            .deserializeJson<List<_i2.Channel>>(jsonSerialization['channels']));
+            .deserialize<List<_i2.Channel>>(jsonSerialization['channels']));
   }
 
   List<_i2.Channel> channels;

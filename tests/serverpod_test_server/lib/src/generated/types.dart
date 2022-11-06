@@ -24,19 +24,18 @@ class Types extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return Types(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      anInt: serializationManager
-          .deserializeJson<int?>(jsonSerialization['anInt']),
-      aBool: serializationManager
-          .deserializeJson<bool?>(jsonSerialization['aBool']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      anInt: serializationManager.deserialize<int?>(jsonSerialization['anInt']),
+      aBool:
+          serializationManager.deserialize<bool?>(jsonSerialization['aBool']),
       aDouble: serializationManager
-          .deserializeJson<double?>(jsonSerialization['aDouble']),
+          .deserialize<double?>(jsonSerialization['aDouble']),
       aDateTime: serializationManager
-          .deserializeJson<DateTime?>(jsonSerialization['aDateTime']),
+          .deserialize<DateTime?>(jsonSerialization['aDateTime']),
       aString: serializationManager
-          .deserializeJson<String?>(jsonSerialization['aString']),
+          .deserialize<String?>(jsonSerialization['aString']),
       aByteData: serializationManager
-          .deserializeJson<_i2.ByteData?>(jsonSerialization['aByteData']),
+          .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
     );
   }
 

@@ -19,9 +19,9 @@ class ChatRequestMessageChunk extends _i1.SerializableEntity {
   ) {
     return ChatRequestMessageChunk(
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
+          .deserialize<String>(jsonSerialization['channel']),
       lastMessageId: serializationManager
-          .deserializeJson<int>(jsonSerialization['lastMessageId']),
+          .deserialize<int>(jsonSerialization['lastMessageId']),
     );
   }
 

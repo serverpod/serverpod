@@ -21,7 +21,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   @override
-  T deserializeJson<T>(
+  T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
@@ -36,9 +36,9 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i2.ModuleClass.fromJson(data, this) : null) as T;
     }
     try {
-      return _i3.Protocol().deserializeJson<T>(data, t);
+      return _i3.Protocol().deserialize<T>(data, t);
     } catch (_) {}
-    return super.deserializeJson<T>(data, t);
+    return super.deserialize<T>(data, t);
   }
 
   @override
@@ -50,11 +50,11 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == 'ModuleClass') {
-      return deserializeJson<_i2.ModuleClass>(data['data']);
+      return deserialize<_i2.ModuleClass>(data['data']);
     }
-    return super.deserializeJsonByClassName(data);
+    return super.deserializeByClassName(data);
   }
 
   @override

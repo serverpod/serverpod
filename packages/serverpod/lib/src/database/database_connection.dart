@@ -236,7 +236,7 @@ Current type was $T''');
       }
     }
 
-    return poolManager.serializationManager.deserializeJson<T>(data);
+    return poolManager.serializationManager.deserialize<T>(data);
   }
 
   /// For most cases use the corresponding method in [Database] instead.

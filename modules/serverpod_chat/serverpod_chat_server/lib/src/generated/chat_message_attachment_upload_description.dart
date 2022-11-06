@@ -19,9 +19,9 @@ class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
   ) {
     return ChatMessageAttachmentUploadDescription(
       filePath: serializationManager
-          .deserializeJson<String>(jsonSerialization['filePath']),
+          .deserialize<String>(jsonSerialization['filePath']),
       uploadDescription: serializationManager
-          .deserializeJson<String>(jsonSerialization['uploadDescription']),
+          .deserialize<String>(jsonSerialization['uploadDescription']),
     );
   }
 

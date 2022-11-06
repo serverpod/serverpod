@@ -21,11 +21,11 @@ class CachesInfo extends _i1.SerializableEntity {
   ) {
     return CachesInfo(
       local: serializationManager
-          .deserializeJson<_i2.CacheInfo>(jsonSerialization['local']),
+          .deserialize<_i2.CacheInfo>(jsonSerialization['local']),
       localPrio: serializationManager
-          .deserializeJson<_i2.CacheInfo>(jsonSerialization['localPrio']),
+          .deserialize<_i2.CacheInfo>(jsonSerialization['localPrio']),
       global: serializationManager
-          .deserializeJson<_i2.CacheInfo>(jsonSerialization['global']),
+          .deserialize<_i2.CacheInfo>(jsonSerialization['global']),
     );
   }
 

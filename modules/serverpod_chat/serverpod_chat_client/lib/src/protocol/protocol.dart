@@ -43,7 +43,7 @@ class Protocol extends _i1.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   @override
-  T deserializeJson<T>(
+  T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
@@ -135,26 +135,26 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<List<_i13.ChatMessageAttachment>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserializeJson<_i13.ChatMessageAttachment>(e))
+              .map((e) => deserialize<_i13.ChatMessageAttachment>(e))
               .toList()
           : null) as dynamic;
     }
     if (t == List<_i13.ChatMessage>) {
       return (data as List)
-          .map((e) => deserializeJson<_i13.ChatMessage>(e))
+          .map((e) => deserialize<_i13.ChatMessage>(e))
           .toList() as dynamic;
     }
     if (t == _i1.getType<List<_i13.ChatMessageAttachment>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserializeJson<_i13.ChatMessageAttachment>(e))
+              .map((e) => deserialize<_i13.ChatMessageAttachment>(e))
               .toList()
           : null) as dynamic;
     }
     try {
-      return _i14.Protocol().deserializeJson<T>(data, t);
+      return _i14.Protocol().deserialize<T>(data, t);
     } catch (_) {}
-    return super.deserializeJson<T>(data, t);
+    return super.deserialize<T>(data, t);
   }
 
   @override
@@ -201,45 +201,45 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  dynamic deserializeJsonByClassName(Map<String, dynamic> data) {
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i14.Protocol().deserializeJsonByClassName(data);
+      return _i14.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'ChatJoinChannel') {
-      return deserializeJson<_i2.ChatJoinChannel>(data['data']);
+      return deserialize<_i2.ChatJoinChannel>(data['data']);
     }
     if (data['className'] == 'ChatJoinChannelFailed') {
-      return deserializeJson<_i3.ChatJoinChannelFailed>(data['data']);
+      return deserialize<_i3.ChatJoinChannelFailed>(data['data']);
     }
     if (data['className'] == 'ChatJoinedChannel') {
-      return deserializeJson<_i4.ChatJoinedChannel>(data['data']);
+      return deserialize<_i4.ChatJoinedChannel>(data['data']);
     }
     if (data['className'] == 'ChatLeaveChannel') {
-      return deserializeJson<_i5.ChatLeaveChannel>(data['data']);
+      return deserialize<_i5.ChatLeaveChannel>(data['data']);
     }
     if (data['className'] == 'ChatMessage') {
-      return deserializeJson<_i6.ChatMessage>(data['data']);
+      return deserialize<_i6.ChatMessage>(data['data']);
     }
     if (data['className'] == 'ChatMessageAttachment') {
-      return deserializeJson<_i7.ChatMessageAttachment>(data['data']);
+      return deserialize<_i7.ChatMessageAttachment>(data['data']);
     }
     if (data['className'] == 'ChatMessageAttachmentUploadDescription') {
-      return deserializeJson<_i8.ChatMessageAttachmentUploadDescription>(
+      return deserialize<_i8.ChatMessageAttachmentUploadDescription>(
           data['data']);
     }
     if (data['className'] == 'ChatMessageChunk') {
-      return deserializeJson<_i9.ChatMessageChunk>(data['data']);
+      return deserialize<_i9.ChatMessageChunk>(data['data']);
     }
     if (data['className'] == 'ChatMessagePost') {
-      return deserializeJson<_i10.ChatMessagePost>(data['data']);
+      return deserialize<_i10.ChatMessagePost>(data['data']);
     }
     if (data['className'] == 'ChatReadMessage') {
-      return deserializeJson<_i11.ChatReadMessage>(data['data']);
+      return deserialize<_i11.ChatReadMessage>(data['data']);
     }
     if (data['className'] == 'ChatRequestMessageChunk') {
-      return deserializeJson<_i12.ChatRequestMessageChunk>(data['data']);
+      return deserialize<_i12.ChatRequestMessageChunk>(data['data']);
     }
-    return super.deserializeJsonByClassName(data);
+    return super.deserializeByClassName(data);
   }
 }

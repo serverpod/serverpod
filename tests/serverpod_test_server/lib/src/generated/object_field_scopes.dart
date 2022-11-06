@@ -20,13 +20,12 @@ class ObjectFieldScopes extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return ObjectFieldScopes(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      normal: serializationManager
-          .deserializeJson<String>(jsonSerialization['normal']),
-      api: serializationManager
-          .deserializeJson<String?>(jsonSerialization['api']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      normal:
+          serializationManager.deserialize<String>(jsonSerialization['normal']),
+      api: serializationManager.deserialize<String?>(jsonSerialization['api']),
       database: serializationManager
-          .deserializeJson<String?>(jsonSerialization['database']),
+          .deserialize<String?>(jsonSerialization['database']),
     );
   }
 

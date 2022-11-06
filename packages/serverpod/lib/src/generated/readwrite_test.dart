@@ -18,9 +18,9 @@ class ReadWriteTestEntry extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return ReadWriteTestEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      number: serializationManager
-          .deserializeJson<int>(jsonSerialization['number']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      number:
+          serializationManager.deserialize<int>(jsonSerialization['number']),
     );
   }
 

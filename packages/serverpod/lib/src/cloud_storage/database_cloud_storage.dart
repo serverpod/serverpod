@@ -125,7 +125,7 @@ class DatabaseCloudStorage extends CloudStorage {
       'type': 'binary',
     };
 
-    return SerializationManager.serializeToJson(uploadDescriptionData);
+    return SerializationManager.serialize(uploadDescriptionData);
   }
 
   @override

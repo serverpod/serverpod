@@ -18,8 +18,8 @@ class SimpleData extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return SimpleData(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      num: serializationManager.deserializeJson<int>(jsonSerialization['num']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      num: serializationManager.deserialize<int>(jsonSerialization['num']),
     );
   }
 

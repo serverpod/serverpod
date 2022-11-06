@@ -9,7 +9,7 @@ class ValueEncoder extends PostgresTextEncoder {
   @override
   String convert(value, {bool escapeStrings = true}) {
     if (value is ByteData || value is DateTime) {
-      return super.convert(SerializationManager.serializeToJson(value),
+      return super.convert(SerializationManager.serialize(value),
           escapeStrings: escapeStrings);
     } else if (value is String &&
         value.startsWith('decode(\'') &&
@@ -21,14 +21,14 @@ class ValueEncoder extends PostgresTextEncoder {
       // are trying to store a ByteData.
       return value;
     } else if (value is List || value is Map || value is Set) {
-      return super.convert(SerializationManager.serializeToJson(value),
+      return super.convert(SerializationManager.serialize(value),
           escapeStrings: escapeStrings);
     }
     try {
       return super.convert(value, escapeStrings: escapeStrings);
     } catch (e) {
       // super.convert failed, therefore value must be a json serializable type.
-      return super.convert(SerializationManager.serializeToJson(value),
+      return super.convert(SerializationManager.serialize(value),
           escapeStrings: escapeStrings);
     }
   }

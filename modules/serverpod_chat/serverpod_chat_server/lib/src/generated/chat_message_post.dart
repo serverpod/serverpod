@@ -22,13 +22,14 @@ class ChatMessagePost extends _i1.SerializableEntity {
   ) {
     return ChatMessagePost(
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
+          .deserialize<String>(jsonSerialization['channel']),
       message: serializationManager
-          .deserializeJson<String>(jsonSerialization['message']),
+          .deserialize<String>(jsonSerialization['message']),
       clientMessageId: serializationManager
-          .deserializeJson<int>(jsonSerialization['clientMessageId']),
-      attachments: serializationManager.deserializeJson<
-          List<_i2.ChatMessageAttachment>?>(jsonSerialization['attachments']),
+          .deserialize<int>(jsonSerialization['clientMessageId']),
+      attachments:
+          serializationManager.deserialize<List<_i2.ChatMessageAttachment>?>(
+              jsonSerialization['attachments']),
     );
   }
 

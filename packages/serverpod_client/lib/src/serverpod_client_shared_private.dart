@@ -7,7 +7,7 @@ String formatArgs(
 
   args['method'] = method;
 
-  return SerializationManager.serializeToJson(args);
+  return SerializationManager.serialize(args);
 }
 
 /// Deserializes data sent from the server based on the return type.
@@ -16,7 +16,7 @@ T parseData<T>(
   Type returnType,
   SerializationManager serializationManager,
 ) {
-  return serializationManager.deserializeJsonString<T>(data, returnType);
+  return serializationManager.deserializeString<T>(data, returnType);
 }
 
 /// A helper method, that just 'returns' void.

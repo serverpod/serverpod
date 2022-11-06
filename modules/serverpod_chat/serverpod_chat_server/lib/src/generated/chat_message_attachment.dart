@@ -23,17 +23,16 @@ class ChatMessageAttachment extends _i1.SerializableEntity {
   ) {
     return ChatMessageAttachment(
       fileName: serializationManager
-          .deserializeJson<String>(jsonSerialization['fileName']),
-      url: serializationManager
-          .deserializeJson<String>(jsonSerialization['url']),
+          .deserialize<String>(jsonSerialization['fileName']),
+      url: serializationManager.deserialize<String>(jsonSerialization['url']),
       contentType: serializationManager
-          .deserializeJson<String>(jsonSerialization['contentType']),
+          .deserialize<String>(jsonSerialization['contentType']),
       previewImage: serializationManager
-          .deserializeJson<String?>(jsonSerialization['previewImage']),
+          .deserialize<String?>(jsonSerialization['previewImage']),
       previewWidth: serializationManager
-          .deserializeJson<int?>(jsonSerialization['previewWidth']),
+          .deserialize<int?>(jsonSerialization['previewWidth']),
       previewHeight: serializationManager
-          .deserializeJson<int?>(jsonSerialization['previewHeight']),
+          .deserialize<int?>(jsonSerialization['previewHeight']),
     );
   }
 

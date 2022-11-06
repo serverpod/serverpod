@@ -20,11 +20,11 @@ class CacheInfo extends _i1.SerializableEntity {
   ) {
     return CacheInfo(
       numEntries: serializationManager
-          .deserializeJson<int>(jsonSerialization['numEntries']),
+          .deserialize<int>(jsonSerialization['numEntries']),
       maxEntries: serializationManager
-          .deserializeJson<int>(jsonSerialization['maxEntries']),
+          .deserialize<int>(jsonSerialization['maxEntries']),
       keys: serializationManager
-          .deserializeJson<List<String>?>(jsonSerialization['keys']),
+          .deserialize<List<String>?>(jsonSerialization['keys']),
     );
   }
 

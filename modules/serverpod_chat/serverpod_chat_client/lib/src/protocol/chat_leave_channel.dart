@@ -16,7 +16,7 @@ class ChatLeaveChannel extends _i1.SerializableEntity {
   ) {
     return ChatLeaveChannel(
         channel: serializationManager
-            .deserializeJson<String>(jsonSerialization['channel']));
+            .deserialize<String>(jsonSerialization['channel']));
   }
 
   String channel;

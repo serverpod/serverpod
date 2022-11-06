@@ -16,9 +16,8 @@ class SessionLogResult extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return SessionLogResult(
-        sessionLog:
-            serializationManager.deserializeJson<List<_i2.SessionLogInfo>>(
-                jsonSerialization['sessionLog']));
+        sessionLog: serializationManager.deserialize<List<_i2.SessionLogInfo>>(
+            jsonSerialization['sessionLog']));
   }
 
   List<_i2.SessionLogInfo> sessionLog;

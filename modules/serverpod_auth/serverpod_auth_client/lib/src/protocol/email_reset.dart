@@ -20,13 +20,13 @@ class EmailReset extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return EmailReset(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
-      userId: serializationManager
-          .deserializeJson<int>(jsonSerialization['userId']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
       verificationCode: serializationManager
-          .deserializeJson<String>(jsonSerialization['verificationCode']),
+          .deserialize<String>(jsonSerialization['verificationCode']),
       expiration: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['expiration']),
+          .deserialize<DateTime>(jsonSerialization['expiration']),
     );
   }
 

@@ -22,16 +22,16 @@ class RuntimeSettings extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return RuntimeSettings(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       logSettings: serializationManager
-          .deserializeJson<_i2.LogSettings>(jsonSerialization['logSettings']),
+          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
       logSettingsOverrides:
-          serializationManager.deserializeJson<List<_i2.LogSettingsOverride>>(
+          serializationManager.deserialize<List<_i2.LogSettingsOverride>>(
               jsonSerialization['logSettingsOverrides']),
       logServiceCalls: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logServiceCalls']),
+          .deserialize<bool>(jsonSerialization['logServiceCalls']),
       logMalformedCalls: serializationManager
-          .deserializeJson<bool>(jsonSerialization['logMalformedCalls']),
+          .deserialize<bool>(jsonSerialization['logMalformedCalls']),
     );
   }
 

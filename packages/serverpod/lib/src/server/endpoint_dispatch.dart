@@ -160,7 +160,7 @@ abstract class EndpointDispatch {
 
   dynamic _formatArg(
       dynamic input, Type type, SerializationManager serializationManager) {
-    return serializationManager.deserializeJson(input, type);
+    return serializationManager.deserialize(input, type);
   }
 }
 

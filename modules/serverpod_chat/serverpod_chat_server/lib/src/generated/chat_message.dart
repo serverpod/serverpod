@@ -28,25 +28,25 @@ class ChatMessage extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return ChatMessage(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
+          .deserialize<String>(jsonSerialization['channel']),
       message: serializationManager
-          .deserializeJson<String>(jsonSerialization['message']),
-      time: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['time']),
-      sender: serializationManager
-          .deserializeJson<int>(jsonSerialization['sender']),
+          .deserialize<String>(jsonSerialization['message']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
+      sender:
+          serializationManager.deserialize<int>(jsonSerialization['sender']),
       senderInfo: serializationManager
-          .deserializeJson<_i2.UserInfo?>(jsonSerialization['senderInfo']),
-      removed: serializationManager
-          .deserializeJson<bool>(jsonSerialization['removed']),
+          .deserialize<_i2.UserInfo?>(jsonSerialization['senderInfo']),
+      removed:
+          serializationManager.deserialize<bool>(jsonSerialization['removed']),
       clientMessageId: serializationManager
-          .deserializeJson<int?>(jsonSerialization['clientMessageId']),
-      sent: serializationManager
-          .deserializeJson<bool?>(jsonSerialization['sent']),
-      attachments: serializationManager.deserializeJson<
-          List<_i3.ChatMessageAttachment>?>(jsonSerialization['attachments']),
+          .deserialize<int?>(jsonSerialization['clientMessageId']),
+      sent: serializationManager.deserialize<bool?>(jsonSerialization['sent']),
+      attachments:
+          serializationManager.deserialize<List<_i3.ChatMessageAttachment>?>(
+              jsonSerialization['attachments']),
     );
   }
 

@@ -21,14 +21,13 @@ class SessionLogInfo extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return SessionLogInfo(
-      sessionLogEntry:
-          serializationManager.deserializeJson<_i2.SessionLogEntry>(
-              jsonSerialization['sessionLogEntry']),
-      queries: serializationManager.deserializeJson<List<_i2.QueryLogEntry>>(
-          jsonSerialization['queries']),
+      sessionLogEntry: serializationManager.deserialize<_i2.SessionLogEntry>(
+          jsonSerialization['sessionLogEntry']),
+      queries: serializationManager
+          .deserialize<List<_i2.QueryLogEntry>>(jsonSerialization['queries']),
       logs: serializationManager
-          .deserializeJson<List<_i2.LogEntry>>(jsonSerialization['logs']),
-      messages: serializationManager.deserializeJson<List<_i2.MessageLogEntry>>(
+          .deserialize<List<_i2.LogEntry>>(jsonSerialization['logs']),
+      messages: serializationManager.deserialize<List<_i2.MessageLogEntry>>(
           jsonSerialization['messages']),
     );
   }

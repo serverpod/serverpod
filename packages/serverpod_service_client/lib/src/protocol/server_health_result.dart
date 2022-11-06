@@ -19,11 +19,10 @@ class ServerHealthResult extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return ServerHealthResult(
-      metrics:
-          serializationManager.deserializeJson<List<_i2.ServerHealthMetric>>(
-              jsonSerialization['metrics']),
+      metrics: serializationManager.deserialize<List<_i2.ServerHealthMetric>>(
+          jsonSerialization['metrics']),
       connectionInfos: serializationManager
-          .deserializeJson<List<_i2.ServerHealthConnectionInfo>>(
+          .deserialize<List<_i2.ServerHealthConnectionInfo>>(
               jsonSerialization['connectionInfos']),
     );
   }

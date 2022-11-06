@@ -24,19 +24,18 @@ class CloudStorageEntry extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return CloudStorageEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       storageId: serializationManager
-          .deserializeJson<String>(jsonSerialization['storageId']),
-      path: serializationManager
-          .deserializeJson<String>(jsonSerialization['path']),
+          .deserialize<String>(jsonSerialization['storageId']),
+      path: serializationManager.deserialize<String>(jsonSerialization['path']),
       addedTime: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['addedTime']),
+          .deserialize<DateTime>(jsonSerialization['addedTime']),
       expiration: serializationManager
-          .deserializeJson<DateTime?>(jsonSerialization['expiration']),
+          .deserialize<DateTime?>(jsonSerialization['expiration']),
       byteData: serializationManager
-          .deserializeJson<_i2.ByteData>(jsonSerialization['byteData']),
-      verified: serializationManager
-          .deserializeJson<bool>(jsonSerialization['verified']),
+          .deserialize<_i2.ByteData>(jsonSerialization['byteData']),
+      verified:
+          serializationManager.deserialize<bool>(jsonSerialization['verified']),
     );
   }
 

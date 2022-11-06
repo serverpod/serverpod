@@ -30,33 +30,32 @@ class SessionLogEntry extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return SessionLogEntry(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       serverId: serializationManager
-          .deserializeJson<String>(jsonSerialization['serverId']),
-      time: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['time']),
+          .deserialize<String>(jsonSerialization['serverId']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
       module: serializationManager
-          .deserializeJson<String?>(jsonSerialization['module']),
+          .deserialize<String?>(jsonSerialization['module']),
       endpoint: serializationManager
-          .deserializeJson<String?>(jsonSerialization['endpoint']),
+          .deserialize<String?>(jsonSerialization['endpoint']),
       method: serializationManager
-          .deserializeJson<String?>(jsonSerialization['method']),
+          .deserialize<String?>(jsonSerialization['method']),
       duration: serializationManager
-          .deserializeJson<double?>(jsonSerialization['duration']),
+          .deserialize<double?>(jsonSerialization['duration']),
       numQueries: serializationManager
-          .deserializeJson<int?>(jsonSerialization['numQueries']),
-      slow: serializationManager
-          .deserializeJson<bool?>(jsonSerialization['slow']),
-      error: serializationManager
-          .deserializeJson<String?>(jsonSerialization['error']),
+          .deserialize<int?>(jsonSerialization['numQueries']),
+      slow: serializationManager.deserialize<bool?>(jsonSerialization['slow']),
+      error:
+          serializationManager.deserialize<String?>(jsonSerialization['error']),
       stackTrace: serializationManager
-          .deserializeJson<String?>(jsonSerialization['stackTrace']),
+          .deserialize<String?>(jsonSerialization['stackTrace']),
       authenticatedUserId: serializationManager
-          .deserializeJson<int?>(jsonSerialization['authenticatedUserId']),
-      isOpen: serializationManager
-          .deserializeJson<bool?>(jsonSerialization['isOpen']),
+          .deserialize<int?>(jsonSerialization['authenticatedUserId']),
+      isOpen:
+          serializationManager.deserialize<bool?>(jsonSerialization['isOpen']),
       touched: serializationManager
-          .deserializeJson<DateTime>(jsonSerialization['touched']),
+          .deserialize<DateTime>(jsonSerialization['touched']),
     );
   }
 

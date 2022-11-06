@@ -264,7 +264,7 @@ class Server {
         }
       } else {
         var serializedEntity =
-            SerializationManager.serializeToJson(result.returnValue);
+            SerializationManager.serialize(result.returnValue);
         request.response.write(serializedEntity);
       }
       await request.response.close();
@@ -326,8 +326,8 @@ class Server {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              webSocket.add(
-                  SerializationManager.serializeToJson({'command': 'pong'}));
+              webSocket
+                  .add(SerializationManager.serialize({'command': 'pong'}));
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
               session.updateAuthenticationKey(authKey);
@@ -357,8 +357,8 @@ class Server {
             try {
               session.sessionLogs.currentEndpoint = endpointName;
 
-              message = serializationManager
-                  .deserializeJsonByClassName(serialization);
+              message =
+                  serializationManager.deserializeByClassName(serialization);
 
               if (message == null) throw Exception('Streamed message was null');
 

@@ -19,11 +19,11 @@ class MethodInfo extends _i1.TableRow {
     _i1.SerializationManager serializationManager,
   ) {
     return MethodInfo(
-      id: serializationManager.deserializeJson<int?>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       endpoint: serializationManager
-          .deserializeJson<String>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserializeJson<String>(jsonSerialization['method']),
+          .deserialize<String>(jsonSerialization['endpoint']),
+      method:
+          serializationManager.deserialize<String>(jsonSerialization['method']),
     );
   }
 

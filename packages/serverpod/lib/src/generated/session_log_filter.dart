@@ -24,19 +24,16 @@ class SessionLogFilter extends _i1.SerializableEntity {
   ) {
     return SessionLogFilter(
       endpoint: serializationManager
-          .deserializeJson<String?>(jsonSerialization['endpoint']),
+          .deserialize<String?>(jsonSerialization['endpoint']),
       method: serializationManager
-          .deserializeJson<String?>(jsonSerialization['method']),
+          .deserialize<String?>(jsonSerialization['method']),
       futureCall: serializationManager
-          .deserializeJson<String?>(jsonSerialization['futureCall']),
-      slow:
-          serializationManager.deserializeJson<bool>(jsonSerialization['slow']),
-      error: serializationManager
-          .deserializeJson<bool>(jsonSerialization['error']),
-      open:
-          serializationManager.deserializeJson<bool>(jsonSerialization['open']),
+          .deserialize<String?>(jsonSerialization['futureCall']),
+      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
+      error: serializationManager.deserialize<bool>(jsonSerialization['error']),
+      open: serializationManager.deserialize<bool>(jsonSerialization['open']),
       lastSessionLogId: serializationManager
-          .deserializeJson<int?>(jsonSerialization['lastSessionLogId']),
+          .deserialize<int?>(jsonSerialization['lastSessionLogId']),
     );
   }
 

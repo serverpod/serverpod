@@ -19,9 +19,9 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
   ) {
     return ChatJoinChannelFailed(
       channel: serializationManager
-          .deserializeJson<String>(jsonSerialization['channel']),
-      reason: serializationManager
-          .deserializeJson<String>(jsonSerialization['reason']),
+          .deserialize<String>(jsonSerialization['channel']),
+      reason:
+          serializationManager.deserialize<String>(jsonSerialization['reason']),
     );
   }
 
