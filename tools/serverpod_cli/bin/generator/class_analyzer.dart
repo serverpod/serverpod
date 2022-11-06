@@ -261,7 +261,10 @@ class ClassAnalyzer {
 
       try {
         fieldDescription = fieldDescription.replaceAll(' ', '');
-        var typeResult = parseAndAnalyzeType(fieldDescription);
+        var typeResult = parseAndAnalyzeType(
+          fieldDescription,
+          sourceSpan: fieldDescriptionNode.span,
+        );
 
         var fieldOptions =
             fieldDescription.substring(typeResult.parsedPosition).split(',');

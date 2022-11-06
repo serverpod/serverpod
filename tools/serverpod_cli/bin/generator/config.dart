@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
@@ -109,32 +110,45 @@ class GeneratorConfig {
 
     // Load extra constructors
     extraConstructors = [];
-    try {
-      if (generatorConfig['extraConstructors'] != null) {
-        for (String name in generatorConfig['extraConstructors']) {
-          extraConstructors.add(
-              parseAndAnalyzeType(name, analyzingCustomConstructors: true)
-                  .type);
+    if (generatorConfig['extraConstructors'] != null) {
+      try {
+        for (var node
+            in (generatorConfig['extraConstructors'] as YamlList).nodes) {
+          extraConstructors.add(parseAndAnalyzeType(
+            node.value,
+            analyzingCustomConstructors: true,
+            sourceSpan: node.span,
+          ).type);
         }
+      } on SourceSpanException catch (_) {
+        rethrow;
+      } catch (e) {
+        throw SourceSpanFormatException(
+            'Failed to load \'extraConstructors\' config',
+            generatorConfig['extraConstructors'].span);
       }
-    } catch (e) {
-      throw const FormatException(
-          'Failed to load \'extraConstructors\' config');
     }
-    extraConstructors.map((e) => e.nullable);
 
     // Load extra classNames
     extraClassNames = {};
-    try {
-      if (generatorConfig['extraClassNames'] != null) {
+    if (generatorConfig['extraClassNames'] != null) {
+      try {
         for (var config in generatorConfig['extraClassNames']) {
-          extraClassNames.addAll((config as YamlMap).map(
-              (key, value) => MapEntry(key, parseAndAnalyzeType(value).type)));
+          extraClassNames
+              .addAll((config as YamlMap).nodes.map((key, node) => MapEntry(
+                  key.value,
+                  parseAndAnalyzeType(
+                    node.value,
+                    sourceSpan: node.span,
+                  ).type)));
         }
+      } on SourceSpanException catch (_) {
+        rethrow;
+      } catch (e) {
+        throw SourceSpanFormatException(
+            'Failed to load \'extraClassNames\' config',
+            generatorConfig['extraClassNames'].span);
       }
-    } catch (e) {
-      throw const FormatException(
-          'Failed to load \'extraConstructors\' config');
     }
 
     return true;

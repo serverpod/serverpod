@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:source_span/source_span.dart';
 
 import 'class_generator_dart.dart';
 import 'config.dart';
@@ -289,8 +290,11 @@ class TypeDefinition {
 /// So when calling with "List<List<String?>?>,database",
 /// the position will point at the ','.
 /// If [analyzingCustomConstructors] is true, the root element might be marked as [TypeDefinition.customClass].
-TypeParseResult parseAndAnalyzeType(String input,
-    {bool analyzingCustomConstructors = false}) {
+TypeParseResult parseAndAnalyzeType(
+  String input, {
+  bool analyzingCustomConstructors = false,
+  required SourceSpan sourceSpan,
+}) {
   String classname = '';
   for (var i = 0; i < input.length; i++) {
     switch (input[i]) {
@@ -298,7 +302,10 @@ TypeParseResult parseAndAnalyzeType(String input,
         var generics = <TypeDefinition>[];
         while (true) {
           i++;
-          var result = parseAndAnalyzeType(input.substring(i));
+          var result = parseAndAnalyzeType(
+            input.substring(i),
+            sourceSpan: sourceSpan.subspan(i),
+          );
           generics.add(result.type);
           i += result.parsedPosition;
           if (input[i] == '>') {
@@ -311,7 +318,7 @@ TypeParseResult parseAndAnalyzeType(String input,
                   generics: generics,
                 ));
           } else if (i >= input.length - 1) {
-            throw 'INVALID TYPE';
+            throw SourceSpanException('Invalid Type', sourceSpan);
           }
         }
       case '>':
