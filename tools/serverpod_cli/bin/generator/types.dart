@@ -5,6 +5,7 @@ import 'package:source_span/source_span.dart';
 
 import 'class_generator_dart.dart';
 import 'config.dart';
+import 'protocol_definition.dart';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -280,6 +281,24 @@ class TypeDefinition {
     } else {
       return [];
     }
+  }
+
+  /// Autodetect protocol references
+  TypeDefinition detectProtocolReferences(
+      List<ProtocolFileDefinition> classDefinitions) {
+    return TypeDefinition(
+        className: className,
+        nullable: nullable,
+        customClass: customClass,
+        dartType: dartType,
+        generics: generics
+            .map((e) => e.detectProtocolReferences(classDefinitions))
+            .toList(),
+        isEnum: isEnum,
+        url:
+            url == null && classDefinitions.any((c) => c.className == className)
+                ? 'protocol'
+                : url);
   }
 }
 

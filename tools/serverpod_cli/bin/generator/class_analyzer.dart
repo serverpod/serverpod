@@ -611,22 +611,3 @@ class ClassAnalyzer {
     return true;
   }
 }
-
-extension on TypeDefinition {
-  TypeDefinition detectProtocolReferences(
-      List<ProtocolFileDefinition> classDefinitions) {
-    return TypeDefinition(
-        className: className,
-        nullable: nullable,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics
-            .map((e) => e.detectProtocolReferences(classDefinitions))
-            .toList(),
-        isEnum: isEnum,
-        url:
-            url == null && classDefinitions.any((c) => c.className == className)
-                ? 'protocol'
-                : url);
-  }
-}
