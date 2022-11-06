@@ -113,7 +113,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
       contents.write(data);
     }, onDone: () //
         {
-      // var test = contents.isEmpty ? '' : .toString();
       return completer.complete(contents.toString());
     });
     return completer.future;
