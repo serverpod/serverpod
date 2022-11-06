@@ -66,9 +66,7 @@ abstract class SerializationManager {
     } else if (t == getType<ByteData?>()) {
       return (data as String?)?.base64DecodedByteData() as T;
     }
-
-    //TODO: handle missing constructor
-    throw 'Unknown Type $t';
+    throw FormatException('No deserialization found for type $t');
   }
 
   /// Get the className for the provided object.
