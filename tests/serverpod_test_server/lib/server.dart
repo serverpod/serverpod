@@ -31,9 +31,8 @@ void run(List<String> args) async {
       serverpod: pod,
       storageId: 's3',
       public: true,
-      region: '',
-      bucket: 'serverpod-test-storage',
-      publicHost: 'localhost:9000'));
+      region: 'us-west-2',
+      bucket: 'serverpod-test-storage'));
 
   // Callbacks for auth
   auth.AuthConfig.set(auth.AuthConfig(

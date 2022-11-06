@@ -1,10 +1,10 @@
-version: "3.7"
+version: '3.7'
 
 services:
   postgres:
     image: postgres:14.1
     ports:
-      - "8090:5432"
+      - '8090:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test
@@ -14,20 +14,9 @@ services:
   redis:
     image: redis:6.2.6
     ports:
-      - "8091:6379"
+      - '8091:6379'
     command: redis-server --requirepass password
     environment:
       - REDIS_REPLICATION_MODE=master
-  s3:
-    image: bitnami/minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - MINIO_ROOT_USER=AKIAXR2IQI6JRDCVBT3A
-      - MINIO_ROOT_PASSWORD=fQnWtewaqr1ZAOclJLTpay2CMKIvRSMS8P+bOQ1r
-      - MINIO_DEFAULT_BUCKETS=serverpod-test-storage
-      # - MINIO_ACCESS_KEY=AKIAXR2IQI6JRDCVBT3A
-      # - MINIO_SECRET_KEY=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
 volumes:
   data:
