@@ -28,7 +28,7 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  Future<bool> hasCached(String key) async {
+  Future<bool> containsKey(String key) async {
     assert(
       redisController != null,
       'Redis needs to be enabled to use this method',

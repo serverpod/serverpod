@@ -30,7 +30,7 @@ class LocalCache extends Cache {
     );
 
     // Remove old entry
-    if (await hasCached(key)) await invalidateKey(key);
+    if (await containsKey(key)) await invalidateKey(key);
 
     // Insert
     _keyList.insert(0, _KeyListKey(key, entry.creationTime));
@@ -65,7 +65,7 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<bool> hasCached(String key) async {
+  Future<bool> containsKey(String key) async {
     var entry = _entries[key];
 
     if (entry == null) return false;

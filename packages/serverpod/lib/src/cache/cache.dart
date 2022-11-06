@@ -21,7 +21,7 @@ abstract class Cache {
       {Duration? lifetime, String? group});
 
   /// Check if a valid cache for the specified key exists.
-  Future<bool> hasCached(String key);
+  Future<bool> containsKey(String key);
 
   /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
   /// matching object can be found, null is returned.
