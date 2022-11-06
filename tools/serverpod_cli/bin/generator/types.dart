@@ -102,8 +102,8 @@ class TypeDefinition {
                 orElse: () => null,
               );
           if (module == null) {
-            //TODO: add to collector
-            throw 'Module with nickname $moduleName not found in config!';
+            throw FormatException(
+                'Module with nickname $moduleName not found in config!');
           }
           t.url =
               'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
