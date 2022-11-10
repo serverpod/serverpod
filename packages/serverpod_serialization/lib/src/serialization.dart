@@ -89,7 +89,8 @@ abstract class SerializationManager {
 
   /// Deserialize the provided json [data] by using the className stored in the [data].
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    switch (data['className']) {
+    var className = data['className'];
+    switch (className) {
       case 'int':
         return deserialize<int>(data['data']);
       case 'double':
@@ -103,7 +104,7 @@ abstract class SerializationManager {
       case 'ByteData':
         return deserialize<ByteData>(data['data']);
     }
-    throw TypeError();
+    throw FormatException('No deserialization found for type named $className');
   }
 
   /// Serialize the provided [object] to an Json [String].
