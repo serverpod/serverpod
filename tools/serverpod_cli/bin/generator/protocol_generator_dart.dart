@@ -23,73 +23,80 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
     for (var endpointDef in protocolDefinition.endpoints) {
       var endpointClassName = _endpointClassName(endpointDef.name);
 
-      library.body.add(Class((endpoint) {
-        endpoint
-          ..docs.add(endpointDef.documentationComment ?? '')
-          ..name = endpointClassName
-          ..extend = refer('EndpointRef', serverpodUrl(false));
+      library.body.add(
+        Class((endpoint) {
+          endpoint
+            ..docs.add(endpointDef.documentationComment ?? '')
+            ..name = endpointClassName
+            ..extend = refer('EndpointRef', serverpodUrl(false));
 
-        endpoint.methods.add(Method((m) => m
-          ..annotations.add(refer('override'))
-          ..name = 'name'
-          ..type = MethodType.getter
-          ..returns = refer('String')
-          ..body = literalString('$modulePrefix${endpointDef.name}').code));
+          endpoint.methods.add(Method((m) => m
+            ..annotations.add(refer('override'))
+            ..name = 'name'
+            ..type = MethodType.getter
+            ..returns = refer('String')
+            ..body = literalString('$modulePrefix${endpointDef.name}').code));
 
-        endpoint.constructors.add(Constructor((c) => c
-          ..requiredParameters.add(Parameter((p) => p
-            ..name = 'caller'
-            ..type = refer('EndpointCaller',
-                'package:serverpod_client/serverpod_client.dart')))
-          ..initializers.add(refer('super').call([refer('caller')]).code)));
+          endpoint.constructors.add(Constructor((c) => c
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'caller'
+              ..type = refer('EndpointCaller',
+                  'package:serverpod_client/serverpod_client.dart')))
+            ..initializers.add(refer('super').call([refer('caller')]).code)));
 
-        for (var methodDef in endpointDef.methods) {
-          var requiredParams = methodDef.parameters;
-          var optionalParams = methodDef.parametersPositional;
-          var namedParameters = methodDef.parametersNamed;
-          var returnType = methodDef.returnType;
+          for (var methodDef in endpointDef.methods) {
+            var requiredParams = methodDef.parameters;
+            var optionalParams = methodDef.parametersPositional;
+            var namedParameters = methodDef.parametersNamed;
+            var returnType = methodDef.returnType;
 
-          endpoint.methods.add(Method(
-            (m) => m
-              ..docs.add(methodDef.documentationComment ?? '')
-              ..returns = returnType.reference(false)
-              ..name = methodDef.name
-              ..requiredParameters.addAll([
-                for (var parameterDef in requiredParams)
-                  Parameter((p) => p
-                    ..name = parameterDef.name
-                    ..type = parameterDef.type.reference(false))
-              ])
-              ..optionalParameters.addAll([
-                for (var parameterDef in optionalParams)
-                  Parameter((p) => p
-                    ..named = false
-                    ..name = parameterDef.name
-                    ..type = parameterDef.type.reference(false)),
-                for (var parameterDef in namedParameters)
-                  Parameter((p) => p
-                    ..named = true
-                    ..required = parameterDef.required
-                    ..name = parameterDef.name
-                    ..type = parameterDef.type.reference(false))
-              ])
-              ..body = refer('caller').property('callServerEndpoint').call([
-                literalString('$modulePrefix${endpointDef.name}'),
-                literalString(methodDef.name),
-                literalMap({
-                  for (var parameterDef in requiredParams)
-                    literalString(parameterDef.name): refer(parameterDef.name),
-                  for (var parameterDef in optionalParams)
-                    literalString(parameterDef.name): refer(parameterDef.name),
-                  for (var parameterDef in namedParameters)
-                    literalString(parameterDef.name): refer(parameterDef.name),
-                })
-              ], {}, [
-                methodDef.returnType.generics.first.reference(false)
-              ]).code,
-          ));
-        }
-      }));
+            endpoint.methods.add(
+              Method(
+                (m) => m
+                  ..docs.add(methodDef.documentationComment ?? '')
+                  ..returns = returnType.reference(false)
+                  ..name = methodDef.name
+                  ..requiredParameters.addAll([
+                    for (var parameterDef in requiredParams)
+                      Parameter((p) => p
+                        ..name = parameterDef.name
+                        ..type = parameterDef.type.reference(false))
+                  ])
+                  ..optionalParameters.addAll([
+                    for (var parameterDef in optionalParams)
+                      Parameter((p) => p
+                        ..named = false
+                        ..name = parameterDef.name
+                        ..type = parameterDef.type.reference(false)),
+                    for (var parameterDef in namedParameters)
+                      Parameter((p) => p
+                        ..named = true
+                        ..required = parameterDef.required
+                        ..name = parameterDef.name
+                        ..type = parameterDef.type.reference(false))
+                  ])
+                  ..body = refer('caller').property('callServerEndpoint').call([
+                    literalString('$modulePrefix${endpointDef.name}'),
+                    literalString(methodDef.name),
+                    literalMap({
+                      for (var parameterDef in requiredParams)
+                        literalString(parameterDef.name):
+                            refer(parameterDef.name),
+                      for (var parameterDef in optionalParams)
+                        literalString(parameterDef.name):
+                            refer(parameterDef.name),
+                      for (var parameterDef in namedParameters)
+                        literalString(parameterDef.name):
+                            refer(parameterDef.name),
+                    })
+                  ], {}, [
+                    methodDef.returnType.generics.first.reference(false)
+                  ]).code,
+              ),
+            );
+          }
+        }),
+      );
     }
 
     if (hasModules) {
@@ -141,90 +148,97 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                 ..name = 'modules'
                 ..type = refer('_Modules')),
           ])
-          ..constructors.add(Constructor((c) {
-            if (config.type == PackageType.server) {
-              c
-                ..requiredParameters.add(Parameter((p) => p
-                  ..type = refer('String')
-                  ..name = 'host'))
-                ..optionalParameters.addAll([
-                  Parameter((p) => p
-                    ..name = 'context'
-                    ..named = true
-                    ..type = TypeReference((t) => t
-                      ..symbol = 'SecurityContext'
-                      ..url = 'dart:io'
-                      ..isNullable = true)),
-                  Parameter((p) => p
-                    ..name = 'authenticationKeyManager'
-                    ..named = true
-                    ..type = TypeReference((t) => t
-                      ..symbol = 'AuthenticationKeyManager'
-                      ..url = serverpodUrl(false)
-                      ..isNullable = true)),
-                ])
-                ..initializers.add(refer('super').call([
-                  refer('host'),
-                  refer('Protocol', 'protocol.dart').call([])
-                ], {
-                  'context': refer('context'),
-                  'authenticationKeyManager': refer('authenticationKeyManager'),
-                }).code);
-            } else {
-              c
-                ..requiredParameters.add(Parameter((p) => p
-                  ..type = refer('ServerpodClientShared', serverpodUrl(false))
-                  ..name = 'client'))
-                ..initializers.add(refer('super').call([refer('client')]).code);
-            }
-            c.body = Block.of([
-              for (var endpointDef in protocolDefinition.endpoints)
-                refer(endpointDef.name)
-                    .assign(refer(_endpointClassName(endpointDef.name))
-                        .call([refer('this')]))
-                    .statement,
-              if (hasModules)
-                refer('modules')
-                    .assign(refer('_Modules').call([refer('this')]))
-                    .statement,
-            ]);
-          }))
-          ..methods.addAll([
-            Method(
-              (m) => m
-                ..name = 'endpointRefLookup'
-                ..annotations.add(refer('override'))
-                ..type = MethodType.getter
-                ..returns = TypeReference((t) => t
-                  ..symbol = 'Map'
-                  ..types.addAll([
-                    refer('String'),
-                    refer('EndpointRef', serverpodUrl(false)),
-                  ]))
-                ..body = literalMap({
-                  for (var endpointDef in protocolDefinition.endpoints)
-                    '$modulePrefix${endpointDef.name}': refer(endpointDef.name)
-                }).code,
-            ),
-            if (config.type == PackageType.server)
+          ..constructors.add(
+            Constructor((c) {
+              if (config.type == PackageType.server) {
+                c
+                  ..requiredParameters.add(Parameter((p) => p
+                    ..type = refer('String')
+                    ..name = 'host'))
+                  ..optionalParameters.addAll([
+                    Parameter((p) => p
+                      ..name = 'context'
+                      ..named = true
+                      ..type = TypeReference((t) => t
+                        ..symbol = 'SecurityContext'
+                        ..url = 'dart:io'
+                        ..isNullable = true)),
+                    Parameter((p) => p
+                      ..name = 'authenticationKeyManager'
+                      ..named = true
+                      ..type = TypeReference((t) => t
+                        ..symbol = 'AuthenticationKeyManager'
+                        ..url = serverpodUrl(false)
+                        ..isNullable = true)),
+                  ])
+                  ..initializers.add(refer('super').call([
+                    refer('host'),
+                    refer('Protocol', 'protocol.dart').call([])
+                  ], {
+                    'context': refer('context'),
+                    'authenticationKeyManager':
+                        refer('authenticationKeyManager'),
+                  }).code);
+              } else {
+                c
+                  ..requiredParameters.add(Parameter((p) => p
+                    ..type = refer('ServerpodClientShared', serverpodUrl(false))
+                    ..name = 'client'))
+                  ..initializers
+                      .add(refer('super').call([refer('client')]).code);
+              }
+              c.body = Block.of([
+                for (var endpointDef in protocolDefinition.endpoints)
+                  refer(endpointDef.name)
+                      .assign(refer(_endpointClassName(endpointDef.name))
+                          .call([refer('this')]))
+                      .statement,
+                if (hasModules)
+                  refer('modules')
+                      .assign(refer('_Modules').call([refer('this')]))
+                      .statement,
+              ]);
+            }),
+          )
+          ..methods.addAll(
+            [
               Method(
                 (m) => m
-                  ..name = 'moduleLookup'
+                  ..name = 'endpointRefLookup'
                   ..annotations.add(refer('override'))
                   ..type = MethodType.getter
                   ..returns = TypeReference((t) => t
                     ..symbol = 'Map'
                     ..types.addAll([
                       refer('String'),
-                      refer('ModuleEndpointCaller', serverpodUrl(false)),
+                      refer('EndpointRef', serverpodUrl(false)),
                     ]))
                   ..body = literalMap({
-                    for (var module in config.modules)
-                      module.nickname:
-                          refer('modules').property(module.nickname),
+                    for (var endpointDef in protocolDefinition.endpoints)
+                      '$modulePrefix${endpointDef.name}':
+                          refer(endpointDef.name)
                   }).code,
               ),
-          ]),
+              if (config.type == PackageType.server)
+                Method(
+                  (m) => m
+                    ..name = 'moduleLookup'
+                    ..annotations.add(refer('override'))
+                    ..type = MethodType.getter
+                    ..returns = TypeReference((t) => t
+                      ..symbol = 'Map'
+                      ..types.addAll([
+                        refer('String'),
+                        refer('ModuleEndpointCaller', serverpodUrl(false)),
+                      ]))
+                    ..body = literalMap({
+                      for (var module in config.modules)
+                        module.nickname:
+                            refer('modules').property(module.nickname),
+                    }).code,
+                ),
+            ],
+          ),
       ),
     );
 
