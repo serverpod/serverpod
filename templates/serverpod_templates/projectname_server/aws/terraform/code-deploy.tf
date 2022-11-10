@@ -35,8 +35,8 @@ resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
 }
 
 resource "aws_iam_policy" "s3_deployment" {
-  name        = "test-policy"
-  description = "A test policy"
+  name        = "${var.project_name}-codedeploy-role"
+  description = "Code deploy policy"
 
   policy = <<EOF
 {

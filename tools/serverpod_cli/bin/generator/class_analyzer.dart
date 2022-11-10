@@ -93,11 +93,20 @@ class ClassAnalyzer {
   ProtocolFileDefinition? analyze() {
     var yamlErrorCollector = ErrorCollector();
 
-    var document = loadYamlDocument(
-      yaml,
-      sourceUrl: Uri.file(sourceFileName),
-      errorListener: yamlErrorCollector,
-    );
+    YamlDocument document;
+    try {
+      document = loadYamlDocument(
+        yaml,
+        sourceUrl: Uri.file(sourceFileName),
+        errorListener: yamlErrorCollector,
+      );
+    } catch (e) {
+      if (e is SourceSpanException) {
+        collector.addError(e);
+        return null;
+      }
+      rethrow;
+    }
 
     collector.addErrors(yamlErrorCollector.errors);
 
