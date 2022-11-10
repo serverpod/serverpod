@@ -283,8 +283,11 @@ class TypeDefinition {
     }
   }
 
-  /// Autodetect protocol references
-  TypeDefinition detectProtocolReferences(
+  /// Applies protocol references. This makes the protocol: prefix optional.
+  /// First, the protocol definition is parsed, then it's check for the
+  /// protocol: prefix in types. Whenever no url is set and user specified a
+  /// class/enum with the same symbol name it defaults to the protocol: prefix.
+  TypeDefinition applyProtocolReferences(
       List<ProtocolFileDefinition> classDefinitions) {
     return TypeDefinition(
         className: className,
@@ -292,7 +295,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics
-            .map((e) => e.detectProtocolReferences(classDefinitions))
+            .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
         isEnum: isEnum,
         url:
