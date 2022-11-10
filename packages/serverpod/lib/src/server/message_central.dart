@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Support for server clusters.
@@ -65,7 +67,11 @@ class MessageCentral {
         'Redis needs to be enabled to use this method',
       );
 
-      var data = SerializationManager.serialize(message.allToJson());
+      var data = SerializationManager.serialize({
+        'className': Serverpod.instance!.serializationManager
+            .getClassNameForObject(message),
+        'data': message.allToJson(),
+      });
       Serverpod.instance!.redisController!.publish(channelName, data);
     }
   }
@@ -122,7 +128,7 @@ class MessageCentral {
     if (channel == null) return;
 
     var messageObj = Serverpod.instance!.serializationManager
-        .deserializeString(message, channel.messageType);
+        .deserializeByClassName(jsonDecode(message));
     if (messageObj == null) {
       return;
     }
