@@ -34,16 +34,19 @@ class RedisEndpoint extends Endpoint {
 
   Future<SimpleData?> listenToChannel(Session session, String channel) async {
     SimpleData? data;
-    session.messages.addListener<SimpleData>(channel, (message) {
-      data = message;
+    session.messages.addListener(channel, (message) {
+      data = message as SimpleData?;
     });
     await Future.delayed(const Duration(seconds: 2));
     return data;
   }
 
   Future<void> postToChannel(
-      Session session, String channel, SimpleData data) async {
-    session.messages.postMessage(channel, data);
+    Session session,
+    String channel,
+    SimpleData data,
+  ) async {
+    session.messages.postMessage(channel, data, global: true);
   }
 
   Future<int> countSubscribedChannels(Session session) async {

@@ -88,10 +88,7 @@ abstract class Endpoint {
 
     var data = {
       'endpoint': '$prefix$name',
-      'object': {
-        'className': server.serializationManager.getClassNameForObject(message),
-        'data': message,
-      },
+      'object': server.serializationManager.wrapWithClassName(message),
     };
 
     var payload = SerializationManager.encode(data);

@@ -3,35 +3,18 @@ import 'package:serverpod/serverpod.dart';
 // TODO: Support for server clusters.
 
 /// The callback used by listeners of the [MessageCentral].
-typedef MessageCentralListenerCallback<T extends SerializableEntity> = void
-    Function(T message);
-
-class _SessionBoundMessageCentralListenerCallback {
-  final Session session;
-  final dynamic _callback;
-
-  const _SessionBoundMessageCentralListenerCallback(
-      this.session, this._callback);
-
-  void call(SerializableEntity data) {
-    _callback(data);
-  }
-}
-
-class _Channel {
-  final Type messageType;
-  final Set<_SessionBoundMessageCentralListenerCallback> callbacks;
-
-  _Channel(this.messageType, this.callbacks);
-}
+typedef MessageCentralListenerCallback = void Function(
+    SerializableEntity message);
 
 /// The [MessageCentral] handles communication within the server, and between
 /// servers in a cluster. It is especially useful when working with streaming
 /// endpoints. The message central can pass on any serializable to a channel.
 /// The channel can be listened to by from any place in the server.
 class MessageCentral {
-  final _channels = <String, _Channel>{};
+  final _channels = <String, Set<MessageCentralListenerCallback>>{};
   final _sessionToChannelNamesLookup = <Session, Set<String>>{};
+  final _sessionToCallbacksLookup =
+      <Session, Set<MessageCentralListenerCallback>>{};
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
   /// can be provided, in which case the message is sent only to that specific
@@ -40,23 +23,15 @@ class MessageCentral {
   void postMessage(
     String channelName,
     SerializableEntity message, {
-    bool local = false,
-    bool ignoreTypeIncompatibility = false,
+    bool global = false,
   }) {
-    if (local) {
+    if (!global) {
       // Handle internally in this server instance
       var channel = _channels[channelName];
       if (channel == null) return;
 
-      assert(
-          ignoreTypeIncompatibility ||
-              message.runtimeType == channel.messageType,
-          'The channel $channelName handles ${channel.messageType} messages.\n'
-          'So a message of type ${message.runtimeType} should not be added to this channel.\n'
-          'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
-
-      for (var sessionCallback in channel.callbacks) {
-        sessionCallback(message);
+      for (var callback in channel) {
+        callback(message);
       }
     } else {
       // Send to Redis
@@ -64,43 +39,33 @@ class MessageCentral {
         Serverpod.instance!.redisController != null,
         'Redis needs to be enabled to use this method',
       );
-
-      var data = SerializationManager.encode(message.allToJson());
+      var data =
+          Serverpod.instance!.serializationManager.encodeWithType(message);
       Serverpod.instance!.redisController!.publish(channelName, data);
     }
   }
 
-  _Channel _getChannel<T extends SerializableEntity>(String channelName) {
+  Set<MessageCentralListenerCallback> _getChannel(String channelName) {
     // Find or create channel
     var channel = _channels[channelName];
     if (channel == null) {
-      var newChannel = _Channel(T, {});
-      _channels[channelName] = newChannel;
-      return newChannel;
+      channel = <MessageCentralListenerCallback>{};
+      _channels[channelName] = channel;
     }
     return channel;
   }
 
   /// Adds a listener to a named channel. Whenever a message is posted using
   /// [postMessage], the [listener] will be notified.
-  void addListener<T extends SerializableEntity>(
+  void addListener(
     Session session,
     String channelName,
-    MessageCentralListenerCallback<T> listener, {
-    bool local = false,
-    bool ignoreTypeIncompatibility = false,
-  }) {
+    MessageCentralListenerCallback listener,
+    // bool global = false,
+  ) {
     // Find or create channel
-    var channel = _getChannel<T>(channelName);
-
-    assert(
-        ignoreTypeIncompatibility || T == channel.messageType,
-        'The channel $channelName handles ${channel.messageType} messages.\n'
-        'So a listener for messages of type $T should not be added to this channel.\n'
-        'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
-
-    channel.callbacks
-        .add(_SessionBoundMessageCentralListenerCallback(session, listener));
+    var channel = _getChannel(channelName);
+    channel.add(listener);
 
     var subscribedChannels = _sessionToChannelNamesLookup[session];
     if (subscribedChannels == null) {
@@ -108,6 +73,13 @@ class MessageCentral {
       _sessionToChannelNamesLookup[session] = subscribedChannels;
     }
     subscribedChannels.add(channelName);
+
+    var callbacks = _sessionToCallbacksLookup[session];
+    if (callbacks == null) {
+      callbacks = {};
+      _sessionToCallbacksLookup[session] = callbacks;
+    }
+    callbacks.add(listener);
 
     if (session.serverpod.redisController != null) {
       session.serverpod.redisController!.subscribe(
@@ -118,26 +90,22 @@ class MessageCentral {
   }
 
   void _receivedRedisMessage(String channelName, String message) {
-    var channel = _channels[channelName];
-    if (channel == null) return;
-
-    var messageObj = Serverpod.instance!.serializationManager
-        .decode(message, channel.messageType);
+    // var serialization = jsonDecode(message);
+    var messageObj =
+        Serverpod.instance!.serializationManager.decodeWithType(message);
     if (messageObj == null) {
       return;
     }
-    postMessage(channelName, messageObj, local: true);
+    postMessage(channelName, messageObj as SerializableEntity, global: false);
   }
 
   /// Removes a listener from a named channel.
-  void removeListener<T extends SerializableEntity>(Session session,
-      String channelName, MessageCentralListenerCallback<T> listener) {
+  void removeListener(Session session, String channelName,
+      MessageCentralListenerCallback listener) {
     var channel = _channels[channelName];
     if (channel != null) {
-      channel.callbacks.removeWhere(
-        (element) => element._callback == listener,
-      );
-      if (channel.callbacks.isEmpty) {
+      channel.remove(listener);
+      if (channel.isEmpty) {
         _channels.remove(channelName);
         if (session.serverpod.redisController != null) {
           session.serverpod.redisController!.unsubscribe(channelName);
@@ -152,6 +120,14 @@ class MessageCentral {
         _sessionToChannelNamesLookup.remove(session);
       }
     }
+
+    var callbacks = _sessionToCallbacksLookup[session];
+    if (callbacks != null) {
+      callbacks.remove(listener);
+      if (callbacks.isEmpty) {
+        _sessionToCallbacksLookup.remove(session);
+      }
+    }
   }
 
   /// Removes all listeners from the specified [Session]. This method is
@@ -160,35 +136,30 @@ class MessageCentral {
     // Get subscribed channels
     var channelNames = _sessionToChannelNamesLookup[session];
     if (channelNames == null) return;
+    var listeners = _sessionToCallbacksLookup[session];
+    if (listeners == null) return;
 
     for (var channelName in channelNames) {
-      var sessionBoundCallbacks = _channels[channelName]?.callbacks.toSet();
-
-      for (var sessionBoundCallback in sessionBoundCallbacks ??
-          <_SessionBoundMessageCentralListenerCallback>{}) {
-        _removeListener(session, channelName, sessionBoundCallback._callback);
+      for (var listener in listeners) {
+        _removeListener(session, channelName, listener);
       }
     }
 
     _sessionToChannelNamesLookup.remove(session);
+    _sessionToCallbacksLookup.remove(session);
   }
 
   void _removeListener(
     Session session,
     String channelName,
-    // An explicit type can't be used here
-    dynamic listener,
+    MessageCentralListenerCallback listener,
   ) {
-    var channel = _channels[channelName];
-    if (channel != null) {
-      channel.callbacks.removeWhere(
-        (element) => element._callback == listener,
-      );
-      if (channel.callbacks.isEmpty) {
-        _channels.remove(channelName);
-        if (session.serverpod.redisController != null) {
-          session.serverpod.redisController!.unsubscribe(channelName);
-        }
+    var channel = _getChannel(channelName);
+    channel.remove(listener);
+    if (channel.isEmpty) {
+      _channels.remove(channelName);
+      if (session.serverpod.redisController != null) {
+        session.serverpod.redisController!.unsubscribe(channelName);
       }
     }
   }

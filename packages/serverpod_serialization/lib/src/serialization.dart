@@ -37,9 +37,15 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
-  /// Deserialize the provided json [String] to an object of type [t] or [T].
+  /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {
     return deserialize<T>(jsonDecode(data), t);
+  }
+
+  /// Decodes the provided json [String] if it has been encoded with
+  /// [encodeWithType].
+  Object? decodeWithType(String data) {
+    return deserializeByClassName(jsonDecode(data));
   }
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
@@ -107,7 +113,22 @@ abstract class SerializationManager {
     throw FormatException('No deserialization found for type named $className');
   }
 
-  /// Serialize the provided [object] to an Json [String].
+  /// Wraps serialized data with its class name so that it can be deserialized
+  /// with [deserializeByClassName].
+  Map<String, dynamic> wrapWithClassName(Object data) {
+    var className = getClassNameForObject(data);
+    assert(
+      className != null,
+      'Could not find class name for ${data.runtimeType} in serialization.',
+    );
+
+    return {
+      'className': className,
+      'data': data,
+    };
+  }
+
+  /// Encode the provided [object] to a Json-formatted [String].
   static String encode(Object? object) {
     // This is the only time [jsonEncode] should be used in the project.
     return jsonEncode(
@@ -127,6 +148,12 @@ abstract class SerializationManager {
         }
       },
     );
+  }
+
+  /// Encode the provided [object] to a json-formatted [String], include class
+  /// name so that it can be decoded even if th class is unknown.
+  String encodeWithType(Object object) {
+    return encode(wrapWithClassName(object));
   }
 }
 

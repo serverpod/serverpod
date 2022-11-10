@@ -84,7 +84,7 @@ class ChatEndpoint extends Endpoint {
       }
 
       // Setup a listener that passes on messages from the subscribed channel
-      void messageListener(ChatMessage message) {
+      void messageListener(SerializableEntity message) {
         sendStreamMessage(session, message);
       }
 
@@ -139,7 +139,7 @@ class ChatEndpoint extends Endpoint {
       session.messages.postMessage(
         _channelPrefix + message.channel,
         chatMessage,
-        local: ChatConfig.current.postMessagesLocallyOnly,
+        global: !ChatConfig.current.postMessagesLocallyOnly,
       );
     } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to
@@ -346,8 +346,7 @@ class ChatEndpoint extends Endpoint {
 }
 
 class _ChatSessionInfo {
-  final messageListeners =
-      <String, MessageCentralListenerCallback<ChatMessage>>{};
+  final messageListeners = <String, MessageCentralListenerCallback>{};
   UserInfo? userInfo;
 
   _ChatSessionInfo({
