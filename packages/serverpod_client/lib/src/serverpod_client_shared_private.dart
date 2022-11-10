@@ -18,3 +18,6 @@ T parseData<T>(
 ) {
   return serializationManager.decode<T>(data, returnType);
 }
+
+/// A helper method, that just 'returns' void.
+void returnVoid() {}
