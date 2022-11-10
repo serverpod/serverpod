@@ -1,12 +1,12 @@
 library aws_s3_upload;
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
-import 'package:serverpod/serverpod.dart';
 
 import 'policy.dart';
 
@@ -202,7 +202,7 @@ class AwsS3Uploader {
       },
     };
 
-    return SerializationManager.serialize(uploadDescriptionData);
+    return jsonEncode(uploadDescriptionData);
 
     // try {
     //   final res = await req.send();

@@ -7,7 +7,7 @@ String formatArgs(
 
   args['method'] = method;
 
-  return SerializationManager.serialize(args);
+  return SerializationManager.encode(args);
 }
 
 /// Deserializes data sent from the server based on the return type.
@@ -16,5 +16,5 @@ T parseData<T>(
   Type returnType,
   SerializationManager serializationManager,
 ) {
-  return serializationManager.deserializeString<T>(data, returnType);
+  return serializationManager.decode<T>(data, returnType);
 }

@@ -177,7 +177,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       },
     };
 
-    var serialization = SerializationManager.serialize(data);
+    var serialization = SerializationManager.encode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -186,7 +186,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map<String, dynamic> args = const {},
   ]) async {
     var data = {'command': command, 'args': args};
-    var serialization = SerializationManager.serialize(data);
+    var serialization = SerializationManager.encode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 

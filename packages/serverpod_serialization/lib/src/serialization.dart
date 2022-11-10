@@ -26,7 +26,7 @@ abstract class SerializableEntity {
 
   @override
   String toString() {
-    return SerializationManager.serialize(this);
+    return SerializationManager.encode(this);
   }
 }
 
@@ -38,7 +38,7 @@ Type getType<T>() => T;
 /// extended by generated code.
 abstract class SerializationManager {
   /// Deserialize the provided json [String] to an object of type [t] or [T].
-  T deserializeString<T>(String data, [Type? t]) {
+  T decode<T>(String data, [Type? t]) {
     return deserialize<T>(jsonDecode(data), t);
   }
 
@@ -107,7 +107,7 @@ abstract class SerializationManager {
   }
 
   /// Serialize the provided [object] to an Json [String].
-  static String serialize(Object? object) {
+  static String encode(Object? object) {
     // This is the only time [jsonEncode] should be used in the project.
     return jsonEncode(
       object,

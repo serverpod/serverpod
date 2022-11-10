@@ -263,8 +263,7 @@ class Server {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedEntity =
-            SerializationManager.serialize(result.returnValue);
+        var serializedEntity = SerializationManager.encode(result.returnValue);
         request.response.write(serializedEntity);
       }
       await request.response.close();
@@ -326,8 +325,7 @@ class Server {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              webSocket
-                  .add(SerializationManager.serialize({'command': 'pong'}));
+              webSocket.add(SerializationManager.encode({'command': 'pong'}));
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
               session.updateAuthenticationKey(authKey);

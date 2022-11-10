@@ -65,7 +65,7 @@ class MessageCentral {
         'Redis needs to be enabled to use this method',
       );
 
-      var data = SerializationManager.serialize(message.allToJson());
+      var data = SerializationManager.encode(message.allToJson());
       Serverpod.instance!.redisController!.publish(channelName, data);
     }
   }
@@ -122,7 +122,7 @@ class MessageCentral {
     if (channel == null) return;
 
     var messageObj = Serverpod.instance!.serializationManager
-        .deserializeString(message, channel.messageType);
+        .decode(message, channel.messageType);
     if (messageObj == null) {
       return;
     }
