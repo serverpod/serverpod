@@ -194,14 +194,14 @@ class TypeDefinition {
                     // using Code.scope only sets the generic to List
                     const Code('(data!=null?'
                         '(data as List).map((e) =>'
-                        'deserializeJson<'),
+                        'deserialize<'),
                     generics.first.reference(serverCode).code,
                     Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
                         ':null) as dynamic')
                   ])
                 : Block.of([
                     const Code('(data as List).map((e) =>'
-                        'deserializeJson<'),
+                        'deserialize<'),
                     generics.first.reference(serverCode).code,
                     Code(
                         '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as dynamic'),
@@ -224,18 +224,18 @@ class TypeDefinition {
                         // using Code.scope only sets the generic to List
                         const Code('(data!=null?'
                             '(data as Map).map((k,v) =>'
-                            'MapEntry(deserializeJson<'),
+                            'MapEntry(deserialize<'),
                         generics.first.reference(serverCode).code,
-                        const Code('>(k),deserializeJson<'),
+                        const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode).code,
                         const Code('>(v)))' ':null) as dynamic')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
                         const Code('(data as Map).map((k,v) =>'
-                            'MapEntry(deserializeJson<'),
+                            'MapEntry(deserialize<'),
                         generics.first.reference(serverCode).code,
-                        const Code('>(k),deserializeJson<'),
+                        const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode).code,
                         const Code('>(v))) as dynamic')
                       ])
@@ -245,18 +245,18 @@ class TypeDefinition {
                         // using Code.scope only sets the generic to List
                         const Code('(data!=null?'
                             'Map.fromEntries((data as List).map((e) =>'
-                            'MapEntry(deserializeJson<'),
+                            'MapEntry(deserialize<'),
                         generics.first.reference(serverCode).code,
-                        const Code('>(e[\'k\']),deserializeJson<'),
+                        const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode).code,
                         const Code('>(e[\'v\']))))' ':null) as dynamic')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
                         const Code('Map.fromEntries((data as List).map((e) =>'
-                            'MapEntry(deserializeJson<'),
+                            'MapEntry(deserialize<'),
                         generics.first.reference(serverCode).code,
-                        const Code('>(e[\'k\']),deserializeJson<'),
+                        const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode).code,
                         const Code('>(e[\'v\'])))) as dynamic')
                       ])

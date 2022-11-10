@@ -131,7 +131,7 @@ class ClassGeneratorDart extends ClassGenerator {
                   for (var field in fields)
                     if (field.shouldIncludeField(serverCode))
                       field.name: refer('serializationManager')
-                          .property('deserializeJson')
+                          .property('deserialize')
                           .call([
                         refer('jsonSerialization')
                             .index(literalString(field.name))
@@ -821,7 +821,7 @@ class ClassGeneratorDart extends ClassGenerator {
     protocol.methods.addAll([
       Method((m) => m
         ..annotations.add(refer('override'))
-        ..name = 'deserializeJson'
+        ..name = 'deserialize'
         ..returns = refer('T')
         ..types.add(refer('T'))
         ..requiredParameters.add(Parameter((p) => p
@@ -884,12 +884,12 @@ class ClassGeneratorDart extends ClassGenerator {
                   ])),
           for (var module in config.modules)
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', module.url(serverCode)))}().deserializeJson<T>(data,t);}catch(_){}'),
+                'try{return ${a(refer('Protocol', module.url(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
           if (config.name != 'serverpod' &&
               (serverCode || config.clientDependsOnServiceClient))
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserializeJson<T>(data,t);}catch(_){}'),
-          const Code('return super.deserializeJson<T>(data,t);'),
+                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}catch(_){}'),
+          const Code('return super.deserialize<T>(data,t);'),
         ])),
       Method((m) => m
         ..annotations.add(refer('override'))
@@ -917,7 +917,7 @@ class ClassGeneratorDart extends ClassGenerator {
         ])),
       Method((m) => m
         ..annotations.add(refer('override'))
-        ..name = 'deserializeJsonByClassName'
+        ..name = 'deserializeByClassName'
         ..returns = refer('dynamic')
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'data'
@@ -928,18 +928,18 @@ class ClassGeneratorDart extends ClassGenerator {
               Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
                   'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
               Code.scope((a) =>
-                  'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeJsonByClassName(data);'),
+                  'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeByClassName(data);'),
               const Code('}'),
             ]),
           for (var extraClassName in config.extraClassNames.entries)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClassName.key}\'){'
-                'return deserializeJson<${a(extraClassName.value.reference(serverCode))}>(data[\'data\']);}'),
+                'return deserialize<${a(extraClassName.value.reference(serverCode))}>(data[\'data\']);}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
-                'return deserializeJson<${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}>(data[\'data\']);}'),
-          const Code('return super.deserializeJsonByClassName(data);'),
+                'return deserialize<${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}>(data[\'data\']);}'),
+          const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
         Method(

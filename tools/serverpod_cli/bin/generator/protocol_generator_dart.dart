@@ -156,13 +156,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                       ..url = 'dart:io'
                       ..isNullable = true)),
                   Parameter((p) => p
-                    ..name = 'errorHandler'
-                    ..named = true
-                    ..type = TypeReference((t) => t
-                      ..symbol = 'ServerpodClientErrorCallback'
-                      ..url = serverpodUrl(false)
-                      ..isNullable = true)),
-                  Parameter((p) => p
                     ..name = 'authenticationKeyManager'
                     ..named = true
                     ..type = TypeReference((t) => t
@@ -175,7 +168,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                   refer('Protocol', 'protocol.dart').call([])
                 ], {
                   'context': refer('context'),
-                  'errorHandler': refer('errorHandler'),
                   'authenticationKeyManager': refer('authenticationKeyManager'),
                 }).code);
             } else {
