@@ -555,6 +555,9 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i15.CustomClass) {
       return 'customClass';
     }
+    if (data is _i15.CustomClass) {
+      return 'customClass?';
+    }
     if (data is _i2.Nullability) {
       return 'Nullability';
     }
@@ -596,6 +599,9 @@ class Protocol extends _i1.SerializationManager {
       return _i17.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'customClass') {
+      return deserialize<_i15.CustomClass>(data['data']);
+    }
+    if (data['className'] == 'customClass?') {
       return deserialize<_i15.CustomClass>(data['data']);
     }
     if (data['className'] == 'Nullability') {

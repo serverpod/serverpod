@@ -31,13 +31,9 @@ class GeneratorConfig {
 
   List<ModuleConfig> modules = [];
 
-  /// A list of user specified complex types, constructors should be created for.
-  /// Useful for types used in caching and streams.
-  List<TypeDefinition> extraConstructors = [];
-
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
-  Map<String, TypeDefinition> extraClassNames = {};
+  Map<String, TypeDefinition> extraClasses = {};
 
   bool load([String dir = '']) {
     Map? pubspec;
@@ -108,37 +104,17 @@ class GeneratorConfig {
       throw const FormatException('Failed to load module config');
     }
 
-    // Load extra constructors
-    extraConstructors = [];
-    if (generatorConfig['extraConstructors'] != null) {
+    // Load extraClasses
+    extraClasses = {};
+    if (generatorConfig['extraClasses'] != null) {
       try {
-        for (var node
-            in (generatorConfig['extraConstructors'] as YamlList).nodes) {
-          extraConstructors.add(parseAndAnalyzeType(
-            node.value,
-            analyzingCustomConstructors: true,
-            sourceSpan: node.span,
-          ).type);
-        }
-      } on SourceSpanException catch (_) {
-        rethrow;
-      } catch (e) {
-        throw SourceSpanFormatException(
-            'Failed to load \'extraConstructors\' config',
-            generatorConfig['extraConstructors'].span);
-      }
-    }
-
-    // Load extra classNames
-    extraClassNames = {};
-    if (generatorConfig['extraClassNames'] != null) {
-      try {
-        for (var config in generatorConfig['extraClassNames']) {
-          extraClassNames
+        for (var config in generatorConfig['extraClasses']) {
+          extraClasses
               .addAll((config as YamlMap).nodes.map((key, node) => MapEntry(
                   key.value,
                   parseAndAnalyzeType(
                     node.value,
+                    analyzingExtraClasses: true,
                     sourceSpan: node.span,
                   ).type)));
         }
@@ -146,8 +122,8 @@ class GeneratorConfig {
         rethrow;
       } catch (e) {
         throw SourceSpanFormatException(
-            'Failed to load \'extraClassNames\' config',
-            generatorConfig['extraClassNames'].span);
+            'Failed to load \'extraClasses\' config',
+            generatorConfig['extraClasses'].span);
       }
     }
 

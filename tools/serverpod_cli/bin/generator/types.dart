@@ -319,10 +319,10 @@ class TypeDefinition {
 /// as well as the position of the last parsed character.
 /// So when calling with "List<List<String?>?>,database",
 /// the position will point at the ','.
-/// If [analyzingCustomConstructors] is true, the root element might be marked as [TypeDefinition.customClass].
+/// If [analyzingExtraClasses] is true, the root element might be marked as [TypeDefinition.customClass].
 TypeParseResult parseAndAnalyzeType(
   String input, {
-  bool analyzingCustomConstructors = false,
+  bool analyzingExtraClasses = false,
   required SourceSpan sourceSpan,
 }) {
   String classname = '';
@@ -358,14 +358,14 @@ TypeParseResult parseAndAnalyzeType(
             TypeDefinition.mixedUrlAndClassName(
                 mixed: classname,
                 nullable: false,
-                customClass: analyzingCustomConstructors));
+                customClass: analyzingExtraClasses));
       case '?':
         return TypeParseResult(
             i + 1,
             TypeDefinition.mixedUrlAndClassName(
                 mixed: classname,
                 nullable: true,
-                customClass: analyzingCustomConstructors));
+                customClass: analyzingExtraClasses));
       default:
         classname += input[i];
         break;
@@ -376,7 +376,7 @@ TypeParseResult parseAndAnalyzeType(
       TypeDefinition.mixedUrlAndClassName(
           mixed: classname,
           nullable: false,
-          customClass: analyzingCustomConstructors));
+          customClass: analyzingExtraClasses));
 }
 
 class TypeParseResult {

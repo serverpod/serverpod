@@ -8,9 +8,6 @@ modules:
   serverpod_auth:
     nickname: auth
 
-extraConstructors:
-  - project:src/custom_classes.dart:CustomClass
-  - project:src/custom_classes.dart:CustomClass?
-
-extraClassNames:
+extraClasses:
   - customClass: project:src/custom_classes.dart:CustomClass
+  - customClass?: project:src/custom_classes.dart:CustomClass?
