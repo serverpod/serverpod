@@ -34,9 +34,21 @@ class RedisEndpoint extends Endpoint {
 
   Future<SimpleData?> listenToChannel(Session session, String channel) async {
     SimpleData? data;
+
+    // This line tests if listeners taking other types break the system;
+    session.messages.addListener<TestEnum>(channel, (message) {});
+
     session.messages.addListener<SimpleData>(channel, (message) {
       data = message;
     });
+
+    session.messages.addListener<SimpleData>(channel, (message) {
+      throw Exception('Test exception');
+    });
+
+    // This line tests if listeners taking other types break the system;
+    session.messages.addListener<TestEnum>(channel, (message) {});
+
     await Future.delayed(const Duration(seconds: 2));
     return data;
   }

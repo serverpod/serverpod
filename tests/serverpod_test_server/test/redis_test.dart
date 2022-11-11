@@ -2,12 +2,19 @@ import 'dart:async';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart'
+    as service;
 
 import 'config.dart';
+import 'service_protocol_test.dart';
 
 void main() {
   var client = Client(
     serverUrl,
+  );
+  var serviceClient = service.Client(
+    serviceServerUrl,
+    authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 
   setUp(() {});
@@ -61,6 +68,22 @@ void main() {
       await client.redis.postToChannel('test', data);
       var channelCount = await client.redis.countSubscribedChannels();
       expect(channelCount, equals(1));
+
+      await Future.delayed(const Duration(seconds: 5));
+
+      var logResult = await serviceClient.insights.getSessionLog(
+          1,
+          service.SessionLogFilter(
+            slow: true,
+            error: false,
+            open: false,
+            endpoint: 'redis',
+            method: 'listenToChannel',
+          ));
+      expect(logResult.sessionLog.first.logs.first.error,
+          equals('Exception: Test exception'));
+      expect(logResult.sessionLog.first.logs.first.message,
+          equals('Failed to execute callback in channel test'));
 
       await Future.delayed(const Duration(seconds: 4));
 
