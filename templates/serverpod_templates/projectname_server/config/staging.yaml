@@ -31,7 +31,7 @@ webServer:
 
 # This is the database setup for your servers.
 database:
-  host: database.examplepod.com
+  host: database-staging.examplepod.com
   port: 5432
   name: serverpod
   user: postgres
@@ -39,5 +39,5 @@ database:
 # This is the setup for Redis.
 redis:
   enabled: false
-  host: redis.examplepod.com
+  host: redis-staging.examplepod.com
   port: 6379

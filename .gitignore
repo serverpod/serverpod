@@ -29,3 +29,6 @@ google_client_secret.json
 firebase_service_account_key.json
 firebase_options.dart
 tests/temp
+templates/serverpod_templates/projectname_flutter/android
+templates/serverpod_templates/projectname_flutter/ios
+templates/serverpod_templates/projectname_flutter/macos

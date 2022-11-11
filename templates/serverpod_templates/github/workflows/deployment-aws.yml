@@ -23,6 +23,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: 2.18.1
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -40,6 +45,13 @@ jobs:
           echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
           ls config/
 
+      - name: Get Dart packages
+        working-directory: projectname_server
+        run: dart pub get
+
+      - name: Compile server
+        working-directory: projectname_server
+        run: dart compile kernel bin/main.dart
 
       - name: Create CodeDeploy Deployment
         id: deploy
