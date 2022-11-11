@@ -144,7 +144,7 @@ class SessionManager with ChangeNotifier {
       await _storage.remove('${_prefsKey}_${keyManager.runMode}');
     } else {
       await _storage.setString('${_prefsKey}_${keyManager.runMode}',
-          SerializationManager.serialize(signedInUser));
+          SerializationManager.encode(signedInUser));
     }
   }
 

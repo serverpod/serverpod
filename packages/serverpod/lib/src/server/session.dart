@@ -504,37 +504,36 @@ class MessageCentralAccess {
 
   /// Adds a listener to a named channel. Whenever a message is posted using
   /// [postMessage], the [listener] will be notified.
-  void addListener<T extends SerializableEntity>(
+  void addListener(
     String channelName,
-    MessageCentralListenerCallback<T> listener, {
-    bool local = false,
-  }) {
-    _session.server.messageCentral.addListener<T>(
+    MessageCentralListenerCallback listener,
+  ) {
+    _session.server.messageCentral.addListener(
       _session,
       channelName,
       listener,
-      local: local,
     );
   }
 
   /// Removes a listener from a named channel.
-  void removeListener<T extends SerializableEntity>(
-      String channelName, MessageCentralListenerCallback<T> listener) {
+  void removeListener(
+      String channelName, MessageCentralListenerCallback listener) {
     _session.server.messageCentral
-        .removeListener<T>(_session, channelName, listener);
+        .removeListener(_session, channelName, listener);
   }
 
-  /// Posts a [message] to a named channel. If local is set to true, the message
-  /// will never leave the server and only local listeners will receive it.
-  void postMessage<T extends SerializableEntity>(
+  /// Posts a [message] to a named channel. If [global] is set to true, the
+  /// message will be posted to all servers in the cluster, otherwise it will
+  /// only be posted locally on the current server.
+  void postMessage(
     String channelName,
-    T message, {
-    bool local = false,
+    SerializableEntity message, {
+    bool global = false,
   }) {
     _session.server.messageCentral.postMessage(
       channelName,
       message,
-      local: local,
+      global: global,
     );
   }
 }

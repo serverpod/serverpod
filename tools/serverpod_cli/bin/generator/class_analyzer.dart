@@ -48,7 +48,7 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
     if (classDefinition is ClassDefinition) {
       for (var fieldDefinition in classDefinition.fields) {
         fieldDefinition.type =
-            fieldDefinition.type.detectProtocolReferences(classDefinitions);
+            fieldDefinition.type.applyProtocolReferences(classDefinitions);
       }
     }
   }

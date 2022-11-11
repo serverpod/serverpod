@@ -24,13 +24,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
     String host,
     SerializationManager serializationManager, {
     dynamic context,
-    ServerpodClientErrorCallback? errorHandler,
     AuthenticationKeyManager? authenticationKeyManager,
     bool logFailedCalls = true,
   }) : super(
           host,
           serializationManager,
-          errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
           logFailedCalls: logFailedCalls,
         ) {
@@ -86,23 +84,17 @@ abstract class ServerpodClient extends ServerpodClientShared {
       }
 
       if (T == getType<void>()) {
-        return () {}() as T;
+        return returnVoid() as T;
       } else {
         return parseData<T>(data, T, serializationManager);
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
 
-      if (errorHandler != null) {
-        errorHandler!(e, stackTrace);
-        //TODO: decide what should be done here
-        rethrow;
-      } else {
-        rethrow;
-      }
+      rethrow;
     }
   }
 

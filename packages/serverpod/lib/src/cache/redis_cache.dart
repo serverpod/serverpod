@@ -49,7 +49,7 @@ class RedisCache extends GlobalCache {
       return null;
     }
 
-    return serializationManager.deserializeString<T>(data, t);
+    return serializationManager.decode<T>(data, t);
   }
 
   @override
@@ -88,7 +88,7 @@ class RedisCache extends GlobalCache {
       'Redis needs to be enabled to use this method',
     );
 
-    var data = SerializationManager.serialize(object);
+    var data = SerializationManager.encode(object);
     await redisController!.set(key, data, lifetime: lifetime);
   }
 }

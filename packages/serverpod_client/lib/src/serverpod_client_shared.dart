@@ -4,10 +4,6 @@ import 'dart:convert';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-/// Method called when errors occur in communication with the server.
-typedef ServerpodClientErrorCallback = void Function(
-    dynamic e, StackTrace stackTrace);
-
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
@@ -76,11 +72,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
-  /// Optional error handler. If the errorHandler is used, exceptions will not
-  /// be thrown when a call to the server fails, instead the errorHandler will
-  /// be called.
-  ServerpodClientErrorCallback? errorHandler;
-
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
@@ -130,7 +121,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic context,
-    this.errorHandler,
     this.authenticationKeyManager,
     this.logFailedCalls = true,
     this.streamingConnectionTimeout = const Duration(seconds: 5),
@@ -187,7 +177,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       },
     };
 
-    var serialization = SerializationManager.serialize(data);
+    var serialization = SerializationManager.encode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -196,7 +186,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map<String, dynamic> args = const {},
   ]) async {
     var data = {'command': command, 'args': args};
-    var serialization = SerializationManager.serialize(data);
+    var serialization = SerializationManager.encode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 

@@ -27,13 +27,11 @@ class Client extends _i1.ServerpodClient {
   Client(
     String host, {
     _i3.SecurityContext? context,
-    _i1.ServerpodClientErrorCallback? errorHandler,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
           _i4.Protocol(),
           context: context,
-          errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
         ) {
     example = _EndpointExample(this);
