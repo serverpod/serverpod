@@ -18,13 +18,19 @@ class _SessionBoundMessageCentralListenerCallback {
   }
 }
 
+class _Channel {
+  final Type messageType;
+  final Set<_SessionBoundMessageCentralListenerCallback> callbacks;
+
+  _Channel(this.messageType, this.callbacks);
+}
+
 /// The [MessageCentral] handles communication within the server, and between
 /// servers in a cluster. It is especially useful when working with streaming
 /// endpoints. The message central can pass on any serializable to a channel.
 /// The channel can be listened to by from any place in the server.
 class MessageCentral {
-  final _channels =
-      <String, Set<_SessionBoundMessageCentralListenerCallback>>{};
+  final _channels = <String, _Channel>{};
   final _sessionToChannelNamesLookup = <Session, Set<String>>{};
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
@@ -42,19 +48,15 @@ class MessageCentral {
       var channel = _channels[channelName];
       if (channel == null) return;
 
-      for (var sessionCallback in channel) {
-        try {
-          sessionCallback(message);
-        } on TypeError catch (_) {
-          // Ignore since the developer has added callbacks taking different types to this Channel.
-        } catch (e, stackTrace) {
-          sessionCallback.session.log(
-            'Failed to execute callback in channel $channelName',
-            exception: e,
-            level: LogLevel.error,
-            stackTrace: stackTrace,
-          );
-        }
+      assert(
+          ignoreTypeIncompatibility ||
+              message.runtimeType == channel.messageType,
+          'The channel $channelName handles ${channel.messageType} messages.\n'
+          'So a message of type ${message.runtimeType} should not be added to this channel.\n'
+          'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
+
+      for (var sessionCallback in channel.callbacks) {
+        sessionCallback(message);
       }
     } else {
       // Send to Redis
@@ -68,12 +70,11 @@ class MessageCentral {
     }
   }
 
-  Set<_SessionBoundMessageCentralListenerCallback>
-      _getChannel<T extends SerializableEntity>(String channelName) {
+  _Channel _getChannel<T extends SerializableEntity>(String channelName) {
     // Find or create channel
     var channel = _channels[channelName];
     if (channel == null) {
-      var newChannel = <_SessionBoundMessageCentralListenerCallback>{};
+      var newChannel = _Channel(T, {});
       _channels[channelName] = newChannel;
       return newChannel;
     }
@@ -92,7 +93,14 @@ class MessageCentral {
     // Find or create channel
     var channel = _getChannel<T>(channelName);
 
-    channel.add(_SessionBoundMessageCentralListenerCallback(session, listener));
+    assert(
+        ignoreTypeIncompatibility || T == channel.messageType,
+        'The channel $channelName handles ${channel.messageType} messages.\n'
+        'So a listener for messages of type $T should not be added to this channel.\n'
+        'In case you really know what you are doing, you can bypass this message by setting `ignoreTypeIncompatibility` to true.');
+
+    channel.callbacks
+        .add(_SessionBoundMessageCentralListenerCallback(session, listener));
 
     var subscribedChannels = _sessionToChannelNamesLookup[session];
     if (subscribedChannels == null) {
@@ -126,10 +134,10 @@ class MessageCentral {
       String channelName, MessageCentralListenerCallback<T> listener) {
     var channel = _channels[channelName];
     if (channel != null) {
-      channel.removeWhere(
+      channel.callbacks.removeWhere(
         (element) => element._callback == listener,
       );
-      if (channel.isEmpty) {
+      if (channel.callbacks.isEmpty) {
         _channels.remove(channelName);
         if (session.serverpod.redisController != null) {
           session.serverpod.redisController!.unsubscribe(channelName);
@@ -154,7 +162,7 @@ class MessageCentral {
     if (channelNames == null) return;
 
     for (var channelName in channelNames) {
-      var sessionBoundCallbacks = _channels[channelName]?.toSet();
+      var sessionBoundCallbacks = _channels[channelName]?.callbacks.toSet();
 
       for (var sessionBoundCallback in sessionBoundCallbacks ??
           <_SessionBoundMessageCentralListenerCallback>{}) {
@@ -173,10 +181,10 @@ class MessageCentral {
   ) {
     var channel = _channels[channelName];
     if (channel != null) {
-      channel.removeWhere(
+      channel.callbacks.removeWhere(
         (element) => element._callback == listener,
       );
-      if (channel.isEmpty) {
+      if (channel.callbacks.isEmpty) {
         _channels.remove(channelName);
         if (session.serverpod.redisController != null) {
           session.serverpod.redisController!.unsubscribe(channelName);
