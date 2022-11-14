@@ -70,15 +70,18 @@ class ImageUploader {
         maxWidth: imageSize,
         aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
         cropStyle: CropStyle.circle,
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: toolbarColor,
-            toolbarWidgetColor: toolbarWidgetColor,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-        iosUiSettings: const IOSUiSettings(
-          minimumAspectRatio: 1.0,
-        ),
+        uiSettings: [
+          AndroidUiSettings(
+              toolbarTitle: 'Cropper',
+              toolbarColor: toolbarColor,
+              toolbarWidgetColor: toolbarWidgetColor,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false),
+           IOSUiSettings(
+            minimumAspectRatio: 1.0,
+          ),
+        ],
+
       );
 
       if (croppedImageFile == null) return;
