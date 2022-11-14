@@ -59,5 +59,4 @@ jurisdiction of the courts located in Stockholm, Sweden for purposes relating to
 that any of the provisions of this Agreement shall be held by a court or other tribunal of competent jurisdiction
 to be unenforceable, the remaining portions hereof shall remain in full force and effect.
 
-
 **Assignment.** You agree that Serverpod may assign this Agreement, and all of its rights, obligations and licenses hereunder.
