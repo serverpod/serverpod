@@ -88,7 +88,7 @@ class PgsqlGenerator {
     out += '\n';
 
     // Table definition
-    out += 'CREATE TABLE ${classInfo.tableName} (\n';
+    out += 'CREATE TABLE "${classInfo.tableName}" (\n';
     // Id is a special case that is nullable in code but not in the database
     out += '  "id" serial';
     for (var field in classInfo.fields) {
@@ -105,7 +105,7 @@ class PgsqlGenerator {
     out += '\n';
 
     // Main index
-    out += 'ALTER TABLE ONLY ${classInfo.tableName}\n';
+    out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
     out += '  ADD CONSTRAINT ${classInfo.tableName}_pkey PRIMARY KEY (id);\n';
     out += '\n';
 
@@ -114,7 +114,7 @@ class PgsqlGenerator {
       for (var index in classInfo.indexes!) {
         var uniqueStr = index.unique ? ' UNIQUE' : '';
         out +=
-            'CREATE$uniqueStr INDEX ${index.name} ON ${classInfo.tableName} USING ${index.type} (';
+            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}" USING ${index.type} (';
         out += index.fields.map((String str) => '"$str"').join(', ');
         out += ');\n';
       }
@@ -124,7 +124,7 @@ class PgsqlGenerator {
     // Foreign keys
     for (var field in classInfo.fields) {
       if (field.parentTable != null) {
-        out += 'ALTER TABLE ONLY ${classInfo.tableName}\n';
+        out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
         out += '  ADD CONSTRAINT ${classInfo.tableName}_fk\n';
         out += '    FOREIGN KEY("${field.name}")\n';
         out += '      REFERENCES ${field.parentTable}(id)\n';

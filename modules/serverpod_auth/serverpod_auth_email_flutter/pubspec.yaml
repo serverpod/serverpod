@@ -14,7 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  email_validator: ^2.0.1
+  email_validator: ^2.1.17
   serverpod_auth_client: #^0.9.19
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^0.9.19
