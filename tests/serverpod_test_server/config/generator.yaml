@@ -9,5 +9,4 @@ modules:
     nickname: auth
 
 extraClasses:
-  - customClass: project:src/custom_classes.dart:CustomClass
-  - customClass?: project:src/custom_classes.dart:CustomClass?
+  - project:src/custom_classes.dart:CustomClass

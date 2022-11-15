@@ -33,7 +33,7 @@ class GeneratorConfig {
 
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
-  Map<String, TypeDefinition> extraClasses = {};
+  List<TypeDefinition> extraClasses = [];
 
   bool load([String dir = '']) {
     Map? pubspec;
@@ -105,18 +105,17 @@ class GeneratorConfig {
     }
 
     // Load extraClasses
-    extraClasses = {};
+    extraClasses = [];
     if (generatorConfig['extraClasses'] != null) {
       try {
-        for (var config in generatorConfig['extraClasses']) {
-          extraClasses
-              .addAll((config as YamlMap).nodes.map((key, node) => MapEntry(
-                  key.value,
-                  parseAndAnalyzeType(
-                    node.value,
-                    analyzingExtraClasses: true,
-                    sourceSpan: node.span,
-                  ).type)));
+        for (var extraClassConfig in generatorConfig['extraClasses']) {
+          extraClasses.add(
+            parseAndAnalyzeType(
+              extraClassConfig,
+              analyzingExtraClasses: true,
+              sourceSpan: generatorConfig['extraClasses'].span,
+            ).type,
+          );
         }
       } on SourceSpanException catch (_) {
         rethrow;

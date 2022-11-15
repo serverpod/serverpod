@@ -42,7 +42,7 @@ void main() {
       expect(
           client.serializationManager
               .getClassNameForObject(CustomClass('test')),
-          'customClass');
+          'CustomClass');
 
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,

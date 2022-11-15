@@ -871,8 +871,10 @@ class ClassGeneratorDart extends ClassGenerator {
                       for (var parameter in method.parametersNamed)
                         ...parameter.type.generateDeserialization(serverCode),
                     ],
-                  for (var extraClass in config.extraClasses.values)
-                    ...extraClass.generateDeserialization(serverCode)
+                  for (var extraClass in config.extraClasses)
+                    ...extraClass.generateDeserialization(serverCode),
+                  for (var extraClass in config.extraClasses)
+                    ...extraClass.asNullable.generateDeserialization(serverCode)
                 ]))
               .entries
               .map((e) => Block.of([
@@ -907,9 +909,9 @@ class ClassGeneratorDart extends ClassGenerator {
               Code(
                   'if(className != null){return \'${module.name}.\$className\';}'),
             ]),
-          for (var extraClass in config.extraClasses.entries)
+          for (var extraClass in config.extraClasses)
             Code.scope((a) =>
-                'if(data is ${a(extraClass.value.reference(serverCode))}) {return \'${extraClass.key}\';}'),
+                'if(data is ${a(extraClass.reference(serverCode))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}) {return \'${classInfo.className}\';}'),
@@ -931,10 +933,10 @@ class ClassGeneratorDart extends ClassGenerator {
                   'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeByClassName(data);'),
               const Code('}'),
             ]),
-          for (var extraClass in config.extraClasses.entries)
+          for (var extraClass in config.extraClasses)
             Code.scope((a) =>
-                'if(data[\'className\'] == \'${extraClass.key}\'){'
-                'return deserialize<${a(extraClass.value.reference(serverCode))}>(data[\'data\']);}'),
+                'if(data[\'className\'] == \'${extraClass.className}\'){'
+                'return deserialize<${a(extraClass.reference(serverCode))}>(data[\'data\']);}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
