@@ -5,3 +5,4 @@ fields:
   nullableEnum: TestEnum?
   enumList: List<TestEnum>
   nullableEnumList: List<TestEnum?>
+  enumListList: List<List<TestEnum>>

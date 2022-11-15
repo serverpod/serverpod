@@ -16,6 +16,11 @@ class MapParametersEndpoint extends Endpoint {
     return map;
   }
 
+  Future<Map<String, Map<String, int>>> returnNestedIntMap(
+      Session session, Map<String, Map<String, int>> map) async {
+    return map;
+  }
+
   Future<Map<String, int?>> returnIntMapNullableInts(
     Session session,
     Map<String, int?> map,
@@ -26,6 +31,27 @@ class MapParametersEndpoint extends Endpoint {
   Future<Map<String, int?>?> returnNullableIntMapNullableInts(
     Session session,
     Map<String, int?>? map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<int, int>> returnIntIntMap(
+    Session session,
+    Map<int, int> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<TestEnum, int>> returnEnumIntMap(
+    Session session,
+    Map<TestEnum, int> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<String, TestEnum>> returnEnumMap(
+    Session session,
+    Map<String, TestEnum> map,
   ) async {
     return map;
   }

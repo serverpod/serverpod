@@ -1,45 +1,43 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ObjectFieldScopes extends SerializableEntity {
-  @override
-  String get className => 'ObjectFieldScopes';
-
-  int? id;
-  late String normal;
-  String? api;
-
+class ObjectFieldScopes extends _i1.SerializableEntity {
   ObjectFieldScopes({
     this.id,
     required this.normal,
     this.api,
   });
 
-  ObjectFieldScopes.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    normal = _data['normal']!;
-    api = _data['api'];
+  factory ObjectFieldScopes.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ObjectFieldScopes(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      normal:
+          serializationManager.deserialize<String>(jsonSerialization['normal']),
+      api: serializationManager.deserialize<String?>(jsonSerialization['api']),
+    );
   }
 
+  int? id;
+
+  String normal;
+
+  String? api;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'normal': normal,
       'api': api,
-    });
+    };
   }
 }

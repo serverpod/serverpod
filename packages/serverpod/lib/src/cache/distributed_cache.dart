@@ -59,7 +59,7 @@
 //     DateTime? expiration;
 //     if (lifetime != null) expiration = DateTime.now().add(lifetime);
 //
-//     var data = jsonEncode(object.serializeAll());
+//     var data = SerializationManager.serializeToJson(object.serializeAll());
 //
 //     if (client == null) {
 //       await _localCache.put(key, DistributedCacheEntry(data: data),

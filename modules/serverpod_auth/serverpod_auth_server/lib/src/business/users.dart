@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 
@@ -60,7 +58,7 @@ class Users {
     UserInfo? userInfo;
 
     if (useCache) {
-      userInfo = await session.caches.local.get(cacheKey) as UserInfo?;
+      userInfo = await session.caches.local.get<UserInfo>(cacheKey);
       if (userInfo != null) return userInfo;
     }
 
@@ -111,7 +109,7 @@ class Users {
     await session.db.update(userInfo);
 
     // Update all authentication keys too.
-    var json = jsonEncode(scopeStrs);
+    var json = SerializationManager.encode(scopeStrs);
     await session.db.query(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 

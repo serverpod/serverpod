@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
+
+import 'types.dart';
 
 var config = GeneratorConfig();
 
@@ -15,6 +18,8 @@ class GeneratorConfig {
   late PackageType type;
 
   late String serverPackage;
+  late String clientPackage;
+  late bool clientDependsOnServiceClient;
 
   final String libSourcePath = 'lib';
   final String protocolSourcePath = p.join('lib', 'src', 'protocol');
@@ -25,6 +30,10 @@ class GeneratorConfig {
   final String generatedServerProtocolPath = p.join('lib', 'src', 'generated');
 
   List<ModuleConfig> modules = [];
+
+  /// User defined class names for complex types.
+  /// Useful for types used in caching and streams.
+  List<TypeDefinition> extraClasses = [];
 
   bool load([String dir = '']) {
     Map? pubspec;
@@ -67,25 +76,55 @@ class GeneratorConfig {
           'Option "client_package_path" is required in config/generator.yaml');
     }
     clientPackagePath = generatorConfig['client_package_path'];
+    try {
+      var file = File(p.join(clientPackagePath, 'pubspec.yaml'));
+      var yamlStr = file.readAsStringSync();
+      var yaml = loadYaml(yamlStr);
+      clientPackage = yaml['name'];
+      clientDependsOnServiceClient =
+          yaml['dependencies'].containsKey('serverpod_service_client');
+    } catch (_) {
+      print(
+          'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
+      return false;
+    }
     generatedClientProtocolPath =
         p.join(clientPackagePath, 'lib', 'src', 'protocol');
 
     // Load module settings
     modules = [];
-    if (type == PackageType.server) {
-      try {
-        if (generatorConfig['modules'] != null) {
-          Map modulesData = generatorConfig['modules'];
-          for (var package in modulesData.keys) {
-            modules.add(ModuleConfig._withMap(package, modulesData[package]));
-          }
+    try {
+      if (generatorConfig['modules'] != null) {
+        Map modulesData = generatorConfig['modules'];
+        for (var package in modulesData.keys) {
+          modules.add(ModuleConfig._withMap(package, modulesData[package]));
         }
-      } catch (e) {
-        throw const FormatException('Failed to load module config');
       }
+    } catch (e) {
+      throw const FormatException('Failed to load module config');
     }
 
-    // print(this);
+    // Load extraClasses
+    extraClasses = [];
+    if (generatorConfig['extraClasses'] != null) {
+      try {
+        for (var extraClassConfig in generatorConfig['extraClasses']) {
+          extraClasses.add(
+            parseAndAnalyzeType(
+              extraClassConfig,
+              analyzingExtraClasses: true,
+              sourceSpan: generatorConfig['extraClasses'].span,
+            ).type,
+          );
+        }
+      } on SourceSpanException catch (_) {
+        rethrow;
+      } catch (e) {
+        throw SourceSpanFormatException(
+            'Failed to load \'extraClasses\' config',
+            generatorConfig['extraClasses'].span);
+      }
+    }
 
     return true;
   }
@@ -118,6 +157,9 @@ class ModuleConfig {
       : clientPackage = '${name}_client',
         serverPackage = '${name}_server',
         nickname = map['nickname']!;
+
+  String url(bool serverCode) =>
+      'package:${serverCode ? serverPackage : clientPackage}/module.dart';
 
   @override
   String toString() {

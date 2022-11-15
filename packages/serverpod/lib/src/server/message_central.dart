@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Support for server clusters.
@@ -25,9 +23,9 @@ class MessageCentral {
   void postMessage(
     String channelName,
     SerializableEntity message, {
-    bool local = false,
+    bool global = false,
   }) {
-    if (local) {
+    if (!global) {
       // Handle internally in this server instance
       var channel = _channels[channelName];
       if (channel == null) return;
@@ -41,8 +39,8 @@ class MessageCentral {
         Serverpod.instance!.redisController != null,
         'Redis needs to be enabled to use this method',
       );
-
-      var data = jsonEncode(message.serializeAll());
+      var data =
+          Serverpod.instance!.serializationManager.encodeWithType(message);
       Serverpod.instance!.redisController!.publish(channelName, data);
     }
   }
@@ -62,9 +60,9 @@ class MessageCentral {
   void addListener(
     Session session,
     String channelName,
-    MessageCentralListenerCallback listener, {
-    bool local = false,
-  }) {
+    MessageCentralListenerCallback listener,
+    // bool global = false,
+  ) {
     // Find or create channel
     var channel = _getChannel(channelName);
     channel.add(listener);
@@ -92,13 +90,13 @@ class MessageCentral {
   }
 
   void _receivedRedisMessage(String channelName, String message) {
-    var serialization = jsonDecode(message);
-    var messageObj = Serverpod.instance!.serializationManager
-        .createEntityFromSerialization(serialization);
+    // var serialization = jsonDecode(message);
+    var messageObj =
+        Serverpod.instance!.serializationManager.decodeWithType(message);
     if (messageObj == null) {
       return;
     }
-    postMessage(channelName, messageObj, local: true);
+    postMessage(channelName, messageObj as SerializableEntity, global: false);
   }
 
   /// Removes a listener from a named channel.

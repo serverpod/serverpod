@@ -12,6 +12,7 @@ import 'package:source_span/source_span.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 import 'code_analysis_collector.dart';
+import 'types.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -138,8 +139,6 @@ class ProtocolAnalyzer {
                 var paramNamedDefs = <ParameterDefinition>[];
                 var parameters = method.parameters;
                 for (var param in parameters) {
-                  var package =
-                      param.type.element2?.librarySource?.uri.pathSegments[0];
                   var paramDef = ParameterDefinition(
                     name: param.name,
                     required: param.isRequiredPositional ||
@@ -147,12 +146,7 @@ class ProtocolAnalyzer {
                         (param.isNamed &&
                             param.type.nullabilitySuffix ==
                                 NullabilitySuffix.none),
-                    type: TypeDefinition(
-                      param.type.getDisplayString(withNullability: true),
-                      package,
-                      _getInnerPackage(param.type),
-                      dartType: param.type,
-                    ),
+                    type: TypeDefinition.fromDartType(param.type),
                     dartParameter: param,
                   );
 
@@ -166,29 +160,8 @@ class ProtocolAnalyzer {
                 }
 
                 if (paramDefs.isNotEmpty &&
-                    paramDefs[0].type.type == 'Session' &&
+                    paramDefs[0].type.className == 'Session' &&
                     method.returnType.isDartAsyncFuture) {
-                  String? package;
-                  String? innerPackage;
-                  var returnType = method.returnType;
-                  if (returnType is InterfaceType) {
-                    var interfaceType = returnType;
-                    if (interfaceType.typeArguments.length == 1) {
-                      package = interfaceType.typeArguments[0].element2
-                          ?.librarySource?.uri.pathSegments[0];
-                      innerPackage =
-                          _getInnerPackage(interfaceType.typeArguments[0]);
-                    }
-                  }
-
-                  for (var parameter in paramDefs.sublist(1)) {
-                    _validateDartType(
-                      dartType: parameter.type.dartType,
-                      dartElement: parameter.dartParameter,
-                      collector: collector,
-                    );
-                  }
-
                   _validateReturnType(
                     dartType: method.returnType,
                     dartElement: method,
@@ -201,13 +174,7 @@ class ProtocolAnalyzer {
                     parameters: paramDefs.sublist(1), // Skip session parameter
                     parametersNamed: paramNamedDefs,
                     parametersPositional: paramPositionalDefs,
-                    returnType: TypeDefinition(
-                      method.returnType.getDisplayString(withNullability: true),
-                      package,
-                      innerPackage,
-                      stripFuture: true,
-                      dartType: method.returnType,
-                    ),
+                    returnType: TypeDefinition.fromDartType(method.returnType),
                   );
                   methodDefs.add(methodDef);
                 }
@@ -218,6 +185,7 @@ class ProtocolAnalyzer {
                 documentationComment: classDocumentationComment,
                 className: className,
                 methods: methodDefs,
+                fileName: filePath,
               );
               endpointDefs.add(endpointDef);
             }
@@ -232,23 +200,6 @@ class ProtocolAnalyzer {
     );
 
     return protocolDefinition;
-  }
-
-  String? _getInnerPackage(DartType type) {
-    if (type.isDartCoreList) {
-      type as InterfaceType;
-      if (type.typeArguments.length == 1) {
-        return type
-            .typeArguments[0].element2?.librarySource?.uri.pathSegments[0];
-      }
-    } else if (type.isDartCoreMap) {
-      type as InterfaceType;
-      if (type.typeArguments.length == 2) {
-        return type
-            .typeArguments[1].element2?.librarySource?.uri.pathSegments[0];
-      }
-    }
-    return null;
   }
 
   String _formatEndpointName(String className) {
@@ -305,138 +256,7 @@ class ProtocolAnalyzer {
       ));
       return;
     }
-
-    _validateDartType(
-      dartType: innerType,
-      dartElement: dartElement,
-      collector: collector,
-    );
   }
-
-  // Check that the type is valid for use with Serverpod, otherwise add an error
-  // to the error collector.
-  void _validateDartType({
-    required DartType? dartType,
-    required Element? dartElement,
-    required CodeAnalysisCollector collector,
-  }) {
-    // Only perform check if there is a declared Dart parameter and type.
-    if (dartElement == null || dartType == null) {
-      return;
-    }
-
-    if (dartType is! InterfaceType) {
-      collector.addError(SourceSpanException(
-        'This type is not supported as an argument or return type.',
-        dartElement.span,
-      ));
-      return;
-    }
-
-    if (dartType.isDartCoreList) {
-      // Check for supported lists.
-      var typeArguments = dartType.typeArguments;
-      if (typeArguments.length != 1) {
-        collector.addError(SourceSpanException(
-          'Lists in parameters must have a type defined. E.g. List<String>.',
-          dartElement.span,
-        ));
-        return;
-      }
-      if (typeArguments[0].isDynamic) {
-        collector.addError(SourceSpanException(
-          'Lists in parameters must have a type defined. E.g. List<String>.',
-          dartElement.span,
-        ));
-        return;
-      } else if (_isSupportedBaseType(typeArguments[0])) {
-        return;
-      } else {
-        collector.addError(SourceSpanException(
-          'This type of List is not supported.',
-          dartElement.span,
-        ));
-        return;
-      }
-    } else if (dartType.isDartCoreMap) {
-      // Check for supported maps.
-      var typeArguments = dartType.typeArguments;
-      if (typeArguments.length != 2) {
-        collector.addError(SourceSpanException(
-          'Maps in parameters must have a type defined. E.g. Map<String, int>.',
-          dartElement.span,
-        ));
-        return;
-      }
-      if (!typeArguments[0].isDartCoreString ||
-          typeArguments[0].nullabilitySuffix != NullabilitySuffix.none) {
-        collector.addError(SourceSpanException(
-          'Maps in parameters must have a non-nullable String as key. E.g. Map<String, int?>.',
-          dartElement.span,
-        ));
-        return;
-      }
-      if (typeArguments[1].isDynamic) {
-        collector.addError(SourceSpanException(
-          'Maps in parameters must have a type defined. E.g. List<String, int?>.',
-          dartElement.span,
-        ));
-        return;
-      } else if (_isSupportedBaseType(typeArguments[1])) {
-        return;
-      } else {
-        collector.addError(SourceSpanException(
-          'This type of Map is not supported.',
-          dartElement.span,
-        ));
-        return;
-      }
-    } else {
-      // Check base types.
-      if (_isSupportedBaseType(dartType)) {
-        return;
-      }
-    }
-
-    collector.addError(SourceSpanException(
-      'This type is not supported as an argument or return type.',
-      dartElement.span,
-    ));
-  }
-}
-
-bool _isSupportedBaseType(DartType type) {
-  if (type is! InterfaceType) {
-    return false;
-  }
-
-  // Core types.
-  if (_isSupportedDartCoreType(type)) {
-    return true;
-  }
-
-  // Basic types.
-  var typeName = type.getDisplayString(withNullability: false);
-  if (typeName == 'DateTime' || typeName == 'ByteData') {
-    return true;
-  }
-
-  // Serializable objects.
-  for (var superType in type.allSupertypes) {
-    if (superType.getDisplayString(withNullability: false) ==
-        'SerializableEntity') {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool _isSupportedDartCoreType(DartType type) {
-  return type.isDartCoreBool ||
-      type.isDartCoreInt ||
-      type.isDartCoreDouble ||
-      type.isDartCoreString;
 }
 
 extension _DartElementSourceSpan on Element {

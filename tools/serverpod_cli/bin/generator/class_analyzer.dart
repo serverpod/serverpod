@@ -9,6 +9,7 @@ import 'class_generator_dart.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 import 'code_analysis_collector.dart';
+import 'types.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
   bool verbose = true,
@@ -39,6 +40,30 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
     var classDefinition = analyzer.analyze();
     if (classDefinition != null) {
       classDefinitions.add(classDefinition);
+    }
+  }
+
+  //Detect protocol references
+  for (var classDefinition in classDefinitions) {
+    if (classDefinition is ClassDefinition) {
+      for (var fieldDefinition in classDefinition.fields) {
+        fieldDefinition.type =
+            fieldDefinition.type.applyProtocolReferences(classDefinitions);
+      }
+    }
+  }
+
+  // Detect enum fields
+  for (var classDefinition in classDefinitions) {
+    if (classDefinition is ClassDefinition) {
+      for (var fieldDefinition in classDefinition.fields) {
+        if (fieldDefinition.type.url == 'protocol' &&
+            classDefinitions
+                .whereType<EnumDefinition>()
+                .any((e) => e.className == fieldDefinition.type.className)) {
+          fieldDefinition.type.isEnum = true;
+        }
+      }
     }
   }
 
@@ -193,7 +218,10 @@ class ClassAnalyzer {
 
     // Add default id field, if object has database table.
     if (tableName != null) {
-      fields.add(FieldDefinition('id', 'int?'));
+      fields.add(FieldDefinition(
+          name: 'id',
+          type: TypeDefinition.int.asNullable,
+          scope: FieldScope.all));
     }
 
     for (var fieldNameNode in fieldsNode.nodes.keys) {
@@ -240,9 +268,69 @@ class ClassAnalyzer {
         continue;
       }
 
-      FieldDefinition fieldDefinition;
       try {
-        fieldDefinition = FieldDefinition(fieldName, fieldDescription);
+        fieldDescription = fieldDescription.replaceAll(' ', '');
+        var typeResult = parseAndAnalyzeType(
+          fieldDescription,
+          sourceSpan: fieldDescriptionNode.span,
+        );
+
+        var fieldOptions =
+            fieldDescription.substring(typeResult.parsedPosition).split(',');
+
+        if (fieldOptions
+                .where((option) => option == 'database' || option == 'api')
+                .length >
+            1) {
+          collector.addError(SourceSpanException(
+            'The field scope (database or api) must at most be set once.',
+            fieldDescriptionNode.span,
+          ));
+          continue;
+        }
+
+        var scope = fieldOptions.any((option) => option == 'database')
+            ? FieldScope.database
+            : fieldOptions.any((option) => option == 'api')
+                ? FieldScope.api
+                : FieldScope.all;
+
+        if (fieldOptions.where((option) => option.startsWith('parent')).length >
+            1) {
+          collector.addError(SourceSpanException(
+            'Only one parent must be set.',
+            fieldDescriptionNode.span,
+          ));
+          continue;
+        }
+
+        var parentTable = fieldOptions
+            .whereType<String?>()
+            .firstWhere(
+              (option) => option?.startsWith('parent=') ?? false,
+              orElse: () => null,
+            )
+            ?.substring(7);
+
+        if (parentTable != null &&
+            !StringValidators.isValidTableIndexName(parentTable)) {
+          collector.addError(SourceSpanException(
+            '$tableName is no valid parent name.',
+            fieldDescriptionNode.span,
+          ));
+          continue;
+        }
+
+        var isEnum =
+            fieldOptions.whereType<String?>().any((option) => option == 'enum');
+
+        var fieldDefinition = FieldDefinition(
+          name: fieldName,
+          scope: scope,
+          type: typeResult.type..isEnum = isEnum,
+          parentTable: parentTable,
+        );
+
         fields.add(fieldDefinition);
       } catch (e) {
         collector.addError(SourceSpanException(

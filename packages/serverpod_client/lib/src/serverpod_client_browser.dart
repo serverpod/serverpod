@@ -23,13 +23,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
     String host,
     SerializationManager serializationManager, {
     dynamic context,
-    ServerpodClientErrorCallback? errorHandler,
     AuthenticationKeyManager? authenticationKeyManager,
     bool logFailedCalls = true,
   }) : super(
           host,
           serializationManager,
-          errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
           logFailedCalls: logFailedCalls,
         ) {
@@ -41,8 +39,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args) async {
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
     String? data;
@@ -62,8 +60,12 @@ abstract class ServerpodClient extends ServerpodClientShared {
         throw (ServerpodClientException(data, response.statusCode));
       }
 
-      return parseData(data, returnTypeName, serializationManager);
-    } catch (e, stackTrace) {
+      if (T == getType<void>()) {
+        return returnVoid() as T;
+      } else {
+        return parseData<T>(data, T, serializationManager);
+      }
+    } catch (e) {
       if (e is http.ClientException) {
         var message = data ?? 'Unknown server response code. ($e)';
         throw (ServerpodClientException(message, -1));
@@ -73,12 +75,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
-
-      if (errorHandler != null) {
-        errorHandler!(e, stackTrace);
-      } else {
-        rethrow;
-      }
+      rethrow;
     }
   }
 

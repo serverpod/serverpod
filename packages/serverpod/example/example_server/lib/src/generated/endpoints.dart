@@ -1,52 +1,43 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: unused_import
 
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod/serverpod.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../endpoints/channels.dart' as _i2;
+import 'package:serverpod_auth_server/module.dart' as _i3;
+import 'package:serverpod_chat_server/module.dart' as _i4;
 
-import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
-import 'package:serverpod_chat_server/module.dart' as serverpod_chat;
-
-import 'protocol.dart';
-
-import '../endpoints/channels.dart';
-
-class Endpoints extends EndpointDispatch {
+class Endpoints extends _i1.EndpointDispatch {
   @override
-  void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
-      'channels': ChannelsEndpoint()..initialize(server, 'channels', null),
+  void initializeEndpoints(_i1.Server server) {
+    var endpoints = <String, _i1.Endpoint>{
+      'channels': _i2.ChannelsEndpoint()
+        ..initialize(
+          server,
+          'channels',
+          null,
+        )
     };
-
-    connectors['channels'] = EndpointConnector(
+    connectors['channels'] = _i1.EndpointConnector(
       name: 'channels',
       endpoint: endpoints['channels']!,
       methodConnectors: {
-        'getChannels': MethodConnector(
+        'getChannels': _i1.MethodConnector(
           name: 'getChannels',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['channels'] as ChannelsEndpoint).getChannels(
-              session,
-            );
-          },
-        ),
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['channels'] as _i2.ChannelsEndpoint)
+                  .getChannels(session),
+        )
       },
     );
-
-    modules['serverpod_auth'] = serverpod_auth.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_chat'] = serverpod_chat.Endpoints()
-      ..initializeEndpoints(server);
-  }
-
-  @override
-  void registerModules(Serverpod pod) {
-    pod.registerModule(serverpod_auth.Protocol(), 'auth');
-    pod.registerModule(serverpod_chat.Protocol(), 'chat');
+    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_chat'] = _i4.Endpoints()..initializeEndpoints(server);
   }
 }

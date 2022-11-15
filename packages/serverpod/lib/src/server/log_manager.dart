@@ -130,7 +130,7 @@ class LogManager {
     var logSettings = getLogSettingsForSession(session);
     var serverLogLevel = (logSettings.logLevel);
 
-    return entry.logLevel >= serverLogLevel;
+    return entry.logLevel.index >= serverLogLevel.index;
   }
 
   /// Returns true if a message should be logged for the provided session.

@@ -1,68 +1,66 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
 // ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: public_member_api_docs
 
-import 'dart:io';
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod_client/serverpod_client.dart';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'dart:async' as _i2;
+import 'package:example_client/src/protocol/channel_list.dart' as _i3;
+import 'package:serverpod_auth_client/module.dart' as _i4;
+import 'package:serverpod_chat_client/module.dart' as _i5;
+import 'dart:io' as _i6;
+import 'protocol.dart' as _i7;
 
-import 'package:serverpod_auth_client/module.dart' as serverpod_auth;
-import 'package:serverpod_chat_client/module.dart' as serverpod_chat;
+class _EndpointChannels extends _i1.EndpointRef {
+  _EndpointChannels(_i1.EndpointCaller caller) : super(caller);
 
-class _EndpointChannels extends EndpointRef {
   @override
   String get name => 'channels';
 
-  _EndpointChannels(EndpointCaller caller) : super(caller);
-
-  Future<ChannelList> getChannels() async {
-    var retval = await caller
-        .callServerEndpoint('channels', 'getChannels', 'ChannelList', {});
-    return retval;
-  }
+  _i2.Future<_i3.ChannelList> getChannels() =>
+      caller.callServerEndpoint<_i3.ChannelList>(
+        'channels',
+        'getChannels',
+        {},
+      );
 }
 
 class _Modules {
-  late final serverpod_auth.Caller auth;
-  late final serverpod_chat.Caller chat;
-
   _Modules(Client client) {
-    auth = serverpod_auth.Caller(client);
-    chat = serverpod_chat.Caller(client);
+    auth = _i4.Caller(client);
+    chat = _i5.Caller(client);
   }
+
+  late final _i4.Caller auth;
+
+  late final _i5.Caller chat;
 }
 
-class Client extends ServerpodClient {
-  late final _EndpointChannels channels;
-  late final _Modules modules;
-
-  Client(String host,
-      {SecurityContext? context,
-      ServerpodClientErrorCallback? errorHandler,
-      AuthenticationKeyManager? authenticationKeyManager})
-      : super(host, Protocol.instance,
-            context: context,
-            errorHandler: errorHandler,
-            authenticationKeyManager: authenticationKeyManager) {
+class Client extends _i1.ServerpodClient {
+  Client(
+    String host, {
+    _i6.SecurityContext? context,
+    _i1.AuthenticationKeyManager? authenticationKeyManager,
+  }) : super(
+          host,
+          _i7.Protocol(),
+          context: context,
+          authenticationKeyManager: authenticationKeyManager,
+        ) {
     channels = _EndpointChannels(this);
-
     modules = _Modules(this);
-    registerModuleProtocol(serverpod_auth.Protocol());
-    registerModuleProtocol(serverpod_chat.Protocol());
   }
 
-  @override
-  Map<String, EndpointRef> get endpointRefLookup => {
-        'channels': channels,
-      };
+  late final _EndpointChannels channels;
+
+  late final _Modules modules;
 
   @override
-  Map<String, ModuleEndpointCaller> get moduleLookup => {
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {'channels': channels};
+  @override
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
         'auth': modules.auth,
         'chat': modules.chat,
       };

@@ -17,13 +17,13 @@ void main() {
     var entry = SimpleData(num: 0);
 
     await cache.put('entry', entry);
-    var retrieved = await cache.get('entry') as SimpleData?;
+    var retrieved = await cache.get<SimpleData>('entry');
     expect(retrieved!.num, equals(0));
 
-    retrieved = await cache.get('missing') as SimpleData?;
+    retrieved = await cache.get<SimpleData>('missing');
     expect(retrieved, isNull);
 
-    retrieved = await cache.get('entry') as SimpleData?;
+    retrieved = await cache.get<SimpleData>('entry');
     expect(retrieved!.num, equals(0));
 
     expect(cache.localSize, equals(1));
@@ -34,11 +34,11 @@ void main() {
 
     await cache.put('entry', entry,
         lifetime: const Duration(milliseconds: 100));
-    var retrieved = await cache.get('entry') as SimpleData?;
+    var retrieved = await cache.get<SimpleData>('entry');
     expect(retrieved!.num, equals(0));
 
     await Future.delayed(const Duration(milliseconds: 110));
-    retrieved = await cache.get('entry') as SimpleData?;
+    retrieved = await cache.get<SimpleData>('entry');
     expect(retrieved, isNull);
 
     expect(cache.localSize, equals(0));
@@ -51,7 +51,7 @@ void main() {
     await cache.put('entry', entryA);
     await cache.put('entry', entryB);
 
-    var retrieved = await cache.get('entry') as SimpleData?;
+    var retrieved = await cache.get<SimpleData>('entry');
     expect(retrieved!.num, equals(1));
 
     expect(cache.localSize, equals(1));
@@ -67,10 +67,10 @@ void main() {
 
     expect(cache.localSize, equals(cacheMaxSize));
 
-    var first = await cache.get('entry:0') as SimpleData?;
+    var first = await cache.get<SimpleData>('entry:0');
     expect(first, isNull);
 
-    var last = await cache.get('entry:${numEntries - 1}') as SimpleData?;
+    var last = await cache.get<SimpleData>('entry:${numEntries - 1}');
     expect(last!.num, equals(numEntries - 1));
   });
 
@@ -82,11 +82,11 @@ void main() {
 
     var middleId = cacheMaxSize ~/ 4;
 
-    var retrieved = await cache.get('entry:$middleId') as SimpleData?;
+    var retrieved = await cache.get<SimpleData>('entry:$middleId');
     expect(retrieved!.num, equals(middleId));
 
     await cache.invalidateKey('entry:$middleId');
-    retrieved = await cache.get('entry:$middleId') as SimpleData?;
+    retrieved = await cache.get<SimpleData>('entry:$middleId');
     expect(retrieved, isNull);
 
     expect(cache.localSize, equals(cacheMaxSize - 1));
@@ -107,10 +107,10 @@ void main() {
     await cache.invalidateGroup('group:0');
     expect(cache.localSize, equals(cacheMaxSize ~/ 2));
 
-    var retrieved = await cache.get('entry:0') as SimpleData?;
+    var retrieved = await cache.get<SimpleData>('entry:0');
     expect(retrieved, isNull);
 
-    retrieved = await cache.get('entry:${cacheMaxSize - 1}') as SimpleData?;
+    retrieved = await cache.get<SimpleData>('entry:${cacheMaxSize - 1}');
     expect(retrieved!.num, equals(cacheMaxSize - 1));
 
     await cache.invalidateGroup('group:1');
@@ -131,10 +131,10 @@ void main() {
     }
 
     await cache.invalidateKey('entry:0');
-    var retrieved = await cache.get('entry:0') as SimpleData?;
+    var retrieved = await cache.get<SimpleData>('entry:0');
     expect(retrieved, isNull);
 
-    retrieved = await cache.get('entry:1') as SimpleData?;
+    retrieved = await cache.get<SimpleData>('entry:1');
     expect(retrieved!.num, equals(1));
 
     await cache.invalidateGroup('group:0');

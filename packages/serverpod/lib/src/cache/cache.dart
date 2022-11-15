@@ -20,9 +20,12 @@ abstract class Cache {
   Future<void> put(String key, SerializableEntity object,
       {Duration? lifetime, String? group});
 
+  /// Check if a valid cache for the specified key exists.
+  Future<bool> containsKey(String key);
+
   /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
   /// matching object can be found, null is returned.
-  Future<SerializableEntity?> get(String key);
+  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]);
 
   /// Removes a single object from the cache if it matches the [key].
   Future<void> invalidateKey(String key);

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'server.dart';
@@ -90,10 +88,10 @@ abstract class Endpoint {
 
     var data = {
       'endpoint': '$prefix$name',
-      'object': message.serialize(),
+      'object': server.serializationManager.wrapWithClassName(message),
     };
 
-    var payload = jsonEncode(data);
+    var payload = SerializationManager.encode(data);
     session.webSocket.add(payload);
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -12,9 +11,8 @@ class ModuleSerializationEndpoint extends Endpoint {
     );
 
     try {
-      var s = pod.serializationManager.serializeEntity(moduleClass)!;
-      var unpacked = pod.serializationManager
-          .createEntityFromSerialization(jsonDecode(s)) as module.ModuleClass;
+      var s = SerializationManager.encode(moduleClass);
+      var unpacked = pod.serializationManager.decode<module.ModuleClass>(s);
       return (unpacked.data == 42 && unpacked.name == 'foo');
     } catch (e, stackTrace) {
       stdout.writeln(

@@ -23,7 +23,7 @@ class RedisEndpoint extends Endpoint {
   }
 
   Future<SimpleData?> getSimpleData(Session session, String key) async {
-    return (await session.caches.global.get(key)) as SimpleData?;
+    return (await session.caches.global.get<SimpleData>(key));
   }
 
   Future<void> deleteSimpleData(Session session, String key) async {
@@ -42,8 +42,11 @@ class RedisEndpoint extends Endpoint {
   }
 
   Future<void> postToChannel(
-      Session session, String channel, SimpleData data) async {
-    session.messages.postMessage(channel, data);
+    Session session,
+    String channel,
+    SimpleData data,
+  ) async {
+    session.messages.postMessage(channel, data, global: true);
   }
 
   Future<int> countSubscribedChannels(Session session) async {

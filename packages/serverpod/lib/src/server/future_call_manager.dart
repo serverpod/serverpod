@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -35,7 +34,9 @@ class FutureCallManager {
     String? identifier,
   ) async {
     String? serialization;
-    if (object != null) serialization = jsonEncode(object.serializeAll());
+    if (object != null) {
+      serialization = SerializationManager.encode(object.allToJson());
+    }
 
     var entry = FutureCallEntry(
       name: name,
@@ -107,11 +108,10 @@ class FutureCallManager {
           continue;
         }
 
-        SerializableEntity? object;
+        dynamic object;
         if (entry.serializedObject != null) {
-          Map? data = jsonDecode(entry.serializedObject!);
-          object = _serializationManager
-              .createEntityFromSerialization(data as Map<String, dynamic>?);
+          object = _serializationManager.decode(
+              entry.serializedObject!, call.dataType);
         }
 
         var futureCallSession = FutureCallSession(
