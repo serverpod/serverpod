@@ -14,7 +14,7 @@ class: Example
 #table: example
 
 # The fields (and columns if connected to the database) of the class. Supported
-# types are `bool`, `int`, `float`, `String`, `DateTime`, and any other
+# types are `bool`, `int`, `double`, `String`, `DateTime`, and any other
 # generated classes. You can also add lists of objects and types have support
 # for null safety. Eg. `List<int>?` or `List<MyOtherClass?>`.
 fields:

@@ -1,42 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class QueryLogEntry extends TableRow {
-  @override
-  String get className => 'QueryLogEntry';
-  @override
-  String get tableName => 'serverpod_query_log';
-
-  static final t = QueryLogEntryTable();
-
-  @override
-  int? id;
-  late String serverId;
-  late int sessionLogId;
-  int? messageId;
-  late String query;
-  late double duration;
-  int? numRows;
-  String? error;
-  String? stackTrace;
-  late bool slow;
-  late int order;
-
+class QueryLogEntry extends _i1.TableRow {
   QueryLogEntry({
-    this.id,
+    int? id,
     required this.serverId,
     required this.sessionLogId,
     this.messageId,
@@ -47,26 +20,62 @@ class QueryLogEntry extends TableRow {
     this.stackTrace,
     required this.slow,
     required this.order,
-  });
+  }) : super(id);
 
-  QueryLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    serverId = _data['serverId']!;
-    sessionLogId = _data['sessionLogId']!;
-    messageId = _data['messageId'];
-    query = _data['query']!;
-    duration = _data['duration']!;
-    numRows = _data['numRows'];
-    error = _data['error'];
-    stackTrace = _data['stackTrace'];
-    slow = _data['slow']!;
-    order = _data['order']!;
+  factory QueryLogEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return QueryLogEntry(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      serverId: serializationManager
+          .deserialize<String>(jsonSerialization['serverId']),
+      sessionLogId: serializationManager
+          .deserialize<int>(jsonSerialization['sessionLogId']),
+      messageId: serializationManager
+          .deserialize<int?>(jsonSerialization['messageId']),
+      query:
+          serializationManager.deserialize<String>(jsonSerialization['query']),
+      duration: serializationManager
+          .deserialize<double>(jsonSerialization['duration']),
+      numRows:
+          serializationManager.deserialize<int?>(jsonSerialization['numRows']),
+      error:
+          serializationManager.deserialize<String?>(jsonSerialization['error']),
+      stackTrace: serializationManager
+          .deserialize<String?>(jsonSerialization['stackTrace']),
+      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
+      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+    );
   }
 
+  static final t = QueryLogEntryTable();
+
+  String serverId;
+
+  int sessionLogId;
+
+  int? messageId;
+
+  String query;
+
+  double duration;
+
+  int? numRows;
+
+  String? error;
+
+  String? stackTrace;
+
+  bool slow;
+
+  int order;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'serverpod_query_log';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -78,12 +87,12 @@ class QueryLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -95,12 +104,12 @@ class QueryLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
@@ -112,11 +121,14 @@ class QueryLogEntry extends TableRow {
       'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -157,15 +169,15 @@ class QueryLogEntry extends TableRow {
   }
 
   static Future<List<QueryLogEntry>> find(
-    Session session, {
+    _i1.Session session, {
     QueryLogEntryExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<QueryLogEntry>(
       where: where != null ? where(QueryLogEntry.t) : null,
@@ -180,13 +192,13 @@ class QueryLogEntry extends TableRow {
   }
 
   static Future<QueryLogEntry?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     QueryLogEntryExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<QueryLogEntry>(
       where: where != null ? where(QueryLogEntry.t) : null,
@@ -198,14 +210,17 @@ class QueryLogEntry extends TableRow {
     );
   }
 
-  static Future<QueryLogEntry?> findById(Session session, int id) async {
+  static Future<QueryLogEntry?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<QueryLogEntry>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required QueryLogEntryExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<QueryLogEntry>(
       where: where(QueryLogEntry.t),
@@ -214,9 +229,9 @@ class QueryLogEntry extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     QueryLogEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -225,9 +240,9 @@ class QueryLogEntry extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     QueryLogEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -236,19 +251,22 @@ class QueryLogEntry extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     QueryLogEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     QueryLogEntryExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<QueryLogEntry>(
       where: where != null ? where(QueryLogEntry.t) : null,
@@ -259,28 +277,36 @@ class QueryLogEntry extends TableRow {
   }
 }
 
-typedef QueryLogEntryExpressionBuilder = Expression Function(
-    QueryLogEntryTable t);
+typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
+    QueryLogEntryTable);
 
-class QueryLogEntryTable extends Table {
+class QueryLogEntryTable extends _i1.Table {
   QueryLogEntryTable() : super(tableName: 'serverpod_query_log');
 
-  @override
-  String tableName = 'serverpod_query_log';
-  final id = ColumnInt('id');
-  final serverId = ColumnString('serverId');
-  final sessionLogId = ColumnInt('sessionLogId');
-  final messageId = ColumnInt('messageId');
-  final query = ColumnString('query');
-  final duration = ColumnDouble('duration');
-  final numRows = ColumnInt('numRows');
-  final error = ColumnString('error');
-  final stackTrace = ColumnString('stackTrace');
-  final slow = ColumnBool('slow');
-  final order = ColumnInt('order');
+  final id = _i1.ColumnInt('id');
+
+  final serverId = _i1.ColumnString('serverId');
+
+  final sessionLogId = _i1.ColumnInt('sessionLogId');
+
+  final messageId = _i1.ColumnInt('messageId');
+
+  final query = _i1.ColumnString('query');
+
+  final duration = _i1.ColumnDouble('duration');
+
+  final numRows = _i1.ColumnInt('numRows');
+
+  final error = _i1.ColumnString('error');
+
+  final stackTrace = _i1.ColumnString('stackTrace');
+
+  final slow = _i1.ColumnBool('slow');
+
+  final order = _i1.ColumnInt('order');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         serverId,
         sessionLogId,

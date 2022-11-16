@@ -1,12 +1,14 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/module.dart';
+import 'package:serverpod_test_client/src/custom_classes.dart';
 import 'package:test/test.dart';
 
 import 'authentication_test.dart';
+import 'config.dart';
 
 void main() {
   var client = Client(
-    'http://serverpod_test_server:8080/',
+    serverUrl,
     authenticationKeyManager: TestAuthKeyManager(),
   );
 
@@ -34,6 +36,28 @@ void main() {
         i += 1;
         if (i == nums.length) break;
       }
+    });
+
+    test('Test extraClassNames', () async {
+      expect(
+          client.serializationManager
+              .getClassNameForObject(CustomClass('test')),
+          'CustomClass');
+
+      await client.openStreamingConnection(
+        disconnectOnLostInternetConnection: false,
+      );
+
+      var resultFuture =
+          client.customTypes.stream.timeout(const Duration(seconds: 4)).first;
+
+      await client.customTypes.sendStreamMessage(CustomClass('test'));
+
+      var result = await resultFuture;
+
+      expect(result, isNotNull);
+      expect(result, isA<CustomClass>());
+      expect((result as CustomClass).value, 'testtest');
     });
   });
 

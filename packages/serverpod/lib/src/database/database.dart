@@ -29,7 +29,7 @@ class Database {
   /// often useful to cast the object returned.
   ///
   ///     var myRow = session.db.findById(tMyTable, myId) as MyTable;
-  Future<T?> findById<T>(
+  Future<T?> findById<T extends TableRow>(
     int id, {
     Transaction? transaction,
   }) async {
@@ -45,7 +45,7 @@ class Database {
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
   /// the table will be returned.
-  Future<List<T>> find<T>({
+  Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
     int? offset,
@@ -73,7 +73,7 @@ class Database {
   /// Find a single [TableRow] from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
   /// multiple columns, user [orderByList].
-  Future<T?> findSingleRow<T>({
+  Future<T?> findSingleRow<T extends TableRow>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -96,7 +96,7 @@ class Database {
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
-  Future<int> count<T>({
+  Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
     bool useCache = true,
@@ -142,7 +142,7 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<int> delete<T>({
+  Future<int> delete<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {
@@ -157,7 +157,7 @@ class Database {
 
   /// Deletes all rows matching the [where] expression, returns all deleted
   /// rows.
-  Future<List<T>> deleteAndReturn<T>({
+  Future<List<T>> deleteAndReturn<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {

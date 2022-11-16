@@ -1,74 +1,71 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class Channel extends TableRow {
-  @override
-  String get className => 'Channel';
-  @override
-  String get tableName => 'channel';
+class Channel extends _i1.TableRow {
+  Channel({
+    int? id,
+    required this.name,
+    required this.channel,
+  }) : super(id);
+
+  factory Channel.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return Channel(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      channel: serializationManager
+          .deserialize<String>(jsonSerialization['channel']),
+    );
+  }
 
   static final t = ChannelTable();
 
-  @override
-  int? id;
-  late String name;
-  late String channel;
+  String name;
 
-  Channel({
-    this.id,
-    required this.name,
-    required this.channel,
-  });
-
-  Channel.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    name = _data['name']!;
-    channel = _data['channel']!;
-  }
+  String channel;
 
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'channel';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'name': name,
       'channel': channel,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'name': name,
       'channel': channel,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'name': name,
       'channel': channel,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -85,15 +82,15 @@ class Channel extends TableRow {
   }
 
   static Future<List<Channel>> find(
-    Session session, {
+    _i1.Session session, {
     ChannelExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -108,13 +105,13 @@ class Channel extends TableRow {
   }
 
   static Future<Channel?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     ChannelExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -126,14 +123,17 @@ class Channel extends TableRow {
     );
   }
 
-  static Future<Channel?> findById(Session session, int id) async {
+  static Future<Channel?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<Channel>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required ChannelExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Channel>(
       where: where(Channel.t),
@@ -142,9 +142,9 @@ class Channel extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     Channel row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -153,9 +153,9 @@ class Channel extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     Channel row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -164,19 +164,22 @@ class Channel extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     Channel row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     ChannelExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -187,19 +190,19 @@ class Channel extends TableRow {
   }
 }
 
-typedef ChannelExpressionBuilder = Expression Function(ChannelTable t);
+typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 
-class ChannelTable extends Table {
+class ChannelTable extends _i1.Table {
   ChannelTable() : super(tableName: 'channel');
 
-  @override
-  String tableName = 'channel';
-  final id = ColumnInt('id');
-  final name = ColumnString('name');
-  final channel = ColumnString('channel');
+  final id = _i1.ColumnInt('id');
+
+  final name = _i1.ColumnString('name');
+
+  final channel = _i1.ColumnString('channel');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         name,
         channel,

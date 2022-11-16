@@ -1,80 +1,80 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class EmailFailedSignIn extends TableRow {
-  @override
-  String get className => 'serverpod_auth_server.EmailFailedSignIn';
-  @override
-  String get tableName => 'serverpod_email_failed_sign_in';
-
-  static final t = EmailFailedSignInTable();
-
-  @override
-  int? id;
-  late String email;
-  late DateTime time;
-  late String ipAddress;
-
+class EmailFailedSignIn extends _i1.TableRow {
   EmailFailedSignIn({
-    this.id,
+    int? id,
     required this.email,
     required this.time,
     required this.ipAddress,
-  });
+  }) : super(id);
 
-  EmailFailedSignIn.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    email = _data['email']!;
-    time = DateTime.tryParse(_data['time'])!;
-    ipAddress = _data['ipAddress']!;
+  factory EmailFailedSignIn.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return EmailFailedSignIn(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
+      ipAddress: serializationManager
+          .deserialize<String>(jsonSerialization['ipAddress']),
+    );
   }
 
+  static final t = EmailFailedSignInTable();
+
+  String email;
+
+  DateTime time;
+
+  String ipAddress;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'serverpod_email_failed_sign_in';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'email': email,
-      'time': time.toUtc().toIso8601String(),
+      'time': time,
       'ipAddress': ipAddress,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'email': email,
-      'time': time.toUtc().toIso8601String(),
+      'time': time,
       'ipAddress': ipAddress,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'email': email,
-      'time': time.toUtc().toIso8601String(),
+      'time': time,
       'ipAddress': ipAddress,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -94,15 +94,15 @@ class EmailFailedSignIn extends TableRow {
   }
 
   static Future<List<EmailFailedSignIn>> find(
-    Session session, {
+    _i1.Session session, {
     EmailFailedSignInExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -117,13 +117,13 @@ class EmailFailedSignIn extends TableRow {
   }
 
   static Future<EmailFailedSignIn?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     EmailFailedSignInExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -135,14 +135,17 @@ class EmailFailedSignIn extends TableRow {
     );
   }
 
-  static Future<EmailFailedSignIn?> findById(Session session, int id) async {
+  static Future<EmailFailedSignIn?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<EmailFailedSignIn>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required EmailFailedSignInExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailFailedSignIn>(
       where: where(EmailFailedSignIn.t),
@@ -151,9 +154,9 @@ class EmailFailedSignIn extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     EmailFailedSignIn row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -162,9 +165,9 @@ class EmailFailedSignIn extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     EmailFailedSignIn row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -173,19 +176,22 @@ class EmailFailedSignIn extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     EmailFailedSignIn row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     EmailFailedSignInExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -196,21 +202,22 @@ class EmailFailedSignIn extends TableRow {
   }
 }
 
-typedef EmailFailedSignInExpressionBuilder = Expression Function(
-    EmailFailedSignInTable t);
+typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
+    EmailFailedSignInTable);
 
-class EmailFailedSignInTable extends Table {
+class EmailFailedSignInTable extends _i1.Table {
   EmailFailedSignInTable() : super(tableName: 'serverpod_email_failed_sign_in');
 
-  @override
-  String tableName = 'serverpod_email_failed_sign_in';
-  final id = ColumnInt('id');
-  final email = ColumnString('email');
-  final time = ColumnDateTime('time');
-  final ipAddress = ColumnString('ipAddress');
+  final id = _i1.ColumnInt('id');
+
+  final email = _i1.ColumnString('email');
+
+  final time = _i1.ColumnDateTime('time');
+
+  final ipAddress = _i1.ColumnString('ipAddress');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         email,
         time,

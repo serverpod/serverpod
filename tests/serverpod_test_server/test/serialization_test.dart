@@ -18,16 +18,15 @@ void main() {
   group('Serializations', () {
     test('Simple data', () {
       var data = SimpleData(num: 42);
-      var s = jsonEncode(data.serialize());
-      var unpacked = SimpleData.fromSerialization(jsonDecode(s));
+      var s = SerializationManager.encode(data);
+      var unpacked = SimpleData.fromJson(jsonDecode(s), protocol);
       expect(unpacked.num, equals(42));
     });
 
     test('Basic types with null values', () {
       var types = Types();
-      var s = protocol.serializeEntity(types)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var s = SerializationManager.encode(types);
+      var unpacked = protocol.deserialize<Types>(jsonDecode(s));
       expect(unpacked.aBool, isNull);
       expect(unpacked.anInt, isNull);
       expect(unpacked.aString, isNull);
@@ -45,9 +44,8 @@ void main() {
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
       );
-      var s = protocol.serializeEntity(types)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Types;
+      var s = SerializationManager.encode(types);
+      var unpacked = protocol.deserialize<Types>(jsonDecode(s));
       expect(unpacked.aBool, equals(true));
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aString, equals('42'));
@@ -61,14 +59,24 @@ void main() {
 
     test('Object with enum', () {
       var object = ObjectWithEnum(
-        testEnum: TestEnum.one,
-        nullableEnum: null,
-        nullableEnumList: [TestEnum.one, null, TestEnum.three],
-        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
-      );
-      var s = protocol.serializeEntity(object)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s))
-          as ObjectWithEnum;
+          testEnum: TestEnum.one,
+          nullableEnum: null,
+          nullableEnumList: [
+            TestEnum.one,
+            null,
+            TestEnum.three
+          ],
+          enumList: [
+            TestEnum.one,
+            TestEnum.two,
+            TestEnum.three
+          ],
+          enumListList: [
+            [TestEnum.one, TestEnum.two],
+            [TestEnum.two, TestEnum.one]
+          ]);
+      var s = SerializationManager.encode(object);
+      var unpacked = protocol.deserialize<ObjectWithEnum>(jsonDecode(s));
       expect(unpacked.testEnum, equals(TestEnum.one));
       expect(unpacked.nullableEnum, isNull);
       expect(unpacked.nullableEnumList.length, equals(3));
@@ -79,6 +87,13 @@ void main() {
       expect(unpacked.enumList[0], equals(TestEnum.one));
       expect(unpacked.enumList[1], equals(TestEnum.two));
       expect(unpacked.enumList[2], equals(TestEnum.three));
+      expect(unpacked.enumListList.length, equals(2));
+      expect(unpacked.enumListList[0].length, equals(2));
+      expect(unpacked.enumListList[0][0], equals(TestEnum.one));
+      expect(unpacked.enumListList[0][1], equals(TestEnum.two));
+      expect(unpacked.enumListList[1].length, equals(2));
+      expect(unpacked.enumListList[1][0], equals(TestEnum.two));
+      expect(unpacked.enumListList[1][1], equals(TestEnum.one));
     });
 
     test('Nullability with null types', () {
@@ -102,9 +117,8 @@ void main() {
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
       );
 
-      var s = protocol.serializeEntity(nullability)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var s = SerializationManager.encode(nullability);
+      var unpacked = protocol.deserialize<Nullability>(jsonDecode(s));
       expect(unpacked.anInt, equals(42));
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aBool, equals(true));
@@ -202,9 +216,8 @@ void main() {
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
       );
 
-      var s = protocol.serializeEntity(nullability)!;
-      var unpacked =
-          protocol.createEntityFromSerialization(jsonDecode(s)) as Nullability;
+      var s = SerializationManager.encode(nullability);
+      var unpacked = protocol.deserialize<Nullability>(jsonDecode(s));
       expect(unpacked.aNullableInt, equals(42));
       expect(unpacked.aNullableDouble, equals(42.42));
       expect(unpacked.aNullableBool, equals(true));
@@ -249,44 +262,52 @@ void main() {
     });
 
     test('Map types', () {
-      var maps = ObjectWithMaps(
-        dataMap: {
-          '0': SimpleData(num: 0),
-          '1': SimpleData(num: 1),
-          '2': SimpleData(num: 2),
-        },
-        intMap: {'0': 0, '1': 1, '2': 2},
-        stringMap: {'0': 'String 0', '1': 'String 1', '2': 'String 2'},
-        dateTimeMap: {
-          '2020': DateTime(2020),
-          '2021': DateTime(2021),
-          '2022': DateTime(2022),
-        },
-        byteDataMap: {
-          '0': createByteData(),
-          '1': createByteData(),
-        },
-        nullableDataMap: {
-          '0': SimpleData(num: 0),
-          '1': null,
-          '2': SimpleData(num: 2),
-        },
-        nullableIntMap: {'0': 0, '1': null, '2': 2},
-        nullableStringMap: {'0': 'null', '1': null, '2': 'String 2'},
-        nullableDateTimeMap: {
-          '2020': DateTime(2020),
-          '2021': null,
-          '2022': DateTime(2022),
-        },
-        nullableByteDataMap: {
-          '0': createByteData(),
-          '1': null,
-        },
-      );
+      var maps = ObjectWithMaps(dataMap: {
+        '0': SimpleData(num: 0),
+        '1': SimpleData(num: 1),
+        '2': SimpleData(num: 2),
+      }, intMap: {
+        '0': 0,
+        '1': 1,
+        '2': 2
+      }, stringMap: {
+        '0': 'String 0',
+        '1': 'String 1',
+        '2': 'String 2'
+      }, dateTimeMap: {
+        '2020': DateTime.utc(2020),
+        '2021': DateTime.utc(2021),
+        '2022': DateTime.utc(2022),
+      }, byteDataMap: {
+        '0': createByteData(),
+        '1': createByteData(),
+      }, nullableDataMap: {
+        '0': SimpleData(num: 0),
+        '1': null,
+        '2': SimpleData(num: 2),
+      }, nullableIntMap: {
+        '0': 0,
+        '1': null,
+        '2': 2
+      }, nullableStringMap: {
+        '0': 'null',
+        '1': null,
+        '2': 'String 2'
+      }, nullableDateTimeMap: {
+        '2020': DateTime.utc(2020),
+        '2021': null,
+        '2022': DateTime.utc(2022),
+      }, nullableByteDataMap: {
+        '0': createByteData(),
+        '1': null,
+      }, intIntMap: {
+        1: 1,
+        2: 4,
+        3: 9
+      });
 
-      var s = protocol.serializeEntity(maps)!;
-      var unpacked = protocol.createEntityFromSerialization(jsonDecode(s))
-          as ObjectWithMaps;
+      var s = SerializationManager.encode(maps);
+      var unpacked = protocol.deserialize<ObjectWithMaps>(jsonDecode(s));
       expect(unpacked.dataMap['0']!.num, equals(0));
       expect(unpacked.dataMap['1']!.num, equals(1));
       expect(unpacked.dataMap['2']!.num, equals(2));
@@ -299,9 +320,9 @@ void main() {
       expect(unpacked.stringMap['1'], equals('String 1'));
       expect(unpacked.stringMap['2'], equals('String 2'));
 
-      expect(unpacked.dateTimeMap['2020'], equals(DateTime(2020)));
-      expect(unpacked.dateTimeMap['2021'], equals(DateTime(2021)));
-      expect(unpacked.dateTimeMap['2022'], equals(DateTime(2022)));
+      expect(unpacked.dateTimeMap['2020'], equals(DateTime.utc(2020)));
+      expect(unpacked.dateTimeMap['2021'], equals(DateTime.utc(2021)));
+      expect(unpacked.dateTimeMap['2022'], equals(DateTime.utc(2022)));
 
       expect(unpacked.byteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.byteDataMap['1']!.lengthInBytes, equals(256));
@@ -318,12 +339,17 @@ void main() {
       expect(unpacked.nullableStringMap['1'], isNull);
       expect(unpacked.nullableStringMap['2'], equals('String 2'));
 
-      expect(unpacked.nullableDateTimeMap['2020'], equals(DateTime(2020)));
+      expect(unpacked.nullableDateTimeMap['2020'], equals(DateTime.utc(2020)));
       expect(unpacked.nullableDateTimeMap['2021'], isNull);
-      expect(unpacked.nullableDateTimeMap['2022'], equals(DateTime(2022)));
+      expect(unpacked.nullableDateTimeMap['2022'], equals(DateTime.utc(2022)));
 
       expect(unpacked.nullableByteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.nullableByteDataMap['1'], isNull);
+
+      expect(unpacked.intIntMap.length, equals(3));
+      expect(unpacked.intIntMap[1], equals(1));
+      expect(unpacked.intIntMap[2], equals(4));
+      expect(unpacked.intIntMap[3], equals(9));
     });
   });
 }

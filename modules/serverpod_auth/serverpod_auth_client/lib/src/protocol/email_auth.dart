@@ -1,27 +1,13 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class EmailAuth extends SerializableEntity {
-  @override
-  String get className => 'serverpod_auth_server.EmailAuth';
-
-  int? id;
-  late int userId;
-  late String email;
-  late String hash;
-
+class EmailAuth extends _i1.SerializableEntity {
   EmailAuth({
     this.id,
     required this.userId,
@@ -29,21 +15,35 @@ class EmailAuth extends SerializableEntity {
     required this.hash,
   });
 
-  EmailAuth.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    userId = _data['userId']!;
-    email = _data['email']!;
-    hash = _data['hash']!;
+  factory EmailAuth.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return EmailAuth(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
+      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
+    );
   }
 
+  int? id;
+
+  int userId;
+
+  String email;
+
+  String hash;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'userId': userId,
       'email': email,
       'hash': hash,
-    });
+    };
   }
 }

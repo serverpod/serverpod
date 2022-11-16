@@ -1,1770 +1,2574 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: unused_import
 
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod/serverpod.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../endpoints/async_tasks.dart' as _i2;
+import '../endpoints/authentication.dart' as _i3;
+import '../endpoints/basic_types.dart' as _i4;
+import '../endpoints/cloud_storage.dart' as _i5;
+import '../endpoints/cloud_storage_s3.dart' as _i6;
+import '../endpoints/custom_types.dart' as _i7;
+import '../endpoints/database_basic.dart' as _i8;
+import '../endpoints/database_transactions.dart' as _i9;
+import '../endpoints/failed_calls.dart' as _i10;
+import '../endpoints/field_scopes.dart' as _i11;
+import '../endpoints/future_calls.dart' as _i12;
+import '../endpoints/list_parameters.dart' as _i13;
+import '../endpoints/logging.dart' as _i14;
+import '../endpoints/logging_disabled.dart' as _i15;
+import '../endpoints/map_parameters.dart' as _i16;
+import '../endpoints/module_serialization.dart' as _i17;
+import '../endpoints/named_parameters.dart' as _i18;
+import '../endpoints/optional_parameters.dart' as _i19;
+import '../endpoints/redis.dart' as _i20;
+import '../endpoints/signin_required.dart' as _i21;
+import '../endpoints/simple.dart' as _i22;
+import '../endpoints/streaming.dart' as _i23;
+import '../endpoints/streaming_logging.dart' as _i24;
+import 'dart:typed_data' as _i25;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i26;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i27;
+import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
+    as _i28;
+import 'package:serverpod_test_server/src/generated/object_with_object.dart'
+    as _i29;
+import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+    as _i30;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i31;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i32;
+import 'package:serverpod_test_module_server/module.dart' as _i33;
+import 'package:serverpod_auth_server/module.dart' as _i34;
 
-import 'package:serverpod_test_module_server/module.dart'
-    as serverpod_test_module;
-import 'package:serverpod_auth_server/module.dart' as serverpod_auth;
-
-import 'protocol.dart';
-
-import '../endpoints/async_tasks.dart';
-import '../endpoints/authentication.dart';
-import '../endpoints/basic_types.dart';
-import '../endpoints/cloud_storage.dart';
-import '../endpoints/cloud_storage_s3.dart';
-import '../endpoints/database_basic.dart';
-import '../endpoints/database_transactions.dart';
-import '../endpoints/failed_calls.dart';
-import '../endpoints/field_scopes.dart';
-import '../endpoints/future_calls.dart';
-import '../endpoints/list_parameters.dart';
-import '../endpoints/logging.dart';
-import '../endpoints/logging_disabled.dart';
-import '../endpoints/map_parameters.dart';
-import '../endpoints/module_serialization.dart';
-import '../endpoints/named_parameters.dart';
-import '../endpoints/optional_parameters.dart';
-import '../endpoints/redis.dart';
-import '../endpoints/signin_required.dart';
-import '../endpoints/simple.dart';
-import '../endpoints/streaming.dart';
-import '../endpoints/streaming_logging.dart';
-
-class Endpoints extends EndpointDispatch {
+class Endpoints extends _i1.EndpointDispatch {
   @override
-  void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
-      'asyncTasks': AsyncTasksEndpoint()
-        ..initialize(server, 'asyncTasks', null),
-      'authentication': AuthenticationEndpoint()
-        ..initialize(server, 'authentication', null),
-      'basicTypes': BasicTypesEndpoint()
-        ..initialize(server, 'basicTypes', null),
-      'cloudStorage': CloudStorageEndpoint()
-        ..initialize(server, 'cloudStorage', null),
-      's3CloudStorage': S3CloudStorageEndpoint()
-        ..initialize(server, 's3CloudStorage', null),
-      'basicDatabase': BasicDatabase()
-        ..initialize(server, 'basicDatabase', null),
-      'transactionsDatabase': TransactionsDatabaseEndpoint()
-        ..initialize(server, 'transactionsDatabase', null),
-      'failedCalls': FailedCallsEndpoint()
-        ..initialize(server, 'failedCalls', null),
-      'fieldScopes': FieldScopesEndpoint()
-        ..initialize(server, 'fieldScopes', null),
-      'futureCalls': FutureCallsEndpoint()
-        ..initialize(server, 'futureCalls', null),
-      'listParameters': ListParametersEndpoint()
-        ..initialize(server, 'listParameters', null),
-      'logging': LoggingEndpoint()..initialize(server, 'logging', null),
-      'loggingDisabled': LoggingDisabledEndpoint()
-        ..initialize(server, 'loggingDisabled', null),
-      'mapParameters': MapParametersEndpoint()
-        ..initialize(server, 'mapParameters', null),
-      'moduleSerialization': ModuleSerializationEndpoint()
-        ..initialize(server, 'moduleSerialization', null),
-      'namedParameters': NamedParametersEndpoint()
-        ..initialize(server, 'namedParameters', null),
-      'optionalParameters': OptionalParametersEndpoint()
-        ..initialize(server, 'optionalParameters', null),
-      'redis': RedisEndpoint()..initialize(server, 'redis', null),
-      'signInRequired': SignInRequiredEndpoint()
-        ..initialize(server, 'signInRequired', null),
-      'simple': SimpleEndpoint()..initialize(server, 'simple', null),
-      'streaming': StreamingEndpoint()..initialize(server, 'streaming', null),
-      'streamingLogging': StreamingLoggingEndpoint()
-        ..initialize(server, 'streamingLogging', null),
+  void initializeEndpoints(_i1.Server server) {
+    var endpoints = <String, _i1.Endpoint>{
+      'asyncTasks': _i2.AsyncTasksEndpoint()
+        ..initialize(
+          server,
+          'asyncTasks',
+          null,
+        ),
+      'authentication': _i3.AuthenticationEndpoint()
+        ..initialize(
+          server,
+          'authentication',
+          null,
+        ),
+      'basicTypes': _i4.BasicTypesEndpoint()
+        ..initialize(
+          server,
+          'basicTypes',
+          null,
+        ),
+      'cloudStorage': _i5.CloudStorageEndpoint()
+        ..initialize(
+          server,
+          'cloudStorage',
+          null,
+        ),
+      's3CloudStorage': _i6.S3CloudStorageEndpoint()
+        ..initialize(
+          server,
+          's3CloudStorage',
+          null,
+        ),
+      'customTypes': _i7.CustomTypesEndpoint()
+        ..initialize(
+          server,
+          'customTypes',
+          null,
+        ),
+      'basicDatabase': _i8.BasicDatabase()
+        ..initialize(
+          server,
+          'basicDatabase',
+          null,
+        ),
+      'transactionsDatabase': _i9.TransactionsDatabaseEndpoint()
+        ..initialize(
+          server,
+          'transactionsDatabase',
+          null,
+        ),
+      'failedCalls': _i10.FailedCallsEndpoint()
+        ..initialize(
+          server,
+          'failedCalls',
+          null,
+        ),
+      'fieldScopes': _i11.FieldScopesEndpoint()
+        ..initialize(
+          server,
+          'fieldScopes',
+          null,
+        ),
+      'futureCalls': _i12.FutureCallsEndpoint()
+        ..initialize(
+          server,
+          'futureCalls',
+          null,
+        ),
+      'listParameters': _i13.ListParametersEndpoint()
+        ..initialize(
+          server,
+          'listParameters',
+          null,
+        ),
+      'logging': _i14.LoggingEndpoint()
+        ..initialize(
+          server,
+          'logging',
+          null,
+        ),
+      'loggingDisabled': _i15.LoggingDisabledEndpoint()
+        ..initialize(
+          server,
+          'loggingDisabled',
+          null,
+        ),
+      'mapParameters': _i16.MapParametersEndpoint()
+        ..initialize(
+          server,
+          'mapParameters',
+          null,
+        ),
+      'moduleSerialization': _i17.ModuleSerializationEndpoint()
+        ..initialize(
+          server,
+          'moduleSerialization',
+          null,
+        ),
+      'namedParameters': _i18.NamedParametersEndpoint()
+        ..initialize(
+          server,
+          'namedParameters',
+          null,
+        ),
+      'optionalParameters': _i19.OptionalParametersEndpoint()
+        ..initialize(
+          server,
+          'optionalParameters',
+          null,
+        ),
+      'redis': _i20.RedisEndpoint()
+        ..initialize(
+          server,
+          'redis',
+          null,
+        ),
+      'signInRequired': _i21.SignInRequiredEndpoint()
+        ..initialize(
+          server,
+          'signInRequired',
+          null,
+        ),
+      'simple': _i22.SimpleEndpoint()
+        ..initialize(
+          server,
+          'simple',
+          null,
+        ),
+      'streaming': _i23.StreamingEndpoint()
+        ..initialize(
+          server,
+          'streaming',
+          null,
+        ),
+      'streamingLogging': _i24.StreamingLoggingEndpoint()
+        ..initialize(
+          server,
+          'streamingLogging',
+          null,
+        ),
     };
-
-    connectors['asyncTasks'] = EndpointConnector(
+    connectors['asyncTasks'] = _i1.EndpointConnector(
       name: 'asyncTasks',
       endpoint: endpoints['asyncTasks']!,
       methodConnectors: {
-        'insertRowToSimpleDataAfterDelay': MethodConnector(
+        'insertRowToSimpleDataAfterDelay': _i1.MethodConnector(
           name: 'insertRowToSimpleDataAfterDelay',
           params: {
-            'num':
-                ParameterDescription(name: 'num', type: int, nullable: false),
-            'seconds': ParameterDescription(
-                name: 'seconds', type: int, nullable: false),
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'seconds': _i1.ParameterDescription(
+              name: 'seconds',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['asyncTasks'] as AsyncTasksEndpoint)
-                .insertRowToSimpleDataAfterDelay(
-              session,
-              params['num'],
-              params['seconds'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['asyncTasks'] as _i2.AsyncTasksEndpoint)
+                  .insertRowToSimpleDataAfterDelay(
+            session,
+            params['num'],
+            params['seconds'],
+          ),
         ),
-        'throwExceptionAfterDelay': MethodConnector(
+        'throwExceptionAfterDelay': _i1.MethodConnector(
           name: 'throwExceptionAfterDelay',
           params: {
-            'seconds': ParameterDescription(
-                name: 'seconds', type: int, nullable: false),
+            'seconds': _i1.ParameterDescription(
+              name: 'seconds',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['asyncTasks'] as AsyncTasksEndpoint)
-                .throwExceptionAfterDelay(
-              session,
-              params['seconds'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['asyncTasks'] as _i2.AsyncTasksEndpoint)
+                  .throwExceptionAfterDelay(
+            session,
+            params['seconds'],
+          ),
         ),
       },
     );
-
-    connectors['authentication'] = EndpointConnector(
+    connectors['authentication'] = _i1.EndpointConnector(
       name: 'authentication',
       endpoint: endpoints['authentication']!,
       methodConnectors: {
-        'removeAllUsers': MethodConnector(
+        'removeAllUsers': _i1.MethodConnector(
           name: 'removeAllUsers',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['authentication'] as AuthenticationEndpoint)
-                .removeAllUsers(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
+                  .removeAllUsers(session),
         ),
-        'countUsers': MethodConnector(
+        'countUsers': _i1.MethodConnector(
           name: 'countUsers',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['authentication'] as AuthenticationEndpoint)
-                .countUsers(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
+                  .countUsers(session),
         ),
-        'createUser': MethodConnector(
+        'createUser': _i1.MethodConnector(
           name: 'createUser',
           params: {
-            'email': ParameterDescription(
-                name: 'email', type: String, nullable: false),
-            'password': ParameterDescription(
-                name: 'password', type: String, nullable: false),
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['authentication'] as AuthenticationEndpoint)
-                .createUser(
-              session,
-              params['email'],
-              params['password'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
+                  .createUser(
+            session,
+            params['email'],
+            params['password'],
+          ),
         ),
-        'authenticate': MethodConnector(
+        'authenticate': _i1.MethodConnector(
           name: 'authenticate',
           params: {
-            'email': ParameterDescription(
-                name: 'email', type: String, nullable: false),
-            'password': ParameterDescription(
-                name: 'password', type: String, nullable: false),
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['authentication'] as AuthenticationEndpoint)
-                .authenticate(
-              session,
-              params['email'],
-              params['password'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
+                  .authenticate(
+            session,
+            params['email'],
+            params['password'],
+          ),
         ),
-        'signOut': MethodConnector(
+        'signOut': _i1.MethodConnector(
           name: 'signOut',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['authentication'] as AuthenticationEndpoint)
-                .signOut(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
+                  .signOut(session),
         ),
       },
     );
-
-    connectors['basicTypes'] = EndpointConnector(
+    connectors['basicTypes'] = _i1.EndpointConnector(
       name: 'basicTypes',
       endpoint: endpoints['basicTypes']!,
       methodConnectors: {
-        'testInt': MethodConnector(
+        'testInt': _i1.MethodConnector(
           name: 'testInt',
           params: {
-            'value':
-                ParameterDescription(name: 'value', type: int, nullable: true),
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint).testInt(
-              session,
-              params['value'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testInt(
+            session,
+            params['value'],
+          ),
         ),
-        'testDouble': MethodConnector(
+        'testDouble': _i1.MethodConnector(
           name: 'testDouble',
           params: {
-            'value': ParameterDescription(
-                name: 'value', type: double, nullable: true),
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<double?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint).testDouble(
-              session,
-              params['value'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testDouble(
+            session,
+            params['value'],
+          ),
         ),
-        'testBool': MethodConnector(
+        'testBool': _i1.MethodConnector(
           name: 'testBool',
           params: {
-            'value':
-                ParameterDescription(name: 'value', type: bool, nullable: true),
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<bool?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint).testBool(
-              session,
-              params['value'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testBool(
+            session,
+            params['value'],
+          ),
         ),
-        'testDateTime': MethodConnector(
+        'testDateTime': _i1.MethodConnector(
           name: 'testDateTime',
           params: {
-            'dateTime': ParameterDescription(
-                name: 'dateTime', type: DateTime, nullable: true),
+            'dateTime': _i1.ParameterDescription(
+              name: 'dateTime',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint).testDateTime(
-              session,
-              params['dateTime'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testDateTime(
+            session,
+            params['dateTime'],
+          ),
         ),
-        'testString': MethodConnector(
+        'testString': _i1.MethodConnector(
           name: 'testString',
           params: {
-            'value': ParameterDescription(
-                name: 'value', type: String, nullable: true),
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint).testString(
-              session,
-              params['value'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testString(
+            session,
+            params['value'],
+          ),
         ),
-        'testByteData': MethodConnector(
+        'testByteData': _i1.MethodConnector(
           name: 'testByteData',
           params: {
-            'value': ParameterDescription(
-                name: 'value', type: typed_data.ByteData, nullable: true),
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<_i25.ByteData?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicTypes'] as BasicTypesEndpoint).testByteData(
-              session,
-              params['value'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testByteData(
+            session,
+            params['value'],
+          ),
         ),
       },
     );
-
-    connectors['cloudStorage'] = EndpointConnector(
+    connectors['cloudStorage'] = _i1.EndpointConnector(
       name: 'cloudStorage',
       endpoint: endpoints['cloudStorage']!,
       methodConnectors: {
-        'reset': MethodConnector(
+        'reset': _i1.MethodConnector(
           name: 'reset',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint).reset(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .reset(session),
         ),
-        'storePublicFile': MethodConnector(
+        'storePublicFile': _i1.MethodConnector(
           name: 'storePublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
-            'byteData': ParameterDescription(
-                name: 'byteData', type: typed_data.ByteData, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'byteData': _i1.ParameterDescription(
+              name: 'byteData',
+              type: _i1.getType<_i25.ByteData>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .storePublicFile(
-              session,
-              params['path'],
-              params['byteData'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .storePublicFile(
+            session,
+            params['path'],
+            params['byteData'],
+          ),
         ),
-        'retrievePublicFile': MethodConnector(
+        'retrievePublicFile': _i1.MethodConnector(
           name: 'retrievePublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .retrievePublicFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .retrievePublicFile(
+            session,
+            params['path'],
+          ),
         ),
-        'existsPublicFile': MethodConnector(
+        'existsPublicFile': _i1.MethodConnector(
           name: 'existsPublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .existsPublicFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .existsPublicFile(
+            session,
+            params['path'],
+          ),
         ),
-        'deletePublicFile': MethodConnector(
+        'deletePublicFile': _i1.MethodConnector(
           name: 'deletePublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .deletePublicFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .deletePublicFile(
+            session,
+            params['path'],
+          ),
         ),
-        'getPublicUrlForFile': MethodConnector(
+        'getPublicUrlForFile': _i1.MethodConnector(
           name: 'getPublicUrlForFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .getPublicUrlForFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .getPublicUrlForFile(
+            session,
+            params['path'],
+          ),
         ),
-        'getDirectFilePostUrl': MethodConnector(
+        'getDirectFilePostUrl': _i1.MethodConnector(
           name: 'getDirectFilePostUrl',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .getDirectFilePostUrl(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .getDirectFilePostUrl(
+            session,
+            params['path'],
+          ),
         ),
-        'verifyDirectFileUpload': MethodConnector(
+        'verifyDirectFileUpload': _i1.MethodConnector(
           name: 'verifyDirectFileUpload',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['cloudStorage'] as CloudStorageEndpoint)
-                .verifyDirectFileUpload(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+                  .verifyDirectFileUpload(
+            session,
+            params['path'],
+          ),
         ),
       },
     );
-
-    connectors['s3CloudStorage'] = EndpointConnector(
+    connectors['s3CloudStorage'] = _i1.EndpointConnector(
       name: 's3CloudStorage',
       endpoint: endpoints['s3CloudStorage']!,
       methodConnectors: {
-        'storePublicFile': MethodConnector(
+        'storePublicFile': _i1.MethodConnector(
           name: 'storePublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
-            'byteData': ParameterDescription(
-                name: 'byteData', type: typed_data.ByteData, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'byteData': _i1.ParameterDescription(
+              name: 'byteData',
+              type: _i1.getType<_i25.ByteData>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .storePublicFile(
-              session,
-              params['path'],
-              params['byteData'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .storePublicFile(
+            session,
+            params['path'],
+            params['byteData'],
+          ),
         ),
-        'retrievePublicFile': MethodConnector(
+        'retrievePublicFile': _i1.MethodConnector(
           name: 'retrievePublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .retrievePublicFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .retrievePublicFile(
+            session,
+            params['path'],
+          ),
         ),
-        'existsPublicFile': MethodConnector(
+        'existsPublicFile': _i1.MethodConnector(
           name: 'existsPublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .existsPublicFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .existsPublicFile(
+            session,
+            params['path'],
+          ),
         ),
-        'deletePublicFile': MethodConnector(
+        'deletePublicFile': _i1.MethodConnector(
           name: 'deletePublicFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .deletePublicFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .deletePublicFile(
+            session,
+            params['path'],
+          ),
         ),
-        'getPublicUrlForFile': MethodConnector(
+        'getPublicUrlForFile': _i1.MethodConnector(
           name: 'getPublicUrlForFile',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .getPublicUrlForFile(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .getPublicUrlForFile(
+            session,
+            params['path'],
+          ),
         ),
-        'getDirectFilePostUrl': MethodConnector(
+        'getDirectFilePostUrl': _i1.MethodConnector(
           name: 'getDirectFilePostUrl',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .getDirectFilePostUrl(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .getDirectFilePostUrl(
+            session,
+            params['path'],
+          ),
         ),
-        'verifyDirectFileUpload': MethodConnector(
+        'verifyDirectFileUpload': _i1.MethodConnector(
           name: 'verifyDirectFileUpload',
           params: {
-            'path': ParameterDescription(
-                name: 'path', type: String, nullable: false),
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['s3CloudStorage'] as S3CloudStorageEndpoint)
-                .verifyDirectFileUpload(
-              session,
-              params['path'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+                  .verifyDirectFileUpload(
+            session,
+            params['path'],
+          ),
         ),
       },
     );
-
-    connectors['basicDatabase'] = EndpointConnector(
+    connectors['customTypes'] = _i1.EndpointConnector(
+      name: 'customTypes',
+      endpoint: endpoints['customTypes']!,
+      methodConnectors: {
+        'returnCustomClass': _i1.MethodConnector(
+          name: 'returnCustomClass',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i26.CustomClass>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i7.CustomTypesEndpoint)
+                  .returnCustomClass(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClassNullable': _i1.MethodConnector(
+          name: 'returnCustomClassNullable',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i26.CustomClass?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i7.CustomTypesEndpoint)
+                  .returnCustomClassNullable(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClass2': _i1.MethodConnector(
+          name: 'returnCustomClass2',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i26.CustomClass2>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i7.CustomTypesEndpoint)
+                  .returnCustomClass2(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClass2Nullable': _i1.MethodConnector(
+          name: 'returnCustomClass2Nullable',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i26.CustomClass2?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i7.CustomTypesEndpoint)
+                  .returnCustomClass2Nullable(
+            session,
+            params['data'],
+          ),
+        ),
+      },
+    );
+    connectors['basicDatabase'] = _i1.EndpointConnector(
       name: 'basicDatabase',
       endpoint: endpoints['basicDatabase']!,
       methodConnectors: {
-        'storeTypes': MethodConnector(
+        'storeTypes': _i1.MethodConnector(
           name: 'storeTypes',
           params: {
-            'types': ParameterDescription(
-                name: 'types', type: Types, nullable: false),
+            'types': _i1.ParameterDescription(
+              name: 'types',
+              type: _i1.getType<_i27.Types>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase).storeTypes(
-              session,
-              params['types'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase).storeTypes(
+            session,
+            params['types'],
+          ),
         ),
-        'getTypes': MethodConnector(
+        'getTypes': _i1.MethodConnector(
           name: 'getTypes',
           params: {
-            'id': ParameterDescription(name: 'id', type: int, nullable: false),
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase).getTypes(
-              session,
-              params['id'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase).getTypes(
+            session,
+            params['id'],
+          ),
         ),
-        'storeObjectWithEnum': MethodConnector(
+        'storeObjectWithEnum': _i1.MethodConnector(
           name: 'storeObjectWithEnum',
           params: {
-            'object': ParameterDescription(
-                name: 'object', type: ObjectWithEnum, nullable: false),
+            'object': _i1.ParameterDescription(
+              name: 'object',
+              type: _i1.getType<_i28.ObjectWithEnum>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .storeObjectWithEnum(
-              session,
-              params['object'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .storeObjectWithEnum(
+            session,
+            params['object'],
+          ),
         ),
-        'getObjectWithEnum': MethodConnector(
+        'getObjectWithEnum': _i1.MethodConnector(
           name: 'getObjectWithEnum',
           params: {
-            'id': ParameterDescription(name: 'id', type: int, nullable: false),
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .getObjectWithEnum(
-              session,
-              params['id'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .getObjectWithEnum(
+            session,
+            params['id'],
+          ),
         ),
-        'getTypesRawQuery': MethodConnector(
+        'getTypesRawQuery': _i1.MethodConnector(
           name: 'getTypesRawQuery',
           params: {
-            'id': ParameterDescription(name: 'id', type: int, nullable: false),
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .getTypesRawQuery(
-              session,
-              params['id'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .getTypesRawQuery(
+            session,
+            params['id'],
+          ),
         ),
-        'countTypesRows': MethodConnector(
+        'countTypesRows': _i1.MethodConnector(
           name: 'countTypesRows',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase).countTypesRows(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .countTypesRows(session),
         ),
-        'deleteAllInTypes': MethodConnector(
+        'deleteAllInTypes': _i1.MethodConnector(
           name: 'deleteAllInTypes',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .deleteAllInTypes(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteAllInTypes(session),
         ),
-        'createSimpleTestData': MethodConnector(
+        'createSimpleTestData': _i1.MethodConnector(
           name: 'createSimpleTestData',
           params: {
-            'numRows': ParameterDescription(
-                name: 'numRows', type: int, nullable: false),
+            'numRows': _i1.ParameterDescription(
+              name: 'numRows',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .createSimpleTestData(
-              session,
-              params['numRows'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .createSimpleTestData(
+            session,
+            params['numRows'],
+          ),
         ),
-        'countSimpleData': MethodConnector(
+        'countSimpleData': _i1.MethodConnector(
           name: 'countSimpleData',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .countSimpleData(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .countSimpleData(session),
         ),
-        'deleteAllSimpleTestData': MethodConnector(
+        'deleteAllSimpleTestData': _i1.MethodConnector(
           name: 'deleteAllSimpleTestData',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .deleteAllSimpleTestData(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteAllSimpleTestData(session),
         ),
-        'deleteSimpleTestDataLessThan': MethodConnector(
+        'deleteSimpleTestDataLessThan': _i1.MethodConnector(
           name: 'deleteSimpleTestDataLessThan',
           params: {
-            'num':
-                ParameterDescription(name: 'num', type: int, nullable: false),
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .deleteSimpleTestDataLessThan(
-              session,
-              params['num'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteSimpleTestDataLessThan(
+            session,
+            params['num'],
+          ),
         ),
-        'findAndDeleteSimpleTestData': MethodConnector(
+        'findAndDeleteSimpleTestData': _i1.MethodConnector(
           name: 'findAndDeleteSimpleTestData',
           params: {
-            'num':
-                ParameterDescription(name: 'num', type: int, nullable: false),
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .findAndDeleteSimpleTestData(
-              session,
-              params['num'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findAndDeleteSimpleTestData(
+            session,
+            params['num'],
+          ),
         ),
-        'findSimpleDataRowsLessThan': MethodConnector(
+        'findSimpleDataRowsLessThan': _i1.MethodConnector(
           name: 'findSimpleDataRowsLessThan',
           params: {
-            'num':
-                ParameterDescription(name: 'num', type: int, nullable: false),
-            'offset': ParameterDescription(
-                name: 'offset', type: int, nullable: false),
-            'limit':
-                ParameterDescription(name: 'limit', type: int, nullable: false),
-            'descending': ParameterDescription(
-                name: 'descending', type: bool, nullable: false),
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .findSimpleDataRowsLessThan(
-              session,
-              params['num'],
-              params['offset'],
-              params['limit'],
-              params['descending'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDataRowsLessThan(
+            session,
+            params['num'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
         ),
-        'updateSimpleDataRow': MethodConnector(
+        'updateSimpleDataRow': _i1.MethodConnector(
           name: 'updateSimpleDataRow',
           params: {
-            'num':
-                ParameterDescription(name: 'num', type: int, nullable: false),
-            'newNum': ParameterDescription(
-                name: 'newNum', type: int, nullable: false),
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'newNum': _i1.ParameterDescription(
+              name: 'newNum',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .updateSimpleDataRow(
-              session,
-              params['num'],
-              params['newNum'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .updateSimpleDataRow(
+            session,
+            params['num'],
+            params['newNum'],
+          ),
         ),
-        'storeObjectWithObject': MethodConnector(
+        'storeObjectWithObject': _i1.MethodConnector(
           name: 'storeObjectWithObject',
           params: {
-            'object': ParameterDescription(
-                name: 'object', type: ObjectWithObject, nullable: false),
+            'object': _i1.ParameterDescription(
+              name: 'object',
+              type: _i1.getType<_i29.ObjectWithObject>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .storeObjectWithObject(
-              session,
-              params['object'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .storeObjectWithObject(
+            session,
+            params['object'],
+          ),
         ),
-        'getObjectWithObject': MethodConnector(
+        'getObjectWithObject': _i1.MethodConnector(
           name: 'getObjectWithObject',
           params: {
-            'id': ParameterDescription(name: 'id', type: int, nullable: false),
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['basicDatabase'] as BasicDatabase)
-                .getObjectWithObject(
-              session,
-              params['id'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .getObjectWithObject(
+            session,
+            params['id'],
+          ),
         ),
       },
     );
-
-    connectors['transactionsDatabase'] = EndpointConnector(
+    connectors['transactionsDatabase'] = _i1.EndpointConnector(
       name: 'transactionsDatabase',
       endpoint: endpoints['transactionsDatabase']!,
       methodConnectors: {
-        'removeRow': MethodConnector(
+        'removeRow': _i1.MethodConnector(
           name: 'removeRow',
           params: {
-            'num':
-                ParameterDescription(name: 'num', type: int, nullable: false),
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['transactionsDatabase']
-                    as TransactionsDatabaseEndpoint)
-                .removeRow(
-              session,
-              params['num'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['transactionsDatabase']
+                      as _i9.TransactionsDatabaseEndpoint)
+                  .removeRow(
+            session,
+            params['num'],
+          ),
         ),
-        'updateInsertDelete': MethodConnector(
+        'updateInsertDelete': _i1.MethodConnector(
           name: 'updateInsertDelete',
           params: {
-            'numUpdate': ParameterDescription(
-                name: 'numUpdate', type: int, nullable: false),
-            'numInsert': ParameterDescription(
-                name: 'numInsert', type: int, nullable: false),
-            'numDelete': ParameterDescription(
-                name: 'numDelete', type: int, nullable: false),
+            'numUpdate': _i1.ParameterDescription(
+              name: 'numUpdate',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'numInsert': _i1.ParameterDescription(
+              name: 'numInsert',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'numDelete': _i1.ParameterDescription(
+              name: 'numDelete',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['transactionsDatabase']
-                    as TransactionsDatabaseEndpoint)
-                .updateInsertDelete(
-              session,
-              params['numUpdate'],
-              params['numInsert'],
-              params['numDelete'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['transactionsDatabase']
+                      as _i9.TransactionsDatabaseEndpoint)
+                  .updateInsertDelete(
+            session,
+            params['numUpdate'],
+            params['numInsert'],
+            params['numDelete'],
+          ),
         ),
       },
     );
-
-    connectors['failedCalls'] = EndpointConnector(
+    connectors['failedCalls'] = _i1.EndpointConnector(
       name: 'failedCalls',
       endpoint: endpoints['failedCalls']!,
       methodConnectors: {
-        'failedCall': MethodConnector(
+        'failedCall': _i1.MethodConnector(
           name: 'failedCall',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['failedCalls'] as FailedCallsEndpoint).failedCall(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['failedCalls'] as _i10.FailedCallsEndpoint)
+                  .failedCall(session),
         ),
-        'failedDatabaseQuery': MethodConnector(
+        'failedDatabaseQuery': _i1.MethodConnector(
           name: 'failedDatabaseQuery',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['failedCalls'] as FailedCallsEndpoint)
-                .failedDatabaseQuery(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['failedCalls'] as _i10.FailedCallsEndpoint)
+                  .failedDatabaseQuery(session),
         ),
-        'failedDatabaseQueryCaughtException': MethodConnector(
+        'failedDatabaseQueryCaughtException': _i1.MethodConnector(
           name: 'failedDatabaseQueryCaughtException',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['failedCalls'] as FailedCallsEndpoint)
-                .failedDatabaseQueryCaughtException(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['failedCalls'] as _i10.FailedCallsEndpoint)
+                  .failedDatabaseQueryCaughtException(session),
         ),
-        'slowCall': MethodConnector(
+        'slowCall': _i1.MethodConnector(
           name: 'slowCall',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['failedCalls'] as FailedCallsEndpoint).slowCall(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['failedCalls'] as _i10.FailedCallsEndpoint)
+                  .slowCall(session),
         ),
-        'caughtException': MethodConnector(
+        'caughtException': _i1.MethodConnector(
           name: 'caughtException',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['failedCalls'] as FailedCallsEndpoint)
-                .caughtException(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['failedCalls'] as _i10.FailedCallsEndpoint)
+                  .caughtException(session),
         ),
       },
     );
-
-    connectors['fieldScopes'] = EndpointConnector(
+    connectors['fieldScopes'] = _i1.EndpointConnector(
       name: 'fieldScopes',
       endpoint: endpoints['fieldScopes']!,
       methodConnectors: {
-        'storeObject': MethodConnector(
+        'storeObject': _i1.MethodConnector(
           name: 'storeObject',
           params: {
-            'object': ParameterDescription(
-                name: 'object', type: ObjectFieldScopes, nullable: false),
+            'object': _i1.ParameterDescription(
+              name: 'object',
+              type: _i1.getType<_i30.ObjectFieldScopes>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['fieldScopes'] as FieldScopesEndpoint)
-                .storeObject(
-              session,
-              params['object'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['fieldScopes'] as _i11.FieldScopesEndpoint)
+                  .storeObject(
+            session,
+            params['object'],
+          ),
         ),
-        'retrieveObject': MethodConnector(
+        'retrieveObject': _i1.MethodConnector(
           name: 'retrieveObject',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['fieldScopes'] as FieldScopesEndpoint)
-                .retrieveObject(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['fieldScopes'] as _i11.FieldScopesEndpoint)
+                  .retrieveObject(session),
         ),
       },
     );
-
-    connectors['futureCalls'] = EndpointConnector(
+    connectors['futureCalls'] = _i1.EndpointConnector(
       name: 'futureCalls',
       endpoint: endpoints['futureCalls']!,
       methodConnectors: {
-        'makeFutureCall': MethodConnector(
+        'makeFutureCall': _i1.MethodConnector(
           name: 'makeFutureCall',
           params: {
-            'data': ParameterDescription(
-                name: 'data', type: SimpleData, nullable: true),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i31.SimpleData?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['futureCalls'] as FutureCallsEndpoint)
-                .makeFutureCall(
-              session,
-              params['data'],
-            );
-          },
-        ),
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['futureCalls'] as _i12.FutureCallsEndpoint)
+                  .makeFutureCall(
+            session,
+            params['data'],
+          ),
+        )
       },
     );
-
-    connectors['listParameters'] = EndpointConnector(
+    connectors['listParameters'] = _i1.EndpointConnector(
       name: 'listParameters',
       endpoint: endpoints['listParameters']!,
       methodConnectors: {
-        'returnIntList': MethodConnector(
+        'returnIntList': _i1.MethodConnector(
           name: 'returnIntList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<int>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnIntList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnIntList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnIntListNullable': MethodConnector(
+        'returnIntListList': _i1.MethodConnector(
+          name: 'returnIntListList',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<List<int>>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnIntListList(
+            session,
+            params['list'],
+          ),
+        ),
+        'returnIntListNullable': _i1.MethodConnector(
           name: 'returnIntListNullable',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<int>, nullable: true),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<int>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnIntListNullable(
-              session,
-              (params['list'] as List?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnIntListNullable(
+            session,
+            params['list'],
+          ),
         ),
-        'returnIntListNullableInts': MethodConnector(
+        'returnIntListNullableList': _i1.MethodConnector(
+          name: 'returnIntListNullableList',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<List<int>?>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnIntListNullableList(
+            session,
+            params['list'],
+          ),
+        ),
+        'returnIntListListNullable': _i1.MethodConnector(
+          name: 'returnIntListListNullable',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<List<int>>?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnIntListListNullable(
+            session,
+            params['list'],
+          ),
+        ),
+        'returnIntListNullableInts': _i1.MethodConnector(
           name: 'returnIntListNullableInts',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<int?>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<int?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnIntListNullableInts(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnIntListNullableInts(
+            session,
+            params['list'],
+          ),
         ),
-        'returnNullableIntListNullableInts': MethodConnector(
+        'returnNullableIntListNullableInts': _i1.MethodConnector(
           name: 'returnNullableIntListNullableInts',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<int?>, nullable: true),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<int?>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnNullableIntListNullableInts(
-              session,
-              (params['list'] as List?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnNullableIntListNullableInts(
+            session,
+            params['list'],
+          ),
         ),
-        'returnDoubleList': MethodConnector(
+        'returnDoubleList': _i1.MethodConnector(
           name: 'returnDoubleList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<double>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<double>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnDoubleList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnDoubleList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnDoubleListNullableDoubles': MethodConnector(
+        'returnDoubleListNullableDoubles': _i1.MethodConnector(
           name: 'returnDoubleListNullableDoubles',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<double?>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<double?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnDoubleListNullableDoubles(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnDoubleListNullableDoubles(
+            session,
+            params['list'],
+          ),
         ),
-        'returnBoolList': MethodConnector(
+        'returnBoolList': _i1.MethodConnector(
           name: 'returnBoolList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<bool>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<bool>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnBoolList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnBoolList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnBoolListNullableBools': MethodConnector(
+        'returnBoolListNullableBools': _i1.MethodConnector(
           name: 'returnBoolListNullableBools',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<bool?>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<bool?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnBoolListNullableBools(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnBoolListNullableBools(
+            session,
+            params['list'],
+          ),
         ),
-        'returnStringList': MethodConnector(
+        'returnStringList': _i1.MethodConnector(
           name: 'returnStringList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<String>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnStringList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnStringList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnStringListNullableStrings': MethodConnector(
+        'returnStringListNullableStrings': _i1.MethodConnector(
           name: 'returnStringListNullableStrings',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<String?>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<String?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnStringListNullableStrings(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnStringListNullableStrings(
+            session,
+            params['list'],
+          ),
         ),
-        'returnDateTimeList': MethodConnector(
+        'returnDateTimeList': _i1.MethodConnector(
           name: 'returnDateTimeList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<DateTime>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<DateTime>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnDateTimeList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnDateTimeList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnDateTimeListNullableDateTimes': MethodConnector(
+        'returnDateTimeListNullableDateTimes': _i1.MethodConnector(
           name: 'returnDateTimeListNullableDateTimes',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<DateTime?>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<DateTime?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnDateTimeListNullableDateTimes(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnDateTimeListNullableDateTimes(
+            session,
+            params['list'],
+          ),
         ),
-        'returnByteDataList': MethodConnector(
+        'returnByteDataList': _i1.MethodConnector(
           name: 'returnByteDataList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<typed_data.ByteData>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<_i25.ByteData>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnByteDataList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnByteDataList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnByteDataListNullableByteDatas': MethodConnector(
+        'returnByteDataListNullableByteDatas': _i1.MethodConnector(
           name: 'returnByteDataListNullableByteDatas',
           params: {
-            'list': ParameterDescription(
-                name: 'list',
-                type: List<typed_data.ByteData?>,
-                nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<_i25.ByteData?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnByteDataListNullableByteDatas(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnByteDataListNullableByteDatas(
+            session,
+            params['list'],
+          ),
         ),
-        'returnSimpleDataList': MethodConnector(
+        'returnSimpleDataList': _i1.MethodConnector(
           name: 'returnSimpleDataList',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<SimpleData>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<_i31.SimpleData>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnSimpleDataList(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnSimpleDataList(
+            session,
+            params['list'],
+          ),
         ),
-        'returnSimpleDataListNullableSimpleData': MethodConnector(
+        'returnSimpleDataListNullableSimpleData': _i1.MethodConnector(
           name: 'returnSimpleDataListNullableSimpleData',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<SimpleData?>, nullable: false),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<_i31.SimpleData?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnSimpleDataListNullableSimpleData(
-              session,
-              (params['list'] as List).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnSimpleDataListNullableSimpleData(
+            session,
+            params['list'],
+          ),
         ),
-        'returnSimpleDataListNullable': MethodConnector(
+        'returnSimpleDataListNullable': _i1.MethodConnector(
           name: 'returnSimpleDataListNullable',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<SimpleData>, nullable: true),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<_i31.SimpleData>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnSimpleDataListNullable(
-              session,
-              (params['list'] as List?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnSimpleDataListNullable(
+            session,
+            params['list'],
+          ),
         ),
-        'returnNullableSimpleDataListNullableSimpleData': MethodConnector(
+        'returnNullableSimpleDataListNullableSimpleData': _i1.MethodConnector(
           name: 'returnNullableSimpleDataListNullableSimpleData',
           params: {
-            'list': ParameterDescription(
-                name: 'list', type: List<SimpleData?>, nullable: true),
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<_i31.SimpleData?>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['listParameters'] as ListParametersEndpoint)
-                .returnNullableSimpleDataListNullableSimpleData(
-              session,
-              (params['list'] as List?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnNullableSimpleDataListNullableSimpleData(
+            session,
+            params['list'],
+          ),
         ),
       },
     );
-
-    connectors['logging'] = EndpointConnector(
+    connectors['logging'] = _i1.EndpointConnector(
       name: 'logging',
       endpoint: endpoints['logging']!,
       methodConnectors: {
-        'logInfo': MethodConnector(
+        'logInfo': _i1.MethodConnector(
           name: 'logInfo',
           params: {
-            'message': ParameterDescription(
-                name: 'message', type: String, nullable: false),
+            'message': _i1.ParameterDescription(
+              name: 'message',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['logging'] as LoggingEndpoint).logInfo(
-              session,
-              params['message'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i14.LoggingEndpoint).logInfo(
+            session,
+            params['message'],
+          ),
         ),
-        'logDebugAndInfoAndError': MethodConnector(
+        'logDebugAndInfoAndError': _i1.MethodConnector(
           name: 'logDebugAndInfoAndError',
           params: {
-            'debug': ParameterDescription(
-                name: 'debug', type: String, nullable: false),
-            'info': ParameterDescription(
-                name: 'info', type: String, nullable: false),
-            'error': ParameterDescription(
-                name: 'error', type: String, nullable: false),
+            'debug': _i1.ParameterDescription(
+              name: 'debug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'info': _i1.ParameterDescription(
+              name: 'info',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'error': _i1.ParameterDescription(
+              name: 'error',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['logging'] as LoggingEndpoint)
-                .logDebugAndInfoAndError(
-              session,
-              params['debug'],
-              params['info'],
-              params['error'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i14.LoggingEndpoint)
+                  .logDebugAndInfoAndError(
+            session,
+            params['debug'],
+            params['info'],
+            params['error'],
+          ),
         ),
-        'twoQueries': MethodConnector(
+        'twoQueries': _i1.MethodConnector(
           name: 'twoQueries',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['logging'] as LoggingEndpoint).twoQueries(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i14.LoggingEndpoint)
+                  .twoQueries(session),
         ),
       },
     );
-
-    connectors['loggingDisabled'] = EndpointConnector(
+    connectors['loggingDisabled'] = _i1.EndpointConnector(
       name: 'loggingDisabled',
       endpoint: endpoints['loggingDisabled']!,
       methodConnectors: {
-        'logInfo': MethodConnector(
+        'logInfo': _i1.MethodConnector(
           name: 'logInfo',
           params: {
-            'message': ParameterDescription(
-                name: 'message', type: String, nullable: false),
+            'message': _i1.ParameterDescription(
+              name: 'message',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['loggingDisabled'] as LoggingDisabledEndpoint)
-                .logInfo(
-              session,
-              params['message'],
-            );
-          },
-        ),
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['loggingDisabled'] as _i15.LoggingDisabledEndpoint)
+                  .logInfo(
+            session,
+            params['message'],
+          ),
+        )
       },
     );
-
-    connectors['mapParameters'] = EndpointConnector(
+    connectors['mapParameters'] = _i1.EndpointConnector(
       name: 'mapParameters',
       endpoint: endpoints['mapParameters']!,
       methodConnectors: {
-        'returnIntMap': MethodConnector(
+        'returnIntMap': _i1.MethodConnector(
           name: 'returnIntMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, int>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, int>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnIntMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnIntMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnIntMapNullable': MethodConnector(
+        'returnIntMapNullable': _i1.MethodConnector(
           name: 'returnIntMapNullable',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, int>, nullable: true),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, int>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnIntMapNullable(
-              session,
-              (params['map'] as Map?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnIntMapNullable(
+            session,
+            params['map'],
+          ),
         ),
-        'returnIntMapNullableInts': MethodConnector(
+        'returnNestedIntMap': _i1.MethodConnector(
+          name: 'returnNestedIntMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, Map<String, int>>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnNestedIntMap(
+            session,
+            params['map'],
+          ),
+        ),
+        'returnIntMapNullableInts': _i1.MethodConnector(
           name: 'returnIntMapNullableInts',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, int?>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, int?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnIntMapNullableInts(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnIntMapNullableInts(
+            session,
+            params['map'],
+          ),
         ),
-        'returnNullableIntMapNullableInts': MethodConnector(
+        'returnNullableIntMapNullableInts': _i1.MethodConnector(
           name: 'returnNullableIntMapNullableInts',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, int?>, nullable: true),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, int?>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnNullableIntMapNullableInts(
-              session,
-              (params['map'] as Map?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnNullableIntMapNullableInts(
+            session,
+            params['map'],
+          ),
         ),
-        'returnDoubleMap': MethodConnector(
+        'returnIntIntMap': _i1.MethodConnector(
+          name: 'returnIntIntMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<int, int>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnIntIntMap(
+            session,
+            params['map'],
+          ),
+        ),
+        'returnEnumIntMap': _i1.MethodConnector(
+          name: 'returnEnumIntMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<_i32.TestEnum, int>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnEnumIntMap(
+            session,
+            params['map'],
+          ),
+        ),
+        'returnEnumMap': _i1.MethodConnector(
+          name: 'returnEnumMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i32.TestEnum>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnEnumMap(
+            session,
+            params['map'],
+          ),
+        ),
+        'returnDoubleMap': _i1.MethodConnector(
           name: 'returnDoubleMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, double>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, double>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnDoubleMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnDoubleMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnDoubleMapNullableDoubles': MethodConnector(
+        'returnDoubleMapNullableDoubles': _i1.MethodConnector(
           name: 'returnDoubleMapNullableDoubles',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, double?>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, double?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnDoubleMapNullableDoubles(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnDoubleMapNullableDoubles(
+            session,
+            params['map'],
+          ),
         ),
-        'returnBoolMap': MethodConnector(
+        'returnBoolMap': _i1.MethodConnector(
           name: 'returnBoolMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, bool>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, bool>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnBoolMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnBoolMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnBoolMapNullableBools': MethodConnector(
+        'returnBoolMapNullableBools': _i1.MethodConnector(
           name: 'returnBoolMapNullableBools',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, bool?>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, bool?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnBoolMapNullableBools(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnBoolMapNullableBools(
+            session,
+            params['map'],
+          ),
         ),
-        'returnStringMap': MethodConnector(
+        'returnStringMap': _i1.MethodConnector(
           name: 'returnStringMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, String>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, String>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnStringMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnStringMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnStringMapNullableStrings': MethodConnector(
+        'returnStringMapNullableStrings': _i1.MethodConnector(
           name: 'returnStringMapNullableStrings',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, String?>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, String?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnStringMapNullableStrings(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnStringMapNullableStrings(
+            session,
+            params['map'],
+          ),
         ),
-        'returnDateTimeMap': MethodConnector(
+        'returnDateTimeMap': _i1.MethodConnector(
           name: 'returnDateTimeMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, DateTime>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, DateTime>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnDateTimeMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnDateTimeMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnDateTimeMapNullableDateTimes': MethodConnector(
+        'returnDateTimeMapNullableDateTimes': _i1.MethodConnector(
           name: 'returnDateTimeMapNullableDateTimes',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, DateTime?>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, DateTime?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnDateTimeMapNullableDateTimes(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnDateTimeMapNullableDateTimes(
+            session,
+            params['map'],
+          ),
         ),
-        'returnByteDataMap': MethodConnector(
+        'returnByteDataMap': _i1.MethodConnector(
           name: 'returnByteDataMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map',
-                type: Map<String, typed_data.ByteData>,
-                nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i25.ByteData>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnByteDataMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnByteDataMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnByteDataMapNullableByteDatas': MethodConnector(
+        'returnByteDataMapNullableByteDatas': _i1.MethodConnector(
           name: 'returnByteDataMapNullableByteDatas',
           params: {
-            'map': ParameterDescription(
-                name: 'map',
-                type: Map<String, typed_data.ByteData?>,
-                nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i25.ByteData?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnByteDataMapNullableByteDatas(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnByteDataMapNullableByteDatas(
+            session,
+            params['map'],
+          ),
         ),
-        'returnSimpleDataMap': MethodConnector(
+        'returnSimpleDataMap': _i1.MethodConnector(
           name: 'returnSimpleDataMap',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, SimpleData>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i31.SimpleData>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnSimpleDataMap(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnSimpleDataMap(
+            session,
+            params['map'],
+          ),
         ),
-        'returnSimpleDataMapNullableSimpleData': MethodConnector(
+        'returnSimpleDataMapNullableSimpleData': _i1.MethodConnector(
           name: 'returnSimpleDataMapNullableSimpleData',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, SimpleData?>, nullable: false),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i31.SimpleData?>>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnSimpleDataMapNullableSimpleData(
-              session,
-              (params['map'] as Map).cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnSimpleDataMapNullableSimpleData(
+            session,
+            params['map'],
+          ),
         ),
-        'returnSimpleDataMapNullable': MethodConnector(
+        'returnSimpleDataMapNullable': _i1.MethodConnector(
           name: 'returnSimpleDataMapNullable',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, SimpleData>, nullable: true),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i31.SimpleData>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnSimpleDataMapNullable(
-              session,
-              (params['map'] as Map?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnSimpleDataMapNullable(
+            session,
+            params['map'],
+          ),
         ),
-        'returnNullableSimpleDataMapNullableSimpleData': MethodConnector(
+        'returnNullableSimpleDataMapNullableSimpleData': _i1.MethodConnector(
           name: 'returnNullableSimpleDataMapNullableSimpleData',
           params: {
-            'map': ParameterDescription(
-                name: 'map', type: Map<String, SimpleData?>, nullable: true),
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, _i31.SimpleData?>?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['mapParameters'] as MapParametersEndpoint)
-                .returnNullableSimpleDataMapNullableSimpleData(
-              session,
-              (params['map'] as Map?)?.cast(),
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnNullableSimpleDataMapNullableSimpleData(
+            session,
+            params['map'],
+          ),
         ),
       },
     );
-
-    connectors['moduleSerialization'] = EndpointConnector(
+    connectors['moduleSerialization'] = _i1.EndpointConnector(
       name: 'moduleSerialization',
       endpoint: endpoints['moduleSerialization']!,
       methodConnectors: {
-        'serializeModuleObject': MethodConnector(
+        'serializeModuleObject': _i1.MethodConnector(
           name: 'serializeModuleObject',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['moduleSerialization']
-                    as ModuleSerializationEndpoint)
-                .serializeModuleObject(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['moduleSerialization']
+                      as _i17.ModuleSerializationEndpoint)
+                  .serializeModuleObject(session),
         ),
-        'modifyModuleObject': MethodConnector(
+        'modifyModuleObject': _i1.MethodConnector(
           name: 'modifyModuleObject',
           params: {
-            'object': ParameterDescription(
-                name: 'object',
-                type: serverpod_test_module.ModuleClass,
-                nullable: false),
+            'object': _i1.ParameterDescription(
+              name: 'object',
+              type: _i1.getType<_i33.ModuleClass>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['moduleSerialization']
-                    as ModuleSerializationEndpoint)
-                .modifyModuleObject(
-              session,
-              params['object'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['moduleSerialization']
+                      as _i17.ModuleSerializationEndpoint)
+                  .modifyModuleObject(
+            session,
+            params['object'],
+          ),
         ),
       },
     );
-
-    connectors['namedParameters'] = EndpointConnector(
+    connectors['namedParameters'] = _i1.EndpointConnector(
       name: 'namedParameters',
       endpoint: endpoints['namedParameters']!,
       methodConnectors: {
-        'namedParametersMethod': MethodConnector(
+        'namedParametersMethod': _i1.MethodConnector(
           name: 'namedParametersMethod',
           params: {
-            'namedInt': ParameterDescription(
-                name: 'namedInt', type: int, nullable: false),
-            'intWithDefaultValue': ParameterDescription(
-                name: 'intWithDefaultValue', type: int, nullable: false),
-            'nullableInt': ParameterDescription(
-                name: 'nullableInt', type: int, nullable: true),
-            'nullableIntWithDefaultValue': ParameterDescription(
-                name: 'nullableIntWithDefaultValue', type: int, nullable: true),
+            'namedInt': _i1.ParameterDescription(
+              name: 'namedInt',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'intWithDefaultValue': _i1.ParameterDescription(
+              name: 'intWithDefaultValue',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'nullableInt': _i1.ParameterDescription(
+              name: 'nullableInt',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'nullableIntWithDefaultValue': _i1.ParameterDescription(
+              name: 'nullableIntWithDefaultValue',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['namedParameters'] as NamedParametersEndpoint)
-                .namedParametersMethod(
-              session,
-              namedInt: params['namedInt'],
-              intWithDefaultValue: params['intWithDefaultValue'],
-              nullableInt: params['nullableInt'],
-              nullableIntWithDefaultValue:
-                  params['nullableIntWithDefaultValue'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['namedParameters'] as _i18.NamedParametersEndpoint)
+                  .namedParametersMethod(
+            session,
+            namedInt: params['namedInt'],
+            intWithDefaultValue: params['intWithDefaultValue'],
+            nullableInt: params['nullableInt'],
+            nullableIntWithDefaultValue: params['nullableIntWithDefaultValue'],
+          ),
         ),
-        'namedParametersMethodEqualInts': MethodConnector(
+        'namedParametersMethodEqualInts': _i1.MethodConnector(
           name: 'namedParametersMethodEqualInts',
           params: {
-            'namedInt': ParameterDescription(
-                name: 'namedInt', type: int, nullable: false),
-            'nullableInt': ParameterDescription(
-                name: 'nullableInt', type: int, nullable: true),
+            'namedInt': _i1.ParameterDescription(
+              name: 'namedInt',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'nullableInt': _i1.ParameterDescription(
+              name: 'nullableInt',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['namedParameters'] as NamedParametersEndpoint)
-                .namedParametersMethodEqualInts(
-              session,
-              namedInt: params['namedInt'],
-              nullableInt: params['nullableInt'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['namedParameters'] as _i18.NamedParametersEndpoint)
+                  .namedParametersMethodEqualInts(
+            session,
+            namedInt: params['namedInt'],
+            nullableInt: params['nullableInt'],
+          ),
         ),
       },
     );
-
-    connectors['optionalParameters'] = EndpointConnector(
+    connectors['optionalParameters'] = _i1.EndpointConnector(
       name: 'optionalParameters',
       endpoint: endpoints['optionalParameters']!,
       methodConnectors: {
-        'returnOptionalInt': MethodConnector(
+        'returnOptionalInt': _i1.MethodConnector(
           name: 'returnOptionalInt',
           params: {
-            'optionalInt': ParameterDescription(
-                name: 'optionalInt', type: int, nullable: true),
+            'optionalInt': _i1.ParameterDescription(
+              name: 'optionalInt',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['optionalParameters']
-                    as OptionalParametersEndpoint)
-                .returnOptionalInt(
-              session,
-              params['optionalInt'],
-            );
-          },
-        ),
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['optionalParameters']
+                      as _i19.OptionalParametersEndpoint)
+                  .returnOptionalInt(
+            session,
+            params['optionalInt'],
+          ),
+        )
       },
     );
-
-    connectors['redis'] = EndpointConnector(
+    connectors['redis'] = _i1.EndpointConnector(
       name: 'redis',
       endpoint: endpoints['redis']!,
       methodConnectors: {
-        'setSimpleData': MethodConnector(
+        'setSimpleData': _i1.MethodConnector(
           name: 'setSimpleData',
           params: {
-            'key': ParameterDescription(
-                name: 'key', type: String, nullable: false),
-            'data': ParameterDescription(
-                name: 'data', type: SimpleData, nullable: false),
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i31.SimpleData>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint).setSimpleData(
-              session,
-              params['key'],
-              params['data'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint).setSimpleData(
+            session,
+            params['key'],
+            params['data'],
+          ),
         ),
-        'setSimpleDataWithLifetime': MethodConnector(
+        'setSimpleDataWithLifetime': _i1.MethodConnector(
           name: 'setSimpleDataWithLifetime',
           params: {
-            'key': ParameterDescription(
-                name: 'key', type: String, nullable: false),
-            'data': ParameterDescription(
-                name: 'data', type: SimpleData, nullable: false),
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i31.SimpleData>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint)
-                .setSimpleDataWithLifetime(
-              session,
-              params['key'],
-              params['data'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint)
+                  .setSimpleDataWithLifetime(
+            session,
+            params['key'],
+            params['data'],
+          ),
         ),
-        'getSimpleData': MethodConnector(
+        'getSimpleData': _i1.MethodConnector(
           name: 'getSimpleData',
           params: {
-            'key': ParameterDescription(
-                name: 'key', type: String, nullable: false),
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint).getSimpleData(
-              session,
-              params['key'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint).getSimpleData(
+            session,
+            params['key'],
+          ),
         ),
-        'deleteSimpleData': MethodConnector(
+        'deleteSimpleData': _i1.MethodConnector(
           name: 'deleteSimpleData',
           params: {
-            'key': ParameterDescription(
-                name: 'key', type: String, nullable: false),
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint).deleteSimpleData(
-              session,
-              params['key'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint).deleteSimpleData(
+            session,
+            params['key'],
+          ),
         ),
-        'resetMessageCentralTest': MethodConnector(
+        'resetMessageCentralTest': _i1.MethodConnector(
           name: 'resetMessageCentralTest',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint)
-                .resetMessageCentralTest(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint)
+                  .resetMessageCentralTest(session),
         ),
-        'listenToChannel': MethodConnector(
+        'listenToChannel': _i1.MethodConnector(
           name: 'listenToChannel',
           params: {
-            'channel': ParameterDescription(
-                name: 'channel', type: String, nullable: false),
+            'channel': _i1.ParameterDescription(
+              name: 'channel',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint).listenToChannel(
-              session,
-              params['channel'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint).listenToChannel(
+            session,
+            params['channel'],
+          ),
         ),
-        'postToChannel': MethodConnector(
+        'postToChannel': _i1.MethodConnector(
           name: 'postToChannel',
           params: {
-            'channel': ParameterDescription(
-                name: 'channel', type: String, nullable: false),
-            'data': ParameterDescription(
-                name: 'data', type: SimpleData, nullable: false),
+            'channel': _i1.ParameterDescription(
+              name: 'channel',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i31.SimpleData>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint).postToChannel(
-              session,
-              params['channel'],
-              params['data'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint).postToChannel(
+            session,
+            params['channel'],
+            params['data'],
+          ),
         ),
-        'countSubscribedChannels': MethodConnector(
+        'countSubscribedChannels': _i1.MethodConnector(
           name: 'countSubscribedChannels',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['redis'] as RedisEndpoint)
-                .countSubscribedChannels(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['redis'] as _i20.RedisEndpoint)
+                  .countSubscribedChannels(session),
         ),
       },
     );
-
-    connectors['signInRequired'] = EndpointConnector(
+    connectors['signInRequired'] = _i1.EndpointConnector(
       name: 'signInRequired',
       endpoint: endpoints['signInRequired']!,
       methodConnectors: {
-        'testMethod': MethodConnector(
+        'testMethod': _i1.MethodConnector(
           name: 'testMethod',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['signInRequired'] as SignInRequiredEndpoint)
-                .testMethod(
-              session,
-            );
-          },
-        ),
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['signInRequired'] as _i21.SignInRequiredEndpoint)
+                  .testMethod(session),
+        )
       },
     );
-
-    connectors['simple'] = EndpointConnector(
+    connectors['simple'] = _i1.EndpointConnector(
       name: 'simple',
       endpoint: endpoints['simple']!,
       methodConnectors: {
-        'setGlobalInt': MethodConnector(
+        'setGlobalInt': _i1.MethodConnector(
           name: 'setGlobalInt',
           params: {
-            'value':
-                ParameterDescription(name: 'value', type: int, nullable: true),
-            'secondValue': ParameterDescription(
-                name: 'secondValue', type: int, nullable: true),
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'secondValue': _i1.ParameterDescription(
+              name: 'secondValue',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['simple'] as SimpleEndpoint).setGlobalInt(
-              session,
-              params['value'],
-              params['secondValue'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['simple'] as _i22.SimpleEndpoint).setGlobalInt(
+            session,
+            params['value'],
+            params['secondValue'],
+          ),
         ),
-        'addToGlobalInt': MethodConnector(
+        'addToGlobalInt': _i1.MethodConnector(
           name: 'addToGlobalInt',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['simple'] as SimpleEndpoint).addToGlobalInt(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['simple'] as _i22.SimpleEndpoint)
+                  .addToGlobalInt(session),
         ),
-        'getGlobalInt': MethodConnector(
+        'getGlobalInt': _i1.MethodConnector(
           name: 'getGlobalInt',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['simple'] as SimpleEndpoint).getGlobalInt(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['simple'] as _i22.SimpleEndpoint)
+                  .getGlobalInt(session),
         ),
       },
     );
-
-    connectors['streaming'] = EndpointConnector(
+    connectors['streaming'] = _i1.EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
       methodConnectors: {},
     );
-
-    connectors['streamingLogging'] = EndpointConnector(
+    connectors['streamingLogging'] = _i1.EndpointConnector(
       name: 'streamingLogging',
       endpoint: endpoints['streamingLogging']!,
       methodConnectors: {},
     );
-
-    modules['serverpod_test_module'] = serverpod_test_module.Endpoints()
+    modules['serverpod_test_module'] = _i33.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = serverpod_auth.Endpoints()
-      ..initializeEndpoints(server);
-  }
-
-  @override
-  void registerModules(Serverpod pod) {
-    pod.registerModule(serverpod_test_module.Protocol(), 'module');
-    pod.registerModule(serverpod_auth.Protocol(), 'auth');
+    modules['serverpod_auth'] = _i34.Endpoints()..initializeEndpoints(server);
   }
 }

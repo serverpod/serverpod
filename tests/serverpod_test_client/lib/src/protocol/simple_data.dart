@@ -1,41 +1,37 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class SimpleData extends SerializableEntity {
-  @override
-  String get className => 'SimpleData';
-
-  int? id;
-  late int num;
-
+class SimpleData extends _i1.SerializableEntity {
   SimpleData({
     this.id,
     required this.num,
   });
 
-  SimpleData.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    num = _data['num']!;
+  factory SimpleData.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return SimpleData(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      num: serializationManager.deserialize<int>(jsonSerialization['num']),
+    );
   }
 
+  int? id;
+
+  int num;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'num': num,
-    });
+    };
   }
 }

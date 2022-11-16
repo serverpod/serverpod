@@ -31,6 +31,11 @@ s3CloudStorage:
   - getPublicUrlForFile:
   - getDirectFilePostUrl:
   - verifyDirectFileUpload:
+customTypes:
+  - returnCustomClass:
+  - returnCustomClassNullable:
+  - returnCustomClass2:
+  - returnCustomClass2Nullable:
 basicDatabase:
   - storeTypes:
   - getTypes:
@@ -64,7 +69,10 @@ futureCalls:
   - makeFutureCall:
 listParameters:
   - returnIntList:
+  - returnIntListList:
   - returnIntListNullable:
+  - returnIntListNullableList:
+  - returnIntListListNullable:
   - returnIntListNullableInts:
   - returnNullableIntListNullableInts:
   - returnDoubleList:
@@ -90,8 +98,12 @@ loggingDisabled:
 mapParameters:
   - returnIntMap:
   - returnIntMapNullable:
+  - returnNestedIntMap:
   - returnIntMapNullableInts:
   - returnNullableIntMapNullableInts:
+  - returnIntIntMap:
+  - returnEnumIntMap:
+  - returnEnumMap:
   - returnDoubleMap:
   - returnDoubleMapNullableDoubles:
   - returnBoolMap:
