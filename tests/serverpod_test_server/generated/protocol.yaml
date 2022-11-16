@@ -36,6 +36,10 @@ customTypes:
   - returnCustomClassNullable:
   - returnCustomClass2:
   - returnCustomClass2Nullable:
+  - returnExternalCustomClass:
+  - returnExternalCustomClassNullable:
+  - returnFreezedCustomClass:
+  - returnFreezedCustomClassNullable:
 basicDatabase:
   - storeTypes:
   - getTypes:
