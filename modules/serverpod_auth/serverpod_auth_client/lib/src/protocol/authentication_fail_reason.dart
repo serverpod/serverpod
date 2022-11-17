@@ -1,47 +1,34 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-enum AuthenticationFailReason with SerializableEntity {
+enum AuthenticationFailReason with _i1.SerializableEntity {
   invalidCredentials,
   userCreationDenied,
   internalError,
-  tooManyFailedAttempts,
-  ;
+  tooManyFailedAttempts;
 
-  static String get _className => 'AuthenticationFailReason';
-
-  @override
-  String get className => _className;
-
-  factory AuthenticationFailReason.fromSerialization(
-      Map<String, dynamic> serialization) {
-    var data = SerializableEntity.unwrapSerializationDataForClassName(
-        _className, serialization);
-    switch (data['index']) {
+  static AuthenticationFailReason? fromJson(int index) {
+    switch (index) {
       case 0:
-        return AuthenticationFailReason.invalidCredentials;
+        return invalidCredentials;
       case 1:
-        return AuthenticationFailReason.userCreationDenied;
+        return userCreationDenied;
       case 2:
-        return AuthenticationFailReason.internalError;
+        return internalError;
       case 3:
-        return AuthenticationFailReason.tooManyFailedAttempts;
+        return tooManyFailedAttempts;
       default:
-        throw Exception('Invalid $_className index $data[\'index\']');
+        return null;
     }
   }
 
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'index': index,
-    });
-  }
+  int toJson() => index;
 }

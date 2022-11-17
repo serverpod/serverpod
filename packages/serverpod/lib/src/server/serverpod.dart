@@ -143,7 +143,7 @@ class Serverpod {
         logFailedSessions: true,
         logFailedQueries: true,
         logStreamingSessionsContinuously: true,
-        logLevel: internal.LogLevel.info.index,
+        logLevel: internal.LogLevel.info,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
       ),
@@ -211,7 +211,6 @@ class Serverpod {
     this.healthCheckHandler,
   }) {
     _internalSerializationManager = internal.Protocol();
-    serializationManager.merge(_internalSerializationManager);
 
     // Create a temporary log manager with default settings, until we have loaded settings from the database.
     _logManager = LogManager(_defaultRuntimeSettings);
@@ -275,7 +274,6 @@ class Serverpod {
       endpoints: endpoints,
     );
     endpoints.initializeEndpoints(server);
-    endpoints.registerModules(this);
 
     // Setup future calls
     _futureCallManager = FutureCallManager(server, serializationManager);
@@ -458,12 +456,6 @@ class Serverpod {
       enableLogging: enableLogging,
     );
     return session;
-  }
-
-  /// Registers a module with the Serverpod. This is typically done from
-  /// generated code.
-  void registerModule(SerializationManager moduleProtocol, String name) {
-    serializationManager.merge(moduleProtocol);
   }
 
   /// Shuts down the Serverpod and all associated servers.

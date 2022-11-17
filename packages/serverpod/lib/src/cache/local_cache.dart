@@ -25,12 +25,12 @@ class LocalCache extends Cache {
     var entry = _CacheEntry(
       key: key,
       group: group,
-      serializedObject: object.serializeAll(),
+      serializedObject: object.allToJson(),
       lifetime: lifetime,
     );
 
     // Remove old entry
-    if (await get(key) != null) await invalidateKey(key);
+    if (await containsKey(key)) await invalidateKey(key);
 
     // Insert
     _keyList.insert(0, _KeyListKey(key, entry.creationTime));
@@ -65,18 +65,31 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<SerializableEntity?> get(String key) async {
+  Future<bool> containsKey(String key) async {
     var entry = _entries[key];
+
+    if (entry == null) return false;
+
+    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
+      await invalidateKey(key);
+      return false;
+    }
+
+    return true;
+  }
+
+  @override
+  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
+    var entry = _entries[key];
+
     if (entry == null) return null;
 
-    if (entry.expirationTime != null &&
-        entry.expirationTime!.compareTo(DateTime.now()) < 0) {
+    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
       await invalidateKey(key);
       return null;
     }
 
-    return serializationManager
-        .createEntityFromSerialization(entry.serializedObject);
+    return serializationManager.deserialize<T>(entry.serializedObject, t);
   }
 
   @override
@@ -148,7 +161,7 @@ class LocalCache extends Cache {
 class _CacheEntry {
   final String key;
   final String? group;
-  final Map<String, dynamic> serializedObject;
+  final dynamic serializedObject;
   final DateTime creationTime;
   final Duration? lifetime;
   DateTime? get expirationTime =>

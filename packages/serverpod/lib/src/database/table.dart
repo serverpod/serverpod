@@ -4,6 +4,9 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// typically generated. Instances of [TableRow] can also be serialized and
 /// either passed to clients or cached.
 abstract class TableRow extends SerializableEntity {
+  /// Create a new TableRow object.
+  TableRow([this.id]);
+
   /// The id column of the row. Can be null if this row is not yet stored in
   /// the database.
   int? id;
@@ -13,7 +16,8 @@ abstract class TableRow extends SerializableEntity {
 
   /// Will create a serialization of with the fields that are stored in the
   /// database only.
-  Map<String, dynamic> serializeForDatabase();
+  //TODO: better name
+  Map<String, dynamic> toJsonForDatabase();
 
   /// Sets the value of a column by its name. Used in communication with the
   /// database.

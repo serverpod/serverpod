@@ -1,43 +1,31 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-enum TestEnum with SerializableEntity {
+enum TestEnum with _i1.SerializableEntity {
   one,
   two,
-  three,
-  ;
+  three;
 
-  static String get _className => 'TestEnum';
-
-  @override
-  String get className => _className;
-
-  factory TestEnum.fromSerialization(Map<String, dynamic> serialization) {
-    var data = SerializableEntity.unwrapSerializationDataForClassName(
-        _className, serialization);
-    switch (data['index']) {
+  static TestEnum? fromJson(int index) {
+    switch (index) {
       case 0:
-        return TestEnum.one;
+        return one;
       case 1:
-        return TestEnum.two;
+        return two;
       case 2:
-        return TestEnum.three;
+        return three;
       default:
-        throw Exception('Invalid $_className index $data[\'index\']');
+        return null;
     }
   }
 
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'index': index,
-    });
-  }
+  int toJson() => index;
 }

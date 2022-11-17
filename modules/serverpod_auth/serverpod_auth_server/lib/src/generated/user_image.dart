@@ -1,80 +1,80 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class UserImage extends TableRow {
-  @override
-  String get className => 'serverpod_auth_server.UserImage';
-  @override
-  String get tableName => 'serverpod_user_image';
-
-  static final t = UserImageTable();
-
-  @override
-  int? id;
-  late int userId;
-  late int version;
-  late String url;
-
+class UserImage extends _i1.TableRow {
   UserImage({
-    this.id,
+    int? id,
     required this.userId,
     required this.version,
     required this.url,
-  });
+  }) : super(id);
 
-  UserImage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    userId = _data['userId']!;
-    version = _data['version']!;
-    url = _data['url']!;
+  factory UserImage.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return UserImage(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      version:
+          serializationManager.deserialize<int>(jsonSerialization['version']),
+      url: serializationManager.deserialize<String>(jsonSerialization['url']),
+    );
   }
 
+  static final t = UserImageTable();
+
+  int userId;
+
+  int version;
+
+  String url;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'serverpod_user_image';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'userId': userId,
       'version': version,
       'url': url,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'userId': userId,
       'version': version,
       'url': url,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'userId': userId,
       'version': version,
       'url': url,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -94,15 +94,15 @@ class UserImage extends TableRow {
   }
 
   static Future<List<UserImage>> find(
-    Session session, {
+    _i1.Session session, {
     UserImageExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<UserImage>(
       where: where != null ? where(UserImage.t) : null,
@@ -117,13 +117,13 @@ class UserImage extends TableRow {
   }
 
   static Future<UserImage?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     UserImageExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<UserImage>(
       where: where != null ? where(UserImage.t) : null,
@@ -135,14 +135,17 @@ class UserImage extends TableRow {
     );
   }
 
-  static Future<UserImage?> findById(Session session, int id) async {
+  static Future<UserImage?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<UserImage>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required UserImageExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserImage>(
       where: where(UserImage.t),
@@ -151,9 +154,9 @@ class UserImage extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     UserImage row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -162,9 +165,9 @@ class UserImage extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     UserImage row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -173,19 +176,22 @@ class UserImage extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     UserImage row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     UserImageExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<UserImage>(
       where: where != null ? where(UserImage.t) : null,
@@ -196,20 +202,21 @@ class UserImage extends TableRow {
   }
 }
 
-typedef UserImageExpressionBuilder = Expression Function(UserImageTable t);
+typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
-class UserImageTable extends Table {
+class UserImageTable extends _i1.Table {
   UserImageTable() : super(tableName: 'serverpod_user_image');
 
-  @override
-  String tableName = 'serverpod_user_image';
-  final id = ColumnInt('id');
-  final userId = ColumnInt('userId');
-  final version = ColumnInt('version');
-  final url = ColumnString('url');
+  final id = _i1.ColumnInt('id');
+
+  final userId = _i1.ColumnInt('userId');
+
+  final version = _i1.ColumnInt('version');
+
+  final url = _i1.ColumnString('url');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         userId,
         version,

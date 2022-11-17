@@ -107,6 +107,32 @@ class ColumnInt extends Column {
   }
 }
 
+/// A [Column] holding an enum.
+class ColumnEnum<E extends Enum> extends Column {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnEnum(String name) : super(name, E);
+
+  /// Creates an [Expression] checking if the value in the column equals the
+  /// specified value.
+  Expression equals(E? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NULL');
+    } else {
+      return Expression('"$columnName" = ${value.index}');
+    }
+  }
+
+  /// Creates an [Expression] checking if the value in the column does not equal
+  /// the specified value.
+  Expression notEquals(E? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NOT NULL');
+    } else {
+      return Expression('"$columnName" != ${value.index}');
+    }
+  }
+}
+
 /// A [Column] holding an [double].
 class ColumnDouble extends Column {
   /// Creates a new [Column], this is typically done in generated code only.

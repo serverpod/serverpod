@@ -1,8 +1,15 @@
-//import 'package:recase/recase.dart';
+import 'package:code_builder/code_builder.dart';
 
 import 'class_generator.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
+import 'types.dart';
+
+String serverpodUrl(bool serverCode) {
+  return serverCode
+      ? 'package:serverpod/serverpod.dart'
+      : 'package:serverpod_client/serverpod_client.dart';
+}
 
 class ClassGeneratorDart extends ClassGenerator {
   @override
@@ -13,10 +20,11 @@ class ClassGeneratorDart extends ClassGenerator {
     required super.verbose,
     required super.serverCode,
     required super.classDefinitions,
+    required super.protocolDefinition,
   });
 
   @override
-  String generateFile(ProtocolFileDefinition protocolFileDefinition) {
+  Library generateFile(ProtocolFileDefinition protocolFileDefinition) {
     if (protocolFileDefinition is ClassDefinition) {
       return _generateClassFile(protocolFileDefinition);
     }
@@ -28,450 +36,955 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   // Handle ordinary classes
-  String _generateClassFile(ClassDefinition classDefinition) {
-    var out = '';
-
+  Library _generateClassFile(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
 
-    // Find dependencies on other modules
-    var moduleDependencies = <String>{};
-    for (var field in fields) {
-      if (field.type.type.contains('.')) {
-        var nameComponents = field.type.type.split('.');
-        var moduleName = nameComponents[0];
-        moduleDependencies.add(moduleName);
-      }
-    }
+    var library = Library(
+      (library) {
+        library.body.add(Class((classBuilder) {
+          classBuilder.name = className;
 
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
+          if (serverCode && tableName != null) {
+            classBuilder.extend =
+                refer('TableRow', 'package:serverpod/serverpod.dart');
 
-    // Ignore camel case warnings
-    out += '// ignore_for_file: non_constant_identifier_names\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unused_import\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: overridden_fields\n';
-    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
-    out += '// ignore_for_file: depend_on_referenced_packages\n';
-    out += '\n';
+            classBuilder.fields.add(Field((f) => f
+              ..static = true
+              ..modifier = FieldModifier.final$
+              ..name = 't'
+              ..assignment = refer('${className}Table').call([]).code));
 
-    if (serverCode) {
-      if (tableName != null) {
-        out += 'import \'package:serverpod/serverpod.dart\';\n';
-        out +=
-            'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-      } else {
-        out +=
-            'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-      }
-      for (var dependencyName in moduleDependencies) {
-        out +=
-            'import \'package:${dependencyName}_server/module.dart\' as $dependencyName;\n';
-      }
-    } else {
-      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-      for (var dependencyName in moduleDependencies) {
-        out +=
-            'import \'package:${dependencyName}_client/module.dart\' as $dependencyName;\n';
-      }
-    }
-
-    out += 'import \'dart:typed_data\';\n';
-    out += 'import \'protocol.dart\';\n';
-    out += '\n';
-
-    // Row class definition
-    if (serverCode && tableName != null) {
-      out += 'class $className extends TableRow {\n';
-      out += '  @override\n';
-      out += '  String get className => \'$classPrefix$className\';\n';
-      out += '  @override\n';
-      out += '  String get tableName => \'$tableName\';\n';
-      out += '\n';
-      out += '  static final t = ${className}Table();\n';
-    } else {
-      out += 'class $className extends SerializableEntity {\n';
-      out += '  @override\n';
-      out += '  String get className => \'$classPrefix$className\';\n';
-    }
-
-    out += '\n';
-
-    // Fields
-    for (var field in fields) {
-      if (field.shouldIncludeField(serverCode)) {
-        if (field.name == 'id' && serverCode && tableName != null) {
-          out += '  @override\n';
-        }
-        out +=
-            '  ${field.type.nullable ? '' : 'late '}${field.type.type} ${field.name};\n';
-      }
-    }
-    out += '\n';
-
-    // Default constructor
-    out += '  $className({\n';
-    for (var field in fields) {
-      if (field.shouldIncludeField(serverCode)) {
-        out +=
-            '    ${field.type.nullable ? '' : 'required '}this.${field.name},\n';
-      }
-    }
-    out += '});\n';
-    out += '\n';
-
-    // Deserialization
-    out +=
-        '  $className.fromSerialization(Map<String, dynamic> serialization) {\n';
-    out += '    var _data = unwrapSerializationData(serialization);\n';
-    for (var field in fields) {
-      if (field.shouldIncludeField(serverCode)) {
-        out += '    ${field.name} = ${field.deserialization};\n';
-      }
-    }
-    out += '  }\n';
-    out += '\n';
-
-    // Serialization
-    out += '  @override\n';
-    out += '  Map<String, dynamic> serialize() {\n';
-    out += '    return wrapSerializationData({\n';
-
-    for (var field in fields) {
-      if (field.shouldSerializeField(serverCode)) {
-        out += '      \'${field.name}\': ${field.serialization},\n';
-      }
-    }
-
-    out += '    });\n';
-    out += '  }\n';
-
-    // Serialization for database and everything
-    if (serverCode) {
-      if (tableName != null) {
-        out += '\n';
-        out += '  @override\n';
-        out += '  Map<String, dynamic> serializeForDatabase() {\n';
-        out += '    return wrapSerializationData({\n';
-
-        for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode)) {
-            out += '      \'${field.name}\': ${field.serialization},\n';
+            // add tableName getter
+            classBuilder.methods.add(Method(
+              (m) => m
+                ..name = 'tableName'
+                ..annotations.add(refer('override'))
+                ..type = MethodType.getter
+                ..returns = refer('String')
+                ..lambda = true
+                ..body = Code('\'$tableName\''),
+            ));
+          } else {
+            classBuilder.extend =
+                refer('SerializableEntity', serverpodUrl(serverCode));
           }
-        }
 
-        out += '    });\n';
-        out += '  }\n';
-      }
-
-      out += '\n';
-      out += '  @override\n';
-      out += '  Map<String, dynamic> serializeAll() {\n';
-      out += '    return wrapSerializationData({\n';
-
-      for (var field in fields) {
-        out += '      \'${field.name}\': ${field.serialization},\n';
-      }
-
-      out += '    });\n';
-      out += '  }\n';
-
-      if (tableName != null) {
-        // Column setter
-        out += '\n';
-        out += '  @override\n';
-        out += '  void setColumn(String columnName, value) {\n';
-        out += '    switch (columnName) {\n';
-
-        for (var field in fields) {
-          if (field.shouldSerializeFieldForDatabase(serverCode)) {
-            out += '      case \'${field.name}\':\n';
-            out += '        ${field.name} = value;\n';
-            out += '        return;\n';
+          // Fields
+          for (var field in fields) {
+            if (field.shouldIncludeField(serverCode) &&
+                !(field.name == 'id' && serverCode && tableName != null)) {
+              classBuilder.fields.add(Field((f) {
+                f.type = field.type.reference(serverCode);
+                f.name = field.name;
+              }));
+            }
           }
+
+          // Default constructor
+          classBuilder.constructors.add(Constructor((c) {
+            for (var field in fields) {
+              if (field.shouldIncludeField(serverCode)) {
+                if (field.name == 'id' && serverCode && tableName != null) {
+                  c.optionalParameters.add(Parameter((p) {
+                    p.named = true;
+                    p.name = 'id';
+                    p.type = TypeReference(
+                      (t) => t
+                        ..symbol = 'int'
+                        ..isNullable = true,
+                    );
+                  }));
+                } else {
+                  c.optionalParameters.add(Parameter((p) {
+                    p.named = true;
+                    p.required = !field.type.nullable;
+                    p.toThis = true;
+                    p.name = field.name;
+                  }));
+                }
+              }
+            }
+            if (serverCode && tableName != null) {
+              c.initializers.add(refer('super').call([refer('id')]).code);
+            }
+          }));
+
+          // Deserialization
+          classBuilder.constructors.add(Constructor((c) {
+            c.factory = true;
+            c.name = 'fromJson';
+            c.requiredParameters.addAll([
+              Parameter((p) {
+                p.name = 'jsonSerialization';
+                p.type = refer('Map<String,dynamic>');
+              }),
+              Parameter((p) {
+                p.name = 'serializationManager';
+                p.type =
+                    refer('SerializationManager', serverpodUrl(serverCode));
+              }),
+            ]);
+            c.body = refer(className)
+                .call([], {
+                  for (var field in fields)
+                    if (field.shouldIncludeField(serverCode))
+                      field.name: refer('serializationManager')
+                          .property('deserialize')
+                          .call([
+                        refer('jsonSerialization')
+                            .index(literalString(field.name))
+                      ], {}, [
+                        field.type.reference(serverCode)
+                      ])
+                })
+                .returned
+                .statement;
+          }));
+
+          // Serialization
+          classBuilder.methods.add(Method(
+            (m) {
+              m.returns = refer('Map<String,dynamic>');
+              m.name = 'toJson';
+              m.annotations.add(refer('override'));
+
+              m.body = literalMap(
+                {
+                  for (var field in fields)
+                    if (field.shouldSerializeField(serverCode))
+                      literalString(field.name): refer(field.name)
+                },
+              ).returned.statement;
+            },
+          ));
+
+          // Serialization for database and everything
+          if (serverCode) {
+            if (tableName != null) {
+              classBuilder.methods.add(Method(
+                (m) {
+                  m.returns = refer('Map<String,dynamic>');
+                  //TODO: better name
+                  m.name = 'toJsonForDatabase';
+                  m.annotations.add(refer('override'));
+
+                  m.body = literalMap(
+                    {
+                      for (var field in fields)
+                        if (field.shouldSerializeFieldForDatabase(serverCode))
+                          literalString(field.name): refer(field.name)
+                    },
+                  ).returned.statement;
+                },
+              ));
+            }
+
+            classBuilder.methods.add(Method(
+              (m) {
+                m.returns = refer('Map<String,dynamic>');
+                m.name = 'allToJson';
+                m.annotations.add(refer('override'));
+
+                m.body = literalMap(
+                  {
+                    for (var field in fields)
+                      literalString(field.name): refer(field.name)
+                  },
+                  //  refer('String'), refer('dynamic')
+                ).returned.statement;
+              },
+            ));
+
+            if (tableName != null) {
+              // Column setter
+              classBuilder.methods.add(Method((m) => m
+                ..annotations.add(refer('override'))
+                ..name = 'setColumn'
+                ..returns = refer('void')
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..name = 'columnName'
+                    ..type = refer('String')),
+                  Parameter((p) => p..name = 'value'),
+                ])
+                ..body = Block.of([
+                  const Code('switch(columnName){'),
+                  for (var field in fields)
+                    if (field.shouldSerializeFieldForDatabase(serverCode))
+                      Block.of([
+                        Code('case \'${field.name}\':'),
+                        refer(field.name).assign(refer('value')).statement,
+                        refer('').returned.statement,
+                      ]),
+                  const Code('default:'),
+                  refer('UnimplementedError').call([]).thrown.statement,
+                  const Code('}'),
+                ])));
+
+              // find
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'find'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(TypeReference(
+                      (r) => r
+                        ..symbol = 'List'
+                        ..types.add(
+                          TypeReference(
+                            (r) => r..symbol = className,
+                          ),
+                        ),
+                    )),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = '${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'limit'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'offset'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Column'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'orderBy'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((t) => t
+                      ..symbol = 'List'
+                      ..isNullable = true
+                      ..types.add(
+                          refer('Order', 'package:serverpod/serverpod.dart')))
+                    ..name = 'orderByList'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'orderDescending'
+                    ..defaultTo = const Code('false')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'useCache'
+                    ..defaultTo = const Code('true')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('find')
+                    .call([], {
+                      'where': refer('where')
+                          .notEqualTo(refer('null'))
+                          .conditional(
+                              refer('where')
+                                  .call([refer(className).property('t')]),
+                              refer('null')),
+                      'limit': refer('limit'),
+                      'offset': refer('offset'),
+                      'orderBy': refer('orderBy'),
+                      'orderByList': refer('orderByList'),
+                      'orderDescending': refer('orderDescending'),
+                      'useCache': refer('useCache'),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+
+              // find single row
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'findSingleRow'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(TypeReference(
+                      (r) => r
+                        ..symbol = className
+                        ..isNullable = true,
+                    )),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = '${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'offset'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Column'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'orderBy'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'orderDescending'
+                    ..defaultTo = const Code('false')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'useCache'
+                    ..defaultTo = const Code('true')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('findSingleRow')
+                    .call([], {
+                      'where': refer('where')
+                          .notEqualTo(refer('null'))
+                          .conditional(
+                              refer('where')
+                                  .call([refer(className).property('t')]),
+                              refer('null')),
+                      'offset': refer('offset'),
+                      'orderBy': refer('orderBy'),
+                      'orderDescending': refer('orderDescending'),
+                      'useCache': refer('useCache'),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+
+              // findById
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'findById'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(TypeReference(
+                      (r) => r
+                        ..symbol = className
+                        ..isNullable = true,
+                    )),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer('int')
+                    ..name = 'id'),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('findById')
+                    .call([refer('id')], {}, [refer(className)])
+                    .returned
+                    .statement));
+
+              // delete
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'delete'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('int')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..required = true
+                    ..type = refer('${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('delete')
+                    .call([], {
+                      'where':
+                          refer('where').call([refer(className).property('t')]),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+
+              // deleteRow
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'deleteRow'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('bool')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('deleteRow')
+                    .call([
+                      refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              // update
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'update'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('bool')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('update')
+                    .call([
+                      refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              // insert
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'insert'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('void')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('insert')
+                    .call([
+                      refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              //count
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'count'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('int')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = '${className}ExpressionBuilder')
+                    ..name = 'where'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'int')
+                    ..name = 'limit'
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = refer('bool')
+                    ..name = 'useCache'
+                    ..defaultTo = const Code('true')
+                    ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('count')
+                    .call([], {
+                      'where': refer('where')
+                          .notEqualTo(refer('null'))
+                          .conditional(
+                              refer('where')
+                                  .call([refer(className).property('t')]),
+                              refer('null')),
+                      'limit': refer('limit'),
+                      'useCache': refer('useCache'),
+                      'transaction': refer('transaction'),
+                    }, [
+                      refer(className)
+                    ])
+                    .returned
+                    .statement));
+            }
+          }
+        }));
+
+        if (serverCode && tableName != null) {
+          // Expression builder
+          library.body.add(FunctionType(
+            (f) {
+              f.returnType = refer('Expression', serverpodUrl(serverCode));
+              f.requiredParameters.add(refer('${className}Table'));
+            },
+          ).toTypeDef('${className}ExpressionBuilder'));
+
+          // Table class definition
+          library.body.add(Class((c) {
+            c.name = '${className}Table';
+            c.extend = refer('Table', serverpodUrl(serverCode));
+            c.constructors.add(Constructor((constructor) {
+              constructor.initializers.add(refer('super')
+                  .call([], {'tableName': literalString(tableName)}).code);
+            }));
+
+            // Column descriptions
+            for (var field in fields) {
+              if (field.shouldSerializeFieldForDatabase(serverCode)) {
+                c.fields.add(Field((f) => f
+                  ..modifier = FieldModifier.final$
+                  ..name = field.name
+                  ..assignment = TypeReference((t) => t
+                    ..symbol = field.type.columnType
+                    ..url = 'package:serverpod/serverpod.dart'
+                    ..types.addAll(field.type.isEnum
+                        ? [field.type.reference(serverCode, false)]
+                        : [])).call([literalString(field.name)]).code));
+              }
+            }
+
+            // List of column values
+            c.methods.add(Method(
+              (m) => m
+                ..annotations.add(refer('override'))
+                ..returns = TypeReference((t) => t
+                  ..symbol = 'List'
+                  ..types
+                      .add(refer('Column', 'package:serverpod/serverpod.dart')))
+                ..name = 'columns'
+                ..lambda = true
+                ..type = MethodType.getter
+                ..body = literalList([
+                  for (var field in fields)
+                    if (field.shouldSerializeFieldForDatabase(serverCode))
+                      refer(field.name)
+                ]).code,
+            ));
+          }));
+
+          // Create instance of table
+          library.body.add(Field((f) => f
+            ..annotations.add(refer('Deprecated')
+                .call([literalString('Use ${className}Table.t instead.')]))
+            ..name = 't$className'
+            ..type = refer('${className}Table')
+            ..assignment = refer('${className}Table').call([]).code));
         }
+      },
+    );
 
-        out += '      default:\n';
-        out += '        throw UnimplementedError();\n';
-        out += '    }\n';
-        out += '  }\n';
-
-        // find
-        out += '\n';
-        out +=
-            '  static Future<List<$className>> find(Session session, {${className}ExpressionBuilder? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
-        out +=
-            '    return session.db.find<$className>(where: where != null ? where($className.t) : null, limit: limit, offset: offset, orderBy: orderBy, orderByList: orderByList, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
-        out += '  }\n';
-
-        // find single row
-        out += '\n';
-        out +=
-            '  static Future<$className?> findSingleRow(Session session, {${className}ExpressionBuilder? where, int? offset, Column? orderBy, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {\n';
-        out +=
-            '    return session.db.findSingleRow<$className>(where: where != null ? where($className.t) : null, offset: offset, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);\n';
-        out += '  }\n';
-
-        // findById
-        out += '\n';
-        out +=
-            '  static Future<$className?> findById(Session session, int id) async {\n';
-        out += '    return session.db.findById<$className>(id);\n';
-        out += '  }\n';
-
-        // delete
-        out += '\n';
-        out +=
-            '  static Future<int> delete(Session session, {required ${className}ExpressionBuilder where, Transaction? transaction,}) async {\n';
-        out +=
-            '    return session.db.delete<$className>(where: where($className.t), transaction: transaction,);\n';
-        out += '  }\n';
-
-        // deleteRow
-        out += '\n';
-        out +=
-            '  static Future<bool> deleteRow(Session session, $className row, {Transaction? transaction,}) async {\n';
-        out +=
-            '    return session.db.deleteRow(row, transaction: transaction,);\n';
-        out += '  }\n';
-
-        // update
-        out += '\n';
-        out +=
-            '  static Future<bool> update(Session session, $className row, {Transaction? transaction,}) async {\n';
-        out +=
-            '    return session.db.update(row, transaction: transaction,);\n';
-        out += '  }\n';
-
-        // insert
-        out += '\n';
-        out +=
-            '  static Future<void> insert(Session session, $className row, {Transaction? transaction,}) async {\n';
-        out += '    return session.db.insert(row, transaction: transaction);\n';
-        out += '  }\n';
-
-        // count
-        out += '\n';
-        out +=
-            '  static Future<int> count(Session session, {${className}ExpressionBuilder? where, int? limit, bool useCache = true, Transaction? transaction,}) async {\n';
-        out +=
-            '    return session.db.count<$className>(where: where != null ? where($className.t) : null, limit: limit, useCache: useCache, transaction: transaction,);\n';
-        out += '  }\n';
-      }
-    }
-
-    // End class
-    out += '}\n';
-    out += '\n';
-
-    if (serverCode && tableName != null) {
-      // Expression builder
-      out +=
-          'typedef ${className}ExpressionBuilder = Expression Function(${className}Table t);\n';
-      out += '\n';
-
-      // Table class definition
-      out += 'class ${className}Table extends Table {\n';
-
-      // Constructor
-      out += '  ${className}Table() : super(tableName: \'$tableName\');\n';
-      out += '\n';
-
-      out += '  @override\n';
-      out += '  String tableName = \'$tableName\';\n';
-
-      // Column descriptions
-      for (var field in fields) {
-        if (field.shouldSerializeFieldForDatabase(serverCode)) {
-          out +=
-              '  final ${field.name} = ${field.columnType}(\'${field.name}\');\n';
-        }
-      }
-      out += '\n';
-
-      // List of column values
-      out += '  @override\n';
-      out += '  List<Column> get columns => [\n';
-      for (var field in fields) {
-        if (field.shouldSerializeFieldForDatabase(serverCode)) {
-          out += '    ${field.name},\n';
-        }
-      }
-      out += '  ];\n';
-
-      // End class
-      out += '}\n';
-
-      out += '\n';
-
-      // Create instance of table
-      out += '@Deprecated(\'Use ${className}Table.t instead.\')\n';
-      out += '${className}Table t$className = ${className}Table();\n';
-    }
-
-    return out;
+    return library;
   }
 
   // Handle enums.
-  String _generateEnumFile(EnumDefinition enumDefinition) {
-    var out = '';
-
+  Library _generateEnumFile(EnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
 
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
-    out += '// ignore_for_file: depend_on_referenced_packages\n';
-    out += '\n';
+    var library = Library((library) {
+      library.body.add(
+        Enum((e) {
+          e.name = enumName;
+          e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
+          e.values.addAll([
+            for (var value in enumDefinition.values)
+              EnumValue((v) {
+                v.name = value;
+              })
+          ]);
 
-    if (serverCode) {
-      out +=
-          'import \'package:serverpod_serialization/serverpod_serialization.dart\';\n';
-    } else {
-      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-    }
+          e.methods.add(Method((m) => m
+            ..static = true
+            ..returns = refer('$enumName?')
+            ..name = 'fromJson'
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'index'
+              ..type = refer('int')))
+            ..body = (BlockBuilder()
+                  ..statements.addAll([
+                    const Code('switch(index){'),
+                    for (int i = 0; i < enumDefinition.values.length; i++)
+                      Code('case $i: return ${enumDefinition.values[i]};'),
+                    const Code('default: return null;'),
+                    const Code('}'),
+                  ]))
+                .build()));
 
-    out += 'enum $enumName with SerializableEntity {\n';
-    for (var value in enumDefinition.values) {
-      out += '  $value,\n';
-    }
-    out += ';\n';
-
-    out += '  static String get _className => \'$enumName\';\n';
-    out += '\n';
-    out += '  @override\n';
-    out += '  String get className => _className;\n';
-    out += '\n';
-
-    // Serialization
-    out +=
-        '  factory $enumName.fromSerialization(Map<String, dynamic> serialization) {\n';
-    out +=
-        '    var data = SerializableEntity.unwrapSerializationDataForClassName(_className, serialization);\n';
-    out += '    switch (data[\'index\']) {\n';
-    var i = 0;
-    for (var value in enumDefinition.values) {
-      out += '      case $i:\n';
-      out += '        return $enumName.$value;\n';
-      i += 1;
-    }
-    out += '      default:\n';
-    out +=
-        '        throw Exception(\'Invalid \$_className index \$data[\\\'index\\\']\');\n';
-    out += '    }\n';
-    out += '  }\n';
-    out += '\n';
-
-    out += '  @override\n';
-    out += '  Map<String, dynamic> serialize() {\n';
-    out += '    return wrapSerializationData({\n';
-    out += '      \'index\': index,\n';
-    out += '    });\n';
-    out += '  }\n';
-
-    out += '}\n';
-    return out;
+          e.methods.add(Method(
+            (m) => m
+              ..annotations.add(refer('override'))
+              ..returns = refer('int')
+              ..name = 'toJson'
+              ..lambda = true
+              ..body = refer('index').code,
+          ));
+        }),
+      );
+    });
+    return library;
   }
 
   @override
-  String generateFactory(List<ProtocolFileDefinition> classInfos) {
-    var out = '';
+  Library generateFactory(List<ProtocolFileDefinition> classInfos,
+      ProtocolDefinition protocolDefinition) {
+    var library = LibraryBuilder();
 
-    // Header
-    out += '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */\n';
-    out += '/*   To generate run: "serverpod generate"    */\n';
-    out += '\n';
-    out += '// ignore_for_file: public_member_api_docs\n';
-    out += '// ignore_for_file: unnecessary_import\n';
-    out += '// ignore_for_file: no_leading_underscores_for_local_identifiers\n';
-    out += '// ignore_for_file: library_private_types_in_public_api\n';
-    out += '// ignore_for_file: depend_on_referenced_packages\n';
-    out += '\n';
+    library.body.add(const Code('// ignore_for_file: equal_keys_in_map\n'));
 
-    out += 'library protocol;\n';
-    out += '\n';
+    library.name = 'protocol';
 
-    out += '// ignore: unused_import\n';
-    out += 'import \'dart:typed_data\';\n';
-    if (serverCode) {
-      out += 'import \'package:serverpod/serverpod.dart\';\n';
-    } else {
-      out += 'import \'package:serverpod_client/serverpod_client.dart\';\n';
-    }
+    // exports
+    library.directives.addAll([
+      for (var classInfo in classInfos)
+        Directive.export('${classInfo.fileName}.dart'),
+      if (!serverCode) Directive.export('client.dart'),
+    ]);
 
-    out += '\n';
+    var protocol = ClassBuilder();
 
-    // Import generated files
-    for (var classInfo in classInfos) {
-      out += 'import \'${classInfo.fileName}.dart\';\n';
-    }
-    out += '\n';
+    protocol
+      ..name = 'Protocol'
+      ..extend = serverCode
+          ? refer('SerializationManagerServer', serverpodUrl(true))
+          : refer('SerializationManager', serverpodUrl(false));
 
-    // Export generated files
-    for (var classInfo in classInfos) {
-      out += 'export \'${classInfo.fileName}.dart\';\n';
-    }
-    if (!serverCode) out += 'export \'client.dart\';\n';
-    out += '\n';
+    protocol.constructors.addAll([
+      Constructor((c) => c..name = '_'),
+      Constructor((c) => c
+        ..factory = true
+        ..body = refer('_instance').code),
+    ]);
 
-    // Fields
-    var extendedClass =
-        serverCode ? 'SerializationManagerServer' : 'SerializationManager';
+    protocol.fields.addAll([
+      Field((f) => f
+        ..name = 'customConstructors'
+        ..static = true
+        ..type = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('Type'),
+            refer('constructor', serverpodUrl(serverCode)),
+          ]))
+        ..modifier = FieldModifier.final$
+        ..assignment = literalMap({}).code),
+      Field((f) => f
+        ..name = '_instance'
+        ..static = true
+        ..type = refer('Protocol')
+        ..modifier = FieldModifier.final$
+        ..assignment = const Code('Protocol._()')),
+    ]);
+    protocol.methods.addAll([
+      Method((m) => m
+        ..annotations.add(refer('override'))
+        ..name = 'deserialize'
+        ..returns = refer('T')
+        ..types.add(refer('T'))
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'data'
+          ..type = refer('dynamic')))
+        ..optionalParameters.add(Parameter((p) => p
+          ..name = 't'
+          ..type = refer('Type?')))
+        ..body = Block.of([
+          const Code('t ??= T;'),
+          const Code(
+              'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
+          ...(<Expression, Code>{
+            for (var classInfo in classInfos)
+              refer(classInfo.className, '${classInfo.fileName}.dart'):
+                  Code.scope((a) =>
+                      '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                      '.fromJson(data'
+                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
+            for (var classInfo in classInfos)
+              refer('getType', serverpodUrl(serverCode)).call([], {}, [
+                TypeReference(
+                  (b) => b
+                    ..symbol = classInfo.className
+                    ..url = '${classInfo.fileName}.dart'
+                    ..isNullable = true,
+                )
+              ]): Code.scope((a) => '(data!=null?'
+                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                  '.fromJson(data'
+                  '${classInfo is ClassDefinition ? ',this' : ''})'
+                  ':null)as T'),
+          }..addEntries([
+                  for (var classInfo in classInfos)
+                    if (classInfo is ClassDefinition)
+                      for (var field in classInfo.fields)
+                        ...field.type.generateDeserialization(serverCode),
+                  for (var endPoint in protocolDefinition.endpoints)
+                    for (var method in endPoint.methods) ...[
+                      ...method.returnType
+                          .stripFuture()
+                          .generateDeserialization(serverCode),
+                      for (var parameter in method.parameters)
+                        ...parameter.type.generateDeserialization(serverCode),
+                      for (var parameter in method.parametersPositional)
+                        ...parameter.type.generateDeserialization(serverCode),
+                      for (var parameter in method.parametersNamed)
+                        ...parameter.type.generateDeserialization(serverCode),
+                    ],
+                  for (var extraClass in config.extraClasses)
+                    ...extraClass.generateDeserialization(serverCode),
+                  for (var extraClass in config.extraClasses)
+                    ...extraClass.asNullable.generateDeserialization(serverCode)
+                ]))
+              .entries
+              .map((e) => Block.of([
+                    const Code('if(t=='),
+                    e.key.code,
+                    const Code('){return '),
+                    e.value,
+                    const Code(';}'),
+                  ])),
+          for (var module in config.modules)
+            Code.scope((a) =>
+                'try{return ${a(refer('Protocol', module.url(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
+          if (config.name != 'serverpod' &&
+              (serverCode || config.clientDependsOnServiceClient))
+            Code.scope((a) =>
+                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}catch(_){}'),
+          const Code('return super.deserialize<T>(data,t);'),
+        ])),
+      Method((m) => m
+        ..annotations.add(refer('override'))
+        ..name = 'getClassNameForObject'
+        ..returns = refer('String?')
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'data'
+          ..type = refer('Object')))
+        ..body = Block.of([
+          if (config.modules.isNotEmpty) const Code('String? className;'),
+          for (var module in config.modules)
+            Block.of([
+              Code.scope((a) =>
+                  'className = ${a(refer('Protocol', module.url(serverCode)))}().getClassNameForObject(data);'),
+              Code(
+                  'if(className != null){return \'${module.name}.\$className\';}'),
+            ]),
+          for (var extraClass in config.extraClasses)
+            Code.scope((a) =>
+                'if(data is ${a(extraClass.reference(serverCode))}) {return \'${extraClass.className}\';}'),
+          for (var classInfo in classInfos)
+            Code.scope((a) =>
+                'if(data is ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}) {return \'${classInfo.className}\';}'),
+          const Code('return super.getClassNameForObject(data);'),
+        ])),
+      Method((m) => m
+        ..annotations.add(refer('override'))
+        ..name = 'deserializeByClassName'
+        ..returns = refer('dynamic')
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'data'
+          ..type = refer('Map<String,dynamic>')))
+        ..body = Block.of([
+          for (var module in config.modules)
+            Block.of([
+              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
+                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
+              Code.scope((a) =>
+                  'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeByClassName(data);'),
+              const Code('}'),
+            ]),
+          for (var extraClass in config.extraClasses)
+            Code.scope((a) =>
+                'if(data[\'className\'] == \'${extraClass.className}\'){'
+                'return deserialize<${a(extraClass.reference(serverCode))}>(data[\'data\']);}'),
+          for (var classInfo in classInfos)
+            Code.scope((a) =>
+                'if(data[\'className\'] == \'${classInfo.className}\'){'
+                'return deserialize<${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}>(data[\'data\']);}'),
+          const Code('return super.deserializeByClassName(data);'),
+        ])),
+      if (serverCode)
+        Method(
+          (m) => m
+            ..name = 'getTableForType'
+            ..annotations.add(refer('override'))
+            ..returns = TypeReference((t) => t
+              ..symbol = 'Table'
+              ..url = serverpodUrl(serverCode)
+              ..isNullable = true)
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 't'
+              ..type = refer('Type')))
+            ..body = Block.of([
+              for (var module in config.modules)
+                Code.scope((a) =>
+                    '{var table = ${a(refer('Protocol', module.url(serverCode)))}().getTableForType(t);'
+                    'if(table!=null) {return table;}}'),
+              if (config.name != 'serverpod' &&
+                  (serverCode || config.clientDependsOnServiceClient))
+                Code.scope((a) =>
+                    '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
+                    'if(table!=null) {return table;}}'),
+              if (classInfos.any((classInfo) =>
+                  classInfo is ClassDefinition && classInfo.tableName != null))
+                Block.of([
+                  const Code('switch(t){'),
+                  for (var classInfo in classInfos)
+                    if (classInfo is ClassDefinition &&
+                        classInfo.tableName != null)
+                      Code.scope((a) =>
+                          'case ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}:'
+                          'return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}.t;'),
+                  const Code('}'),
+                ]),
+              const Code('return null;'),
+            ]),
+        ),
+    ]);
 
-    out += 'class Protocol extends $extendedClass {\n';
-    out += '  static final Protocol instance = Protocol();\n';
-    out += '\n';
+    library.body.add(protocol.build());
 
-    out += '  final Map<String, constructor> _constructors = {};\n';
-    out += '  @override\n';
-    out += '  Map<String, constructor> get constructors => _constructors;\n';
-    out += '\n';
-    if (serverCode) {
-      out += '  final Map<String,String> _tableClassMapping = {};\n';
-      out += '  @override\n';
-      out +=
-          '  Map<String,String> get tableClassMapping => _tableClassMapping;\n';
-      out += '\n';
-      out += '  final Map<Type, Table> _typeTableMapping = {};\n';
-      out += '  @override\n';
-      out += '  Map<Type, Table> get typeTableMapping => _typeTableMapping;\n';
-      out += '\n';
-    }
-
-    // Constructor
-    out += '  Protocol() {\n';
-
-    for (var classInfo in classInfos) {
-      out +=
-          '    constructors[\'$classPrefix${classInfo.className}\'] = (Map<String, dynamic> serialization) => ${classInfo.className}.fromSerialization(serialization);\n';
-    }
-
-    if (serverCode) {
-      out += '\n';
-      for (var classInfo in classInfos) {
-        if (classInfo is! ClassDefinition || classInfo.tableName == null) {
-          continue;
-        }
-        out +=
-            '    tableClassMapping[\'${classInfo.tableName}\'] = \'$classPrefix${classInfo.className}\';\n';
-        out +=
-            '    typeTableMapping[${classInfo.className}] = ${classInfo.className}.t;\n';
-      }
-    }
-
-    out += '  }\n';
-    out += '}\n';
-
-    return out;
+    return library.build();
   }
 
   String get classPrefix {
@@ -490,197 +1003,18 @@ enum FieldScope {
 }
 
 class FieldDefinition {
-  String name;
-  late TypeDefinition type;
+  final String name;
+  TypeDefinition type;
 
-  String? get columnType {
-    if (type.typeNonNullable == 'int') return 'ColumnInt';
-    if (type.typeNonNullable == 'double') return 'ColumnDouble';
-    if (type.typeNonNullable == 'bool') return 'ColumnBool';
-    if (type.typeNonNullable == 'String') return 'ColumnString';
-    if (type.typeNonNullable == 'DateTime') return 'ColumnDateTime';
-    if (type.typeNonNullable == 'ByteData') return 'ColumnByteData';
-    return 'ColumnSerializable';
-  }
+  final FieldScope scope;
+  final String? parentTable;
 
-  FieldScope scope = FieldScope.all;
-  String? parentTable;
-
-  FieldDefinition(this.name, String description) {
-    var components = description.split(',').map((s) => s.trim()).toList();
-    var typeStr = components[0];
-
-    // Fix for handling Maps where the type contains a comma (which is also used
-    // to separate the options).
-    if (typeStr.startsWith('Map<') && components.length >= 2) {
-      typeStr = '$typeStr,${components[1]}';
-      components.removeAt(1);
-    }
-
-    if (components.length >= 2) {
-      _parseOptions(components.sublist(1));
-    }
-
-    // TODO: Fix package?
-    type = TypeDefinition(typeStr, null, null);
-  }
-
-  void _parseOptions(List<String> options) {
-    for (var option in options) {
-      if (option == 'database') {
-        scope = FieldScope.database;
-      } else if (option == 'api') {
-        scope = FieldScope.api;
-      } else if (option.startsWith('parent')) {
-        var components = option.split('=').map((s) => s.trim()).toList();
-        if (components.length == 2 && components[0] == 'parent') {
-          parentTable = components[1];
-        }
-      }
-    }
-  }
-
-  String get serialization {
-    if (type.isTypedList) {
-      if (type.listType!.typeNonNullable == 'String' ||
-          type.listType!.typeNonNullable == 'int' ||
-          type.listType!.typeNonNullable == 'double' ||
-          type.listType!.typeNonNullable == 'bool') {
-        return name;
-      } else if (type.listType!.typeNonNullable == 'DateTime') {
-        if (type.listType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.toIso8601String()).toList()';
-        } else {
-          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.toIso8601String()).toList()';
-        }
-      } else if (type.listType!.typeNonNullable == 'ByteData') {
-        if (type.listType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String?>((a) => a?.base64encodedString()).toList()';
-        } else {
-          return '$name${type.nullable ? '?' : ''}.map<String>((a) => a.base64encodedString()).toList()';
-        }
-      } else {
-        return '$name${type.nullable ? '?' : ''}.map((${type.listType!.type} a) => a${type.listType!.nullable ? '?' : ''}.serialize()).toList()';
-      }
-    }
-
-    if (type.isTypedMap) {
-      if (type.mapType!.typeNonNullable == 'String' ||
-          type.mapType!.typeNonNullable == 'int' ||
-          type.mapType!.typeNonNullable == 'double' ||
-          type.mapType!.typeNonNullable == 'bool') {
-        return name;
-      } else if (type.mapType!.typeNonNullable == 'DateTime') {
-        if (type.mapType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String,String?>((key, value) => MapEntry(key, value?.toIso8601String()))';
-        } else {
-          return '$name${type.nullable ? '?' : ''}.map<String,String?>((key, value) => MapEntry(key, value.toIso8601String()))';
-        }
-      } else if (type.mapType!.typeNonNullable == 'ByteData') {
-        if (type.mapType!.nullable) {
-          return '$name${type.nullable ? '?' : ''}.map<String,String?>((key, value) => MapEntry(key, value?.base64encodedString()))';
-        } else {
-          return '$name${type.nullable ? '?' : ''}.map<String,String>((key, value) => MapEntry(key, value.base64encodedString()))';
-        }
-      } else {
-        return '$name${type.nullable ? '?' : ''}.map<String, Map<String, dynamic>${type.mapType!.nullable ? '?' : ''}>((String key, ${type.mapType!.type} value) => MapEntry(key, value${type.mapType!.nullable ? '?' : ''}.serialize()))';
-      }
-    }
-
-    if (type.typeNonNullable == 'String' ||
-        type.typeNonNullable == 'int' ||
-        type.typeNonNullable == 'double' ||
-        type.typeNonNullable == 'bool') {
-      return name;
-    } else if (type.typeNonNullable == 'DateTime') {
-      return '$name${type.nullable ? '?' : ''}.toUtc().toIso8601String()';
-    } else if (type.typeNonNullable == 'ByteData') {
-      return '$name${type.nullable ? '?' : ''}.base64encodedString()';
-    } else {
-      return '$name${type.nullable ? '?' : ''}.serialize()';
-    }
-  }
-
-  String get deserialization {
-    if (type.isTypedList) {
-      if (type.listType!.typeNonNullable == 'String' ||
-          type.listType!.typeNonNullable == 'int' ||
-          type.listType!.typeNonNullable == 'double' ||
-          type.listType!.typeNonNullable == 'bool') {
-        return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<${type.listType!.type}>()';
-      } else if (type.listType!.typeNonNullable == 'DateTime') {
-        if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime?>((a) => a != null ? DateTime.tryParse(a) : null).toList()';
-        } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<DateTime>((a) => DateTime.tryParse(a)!).toList()';
-        }
-      } else if (type.listType!.typeNonNullable == 'ByteData') {
-        if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData?>((a) => (a as String?)?.base64DecodedByteData()).toList()';
-        } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<ByteData>((a) => (a as String).base64DecodedByteData()!).toList()';
-        }
-      } else {
-        if (type.listType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => a != null ? ${type.listType!.type}.fromSerialization(a) : null)?.toList()';
-        } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<${type.listType!.type}>((a) => ${type.listType!.type}.fromSerialization(a))?.toList()';
-        }
-      }
-    }
-
-    if (type.isTypedMap) {
-      if (type.mapType!.typeNonNullable == 'String' ||
-          type.mapType!.typeNonNullable == 'int' ||
-          type.mapType!.typeNonNullable == 'double' ||
-          type.mapType!.typeNonNullable == 'bool') {
-        return '_data[\'$name\']${type.nullable ? '?' : '!'}.cast<String, ${type.mapType!.type}>()';
-      } else if (type.mapType!.typeNonNullable == 'DateTime') {
-        if (type.mapType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, DateTime?>((String key, dynamic value) => MapEntry(key, value == null ? null : DateTime.tryParse(value as String)))';
-        } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, DateTime>((String key, dynamic value) => MapEntry(key, DateTime.tryParse(value as String)!))';
-        }
-      } else if (type.mapType!.typeNonNullable == 'ByteData') {
-        if (type.mapType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ByteData?>((String key, dynamic value) => MapEntry(key, (value as String?)?.base64DecodedByteData()))';
-        } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ByteData>((String key, dynamic value) => MapEntry(key, (value as String).base64DecodedByteData()!))';
-        }
-      } else {
-        if (type.mapType!.nullable) {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ${type.mapType!.type}>((String key, dynamic value) => MapEntry(key, value != null ? ${type.mapType!.type}.fromSerialization(value) : null))';
-        } else {
-          return '_data[\'$name\']${type.nullable ? '?' : '!'}.map<String, ${type.mapType!.type}>((String key, dynamic value) => MapEntry(key, ${type.mapType!.type}.fromSerialization(value)))';
-        }
-      }
-    }
-
-    if (type.typeNonNullable == 'String' ||
-        type.typeNonNullable == 'int' ||
-        type.typeNonNullable == 'double' ||
-        type.typeNonNullable == 'bool') {
-      return '_data[\'$name\']${type.nullable ? '' : '!'}';
-    } else if (type.typeNonNullable == 'DateTime') {
-      if (type.nullable) {
-        return '_data[\'$name\'] != null ? DateTime.tryParse(_data[\'$name\']) : null';
-      } else {
-        return 'DateTime.tryParse(_data[\'$name\'])!';
-      }
-    } else if (type.typeNonNullable == 'ByteData') {
-      if (type.nullable) {
-        return '_data[\'$name\'] == null ? null : (_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData() : ByteData.view((_data[\'$name\'] as Uint8List).buffer))';
-      } else {
-        return '_data[\'$name\'] is String ? (_data[\'$name\'] as String).base64DecodedByteData()! : ByteData.view((_data[\'$name\'] as Uint8List).buffer)';
-      }
-    } else {
-      if (type.nullable) {
-        return '_data[\'$name\'] != null ? $type.fromSerialization(_data[\'$name\']) : null';
-      } else {
-        return '$type.fromSerialization(_data[\'$name\'])';
-      }
-    }
-  }
+  FieldDefinition({
+    required this.name,
+    required this.type,
+    required this.scope,
+    this.parentTable,
+  });
 
   bool shouldIncludeField(bool serverCode) {
     if (serverCode) return true;

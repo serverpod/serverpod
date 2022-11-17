@@ -24,13 +24,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
     String host,
     SerializationManager serializationManager, {
     dynamic context,
-    ServerpodClientErrorCallback? errorHandler,
     AuthenticationKeyManager? authenticationKeyManager,
     bool logFailedCalls = true,
   }) : super(
           host,
           serializationManager,
-          errorHandler: errorHandler,
           authenticationKeyManager: authenticationKeyManager,
           logFailedCalls: logFailedCalls,
         ) {
@@ -60,11 +58,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args) async {
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
-    String? data;
     try {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
@@ -80,33 +77,36 @@ abstract class ServerpodClient extends ServerpodClientShared {
       await request.flush();
 
       var response = await request.close(); // done instead of close() ?
-      data = await _readResponse(response);
+      var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
-        throw (ServerpodClientException(data!, response.statusCode));
+        throw (ServerpodClientException(data, response.statusCode));
       }
 
-      return parseData(data!, returnTypeName, serializationManager);
-    } catch (e, stackTrace) {
+      if (T == getType<void>()) {
+        return returnVoid() as T;
+      } else {
+        return parseData<T>(data, T, serializationManager);
+      }
+    } catch (e) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
 
-      if (errorHandler != null) {
-        errorHandler!(e, stackTrace);
-      } else {
-        rethrow;
-      }
+      rethrow;
     }
   }
 
-  Future<dynamic> _readResponse(HttpClientResponse response) {
-    var completer = Completer();
+  Future<String> _readResponse(HttpClientResponse response) {
+    var completer = Completer<String>();
     var contents = StringBuffer();
     response.transform(const Utf8Decoder()).listen((String data) {
       contents.write(data);
-    }, onDone: () => completer.complete(contents.toString()));
+    }, onDone: () //
+        {
+      return completer.complete(contents.toString());
+    });
     return completer.future;
   }
 

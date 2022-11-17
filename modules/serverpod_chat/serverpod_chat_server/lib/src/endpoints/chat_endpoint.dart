@@ -109,7 +109,8 @@ class ChatEndpoint extends Endpoint {
       // Remove listener for a subscribed channel
       var listener = chatSession.messageListeners[message.channel];
       if (listener != null) {
-        session.messages.removeListener(message.className, listener);
+        session.messages
+            .removeListener(_channelPrefix + message.channel, listener);
         chatSession.messageListeners.remove(message.channel);
       }
     } else if (message is ChatMessagePost) {
@@ -138,7 +139,7 @@ class ChatEndpoint extends Endpoint {
       session.messages.postMessage(
         _channelPrefix + message.channel,
         chatMessage,
-        local: ChatConfig.current.postMessagesLocallyOnly,
+        global: !ChatConfig.current.postMessagesLocallyOnly,
       );
     } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to

@@ -1,7 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_client/src/custom_classes.dart';
+import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 import 'package:test/test.dart';
+
+import 'config.dart';
 
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
@@ -17,9 +21,11 @@ ByteData createByteData() {
 }
 
 void main() {
-  var client = Client('http://serverpod_test_server:8080/');
+  var client = Client(serverUrl);
 
-  setUp(() {});
+  setUp(() {
+    Protocol().registerCustomConstructors();
+  });
 
   group('Calls', () {
     test('Named parameters basic call', () async {
@@ -74,6 +80,22 @@ void main() {
       expect(result[2], equals(2));
     });
 
+    test('List<List<int>> parameter and return type', () async {
+      var result = await client.listParameters.returnIntListList([
+        [0, 1, 2],
+        [3, 4, 5]
+      ]);
+      expect(result.length, equals(2));
+      expect(result[0].length, equals(3));
+      expect(result[0][0], equals(0));
+      expect(result[0][1], equals(1));
+      expect(result[0][2], equals(2));
+      expect(result[1].length, equals(3));
+      expect(result[1][0], equals(3));
+      expect(result[1][1], equals(4));
+      expect(result[1][2], equals(5));
+    });
+
     test('List<int>? parameter and return type', () async {
       var result = await client.listParameters.returnIntListNullable([0, 1, 2]);
       expect(result, isNotNull);
@@ -83,6 +105,40 @@ void main() {
       expect(result[2], equals(2));
 
       result = await client.listParameters.returnIntListNullable(null);
+      expect(result, isNull);
+    });
+
+    test('List<List<int>?> parameter and return type', () async {
+      var result = await client.listParameters.returnIntListNullableList([
+        [0, 1, 2],
+        null
+      ]);
+      expect(result.length, equals(2));
+      expect(result[0], isNotNull);
+      expect(result[0]!.length, equals(3));
+      expect(result[0]![0], equals(0));
+      expect(result[0]![1], equals(1));
+      expect(result[0]![2], equals(2));
+      expect(result[1], isNull);
+    });
+
+    test('List<List<int>>? parameter and return type', () async {
+      var result = await client.listParameters.returnIntListListNullable([
+        [0, 1, 2],
+        [3, 4, 5]
+      ]);
+      expect(result, isNotNull);
+      expect(result!.length, equals(2));
+      expect(result[0].length, equals(3));
+      expect(result[0][0], equals(0));
+      expect(result[0][1], equals(1));
+      expect(result[0][2], equals(2));
+      expect(result[1].length, equals(3));
+      expect(result[1][0], equals(3));
+      expect(result[1][1], equals(4));
+      expect(result[1][2], equals(5));
+
+      result = await client.listParameters.returnIntListListNullable(null);
       expect(result, isNull);
     });
 
@@ -293,6 +349,26 @@ void main() {
       expect(result['2'], equals(2));
     });
 
+    test('Map<String, Map<String, int>> parameter and return type', () async {
+      var result = await client.mapParameters.returnNestedIntMap({
+        'a': {
+          '0': 0,
+          '1': 1,
+        },
+        'b': {
+          '2': 2,
+          '3': 3,
+        },
+      });
+      expect(result.length, equals(2));
+      expect(result['a']!.length, equals(2));
+      expect(result['a']!['0'], equals(0));
+      expect(result['a']!['1'], equals(1));
+      expect(result['b']!.length, equals(2));
+      expect(result['b']!['2'], equals(2));
+      expect(result['b']!['3'], equals(3));
+    });
+
     test('Map<String, int>? parameter and return type', () async {
       var result = await client.mapParameters.returnIntMapNullable({
         '0': 0,
@@ -337,6 +413,42 @@ void main() {
       result =
           await client.mapParameters.returnNullableIntMapNullableInts(null);
       expect(result, isNull);
+    });
+
+    test('Map<int, int> parameter and return type', () async {
+      var result = await client.mapParameters.returnIntIntMap({
+        0: 0,
+        10: 1,
+        20: 2,
+      });
+      expect(result.length, equals(3));
+      expect(result[0], equals(0));
+      expect(result[10], equals(1));
+      expect(result[20], equals(2));
+    });
+
+    test('Map<TestEnum, int> parameter and return type', () async {
+      var result = await client.mapParameters.returnEnumIntMap({
+        TestEnum.one: 1,
+        TestEnum.two: 2,
+        TestEnum.three: 3,
+      });
+      expect(result.length, equals(3));
+      expect(result[TestEnum.one], equals(1));
+      expect(result[TestEnum.two], equals(2));
+      expect(result[TestEnum.three], equals(3));
+    });
+
+    test('Map<String, TestEnum> parameter and return type', () async {
+      var result = await client.mapParameters.returnEnumMap({
+        'one': TestEnum.one,
+        'two': TestEnum.two,
+        'three': TestEnum.three,
+      });
+      expect(result.length, equals(3));
+      expect(result['one'], equals(TestEnum.one));
+      expect(result['two'], equals(TestEnum.two));
+      expect(result['three'], equals(TestEnum.three));
     });
 
     test('Map<String, double> parameter and return type', () async {
@@ -525,10 +637,100 @@ void main() {
           .returnNullableSimpleDataMapNullableSimpleData(null);
       expect(result, isNull);
     });
+
+    test('CustomClass parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClass(CustomClass('customClassText'));
+
+      expect(result, isNotNull);
+      expect(result.value, 'customClassText');
+    });
+
+    test('CustomClass? parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClassNullable(CustomClass('customClassText'));
+
+      expect(result, isNotNull);
+      expect(result!.value, 'customClassText');
+
+      result = await client.customTypes.returnCustomClassNullable(null);
+
+      expect(result, isNull);
+    });
+
+    test('CustomClass2 parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClass2(const CustomClass2('text'));
+
+      expect(result, isNotNull);
+      expect(result.value, 'text');
+    });
+
+    test('CustomClass2? parameter and return type', () async {
+      var result = await client.customTypes
+          .returnCustomClass2Nullable(const CustomClass2('text'));
+
+      expect(result, isNotNull);
+      expect(result!.value, 'text');
+
+      result = await client.customTypes.returnCustomClass2Nullable(null);
+
+      expect(result, isNull);
+    });
+
+    test('ExternalCustomClass parameter and return type', () async {
+      var result = await client.customTypes
+          .returnExternalCustomClass(const ExternalCustomClass('text'));
+
+      expect(result, isNotNull);
+      expect(result.value, 'text');
+    });
+
+    test('ExternalCustomClass parameter and return type', () async {
+      var result = await client.customTypes
+          .returnExternalCustomClassNullable(const ExternalCustomClass('text'));
+
+      expect(result, isNotNull);
+      expect(result!.value, 'text');
+
+      result = await client.customTypes.returnExternalCustomClassNullable(null);
+
+      expect(result, isNull);
+    });
+
+    test('FreezedCustomClass parameter and return type', () async {
+      var result = await client.customTypes.returnFreezedCustomClass(
+        const FreezedCustomClass(
+          firstName: 'First',
+          lastName: 'Last',
+          age: 42,
+        ),
+      );
+
+      expect(result, isNotNull);
+      expect(result.firstName, 'First');
+    });
+
+    test('ExternalCustomClass parameter and return type', () async {
+      var result = await client.customTypes.returnFreezedCustomClassNullable(
+        const FreezedCustomClass(
+          firstName: 'First',
+          lastName: 'Last',
+          age: 42,
+        ),
+      );
+
+      expect(result, isNotNull);
+      expect(result!.firstName, 'First');
+
+      result = await client.customTypes.returnFreezedCustomClassNullable(null);
+
+      expect(result, isNull);
+    });
   });
 
   group('Basic types', () {
-    var dateTime = DateTime(1976, 9, 10, 2, 10);
+    var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
 
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
@@ -584,7 +786,7 @@ void main() {
 
     test('Type DateTime', () async {
       var result = await client.basicTypes.testDateTime(dateTime);
-      expect(result!.toLocal(), equals(dateTime));
+      expect(result!, equals(dateTime));
     });
 
     test('Type null DateTime', () async {
@@ -605,7 +807,7 @@ void main() {
 
   group('Database', () {
     test('Write and read', () async {
-      var dateTime = DateTime(1976, 9, 10, 2, 10);
+      var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
 
       // TODO: Support ByteData in database store
       var types = Types(
@@ -637,7 +839,7 @@ void main() {
         expect(storedTypes.anInt, equals(42));
         expect(storedTypes.aDouble, equals(1.5));
         expect(storedTypes.aString, equals('Foo'));
-        expect(storedTypes.aDateTime?.toLocal(), equals(dateTime));
+        expect(storedTypes.aDateTime, equals(dateTime));
         // expect(storedTypes.aByteData!.lengthInBytes, equals(256));
       }
     });
@@ -670,12 +872,19 @@ void main() {
     });
 
     test('Write and read enums', () async {
-      var object = ObjectWithEnum(
-        testEnum: TestEnum.two,
-        nullableEnum: null,
-        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
-        nullableEnumList: [TestEnum.one, null, TestEnum.three],
-      );
+      var object =
+          ObjectWithEnum(testEnum: TestEnum.two, nullableEnum: null, enumList: [
+        TestEnum.one,
+        TestEnum.two,
+        TestEnum.three
+      ], nullableEnumList: [
+        TestEnum.one,
+        null,
+        TestEnum.three
+      ], enumListList: [
+        [TestEnum.one, TestEnum.two],
+        [TestEnum.two, TestEnum.one]
+      ]);
 
       var objectId = await client.basicDatabase.storeObjectWithEnum(object);
       expect(objectId, isNotNull);
@@ -684,6 +893,13 @@ void main() {
           await client.basicDatabase.getObjectWithEnum(objectId!);
       expect(returnedObject, isNotNull);
       expect(returnedObject!.testEnum, equals(TestEnum.two));
+      expect(returnedObject.enumListList.length, equals(2));
+      expect(returnedObject.enumListList[0].length, equals(2));
+      expect(returnedObject.enumListList[0][0], equals(TestEnum.one));
+      expect(returnedObject.enumListList[0][1], equals(TestEnum.two));
+      expect(returnedObject.enumListList[1].length, equals(2));
+      expect(returnedObject.enumListList[1][0], equals(TestEnum.two));
+      expect(returnedObject.enumListList[1][1], equals(TestEnum.one));
     });
 
     test('Raw query', () async {

@@ -3,4 +3,4 @@ fields:
   channel: String
   initialMessageChunk: ChatMessageChunk
   lastReadMessageId: int
-  userInfo: serverpod_auth.UserInfo
+  userInfo: module:auth:UserInfo

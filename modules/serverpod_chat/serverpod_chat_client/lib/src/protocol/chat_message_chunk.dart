@@ -1,47 +1,47 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-class ChatMessageChunk extends SerializableEntity {
-  @override
-  String get className => 'serverpod_chat_server.ChatMessageChunk';
-
-  late String channel;
-  late List<ChatMessage> messages;
-  late bool hasOlderMessages;
-
+class ChatMessageChunk extends _i1.SerializableEntity {
   ChatMessageChunk({
     required this.channel,
     required this.messages,
     required this.hasOlderMessages,
   });
 
-  ChatMessageChunk.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    channel = _data['channel']!;
-    messages = _data['messages']!
-        .map<ChatMessage>((a) => ChatMessage.fromSerialization(a))
-        ?.toList();
-    hasOlderMessages = _data['hasOlderMessages']!;
+  factory ChatMessageChunk.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ChatMessageChunk(
+      channel: serializationManager
+          .deserialize<String>(jsonSerialization['channel']),
+      messages: serializationManager
+          .deserialize<List<_i2.ChatMessage>>(jsonSerialization['messages']),
+      hasOlderMessages: serializationManager
+          .deserialize<bool>(jsonSerialization['hasOlderMessages']),
+    );
   }
 
+  String channel;
+
+  List<_i2.ChatMessage> messages;
+
+  bool hasOlderMessages;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'channel': channel,
-      'messages': messages.map((ChatMessage a) => a.serialize()).toList(),
+      'messages': messages,
       'hasOlderMessages': hasOlderMessages,
-    });
+    };
   }
 }

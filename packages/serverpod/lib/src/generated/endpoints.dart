@@ -1,157 +1,190 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: unused_import
+// ignore_for_file: implementation_imports
 
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod/serverpod.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../endpoints/insights.dart' as _i2;
+import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
+import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
 
-import 'protocol.dart';
-
-import '../endpoints/cache.dart';
-import '../endpoints/insights.dart';
-
-class Endpoints extends EndpointDispatch {
+class Endpoints extends _i1.EndpointDispatch {
   @override
-  void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
-      'insights': InsightsEndpoint()..initialize(server, 'insights', null),
+  void initializeEndpoints(_i1.Server server) {
+    var endpoints = <String, _i1.Endpoint>{
+      'insights': _i2.InsightsEndpoint()
+        ..initialize(
+          server,
+          'insights',
+          null,
+        )
     };
-
-    connectors['insights'] = EndpointConnector(
+    connectors['insights'] = _i1.EndpointConnector(
       name: 'insights',
       endpoint: endpoints['insights']!,
       methodConnectors: {
-        'getRuntimeSettings': MethodConnector(
+        'getRuntimeSettings': _i1.MethodConnector(
           name: 'getRuntimeSettings',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint)
-                .getRuntimeSettings(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .getRuntimeSettings(session),
         ),
-        'setRuntimeSettings': MethodConnector(
+        'setRuntimeSettings': _i1.MethodConnector(
           name: 'setRuntimeSettings',
           params: {
-            'runtimeSettings': ParameterDescription(
-                name: 'runtimeSettings',
-                type: RuntimeSettings,
-                nullable: false),
+            'runtimeSettings': _i1.ParameterDescription(
+              name: 'runtimeSettings',
+              type: _i1.getType<_i3.RuntimeSettings>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint)
-                .setRuntimeSettings(
-              session,
-              params['runtimeSettings'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .setRuntimeSettings(
+            session,
+            params['runtimeSettings'],
+          ),
         ),
-        'clearAllLogs': MethodConnector(
+        'clearAllLogs': _i1.MethodConnector(
           name: 'clearAllLogs',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).clearAllLogs(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .clearAllLogs(session),
         ),
-        'getSessionLog': MethodConnector(
+        'getSessionLog': _i1.MethodConnector(
           name: 'getSessionLog',
           params: {
-            'numEntries': ParameterDescription(
-                name: 'numEntries', type: int, nullable: true),
-            'filter': ParameterDescription(
-                name: 'filter', type: SessionLogFilter, nullable: true),
+            'numEntries': _i1.ParameterDescription(
+              name: 'numEntries',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'filter': _i1.ParameterDescription(
+              name: 'filter',
+              type: _i1.getType<_i4.SessionLogFilter?>(),
+              nullable: true,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).getSessionLog(
-              session,
-              params['numEntries'],
-              params['filter'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).getSessionLog(
+            session,
+            params['numEntries'],
+            params['filter'],
+          ),
         ),
-        'getOpenSessionLog': MethodConnector(
+        'getOpenSessionLog': _i1.MethodConnector(
           name: 'getOpenSessionLog',
           params: {
-            'numEntries': ParameterDescription(
-                name: 'numEntries', type: int, nullable: true),
-            'filter': ParameterDescription(
-                name: 'filter', type: SessionLogFilter, nullable: true),
+            'numEntries': _i1.ParameterDescription(
+              name: 'numEntries',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'filter': _i1.ParameterDescription(
+              name: 'filter',
+              type: _i1.getType<_i4.SessionLogFilter?>(),
+              nullable: true,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint)
-                .getOpenSessionLog(
-              session,
-              params['numEntries'],
-              params['filter'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).getOpenSessionLog(
+            session,
+            params['numEntries'],
+            params['filter'],
+          ),
         ),
-        'getCachesInfo': MethodConnector(
+        'getCachesInfo': _i1.MethodConnector(
           name: 'getCachesInfo',
           params: {
-            'fetchKeys': ParameterDescription(
-                name: 'fetchKeys', type: bool, nullable: false),
+            'fetchKeys': _i1.ParameterDescription(
+              name: 'fetchKeys',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).getCachesInfo(
-              session,
-              params['fetchKeys'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).getCachesInfo(
+            session,
+            params['fetchKeys'],
+          ),
         ),
-        'shutdown': MethodConnector(
+        'shutdown': _i1.MethodConnector(
           name: 'shutdown',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).shutdown(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).shutdown(session),
         ),
-        'checkHealth': MethodConnector(
+        'checkHealth': _i1.MethodConnector(
           name: 'checkHealth',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).checkHealth(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .checkHealth(session),
         ),
-        'getHealthData': MethodConnector(
+        'getHealthData': _i1.MethodConnector(
           name: 'getHealthData',
           params: {
-            'start': ParameterDescription(
-                name: 'start', type: DateTime, nullable: false),
-            'end': ParameterDescription(
-                name: 'end', type: DateTime, nullable: false),
+            'start': _i1.ParameterDescription(
+              name: 'start',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'end': _i1.ParameterDescription(
+              name: 'end',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).getHealthData(
-              session,
-              params['start'],
-              params['end'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).getHealthData(
+            session,
+            params['start'],
+            params['end'],
+          ),
         ),
-        'hotReload': MethodConnector(
+        'hotReload': _i1.MethodConnector(
           name: 'hotReload',
           params: {},
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['insights'] as InsightsEndpoint).hotReload(
-              session,
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .hotReload(session),
         ),
       },
     );
   }
-
-  @override
-  void registerModules(Serverpod pod) {}
 }

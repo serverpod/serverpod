@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
+import 'generator.dart';
 import 'pgsql_generator.dart';
 import 'protocol_definition.dart';
 
@@ -11,6 +13,8 @@ void performGenerateClasses({
   required bool verbose,
   required List<ProtocolFileDefinition> classDefinitions,
   required CodeAnalysisCollector collector,
+  required ProtocolDefinition protocolDefinition,
+  required CodeGenerator codeGenerator,
 }) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
@@ -19,8 +23,9 @@ void performGenerateClasses({
     outputDirectoryPath: config.generatedServerProtocolPath,
     serverCode: true,
     classDefinitions: classDefinitions,
+    protocolDefinition: protocolDefinition,
   );
-  serverGenerator.generate(collector: collector);
+  serverGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 
   // Generate client side code
   if (verbose) print('Generating Dart client side code.');
@@ -29,8 +34,9 @@ void performGenerateClasses({
     outputDirectoryPath: config.generatedClientProtocolPath,
     serverCode: false,
     classDefinitions: classDefinitions,
+    protocolDefinition: protocolDefinition,
   );
-  clientGenerator.generate(collector: collector);
+  clientGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 }
 
 abstract class ClassGenerator {
@@ -38,17 +44,22 @@ abstract class ClassGenerator {
   final bool verbose;
   final bool serverCode;
   final List<ProtocolFileDefinition> classDefinitions;
+  final ProtocolDefinition protocolDefinition;
 
   ClassGenerator({
     required this.verbose,
     required this.classDefinitions,
     required this.outputDirectoryPath,
     required this.serverCode,
+    required this.protocolDefinition,
   });
 
   String get outputExtension;
 
-  void generate({required CodeAnalysisCollector collector}) {
+  void generate({
+    required CodeAnalysisCollector collector,
+    required CodeGenerator codeGenerator,
+  }) {
     for (var classDefinition in classDefinitions) {
       var outputFile = File(p.join(
         outputDirectoryPath,
@@ -59,7 +70,7 @@ abstract class ClassGenerator {
         var out = generateFile(classDefinition);
 
         outputFile.createSync();
-        outputFile.writeAsStringSync(out);
+        outputFile.writeAsStringSync(codeGenerator(out));
 
         collector.addGeneratedFile(outputFile);
       } catch (e, stackTrace) {
@@ -70,9 +81,9 @@ abstract class ClassGenerator {
 
     // Generate factory class
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
-    var out = generateFactory(classDefinitions);
+    var out = generateFactory(classDefinitions, protocolDefinition);
     outFile.createSync();
-    outFile.writeAsStringSync(out);
+    outFile.writeAsStringSync(codeGenerator(out));
     collector.addGeneratedFile(outFile);
 
     if (serverCode) {
@@ -85,7 +96,8 @@ abstract class ClassGenerator {
     }
   }
 
-  String generateFile(ProtocolFileDefinition classDefinition);
+  Library generateFile(ProtocolFileDefinition classDefinition);
 
-  String generateFactory(List<ProtocolFileDefinition> classNames);
+  Library generateFactory(List<ProtocolFileDefinition> classNames,
+      ProtocolDefinition protocolDefinition);
 }

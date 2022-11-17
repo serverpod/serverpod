@@ -1,29 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ServerHealthMetric extends SerializableEntity {
-  @override
-  String get className => 'ServerHealthMetric';
-
-  int? id;
-  late String name;
-  late String serverId;
-  late DateTime timestamp;
-  late bool isHealthy;
-  late double value;
-
+class ServerHealthMetric extends _i1.SerializableEntity {
   ServerHealthMetric({
     this.id,
     required this.name,
@@ -33,25 +18,45 @@ class ServerHealthMetric extends SerializableEntity {
     required this.value,
   });
 
-  ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    name = _data['name']!;
-    serverId = _data['serverId']!;
-    timestamp = DateTime.tryParse(_data['timestamp'])!;
-    isHealthy = _data['isHealthy']!;
-    value = _data['value']!;
+  factory ServerHealthMetric.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ServerHealthMetric(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      serverId: serializationManager
+          .deserialize<String>(jsonSerialization['serverId']),
+      timestamp: serializationManager
+          .deserialize<DateTime>(jsonSerialization['timestamp']),
+      isHealthy: serializationManager
+          .deserialize<bool>(jsonSerialization['isHealthy']),
+      value:
+          serializationManager.deserialize<double>(jsonSerialization['value']),
+    );
   }
 
+  int? id;
+
+  String name;
+
+  String serverId;
+
+  DateTime timestamp;
+
+  bool isHealthy;
+
+  double value;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp.toUtc().toIso8601String(),
+      'timestamp': timestamp,
       'isHealthy': isHealthy,
       'value': value,
-    });
+    };
   }
 }

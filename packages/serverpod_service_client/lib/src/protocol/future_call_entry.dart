@@ -1,29 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class FutureCallEntry extends SerializableEntity {
-  @override
-  String get className => 'FutureCallEntry';
-
-  int? id;
-  late String name;
-  late DateTime time;
-  String? serializedObject;
-  late String serverId;
-  String? identifier;
-
+class FutureCallEntry extends _i1.SerializableEntity {
   FutureCallEntry({
     this.id,
     required this.name,
@@ -33,25 +18,45 @@ class FutureCallEntry extends SerializableEntity {
     this.identifier,
   });
 
-  FutureCallEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    name = _data['name']!;
-    time = DateTime.tryParse(_data['time'])!;
-    serializedObject = _data['serializedObject'];
-    serverId = _data['serverId']!;
-    identifier = _data['identifier'];
+  factory FutureCallEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return FutureCallEntry(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
+      serializedObject: serializationManager
+          .deserialize<String?>(jsonSerialization['serializedObject']),
+      serverId: serializationManager
+          .deserialize<String>(jsonSerialization['serverId']),
+      identifier: serializationManager
+          .deserialize<String?>(jsonSerialization['identifier']),
+    );
   }
 
+  int? id;
+
+  String name;
+
+  DateTime time;
+
+  String? serializedObject;
+
+  String serverId;
+
+  String? identifier;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'name': name,
-      'time': time.toUtc().toIso8601String(),
+      'time': time,
       'serializedObject': serializedObject,
       'serverId': serverId,
       'identifier': identifier,
-    });
+    };
   }
 }
