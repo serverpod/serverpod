@@ -3,6 +3,7 @@
 
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: implementation_imports
 
 library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
@@ -21,8 +22,9 @@ import 'dart:typed_data' as _i12;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i13;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i14;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i15;
-import 'package:serverpod_test_module_client/module.dart' as _i16;
-import 'package:serverpod_auth_client/module.dart' as _i17;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i16;
+import 'package:serverpod_test_module_client/module.dart' as _i17;
+import 'package:serverpod_auth_client/module.dart' as _i18;
 export 'nullability.dart';
 export 'object_field_scopes.dart';
 export 'object_with_enum.dart';
@@ -529,14 +531,30 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i15.CustomClass) {
       return _i15.CustomClass.fromJson(data, this) as T;
     }
+    if (t == _i16.ExternalCustomClass) {
+      return _i16.ExternalCustomClass.fromJson(data, this) as T;
+    }
+    if (t == _i16.FreezedCustomClass) {
+      return _i16.FreezedCustomClass.fromJson(data, this) as T;
+    }
     if (t == _i1.getType<_i15.CustomClass?>()) {
       return (data != null ? _i15.CustomClass.fromJson(data, this) : null) as T;
     }
-    try {
-      return _i16.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    if (t == _i1.getType<_i16.ExternalCustomClass?>()) {
+      return (data != null
+          ? _i16.ExternalCustomClass.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i16.FreezedCustomClass?>()) {
+      return (data != null
+          ? _i16.FreezedCustomClass.fromJson(data, this)
+          : null) as T;
+    }
     try {
       return _i17.Protocol().deserialize<T>(data, t);
+    } catch (_) {}
+    try {
+      return _i18.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -544,16 +562,22 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i16.Protocol().getClassNameForObject(data);
+    className = _i17.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
-    className = _i17.Protocol().getClassNameForObject(data);
+    className = _i18.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
     if (data is _i15.CustomClass) {
       return 'CustomClass';
+    }
+    if (data is _i16.ExternalCustomClass) {
+      return 'ExternalCustomClass';
+    }
+    if (data is _i16.FreezedCustomClass) {
+      return 'FreezedCustomClass';
     }
     if (data is _i2.Nullability) {
       return 'Nullability';
@@ -589,14 +613,20 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
-      return _i16.Protocol().deserializeByClassName(data);
+      return _i17.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i17.Protocol().deserializeByClassName(data);
+      return _i18.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
       return deserialize<_i15.CustomClass>(data['data']);
+    }
+    if (data['className'] == 'ExternalCustomClass') {
+      return deserialize<_i16.ExternalCustomClass>(data['data']);
+    }
+    if (data['className'] == 'FreezedCustomClass') {
+      return deserialize<_i16.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'Nullability') {
       return deserialize<_i2.Nullability>(data['data']);

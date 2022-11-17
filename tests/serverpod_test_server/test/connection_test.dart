@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
+import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 import 'package:test/test.dart';
 
 import 'config.dart';
@@ -673,6 +674,56 @@ void main() {
       expect(result!.value, 'text');
 
       result = await client.customTypes.returnCustomClass2Nullable(null);
+
+      expect(result, isNull);
+    });
+
+    test('ExternalCustomClass parameter and return type', () async {
+      var result = await client.customTypes
+          .returnExternalCustomClass(const ExternalCustomClass('text'));
+
+      expect(result, isNotNull);
+      expect(result.value, 'text');
+    });
+
+    test('ExternalCustomClass parameter and return type', () async {
+      var result = await client.customTypes
+          .returnExternalCustomClassNullable(const ExternalCustomClass('text'));
+
+      expect(result, isNotNull);
+      expect(result!.value, 'text');
+
+      result = await client.customTypes.returnExternalCustomClassNullable(null);
+
+      expect(result, isNull);
+    });
+
+    test('FreezedCustomClass parameter and return type', () async {
+      var result = await client.customTypes.returnFreezedCustomClass(
+        const FreezedCustomClass(
+          firstName: 'First',
+          lastName: 'Last',
+          age: 42,
+        ),
+      );
+
+      expect(result, isNotNull);
+      expect(result.firstName, 'First');
+    });
+
+    test('ExternalCustomClass parameter and return type', () async {
+      var result = await client.customTypes.returnFreezedCustomClassNullable(
+        const FreezedCustomClass(
+          firstName: 'First',
+          lastName: 'Last',
+          age: 42,
+        ),
+      );
+
+      expect(result, isNotNull);
+      expect(result!.firstName, 'First');
+
+      result = await client.customTypes.returnFreezedCustomClassNullable(null);
 
       expect(result, isNull);
     });
