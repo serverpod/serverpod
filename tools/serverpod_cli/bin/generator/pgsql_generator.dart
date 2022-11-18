@@ -122,14 +122,16 @@ class PgsqlGenerator {
     }
 
     // Foreign keys
+    var fkIdx = 0;
     for (var field in classInfo.fields) {
       if (field.parentTable != null) {
         out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
-        out += '  ADD CONSTRAINT ${classInfo.tableName}_fk\n';
+        out += '  ADD CONSTRAINT ${classInfo.tableName}_fk_$fkIdx\n';
         out += '    FOREIGN KEY("${field.name}")\n';
         out += '      REFERENCES ${field.parentTable}(id)\n';
         out += '        ON DELETE CASCADE;\n';
       }
+      fkIdx++;
     }
 
     out += '\n';
