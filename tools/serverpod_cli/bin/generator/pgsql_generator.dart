@@ -130,8 +130,9 @@ class PgsqlGenerator {
         out += '    FOREIGN KEY("${field.name}")\n';
         out += '      REFERENCES ${field.parentTable}(id)\n';
         out += '        ON DELETE CASCADE;\n';
+
+        fkIdx += 1;
       }
-      fkIdx++;
     }
 
     out += '\n';
