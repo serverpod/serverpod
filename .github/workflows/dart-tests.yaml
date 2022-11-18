@@ -43,9 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1.3
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: 2.17.7
+          flutter-version: "3.3.2"
       - name: Run serverpod generate
         run: util/run_tests_serverpod_generate
 
@@ -54,9 +54,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1.3
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: 2.17.7
+          flutter-version: "3.3.2"
       - name: Run serverpod generate
         run: util/run_tests_update_pubspecs
 
