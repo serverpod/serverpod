@@ -1,9 +1,7 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
 publish_to: none
 
 name: serverpod_test_client
-version: 0.9.11
+version: 1.0.0
 description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
