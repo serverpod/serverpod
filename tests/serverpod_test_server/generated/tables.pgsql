@@ -2,13 +2,13 @@
 -- Class ObjectFieldScopes as table object_field_scopes
 --
 
-CREATE TABLE object_field_scopes (
+CREATE TABLE "object_field_scopes" (
   "id" serial,
   "normal" text NOT NULL,
   "database" text
 );
 
-ALTER TABLE ONLY object_field_scopes
+ALTER TABLE ONLY "object_field_scopes"
   ADD CONSTRAINT object_field_scopes_pkey PRIMARY KEY (id);
 
 
@@ -16,7 +16,7 @@ ALTER TABLE ONLY object_field_scopes
 -- Class ObjectWithEnum as table object_with_enum
 --
 
-CREATE TABLE object_with_enum (
+CREATE TABLE "object_with_enum" (
   "id" serial,
   "testEnum" integer NOT NULL,
   "nullableEnum" integer,
@@ -25,7 +25,7 @@ CREATE TABLE object_with_enum (
   "enumListList" json NOT NULL
 );
 
-ALTER TABLE ONLY object_with_enum
+ALTER TABLE ONLY "object_with_enum"
   ADD CONSTRAINT object_with_enum_pkey PRIMARY KEY (id);
 
 
@@ -33,7 +33,7 @@ ALTER TABLE ONLY object_with_enum
 -- Class ObjectWithObject as table object_with_object
 --
 
-CREATE TABLE object_with_object (
+CREATE TABLE "object_with_object" (
   "id" serial,
   "data" json NOT NULL,
   "nullableData" json,
@@ -43,7 +43,7 @@ CREATE TABLE object_with_object (
   "nullableListWithNullableData" json
 );
 
-ALTER TABLE ONLY object_with_object
+ALTER TABLE ONLY "object_with_object"
   ADD CONSTRAINT object_with_object_pkey PRIMARY KEY (id);
 
 
@@ -51,12 +51,12 @@ ALTER TABLE ONLY object_with_object
 -- Class SimpleData as table simple_data
 --
 
-CREATE TABLE simple_data (
+CREATE TABLE "simple_data" (
   "id" serial,
   "num" integer NOT NULL
 );
 
-ALTER TABLE ONLY simple_data
+ALTER TABLE ONLY "simple_data"
   ADD CONSTRAINT simple_data_pkey PRIMARY KEY (id);
 
 
@@ -64,7 +64,7 @@ ALTER TABLE ONLY simple_data
 -- Class Types as table types
 --
 
-CREATE TABLE types (
+CREATE TABLE "types" (
   "id" serial,
   "anInt" integer,
   "aBool" boolean,
@@ -74,7 +74,7 @@ CREATE TABLE types (
   "aByteData" bytea
 );
 
-ALTER TABLE ONLY types
+ALTER TABLE ONLY "types"
   ADD CONSTRAINT types_pkey PRIMARY KEY (id);
 
 
