@@ -1,78 +1,76 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ObjectFieldScopes extends _i1.TableRow {
-  ObjectFieldScopes({
-    int? id,
-    required this.normal,
-    this.api,
-    this.database,
-  }) : super(id);
-
-  factory ObjectFieldScopes.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ObjectFieldScopes(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      normal:
-          serializationManager.deserialize<String>(jsonSerialization['normal']),
-      api: serializationManager.deserialize<String?>(jsonSerialization['api']),
-      database: serializationManager
-          .deserialize<String?>(jsonSerialization['database']),
-    );
-  }
+class ObjectFieldScopes extends TableRow {
+  @override
+  String get className => 'ObjectFieldScopes';
+  @override
+  String get tableName => 'object_field_scopes';
 
   static final t = ObjectFieldScopesTable();
 
-  String normal;
-
+  @override
+  int? id;
+  late String normal;
   String? api;
-
   String? database;
 
+  ObjectFieldScopes({
+    this.id,
+    required this.normal,
+    this.api,
+    this.database,
+  });
+
+  ObjectFieldScopes.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    normal = _data['normal']!;
+    api = _data['api'];
+    database = _data['database'];
+  }
+
   @override
-  String get tableName => 'object_field_scopes';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'normal': normal,
       'api': api,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'normal': normal,
       'database': database,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'normal': normal,
       'api': api,
       'database': database,
-    };
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -89,15 +87,15 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   static Future<List<ObjectFieldScopes>> find(
-    _i1.Session session, {
+    Session session, {
     ObjectFieldScopesExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<ObjectFieldScopes>(
       where: where != null ? where(ObjectFieldScopes.t) : null,
@@ -112,13 +110,13 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   static Future<ObjectFieldScopes?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     ObjectFieldScopesExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ObjectFieldScopes>(
       where: where != null ? where(ObjectFieldScopes.t) : null,
@@ -130,17 +128,14 @@ class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
-  static Future<ObjectFieldScopes?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<ObjectFieldScopes?> findById(Session session, int id) async {
     return session.db.findById<ObjectFieldScopes>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required ObjectFieldScopesExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),
@@ -149,9 +144,9 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -160,9 +155,9 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -171,22 +166,19 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     ObjectFieldScopesExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<ObjectFieldScopes>(
       where: where != null ? where(ObjectFieldScopes.t) : null,
@@ -197,20 +189,20 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 }
 
-typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
-    ObjectFieldScopesTable);
+typedef ObjectFieldScopesExpressionBuilder = Expression Function(
+    ObjectFieldScopesTable t);
 
-class ObjectFieldScopesTable extends _i1.Table {
+class ObjectFieldScopesTable extends Table {
   ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
 
-  final id = _i1.ColumnInt('id');
-
-  final normal = _i1.ColumnString('normal');
-
-  final database = _i1.ColumnString('database');
+  @override
+  String tableName = 'object_field_scopes';
+  final id = ColumnInt('id');
+  final normal = ColumnString('normal');
+  final database = ColumnString('database');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         normal,
         database,

@@ -1,47 +1,47 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class CachesInfo extends _i1.SerializableEntity {
+class CachesInfo extends SerializableEntity {
+  @override
+  String get className => 'CachesInfo';
+
+  int? id;
+  late CacheInfo local;
+  late CacheInfo localPrio;
+  late CacheInfo global;
+
   CachesInfo({
+    this.id,
     required this.local,
     required this.localPrio,
     required this.global,
   });
 
-  factory CachesInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return CachesInfo(
-      local: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['local']),
-      localPrio: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['localPrio']),
-      global: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['global']),
-    );
+  CachesInfo.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    local = CacheInfo.fromSerialization(_data['local']);
+    localPrio = CacheInfo.fromSerialization(_data['localPrio']);
+    global = CacheInfo.fromSerialization(_data['global']);
   }
 
-  _i2.CacheInfo local;
-
-  _i2.CacheInfo localPrio;
-
-  _i2.CacheInfo global;
-
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      'local': local,
-      'localPrio': localPrio,
-      'global': global,
-    };
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
+      'local': local.serialize(),
+      'localPrio': localPrio.serialize(),
+      'global': global.serialize(),
+    });
   }
 }

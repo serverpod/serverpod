@@ -1,15 +1,30 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ChatMessageAttachment extends _i1.SerializableEntity {
+class ChatMessageAttachment extends SerializableEntity {
+  @override
+  String get className => 'serverpod_chat_server.ChatMessageAttachment';
+
+  int? id;
+  late String fileName;
+  late String url;
+  late String contentType;
+  String? previewImage;
+  int? previewWidth;
+  int? previewHeight;
+
   ChatMessageAttachment({
+    this.id,
     required this.fileName,
     required this.url,
     required this.contentType,
@@ -18,58 +33,40 @@ class ChatMessageAttachment extends _i1.SerializableEntity {
     this.previewHeight,
   });
 
-  factory ChatMessageAttachment.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ChatMessageAttachment(
-      fileName: serializationManager
-          .deserialize<String>(jsonSerialization['fileName']),
-      url: serializationManager.deserialize<String>(jsonSerialization['url']),
-      contentType: serializationManager
-          .deserialize<String>(jsonSerialization['contentType']),
-      previewImage: serializationManager
-          .deserialize<String?>(jsonSerialization['previewImage']),
-      previewWidth: serializationManager
-          .deserialize<int?>(jsonSerialization['previewWidth']),
-      previewHeight: serializationManager
-          .deserialize<int?>(jsonSerialization['previewHeight']),
-    );
+  ChatMessageAttachment.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    fileName = _data['fileName']!;
+    url = _data['url']!;
+    contentType = _data['contentType']!;
+    previewImage = _data['previewImage'];
+    previewWidth = _data['previewWidth'];
+    previewHeight = _data['previewHeight'];
   }
 
-  String fileName;
-
-  String url;
-
-  String contentType;
-
-  String? previewImage;
-
-  int? previewWidth;
-
-  int? previewHeight;
-
   @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
       'fileName': fileName,
       'url': url,
       'contentType': contentType,
       'previewImage': previewImage,
       'previewWidth': previewWidth,
       'previewHeight': previewHeight,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
+      'id': id,
       'fileName': fileName,
       'url': url,
       'contentType': contentType,
       'previewImage': previewImage,
       'previewWidth': previewWidth,
       'previewHeight': previewHeight,
-    };
+    });
   }
 }

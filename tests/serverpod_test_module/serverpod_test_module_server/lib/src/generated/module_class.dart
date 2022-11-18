@@ -1,46 +1,52 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ModuleClass extends _i1.SerializableEntity {
+class ModuleClass extends SerializableEntity {
+  @override
+  String get className => 'serverpod_test_module_server.ModuleClass';
+
+  int? id;
+  late String name;
+  late int data;
+
   ModuleClass({
+    this.id,
     required this.name,
     required this.data,
   });
 
-  factory ModuleClass.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ModuleClass(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      data: serializationManager.deserialize<int>(jsonSerialization['data']),
-    );
-  }
-
-  String name;
-
-  int data;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'data': data,
-    };
+  ModuleClass.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    name = _data['name']!;
+    data = _data['data']!;
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
       'name': name,
       'data': data,
-    };
+    });
+  }
+
+  @override
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
+      'id': id,
+      'name': name,
+      'data': data,
+    });
   }
 }

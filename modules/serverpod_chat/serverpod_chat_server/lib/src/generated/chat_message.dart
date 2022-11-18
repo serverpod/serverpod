@@ -1,18 +1,39 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_server/module.dart' as _i2;
-import 'protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ChatMessage extends _i1.TableRow {
+class ChatMessage extends TableRow {
+  @override
+  String get className => 'serverpod_chat_server.ChatMessage';
+  @override
+  String get tableName => 'serverpod_chat_message';
+
+  static final t = ChatMessageTable();
+
+  @override
+  int? id;
+  late String channel;
+  late String message;
+  late DateTime time;
+  late int sender;
+  module:auth:UserInfo? senderInfo;
+  late bool removed;
+  int? clientMessageId;
+  bool? sent;
+  List<ChatMessageAttachment>? attachments;
+
   ChatMessage({
-    int? id,
+    this.id,
     required this.channel,
     required this.message,
     required this.time,
@@ -22,107 +43,69 @@ class ChatMessage extends _i1.TableRow {
     this.clientMessageId,
     this.sent,
     this.attachments,
-  }) : super(id);
+});
 
-  factory ChatMessage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ChatMessage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      sender:
-          serializationManager.deserialize<int>(jsonSerialization['sender']),
-      senderInfo: serializationManager
-          .deserialize<_i2.UserInfo?>(jsonSerialization['senderInfo']),
-      removed:
-          serializationManager.deserialize<bool>(jsonSerialization['removed']),
-      clientMessageId: serializationManager
-          .deserialize<int?>(jsonSerialization['clientMessageId']),
-      sent: serializationManager.deserialize<bool?>(jsonSerialization['sent']),
-      attachments:
-          serializationManager.deserialize<List<_i3.ChatMessageAttachment>?>(
-              jsonSerialization['attachments']),
-    );
+  ChatMessage.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    channel = _data['channel']!;
+    message = _data['message']!;
+    time = DateTime.tryParse(_data['time'])!;
+    sender = _data['sender']!;
+    senderInfo = _data['senderInfo'] != null ? module:auth:UserInfo?.fromSerialization(_data['senderInfo']) : null;
+    removed = _data['removed']!;
+    clientMessageId = _data['clientMessageId'];
+    sent = _data['sent'];
+    attachments = _data['attachments']?.map<ChatMessageAttachment>((a) => ChatMessageAttachment.fromSerialization(a))?.toList();
   }
 
-  static final t = ChatMessageTable();
-
-  String channel;
-
-  String message;
-
-  DateTime time;
-
-  int sender;
-
-  _i2.UserInfo? senderInfo;
-
-  bool removed;
-
-  int? clientMessageId;
-
-  bool? sent;
-
-  List<_i3.ChatMessageAttachment>? attachments;
-
   @override
-  String get tableName => 'serverpod_chat_message';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'sender': sender,
-      'senderInfo': senderInfo,
+      'senderInfo': senderInfo?.serialize(),
       'removed': removed,
       'clientMessageId': clientMessageId,
       'sent': sent,
-      'attachments': attachments,
-    };
+      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'sender': sender,
       'removed': removed,
-      'attachments': attachments,
-    };
+      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'sender': sender,
-      'senderInfo': senderInfo,
+      'senderInfo': senderInfo?.serialize(),
       'removed': removed,
       'clientMessageId': clientMessageId,
       'sent': sent,
-      'attachments': attachments,
-    };
+      'attachments': attachments?.map((ChatMessageAttachment a) => a.serialize()).toList(),
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -150,145 +133,64 @@ class ChatMessage extends _i1.TableRow {
     }
   }
 
-  static Future<List<ChatMessage>> find(
-    _i1.Session session, {
-    ChatMessageExpressionBuilder? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ChatMessage>(
-      where: where != null ? where(ChatMessage.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
+  static Future<List<ChatMessage>> find(Session session, {ChatMessageExpressionBuilder? where, int? limit, int? offset, Column? orderBy, List<Order>? orderByList, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {
+    return session.db.find<ChatMessage>(where: where != null ? where(ChatMessage.t) : null, limit: limit, offset: offset, orderBy: orderBy, orderByList: orderByList, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);
   }
 
-  static Future<ChatMessage?> findSingleRow(
-    _i1.Session session, {
-    ChatMessageExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ChatMessage>(
-      where: where != null ? where(ChatMessage.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
+  static Future<ChatMessage?> findSingleRow(Session session, {ChatMessageExpressionBuilder? where, int? offset, Column? orderBy, bool orderDescending = false, bool useCache = true, Transaction? transaction,}) async {
+    return session.db.findSingleRow<ChatMessage>(where: where != null ? where(ChatMessage.t) : null, offset: offset, orderBy: orderBy, orderDescending: orderDescending, useCache: useCache, transaction: transaction,);
   }
 
-  static Future<ChatMessage?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<ChatMessage?> findById(Session session, int id) async {
     return session.db.findById<ChatMessage>(id);
   }
 
-  static Future<int> delete(
-    _i1.Session session, {
-    required ChatMessageExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ChatMessage>(
-      where: where(ChatMessage.t),
-      transaction: transaction,
-    );
+  static Future<int> delete(Session session, {required ChatMessageExpressionBuilder where, Transaction? transaction,}) async {
+    return session.db.delete<ChatMessage>(where: where(ChatMessage.t), transaction: transaction,);
   }
 
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ChatMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
+  static Future<bool> deleteRow(Session session, ChatMessage row, {Transaction? transaction,}) async {
+    return session.db.deleteRow(row, transaction: transaction,);
   }
 
-  static Future<bool> update(
-    _i1.Session session,
-    ChatMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
+  static Future<bool> update(Session session, ChatMessage row, {Transaction? transaction,}) async {
+    return session.db.update(row, transaction: transaction,);
   }
 
-  static Future<void> insert(
-    _i1.Session session,
-    ChatMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+  static Future<void> insert(Session session, ChatMessage row, {Transaction? transaction,}) async {
+    return session.db.insert(row, transaction: transaction);
   }
 
-  static Future<int> count(
-    _i1.Session session, {
-    ChatMessageExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ChatMessage>(
-      where: where != null ? where(ChatMessage.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
+  static Future<int> count(Session session, {ChatMessageExpressionBuilder? where, int? limit, bool useCache = true, Transaction? transaction,}) async {
+    return session.db.count<ChatMessage>(where: where != null ? where(ChatMessage.t) : null, limit: limit, useCache: useCache, transaction: transaction,);
   }
 }
 
-typedef ChatMessageExpressionBuilder = _i1.Expression Function(
-    ChatMessageTable);
+typedef ChatMessageExpressionBuilder = Expression Function(ChatMessageTable t);
 
-class ChatMessageTable extends _i1.Table {
+class ChatMessageTable extends Table {
   ChatMessageTable() : super(tableName: 'serverpod_chat_message');
 
-  final id = _i1.ColumnInt('id');
-
-  final channel = _i1.ColumnString('channel');
-
-  final message = _i1.ColumnString('message');
-
-  final time = _i1.ColumnDateTime('time');
-
-  final sender = _i1.ColumnInt('sender');
-
-  final removed = _i1.ColumnBool('removed');
-
-  final attachments = _i1.ColumnSerializable('attachments');
+  @override
+  String tableName = 'serverpod_chat_message';
+  final id = ColumnInt('id');
+  final channel = ColumnString('channel');
+  final message = ColumnString('message');
+  final time = ColumnDateTime('time');
+  final sender = ColumnInt('sender');
+  final removed = ColumnBool('removed');
+  final attachments = ColumnSerializable('attachments');
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        channel,
-        message,
-        time,
-        sender,
-        removed,
-        attachments,
-      ];
+  List<Column> get columns => [
+    id,
+    channel,
+    message,
+    time,
+    sender,
+    removed,
+    attachments,
+  ];
 }
 
 @Deprecated('Use ChatMessageTable.t instead.')

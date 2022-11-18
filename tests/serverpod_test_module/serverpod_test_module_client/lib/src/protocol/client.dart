@@ -1,55 +1,57 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:serverpod_test_module_client/src/protocol/module_class.dart'
-    as _i3;
+import 'dart:io';
+import 'dart:typed_data' as typed_data;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'protocol.dart';
 
-class _EndpointModule extends _i1.EndpointRef {
-  _EndpointModule(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointModule extends EndpointRef {
   @override
   String get name => 'serverpod_test_module.module';
 
-  _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
-        'serverpod_test_module.module',
-        'hello',
-        {'name': name},
-      );
+  _EndpointModule(EndpointCaller caller) : super(caller);
 
-  _i2.Future<_i3.ModuleClass> modifyModuleObject(_i3.ModuleClass object) =>
-      caller.callServerEndpoint<_i3.ModuleClass>(
-        'serverpod_test_module.module',
-        'modifyModuleObject',
-        {'object': object},
-      );
+  Future<String> hello(
+    String name,
+  ) async {
+    return await caller
+        .callServerEndpoint('serverpod_test_module.module', 'hello', 'String', {
+      'name': name,
+    });
+  }
+
+  Future<ModuleClass> modifyModuleObject(
+    ModuleClass object,
+  ) async {
+    return await caller.callServerEndpoint(
+        'serverpod_test_module.module', 'modifyModuleObject', 'ModuleClass', {
+      'object': object,
+    });
+  }
 }
 
-class _EndpointStreaming extends _i1.EndpointRef {
-  _EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointStreaming extends EndpointRef {
   @override
   String get name => 'serverpod_test_module.streaming';
+
+  _EndpointStreaming(EndpointCaller caller) : super(caller);
 }
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {
+class Caller extends ModuleEndpointCaller {
+  late final _EndpointModule module;
+  late final _EndpointStreaming streaming;
+
+  Caller(ServerpodClientShared client) : super(client) {
     module = _EndpointModule(this);
     streaming = _EndpointStreaming(this);
   }
 
-  late final _EndpointModule module;
-
-  late final _EndpointStreaming streaming;
-
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+  Map<String, EndpointRef> get endpointRefLookup => {
         'serverpod_test_module.module': module,
         'serverpod_test_module.streaming': streaming,
       };

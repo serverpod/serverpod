@@ -1,50 +1,61 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ServerHealthResult extends _i1.SerializableEntity {
+class ServerHealthResult extends SerializableEntity {
+  @override
+  String get className => 'ServerHealthResult';
+
+  int? id;
+  late List<ServerHealthMetric> metrics;
+  late List<ServerHealthConnectionInfo> connectionInfos;
+
   ServerHealthResult({
+    this.id,
     required this.metrics,
     required this.connectionInfos,
   });
 
-  factory ServerHealthResult.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ServerHealthResult(
-      metrics: serializationManager.deserialize<List<_i2.ServerHealthMetric>>(
-          jsonSerialization['metrics']),
-      connectionInfos: serializationManager
-          .deserialize<List<_i2.ServerHealthConnectionInfo>>(
-              jsonSerialization['connectionInfos']),
-    );
-  }
-
-  List<_i2.ServerHealthMetric> metrics;
-
-  List<_i2.ServerHealthConnectionInfo> connectionInfos;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'metrics': metrics,
-      'connectionInfos': connectionInfos,
-    };
+  ServerHealthResult.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    metrics = _data['metrics']!
+        .map<ServerHealthMetric>((a) => ServerHealthMetric.fromSerialization(a))
+        ?.toList();
+    connectionInfos = _data['connectionInfos']!
+        .map<ServerHealthConnectionInfo>(
+            (a) => ServerHealthConnectionInfo.fromSerialization(a))
+        ?.toList();
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'metrics': metrics,
-      'connectionInfos': connectionInfos,
-    };
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
+      'metrics': metrics.map((ServerHealthMetric a) => a.serialize()).toList(),
+      'connectionInfos': connectionInfos
+          .map((ServerHealthConnectionInfo a) => a.serialize())
+          .toList(),
+    });
+  }
+
+  @override
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
+      'id': id,
+      'metrics': metrics.map((ServerHealthMetric a) => a.serialize()).toList(),
+      'connectionInfos': connectionInfos
+          .map((ServerHealthConnectionInfo a) => a.serialize())
+          .toList(),
+    });
   }
 }

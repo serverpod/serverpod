@@ -1,1215 +1,1295 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:serverpod_auth_client/module.dart' as _i3;
-import 'dart:typed_data' as _i4;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i5;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i6;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i7;
-import 'package:serverpod_test_client/src/protocol/types.dart' as _i8;
-import 'package:serverpod_test_client/src/protocol/object_with_enum.dart'
-    as _i9;
-import 'package:serverpod_test_client/src/protocol/simple_data_list.dart'
-    as _i10;
-import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
-    as _i11;
-import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
-    as _i12;
-import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i13;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i14;
-import 'package:serverpod_test_module_client/module.dart' as _i15;
-import 'dart:io' as _i16;
-import 'protocol.dart' as _i17;
+import 'dart:io';
+import 'dart:typed_data' as typed_data;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'protocol.dart';
 
-class _EndpointAsyncTasks extends _i1.EndpointRef {
-  _EndpointAsyncTasks(_i1.EndpointCaller caller) : super(caller);
+import 'package:serverpod_test_module_client/module.dart'
+    as serverpod_test_module;
+import 'package:serverpod_auth_client/module.dart' as serverpod_auth;
 
+class _EndpointAsyncTasks extends EndpointRef {
   @override
   String get name => 'asyncTasks';
 
-  _i2.Future<void> insertRowToSimpleDataAfterDelay(
+  _EndpointAsyncTasks(EndpointCaller caller) : super(caller);
+
+  Future<void> insertRowToSimpleDataAfterDelay(
     int num,
     int seconds,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'asyncTasks',
-        'insertRowToSimpleDataAfterDelay',
-        {
-          'num': num,
-          'seconds': seconds,
-        },
-      );
+  ) async {
+    return await caller.callServerEndpoint(
+        'asyncTasks', 'insertRowToSimpleDataAfterDelay', 'void', {
+      'num': num,
+      'seconds': seconds,
+    });
+  }
 
-  _i2.Future<void> throwExceptionAfterDelay(int seconds) =>
-      caller.callServerEndpoint<void>(
-        'asyncTasks',
-        'throwExceptionAfterDelay',
-        {'seconds': seconds},
-      );
+  Future<void> throwExceptionAfterDelay(
+    int seconds,
+  ) async {
+    return await caller
+        .callServerEndpoint('asyncTasks', 'throwExceptionAfterDelay', 'void', {
+      'seconds': seconds,
+    });
+  }
 }
 
-class _EndpointAuthentication extends _i1.EndpointRef {
-  _EndpointAuthentication(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointAuthentication extends EndpointRef {
   @override
   String get name => 'authentication';
 
-  _i2.Future<void> removeAllUsers() => caller.callServerEndpoint<void>(
-        'authentication',
-        'removeAllUsers',
-        {},
-      );
+  _EndpointAuthentication(EndpointCaller caller) : super(caller);
 
-  _i2.Future<int> countUsers() => caller.callServerEndpoint<int>(
-        'authentication',
-        'countUsers',
-        {},
-      );
+  Future<void> removeAllUsers() async {
+    return await caller
+        .callServerEndpoint('authentication', 'removeAllUsers', 'void', {});
+  }
 
-  _i2.Future<void> createUser(
+  Future<int> countUsers() async {
+    return await caller
+        .callServerEndpoint('authentication', 'countUsers', 'int', {});
+  }
+
+  Future<void> createUser(
     String email,
     String password,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'authentication',
-        'createUser',
-        {
-          'email': email,
-          'password': password,
-        },
-      );
+  ) async {
+    return await caller
+        .callServerEndpoint('authentication', 'createUser', 'void', {
+      'email': email,
+      'password': password,
+    });
+  }
 
-  _i2.Future<_i3.AuthenticationResponse> authenticate(
+  Future<serverpod_auth.AuthenticationResponse> authenticate(
     String email,
     String password,
-  ) =>
-      caller.callServerEndpoint<_i3.AuthenticationResponse>(
-        'authentication',
-        'authenticate',
-        {
-          'email': email,
-          'password': password,
-        },
-      );
+  ) async {
+    return await caller.callServerEndpoint(
+        'authentication', 'authenticate', 'AuthenticationResponse', {
+      'email': email,
+      'password': password,
+    });
+  }
 
-  _i2.Future<void> signOut() => caller.callServerEndpoint<void>(
-        'authentication',
-        'signOut',
-        {},
-      );
+  Future<void> signOut() async {
+    return await caller
+        .callServerEndpoint('authentication', 'signOut', 'void', {});
+  }
 }
 
-class _EndpointBasicTypes extends _i1.EndpointRef {
-  _EndpointBasicTypes(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointBasicTypes extends EndpointRef {
   @override
   String get name => 'basicTypes';
 
-  _i2.Future<int?> testInt(int? value) => caller.callServerEndpoint<int?>(
-        'basicTypes',
-        'testInt',
-        {'value': value},
-      );
+  _EndpointBasicTypes(EndpointCaller caller) : super(caller);
 
-  _i2.Future<double?> testDouble(double? value) =>
-      caller.callServerEndpoint<double?>(
-        'basicTypes',
-        'testDouble',
-        {'value': value},
-      );
+  Future<int?> testInt(
+    int? value,
+  ) async {
+    return await caller.callServerEndpoint('basicTypes', 'testInt', 'int', {
+      'value': value,
+    });
+  }
 
-  _i2.Future<bool?> testBool(bool? value) => caller.callServerEndpoint<bool?>(
-        'basicTypes',
-        'testBool',
-        {'value': value},
-      );
+  Future<double?> testDouble(
+    double? value,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicTypes', 'testDouble', 'double', {
+      'value': value,
+    });
+  }
 
-  _i2.Future<DateTime?> testDateTime(DateTime? dateTime) =>
-      caller.callServerEndpoint<DateTime?>(
-        'basicTypes',
-        'testDateTime',
-        {'dateTime': dateTime},
-      );
+  Future<bool?> testBool(
+    bool? value,
+  ) async {
+    return await caller.callServerEndpoint('basicTypes', 'testBool', 'bool', {
+      'value': value,
+    });
+  }
 
-  _i2.Future<String?> testString(String? value) =>
-      caller.callServerEndpoint<String?>(
-        'basicTypes',
-        'testString',
-        {'value': value},
-      );
+  Future<DateTime?> testDateTime(
+    DateTime? dateTime,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicTypes', 'testDateTime', 'DateTime', {
+      'dateTime': dateTime,
+    });
+  }
 
-  _i2.Future<_i4.ByteData?> testByteData(_i4.ByteData? value) =>
-      caller.callServerEndpoint<_i4.ByteData?>(
-        'basicTypes',
-        'testByteData',
-        {'value': value},
-      );
+  Future<String?> testString(
+    String? value,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicTypes', 'testString', 'String', {
+      'value': value,
+    });
+  }
+
+  Future<typed_data.ByteData?> testByteData(
+    typed_data.ByteData? value,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicTypes', 'testByteData', 'ByteData', {
+      'value': value,
+    });
+  }
 }
 
-class _EndpointCloudStorage extends _i1.EndpointRef {
-  _EndpointCloudStorage(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointCloudStorage extends EndpointRef {
   @override
   String get name => 'cloudStorage';
 
-  _i2.Future<void> reset() => caller.callServerEndpoint<void>(
-        'cloudStorage',
-        'reset',
-        {},
-      );
+  _EndpointCloudStorage(EndpointCaller caller) : super(caller);
 
-  _i2.Future<void> storePublicFile(
+  Future<void> reset() async {
+    return await caller.callServerEndpoint('cloudStorage', 'reset', 'void', {});
+  }
+
+  Future<void> storePublicFile(
     String path,
-    _i4.ByteData byteData,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'cloudStorage',
-        'storePublicFile',
-        {
-          'path': path,
-          'byteData': byteData,
-        },
-      );
+    typed_data.ByteData byteData,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'storePublicFile', 'void', {
+      'path': path,
+      'byteData': byteData,
+    });
+  }
 
-  _i2.Future<_i4.ByteData?> retrievePublicFile(String path) =>
-      caller.callServerEndpoint<_i4.ByteData?>(
-        'cloudStorage',
-        'retrievePublicFile',
-        {'path': path},
-      );
+  Future<typed_data.ByteData?> retrievePublicFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'retrievePublicFile', 'ByteData', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<bool?> existsPublicFile(String path) =>
-      caller.callServerEndpoint<bool?>(
-        'cloudStorage',
-        'existsPublicFile',
-        {'path': path},
-      );
+  Future<bool?> existsPublicFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'existsPublicFile', 'bool', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<void> deletePublicFile(String path) =>
-      caller.callServerEndpoint<void>(
-        'cloudStorage',
-        'deletePublicFile',
-        {'path': path},
-      );
+  Future<void> deletePublicFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'deletePublicFile', 'void', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<String?> getPublicUrlForFile(String path) =>
-      caller.callServerEndpoint<String?>(
-        'cloudStorage',
-        'getPublicUrlForFile',
-        {'path': path},
-      );
+  Future<String?> getPublicUrlForFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'getPublicUrlForFile', 'String', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<String?> getDirectFilePostUrl(String path) =>
-      caller.callServerEndpoint<String?>(
-        'cloudStorage',
-        'getDirectFilePostUrl',
-        {'path': path},
-      );
+  Future<String?> getDirectFilePostUrl(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'getDirectFilePostUrl', 'String', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<bool> verifyDirectFileUpload(String path) =>
-      caller.callServerEndpoint<bool>(
-        'cloudStorage',
-        'verifyDirectFileUpload',
-        {'path': path},
-      );
+  Future<bool> verifyDirectFileUpload(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('cloudStorage', 'verifyDirectFileUpload', 'bool', {
+      'path': path,
+    });
+  }
 }
 
-class _EndpointS3CloudStorage extends _i1.EndpointRef {
-  _EndpointS3CloudStorage(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointS3CloudStorage extends EndpointRef {
   @override
   String get name => 's3CloudStorage';
 
-  _i2.Future<void> storePublicFile(
+  _EndpointS3CloudStorage(EndpointCaller caller) : super(caller);
+
+  Future<void> storePublicFile(
     String path,
-    _i4.ByteData byteData,
-  ) =>
-      caller.callServerEndpoint<void>(
-        's3CloudStorage',
-        'storePublicFile',
-        {
-          'path': path,
-          'byteData': byteData,
-        },
-      );
+    typed_data.ByteData byteData,
+  ) async {
+    return await caller
+        .callServerEndpoint('s3CloudStorage', 'storePublicFile', 'void', {
+      'path': path,
+      'byteData': byteData,
+    });
+  }
 
-  _i2.Future<_i4.ByteData?> retrievePublicFile(String path) =>
-      caller.callServerEndpoint<_i4.ByteData?>(
-        's3CloudStorage',
-        'retrievePublicFile',
-        {'path': path},
-      );
+  Future<typed_data.ByteData?> retrievePublicFile(
+    String path,
+  ) async {
+    return await caller.callServerEndpoint(
+        's3CloudStorage', 'retrievePublicFile', 'ByteData', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<bool?> existsPublicFile(String path) =>
-      caller.callServerEndpoint<bool?>(
-        's3CloudStorage',
-        'existsPublicFile',
-        {'path': path},
-      );
+  Future<bool?> existsPublicFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('s3CloudStorage', 'existsPublicFile', 'bool', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<void> deletePublicFile(String path) =>
-      caller.callServerEndpoint<void>(
-        's3CloudStorage',
-        'deletePublicFile',
-        {'path': path},
-      );
+  Future<void> deletePublicFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('s3CloudStorage', 'deletePublicFile', 'void', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<String?> getPublicUrlForFile(String path) =>
-      caller.callServerEndpoint<String?>(
-        's3CloudStorage',
-        'getPublicUrlForFile',
-        {'path': path},
-      );
+  Future<String?> getPublicUrlForFile(
+    String path,
+  ) async {
+    return await caller
+        .callServerEndpoint('s3CloudStorage', 'getPublicUrlForFile', 'String', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<String?> getDirectFilePostUrl(String path) =>
-      caller.callServerEndpoint<String?>(
-        's3CloudStorage',
-        'getDirectFilePostUrl',
-        {'path': path},
-      );
+  Future<String?> getDirectFilePostUrl(
+    String path,
+  ) async {
+    return await caller.callServerEndpoint(
+        's3CloudStorage', 'getDirectFilePostUrl', 'String', {
+      'path': path,
+    });
+  }
 
-  _i2.Future<bool> verifyDirectFileUpload(String path) =>
-      caller.callServerEndpoint<bool>(
-        's3CloudStorage',
-        'verifyDirectFileUpload',
-        {'path': path},
-      );
+  Future<bool> verifyDirectFileUpload(
+    String path,
+  ) async {
+    return await caller.callServerEndpoint(
+        's3CloudStorage', 'verifyDirectFileUpload', 'bool', {
+      'path': path,
+    });
+  }
 }
 
-class _EndpointCustomTypes extends _i1.EndpointRef {
-  _EndpointCustomTypes(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointCustomTypes extends EndpointRef {
   @override
   String get name => 'customTypes';
 
-  _i2.Future<_i5.CustomClass> returnCustomClass(_i5.CustomClass data) =>
-      caller.callServerEndpoint<_i5.CustomClass>(
-        'customTypes',
-        'returnCustomClass',
-        {'data': data},
-      );
+  _EndpointCustomTypes(EndpointCaller caller) : super(caller);
 
-  _i2.Future<_i5.CustomClass?> returnCustomClassNullable(
-          _i5.CustomClass? data) =>
-      caller.callServerEndpoint<_i5.CustomClass?>(
-        'customTypes',
-        'returnCustomClassNullable',
-        {'data': data},
-      );
+  Future<CustomClass> returnCustomClass(
+    CustomClass data,
+  ) async {
+    return await caller
+        .callServerEndpoint('customTypes', 'returnCustomClass', 'CustomClass', {
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i5.CustomClass2> returnCustomClass2(_i5.CustomClass2 data) =>
-      caller.callServerEndpoint<_i5.CustomClass2>(
-        'customTypes',
-        'returnCustomClass2',
-        {'data': data},
-      );
+  Future<CustomClass?> returnCustomClassNullable(
+    CustomClass? data,
+  ) async {
+    return await caller.callServerEndpoint(
+        'customTypes', 'returnCustomClassNullable', 'CustomClass', {
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i5.CustomClass2?> returnCustomClass2Nullable(
-          _i5.CustomClass2? data) =>
-      caller.callServerEndpoint<_i5.CustomClass2?>(
-        'customTypes',
-        'returnCustomClass2Nullable',
-        {'data': data},
-      );
+  Future<CustomClass2> returnCustomClass2(
+    CustomClass2 data,
+  ) async {
+    return await caller.callServerEndpoint(
+        'customTypes', 'returnCustomClass2', 'CustomClass2', {
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i6.ExternalCustomClass> returnExternalCustomClass(
-          _i6.ExternalCustomClass data) =>
-      caller.callServerEndpoint<_i6.ExternalCustomClass>(
-        'customTypes',
-        'returnExternalCustomClass',
-        {'data': data},
-      );
+  Future<CustomClass2?> returnCustomClass2Nullable(
+    CustomClass2? data,
+  ) async {
+    return await caller.callServerEndpoint(
+        'customTypes', 'returnCustomClass2Nullable', 'CustomClass2', {
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i6.ExternalCustomClass?> returnExternalCustomClassNullable(
-          _i6.ExternalCustomClass? data) =>
-      caller.callServerEndpoint<_i6.ExternalCustomClass?>(
-        'customTypes',
-        'returnExternalCustomClassNullable',
-        {'data': data},
-      );
+  Future<serverpod_test_shared.ExternalCustomClass> returnExternalCustomClass(
+    serverpod_test_shared.ExternalCustomClass data,
+  ) async {
+    return await caller.callServerEndpoint(
+        'customTypes', 'returnExternalCustomClass', 'ExternalCustomClass', {
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i7.FreezedCustomClass> returnFreezedCustomClass(
-          _i7.FreezedCustomClass data) =>
-      caller.callServerEndpoint<_i7.FreezedCustomClass>(
-        'customTypes',
-        'returnFreezedCustomClass',
-        {'data': data},
-      );
+  Future<serverpod_test_shared.ExternalCustomClass?>
+      returnExternalCustomClassNullable(
+    serverpod_test_shared.ExternalCustomClass? data,
+  ) async {
+    return await caller.callServerEndpoint('customTypes',
+        'returnExternalCustomClassNullable', 'ExternalCustomClass', {
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i7.FreezedCustomClass?> returnFreezedCustomClassNullable(
-          _i7.FreezedCustomClass? data) =>
-      caller.callServerEndpoint<_i7.FreezedCustomClass?>(
-        'customTypes',
-        'returnFreezedCustomClassNullable',
-        {'data': data},
-      );
+  Future<serverpod_test_shared.FreezedCustomClass> returnFreezedCustomClass(
+    serverpod_test_shared.FreezedCustomClass data,
+  ) async {
+    return await caller.callServerEndpoint(
+        'customTypes', 'returnFreezedCustomClass', 'FreezedCustomClass', {
+      'data': data,
+    });
+  }
+
+  Future<serverpod_test_shared.FreezedCustomClass?>
+      returnFreezedCustomClassNullable(
+    serverpod_test_shared.FreezedCustomClass? data,
+  ) async {
+    return await caller.callServerEndpoint('customTypes',
+        'returnFreezedCustomClassNullable', 'FreezedCustomClass', {
+      'data': data,
+    });
+  }
 }
 
-class _EndpointBasicDatabase extends _i1.EndpointRef {
-  _EndpointBasicDatabase(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointBasicDatabase extends EndpointRef {
   @override
   String get name => 'basicDatabase';
 
-  _i2.Future<int?> storeTypes(_i8.Types types) =>
-      caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'storeTypes',
-        {'types': types},
-      );
+  _EndpointBasicDatabase(EndpointCaller caller) : super(caller);
 
-  _i2.Future<_i8.Types?> getTypes(int id) =>
-      caller.callServerEndpoint<_i8.Types?>(
-        'basicDatabase',
-        'getTypes',
-        {'id': id},
-      );
+  Future<int?> storeTypes(
+    Types types,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'storeTypes', 'int', {
+      'types': types,
+    });
+  }
 
-  _i2.Future<int?> storeObjectWithEnum(_i9.ObjectWithEnum object) =>
-      caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'storeObjectWithEnum',
-        {'object': object},
-      );
+  Future<Types?> getTypes(
+    int id,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'getTypes', 'Types', {
+      'id': id,
+    });
+  }
 
-  _i2.Future<_i9.ObjectWithEnum?> getObjectWithEnum(int id) =>
-      caller.callServerEndpoint<_i9.ObjectWithEnum?>(
-        'basicDatabase',
-        'getObjectWithEnum',
-        {'id': id},
-      );
+  Future<int?> storeObjectWithEnum(
+    ObjectWithEnum object,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'storeObjectWithEnum', 'int', {
+      'object': object,
+    });
+  }
 
-  _i2.Future<int?> getTypesRawQuery(int id) => caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'getTypesRawQuery',
-        {'id': id},
-      );
+  Future<ObjectWithEnum?> getObjectWithEnum(
+    int id,
+  ) async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'getObjectWithEnum', 'ObjectWithEnum', {
+      'id': id,
+    });
+  }
 
-  _i2.Future<int?> countTypesRows() => caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'countTypesRows',
-        {},
-      );
+  Future<int?> getTypesRawQuery(
+    int id,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'getTypesRawQuery', 'int', {
+      'id': id,
+    });
+  }
 
-  _i2.Future<int?> deleteAllInTypes() => caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'deleteAllInTypes',
-        {},
-      );
+  Future<int?> countTypesRows() async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'countTypesRows', 'int', {});
+  }
 
-  _i2.Future<void> createSimpleTestData(int numRows) =>
-      caller.callServerEndpoint<void>(
-        'basicDatabase',
-        'createSimpleTestData',
-        {'numRows': numRows},
-      );
+  Future<int?> deleteAllInTypes() async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'deleteAllInTypes', 'int', {});
+  }
 
-  _i2.Future<int?> countSimpleData() => caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'countSimpleData',
-        {},
-      );
+  Future<void> createSimpleTestData(
+    int numRows,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'createSimpleTestData', 'void', {
+      'numRows': numRows,
+    });
+  }
 
-  _i2.Future<void> deleteAllSimpleTestData() => caller.callServerEndpoint<void>(
-        'basicDatabase',
-        'deleteAllSimpleTestData',
-        {},
-      );
+  Future<int?> countSimpleData() async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'countSimpleData', 'int', {});
+  }
 
-  _i2.Future<void> deleteSimpleTestDataLessThan(int num) =>
-      caller.callServerEndpoint<void>(
-        'basicDatabase',
-        'deleteSimpleTestDataLessThan',
-        {'num': num},
-      );
+  Future<void> deleteAllSimpleTestData() async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'deleteAllSimpleTestData', 'void', {});
+  }
 
-  _i2.Future<bool?> findAndDeleteSimpleTestData(int num) =>
-      caller.callServerEndpoint<bool?>(
-        'basicDatabase',
-        'findAndDeleteSimpleTestData',
-        {'num': num},
-      );
+  Future<void> deleteSimpleTestDataLessThan(
+    int num,
+  ) async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'deleteSimpleTestDataLessThan', 'void', {
+      'num': num,
+    });
+  }
 
-  _i2.Future<_i10.SimpleDataList?> findSimpleDataRowsLessThan(
+  Future<bool?> findAndDeleteSimpleTestData(
+    int num,
+  ) async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'findAndDeleteSimpleTestData', 'bool', {
+      'num': num,
+    });
+  }
+
+  Future<SimpleDataList?> findSimpleDataRowsLessThan(
     int num,
     int offset,
     int limit,
     bool descending,
-  ) =>
-      caller.callServerEndpoint<_i10.SimpleDataList?>(
-        'basicDatabase',
-        'findSimpleDataRowsLessThan',
-        {
-          'num': num,
-          'offset': offset,
-          'limit': limit,
-          'descending': descending,
-        },
-      );
+  ) async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'findSimpleDataRowsLessThan', 'SimpleDataList', {
+      'num': num,
+      'offset': offset,
+      'limit': limit,
+      'descending': descending,
+    });
+  }
 
-  _i2.Future<bool?> updateSimpleDataRow(
+  Future<bool?> updateSimpleDataRow(
     int num,
     int newNum,
-  ) =>
-      caller.callServerEndpoint<bool?>(
-        'basicDatabase',
-        'updateSimpleDataRow',
-        {
-          'num': num,
-          'newNum': newNum,
-        },
-      );
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'updateSimpleDataRow', 'bool', {
+      'num': num,
+      'newNum': newNum,
+    });
+  }
 
-  _i2.Future<int?> storeObjectWithObject(_i11.ObjectWithObject object) =>
-      caller.callServerEndpoint<int?>(
-        'basicDatabase',
-        'storeObjectWithObject',
-        {'object': object},
-      );
+  Future<int?> storeObjectWithObject(
+    ObjectWithObject object,
+  ) async {
+    return await caller
+        .callServerEndpoint('basicDatabase', 'storeObjectWithObject', 'int', {
+      'object': object,
+    });
+  }
 
-  _i2.Future<_i11.ObjectWithObject?> getObjectWithObject(int id) =>
-      caller.callServerEndpoint<_i11.ObjectWithObject?>(
-        'basicDatabase',
-        'getObjectWithObject',
-        {'id': id},
-      );
+  Future<ObjectWithObject?> getObjectWithObject(
+    int id,
+  ) async {
+    return await caller.callServerEndpoint(
+        'basicDatabase', 'getObjectWithObject', 'ObjectWithObject', {
+      'id': id,
+    });
+  }
 }
 
-class _EndpointTransactionsDatabase extends _i1.EndpointRef {
-  _EndpointTransactionsDatabase(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointTransactionsDatabase extends EndpointRef {
   @override
   String get name => 'transactionsDatabase';
 
-  _i2.Future<void> removeRow(int num) => caller.callServerEndpoint<void>(
-        'transactionsDatabase',
-        'removeRow',
-        {'num': num},
-      );
+  _EndpointTransactionsDatabase(EndpointCaller caller) : super(caller);
 
-  _i2.Future<bool> updateInsertDelete(
+  Future<void> removeRow(
+    int num,
+  ) async {
+    return await caller
+        .callServerEndpoint('transactionsDatabase', 'removeRow', 'void', {
+      'num': num,
+    });
+  }
+
+  Future<bool> updateInsertDelete(
     int numUpdate,
     int numInsert,
     int numDelete,
-  ) =>
-      caller.callServerEndpoint<bool>(
-        'transactionsDatabase',
-        'updateInsertDelete',
-        {
-          'numUpdate': numUpdate,
-          'numInsert': numInsert,
-          'numDelete': numDelete,
-        },
-      );
+  ) async {
+    return await caller.callServerEndpoint(
+        'transactionsDatabase', 'updateInsertDelete', 'bool', {
+      'numUpdate': numUpdate,
+      'numInsert': numInsert,
+      'numDelete': numDelete,
+    });
+  }
 }
 
-class _EndpointFailedCalls extends _i1.EndpointRef {
-  _EndpointFailedCalls(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointFailedCalls extends EndpointRef {
   @override
   String get name => 'failedCalls';
 
-  _i2.Future<void> failedCall() => caller.callServerEndpoint<void>(
-        'failedCalls',
-        'failedCall',
-        {},
-      );
+  _EndpointFailedCalls(EndpointCaller caller) : super(caller);
 
-  _i2.Future<void> failedDatabaseQuery() => caller.callServerEndpoint<void>(
-        'failedCalls',
-        'failedDatabaseQuery',
-        {},
-      );
+  Future<void> failedCall() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'failedCall', 'void', {});
+  }
 
-  _i2.Future<bool> failedDatabaseQueryCaughtException() =>
-      caller.callServerEndpoint<bool>(
-        'failedCalls',
-        'failedDatabaseQueryCaughtException',
-        {},
-      );
+  Future<void> failedDatabaseQuery() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'failedDatabaseQuery', 'void', {});
+  }
 
-  _i2.Future<void> slowCall() => caller.callServerEndpoint<void>(
-        'failedCalls',
-        'slowCall',
-        {},
-      );
+  Future<bool> failedDatabaseQueryCaughtException() async {
+    return await caller.callServerEndpoint(
+        'failedCalls', 'failedDatabaseQueryCaughtException', 'bool', {});
+  }
 
-  _i2.Future<void> caughtException() => caller.callServerEndpoint<void>(
-        'failedCalls',
-        'caughtException',
-        {},
-      );
+  Future<void> slowCall() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'slowCall', 'void', {});
+  }
+
+  Future<void> caughtException() async {
+    return await caller
+        .callServerEndpoint('failedCalls', 'caughtException', 'void', {});
+  }
 }
 
-class _EndpointFieldScopes extends _i1.EndpointRef {
-  _EndpointFieldScopes(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointFieldScopes extends EndpointRef {
   @override
   String get name => 'fieldScopes';
 
-  _i2.Future<void> storeObject(_i12.ObjectFieldScopes object) =>
-      caller.callServerEndpoint<void>(
-        'fieldScopes',
-        'storeObject',
-        {'object': object},
-      );
+  _EndpointFieldScopes(EndpointCaller caller) : super(caller);
 
-  _i2.Future<_i12.ObjectFieldScopes?> retrieveObject() =>
-      caller.callServerEndpoint<_i12.ObjectFieldScopes?>(
-        'fieldScopes',
-        'retrieveObject',
-        {},
-      );
+  Future<void> storeObject(
+    ObjectFieldScopes object,
+  ) async {
+    return await caller
+        .callServerEndpoint('fieldScopes', 'storeObject', 'void', {
+      'object': object,
+    });
+  }
+
+  Future<ObjectFieldScopes?> retrieveObject() async {
+    return await caller.callServerEndpoint(
+        'fieldScopes', 'retrieveObject', 'ObjectFieldScopes', {});
+  }
 }
 
-class _EndpointFutureCalls extends _i1.EndpointRef {
-  _EndpointFutureCalls(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointFutureCalls extends EndpointRef {
   @override
   String get name => 'futureCalls';
 
-  _i2.Future<void> makeFutureCall(_i13.SimpleData? data) =>
-      caller.callServerEndpoint<void>(
-        'futureCalls',
-        'makeFutureCall',
-        {'data': data},
-      );
+  _EndpointFutureCalls(EndpointCaller caller) : super(caller);
+
+  Future<void> makeFutureCall(
+    SimpleData? data,
+  ) async {
+    return await caller
+        .callServerEndpoint('futureCalls', 'makeFutureCall', 'void', {
+      'data': data,
+    });
+  }
 }
 
-class _EndpointListParameters extends _i1.EndpointRef {
-  _EndpointListParameters(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointListParameters extends EndpointRef {
   @override
   String get name => 'listParameters';
 
-  _i2.Future<List<int>> returnIntList(List<int> list) =>
-      caller.callServerEndpoint<List<int>>(
-        'listParameters',
-        'returnIntList',
-        {'list': list},
-      );
+  _EndpointListParameters(EndpointCaller caller) : super(caller);
 
-  _i2.Future<List<List<int>>> returnIntListList(List<List<int>> list) =>
-      caller.callServerEndpoint<List<List<int>>>(
-        'listParameters',
-        'returnIntListList',
-        {'list': list},
-      );
+  Future<List<int>> returnIntList(
+    List<int> list,
+  ) async {
+    return await caller
+        .callServerEndpoint('listParameters', 'returnIntList', 'List<int>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<int>?> returnIntListNullable(List<int>? list) =>
-      caller.callServerEndpoint<List<int>?>(
-        'listParameters',
-        'returnIntListNullable',
-        {'list': list},
-      );
+  Future<List<List<int>>> returnIntListList(
+    List<List<int>> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnIntListList', 'List<List<int>>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<List<int>?>> returnIntListNullableList(
-          List<List<int>?> list) =>
-      caller.callServerEndpoint<List<List<int>?>>(
-        'listParameters',
-        'returnIntListNullableList',
-        {'list': list},
-      );
+  Future<List<int>?> returnIntListNullable(
+    List<int>? list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnIntListNullable', 'List<int>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<List<int>>?> returnIntListListNullable(
-          List<List<int>>? list) =>
-      caller.callServerEndpoint<List<List<int>>?>(
-        'listParameters',
-        'returnIntListListNullable',
-        {'list': list},
-      );
+  Future<List<List<int>?>> returnIntListNullableList(
+    List<List<int>?> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnIntListNullableList', 'List<List<int>>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<int?>> returnIntListNullableInts(List<int?> list) =>
-      caller.callServerEndpoint<List<int?>>(
-        'listParameters',
-        'returnIntListNullableInts',
-        {'list': list},
-      );
+  Future<List<List<int>>?> returnIntListListNullable(
+    List<List<int>>? list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnIntListListNullable', 'List<List<int>>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<int?>?> returnNullableIntListNullableInts(List<int?>? list) =>
-      caller.callServerEndpoint<List<int?>?>(
-        'listParameters',
-        'returnNullableIntListNullableInts',
-        {'list': list},
-      );
+  Future<List<int?>> returnIntListNullableInts(
+    List<int?> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnIntListNullableInts', 'List<int>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<double>> returnDoubleList(List<double> list) =>
-      caller.callServerEndpoint<List<double>>(
-        'listParameters',
-        'returnDoubleList',
-        {'list': list},
-      );
+  Future<List<int?>?> returnNullableIntListNullableInts(
+    List<int?>? list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnNullableIntListNullableInts', 'List<int>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<double?>> returnDoubleListNullableDoubles(
-          List<double?> list) =>
-      caller.callServerEndpoint<List<double?>>(
-        'listParameters',
-        'returnDoubleListNullableDoubles',
-        {'list': list},
-      );
+  Future<List<double>> returnDoubleList(
+    List<double> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnDoubleList', 'List<double>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<bool>> returnBoolList(List<bool> list) =>
-      caller.callServerEndpoint<List<bool>>(
-        'listParameters',
-        'returnBoolList',
-        {'list': list},
-      );
+  Future<List<double?>> returnDoubleListNullableDoubles(
+    List<double?> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnDoubleListNullableDoubles', 'List<double>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<bool?>> returnBoolListNullableBools(List<bool?> list) =>
-      caller.callServerEndpoint<List<bool?>>(
-        'listParameters',
-        'returnBoolListNullableBools',
-        {'list': list},
-      );
+  Future<List<bool>> returnBoolList(
+    List<bool> list,
+  ) async {
+    return await caller
+        .callServerEndpoint('listParameters', 'returnBoolList', 'List<bool>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<String>> returnStringList(List<String> list) =>
-      caller.callServerEndpoint<List<String>>(
-        'listParameters',
-        'returnStringList',
-        {'list': list},
-      );
+  Future<List<bool?>> returnBoolListNullableBools(
+    List<bool?> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnBoolListNullableBools', 'List<bool>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<String?>> returnStringListNullableStrings(
-          List<String?> list) =>
-      caller.callServerEndpoint<List<String?>>(
-        'listParameters',
-        'returnStringListNullableStrings',
-        {'list': list},
-      );
+  Future<List<String>> returnStringList(
+    List<String> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnStringList', 'List<String>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<DateTime>> returnDateTimeList(List<DateTime> list) =>
-      caller.callServerEndpoint<List<DateTime>>(
-        'listParameters',
-        'returnDateTimeList',
-        {'list': list},
-      );
+  Future<List<String?>> returnStringListNullableStrings(
+    List<String?> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnStringListNullableStrings', 'List<String>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<DateTime?>> returnDateTimeListNullableDateTimes(
-          List<DateTime?> list) =>
-      caller.callServerEndpoint<List<DateTime?>>(
-        'listParameters',
-        'returnDateTimeListNullableDateTimes',
-        {'list': list},
-      );
+  Future<List<DateTime>> returnDateTimeList(
+    List<DateTime> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnDateTimeList', 'List<DateTime>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<_i4.ByteData>> returnByteDataList(List<_i4.ByteData> list) =>
-      caller.callServerEndpoint<List<_i4.ByteData>>(
-        'listParameters',
-        'returnByteDataList',
-        {'list': list},
-      );
+  Future<List<DateTime?>> returnDateTimeListNullableDateTimes(
+    List<DateTime?> list,
+  ) async {
+    return await caller.callServerEndpoint('listParameters',
+        'returnDateTimeListNullableDateTimes', 'List<DateTime>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<_i4.ByteData?>> returnByteDataListNullableByteDatas(
-          List<_i4.ByteData?> list) =>
-      caller.callServerEndpoint<List<_i4.ByteData?>>(
-        'listParameters',
-        'returnByteDataListNullableByteDatas',
-        {'list': list},
-      );
+  Future<List<ByteData>> returnByteDataList(
+    List<ByteData> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnByteDataList', 'List<ByteData>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<_i13.SimpleData>> returnSimpleDataList(
-          List<_i13.SimpleData> list) =>
-      caller.callServerEndpoint<List<_i13.SimpleData>>(
-        'listParameters',
-        'returnSimpleDataList',
-        {'list': list},
-      );
+  Future<List<ByteData?>> returnByteDataListNullableByteDatas(
+    List<ByteData?> list,
+  ) async {
+    return await caller.callServerEndpoint('listParameters',
+        'returnByteDataListNullableByteDatas', 'List<ByteData>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<_i13.SimpleData?>> returnSimpleDataListNullableSimpleData(
-          List<_i13.SimpleData?> list) =>
-      caller.callServerEndpoint<List<_i13.SimpleData?>>(
-        'listParameters',
-        'returnSimpleDataListNullableSimpleData',
-        {'list': list},
-      );
+  Future<List<SimpleData>> returnSimpleDataList(
+    List<SimpleData> list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnSimpleDataList', 'List<SimpleData>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<_i13.SimpleData>?> returnSimpleDataListNullable(
-          List<_i13.SimpleData>? list) =>
-      caller.callServerEndpoint<List<_i13.SimpleData>?>(
-        'listParameters',
-        'returnSimpleDataListNullable',
-        {'list': list},
-      );
+  Future<List<SimpleData?>> returnSimpleDataListNullableSimpleData(
+    List<SimpleData?> list,
+  ) async {
+    return await caller.callServerEndpoint('listParameters',
+        'returnSimpleDataListNullableSimpleData', 'List<SimpleData>', {
+      'list': list,
+    });
+  }
 
-  _i2.Future<List<_i13.SimpleData?>?>
-      returnNullableSimpleDataListNullableSimpleData(
-              List<_i13.SimpleData?>? list) =>
-          caller.callServerEndpoint<List<_i13.SimpleData?>?>(
-            'listParameters',
-            'returnNullableSimpleDataListNullableSimpleData',
-            {'list': list},
-          );
+  Future<List<SimpleData>?> returnSimpleDataListNullable(
+    List<SimpleData>? list,
+  ) async {
+    return await caller.callServerEndpoint(
+        'listParameters', 'returnSimpleDataListNullable', 'List<SimpleData>', {
+      'list': list,
+    });
+  }
+
+  Future<List<SimpleData?>?> returnNullableSimpleDataListNullableSimpleData(
+    List<SimpleData?>? list,
+  ) async {
+    return await caller.callServerEndpoint('listParameters',
+        'returnNullableSimpleDataListNullableSimpleData', 'List<SimpleData>', {
+      'list': list,
+    });
+  }
 }
 
-class _EndpointLogging extends _i1.EndpointRef {
-  _EndpointLogging(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointLogging extends EndpointRef {
   @override
   String get name => 'logging';
 
-  _i2.Future<void> logInfo(String message) => caller.callServerEndpoint<void>(
-        'logging',
-        'logInfo',
-        {'message': message},
-      );
+  _EndpointLogging(EndpointCaller caller) : super(caller);
 
-  _i2.Future<void> logDebugAndInfoAndError(
+  Future<void> logInfo(
+    String message,
+  ) async {
+    return await caller.callServerEndpoint('logging', 'logInfo', 'void', {
+      'message': message,
+    });
+  }
+
+  Future<void> logDebugAndInfoAndError(
     String debug,
     String info,
     String error,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'logging',
-        'logDebugAndInfoAndError',
-        {
-          'debug': debug,
-          'info': info,
-          'error': error,
-        },
-      );
+  ) async {
+    return await caller
+        .callServerEndpoint('logging', 'logDebugAndInfoAndError', 'void', {
+      'debug': debug,
+      'info': info,
+      'error': error,
+    });
+  }
 
-  _i2.Future<void> twoQueries() => caller.callServerEndpoint<void>(
-        'logging',
-        'twoQueries',
-        {},
-      );
+  Future<void> twoQueries() async {
+    return await caller.callServerEndpoint('logging', 'twoQueries', 'void', {});
+  }
 }
 
-class _EndpointLoggingDisabled extends _i1.EndpointRef {
-  _EndpointLoggingDisabled(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointLoggingDisabled extends EndpointRef {
   @override
   String get name => 'loggingDisabled';
 
-  _i2.Future<void> logInfo(String message) => caller.callServerEndpoint<void>(
-        'loggingDisabled',
-        'logInfo',
-        {'message': message},
-      );
+  _EndpointLoggingDisabled(EndpointCaller caller) : super(caller);
+
+  Future<void> logInfo(
+    String message,
+  ) async {
+    return await caller
+        .callServerEndpoint('loggingDisabled', 'logInfo', 'void', {
+      'message': message,
+    });
+  }
 }
 
-class _EndpointMapParameters extends _i1.EndpointRef {
-  _EndpointMapParameters(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointMapParameters extends EndpointRef {
   @override
   String get name => 'mapParameters';
 
-  _i2.Future<Map<String, int>> returnIntMap(Map<String, int> map) =>
-      caller.callServerEndpoint<Map<String, int>>(
-        'mapParameters',
-        'returnIntMap',
-        {'map': map},
-      );
+  _EndpointMapParameters(EndpointCaller caller) : super(caller);
 
-  _i2.Future<Map<String, int>?> returnIntMapNullable(Map<String, int>? map) =>
-      caller.callServerEndpoint<Map<String, int>?>(
-        'mapParameters',
-        'returnIntMapNullable',
-        {'map': map},
-      );
+  Future<Map<String, int>> returnIntMap(
+    Map<String, int> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMap', 'Map<String,int>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, Map<String, int>>> returnNestedIntMap(
-          Map<String, Map<String, int>> map) =>
-      caller.callServerEndpoint<Map<String, Map<String, int>>>(
-        'mapParameters',
-        'returnNestedIntMap',
-        {'map': map},
-      );
+  Future<Map<String, int>?> returnIntMapNullable(
+    Map<String, int>? map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMapNullable', 'Map<String,int>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, int?>> returnIntMapNullableInts(
-          Map<String, int?> map) =>
-      caller.callServerEndpoint<Map<String, int?>>(
-        'mapParameters',
-        'returnIntMapNullableInts',
-        {'map': map},
-      );
+  Future<Map<String, Map<String, int>>> returnNestedIntMap(
+    Map<String, Map<String, int>> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnNestedIntMap', 'Map<String,Map<String,int>>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, int?>?> returnNullableIntMapNullableInts(
-          Map<String, int?>? map) =>
-      caller.callServerEndpoint<Map<String, int?>?>(
-        'mapParameters',
-        'returnNullableIntMapNullableInts',
-        {'map': map},
-      );
+  Future<Map<String, int?>> returnIntMapNullableInts(
+    Map<String, int?> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnIntMapNullableInts', 'Map<String,int?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<int, int>> returnIntIntMap(Map<int, int> map) =>
-      caller.callServerEndpoint<Map<int, int>>(
-        'mapParameters',
-        'returnIntIntMap',
-        {'map': map},
-      );
+  Future<Map<String, int?>?> returnNullableIntMapNullableInts(
+    Map<String, int?>? map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnNullableIntMapNullableInts', 'Map<String,int?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<_i14.TestEnum, int>> returnEnumIntMap(
-          Map<_i14.TestEnum, int> map) =>
-      caller.callServerEndpoint<Map<_i14.TestEnum, int>>(
-        'mapParameters',
-        'returnEnumIntMap',
-        {'map': map},
-      );
+  Future<Map<int, int>> returnIntIntMap(
+    Map<int, int> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnIntIntMap', 'Map<int,int>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i14.TestEnum>> returnEnumMap(
-          Map<String, _i14.TestEnum> map) =>
-      caller.callServerEndpoint<Map<String, _i14.TestEnum>>(
-        'mapParameters',
-        'returnEnumMap',
-        {'map': map},
-      );
+  Future<Map<TestEnum, int>> returnEnumIntMap(
+    Map<TestEnum, int> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnEnumIntMap', 'Map<TestEnum,int>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, double>> returnDoubleMap(Map<String, double> map) =>
-      caller.callServerEndpoint<Map<String, double>>(
-        'mapParameters',
-        'returnDoubleMap',
-        {'map': map},
-      );
+  Future<Map<String, TestEnum>> returnEnumMap(
+    Map<String, TestEnum> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnEnumMap', 'Map<String,TestEnum>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, double?>> returnDoubleMapNullableDoubles(
-          Map<String, double?> map) =>
-      caller.callServerEndpoint<Map<String, double?>>(
-        'mapParameters',
-        'returnDoubleMapNullableDoubles',
-        {'map': map},
-      );
+  Future<Map<String, double>> returnDoubleMap(
+    Map<String, double> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnDoubleMap', 'Map<String,double>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, bool>> returnBoolMap(Map<String, bool> map) =>
-      caller.callServerEndpoint<Map<String, bool>>(
-        'mapParameters',
-        'returnBoolMap',
-        {'map': map},
-      );
+  Future<Map<String, double?>> returnDoubleMapNullableDoubles(
+    Map<String, double?> map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnDoubleMapNullableDoubles', 'Map<String,double?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, bool?>> returnBoolMapNullableBools(
-          Map<String, bool?> map) =>
-      caller.callServerEndpoint<Map<String, bool?>>(
-        'mapParameters',
-        'returnBoolMapNullableBools',
-        {'map': map},
-      );
+  Future<Map<String, bool>> returnBoolMap(
+    Map<String, bool> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnBoolMap', 'Map<String,bool>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, String>> returnStringMap(Map<String, String> map) =>
-      caller.callServerEndpoint<Map<String, String>>(
-        'mapParameters',
-        'returnStringMap',
-        {'map': map},
-      );
+  Future<Map<String, bool?>> returnBoolMapNullableBools(
+    Map<String, bool?> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnBoolMapNullableBools', 'Map<String,bool?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, String?>> returnStringMapNullableStrings(
-          Map<String, String?> map) =>
-      caller.callServerEndpoint<Map<String, String?>>(
-        'mapParameters',
-        'returnStringMapNullableStrings',
-        {'map': map},
-      );
+  Future<Map<String, String>> returnStringMap(
+    Map<String, String> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnStringMap', 'Map<String,String>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, DateTime>> returnDateTimeMap(
-          Map<String, DateTime> map) =>
-      caller.callServerEndpoint<Map<String, DateTime>>(
-        'mapParameters',
-        'returnDateTimeMap',
-        {'map': map},
-      );
+  Future<Map<String, String?>> returnStringMapNullableStrings(
+    Map<String, String?> map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnStringMapNullableStrings', 'Map<String,String?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
-          Map<String, DateTime?> map) =>
-      caller.callServerEndpoint<Map<String, DateTime?>>(
-        'mapParameters',
-        'returnDateTimeMapNullableDateTimes',
-        {'map': map},
-      );
+  Future<Map<String, DateTime>> returnDateTimeMap(
+    Map<String, DateTime> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnDateTimeMap', 'Map<String,DateTime>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i4.ByteData>> returnByteDataMap(
-          Map<String, _i4.ByteData> map) =>
-      caller.callServerEndpoint<Map<String, _i4.ByteData>>(
-        'mapParameters',
-        'returnByteDataMap',
-        {'map': map},
-      );
+  Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
+    Map<String, DateTime?> map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnDateTimeMapNullableDateTimes', 'Map<String,DateTime?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i4.ByteData?>> returnByteDataMapNullableByteDatas(
-          Map<String, _i4.ByteData?> map) =>
-      caller.callServerEndpoint<Map<String, _i4.ByteData?>>(
-        'mapParameters',
-        'returnByteDataMapNullableByteDatas',
-        {'map': map},
-      );
+  Future<Map<String, ByteData>> returnByteDataMap(
+    Map<String, ByteData> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnByteDataMap', 'Map<String,ByteData>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i13.SimpleData>> returnSimpleDataMap(
-          Map<String, _i13.SimpleData> map) =>
-      caller.callServerEndpoint<Map<String, _i13.SimpleData>>(
-        'mapParameters',
-        'returnSimpleDataMap',
-        {'map': map},
-      );
+  Future<Map<String, ByteData?>> returnByteDataMapNullableByteDatas(
+    Map<String, ByteData?> map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnByteDataMapNullableByteDatas', 'Map<String,ByteData?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i13.SimpleData?>>
-      returnSimpleDataMapNullableSimpleData(
-              Map<String, _i13.SimpleData?> map) =>
-          caller.callServerEndpoint<Map<String, _i13.SimpleData?>>(
-            'mapParameters',
-            'returnSimpleDataMapNullableSimpleData',
-            {'map': map},
-          );
+  Future<Map<String, SimpleData>> returnSimpleDataMap(
+    Map<String, SimpleData> map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters', 'returnSimpleDataMap', 'Map<String,SimpleData>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i13.SimpleData>?> returnSimpleDataMapNullable(
-          Map<String, _i13.SimpleData>? map) =>
-      caller.callServerEndpoint<Map<String, _i13.SimpleData>?>(
-        'mapParameters',
-        'returnSimpleDataMapNullable',
-        {'map': map},
-      );
+  Future<Map<String, SimpleData?>> returnSimpleDataMapNullableSimpleData(
+    Map<String, SimpleData?> map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnSimpleDataMapNullableSimpleData', 'Map<String,SimpleData?>', {
+      'map': map,
+    });
+  }
 
-  _i2.Future<Map<String, _i13.SimpleData?>?>
+  Future<Map<String, SimpleData>?> returnSimpleDataMapNullable(
+    Map<String, SimpleData>? map,
+  ) async {
+    return await caller.callServerEndpoint('mapParameters',
+        'returnSimpleDataMapNullable', 'Map<String,SimpleData>', {
+      'map': map,
+    });
+  }
+
+  Future<Map<String, SimpleData?>?>
       returnNullableSimpleDataMapNullableSimpleData(
-              Map<String, _i13.SimpleData?>? map) =>
-          caller.callServerEndpoint<Map<String, _i13.SimpleData?>?>(
-            'mapParameters',
-            'returnNullableSimpleDataMapNullableSimpleData',
-            {'map': map},
-          );
+    Map<String, SimpleData?>? map,
+  ) async {
+    return await caller.callServerEndpoint(
+        'mapParameters',
+        'returnNullableSimpleDataMapNullableSimpleData',
+        'Map<String,SimpleData?>', {
+      'map': map,
+    });
+  }
 }
 
-class _EndpointModuleSerialization extends _i1.EndpointRef {
-  _EndpointModuleSerialization(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointModuleSerialization extends EndpointRef {
   @override
   String get name => 'moduleSerialization';
 
-  _i2.Future<bool> serializeModuleObject() => caller.callServerEndpoint<bool>(
-        'moduleSerialization',
-        'serializeModuleObject',
-        {},
-      );
+  _EndpointModuleSerialization(EndpointCaller caller) : super(caller);
 
-  _i2.Future<_i15.ModuleClass> modifyModuleObject(_i15.ModuleClass object) =>
-      caller.callServerEndpoint<_i15.ModuleClass>(
-        'moduleSerialization',
-        'modifyModuleObject',
-        {'object': object},
-      );
+  Future<bool> serializeModuleObject() async {
+    return await caller.callServerEndpoint(
+        'moduleSerialization', 'serializeModuleObject', 'bool', {});
+  }
+
+  Future<serverpod_test_module.ModuleClass> modifyModuleObject(
+    serverpod_test_module.ModuleClass object,
+  ) async {
+    return await caller.callServerEndpoint(
+        'moduleSerialization', 'modifyModuleObject', 'ModuleClass', {
+      'object': object,
+    });
+  }
 }
 
-class _EndpointNamedParameters extends _i1.EndpointRef {
-  _EndpointNamedParameters(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointNamedParameters extends EndpointRef {
   @override
   String get name => 'namedParameters';
 
-  _i2.Future<bool> namedParametersMethod({
-    required int namedInt,
-    required int intWithDefaultValue,
-    int? nullableInt,
-    int? nullableIntWithDefaultValue,
-  }) =>
-      caller.callServerEndpoint<bool>(
-        'namedParameters',
-        'namedParametersMethod',
-        {
-          'namedInt': namedInt,
-          'intWithDefaultValue': intWithDefaultValue,
-          'nullableInt': nullableInt,
-          'nullableIntWithDefaultValue': nullableIntWithDefaultValue,
-        },
-      );
+  _EndpointNamedParameters(EndpointCaller caller) : super(caller);
 
-  _i2.Future<bool> namedParametersMethodEqualInts({
-    required int namedInt,
-    int? nullableInt,
-  }) =>
-      caller.callServerEndpoint<bool>(
-        'namedParameters',
-        'namedParametersMethodEqualInts',
-        {
-          'namedInt': namedInt,
-          'nullableInt': nullableInt,
-        },
-      );
+  Future<bool> namedParametersMethod() async {
+    return await caller.callServerEndpoint(
+        'namedParameters', 'namedParametersMethod', 'bool', {});
+  }
+
+  Future<bool> namedParametersMethodEqualInts() async {
+    return await caller.callServerEndpoint(
+        'namedParameters', 'namedParametersMethodEqualInts', 'bool', {});
+  }
 }
 
-class _EndpointOptionalParameters extends _i1.EndpointRef {
-  _EndpointOptionalParameters(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointOptionalParameters extends EndpointRef {
   @override
   String get name => 'optionalParameters';
 
-  _i2.Future<int?> returnOptionalInt([int? optionalInt]) =>
-      caller.callServerEndpoint<int?>(
-        'optionalParameters',
-        'returnOptionalInt',
-        {'optionalInt': optionalInt},
-      );
+  _EndpointOptionalParameters(EndpointCaller caller) : super(caller);
+
+  Future<int?> returnOptionalInt([
+    int? optionalInt,
+  ]) async {
+    return await caller
+        .callServerEndpoint('optionalParameters', 'returnOptionalInt', 'int', {
+      'optionalInt': optionalInt,
+    });
+  }
 }
 
-class _EndpointRedis extends _i1.EndpointRef {
-  _EndpointRedis(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointRedis extends EndpointRef {
   @override
   String get name => 'redis';
 
-  _i2.Future<void> setSimpleData(
+  _EndpointRedis(EndpointCaller caller) : super(caller);
+
+  Future<void> setSimpleData(
     String key,
-    _i13.SimpleData data,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'redis',
-        'setSimpleData',
-        {
-          'key': key,
-          'data': data,
-        },
-      );
+    SimpleData data,
+  ) async {
+    return await caller.callServerEndpoint('redis', 'setSimpleData', 'void', {
+      'key': key,
+      'data': data,
+    });
+  }
 
-  _i2.Future<void> setSimpleDataWithLifetime(
+  Future<void> setSimpleDataWithLifetime(
     String key,
-    _i13.SimpleData data,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'redis',
-        'setSimpleDataWithLifetime',
-        {
-          'key': key,
-          'data': data,
-        },
-      );
+    SimpleData data,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'setSimpleDataWithLifetime', 'void', {
+      'key': key,
+      'data': data,
+    });
+  }
 
-  _i2.Future<_i13.SimpleData?> getSimpleData(String key) =>
-      caller.callServerEndpoint<_i13.SimpleData?>(
-        'redis',
-        'getSimpleData',
-        {'key': key},
-      );
+  Future<SimpleData?> getSimpleData(
+    String key,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'getSimpleData', 'SimpleData', {
+      'key': key,
+    });
+  }
 
-  _i2.Future<void> deleteSimpleData(String key) =>
-      caller.callServerEndpoint<void>(
-        'redis',
-        'deleteSimpleData',
-        {'key': key},
-      );
+  Future<void> deleteSimpleData(
+    String key,
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'deleteSimpleData', 'void', {
+      'key': key,
+    });
+  }
 
-  _i2.Future<void> resetMessageCentralTest() => caller.callServerEndpoint<void>(
-        'redis',
-        'resetMessageCentralTest',
-        {},
-      );
+  Future<void> resetMessageCentralTest() async {
+    return await caller
+        .callServerEndpoint('redis', 'resetMessageCentralTest', 'void', {});
+  }
 
-  _i2.Future<_i13.SimpleData?> listenToChannel(String channel) =>
-      caller.callServerEndpoint<_i13.SimpleData?>(
-        'redis',
-        'listenToChannel',
-        {'channel': channel},
-      );
-
-  _i2.Future<void> postToChannel(
+  Future<SimpleData?> listenToChannel(
     String channel,
-    _i13.SimpleData data,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'redis',
-        'postToChannel',
-        {
-          'channel': channel,
-          'data': data,
-        },
-      );
+  ) async {
+    return await caller
+        .callServerEndpoint('redis', 'listenToChannel', 'SimpleData', {
+      'channel': channel,
+    });
+  }
 
-  _i2.Future<int> countSubscribedChannels() => caller.callServerEndpoint<int>(
-        'redis',
-        'countSubscribedChannels',
-        {},
-      );
+  Future<void> postToChannel(
+    String channel,
+    SimpleData data,
+  ) async {
+    return await caller.callServerEndpoint('redis', 'postToChannel', 'void', {
+      'channel': channel,
+      'data': data,
+    });
+  }
+
+  Future<int> countSubscribedChannels() async {
+    return await caller
+        .callServerEndpoint('redis', 'countSubscribedChannels', 'int', {});
+  }
 }
 
-class _EndpointSignInRequired extends _i1.EndpointRef {
-  _EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointSignInRequired extends EndpointRef {
   @override
   String get name => 'signInRequired';
 
-  _i2.Future<bool> testMethod() => caller.callServerEndpoint<bool>(
-        'signInRequired',
-        'testMethod',
-        {},
-      );
+  _EndpointSignInRequired(EndpointCaller caller) : super(caller);
+
+  Future<bool> testMethod() async {
+    return await caller
+        .callServerEndpoint('signInRequired', 'testMethod', 'bool', {});
+  }
 }
 
-/// A simple endpoint that modifies a global integer. This class is meant for
-/// testing and the documentation has multiple lines.
-class _EndpointSimple extends _i1.EndpointRef {
-  _EndpointSimple(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointSimple extends EndpointRef {
   @override
   String get name => 'simple';
 
-  /// Sets a global integer.
-  _i2.Future<void> setGlobalInt(
+  _EndpointSimple(EndpointCaller caller) : super(caller);
+
+  Future<void> setGlobalInt(
     int? value, [
     int? secondValue,
-  ]) =>
-      caller.callServerEndpoint<void>(
-        'simple',
-        'setGlobalInt',
-        {
-          'value': value,
-          'secondValue': secondValue,
-        },
-      );
+  ]) async {
+    return await caller.callServerEndpoint('simple', 'setGlobalInt', 'void', {
+      'value': value,
+      'secondValue': secondValue,
+    });
+  }
 
-  /// Adds 1 to the global integer.
-  _i2.Future<void> addToGlobalInt() => caller.callServerEndpoint<void>(
-        'simple',
-        'addToGlobalInt',
-        {},
-      );
+  Future<void> addToGlobalInt() async {
+    return await caller
+        .callServerEndpoint('simple', 'addToGlobalInt', 'void', {});
+  }
 
-  /// Retrieves a global integer.
-  _i2.Future<int> getGlobalInt() => caller.callServerEndpoint<int>(
-        'simple',
-        'getGlobalInt',
-        {},
-      );
+  Future<int> getGlobalInt() async {
+    return await caller.callServerEndpoint('simple', 'getGlobalInt', 'int', {});
+  }
 }
 
-class _EndpointStreaming extends _i1.EndpointRef {
-  _EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointStreaming extends EndpointRef {
   @override
   String get name => 'streaming';
+
+  _EndpointStreaming(EndpointCaller caller) : super(caller);
 }
 
-class _EndpointStreamingLogging extends _i1.EndpointRef {
-  _EndpointStreamingLogging(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointStreamingLogging extends EndpointRef {
   @override
   String get name => 'streamingLogging';
+
+  _EndpointStreamingLogging(EndpointCaller caller) : super(caller);
 }
 
 class _Modules {
+  late final serverpod_test_module.Caller module;
+  late final serverpod_auth.Caller auth;
+
   _Modules(Client client) {
-    module = _i15.Caller(client);
-    auth = _i3.Caller(client);
+    module = serverpod_test_module.Caller(client);
+    auth = serverpod_auth.Caller(client);
   }
-
-  late final _i15.Caller module;
-
-  late final _i3.Caller auth;
 }
 
-class Client extends _i1.ServerpodClient {
-  Client(
-    String host, {
-    _i16.SecurityContext? context,
-    _i1.AuthenticationKeyManager? authenticationKeyManager,
-  }) : super(
-          host,
-          _i17.Protocol(),
-          context: context,
-          authenticationKeyManager: authenticationKeyManager,
-        ) {
+class Client extends ServerpodClient {
+  late final _EndpointAsyncTasks asyncTasks;
+  late final _EndpointAuthentication authentication;
+  late final _EndpointBasicTypes basicTypes;
+  late final _EndpointCloudStorage cloudStorage;
+  late final _EndpointS3CloudStorage s3CloudStorage;
+  late final _EndpointCustomTypes customTypes;
+  late final _EndpointBasicDatabase basicDatabase;
+  late final _EndpointTransactionsDatabase transactionsDatabase;
+  late final _EndpointFailedCalls failedCalls;
+  late final _EndpointFieldScopes fieldScopes;
+  late final _EndpointFutureCalls futureCalls;
+  late final _EndpointListParameters listParameters;
+  late final _EndpointLogging logging;
+  late final _EndpointLoggingDisabled loggingDisabled;
+  late final _EndpointMapParameters mapParameters;
+  late final _EndpointModuleSerialization moduleSerialization;
+  late final _EndpointNamedParameters namedParameters;
+  late final _EndpointOptionalParameters optionalParameters;
+  late final _EndpointRedis redis;
+  late final _EndpointSignInRequired signInRequired;
+  late final _EndpointSimple simple;
+  late final _EndpointStreaming streaming;
+  late final _EndpointStreamingLogging streamingLogging;
+  late final _Modules modules;
+
+  Client(String host,
+      {SecurityContext? context,
+      ServerpodClientErrorCallback? errorHandler,
+      AuthenticationKeyManager? authenticationKeyManager})
+      : super(host, Protocol.instance,
+            context: context,
+            errorHandler: errorHandler,
+            authenticationKeyManager: authenticationKeyManager) {
     asyncTasks = _EndpointAsyncTasks(this);
     authentication = _EndpointAuthentication(this);
     basicTypes = _EndpointBasicTypes(this);
@@ -1233,59 +1313,14 @@ class Client extends _i1.ServerpodClient {
     simple = _EndpointSimple(this);
     streaming = _EndpointStreaming(this);
     streamingLogging = _EndpointStreamingLogging(this);
+
     modules = _Modules(this);
+    registerModuleProtocol(serverpod_test_module.Protocol());
+    registerModuleProtocol(serverpod_auth.Protocol());
   }
 
-  late final _EndpointAsyncTasks asyncTasks;
-
-  late final _EndpointAuthentication authentication;
-
-  late final _EndpointBasicTypes basicTypes;
-
-  late final _EndpointCloudStorage cloudStorage;
-
-  late final _EndpointS3CloudStorage s3CloudStorage;
-
-  late final _EndpointCustomTypes customTypes;
-
-  late final _EndpointBasicDatabase basicDatabase;
-
-  late final _EndpointTransactionsDatabase transactionsDatabase;
-
-  late final _EndpointFailedCalls failedCalls;
-
-  late final _EndpointFieldScopes fieldScopes;
-
-  late final _EndpointFutureCalls futureCalls;
-
-  late final _EndpointListParameters listParameters;
-
-  late final _EndpointLogging logging;
-
-  late final _EndpointLoggingDisabled loggingDisabled;
-
-  late final _EndpointMapParameters mapParameters;
-
-  late final _EndpointModuleSerialization moduleSerialization;
-
-  late final _EndpointNamedParameters namedParameters;
-
-  late final _EndpointOptionalParameters optionalParameters;
-
-  late final _EndpointRedis redis;
-
-  late final _EndpointSignInRequired signInRequired;
-
-  late final _EndpointSimple simple;
-
-  late final _EndpointStreaming streaming;
-
-  late final _EndpointStreamingLogging streamingLogging;
-
-  late final _Modules modules;
-
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+  Map<String, EndpointRef> get endpointRefLookup => {
         'asyncTasks': asyncTasks,
         'authentication': authentication,
         'basicTypes': basicTypes,
@@ -1310,8 +1345,9 @@ class Client extends _i1.ServerpodClient {
         'streaming': streaming,
         'streamingLogging': streamingLogging,
       };
+
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
+  Map<String, ModuleEndpointCaller> get moduleLookup => {
         'module': modules.module,
         'auth': modules.auth,
       };

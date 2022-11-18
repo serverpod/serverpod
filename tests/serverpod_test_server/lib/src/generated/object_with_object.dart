@@ -1,108 +1,120 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ObjectWithObject extends _i1.TableRow {
+class ObjectWithObject extends TableRow {
+  @override
+  String get className => 'ObjectWithObject';
+  @override
+  String get tableName => 'object_with_object';
+
+  static final t = ObjectWithObjectTable();
+
+  @override
+  int? id;
+  late SimpleData data;
+  SimpleData? nullableData;
+  late List<SimpleData> dataList;
+  List<SimpleData>? nullableDataList;
+  late List<SimpleData?> listWithNullableData;
+  List<SimpleData?>? nullableListWithNullableData;
+
   ObjectWithObject({
-    int? id,
+    this.id,
     required this.data,
     this.nullableData,
     required this.dataList,
     this.nullableDataList,
     required this.listWithNullableData,
     this.nullableListWithNullableData,
-  }) : super(id);
+  });
 
-  factory ObjectWithObject.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ObjectWithObject(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      data: serializationManager
-          .deserialize<_i2.SimpleData>(jsonSerialization['data']),
-      nullableData: serializationManager
-          .deserialize<_i2.SimpleData?>(jsonSerialization['nullableData']),
-      dataList: serializationManager
-          .deserialize<List<_i2.SimpleData>>(jsonSerialization['dataList']),
-      nullableDataList: serializationManager.deserialize<List<_i2.SimpleData>?>(
-          jsonSerialization['nullableDataList']),
-      listWithNullableData:
-          serializationManager.deserialize<List<_i2.SimpleData?>>(
-              jsonSerialization['listWithNullableData']),
-      nullableListWithNullableData:
-          serializationManager.deserialize<List<_i2.SimpleData?>?>(
-              jsonSerialization['nullableListWithNullableData']),
-    );
+  ObjectWithObject.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    data = SimpleData.fromSerialization(_data['data']);
+    nullableData = _data['nullableData'] != null
+        ? SimpleData?.fromSerialization(_data['nullableData'])
+        : null;
+    dataList = _data['dataList']!
+        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.toList();
+    nullableDataList = _data['nullableDataList']
+        ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
+        ?.toList();
+    listWithNullableData = _data['listWithNullableData']!
+        .map<SimpleData?>(
+            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        ?.toList();
+    nullableListWithNullableData = _data['nullableListWithNullableData']
+        ?.map<SimpleData?>(
+            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
+        ?.toList();
   }
 
-  static final t = ObjectWithObjectTable();
-
-  _i2.SimpleData data;
-
-  _i2.SimpleData? nullableData;
-
-  List<_i2.SimpleData> dataList;
-
-  List<_i2.SimpleData>? nullableDataList;
-
-  List<_i2.SimpleData?> listWithNullableData;
-
-  List<_i2.SimpleData?>? nullableListWithNullableData;
-
   @override
-  String get tableName => 'object_with_object';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
-      'data': data,
-      'nullableData': nullableData,
-      'dataList': dataList,
-      'nullableDataList': nullableDataList,
-      'listWithNullableData': listWithNullableData,
-      'nullableListWithNullableData': nullableListWithNullableData,
-    };
+      'data': data.serialize(),
+      'nullableData': nullableData?.serialize(),
+      'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
+      'nullableDataList':
+          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
+      'listWithNullableData':
+          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableListWithNullableData': nullableListWithNullableData
+          ?.map((SimpleData? a) => a?.serialize())
+          .toList(),
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
-      'data': data,
-      'nullableData': nullableData,
-      'dataList': dataList,
-      'nullableDataList': nullableDataList,
-      'listWithNullableData': listWithNullableData,
-      'nullableListWithNullableData': nullableListWithNullableData,
-    };
+      'data': data.serialize(),
+      'nullableData': nullableData?.serialize(),
+      'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
+      'nullableDataList':
+          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
+      'listWithNullableData':
+          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableListWithNullableData': nullableListWithNullableData
+          ?.map((SimpleData? a) => a?.serialize())
+          .toList(),
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
-      'data': data,
-      'nullableData': nullableData,
-      'dataList': dataList,
-      'nullableDataList': nullableDataList,
-      'listWithNullableData': listWithNullableData,
-      'nullableListWithNullableData': nullableListWithNullableData,
-    };
+      'data': data.serialize(),
+      'nullableData': nullableData?.serialize(),
+      'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
+      'nullableDataList':
+          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
+      'listWithNullableData':
+          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
+      'nullableListWithNullableData': nullableListWithNullableData
+          ?.map((SimpleData? a) => a?.serialize())
+          .toList(),
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -131,15 +143,15 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   static Future<List<ObjectWithObject>> find(
-    _i1.Session session, {
+    Session session, {
     ObjectWithObjectExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -154,13 +166,13 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   static Future<ObjectWithObject?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     ObjectWithObjectExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -172,17 +184,14 @@ class ObjectWithObject extends _i1.TableRow {
     );
   }
 
-  static Future<ObjectWithObject?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<ObjectWithObject?> findById(Session session, int id) async {
     return session.db.findById<ObjectWithObject>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required ObjectWithObjectExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithObject>(
       where: where(ObjectWithObject.t),
@@ -191,9 +200,9 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     ObjectWithObject row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -202,9 +211,9 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     ObjectWithObject row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -213,22 +222,19 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     ObjectWithObject row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     ObjectWithObjectExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -239,29 +245,25 @@ class ObjectWithObject extends _i1.TableRow {
   }
 }
 
-typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
-    ObjectWithObjectTable);
+typedef ObjectWithObjectExpressionBuilder = Expression Function(
+    ObjectWithObjectTable t);
 
-class ObjectWithObjectTable extends _i1.Table {
+class ObjectWithObjectTable extends Table {
   ObjectWithObjectTable() : super(tableName: 'object_with_object');
 
-  final id = _i1.ColumnInt('id');
-
-  final data = _i1.ColumnSerializable('data');
-
-  final nullableData = _i1.ColumnSerializable('nullableData');
-
-  final dataList = _i1.ColumnSerializable('dataList');
-
-  final nullableDataList = _i1.ColumnSerializable('nullableDataList');
-
-  final listWithNullableData = _i1.ColumnSerializable('listWithNullableData');
-
+  @override
+  String tableName = 'object_with_object';
+  final id = ColumnInt('id');
+  final data = ColumnSerializable('data');
+  final nullableData = ColumnSerializable('nullableData');
+  final dataList = ColumnSerializable('dataList');
+  final nullableDataList = ColumnSerializable('nullableDataList');
+  final listWithNullableData = ColumnSerializable('listWithNullableData');
   final nullableListWithNullableData =
-      _i1.ColumnSerializable('nullableListWithNullableData');
+      ColumnSerializable('nullableListWithNullableData');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         data,
         nullableData,

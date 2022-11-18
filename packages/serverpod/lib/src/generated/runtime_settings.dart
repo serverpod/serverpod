@@ -1,91 +1,93 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class RuntimeSettings extends _i1.TableRow {
+class RuntimeSettings extends TableRow {
+  @override
+  String get className => 'RuntimeSettings';
+  @override
+  String get tableName => 'serverpod_runtime_settings';
+
+  static final t = RuntimeSettingsTable();
+
+  @override
+  int? id;
+  late LogSettings logSettings;
+  late List<LogSettingsOverride> logSettingsOverrides;
+  late bool logServiceCalls;
+  late bool logMalformedCalls;
+
   RuntimeSettings({
-    int? id,
+    this.id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
-  }) : super(id);
+  });
 
-  factory RuntimeSettings.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return RuntimeSettings(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      logSettings: serializationManager
-          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
-      logSettingsOverrides:
-          serializationManager.deserialize<List<_i2.LogSettingsOverride>>(
-              jsonSerialization['logSettingsOverrides']),
-      logServiceCalls: serializationManager
-          .deserialize<bool>(jsonSerialization['logServiceCalls']),
-      logMalformedCalls: serializationManager
-          .deserialize<bool>(jsonSerialization['logMalformedCalls']),
-    );
+  RuntimeSettings.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    logSettings = LogSettings.fromSerialization(_data['logSettings']);
+    logSettingsOverrides = _data['logSettingsOverrides']!
+        .map<LogSettingsOverride>(
+            (a) => LogSettingsOverride.fromSerialization(a))
+        ?.toList();
+    logServiceCalls = _data['logServiceCalls']!;
+    logMalformedCalls = _data['logMalformedCalls']!;
   }
 
-  static final t = RuntimeSettingsTable();
-
-  _i2.LogSettings logSettings;
-
-  List<_i2.LogSettingsOverride> logSettingsOverrides;
-
-  bool logServiceCalls;
-
-  bool logMalformedCalls;
-
   @override
-  String get tableName => 'serverpod_runtime_settings';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.serialize(),
+      'logSettingsOverrides': logSettingsOverrides
+          .map((LogSettingsOverride a) => a.serialize())
+          .toList(),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.serialize(),
+      'logSettingsOverrides': logSettingsOverrides
+          .map((LogSettingsOverride a) => a.serialize())
+          .toList(),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.serialize(),
+      'logSettingsOverrides': logSettingsOverrides
+          .map((LogSettingsOverride a) => a.serialize())
+          .toList(),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
-    };
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -108,15 +110,15 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   static Future<List<RuntimeSettings>> find(
-    _i1.Session session, {
+    Session session, {
     RuntimeSettingsExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<RuntimeSettings>(
       where: where != null ? where(RuntimeSettings.t) : null,
@@ -131,13 +133,13 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   static Future<RuntimeSettings?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     RuntimeSettingsExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<RuntimeSettings>(
       where: where != null ? where(RuntimeSettings.t) : null,
@@ -149,17 +151,14 @@ class RuntimeSettings extends _i1.TableRow {
     );
   }
 
-  static Future<RuntimeSettings?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<RuntimeSettings?> findById(Session session, int id) async {
     return session.db.findById<RuntimeSettings>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required RuntimeSettingsExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<RuntimeSettings>(
       where: where(RuntimeSettings.t),
@@ -168,9 +167,9 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     RuntimeSettings row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -179,9 +178,9 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     RuntimeSettings row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -190,22 +189,19 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     RuntimeSettings row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     RuntimeSettingsExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<RuntimeSettings>(
       where: where != null ? where(RuntimeSettings.t) : null,
@@ -216,24 +212,22 @@ class RuntimeSettings extends _i1.TableRow {
   }
 }
 
-typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
-    RuntimeSettingsTable);
+typedef RuntimeSettingsExpressionBuilder = Expression Function(
+    RuntimeSettingsTable t);
 
-class RuntimeSettingsTable extends _i1.Table {
+class RuntimeSettingsTable extends Table {
   RuntimeSettingsTable() : super(tableName: 'serverpod_runtime_settings');
 
-  final id = _i1.ColumnInt('id');
-
-  final logSettings = _i1.ColumnSerializable('logSettings');
-
-  final logSettingsOverrides = _i1.ColumnSerializable('logSettingsOverrides');
-
-  final logServiceCalls = _i1.ColumnBool('logServiceCalls');
-
-  final logMalformedCalls = _i1.ColumnBool('logMalformedCalls');
+  @override
+  String tableName = 'serverpod_runtime_settings';
+  final id = ColumnInt('id');
+  final logSettings = ColumnSerializable('logSettings');
+  final logSettingsOverrides = ColumnSerializable('logSettingsOverrides');
+  final logServiceCalls = ColumnBool('logServiceCalls');
+  final logMalformedCalls = ColumnBool('logMalformedCalls');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         logSettings,
         logSettingsOverrides,

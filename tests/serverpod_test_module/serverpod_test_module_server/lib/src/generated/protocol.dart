@@ -1,71 +1,37 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unnecessary_import
 
-library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
+library protocol;
 
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'module_class.dart' as _i2;
-import 'package:serverpod/protocol.dart' as _i3;
-export 'module_class.dart'; // ignore_for_file: equal_keys_in_map
+// ignore: unused_import
+import 'dart:typed_data';
+import 'package:serverpod/serverpod.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
-  Protocol._();
+import 'module_class.dart';
 
-  factory Protocol() => _instance;
+export 'module_class.dart';
 
-  static final Map<Type, _i1.constructor> customConstructors = {};
+class Protocol extends SerializationManagerServer {
+  static final Protocol instance = Protocol();
 
-  static final Protocol _instance = Protocol._();
-
+  final Map<String, constructor> _constructors = {};
   @override
-  T deserialize<T>(
-    dynamic data, [
-    Type? t,
-  ]) {
-    t ??= T;
-    if (customConstructors.containsKey(t)) {
-      return customConstructors[t]!(data, this) as T;
-    }
-    if (t == _i2.ModuleClass) {
-      return _i2.ModuleClass.fromJson(data, this) as T;
-    }
-    if (t == _i1.getType<_i2.ModuleClass?>()) {
-      return (data != null ? _i2.ModuleClass.fromJson(data, this) : null) as T;
-    }
-    try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
-    return super.deserialize<T>(data, t);
-  }
+  Map<String, constructor> get constructors => _constructors;
 
+  final Map<String, String> _tableClassMapping = {};
   @override
-  String? getClassNameForObject(Object data) {
-    if (data is _i2.ModuleClass) {
-      return 'ModuleClass';
-    }
-    return super.getClassNameForObject(data);
-  }
+  Map<String, String> get tableClassMapping => _tableClassMapping;
 
+  final Map<Type, Table> _typeTableMapping = {};
   @override
-  dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'ModuleClass') {
-      return deserialize<_i2.ModuleClass>(data['data']);
-    }
-    return super.deserializeByClassName(data);
-  }
+  Map<Type, Table> get typeTableMapping => _typeTableMapping;
 
-  @override
-  _i1.Table? getTableForType(Type t) {
-    {
-      var table = _i3.Protocol().getTableForType(t);
-      if (table != null) {
-        return table;
-      }
-    }
-    return null;
+  Protocol() {
+    constructors['serverpod_test_module_server.ModuleClass'] =
+        (Map<String, dynamic> serialization) =>
+            ModuleClass.fromSerialization(serialization);
   }
 }

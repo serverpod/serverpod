@@ -1,57 +1,53 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:serverpod_chat_client/src/protocol/chat_message_attachment_upload_description.dart'
-    as _i3;
-import 'package:serverpod_chat_client/src/protocol/chat_message_attachment.dart'
-    as _i4;
+import 'dart:io';
+import 'dart:typed_data' as typed_data;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'protocol.dart';
 
-/// Connect to the chat endpoint to send and receive chat messages.
-class _EndpointChat extends _i1.EndpointRef {
-  _EndpointChat(_i1.EndpointCaller caller) : super(caller);
-
+class _EndpointChat extends EndpointRef {
   @override
   String get name => 'serverpod_chat.chat';
 
-  /// Creates a description for uploading an attachment.
-  _i2.Future<_i3.ChatMessageAttachmentUploadDescription?>
-      createAttachmentUploadDescription(String fileName) => caller
-              .callServerEndpoint<_i3.ChatMessageAttachmentUploadDescription?>(
-            'serverpod_chat.chat',
-            'createAttachmentUploadDescription',
-            {'fileName': fileName},
-          );
+  _EndpointChat(EndpointCaller caller) : super(caller);
 
-  /// Verifies that an attachment has been uploaded.
-  _i2.Future<_i4.ChatMessageAttachment?> verifyAttachmentUpload(
+  Future<ChatMessageAttachmentUploadDescription?>
+      createAttachmentUploadDescription(
+    String fileName,
+  ) async {
+    return await caller.callServerEndpoint(
+        'serverpod_chat.chat',
+        'createAttachmentUploadDescription',
+        'ChatMessageAttachmentUploadDescription', {
+      'fileName': fileName,
+    });
+  }
+
+  Future<ChatMessageAttachment?> verifyAttachmentUpload(
     String fileName,
     String filePath,
-  ) =>
-      caller.callServerEndpoint<_i4.ChatMessageAttachment?>(
-        'serverpod_chat.chat',
-        'verifyAttachmentUpload',
-        {
-          'fileName': fileName,
-          'filePath': filePath,
-        },
-      );
+  ) async {
+    return await caller.callServerEndpoint('serverpod_chat.chat',
+        'verifyAttachmentUpload', 'ChatMessageAttachment', {
+      'fileName': fileName,
+      'filePath': filePath,
+    });
+  }
 }
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {
+class Caller extends ModuleEndpointCaller {
+  late final _EndpointChat chat;
+
+  Caller(ServerpodClientShared client) : super(client) {
     chat = _EndpointChat(this);
   }
 
-  late final _EndpointChat chat;
-
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup =>
-      {'serverpod_chat.chat': chat};
+  Map<String, EndpointRef> get endpointRefLookup => {
+        'serverpod_chat.chat': chat,
+      };
 }

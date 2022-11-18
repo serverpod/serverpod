@@ -1,96 +1,90 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ServerHealthMetric extends _i1.TableRow {
+class ServerHealthMetric extends TableRow {
+  @override
+  String get className => 'ServerHealthMetric';
+  @override
+  String get tableName => 'serverpod_health_metric';
+
+  static final t = ServerHealthMetricTable();
+
+  @override
+  int? id;
+  late String name;
+  late String serverId;
+  late DateTime timestamp;
+  late bool isHealthy;
+  late double value;
+
   ServerHealthMetric({
-    int? id,
+    this.id,
     required this.name,
     required this.serverId,
     required this.timestamp,
     required this.isHealthy,
     required this.value,
-  }) : super(id);
+  });
 
-  factory ServerHealthMetric.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ServerHealthMetric(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      timestamp: serializationManager
-          .deserialize<DateTime>(jsonSerialization['timestamp']),
-      isHealthy: serializationManager
-          .deserialize<bool>(jsonSerialization['isHealthy']),
-      value:
-          serializationManager.deserialize<double>(jsonSerialization['value']),
-    );
+  ServerHealthMetric.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    name = _data['name']!;
+    serverId = _data['serverId']!;
+    timestamp = DateTime.tryParse(_data['timestamp'])!;
+    isHealthy = _data['isHealthy']!;
+    value = _data['value']!;
   }
 
-  static final t = ServerHealthMetricTable();
-
-  String name;
-
-  String serverId;
-
-  DateTime timestamp;
-
-  bool isHealthy;
-
-  double value;
-
   @override
-  String get tableName => 'serverpod_health_metric';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toUtc().toIso8601String(),
       'isHealthy': isHealthy,
       'value': value,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toUtc().toIso8601String(),
       'isHealthy': isHealthy,
       'value': value,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toUtc().toIso8601String(),
       'isHealthy': isHealthy,
       'value': value,
-    };
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -116,15 +110,15 @@ class ServerHealthMetric extends _i1.TableRow {
   }
 
   static Future<List<ServerHealthMetric>> find(
-    _i1.Session session, {
+    Session session, {
     ServerHealthMetricExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<ServerHealthMetric>(
       where: where != null ? where(ServerHealthMetric.t) : null,
@@ -139,13 +133,13 @@ class ServerHealthMetric extends _i1.TableRow {
   }
 
   static Future<ServerHealthMetric?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     ServerHealthMetricExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ServerHealthMetric>(
       where: where != null ? where(ServerHealthMetric.t) : null,
@@ -157,17 +151,14 @@ class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
-  static Future<ServerHealthMetric?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<ServerHealthMetric?> findById(Session session, int id) async {
     return session.db.findById<ServerHealthMetric>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required ServerHealthMetricExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),
@@ -176,9 +167,9 @@ class ServerHealthMetric extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     ServerHealthMetric row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -187,9 +178,9 @@ class ServerHealthMetric extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     ServerHealthMetric row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -198,22 +189,19 @@ class ServerHealthMetric extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     ServerHealthMetric row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     ServerHealthMetricExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<ServerHealthMetric>(
       where: where != null ? where(ServerHealthMetric.t) : null,
@@ -224,26 +212,23 @@ class ServerHealthMetric extends _i1.TableRow {
   }
 }
 
-typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
-    ServerHealthMetricTable);
+typedef ServerHealthMetricExpressionBuilder = Expression Function(
+    ServerHealthMetricTable t);
 
-class ServerHealthMetricTable extends _i1.Table {
+class ServerHealthMetricTable extends Table {
   ServerHealthMetricTable() : super(tableName: 'serverpod_health_metric');
 
-  final id = _i1.ColumnInt('id');
-
-  final name = _i1.ColumnString('name');
-
-  final serverId = _i1.ColumnString('serverId');
-
-  final timestamp = _i1.ColumnDateTime('timestamp');
-
-  final isHealthy = _i1.ColumnBool('isHealthy');
-
-  final value = _i1.ColumnDouble('value');
+  @override
+  String tableName = 'serverpod_health_metric';
+  final id = ColumnInt('id');
+  final name = ColumnString('name');
+  final serverId = ColumnString('serverId');
+  final timestamp = ColumnDateTime('timestamp');
+  final isHealthy = ColumnBool('isHealthy');
+  final value = ColumnDouble('value');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         name,
         serverId,

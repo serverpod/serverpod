@@ -1,14 +1,25 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class EmailFailedSignIn extends _i1.SerializableEntity {
+class EmailFailedSignIn extends SerializableEntity {
+  @override
+  String get className => 'serverpod_auth_server.EmailFailedSignIn';
+
+  int? id;
+  late String email;
+  late DateTime time;
+  late String ipAddress;
+
   EmailFailedSignIn({
     this.id,
     required this.email,
@@ -16,36 +27,21 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
     required this.ipAddress,
   });
 
-  factory EmailFailedSignIn.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return EmailFailedSignIn(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      ipAddress: serializationManager
-          .deserialize<String>(jsonSerialization['ipAddress']),
-    );
+  EmailFailedSignIn.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    email = _data['email']!;
+    time = DateTime.tryParse(_data['time'])!;
+    ipAddress = _data['ipAddress']!;
   }
 
-  int? id;
-
-  String email;
-
-  DateTime time;
-
-  String ipAddress;
-
   @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'email': email,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'ipAddress': ipAddress,
-    };
+    });
   }
 }

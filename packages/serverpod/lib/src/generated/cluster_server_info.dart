@@ -1,34 +1,47 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ClusterServerInfo extends _i1.SerializableEntity {
-  ClusterServerInfo({required this.serverId});
+class ClusterServerInfo extends SerializableEntity {
+  @override
+  String get className => 'ClusterServerInfo';
 
-  factory ClusterServerInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ClusterServerInfo(
-        serverId: serializationManager
-            .deserialize<String>(jsonSerialization['serverId']));
+  int? id;
+  late String serverId;
+
+  ClusterServerInfo({
+    this.id,
+    required this.serverId,
+  });
+
+  ClusterServerInfo.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    serverId = _data['serverId']!;
   }
 
-  String serverId;
-
   @override
-  Map<String, dynamic> toJson() {
-    return {'serverId': serverId};
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
+      'serverId': serverId,
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'serverId': serverId};
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
+      'id': id,
+      'serverId': serverId,
+    });
   }
 }

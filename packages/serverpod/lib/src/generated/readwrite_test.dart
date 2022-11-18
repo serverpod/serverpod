@@ -1,65 +1,66 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ReadWriteTestEntry extends _i1.TableRow {
-  ReadWriteTestEntry({
-    int? id,
-    required this.number,
-  }) : super(id);
-
-  factory ReadWriteTestEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ReadWriteTestEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
-    );
-  }
+class ReadWriteTestEntry extends TableRow {
+  @override
+  String get className => 'ReadWriteTestEntry';
+  @override
+  String get tableName => 'serverpod_readwrite_test';
 
   static final t = ReadWriteTestEntryTable();
 
-  int number;
+  @override
+  int? id;
+  late int number;
 
-  @override
-  String get tableName => 'serverpod_readwrite_test';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'number': number,
-    };
+  ReadWriteTestEntry({
+    this.id,
+    required this.number,
+  });
+
+  ReadWriteTestEntry.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    number = _data['number']!;
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'number': number,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'number': number,
-    };
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
+      'id': id,
+      'number': number,
+    });
+  }
+
+  @override
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -73,15 +74,15 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   static Future<List<ReadWriteTestEntry>> find(
-    _i1.Session session, {
+    Session session, {
     ReadWriteTestEntryExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -96,13 +97,13 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   static Future<ReadWriteTestEntry?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     ReadWriteTestEntryExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -114,17 +115,14 @@ class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
-  static Future<ReadWriteTestEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<ReadWriteTestEntry?> findById(Session session, int id) async {
     return session.db.findById<ReadWriteTestEntry>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required ReadWriteTestEntryExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<ReadWriteTestEntry>(
       where: where(ReadWriteTestEntry.t),
@@ -133,9 +131,9 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     ReadWriteTestEntry row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -144,9 +142,9 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     ReadWriteTestEntry row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -155,22 +153,19 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     ReadWriteTestEntry row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     ReadWriteTestEntryExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -181,18 +176,19 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 }
 
-typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
-    ReadWriteTestEntryTable);
+typedef ReadWriteTestEntryExpressionBuilder = Expression Function(
+    ReadWriteTestEntryTable t);
 
-class ReadWriteTestEntryTable extends _i1.Table {
+class ReadWriteTestEntryTable extends Table {
   ReadWriteTestEntryTable() : super(tableName: 'serverpod_readwrite_test');
 
-  final id = _i1.ColumnInt('id');
-
-  final number = _i1.ColumnInt('number');
+  @override
+  String tableName = 'serverpod_readwrite_test';
+  final id = ColumnInt('id');
+  final number = ColumnInt('number');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         number,
       ];

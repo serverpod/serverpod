@@ -1,14 +1,26 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class EmailCreateAccountRequest extends _i1.SerializableEntity {
+class EmailCreateAccountRequest extends SerializableEntity {
+  @override
+  String get className => 'serverpod_auth_server.EmailCreateAccountRequest';
+
+  int? id;
+  late String userName;
+  late String email;
+  late String hash;
+  late String verificationCode;
+
   EmailCreateAccountRequest({
     this.id,
     required this.userName,
@@ -17,40 +29,24 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
     required this.verificationCode,
   });
 
-  factory EmailCreateAccountRequest.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return EmailCreateAccountRequest(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
-      verificationCode: serializationManager
-          .deserialize<String>(jsonSerialization['verificationCode']),
-    );
+  EmailCreateAccountRequest.fromSerialization(
+      Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    userName = _data['userName']!;
+    email = _data['email']!;
+    hash = _data['hash']!;
+    verificationCode = _data['verificationCode']!;
   }
 
-  int? id;
-
-  String userName;
-
-  String email;
-
-  String hash;
-
-  String verificationCode;
-
   @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'userName': userName,
       'email': email,
       'hash': hash,
       'verificationCode': verificationCode,
-    };
+    });
   }
 }

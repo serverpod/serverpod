@@ -1,98 +1,105 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ObjectWithEnum extends _i1.TableRow {
+class ObjectWithEnum extends TableRow {
+  @override
+  String get className => 'ObjectWithEnum';
+  @override
+  String get tableName => 'object_with_enum';
+
+  static final t = ObjectWithEnumTable();
+
+  @override
+  int? id;
+  late TestEnum testEnum;
+  TestEnum? nullableEnum;
+  late List<TestEnum> enumList;
+  late List<TestEnum?> nullableEnumList;
+  late List<List<TestEnum>> enumListList;
+
   ObjectWithEnum({
-    int? id,
+    this.id,
     required this.testEnum,
     this.nullableEnum,
     required this.enumList,
     required this.nullableEnumList,
     required this.enumListList,
-  }) : super(id);
+  });
 
-  factory ObjectWithEnum.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ObjectWithEnum(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      testEnum: serializationManager
-          .deserialize<_i2.TestEnum>(jsonSerialization['testEnum']),
-      nullableEnum: serializationManager
-          .deserialize<_i2.TestEnum?>(jsonSerialization['nullableEnum']),
-      enumList: serializationManager
-          .deserialize<List<_i2.TestEnum>>(jsonSerialization['enumList']),
-      nullableEnumList: serializationManager.deserialize<List<_i2.TestEnum?>>(
-          jsonSerialization['nullableEnumList']),
-      enumListList: serializationManager.deserialize<List<List<_i2.TestEnum>>>(
-          jsonSerialization['enumListList']),
-    );
+  ObjectWithEnum.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    testEnum = TestEnum.fromSerialization(_data['testEnum']);
+    nullableEnum = _data['nullableEnum'] != null
+        ? TestEnum?.fromSerialization(_data['nullableEnum'])
+        : null;
+    enumList = _data['enumList']!
+        .map<TestEnum>((a) => TestEnum.fromSerialization(a))
+        ?.toList();
+    nullableEnumList = _data['nullableEnumList']!
+        .map<TestEnum?>(
+            (a) => a != null ? TestEnum?.fromSerialization(a) : null)
+        ?.toList();
+    enumListList = _data['enumListList']!
+        .map<List<TestEnum>>((a) => List<TestEnum>.fromSerialization(a))
+        ?.toList();
   }
 
-  static final t = ObjectWithEnumTable();
-
-  _i2.TestEnum testEnum;
-
-  _i2.TestEnum? nullableEnum;
-
-  List<_i2.TestEnum> enumList;
-
-  List<_i2.TestEnum?> nullableEnumList;
-
-  List<List<_i2.TestEnum>> enumListList;
-
   @override
-  String get tableName => 'object_with_enum';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
-    };
+      'testEnum': testEnum.serialize(),
+      'nullableEnum': nullableEnum?.serialize(),
+      'enumList': enumList.map((TestEnum a) => a.serialize()).toList(),
+      'nullableEnumList':
+          nullableEnumList.map((TestEnum? a) => a?.serialize()).toList(),
+      'enumListList':
+          enumListList.map((List<TestEnum> a) => a.serialize()).toList(),
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
-    };
+      'testEnum': testEnum.serialize(),
+      'nullableEnum': nullableEnum?.serialize(),
+      'enumList': enumList.map((TestEnum a) => a.serialize()).toList(),
+      'nullableEnumList':
+          nullableEnumList.map((TestEnum? a) => a?.serialize()).toList(),
+      'enumListList':
+          enumListList.map((List<TestEnum> a) => a.serialize()).toList(),
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
-    };
+      'testEnum': testEnum.serialize(),
+      'nullableEnum': nullableEnum?.serialize(),
+      'enumList': enumList.map((TestEnum a) => a.serialize()).toList(),
+      'nullableEnumList':
+          nullableEnumList.map((TestEnum? a) => a?.serialize()).toList(),
+      'enumListList':
+          enumListList.map((List<TestEnum> a) => a.serialize()).toList(),
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -118,15 +125,15 @@ class ObjectWithEnum extends _i1.TableRow {
   }
 
   static Future<List<ObjectWithEnum>> find(
-    _i1.Session session, {
+    Session session, {
     ObjectWithEnumExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<ObjectWithEnum>(
       where: where != null ? where(ObjectWithEnum.t) : null,
@@ -141,13 +148,13 @@ class ObjectWithEnum extends _i1.TableRow {
   }
 
   static Future<ObjectWithEnum?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     ObjectWithEnumExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ObjectWithEnum>(
       where: where != null ? where(ObjectWithEnum.t) : null,
@@ -159,17 +166,14 @@ class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
-  static Future<ObjectWithEnum?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<ObjectWithEnum?> findById(Session session, int id) async {
     return session.db.findById<ObjectWithEnum>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required ObjectWithEnumExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithEnum>(
       where: where(ObjectWithEnum.t),
@@ -178,9 +182,9 @@ class ObjectWithEnum extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     ObjectWithEnum row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -189,9 +193,9 @@ class ObjectWithEnum extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     ObjectWithEnum row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -200,22 +204,19 @@ class ObjectWithEnum extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     ObjectWithEnum row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     ObjectWithEnumExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithEnum>(
       where: where != null ? where(ObjectWithEnum.t) : null,
@@ -226,26 +227,23 @@ class ObjectWithEnum extends _i1.TableRow {
   }
 }
 
-typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
-    ObjectWithEnumTable);
+typedef ObjectWithEnumExpressionBuilder = Expression Function(
+    ObjectWithEnumTable t);
 
-class ObjectWithEnumTable extends _i1.Table {
+class ObjectWithEnumTable extends Table {
   ObjectWithEnumTable() : super(tableName: 'object_with_enum');
 
-  final id = _i1.ColumnInt('id');
-
-  final testEnum = _i1.ColumnEnum<_i2.TestEnum>('testEnum');
-
-  final nullableEnum = _i1.ColumnEnum<_i2.TestEnum>('nullableEnum');
-
-  final enumList = _i1.ColumnSerializable('enumList');
-
-  final nullableEnumList = _i1.ColumnSerializable('nullableEnumList');
-
-  final enumListList = _i1.ColumnSerializable('enumListList');
+  @override
+  String tableName = 'object_with_enum';
+  final id = ColumnInt('id');
+  final testEnum = ColumnSerializable('testEnum');
+  final nullableEnum = ColumnSerializable('nullableEnum');
+  final enumList = ColumnSerializable('enumList');
+  final nullableEnumList = ColumnSerializable('nullableEnumList');
+  final enumListList = ColumnSerializable('enumListList');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         testEnum,
         nullableEnum,

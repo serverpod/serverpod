@@ -1,75 +1,62 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unnecessary_import
+// ignore_for_file: unused_import
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/chat_endpoint.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
+import 'dart:typed_data' as typed_data;
+import 'package:serverpod/serverpod.dart';
 
-class Endpoints extends _i1.EndpointDispatch {
+import 'protocol.dart';
+
+import '../endpoints/chat_endpoint.dart';
+
+class Endpoints extends EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'chat': _i2.ChatEndpoint()
-        ..initialize(
-          server,
-          'chat',
-          'serverpod_chat',
-        )
+  void initializeEndpoints(Server server) {
+    var endpoints = <String, Endpoint>{
+      'chat': ChatEndpoint()..initialize(server, 'chat', 'serverpod_chat'),
     };
-    connectors['chat'] = _i1.EndpointConnector(
+
+    connectors['chat'] = EndpointConnector(
       name: 'chat',
       endpoint: endpoints['chat']!,
       methodConnectors: {
-        'createAttachmentUploadDescription': _i1.MethodConnector(
+        'createAttachmentUploadDescription': MethodConnector(
           name: 'createAttachmentUploadDescription',
           params: {
-            'fileName': _i1.ParameterDescription(
-              name: 'fileName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
+            'fileName': ParameterDescription(
+                name: 'fileName', type: String, nullable: false),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['chat'] as _i2.ChatEndpoint)
-                  .createAttachmentUploadDescription(
-            session,
-            params['fileName'],
-          ),
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['chat'] as ChatEndpoint)
+                .createAttachmentUploadDescription(
+              session,
+              params['fileName'],
+            );
+          },
         ),
-        'verifyAttachmentUpload': _i1.MethodConnector(
+        'verifyAttachmentUpload': MethodConnector(
           name: 'verifyAttachmentUpload',
           params: {
-            'fileName': _i1.ParameterDescription(
-              name: 'fileName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'filePath': _i1.ParameterDescription(
-              name: 'filePath',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
+            'fileName': ParameterDescription(
+                name: 'fileName', type: String, nullable: false),
+            'filePath': ParameterDescription(
+                name: 'filePath', type: String, nullable: false),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['chat'] as _i2.ChatEndpoint).verifyAttachmentUpload(
-            session,
-            params['fileName'],
-            params['filePath'],
-          ),
+          call: (Session session, Map<String, dynamic> params) async {
+            return (endpoints['chat'] as ChatEndpoint).verifyAttachmentUpload(
+              session,
+              params['fileName'],
+              params['filePath'],
+            );
+          },
         ),
       },
     );
-    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
   }
+
+  @override
+  void registerModules(Serverpod pod) {}
 }

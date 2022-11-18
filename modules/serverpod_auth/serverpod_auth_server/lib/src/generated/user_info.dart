@@ -1,16 +1,40 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class UserInfo extends _i1.TableRow {
+class UserInfo extends TableRow {
+  @override
+  String get className => 'serverpod_auth_server.UserInfo';
+  @override
+  String get tableName => 'serverpod_user_info';
+
+  static final t = UserInfoTable();
+
+  @override
+  int? id;
+  late String userIdentifier;
+  late String userName;
+  String? fullName;
+  String? email;
+  late DateTime created;
+  String? imageUrl;
+  late List<String> scopeNames;
+  late bool active;
+  late bool blocked;
+  DateTime? suspendedUntil;
+
   UserInfo({
-    int? id,
+    this.id,
     required this.userIdentifier,
     required this.userName,
     this.fullName,
@@ -21,117 +45,78 @@ class UserInfo extends _i1.TableRow {
     required this.active,
     required this.blocked,
     this.suspendedUntil,
-  }) : super(id);
+  });
 
-  factory UserInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return UserInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userIdentifier: serializationManager
-          .deserialize<String>(jsonSerialization['userIdentifier']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      fullName: serializationManager
-          .deserialize<String?>(jsonSerialization['fullName']),
-      email:
-          serializationManager.deserialize<String?>(jsonSerialization['email']),
-      created: serializationManager
-          .deserialize<DateTime>(jsonSerialization['created']),
-      imageUrl: serializationManager
-          .deserialize<String?>(jsonSerialization['imageUrl']),
-      scopeNames: serializationManager
-          .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      active:
-          serializationManager.deserialize<bool>(jsonSerialization['active']),
-      blocked:
-          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
-      suspendedUntil: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['suspendedUntil']),
-    );
+  UserInfo.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    userIdentifier = _data['userIdentifier']!;
+    userName = _data['userName']!;
+    fullName = _data['fullName'];
+    email = _data['email'];
+    created = DateTime.tryParse(_data['created'])!;
+    imageUrl = _data['imageUrl'];
+    scopeNames = _data['scopeNames']!.cast<String>();
+    active = _data['active']!;
+    blocked = _data['blocked']!;
+    suspendedUntil = _data['suspendedUntil'] != null
+        ? DateTime.tryParse(_data['suspendedUntil'])
+        : null;
   }
 
-  static final t = UserInfoTable();
-
-  String userIdentifier;
-
-  String userName;
-
-  String? fullName;
-
-  String? email;
-
-  DateTime created;
-
-  String? imageUrl;
-
-  List<String> scopeNames;
-
-  bool active;
-
-  bool blocked;
-
-  DateTime? suspendedUntil;
-
   @override
-  String get tableName => 'serverpod_user_info';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
       'fullName': fullName,
       'email': email,
-      'created': created,
+      'created': created.toUtc().toIso8601String(),
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
-    };
+      'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
       'fullName': fullName,
       'email': email,
-      'created': created,
+      'created': created.toUtc().toIso8601String(),
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
-    };
+      'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
       'fullName': fullName,
       'email': email,
-      'created': created,
+      'created': created.toUtc().toIso8601String(),
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
-    };
+      'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -172,15 +157,15 @@ class UserInfo extends _i1.TableRow {
   }
 
   static Future<List<UserInfo>> find(
-    _i1.Session session, {
+    Session session, {
     UserInfoExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<UserInfo>(
       where: where != null ? where(UserInfo.t) : null,
@@ -195,13 +180,13 @@ class UserInfo extends _i1.TableRow {
   }
 
   static Future<UserInfo?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     UserInfoExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<UserInfo>(
       where: where != null ? where(UserInfo.t) : null,
@@ -213,17 +198,14 @@ class UserInfo extends _i1.TableRow {
     );
   }
 
-  static Future<UserInfo?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<UserInfo?> findById(Session session, int id) async {
     return session.db.findById<UserInfo>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required UserInfoExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<UserInfo>(
       where: where(UserInfo.t),
@@ -232,9 +214,9 @@ class UserInfo extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     UserInfo row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -243,9 +225,9 @@ class UserInfo extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     UserInfo row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -254,22 +236,19 @@ class UserInfo extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     UserInfo row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     UserInfoExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<UserInfo>(
       where: where != null ? where(UserInfo.t) : null,
@@ -280,35 +259,27 @@ class UserInfo extends _i1.TableRow {
   }
 }
 
-typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
+typedef UserInfoExpressionBuilder = Expression Function(UserInfoTable t);
 
-class UserInfoTable extends _i1.Table {
+class UserInfoTable extends Table {
   UserInfoTable() : super(tableName: 'serverpod_user_info');
 
-  final id = _i1.ColumnInt('id');
-
-  final userIdentifier = _i1.ColumnString('userIdentifier');
-
-  final userName = _i1.ColumnString('userName');
-
-  final fullName = _i1.ColumnString('fullName');
-
-  final email = _i1.ColumnString('email');
-
-  final created = _i1.ColumnDateTime('created');
-
-  final imageUrl = _i1.ColumnString('imageUrl');
-
-  final scopeNames = _i1.ColumnSerializable('scopeNames');
-
-  final active = _i1.ColumnBool('active');
-
-  final blocked = _i1.ColumnBool('blocked');
-
-  final suspendedUntil = _i1.ColumnDateTime('suspendedUntil');
+  @override
+  String tableName = 'serverpod_user_info';
+  final id = ColumnInt('id');
+  final userIdentifier = ColumnString('userIdentifier');
+  final userName = ColumnString('userName');
+  final fullName = ColumnString('fullName');
+  final email = ColumnString('email');
+  final created = ColumnDateTime('created');
+  final imageUrl = ColumnString('imageUrl');
+  final scopeNames = ColumnSerializable('scopeNames');
+  final active = ColumnBool('active');
+  final blocked = ColumnBool('blocked');
+  final suspendedUntil = ColumnDateTime('suspendedUntil');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         userIdentifier,
         userName,

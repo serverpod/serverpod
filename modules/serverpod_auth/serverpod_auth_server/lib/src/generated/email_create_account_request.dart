@@ -1,88 +1,85 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class EmailCreateAccountRequest extends _i1.TableRow {
+class EmailCreateAccountRequest extends TableRow {
+  @override
+  String get className => 'serverpod_auth_server.EmailCreateAccountRequest';
+  @override
+  String get tableName => 'serverpod_email_create_request';
+
+  static final t = EmailCreateAccountRequestTable();
+
+  @override
+  int? id;
+  late String userName;
+  late String email;
+  late String hash;
+  late String verificationCode;
+
   EmailCreateAccountRequest({
-    int? id,
+    this.id,
     required this.userName,
     required this.email,
     required this.hash,
     required this.verificationCode,
-  }) : super(id);
+  });
 
-  factory EmailCreateAccountRequest.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return EmailCreateAccountRequest(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
-      verificationCode: serializationManager
-          .deserialize<String>(jsonSerialization['verificationCode']),
-    );
+  EmailCreateAccountRequest.fromSerialization(
+      Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    userName = _data['userName']!;
+    email = _data['email']!;
+    hash = _data['hash']!;
+    verificationCode = _data['verificationCode']!;
   }
 
-  static final t = EmailCreateAccountRequestTable();
-
-  String userName;
-
-  String email;
-
-  String hash;
-
-  String verificationCode;
-
   @override
-  String get tableName => 'serverpod_email_create_request';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'userName': userName,
       'email': email,
       'hash': hash,
       'verificationCode': verificationCode,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'userName': userName,
       'email': email,
       'hash': hash,
       'verificationCode': verificationCode,
-    };
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'userName': userName,
       'email': email,
       'hash': hash,
       'verificationCode': verificationCode,
-    };
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -105,15 +102,15 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   static Future<List<EmailCreateAccountRequest>> find(
-    _i1.Session session, {
+    Session session, {
     EmailCreateAccountRequestExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -128,13 +125,13 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   static Future<EmailCreateAccountRequest?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     EmailCreateAccountRequestExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -147,16 +144,14 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   static Future<EmailCreateAccountRequest?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+      Session session, int id) async {
     return session.db.findById<EmailCreateAccountRequest>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required EmailCreateAccountRequestExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
@@ -165,9 +160,9 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -176,9 +171,9 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -187,22 +182,19 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     EmailCreateAccountRequestExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -213,25 +205,23 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 }
 
-typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
-    EmailCreateAccountRequestTable);
+typedef EmailCreateAccountRequestExpressionBuilder = Expression Function(
+    EmailCreateAccountRequestTable t);
 
-class EmailCreateAccountRequestTable extends _i1.Table {
+class EmailCreateAccountRequestTable extends Table {
   EmailCreateAccountRequestTable()
       : super(tableName: 'serverpod_email_create_request');
 
-  final id = _i1.ColumnInt('id');
-
-  final userName = _i1.ColumnString('userName');
-
-  final email = _i1.ColumnString('email');
-
-  final hash = _i1.ColumnString('hash');
-
-  final verificationCode = _i1.ColumnString('verificationCode');
+  @override
+  String tableName = 'serverpod_email_create_request';
+  final id = ColumnInt('id');
+  final userName = ColumnString('userName');
+  final email = ColumnString('email');
+  final hash = ColumnString('hash');
+  final verificationCode = ColumnString('verificationCode');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         userName,
         email,

@@ -1,16 +1,43 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class SessionLogEntry extends _i1.TableRow {
+class SessionLogEntry extends TableRow {
+  @override
+  String get className => 'SessionLogEntry';
+  @override
+  String get tableName => 'serverpod_session_log';
+
+  static final t = SessionLogEntryTable();
+
+  @override
+  int? id;
+  late String serverId;
+  late DateTime time;
+  String? module;
+  String? endpoint;
+  String? method;
+  double? duration;
+  int? numQueries;
+  bool? slow;
+  String? error;
+  String? stackTrace;
+  int? authenticatedUserId;
+  bool? isOpen;
+  late DateTime touched;
+
   SessionLogEntry({
-    int? id,
+    this.id,
     required this.serverId,
     required this.time,
     this.module,
@@ -24,78 +51,32 @@ class SessionLogEntry extends _i1.TableRow {
     this.authenticatedUserId,
     this.isOpen,
     required this.touched,
-  }) : super(id);
+  });
 
-  factory SessionLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return SessionLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      duration: serializationManager
-          .deserialize<double?>(jsonSerialization['duration']),
-      numQueries: serializationManager
-          .deserialize<int?>(jsonSerialization['numQueries']),
-      slow: serializationManager.deserialize<bool?>(jsonSerialization['slow']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      authenticatedUserId: serializationManager
-          .deserialize<int?>(jsonSerialization['authenticatedUserId']),
-      isOpen:
-          serializationManager.deserialize<bool?>(jsonSerialization['isOpen']),
-      touched: serializationManager
-          .deserialize<DateTime>(jsonSerialization['touched']),
-    );
+  SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    serverId = _data['serverId']!;
+    time = DateTime.tryParse(_data['time'])!;
+    module = _data['module'];
+    endpoint = _data['endpoint'];
+    method = _data['method'];
+    duration = _data['duration'];
+    numQueries = _data['numQueries'];
+    slow = _data['slow'];
+    error = _data['error'];
+    stackTrace = _data['stackTrace'];
+    authenticatedUserId = _data['authenticatedUserId'];
+    isOpen = _data['isOpen'];
+    touched = DateTime.tryParse(_data['touched'])!;
   }
 
-  static final t = SessionLogEntryTable();
-
-  String serverId;
-
-  DateTime time;
-
-  String? module;
-
-  String? endpoint;
-
-  String? method;
-
-  double? duration;
-
-  int? numQueries;
-
-  bool? slow;
-
-  String? error;
-
-  String? stackTrace;
-
-  int? authenticatedUserId;
-
-  bool? isOpen;
-
-  DateTime touched;
-
   @override
-  String get tableName => 'serverpod_session_log';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'module': module,
       'endpoint': endpoint,
       'method': method,
@@ -106,16 +87,16 @@ class SessionLogEntry extends _i1.TableRow {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
-      'touched': touched,
-    };
+      'touched': touched.toUtc().toIso8601String(),
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'module': module,
       'endpoint': endpoint,
       'method': method,
@@ -126,16 +107,16 @@ class SessionLogEntry extends _i1.TableRow {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
-      'touched': touched,
-    };
+      'touched': touched.toUtc().toIso8601String(),
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toUtc().toIso8601String(),
       'module': module,
       'endpoint': endpoint,
       'method': method,
@@ -146,15 +127,12 @@ class SessionLogEntry extends _i1.TableRow {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
-      'touched': touched,
-    };
+      'touched': touched.toUtc().toIso8601String(),
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -204,15 +182,15 @@ class SessionLogEntry extends _i1.TableRow {
   }
 
   static Future<List<SessionLogEntry>> find(
-    _i1.Session session, {
+    Session session, {
     SessionLogEntryExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<SessionLogEntry>(
       where: where != null ? where(SessionLogEntry.t) : null,
@@ -227,13 +205,13 @@ class SessionLogEntry extends _i1.TableRow {
   }
 
   static Future<SessionLogEntry?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     SessionLogEntryExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<SessionLogEntry>(
       where: where != null ? where(SessionLogEntry.t) : null,
@@ -245,17 +223,14 @@ class SessionLogEntry extends _i1.TableRow {
     );
   }
 
-  static Future<SessionLogEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<SessionLogEntry?> findById(Session session, int id) async {
     return session.db.findById<SessionLogEntry>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required SessionLogEntryExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<SessionLogEntry>(
       where: where(SessionLogEntry.t),
@@ -264,9 +239,9 @@ class SessionLogEntry extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     SessionLogEntry row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -275,9 +250,9 @@ class SessionLogEntry extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     SessionLogEntry row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -286,22 +261,19 @@ class SessionLogEntry extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     SessionLogEntry row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     SessionLogEntryExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<SessionLogEntry>(
       where: where != null ? where(SessionLogEntry.t) : null,
@@ -312,42 +284,31 @@ class SessionLogEntry extends _i1.TableRow {
   }
 }
 
-typedef SessionLogEntryExpressionBuilder = _i1.Expression Function(
-    SessionLogEntryTable);
+typedef SessionLogEntryExpressionBuilder = Expression Function(
+    SessionLogEntryTable t);
 
-class SessionLogEntryTable extends _i1.Table {
+class SessionLogEntryTable extends Table {
   SessionLogEntryTable() : super(tableName: 'serverpod_session_log');
 
-  final id = _i1.ColumnInt('id');
-
-  final serverId = _i1.ColumnString('serverId');
-
-  final time = _i1.ColumnDateTime('time');
-
-  final module = _i1.ColumnString('module');
-
-  final endpoint = _i1.ColumnString('endpoint');
-
-  final method = _i1.ColumnString('method');
-
-  final duration = _i1.ColumnDouble('duration');
-
-  final numQueries = _i1.ColumnInt('numQueries');
-
-  final slow = _i1.ColumnBool('slow');
-
-  final error = _i1.ColumnString('error');
-
-  final stackTrace = _i1.ColumnString('stackTrace');
-
-  final authenticatedUserId = _i1.ColumnInt('authenticatedUserId');
-
-  final isOpen = _i1.ColumnBool('isOpen');
-
-  final touched = _i1.ColumnDateTime('touched');
+  @override
+  String tableName = 'serverpod_session_log';
+  final id = ColumnInt('id');
+  final serverId = ColumnString('serverId');
+  final time = ColumnDateTime('time');
+  final module = ColumnString('module');
+  final endpoint = ColumnString('endpoint');
+  final method = ColumnString('method');
+  final duration = ColumnDouble('duration');
+  final numQueries = ColumnInt('numQueries');
+  final slow = ColumnBool('slow');
+  final error = ColumnString('error');
+  final stackTrace = ColumnString('stackTrace');
+  final authenticatedUserId = ColumnInt('authenticatedUserId');
+  final isOpen = ColumnBool('isOpen');
+  final touched = ColumnDateTime('touched');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         serverId,
         time,

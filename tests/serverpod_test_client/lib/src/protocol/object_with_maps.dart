@@ -1,17 +1,35 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
-import 'dart:typed_data' as _i3;
+import 'package:serverpod_client/serverpod_client.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ObjectWithMaps extends _i1.SerializableEntity {
+class ObjectWithMaps extends SerializableEntity {
+  @override
+  String get className => 'ObjectWithMaps';
+
+  int? id;
+  late Map<String dataMap;
+  late Map<String intMap;
+  late Map<String stringMap;
+  late Map<String dateTimeMap;
+  late Map<String byteDataMap;
+  late Map<String nullableDataMap;
+  late Map<String nullableIntMap;
+  late Map<String nullableStringMap;
+  late Map<String nullableDateTimeMap;
+  late Map<String nullableByteDataMap;
+  late Map<int intIntMap;
+
   ObjectWithMaps({
+    this.id,
     required this.dataMap,
     required this.intMap,
     required this.stringMap,
@@ -23,77 +41,40 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     required this.nullableDateTimeMap,
     required this.nullableByteDataMap,
     required this.intIntMap,
-  });
+});
 
-  factory ObjectWithMaps.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ObjectWithMaps(
-      dataMap: serializationManager.deserialize<Map<String, _i2.SimpleData>>(
-          jsonSerialization['dataMap']),
-      intMap: serializationManager
-          .deserialize<Map<String, int>>(jsonSerialization['intMap']),
-      stringMap: serializationManager
-          .deserialize<Map<String, String>>(jsonSerialization['stringMap']),
-      dateTimeMap: serializationManager
-          .deserialize<Map<String, DateTime>>(jsonSerialization['dateTimeMap']),
-      byteDataMap: serializationManager.deserialize<Map<String, _i3.ByteData>>(
-          jsonSerialization['byteDataMap']),
-      nullableDataMap:
-          serializationManager.deserialize<Map<String, _i2.SimpleData?>>(
-              jsonSerialization['nullableDataMap']),
-      nullableIntMap: serializationManager
-          .deserialize<Map<String, int?>>(jsonSerialization['nullableIntMap']),
-      nullableStringMap: serializationManager.deserialize<Map<String, String?>>(
-          jsonSerialization['nullableStringMap']),
-      nullableDateTimeMap:
-          serializationManager.deserialize<Map<String, DateTime?>>(
-              jsonSerialization['nullableDateTimeMap']),
-      nullableByteDataMap:
-          serializationManager.deserialize<Map<String, _i3.ByteData?>>(
-              jsonSerialization['nullableByteDataMap']),
-      intIntMap: serializationManager
-          .deserialize<Map<int, int>>(jsonSerialization['intIntMap']),
-    );
+  ObjectWithMaps.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    dataMap = Map<String.fromSerialization(_data['dataMap']);
+    intMap = Map<String.fromSerialization(_data['intMap']);
+    stringMap = Map<String.fromSerialization(_data['stringMap']);
+    dateTimeMap = Map<String.fromSerialization(_data['dateTimeMap']);
+    byteDataMap = Map<String.fromSerialization(_data['byteDataMap']);
+    nullableDataMap = Map<String.fromSerialization(_data['nullableDataMap']);
+    nullableIntMap = Map<String.fromSerialization(_data['nullableIntMap']);
+    nullableStringMap = Map<String.fromSerialization(_data['nullableStringMap']);
+    nullableDateTimeMap = Map<String.fromSerialization(_data['nullableDateTimeMap']);
+    nullableByteDataMap = Map<String.fromSerialization(_data['nullableByteDataMap']);
+    intIntMap = Map<int.fromSerialization(_data['intIntMap']);
   }
-
-  Map<String, _i2.SimpleData> dataMap;
-
-  Map<String, int> intMap;
-
-  Map<String, String> stringMap;
-
-  Map<String, DateTime> dateTimeMap;
-
-  Map<String, _i3.ByteData> byteDataMap;
-
-  Map<String, _i2.SimpleData?> nullableDataMap;
-
-  Map<String, int?> nullableIntMap;
-
-  Map<String, String?> nullableStringMap;
-
-  Map<String, DateTime?> nullableDateTimeMap;
-
-  Map<String, _i3.ByteData?> nullableByteDataMap;
-
-  Map<int, int> intIntMap;
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      'dataMap': dataMap,
-      'intMap': intMap,
-      'stringMap': stringMap,
-      'dateTimeMap': dateTimeMap,
-      'byteDataMap': byteDataMap,
-      'nullableDataMap': nullableDataMap,
-      'nullableIntMap': nullableIntMap,
-      'nullableStringMap': nullableStringMap,
-      'nullableDateTimeMap': nullableDateTimeMap,
-      'nullableByteDataMap': nullableByteDataMap,
-      'intIntMap': intIntMap,
-    };
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
+      'dataMap': dataMap.serialize(),
+      'intMap': intMap.serialize(),
+      'stringMap': stringMap.serialize(),
+      'dateTimeMap': dateTimeMap.serialize(),
+      'byteDataMap': byteDataMap.serialize(),
+      'nullableDataMap': nullableDataMap.serialize(),
+      'nullableIntMap': nullableIntMap.serialize(),
+      'nullableStringMap': nullableStringMap.serialize(),
+      'nullableDateTimeMap': nullableDateTimeMap.serialize(),
+      'nullableByteDataMap': nullableByteDataMap.serialize(),
+      'intIntMap': intIntMap.serialize(),
+    });
   }
 }
+

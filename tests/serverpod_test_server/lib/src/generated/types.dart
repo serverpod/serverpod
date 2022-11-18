@@ -1,105 +1,102 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class Types extends _i1.TableRow {
+class Types extends TableRow {
+  @override
+  String get className => 'Types';
+  @override
+  String get tableName => 'types';
+
+  static final t = TypesTable();
+
+  @override
+  int? id;
+  int? anInt;
+  bool? aBool;
+  double? aDouble;
+  DateTime? aDateTime;
+  String? aString;
+  ByteData? aByteData;
+
   Types({
-    int? id,
+    this.id,
     this.anInt,
     this.aBool,
     this.aDouble,
     this.aDateTime,
     this.aString,
     this.aByteData,
-  }) : super(id);
+  });
 
-  factory Types.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return Types(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      anInt: serializationManager.deserialize<int?>(jsonSerialization['anInt']),
-      aBool:
-          serializationManager.deserialize<bool?>(jsonSerialization['aBool']),
-      aDouble: serializationManager
-          .deserialize<double?>(jsonSerialization['aDouble']),
-      aDateTime: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['aDateTime']),
-      aString: serializationManager
-          .deserialize<String?>(jsonSerialization['aString']),
-      aByteData: serializationManager
-          .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
-    );
+  Types.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    anInt = _data['anInt'];
+    aBool = _data['aBool'];
+    aDouble = _data['aDouble'];
+    aDateTime = _data['aDateTime'] != null
+        ? DateTime.tryParse(_data['aDateTime'])
+        : null;
+    aString = _data['aString'];
+    aByteData = _data['aByteData'] == null
+        ? null
+        : (_data['aByteData'] is String
+            ? (_data['aByteData'] as String).base64DecodedByteData()
+            : ByteData.view((_data['aByteData'] as Uint8List).buffer));
   }
 
-  static final t = TypesTable();
-
-  int? anInt;
-
-  bool? aBool;
-
-  double? aDouble;
-
-  DateTime? aDateTime;
-
-  String? aString;
-
-  _i2.ByteData? aByteData;
-
   @override
-  String get tableName => 'types';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime,
+      'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
-      'aByteData': aByteData,
-    };
+      'aByteData': aByteData?.base64encodedString(),
+    });
   }
 
   @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
+  Map<String, dynamic> serializeForDatabase() {
+    return wrapSerializationData({
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime,
+      'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
-      'aByteData': aByteData,
-    };
+      'aByteData': aByteData?.base64encodedString(),
+    });
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime,
+      'aDateTime': aDateTime?.toUtc().toIso8601String(),
       'aString': aString,
-      'aByteData': aByteData,
-    };
+      'aByteData': aByteData?.base64encodedString(),
+    });
   }
 
   @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
+  void setColumn(String columnName, value) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -128,15 +125,15 @@ class Types extends _i1.TableRow {
   }
 
   static Future<List<Types>> find(
-    _i1.Session session, {
+    Session session, {
     TypesExpressionBuilder? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.find<Types>(
       where: where != null ? where(Types.t) : null,
@@ -151,13 +148,13 @@ class Types extends _i1.TableRow {
   }
 
   static Future<Types?> findSingleRow(
-    _i1.Session session, {
+    Session session, {
     TypesExpressionBuilder? where,
     int? offset,
-    _i1.Column? orderBy,
+    Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.findSingleRow<Types>(
       where: where != null ? where(Types.t) : null,
@@ -169,17 +166,14 @@ class Types extends _i1.TableRow {
     );
   }
 
-  static Future<Types?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
+  static Future<Types?> findById(Session session, int id) async {
     return session.db.findById<Types>(id);
   }
 
   static Future<int> delete(
-    _i1.Session session, {
+    Session session, {
     required TypesExpressionBuilder where,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.delete<Types>(
       where: where(Types.t),
@@ -188,9 +182,9 @@ class Types extends _i1.TableRow {
   }
 
   static Future<bool> deleteRow(
-    _i1.Session session,
+    Session session,
     Types row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -199,9 +193,9 @@ class Types extends _i1.TableRow {
   }
 
   static Future<bool> update(
-    _i1.Session session,
+    Session session,
     Types row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -210,22 +204,19 @@ class Types extends _i1.TableRow {
   }
 
   static Future<void> insert(
-    _i1.Session session,
+    Session session,
     Types row, {
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insert(row, transaction: transaction);
   }
 
   static Future<int> count(
-    _i1.Session session, {
+    Session session, {
     TypesExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    _i1.Transaction? transaction,
+    Transaction? transaction,
   }) async {
     return session.db.count<Types>(
       where: where != null ? where(Types.t) : null,
@@ -236,27 +227,23 @@ class Types extends _i1.TableRow {
   }
 }
 
-typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
+typedef TypesExpressionBuilder = Expression Function(TypesTable t);
 
-class TypesTable extends _i1.Table {
+class TypesTable extends Table {
   TypesTable() : super(tableName: 'types');
 
-  final id = _i1.ColumnInt('id');
-
-  final anInt = _i1.ColumnInt('anInt');
-
-  final aBool = _i1.ColumnBool('aBool');
-
-  final aDouble = _i1.ColumnDouble('aDouble');
-
-  final aDateTime = _i1.ColumnDateTime('aDateTime');
-
-  final aString = _i1.ColumnString('aString');
-
-  final aByteData = _i1.ColumnByteData('aByteData');
+  @override
+  String tableName = 'types';
+  final id = ColumnInt('id');
+  final anInt = ColumnInt('anInt');
+  final aBool = ColumnBool('aBool');
+  final aDouble = ColumnDouble('aDouble');
+  final aDateTime = ColumnDateTime('aDateTime');
+  final aString = ColumnString('aString');
+  final aByteData = ColumnByteData('aByteData');
 
   @override
-  List<_i1.Column> get columns => [
+  List<Column> get columns => [
         id,
         anInt,
         aBool,

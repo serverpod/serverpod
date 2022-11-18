@@ -1,65 +1,63 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: overridden_fields
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:typed_data';
+import 'protocol.dart';
 
-class ChatJoinedChannel extends _i1.SerializableEntity {
+class ChatJoinedChannel extends SerializableEntity {
+  @override
+  String get className => 'serverpod_chat_server.ChatJoinedChannel';
+
+  int? id;
+  late String channel;
+  late ChatMessageChunk initialMessageChunk;
+  late int lastReadMessageId;
+  late module:auth:UserInfo userInfo;
+
   ChatJoinedChannel({
+    this.id,
     required this.channel,
     required this.initialMessageChunk,
     required this.lastReadMessageId,
     required this.userInfo,
-  });
+});
 
-  factory ChatJoinedChannel.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ChatJoinedChannel(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      initialMessageChunk:
-          serializationManager.deserialize<_i2.ChatMessageChunk>(
-              jsonSerialization['initialMessageChunk']),
-      lastReadMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['lastReadMessageId']),
-      userInfo: serializationManager
-          .deserialize<_i3.UserInfo>(jsonSerialization['userInfo']),
-    );
-  }
-
-  String channel;
-
-  _i2.ChatMessageChunk initialMessageChunk;
-
-  int lastReadMessageId;
-
-  _i3.UserInfo userInfo;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'channel': channel,
-      'initialMessageChunk': initialMessageChunk,
-      'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo,
-    };
+  ChatJoinedChannel.fromSerialization(Map<String, dynamic> serialization) {
+    var _data = unwrapSerializationData(serialization);
+    id = _data['id'];
+    channel = _data['channel']!;
+    initialMessageChunk = ChatMessageChunk.fromSerialization(_data['initialMessageChunk']);
+    lastReadMessageId = _data['lastReadMessageId']!;
+    userInfo = module:auth:UserInfo.fromSerialization(_data['userInfo']);
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
+  Map<String, dynamic> serialize() {
+    return wrapSerializationData({
+      'id': id,
       'channel': channel,
-      'initialMessageChunk': initialMessageChunk,
+      'initialMessageChunk': initialMessageChunk.serialize(),
       'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo,
-    };
+      'userInfo': userInfo.serialize(),
+    });
+  }
+
+  @override
+  Map<String, dynamic> serializeAll() {
+    return wrapSerializationData({
+      'id': id,
+      'channel': channel,
+      'initialMessageChunk': initialMessageChunk.serialize(),
+      'lastReadMessageId': lastReadMessageId,
+      'userInfo': userInfo.serialize(),
+    });
   }
 }
+
