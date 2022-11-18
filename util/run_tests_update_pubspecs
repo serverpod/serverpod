@@ -27,3 +27,5 @@ cd ../..
 util/update_pubspecs
 
 util/ensure_no_changes
+
+echo "### Test complete"
