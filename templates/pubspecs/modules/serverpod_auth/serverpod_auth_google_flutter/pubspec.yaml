@@ -17,7 +17,7 @@ dependencies:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^VERSION
     path: ../serverpod_auth_shared_flutter
-  google_sign_in: ^5.2.1
+  google_sign_in: ^5.4.2
 
 dev_dependencies:
   lints: ^2.0.0

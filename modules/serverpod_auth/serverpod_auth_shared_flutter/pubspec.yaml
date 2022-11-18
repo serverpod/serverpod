@@ -22,7 +22,7 @@ dependencies:
     path: ../serverpod_auth_client
   shared_preferences: ^2.0.15
   cached_network_image: ^3.2.2
-  image:  ^3.2.2
+  image: ^3.2.2
   file_picker: ^4.1.6
 
   # See https://pub.dev/packages/image_cropper for installation instructions.
