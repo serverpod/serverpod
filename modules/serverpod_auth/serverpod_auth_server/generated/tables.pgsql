@@ -1,6 +1,6 @@
 --
 -- Class EmailAuth as table serverpod_email_auth
---
+-- Test :P
 
 CREATE TABLE "serverpod_email_auth" (
   "id" serial,
@@ -124,5 +124,3 @@ ALTER TABLE ONLY "serverpod_user_info"
 
 CREATE UNIQUE INDEX serverpod_user_info_user_identifier ON "serverpod_user_info" USING btree ("userIdentifier");
 CREATE INDEX serverpod_user_info_email ON "serverpod_user_info" USING btree ("email");
-
-
