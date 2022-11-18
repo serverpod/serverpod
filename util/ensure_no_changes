@@ -1,5 +1,3 @@
-#!/bin/sh
-
 if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/pub_get_all"
