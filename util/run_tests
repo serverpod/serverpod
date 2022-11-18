@@ -19,3 +19,6 @@ util/run_tests_analyze
 
 echo "### Running unit tests"
 util/run_tests_single_server
+
+echo "### Run serverpod generate tests"
+util/run_tests_serverpod_generate
