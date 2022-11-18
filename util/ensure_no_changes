@@ -8,7 +8,10 @@ fi
 
 if [[ $(git status -s) ]]
 then
-    echo "Files have been changed while running this test."
+    echo "Files have been changed while running this test. Diff:"
+    git diff
+
+    echo "List of changed files:"
     git status -s
     exit 1
 fi
