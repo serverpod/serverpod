@@ -1,57 +1,37 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class LogLevel extends SerializableEntity {
-  @override
-  String get className => 'LogLevel';
+enum LogLevel with _i1.SerializableEntity {
+  debug,
+  info,
+  warning,
+  error,
+  fatal;
 
-  late final int _index;
-  int get index => _index;
-
-  LogLevel._internal(this._index);
-
-  LogLevel.fromSerialization(Map<String, dynamic> serialization) {
-    var data = unwrapSerializationData(serialization);
-    _index = data['index'];
+  static LogLevel? fromJson(int index) {
+    switch (index) {
+      case 0:
+        return debug;
+      case 1:
+        return info;
+      case 2:
+        return warning;
+      case 3:
+        return error;
+      case 4:
+        return fatal;
+      default:
+        return null;
+    }
   }
 
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'index': _index,
-    });
-  }
-
-  static final debug = LogLevel._internal(0);
-  static final info = LogLevel._internal(1);
-  static final warning = LogLevel._internal(2);
-  static final error = LogLevel._internal(3);
-  static final fatal = LogLevel._internal(4);
-
-  @override
-  int get hashCode => _index.hashCode;
-  @override
-  bool operator ==(other) => other is LogLevel && other._index == _index;
-
-  static final values = <LogLevel>[
-    debug,
-    info,
-    warning,
-    error,
-    fatal,
-  ];
-
-  String get name {
-    if (this == debug) return 'debug';
-    if (this == info) return 'info';
-    if (this == warning) return 'warning';
-    if (this == error) return 'error';
-    if (this == fatal) return 'fatal';
-    throw const FormatException();
-  }
+  int toJson() => index;
 }

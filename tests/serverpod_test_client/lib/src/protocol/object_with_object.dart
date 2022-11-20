@@ -1,28 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-class ObjectWithObject extends SerializableEntity {
-  @override
-  String get className => 'ObjectWithObject';
-
-  int? id;
-  late SimpleData data;
-  SimpleData? nullableData;
-  late List<SimpleData> dataList;
-  List<SimpleData>? nullableDataList;
-  late List<SimpleData?> listWithNullableData;
-  List<SimpleData?>? nullableListWithNullableData;
-
+class ObjectWithObject extends _i1.SerializableEntity {
   ObjectWithObject({
     this.id,
     required this.data,
@@ -33,43 +20,53 @@ class ObjectWithObject extends SerializableEntity {
     this.nullableListWithNullableData,
   });
 
-  ObjectWithObject.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    data = SimpleData.fromSerialization(_data['data']);
-    nullableData = _data['nullableData'] != null
-        ? SimpleData?.fromSerialization(_data['nullableData'])
-        : null;
-    dataList = _data['dataList']!
-        .map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    nullableDataList = _data['nullableDataList']
-        ?.map<SimpleData>((a) => SimpleData.fromSerialization(a))
-        ?.toList();
-    listWithNullableData = _data['listWithNullableData']!
-        .map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
-    nullableListWithNullableData = _data['nullableListWithNullableData']
-        ?.map<SimpleData?>(
-            (a) => a != null ? SimpleData?.fromSerialization(a) : null)
-        ?.toList();
+  factory ObjectWithObject.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ObjectWithObject(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      data: serializationManager
+          .deserialize<_i2.SimpleData>(jsonSerialization['data']),
+      nullableData: serializationManager
+          .deserialize<_i2.SimpleData?>(jsonSerialization['nullableData']),
+      dataList: serializationManager
+          .deserialize<List<_i2.SimpleData>>(jsonSerialization['dataList']),
+      nullableDataList: serializationManager.deserialize<List<_i2.SimpleData>?>(
+          jsonSerialization['nullableDataList']),
+      listWithNullableData:
+          serializationManager.deserialize<List<_i2.SimpleData?>>(
+              jsonSerialization['listWithNullableData']),
+      nullableListWithNullableData:
+          serializationManager.deserialize<List<_i2.SimpleData?>?>(
+              jsonSerialization['nullableListWithNullableData']),
+    );
   }
 
+  int? id;
+
+  _i2.SimpleData data;
+
+  _i2.SimpleData? nullableData;
+
+  List<_i2.SimpleData> dataList;
+
+  List<_i2.SimpleData>? nullableDataList;
+
+  List<_i2.SimpleData?> listWithNullableData;
+
+  List<_i2.SimpleData?>? nullableListWithNullableData;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
-      'data': data.serialize(),
-      'nullableData': nullableData?.serialize(),
-      'dataList': dataList.map((SimpleData a) => a.serialize()).toList(),
-      'nullableDataList':
-          nullableDataList?.map((SimpleData a) => a.serialize()).toList(),
-      'listWithNullableData':
-          listWithNullableData.map((SimpleData? a) => a?.serialize()).toList(),
-      'nullableListWithNullableData': nullableListWithNullableData
-          ?.map((SimpleData? a) => a?.serialize())
-          .toList(),
-    });
+      'data': data,
+      'nullableData': nullableData,
+      'dataList': dataList,
+      'nullableDataList': nullableDataList,
+      'listWithNullableData': listWithNullableData,
+      'nullableListWithNullableData': nullableListWithNullableData,
+    };
   }
 }

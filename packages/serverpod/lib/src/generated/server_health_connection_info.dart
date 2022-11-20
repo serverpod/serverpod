@@ -1,97 +1,103 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class ServerHealthConnectionInfo extends TableRow {
-  @override
-  String get className => 'ServerHealthConnectionInfo';
-  @override
-  String get tableName => 'serverpod_health_connection_info';
-
-  static final t = ServerHealthConnectionInfoTable();
-
-  @override
-  int? id;
-  late String serverId;
-  late int type;
-  late DateTime timestamp;
-  late int active;
-  late int closing;
-  late int idle;
-
+class ServerHealthConnectionInfo extends _i1.TableRow {
   ServerHealthConnectionInfo({
-    this.id,
+    int? id,
     required this.serverId,
     required this.type,
     required this.timestamp,
     required this.active,
     required this.closing,
     required this.idle,
-  });
+  }) : super(id);
 
-  ServerHealthConnectionInfo.fromSerialization(
-      Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    serverId = _data['serverId']!;
-    type = _data['type']!;
-    timestamp = DateTime.tryParse(_data['timestamp'])!;
-    active = _data['active']!;
-    closing = _data['closing']!;
-    idle = _data['idle']!;
+  factory ServerHealthConnectionInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ServerHealthConnectionInfo(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      serverId: serializationManager
+          .deserialize<String>(jsonSerialization['serverId']),
+      type: serializationManager.deserialize<int>(jsonSerialization['type']),
+      timestamp: serializationManager
+          .deserialize<DateTime>(jsonSerialization['timestamp']),
+      active:
+          serializationManager.deserialize<int>(jsonSerialization['active']),
+      closing:
+          serializationManager.deserialize<int>(jsonSerialization['closing']),
+      idle: serializationManager.deserialize<int>(jsonSerialization['idle']),
+    );
   }
 
+  static final t = ServerHealthConnectionInfoTable();
+
+  String serverId;
+
+  int type;
+
+  DateTime timestamp;
+
+  int active;
+
+  int closing;
+
+  int idle;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'serverpod_health_connection_info';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'serverId': serverId,
       'type': type,
-      'timestamp': timestamp.toUtc().toIso8601String(),
+      'timestamp': timestamp,
       'active': active,
       'closing': closing,
       'idle': idle,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'serverId': serverId,
       'type': type,
-      'timestamp': timestamp.toUtc().toIso8601String(),
+      'timestamp': timestamp,
       'active': active,
       'closing': closing,
       'idle': idle,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'serverId': serverId,
       'type': type,
-      'timestamp': timestamp.toUtc().toIso8601String(),
+      'timestamp': timestamp,
       'active': active,
       'closing': closing,
       'idle': idle,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -120,19 +126,20 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 
   static Future<List<ServerHealthConnectionInfo>> find(
-    Session session, {
+    _i1.Session session, {
     ServerHealthConnectionInfoExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<ServerHealthConnectionInfo>(
       where: where != null ? where(ServerHealthConnectionInfo.t) : null,
       limit: limit,
+      viewTable: false,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
@@ -143,13 +150,13 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 
   static Future<ServerHealthConnectionInfo?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     ServerHealthConnectionInfoExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ServerHealthConnectionInfo>(
       where: where != null ? where(ServerHealthConnectionInfo.t) : null,
@@ -162,14 +169,16 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 
   static Future<ServerHealthConnectionInfo?> findById(
-      Session session, int id) async {
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<ServerHealthConnectionInfo>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required ServerHealthConnectionInfoExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
@@ -178,9 +187,9 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     ServerHealthConnectionInfo row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -189,9 +198,9 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     ServerHealthConnectionInfo row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -200,19 +209,22 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     ServerHealthConnectionInfo row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     ServerHealthConnectionInfoExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<ServerHealthConnectionInfo>(
       where: where != null ? where(ServerHealthConnectionInfo.t) : null,
@@ -223,25 +235,29 @@ class ServerHealthConnectionInfo extends TableRow {
   }
 }
 
-typedef ServerHealthConnectionInfoExpressionBuilder = Expression Function(
-    ServerHealthConnectionInfoTable t);
+typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
+    ServerHealthConnectionInfoTable);
 
-class ServerHealthConnectionInfoTable extends Table {
+class ServerHealthConnectionInfoTable extends _i1.Table {
   ServerHealthConnectionInfoTable()
       : super(tableName: 'serverpod_health_connection_info');
 
-  @override
-  String tableName = 'serverpod_health_connection_info';
-  final id = ColumnInt('id');
-  final serverId = ColumnString('serverId');
-  final type = ColumnInt('type');
-  final timestamp = ColumnDateTime('timestamp');
-  final active = ColumnInt('active');
-  final closing = ColumnInt('closing');
-  final idle = ColumnInt('idle');
+  final id = _i1.ColumnInt('id');
+
+  final serverId = _i1.ColumnString('serverId');
+
+  final type = _i1.ColumnInt('type');
+
+  final timestamp = _i1.ColumnDateTime('timestamp');
+
+  final active = _i1.ColumnInt('active');
+
+  final closing = _i1.ColumnInt('closing');
+
+  final idle = _i1.ColumnInt('idle');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         serverId,
         type,

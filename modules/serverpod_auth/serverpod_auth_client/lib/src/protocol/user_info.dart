@@ -1,32 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class UserInfo extends SerializableEntity {
-  @override
-  String get className => 'serverpod_auth_server.UserInfo';
-
-  int? id;
-  late String userIdentifier;
-  late String userName;
-  String? fullName;
-  String? email;
-  late DateTime created;
-  String? imageUrl;
-  late List<String> scopeNames;
-  late bool active;
-  late bool blocked;
-  DateTime? suspendedUntil;
-
+class UserInfo extends _i1.SerializableEntity {
   UserInfo({
     this.id,
     required this.userIdentifier,
@@ -41,37 +23,71 @@ class UserInfo extends SerializableEntity {
     this.suspendedUntil,
   });
 
-  UserInfo.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    userIdentifier = _data['userIdentifier']!;
-    userName = _data['userName']!;
-    fullName = _data['fullName'];
-    email = _data['email'];
-    created = DateTime.tryParse(_data['created'])!;
-    imageUrl = _data['imageUrl'];
-    scopeNames = _data['scopeNames']!.cast<String>();
-    active = _data['active']!;
-    blocked = _data['blocked']!;
-    suspendedUntil = _data['suspendedUntil'] != null
-        ? DateTime.tryParse(_data['suspendedUntil'])
-        : null;
+  factory UserInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return UserInfo(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userIdentifier: serializationManager
+          .deserialize<String>(jsonSerialization['userIdentifier']),
+      userName: serializationManager
+          .deserialize<String>(jsonSerialization['userName']),
+      fullName: serializationManager
+          .deserialize<String?>(jsonSerialization['fullName']),
+      email:
+          serializationManager.deserialize<String?>(jsonSerialization['email']),
+      created: serializationManager
+          .deserialize<DateTime>(jsonSerialization['created']),
+      imageUrl: serializationManager
+          .deserialize<String?>(jsonSerialization['imageUrl']),
+      scopeNames: serializationManager
+          .deserialize<List<String>>(jsonSerialization['scopeNames']),
+      active:
+          serializationManager.deserialize<bool>(jsonSerialization['active']),
+      blocked:
+          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
+      suspendedUntil: serializationManager
+          .deserialize<DateTime?>(jsonSerialization['suspendedUntil']),
+    );
   }
 
+  int? id;
+
+  String userIdentifier;
+
+  String userName;
+
+  String? fullName;
+
+  String? email;
+
+  DateTime created;
+
+  String? imageUrl;
+
+  List<String> scopeNames;
+
+  bool active;
+
+  bool blocked;
+
+  DateTime? suspendedUntil;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
       'fullName': fullName,
       'email': email,
-      'created': created.toUtc().toIso8601String(),
+      'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
       'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil?.toUtc().toIso8601String(),
-    });
+      'suspendedUntil': suspendedUntil,
+    };
   }
 }

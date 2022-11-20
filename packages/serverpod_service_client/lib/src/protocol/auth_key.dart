@@ -1,27 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class AuthKey extends SerializableEntity {
-  @override
-  String get className => 'AuthKey';
-
-  int? id;
-  late int userId;
-  late String hash;
-  String? key;
-  late List<String> scopeNames;
-  late String method;
-
+class AuthKey extends _i1.SerializableEntity {
   AuthKey({
     this.id,
     required this.userId,
@@ -31,25 +18,44 @@ class AuthKey extends SerializableEntity {
     required this.method,
   });
 
-  AuthKey.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    userId = _data['userId']!;
-    hash = _data['hash']!;
-    key = _data['key'];
-    scopeNames = _data['scopeNames']!.cast<String>();
-    method = _data['method']!;
+  factory AuthKey.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return AuthKey(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
+      key: serializationManager.deserialize<String?>(jsonSerialization['key']),
+      scopeNames: serializationManager
+          .deserialize<List<String>>(jsonSerialization['scopeNames']),
+      method:
+          serializationManager.deserialize<String>(jsonSerialization['method']),
+    );
   }
 
+  int? id;
+
+  int userId;
+
+  String hash;
+
+  String? key;
+
+  List<String> scopeNames;
+
+  String method;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'userId': userId,
       'hash': hash,
       'key': key,
       'scopeNames': scopeNames,
       'method': method,
-    });
+    };
   }
 }

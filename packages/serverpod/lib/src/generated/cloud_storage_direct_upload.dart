@@ -1,85 +1,88 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class CloudStorageDirectUploadEntry extends TableRow {
-  @override
-  String get className => 'CloudStorageDirectUploadEntry';
-  @override
-  String get tableName => 'serverpod_cloud_storage_direct_upload';
-
-  static final t = CloudStorageDirectUploadEntryTable();
-
-  @override
-  int? id;
-  late String storageId;
-  late String path;
-  late DateTime expiration;
-  late String authKey;
-
+class CloudStorageDirectUploadEntry extends _i1.TableRow {
   CloudStorageDirectUploadEntry({
-    this.id,
+    int? id,
     required this.storageId,
     required this.path,
     required this.expiration,
     required this.authKey,
-  });
+  }) : super(id);
 
-  CloudStorageDirectUploadEntry.fromSerialization(
-      Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    storageId = _data['storageId']!;
-    path = _data['path']!;
-    expiration = DateTime.tryParse(_data['expiration'])!;
-    authKey = _data['authKey']!;
+  factory CloudStorageDirectUploadEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return CloudStorageDirectUploadEntry(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      storageId: serializationManager
+          .deserialize<String>(jsonSerialization['storageId']),
+      path: serializationManager.deserialize<String>(jsonSerialization['path']),
+      expiration: serializationManager
+          .deserialize<DateTime>(jsonSerialization['expiration']),
+      authKey: serializationManager
+          .deserialize<String>(jsonSerialization['authKey']),
+    );
   }
 
+  static final t = CloudStorageDirectUploadEntryTable();
+
+  String storageId;
+
+  String path;
+
+  DateTime expiration;
+
+  String authKey;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'serverpod_cloud_storage_direct_upload';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration.toUtc().toIso8601String(),
+      'expiration': expiration,
       'authKey': authKey,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration.toUtc().toIso8601String(),
+      'expiration': expiration,
       'authKey': authKey,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration.toUtc().toIso8601String(),
+      'expiration': expiration,
       'authKey': authKey,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -102,19 +105,20 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   static Future<List<CloudStorageDirectUploadEntry>> find(
-    Session session, {
+    _i1.Session session, {
     CloudStorageDirectUploadEntryExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<CloudStorageDirectUploadEntry>(
       where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
       limit: limit,
+      viewTable: false,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
@@ -125,13 +129,13 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   static Future<CloudStorageDirectUploadEntry?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     CloudStorageDirectUploadEntryExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<CloudStorageDirectUploadEntry>(
       where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
@@ -144,14 +148,16 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   static Future<CloudStorageDirectUploadEntry?> findById(
-      Session session, int id) async {
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<CloudStorageDirectUploadEntry>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required CloudStorageDirectUploadEntryExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CloudStorageDirectUploadEntry>(
       where: where(CloudStorageDirectUploadEntry.t),
@@ -160,9 +166,9 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     CloudStorageDirectUploadEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -171,9 +177,9 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     CloudStorageDirectUploadEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -182,19 +188,22 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     CloudStorageDirectUploadEntry row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     CloudStorageDirectUploadEntryExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<CloudStorageDirectUploadEntry>(
       where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
@@ -205,23 +214,25 @@ class CloudStorageDirectUploadEntry extends TableRow {
   }
 }
 
-typedef CloudStorageDirectUploadEntryExpressionBuilder = Expression Function(
-    CloudStorageDirectUploadEntryTable t);
+typedef CloudStorageDirectUploadEntryExpressionBuilder = _i1.Expression
+    Function(CloudStorageDirectUploadEntryTable);
 
-class CloudStorageDirectUploadEntryTable extends Table {
+class CloudStorageDirectUploadEntryTable extends _i1.Table {
   CloudStorageDirectUploadEntryTable()
       : super(tableName: 'serverpod_cloud_storage_direct_upload');
 
-  @override
-  String tableName = 'serverpod_cloud_storage_direct_upload';
-  final id = ColumnInt('id');
-  final storageId = ColumnString('storageId');
-  final path = ColumnString('path');
-  final expiration = ColumnDateTime('expiration');
-  final authKey = ColumnString('authKey');
+  final id = _i1.ColumnInt('id');
+
+  final storageId = _i1.ColumnString('storageId');
+
+  final path = _i1.ColumnString('path');
+
+  final expiration = _i1.ColumnDateTime('expiration');
+
+  final authKey = _i1.ColumnString('authKey');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         storageId,
         path,

@@ -1,44 +1,40 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ChatRequestMessageChunk extends SerializableEntity {
-  @override
-  String get className => 'serverpod_chat_server.ChatRequestMessageChunk';
-
-  int? id;
-  late String channel;
-  late int lastMessageId;
-
+class ChatRequestMessageChunk extends _i1.SerializableEntity {
   ChatRequestMessageChunk({
-    this.id,
     required this.channel,
     required this.lastMessageId,
   });
 
-  ChatRequestMessageChunk.fromSerialization(
-      Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    channel = _data['channel']!;
-    lastMessageId = _data['lastMessageId']!;
+  factory ChatRequestMessageChunk.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ChatRequestMessageChunk(
+      channel: serializationManager
+          .deserialize<String>(jsonSerialization['channel']),
+      lastMessageId: serializationManager
+          .deserialize<int>(jsonSerialization['lastMessageId']),
+    );
   }
 
+  String channel;
+
+  int lastMessageId;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'id': id,
+  Map<String, dynamic> toJson() {
+    return {
       'channel': channel,
       'lastMessageId': lastMessageId,
-    });
+    };
   }
 }

@@ -1,43 +1,40 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ChatJoinChannelFailed extends SerializableEntity {
-  @override
-  String get className => 'serverpod_chat_server.ChatJoinChannelFailed';
-
-  int? id;
-  late String channel;
-  late String reason;
-
+class ChatJoinChannelFailed extends _i1.SerializableEntity {
   ChatJoinChannelFailed({
-    this.id,
     required this.channel,
     required this.reason,
   });
 
-  ChatJoinChannelFailed.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    channel = _data['channel']!;
-    reason = _data['reason']!;
+  factory ChatJoinChannelFailed.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ChatJoinChannelFailed(
+      channel: serializationManager
+          .deserialize<String>(jsonSerialization['channel']),
+      reason:
+          serializationManager.deserialize<String>(jsonSerialization['reason']),
+    );
   }
 
+  String channel;
+
+  String reason;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'id': id,
+  Map<String, dynamic> toJson() {
+    return {
       'channel': channel,
       'reason': reason,
-    });
+    };
   }
 }

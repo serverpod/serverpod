@@ -1,35 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class SessionLogEntry extends SerializableEntity {
-  @override
-  String get className => 'SessionLogEntry';
-
-  int? id;
-  late String serverId;
-  late DateTime time;
-  String? module;
-  String? endpoint;
-  String? method;
-  double? duration;
-  int? numQueries;
-  bool? slow;
-  String? error;
-  String? stackTrace;
-  int? authenticatedUserId;
-  bool? isOpen;
-  late DateTime touched;
-
+class SessionLogEntry extends _i1.SerializableEntity {
   SessionLogEntry({
     this.id,
     required this.serverId,
@@ -47,30 +26,74 @@ class SessionLogEntry extends SerializableEntity {
     required this.touched,
   });
 
-  SessionLogEntry.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    serverId = _data['serverId']!;
-    time = DateTime.tryParse(_data['time'])!;
-    module = _data['module'];
-    endpoint = _data['endpoint'];
-    method = _data['method'];
-    duration = _data['duration'];
-    numQueries = _data['numQueries'];
-    slow = _data['slow'];
-    error = _data['error'];
-    stackTrace = _data['stackTrace'];
-    authenticatedUserId = _data['authenticatedUserId'];
-    isOpen = _data['isOpen'];
-    touched = DateTime.tryParse(_data['touched'])!;
+  factory SessionLogEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return SessionLogEntry(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      serverId: serializationManager
+          .deserialize<String>(jsonSerialization['serverId']),
+      time:
+          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
+      module: serializationManager
+          .deserialize<String?>(jsonSerialization['module']),
+      endpoint: serializationManager
+          .deserialize<String?>(jsonSerialization['endpoint']),
+      method: serializationManager
+          .deserialize<String?>(jsonSerialization['method']),
+      duration: serializationManager
+          .deserialize<double?>(jsonSerialization['duration']),
+      numQueries: serializationManager
+          .deserialize<int?>(jsonSerialization['numQueries']),
+      slow: serializationManager.deserialize<bool?>(jsonSerialization['slow']),
+      error:
+          serializationManager.deserialize<String?>(jsonSerialization['error']),
+      stackTrace: serializationManager
+          .deserialize<String?>(jsonSerialization['stackTrace']),
+      authenticatedUserId: serializationManager
+          .deserialize<int?>(jsonSerialization['authenticatedUserId']),
+      isOpen:
+          serializationManager.deserialize<bool?>(jsonSerialization['isOpen']),
+      touched: serializationManager
+          .deserialize<DateTime>(jsonSerialization['touched']),
+    );
   }
 
+  int? id;
+
+  String serverId;
+
+  DateTime time;
+
+  String? module;
+
+  String? endpoint;
+
+  String? method;
+
+  double? duration;
+
+  int? numQueries;
+
+  bool? slow;
+
+  String? error;
+
+  String? stackTrace;
+
+  int? authenticatedUserId;
+
+  bool? isOpen;
+
+  DateTime touched;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'serverId': serverId,
-      'time': time.toUtc().toIso8601String(),
+      'time': time,
       'module': module,
       'endpoint': endpoint,
       'method': method,
@@ -81,7 +104,7 @@ class SessionLogEntry extends SerializableEntity {
       'stackTrace': stackTrace,
       'authenticatedUserId': authenticatedUserId,
       'isOpen': isOpen,
-      'touched': touched.toUtc().toIso8601String(),
-    });
+      'touched': touched,
+    };
   }
 }

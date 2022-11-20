@@ -1,114 +1,147 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
+// ignore_for_file: implementation_imports
 
-import 'dart:io';
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod_client/serverpod_client.dart';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'dart:async' as _i2;
+import 'package:serverpod_service_client/src/protocol/runtime_settings.dart'
+    as _i3;
+import 'package:serverpod_service_client/src/protocol/session_log_result.dart'
+    as _i4;
+import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
+    as _i5;
+import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
+import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
+    as _i7;
+import 'dart:io' as _i8;
+import 'protocol.dart' as _i9;
 
-class _EndpointInsights extends EndpointRef {
+/// The [InsightsEndpoint] provides a way to access real time information from
+/// the running server or to change settings.
+class _EndpointInsights extends _i1.EndpointRef {
+  _EndpointInsights(_i1.EndpointCaller caller) : super(caller);
+
   @override
   String get name => 'insights';
 
-  _EndpointInsights(EndpointCaller caller) : super(caller);
+  /// Get the current [RuntimeSettings] from the running [Server].
+  _i2.Future<_i3.RuntimeSettings> getRuntimeSettings() =>
+      caller.callServerEndpoint<_i3.RuntimeSettings>(
+        'insights',
+        'getRuntimeSettings',
+        {},
+      );
 
-  Future<RuntimeSettings> getRuntimeSettings() async {
-    return await caller.callServerEndpoint(
-        'insights', 'getRuntimeSettings', 'RuntimeSettings', {});
-  }
+  /// Update the current [RuntimeSettings] in the running [Server].
+  _i2.Future<void> setRuntimeSettings(_i3.RuntimeSettings runtimeSettings) =>
+      caller.callServerEndpoint<void>(
+        'insights',
+        'setRuntimeSettings',
+        {'runtimeSettings': runtimeSettings},
+      );
 
-  Future<void> setRuntimeSettings(
-    RuntimeSettings runtimeSettings,
-  ) async {
-    return await caller
-        .callServerEndpoint('insights', 'setRuntimeSettings', 'void', {
-      'runtimeSettings': runtimeSettings,
-    });
-  }
+  /// Clear all server logs.
+  _i2.Future<void> clearAllLogs() => caller.callServerEndpoint<void>(
+        'insights',
+        'clearAllLogs',
+        {},
+      );
 
-  Future<void> clearAllLogs() async {
-    return await caller
-        .callServerEndpoint('insights', 'clearAllLogs', 'void', {});
-  }
-
-  Future<SessionLogResult> getSessionLog(
+  /// Get the latest [numEntries] from the session log.
+  _i2.Future<_i4.SessionLogResult> getSessionLog(
     int? numEntries,
-    SessionLogFilter? filter,
-  ) async {
-    return await caller
-        .callServerEndpoint('insights', 'getSessionLog', 'SessionLogResult', {
-      'numEntries': numEntries,
-      'filter': filter,
-    });
-  }
+    _i5.SessionLogFilter? filter,
+  ) =>
+      caller.callServerEndpoint<_i4.SessionLogResult>(
+        'insights',
+        'getSessionLog',
+        {
+          'numEntries': numEntries,
+          'filter': filter,
+        },
+      );
 
-  Future<SessionLogResult> getOpenSessionLog(
+  /// Get the latest [numEntries] from the session log.
+  _i2.Future<_i4.SessionLogResult> getOpenSessionLog(
     int? numEntries,
-    SessionLogFilter? filter,
-  ) async {
-    return await caller.callServerEndpoint(
-        'insights', 'getOpenSessionLog', 'SessionLogResult', {
-      'numEntries': numEntries,
-      'filter': filter,
-    });
-  }
+    _i5.SessionLogFilter? filter,
+  ) =>
+      caller.callServerEndpoint<_i4.SessionLogResult>(
+        'insights',
+        'getOpenSessionLog',
+        {
+          'numEntries': numEntries,
+          'filter': filter,
+        },
+      );
 
-  Future<CachesInfo> getCachesInfo(
-    bool fetchKeys,
-  ) async {
-    return await caller
-        .callServerEndpoint('insights', 'getCachesInfo', 'CachesInfo', {
-      'fetchKeys': fetchKeys,
-    });
-  }
+  /// Retrieve information about the state of the caches on this server.
+  _i2.Future<_i6.CachesInfo> getCachesInfo(bool fetchKeys) =>
+      caller.callServerEndpoint<_i6.CachesInfo>(
+        'insights',
+        'getCachesInfo',
+        {'fetchKeys': fetchKeys},
+      );
 
-  Future<void> shutdown() async {
-    return await caller.callServerEndpoint('insights', 'shutdown', 'void', {});
-  }
+  /// Safely shuts down this [ServerPod].
+  _i2.Future<void> shutdown() => caller.callServerEndpoint<void>(
+        'insights',
+        'shutdown',
+        {},
+      );
 
-  Future<ServerHealthResult> checkHealth() async {
-    return await caller.callServerEndpoint(
-        'insights', 'checkHealth', 'ServerHealthResult', {});
-  }
+  /// Performs a health check on the running [ServerPod].
+  _i2.Future<_i7.ServerHealthResult> checkHealth() =>
+      caller.callServerEndpoint<_i7.ServerHealthResult>(
+        'insights',
+        'checkHealth',
+        {},
+      );
 
-  Future<ServerHealthResult> getHealthData(
+  /// Gets historical health check data. Returns data for the whole cluster.
+  _i2.Future<_i7.ServerHealthResult> getHealthData(
     DateTime start,
     DateTime end,
-  ) async {
-    return await caller
-        .callServerEndpoint('insights', 'getHealthData', 'ServerHealthResult', {
-      'start': start,
-      'end': end,
-    });
-  }
+  ) =>
+      caller.callServerEndpoint<_i7.ServerHealthResult>(
+        'insights',
+        'getHealthData',
+        {
+          'start': start,
+          'end': end,
+        },
+      );
 
-  Future<bool> hotReload() async {
-    return await caller.callServerEndpoint('insights', 'hotReload', 'bool', {});
-  }
+  /// Performs a hot reload of the server.
+  _i2.Future<bool> hotReload() => caller.callServerEndpoint<bool>(
+        'insights',
+        'hotReload',
+        {},
+      );
 }
 
-class Client extends ServerpodClient {
-  late final _EndpointInsights insights;
-
-  Client(String host,
-      {SecurityContext? context,
-      ServerpodClientErrorCallback? errorHandler,
-      AuthenticationKeyManager? authenticationKeyManager})
-      : super(host, Protocol.instance,
-            context: context,
-            errorHandler: errorHandler,
-            authenticationKeyManager: authenticationKeyManager) {
+class Client extends _i1.ServerpodClient {
+  Client(
+    String host, {
+    _i8.SecurityContext? context,
+    _i1.AuthenticationKeyManager? authenticationKeyManager,
+  }) : super(
+          host,
+          _i9.Protocol(),
+          context: context,
+          authenticationKeyManager: authenticationKeyManager,
+        ) {
     insights = _EndpointInsights(this);
   }
 
-  @override
-  Map<String, EndpointRef> get endpointRefLookup => {
-        'insights': insights,
-      };
+  late final _EndpointInsights insights;
 
   @override
-  Map<String, ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {'insights': insights};
+  @override
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
 }

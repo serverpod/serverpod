@@ -1,31 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class SessionLogFilter extends SerializableEntity {
-  @override
-  String get className => 'SessionLogFilter';
-
-  int? id;
-  String? endpoint;
-  String? method;
-  String? futureCall;
-  late bool slow;
-  late bool error;
-  late bool open;
-  int? lastSessionLogId;
-
+class SessionLogFilter extends _i1.SerializableEntity {
   SessionLogFilter({
-    this.id,
     this.endpoint,
     this.method,
     this.futureCall,
@@ -35,22 +19,42 @@ class SessionLogFilter extends SerializableEntity {
     this.lastSessionLogId,
   });
 
-  SessionLogFilter.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    endpoint = _data['endpoint'];
-    method = _data['method'];
-    futureCall = _data['futureCall'];
-    slow = _data['slow']!;
-    error = _data['error']!;
-    open = _data['open']!;
-    lastSessionLogId = _data['lastSessionLogId'];
+  factory SessionLogFilter.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return SessionLogFilter(
+      endpoint: serializationManager
+          .deserialize<String?>(jsonSerialization['endpoint']),
+      method: serializationManager
+          .deserialize<String?>(jsonSerialization['method']),
+      futureCall: serializationManager
+          .deserialize<String?>(jsonSerialization['futureCall']),
+      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
+      error: serializationManager.deserialize<bool>(jsonSerialization['error']),
+      open: serializationManager.deserialize<bool>(jsonSerialization['open']),
+      lastSessionLogId: serializationManager
+          .deserialize<int?>(jsonSerialization['lastSessionLogId']),
+    );
   }
 
+  String? endpoint;
+
+  String? method;
+
+  String? futureCall;
+
+  bool slow;
+
+  bool error;
+
+  bool open;
+
+  int? lastSessionLogId;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'id': id,
+  Map<String, dynamic> toJson() {
+    return {
       'endpoint': endpoint,
       'method': method,
       'futureCall': futureCall,
@@ -58,6 +62,6 @@ class SessionLogFilter extends SerializableEntity {
       'error': error,
       'open': open,
       'lastSessionLogId': lastSessionLogId,
-    });
+    };
   }
 }

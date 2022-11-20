@@ -1,28 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'dart:typed_data' as _i2;
 
-class Types extends SerializableEntity {
-  @override
-  String get className => 'Types';
-
-  int? id;
-  int? anInt;
-  bool? aBool;
-  double? aDouble;
-  DateTime? aDateTime;
-  String? aString;
-  ByteData? aByteData;
-
+class Types extends _i1.SerializableEntity {
   Types({
     this.id,
     this.anInt,
@@ -33,33 +20,50 @@ class Types extends SerializableEntity {
     this.aByteData,
   });
 
-  Types.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    anInt = _data['anInt'];
-    aBool = _data['aBool'];
-    aDouble = _data['aDouble'];
-    aDateTime = _data['aDateTime'] != null
-        ? DateTime.tryParse(_data['aDateTime'])
-        : null;
-    aString = _data['aString'];
-    aByteData = _data['aByteData'] == null
-        ? null
-        : (_data['aByteData'] is String
-            ? (_data['aByteData'] as String).base64DecodedByteData()
-            : ByteData.view((_data['aByteData'] as Uint8List).buffer));
+  factory Types.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return Types(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      anInt: serializationManager.deserialize<int?>(jsonSerialization['anInt']),
+      aBool:
+          serializationManager.deserialize<bool?>(jsonSerialization['aBool']),
+      aDouble: serializationManager
+          .deserialize<double?>(jsonSerialization['aDouble']),
+      aDateTime: serializationManager
+          .deserialize<DateTime?>(jsonSerialization['aDateTime']),
+      aString: serializationManager
+          .deserialize<String?>(jsonSerialization['aString']),
+      aByteData: serializationManager
+          .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
+    );
   }
 
+  int? id;
+
+  int? anInt;
+
+  bool? aBool;
+
+  double? aDouble;
+
+  DateTime? aDateTime;
+
+  String? aString;
+
+  _i2.ByteData? aByteData;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'anInt': anInt,
       'aBool': aBool,
       'aDouble': aDouble,
-      'aDateTime': aDateTime?.toUtc().toIso8601String(),
+      'aDateTime': aDateTime,
       'aString': aString,
-      'aByteData': aByteData?.base64encodedString(),
-    });
+      'aByteData': aByteData,
+    };
   }
 }

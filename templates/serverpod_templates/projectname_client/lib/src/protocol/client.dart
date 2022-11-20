@@ -1,48 +1,47 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
+// ignore_for_file: implementation_imports
 
-import 'dart:io';
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod_client/serverpod_client.dart';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'dart:async' as _i2;
+import 'dart:io' as _i3;
+import 'protocol.dart' as _i4;
 
-class _EndpointExample extends EndpointRef {
+class _EndpointExample extends _i1.EndpointRef {
+  _EndpointExample(_i1.EndpointCaller caller) : super(caller);
+
   @override
   String get name => 'example';
 
-  _EndpointExample(EndpointCaller caller) : super(caller);
-
-  Future<String> hello(
-    String name,
-  ) async {
-    return await caller.callServerEndpoint('example', 'hello', 'String', {
-      'name': name,
-    });
-  }
+  _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
+        'example',
+        'hello',
+        {'name': name},
+      );
 }
 
-class Client extends ServerpodClient {
-  late final _EndpointExample example;
-
-  Client(String host,
-      {SecurityContext? context,
-      ServerpodClientErrorCallback? errorHandler,
-      AuthenticationKeyManager? authenticationKeyManager})
-      : super(host, Protocol.instance,
-            context: context,
-            errorHandler: errorHandler,
-            authenticationKeyManager: authenticationKeyManager) {
+class Client extends _i1.ServerpodClient {
+  Client(
+    String host, {
+    _i3.SecurityContext? context,
+    _i1.AuthenticationKeyManager? authenticationKeyManager,
+  }) : super(
+          host,
+          _i4.Protocol(),
+          context: context,
+          authenticationKeyManager: authenticationKeyManager,
+        ) {
     example = _EndpointExample(this);
   }
 
-  @override
-  Map<String, EndpointRef> get endpointRefLookup => {
-        'example': example,
-      };
+  late final _EndpointExample example;
 
   @override
-  Map<String, ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+  @override
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
 }

@@ -1,66 +1,64 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class SimpleData extends TableRow {
-  @override
-  String get className => 'SimpleData';
-  @override
-  String get tableName => 'simple_data';
+class SimpleData extends _i1.TableRow {
+  SimpleData({
+    int? id,
+    required this.num,
+  }) : super(id);
+
+  factory SimpleData.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return SimpleData(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      num: serializationManager.deserialize<int>(jsonSerialization['num']),
+    );
+  }
 
   static final t = SimpleDataTable();
 
-  @override
-  int? id;
-  late int num;
-
-  SimpleData({
-    this.id,
-    required this.num,
-  });
-
-  SimpleData.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    num = _data['num']!;
-  }
+  int num;
 
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'simple_data';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'num': num,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'num': num,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'num': num,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -74,19 +72,20 @@ class SimpleData extends TableRow {
   }
 
   static Future<List<SimpleData>> find(
-    Session session, {
+    _i1.Session session, {
     SimpleDataExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<SimpleData>(
       where: where != null ? where(SimpleData.t) : null,
       limit: limit,
+      viewTable: false,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
@@ -97,13 +96,13 @@ class SimpleData extends TableRow {
   }
 
   static Future<SimpleData?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     SimpleDataExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<SimpleData>(
       where: where != null ? where(SimpleData.t) : null,
@@ -115,14 +114,17 @@ class SimpleData extends TableRow {
     );
   }
 
-  static Future<SimpleData?> findById(Session session, int id) async {
+  static Future<SimpleData?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<SimpleData>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required SimpleDataExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<SimpleData>(
       where: where(SimpleData.t),
@@ -131,9 +133,9 @@ class SimpleData extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     SimpleData row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -142,9 +144,9 @@ class SimpleData extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     SimpleData row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -153,19 +155,22 @@ class SimpleData extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     SimpleData row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     SimpleDataExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<SimpleData>(
       where: where != null ? where(SimpleData.t) : null,
@@ -176,18 +181,17 @@ class SimpleData extends TableRow {
   }
 }
 
-typedef SimpleDataExpressionBuilder = Expression Function(SimpleDataTable t);
+typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
 
-class SimpleDataTable extends Table {
+class SimpleDataTable extends _i1.Table {
   SimpleDataTable() : super(tableName: 'simple_data');
 
-  @override
-  String tableName = 'simple_data';
-  final id = ColumnInt('id');
-  final num = ColumnInt('num');
+  final id = _i1.ColumnInt('id');
+
+  final num = _i1.ColumnInt('num');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         num,
       ];

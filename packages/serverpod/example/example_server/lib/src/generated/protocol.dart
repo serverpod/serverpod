@@ -1,43 +1,131 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
+// ignore_for_file: implementation_imports
 
-library protocol;
+library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
-// ignore: unused_import
-import 'dart:typed_data';
-import 'package:serverpod/serverpod.dart';
-
-import 'channel.dart';
-import 'channel_list.dart';
-
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'channel.dart' as _i2;
+import 'channel_list.dart' as _i3;
+import 'protocol.dart' as _i4;
+import 'package:serverpod_auth_server/module.dart' as _i5;
+import 'package:serverpod_chat_server/module.dart' as _i6;
+import 'package:serverpod/protocol.dart' as _i7;
 export 'channel.dart';
-export 'channel_list.dart';
+export 'channel_list.dart'; // ignore_for_file: equal_keys_in_map
 
-class Protocol extends SerializationManagerServer {
-  static final Protocol instance = Protocol();
+class Protocol extends _i1.SerializationManagerServer {
+  Protocol._();
 
-  final Map<String, constructor> _constructors = {};
+  factory Protocol() => _instance;
+
+  static final Map<Type, _i1.constructor> customConstructors = {};
+
+  static final Protocol _instance = Protocol._();
+
   @override
-  Map<String, constructor> get constructors => _constructors;
+  T deserialize<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+    if (customConstructors.containsKey(t)) {
+      return customConstructors[t]!(data, this) as T;
+    }
+    if (t == _i2.Channel) {
+      return _i2.Channel.fromJson(data, this) as T;
+    }
+    if (t == _i3.ChannelList) {
+      return _i3.ChannelList.fromJson(data, this) as T;
+    }
+    if (t == _i1.getType<_i2.Channel?>()) {
+      return (data != null ? _i2.Channel.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i3.ChannelList?>()) {
+      return (data != null ? _i3.ChannelList.fromJson(data, this) : null) as T;
+    }
+    if (t == List<_i4.Channel>) {
+      return (data as List).map((e) => deserialize<_i4.Channel>(e)).toList()
+          as dynamic;
+    }
+    try {
+      return _i5.Protocol().deserialize<T>(data, t);
+    } catch (_) {}
+    try {
+      return _i6.Protocol().deserialize<T>(data, t);
+    } catch (_) {}
+    try {
+      return _i7.Protocol().deserialize<T>(data, t);
+    } catch (_) {}
+    return super.deserialize<T>(data, t);
+  }
 
-  final Map<String, String> _tableClassMapping = {};
   @override
-  Map<String, String> get tableClassMapping => _tableClassMapping;
+  String? getClassNameForObject(Object data) {
+    String? className;
+    className = _i5.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i6.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_chat.$className';
+    }
+    if (data is _i2.Channel) {
+      return 'Channel';
+    }
+    if (data is _i3.ChannelList) {
+      return 'ChannelList';
+    }
+    return super.getClassNameForObject(data);
+  }
 
-  final Map<Type, Table> _typeTableMapping = {};
   @override
-  Map<Type, Table> get typeTableMapping => _typeTableMapping;
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'].startsWith('serverpod_auth.')) {
+      data['className'] = data['className'].substring(15);
+      return _i5.Protocol().deserializeByClassName(data);
+    }
+    if (data['className'].startsWith('serverpod_chat.')) {
+      data['className'] = data['className'].substring(15);
+      return _i6.Protocol().deserializeByClassName(data);
+    }
+    if (data['className'] == 'Channel') {
+      return deserialize<_i2.Channel>(data['data']);
+    }
+    if (data['className'] == 'ChannelList') {
+      return deserialize<_i3.ChannelList>(data['data']);
+    }
+    return super.deserializeByClassName(data);
+  }
 
-  Protocol() {
-    constructors['Channel'] = (Map<String, dynamic> serialization) =>
-        Channel.fromSerialization(serialization);
-    constructors['ChannelList'] = (Map<String, dynamic> serialization) =>
-        ChannelList.fromSerialization(serialization);
-
-    tableClassMapping['channel'] = 'Channel';
-    typeTableMapping[Channel] = Channel.t;
+  @override
+  _i1.Table? getTableForType(Type t) {
+    {
+      var table = _i5.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i6.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i7.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    switch (t) {
+      case _i2.Channel:
+        return _i2.Channel.t;
+    }
+    return null;
   }
 }
