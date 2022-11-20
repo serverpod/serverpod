@@ -1,0 +1,5 @@
+class: Channel
+table: channel
+fields:
+  name: String
+  channel: String

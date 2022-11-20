@@ -24,6 +24,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  made_with_serverpod: ^1.0.0
+  serverpod_auth_email_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
+  serverpod_auth_shared_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_chat_flutter:
+    path: ../../../modules/serverpod_chat/serverpod_chat_flutter
+  serverpod_client:
+    path: ../../../packages/serverpod_client
   serverpod_flutter:
     path: ../../../packages/serverpod_flutter
   chat_client:

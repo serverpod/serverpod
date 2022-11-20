@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-
-import 'package:chat_server/src/web/routes/root.dart';
+import 'package:serverpod_auth_server/module.dart' as auth;
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
@@ -17,15 +16,55 @@ void run(List<String> args) async {
     Endpoints(),
   );
 
-  // If you are using any future calls, they need to be registered here.
-  // pod.registerFutureCall(ExampleFutureCall(), 'exampleFutureCall');
+  // Configures sign in with email to print out the validation codes on the
+  // console.
+  auth.AuthConfig.set(auth.AuthConfig(
+    sendValidationEmail: (session, email, validationCode) async {
+      print('Validation code: $validationCode');
+      session.log('Code for $email is $validationCode');
+      return true;
+    },
+    sendPasswordResetEmail: (session, userInfo, validationCode) async {
+      print('Validation code: $validationCode');
+      session.log('Code for ${userInfo.userName} is $validationCode');
+      return true;
+    },
+  ));
 
-  // Setup a default page at the web root.
-  pod.webServer.addRoute(RouteRoot(), '/');
-  // Serve all files in the /static directory.
-  pod.webServer
-      .addRoute(RouteStaticDirectory(serverDirectory: 'static'), '/static/*');
+  // Create an initial set of entries in the database, if they do not exist
+  // already.
+  await _populateDatabase(pod);
 
   // Start the server.
   await pod.start();
+}
+
+Future<void> _populateDatabase(Serverpod pod) async {
+  // Create a session so that we can access the database.
+  var session = await pod.createSession();
+
+  var numChannels = await Channel.count(session);
+  if (numChannels != 0) {
+    // There are already entries in the database, whe shouldn't add them again.
+    await session.close();
+    return;
+  }
+
+  // Insert an initial set of channels.
+  await Channel.insert(
+    session,
+    Channel(name: 'General', channel: 'general'),
+  );
+  await Channel.insert(
+    session,
+    Channel(name: 'Serverpod', channel: 'serverpod'),
+  );
+  await Channel.insert(
+    session,
+    Channel(name: 'Introductions', channel: 'intros'),
+  );
+
+  // Make sure to close the session when we are done, or it will hold up
+  // resources.
+  await session.close();
 }

@@ -6,41 +6,39 @@
 // ignore_for_file: implementation_imports
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class Example extends _i1.SerializableEntity {
-  Example({
+class Channel extends _i1.SerializableEntity {
+  Channel({
+    this.id,
     required this.name,
-    required this.data,
+    required this.channel,
   });
 
-  factory Example.fromJson(
+  factory Channel.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return Example(
+    return Channel(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      data: serializationManager.deserialize<int>(jsonSerialization['data']),
+      channel: serializationManager
+          .deserialize<String>(jsonSerialization['channel']),
     );
   }
 
+  int? id;
+
   String name;
 
-  int data;
+  String channel;
 
   @override
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
-      'data': data,
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'name': name,
-      'data': data,
+      'channel': channel,
     };
   }
 }
