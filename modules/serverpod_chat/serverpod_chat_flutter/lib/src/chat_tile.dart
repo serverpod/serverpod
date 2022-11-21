@@ -59,7 +59,7 @@ class DefaultChatTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: CircularUserImage(
-                userInfo: message.senderInfo,
+                userInfoPublic: message.senderInfo,
                 size: 40,
               ),
             ),

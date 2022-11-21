@@ -125,7 +125,7 @@ class ChatEndpoint extends Endpoint {
         message: message.message,
         time: DateTime.now(),
         sender: chatSession.userInfo!.id!,
-        senderInfo: chatSession.userInfo,
+        senderInfo: chatSession.userInfo?.toPublic(),
         removed: false,
         clientMessageId: message.clientMessageId,
         sent: true,
@@ -214,7 +214,8 @@ class ChatEndpoint extends Endpoint {
   }
 
   Future<void> _formatChatMessage(Session session, ChatMessage message) async {
-    message.senderInfo = await Users.findUserByUserId(session, message.sender);
+    message.senderInfo =
+        (await Users.findUserByUserId(session, message.sender))?.toPublic();
   }
 
   Future<int> _getLastReadMessage(
