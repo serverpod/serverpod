@@ -1,8 +1,8 @@
 import 'package:chat_flutter/src/disconnected_page.dart';
 import 'package:chat_flutter/src/loading_page.dart';
 import 'package:chat_flutter/src/main_page.dart';
-import 'package:chat_flutter/src/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:chat_client/chat_client.dart';
@@ -81,10 +81,12 @@ class _SignInPageState extends State<_SignInPage> {
     } else {
       return Scaffold(
         body: Container(
-          color: Colors.blueGrey,
+          color: Colors.white,
           alignment: Alignment.center,
-          child: const SignInDialog(
-            shownAsDialog: false,
+          child: Center(
+            child: SignInWithEmailButton(
+              caller: client.modules.auth,
+            ),
           ),
         ),
       );
