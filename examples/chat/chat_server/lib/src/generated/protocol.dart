@@ -30,9 +30,6 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-
-    print('CHAT SERVER deserialize type $t');
-
     if (customConstructors.containsKey(t)) {
       return customConstructors[t]!(data, this) as T;
     }

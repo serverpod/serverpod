@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart' as auth;
+import 'package:serverpod_chat_server/module.dart' as chat;
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
@@ -17,7 +18,8 @@ void run(List<String> args) async {
   );
 
   // Configures sign in with email to print out the validation codes on the
-  // console.
+  // console. In a real-world application, these methods would send emails to
+  // the users to validate their email.
   auth.AuthConfig.set(auth.AuthConfig(
     sendValidationEmail: (session, email, validationCode) async {
       print('Validation code: $validationCode');
@@ -29,6 +31,14 @@ void run(List<String> args) async {
       session.log('Code for ${userInfo.userName} is $validationCode');
       return true;
     },
+  ));
+
+  // Configure the chat module. By default, chat messages are posted internally
+  // on a single server. If you are running the chat in a cluster of servers
+  // the postMessagesGlobally needs to be enabled. You will also need to enable
+  // Redis in the config files.
+  chat.ChatConfig.set(chat.ChatConfig(
+    postMessagesGlobally: false,
   ));
 
   // Create an initial set of entries in the database, if they do not exist
