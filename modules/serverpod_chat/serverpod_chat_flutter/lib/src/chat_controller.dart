@@ -190,7 +190,7 @@ class ChatController {
       time: DateTime.now().toUtc(),
       sent: false,
       sender: _joinedAsUserInfo!.id!,
-      senderInfo: _joinedAsUserInfo,
+      senderInfo: _joinedAsUserInfo?.toPublic(),
       removed: false,
       clientMessageId: _clientMessageId,
       attachments: attachments,

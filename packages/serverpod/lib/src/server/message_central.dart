@@ -25,15 +25,7 @@ class MessageCentral {
     SerializableEntity message, {
     bool global = false,
   }) {
-    if (!global) {
-      // Handle internally in this server instance
-      var channel = _channels[channelName];
-      if (channel == null) return;
-
-      for (var callback in channel) {
-        callback(message);
-      }
-    } else {
+    if (global) {
       // Send to Redis
       assert(
         Serverpod.instance!.redisController != null,
@@ -42,6 +34,14 @@ class MessageCentral {
       var data =
           Serverpod.instance!.serializationManager.encodeWithType(message);
       Serverpod.instance!.redisController!.publish(channelName, data);
+    } else {
+      // Handle internally in this server instance
+      var channel = _channels[channelName];
+      if (channel == null) return;
+
+      for (var callback in channel) {
+        callback(message);
+      }
     }
   }
 
@@ -61,7 +61,6 @@ class MessageCentral {
     Session session,
     String channelName,
     MessageCentralListenerCallback listener,
-    // bool global = false,
   ) {
     // Find or create channel
     var channel = _getChannel(channelName);

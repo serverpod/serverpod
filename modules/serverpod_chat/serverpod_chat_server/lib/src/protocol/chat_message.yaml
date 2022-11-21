@@ -5,7 +5,7 @@ fields:
   message: String
   time: DateTime
   sender: int
-  senderInfo: module:auth:UserInfo?, api
+  senderInfo: module:auth:UserInfoPublic?, api
   removed: bool
   clientMessageId: int?, api
   sent: bool?, api

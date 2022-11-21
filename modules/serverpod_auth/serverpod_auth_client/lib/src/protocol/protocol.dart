@@ -19,7 +19,8 @@ import 'email_reset.dart' as _i9;
 import 'google_refresh_token.dart' as _i10;
 import 'user_image.dart' as _i11;
 import 'user_info.dart' as _i12;
-import 'user_settings_config.dart' as _i13;
+import 'user_info_public.dart' as _i13;
+import 'user_settings_config.dart' as _i14;
 export 'apple_auth_info.dart';
 export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
@@ -31,6 +32,7 @@ export 'email_reset.dart';
 export 'google_refresh_token.dart';
 export 'user_image.dart';
 export 'user_info.dart';
+export 'user_info_public.dart';
 export 'user_settings_config.dart';
 export 'client.dart'; // ignore_for_file: equal_keys_in_map
 
@@ -85,8 +87,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i12.UserInfo) {
       return _i12.UserInfo.fromJson(data, this) as T;
     }
-    if (t == _i13.UserSettingsConfig) {
-      return _i13.UserSettingsConfig.fromJson(data, this) as T;
+    if (t == _i13.UserInfoPublic) {
+      return _i13.UserInfoPublic.fromJson(data, this) as T;
+    }
+    if (t == _i14.UserSettingsConfig) {
+      return _i14.UserSettingsConfig.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i2.AppleAuthInfo?>()) {
       return (data != null ? _i2.AppleAuthInfo.fromJson(data, this) : null)
@@ -131,9 +136,13 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i12.UserInfo?>()) {
       return (data != null ? _i12.UserInfo.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i13.UserSettingsConfig?>()) {
+    if (t == _i1.getType<_i13.UserInfoPublic?>()) {
+      return (data != null ? _i13.UserInfoPublic.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i14.UserSettingsConfig?>()) {
       return (data != null
-          ? _i13.UserSettingsConfig.fromJson(data, this)
+          ? _i14.UserSettingsConfig.fromJson(data, this)
           : null) as T;
     }
     if (t == List<String>) {
@@ -178,7 +187,10 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i12.UserInfo) {
       return 'UserInfo';
     }
-    if (data is _i13.UserSettingsConfig) {
+    if (data is _i13.UserInfoPublic) {
+      return 'UserInfoPublic';
+    }
+    if (data is _i14.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
     return super.getClassNameForObject(data);
@@ -219,8 +231,11 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'UserInfo') {
       return deserialize<_i12.UserInfo>(data['data']);
     }
+    if (data['className'] == 'UserInfoPublic') {
+      return deserialize<_i13.UserInfoPublic>(data['data']);
+    }
     if (data['className'] == 'UserSettingsConfig') {
-      return deserialize<_i13.UserSettingsConfig>(data['data']);
+      return deserialize<_i14.UserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

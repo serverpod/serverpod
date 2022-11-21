@@ -39,7 +39,7 @@ class ChatMessage extends _i1.TableRow {
       sender:
           serializationManager.deserialize<int>(jsonSerialization['sender']),
       senderInfo: serializationManager
-          .deserialize<_i2.UserInfo?>(jsonSerialization['senderInfo']),
+          .deserialize<_i2.UserInfoPublic?>(jsonSerialization['senderInfo']),
       removed:
           serializationManager.deserialize<bool>(jsonSerialization['removed']),
       clientMessageId: serializationManager
@@ -61,7 +61,7 @@ class ChatMessage extends _i1.TableRow {
 
   int sender;
 
-  _i2.UserInfo? senderInfo;
+  _i2.UserInfoPublic? senderInfo;
 
   bool removed;
 
