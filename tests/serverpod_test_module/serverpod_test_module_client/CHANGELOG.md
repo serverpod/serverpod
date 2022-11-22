@@ -1,3 +1,10 @@
+## 0.9.20
+- New serialization layer thanks to the extensive work of [Maximilian Fischer](https://github.com/fischerscode). This adds compatibility with custom serialization, such as [Freezed](https://pub.dev/packages/freezed). It also adds support for nested `Map`s and `List`s.
+- Updates examples.
+- More extensive test coverage.
+- Much improved documentation.
+- __Breaking changes__: This version updates the Serverpod protocol, which is now much more streamlined ahead of the 1.0 release. Unfortunately, it makes apps built with earlier versions incompatible with the latest version of Serverpod. More detailed migration instructions here: [https://github.com/serverpod/serverpod/discussions/401](https://github.com/serverpod/serverpod/discussions/401)
+
 ## 0.9.19
 - Adds support for storing and reading binary ByteData to/from the database.
 
