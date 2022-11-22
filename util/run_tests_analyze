@@ -17,6 +17,10 @@ dart analyze --fatal-infos packages/serverpod_service_client
 dart analyze --fatal-infos packages/serverpod_shared
 dart analyze --fatal-infos packages/serverpod_flutter
 
+dart analyze --fatal-infos examples/chat/chat_server
+dart analyze --fatal-infos examples/chat/chat_client
+dart analyze --fatal-infos examples/chat/chat_flutter
+
 dart analyze --fatal-infos tests/serverpod_test_server
 dart analyze --fatal-infos tests/serverpod_test_client
 dart analyze --fatal-infos tests/serverpod_test_module/serverpod_test_module_server
