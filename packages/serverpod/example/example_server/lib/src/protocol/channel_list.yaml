@@ -1,4 +1,0 @@
-# Contains a list of chat channels.
-class: ChannelList
-fields:
-  channels: List<Channel>
