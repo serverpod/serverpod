@@ -298,8 +298,14 @@ class Constant extends Expression {
   }
 }
 
+/// Represents a database object that can Table or View
+abstract class DatabaseObject {
+  /// The name of the database object.
+  String getObjectName();
+}
+
 /// Represents a database table.
-class Table {
+class Table implements DatabaseObject {
   /// Name of the table as used in the database.
   final String tableName;
   late List<Column>? _columns;
@@ -313,8 +319,35 @@ class Table {
   }
 
   @override
+  String getObjectName() => tableName;
+
+  @override
   String toString() {
     var str = '$tableName\n';
+    for (var col in columns) {
+      str += '  ${col.columnName} (${col.type})\n';
+    }
+    return str;
+  }
+}
+
+/// Represents a database view.
+class View extends Table {
+  /// Name of the view as used in the database.
+  final String viewName;
+
+  @override
+  String getObjectName() => viewName;
+
+  /// Creates a new [View]. Typically, this is done only by generated code.
+  View({required this.viewName, List<Column>? columns})
+      : super(tableName: viewName, columns: columns) {
+    _columns = columns;
+  }
+
+  @override
+  String toString() {
+    var str = '$viewName\n';
     for (var col in columns) {
       str += '  ${col.columnName} (${col.type})\n';
     }

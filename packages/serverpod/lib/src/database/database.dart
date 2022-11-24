@@ -53,6 +53,7 @@ class Database {
     List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
+    bool viewTable = false,
     Transaction? transaction,
   }) async {
     var conn = await databaseConnection;
@@ -65,6 +66,7 @@ class Database {
       orderByList: orderByList,
       orderDescending: orderDescending,
       useCache: useCache,
+      viewTable: viewTable,
       session: session,
       transaction: transaction,
     );

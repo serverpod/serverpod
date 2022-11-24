@@ -6,9 +6,9 @@ import 'package:source_span/source_span.dart';
 
 import '../util/string_validators.dart';
 import 'class_generator_dart.dart';
+import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'code_analysis_collector.dart';
 import 'types.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
@@ -142,7 +142,7 @@ class ClassAnalyzer {
   ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'fields', 'indexes'},
+      {'class', 'table', 'fields', 'indexes', 'view'},
     )) {
       return null;
     }
@@ -174,9 +174,20 @@ class ClassAnalyzer {
       return null;
     }
 
+    //Validate only table or view name can be defined
+    var tableNameNode = documentContents.nodes['table'];
+    var viewNameNode = documentContents.nodes['view'];
+
+    if (tableNameNode != null && viewNameNode != null) {
+      collector.addError(SourceSpanException(
+        'Only one of "table" or "view" can be defined.',
+        documentContents.span,
+      ));
+      return null;
+    }
+
     // Validate table name.
     String? tableName;
-    var tableNameNode = documentContents.nodes['table'];
     if (tableNameNode != null) {
       tableName = tableNameNode.value;
       if (tableName is! String) {
@@ -190,6 +201,25 @@ class ClassAnalyzer {
         collector.addError(SourceSpanException(
           'The "table" property must be lower_snake_case.',
           tableNameNode.span,
+        ));
+        tableName = null;
+      }
+    }
+
+    // Validate view name.
+    String? viewName;
+    if (viewNameNode != null) {
+      viewName = viewNameNode.value;
+      if (viewName is! String) {
+        collector.addError(SourceSpanException(
+          'The "view" property must be a String.',
+          viewNameNode.span,
+        ));
+      }
+      if (viewName != null && !StringValidators.isValidViewName(viewName)) {
+        collector.addError(SourceSpanException(
+          'The "view" property must be lower_snake_case.',
+          viewNameNode.span,
         ));
         tableName = null;
       }
@@ -496,6 +526,7 @@ class ClassAnalyzer {
     return ClassDefinition(
       className: className,
       tableName: tableName,
+      viewName: viewName,
       fileName: outFileName,
       fields: fields,
       indexes: indexes,

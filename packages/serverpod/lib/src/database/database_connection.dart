@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:retry/retry.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -130,21 +130,22 @@ class DatabaseConnection {
     List<Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
+    bool viewTable = false,
     required Session session,
     Transaction? transaction,
   }) async {
     assert(orderByList == null || orderBy == null);
     var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.find<MyTableClass>(where: ...);
-Current type was $T''');
+          You need to specify a template type that is a subclass of TableRow.
+          E.g. myRows = await session.db.find<MyTableClass>(where: ...);
+          Current type was $T''');
     table = table!;
 
     var startTime = DateTime.now();
     where ??= Expression('TRUE');
 
-    var tableName = table.tableName;
+    var tableName = table.getObjectName();
     var query = 'SELECT * FROM $tableName WHERE $where';
     if (orderBy != null) {
       query += ' ORDER BY $orderBy';
@@ -162,7 +163,7 @@ Current type was $T''');
     if (limit != null) query += ' LIMIT $limit';
     if (offset != null) query += ' OFFSET $offset';
 
-    List<TableRow?> list = <TableRow>[];
+    List<TableRow?> listTableRow = <TableRow>[];
     try {
       var context = transaction != null
           ? transaction.postgresContext
@@ -175,15 +176,19 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        if (viewTable) {
+          listTableRow.add(_formatTableRow<T>(rawRow['']));
+        } else {
+          listTableRow.add(_formatTableRow<T>(rawRow[tableName]));
+        }
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
       rethrow;
     }
 
-    _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list.cast<T>();
+    _logQuery(session, query, startTime, numRowsAffected: listTableRow.length);
+    return listTableRow.cast<T>();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -215,8 +220,7 @@ Current type was $T''');
   }
 
   //TODO: is this still needed?
-  T? _formatTableRow<T extends TableRow>(
-      String tableName, Map<String, dynamic>? rawRow) {
+  T? _formatTableRow<T extends TableRow>(Map<String, dynamic>? rawRow) {
     var data = <String, dynamic>{};
 
     for (var columnName in rawRow!.keys) {
@@ -258,7 +262,7 @@ Current type was $T''');
 
     where ??= Expression('TRUE');
 
-    var tableName = table.tableName;
+    var tableName = table.getObjectName();
     var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
     if (limit != null) query += ' LIMIT $limit';
 
@@ -398,7 +402,7 @@ Current type was $T''');
 
     var startTime = DateTime.now();
 
-    var tableName = table.tableName;
+    var tableName = table.getObjectName();
 
     var query = 'DELETE FROM $tableName WHERE $where';
 
@@ -431,7 +435,7 @@ Current type was $T''');
 
     var startTime = DateTime.now();
 
-    var tableName = table.tableName;
+    var tableName = table.getObjectName();
     var query = 'DELETE FROM $tableName WHERE $where RETURNING *';
 
     List<TableRow?> list = <TableRow>[];
@@ -447,7 +451,7 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        list.add(_formatTableRow<T>(rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);

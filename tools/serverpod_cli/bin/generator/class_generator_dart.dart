@@ -38,8 +38,11 @@ class ClassGeneratorDart extends ClassGenerator {
   // Handle ordinary classes
   Library _generateClassFile(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
+    String? viewName = classDefinition.viewName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
+
+    bool isViewTable = viewName != null ? true : false;
 
     var library = Library(
       (library) {
@@ -65,6 +68,26 @@ class ClassGeneratorDart extends ClassGenerator {
                 ..returns = refer('String')
                 ..lambda = true
                 ..body = Code('\'$tableName\''),
+            ));
+          } else if (serverCode && isViewTable) {
+            classBuilder.extend =
+                refer('ViewRow', 'package:serverpod/serverpod.dart');
+
+            classBuilder.fields.add(Field((f) => f
+              ..static = true
+              ..modifier = FieldModifier.final$
+              ..name = 't'
+              ..assignment = refer('${className}Table').call([]).code));
+
+            // add tableName getter
+            classBuilder.methods.add(Method(
+              (m) => m
+                ..name = 'viewName'
+                ..annotations.add(refer('override'))
+                ..type = MethodType.getter
+                ..returns = refer('String')
+                ..lambda = true
+                ..body = Code('\'$viewName\''),
             ));
           } else {
             classBuilder.extend =
@@ -162,7 +185,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
           // Serialization for database and everything
           if (serverCode) {
-            if (tableName != null) {
+            if (tableName != null || isViewTable) {
               classBuilder.methods.add(Method(
                 (m) {
                   m.returns = refer('Map<String,dynamic>');
@@ -197,7 +220,7 @@ class ClassGeneratorDart extends ClassGenerator {
               },
             ));
 
-            if (tableName != null) {
+            if (tableName != null || isViewTable) {
               // Column setter
               classBuilder.methods.add(Method((m) => m
                 ..annotations.add(refer('override'))
@@ -310,6 +333,10 @@ class ClassGeneratorDart extends ClassGenerator {
                                   .call([refer(className).property('t')]),
                               refer('null')),
                       'limit': refer('limit'),
+                      // 'viewTable': const CodeExpression(Code('')),
+                      'viewTable': isViewTable
+                          ? const CodeExpression(Code('true'))
+                          : const CodeExpression(Code('false')),
                       'offset': refer('offset'),
                       'orderBy': refer('orderBy'),
                       'orderByList': refer('orderByList'),
@@ -432,165 +459,172 @@ class ClassGeneratorDart extends ClassGenerator {
                     .statement));
 
               // delete
-              classBuilder.methods.add(Method((m) => m
-                ..static = true
-                ..name = 'delete'
-                ..returns = TypeReference(
-                  (r) => r
-                    ..symbol = 'Future'
-                    ..types.add(refer('int')),
-                )
-                ..requiredParameters.addAll([
-                  Parameter((p) => p
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart')
-                    ..name = 'session'),
-                ])
-                ..optionalParameters.addAll([
-                  Parameter((p) => p
-                    ..required = true
-                    ..type = refer('${className}ExpressionBuilder')
-                    ..name = 'where'
-                    ..named = true),
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = 'Transaction'
-                      ..url = 'package:serverpod/serverpod.dart')
-                    ..name = 'transaction'
-                    ..named = true),
-                ])
-                ..modifier = MethodModifier.async
-                ..body = refer('session')
-                    .property('db')
-                    .property('delete')
-                    .call([], {
-                      'where':
-                          refer('where').call([refer(className).property('t')]),
-                      'transaction': refer('transaction'),
-                    }, [
-                      refer(className)
-                    ])
-                    .returned
-                    .statement));
+              if (!isViewTable) {
+                classBuilder.methods.add(Method((m) => m
+                  ..static = true
+                  ..name = 'delete'
+                  ..returns = TypeReference(
+                    (r) => r
+                      ..symbol = 'Future'
+                      ..types.add(refer('int')),
+                  )
+                  ..requiredParameters.addAll([
+                    Parameter((p) => p
+                      ..type =
+                          refer('Session', 'package:serverpod/serverpod.dart')
+                      ..name = 'session'),
+                  ])
+                  ..optionalParameters.addAll([
+                    Parameter((p) => p
+                      ..required = true
+                      ..type = refer('${className}ExpressionBuilder')
+                      ..name = 'where'
+                      ..named = true),
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = 'Transaction'
+                        ..url = 'package:serverpod/serverpod.dart')
+                      ..name = 'transaction'
+                      ..named = true),
+                  ])
+                  ..modifier = MethodModifier.async
+                  ..body = refer('session')
+                      .property('db')
+                      .property('delete')
+                      .call([], {
+                        'where': refer('where')
+                            .call([refer(className).property('t')]),
+                        'transaction': refer('transaction'),
+                      }, [
+                        refer(className)
+                      ])
+                      .returned
+                      .statement));
+              }
 
               // deleteRow
-              classBuilder.methods.add(Method((m) => m
-                ..static = true
-                ..name = 'deleteRow'
-                ..returns = TypeReference(
-                  (r) => r
-                    ..symbol = 'Future'
-                    ..types.add(refer('bool')),
-                )
-                ..requiredParameters.addAll([
-                  Parameter((p) => p
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart')
-                    ..name = 'session'),
-                  Parameter((p) => p
-                    ..type = refer(className)
-                    ..name = 'row'),
-                ])
-                ..optionalParameters.addAll([
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = 'Transaction'
-                      ..url = 'package:serverpod/serverpod.dart')
-                    ..name = 'transaction'
-                    ..named = true),
-                ])
-                ..modifier = MethodModifier.async
-                ..body = refer('session')
-                    .property('db')
-                    .property('deleteRow')
-                    .call([
-                      refer('row')
-                    ], {
-                      'transaction': refer('transaction'),
-                    })
-                    .returned
-                    .statement));
+              if (!isViewTable) {
+                classBuilder.methods.add(Method((m) => m
+                  ..static = true
+                  ..name = 'deleteRow'
+                  ..returns = TypeReference(
+                    (r) => r
+                      ..symbol = 'Future'
+                      ..types.add(refer('bool')),
+                  )
+                  ..requiredParameters.addAll([
+                    Parameter((p) => p
+                      ..type =
+                          refer('Session', 'package:serverpod/serverpod.dart')
+                      ..name = 'session'),
+                    Parameter((p) => p
+                      ..type = refer(className)
+                      ..name = 'row'),
+                  ])
+                  ..optionalParameters.addAll([
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = 'Transaction'
+                        ..url = 'package:serverpod/serverpod.dart')
+                      ..name = 'transaction'
+                      ..named = true),
+                  ])
+                  ..modifier = MethodModifier.async
+                  ..body = refer('session')
+                      .property('db')
+                      .property('deleteRow')
+                      .call([
+                        refer('row')
+                      ], {
+                        'transaction': refer('transaction'),
+                      })
+                      .returned
+                      .statement));
+              }
 
               // update
-              classBuilder.methods.add(Method((m) => m
-                ..static = true
-                ..name = 'update'
-                ..returns = TypeReference(
-                  (r) => r
-                    ..symbol = 'Future'
-                    ..types.add(refer('bool')),
-                )
-                ..requiredParameters.addAll([
-                  Parameter((p) => p
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart')
-                    ..name = 'session'),
-                  Parameter((p) => p
-                    ..type = refer(className)
-                    ..name = 'row'),
-                ])
-                ..optionalParameters.addAll([
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = 'Transaction'
-                      ..url = 'package:serverpod/serverpod.dart')
-                    ..name = 'transaction'
-                    ..named = true),
-                ])
-                ..modifier = MethodModifier.async
-                ..body = refer('session')
-                    .property('db')
-                    .property('update')
-                    .call([
-                      refer('row')
-                    ], {
-                      'transaction': refer('transaction'),
-                    })
-                    .returned
-                    .statement));
+              if (!isViewTable) {
+                classBuilder.methods.add(Method((m) => m
+                  ..static = true
+                  ..name = 'update'
+                  ..returns = TypeReference(
+                    (r) => r
+                      ..symbol = 'Future'
+                      ..types.add(refer('bool')),
+                  )
+                  ..requiredParameters.addAll([
+                    Parameter((p) => p
+                      ..type =
+                          refer('Session', 'package:serverpod/serverpod.dart')
+                      ..name = 'session'),
+                    Parameter((p) => p
+                      ..type = refer(className)
+                      ..name = 'row'),
+                  ])
+                  ..optionalParameters.addAll([
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = 'Transaction'
+                        ..url = 'package:serverpod/serverpod.dart')
+                      ..name = 'transaction'
+                      ..named = true),
+                  ])
+                  ..modifier = MethodModifier.async
+                  ..body = refer('session')
+                      .property('db')
+                      .property('update')
+                      .call([
+                        refer('row')
+                      ], {
+                        'transaction': refer('transaction'),
+                      })
+                      .returned
+                      .statement));
+              }
 
               // insert
-              classBuilder.methods.add(Method((m) => m
-                ..static = true
-                ..name = 'insert'
-                ..returns = TypeReference(
-                  (r) => r
-                    ..symbol = 'Future'
-                    ..types.add(refer('void')),
-                )
-                ..requiredParameters.addAll([
-                  Parameter((p) => p
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart')
-                    ..name = 'session'),
-                  Parameter((p) => p
-                    ..type = refer(className)
-                    ..name = 'row'),
-                ])
-                ..optionalParameters.addAll([
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = 'Transaction'
-                      ..url = 'package:serverpod/serverpod.dart')
-                    ..name = 'transaction'
-                    ..named = true),
-                ])
-                ..modifier = MethodModifier.async
-                ..body = refer('session')
-                    .property('db')
-                    .property('insert')
-                    .call([
-                      refer('row')
-                    ], {
-                      'transaction': refer('transaction'),
-                    })
-                    .returned
-                    .statement));
-
+              if (!isViewTable) {
+                classBuilder.methods.add(Method((m) => m
+                  ..static = true
+                  ..name = 'insert'
+                  ..returns = TypeReference(
+                    (r) => r
+                      ..symbol = 'Future'
+                      ..types.add(refer('void')),
+                  )
+                  ..requiredParameters.addAll([
+                    Parameter((p) => p
+                      ..type =
+                          refer('Session', 'package:serverpod/serverpod.dart')
+                      ..name = 'session'),
+                    Parameter((p) => p
+                      ..type = refer(className)
+                      ..name = 'row'),
+                  ])
+                  ..optionalParameters.addAll([
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = 'Transaction'
+                        ..url = 'package:serverpod/serverpod.dart')
+                      ..name = 'transaction'
+                      ..named = true),
+                  ])
+                  ..modifier = MethodModifier.async
+                  ..body = refer('session')
+                      .property('db')
+                      .property('insert')
+                      .call([
+                        refer('row')
+                      ], {
+                        'transaction': refer('transaction'),
+                      })
+                      .returned
+                      .statement));
+              }
               //count
               classBuilder.methods.add(Method((m) => m
                 ..static = true
@@ -655,7 +689,7 @@ class ClassGeneratorDart extends ClassGenerator {
           }
         }));
 
-        if (serverCode && tableName != null) {
+        if (serverCode && (tableName != null || isViewTable)) {
           // Expression builder
           library.body.add(FunctionType(
             (f) {
@@ -667,11 +701,24 @@ class ClassGeneratorDart extends ClassGenerator {
           // Table class definition
           library.body.add(Class((c) {
             c.name = '${className}Table';
-            c.extend = refer('Table', serverpodUrl(serverCode));
-            c.constructors.add(Constructor((constructor) {
-              constructor.initializers.add(refer('super')
-                  .call([], {'tableName': literalString(tableName)}).code);
-            }));
+
+            if (tableName != null) {
+              c.extend = refer('Table', serverpodUrl(serverCode));
+            } else {
+              c.extend = refer('View', serverpodUrl(serverCode));
+            }
+
+            if (tableName != null) {
+              c.constructors.add(Constructor((constructor) {
+                constructor.initializers.add(refer('super')
+                    .call([], {'tableName': literalString(tableName)}).code);
+              }));
+            } else if (isViewTable) {
+              c.constructors.add(Constructor((constructor) {
+                constructor.initializers.add(refer('super')
+                    .call([], {'viewName': literalString(viewName)}).code);
+              }));
+            }
 
             // Column descriptions
             for (var field in fields) {
@@ -970,8 +1017,10 @@ class ClassGeneratorDart extends ClassGenerator {
                 Block.of([
                   const Code('switch(t){'),
                   for (var classInfo in classInfos)
-                    if (classInfo is ClassDefinition &&
-                        classInfo.tableName != null)
+                    if ((classInfo is ClassDefinition &&
+                            classInfo.tableName != null) ||
+                        (classInfo is ClassDefinition &&
+                            classInfo.viewName != null))
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}:'
                           'return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}.t;'),
