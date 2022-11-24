@@ -57,6 +57,12 @@ basicDatabase:
   - updateSimpleDataRow:
   - storeObjectWithObject:
   - getObjectWithObject:
+  - createSampleView:
+  - createSampleDataForView:
+  - deleteAllSampleDataForView:
+  - deleteChildDataWithId:
+  - readSampleView:
+  - countSampleView:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:

@@ -12,6 +12,12 @@ Future<void> setupTestData(Client client) async {
   await client.basicDatabase.createSimpleTestData(100);
 }
 
+Future<void> setupView(Client client) async {
+  await client.basicDatabase.deleteAllSampleDataForView();
+  await client.basicDatabase.createSampleDataForView();
+  await client.basicDatabase.createSampleView();
+}
+
 ByteData createByteData() {
   var ints = Uint8List(256);
   for (var i = 0; i < 256; i++) {
@@ -1058,6 +1064,19 @@ void main() {
       expect(result, isNotNull);
       expect(result!.normal, equals('test normal'));
       expect(result.api, isNull);
+    });
+
+    test('View Test', () async {
+      await setupView(client);
+
+      var result = await client.basicDatabase.countSampleView();
+      expect(result, isNotNull);
+      expect(result, equals(10));
+
+      // Delete 1 data from child and verify
+      await client.basicDatabase.deleteChildDataWithId(1);
+      var countAfterDelete = await client.basicDatabase.countSampleView();
+      expect(countAfterDelete, equals(9));
     });
   });
 

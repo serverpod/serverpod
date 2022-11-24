@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
@@ -125,5 +127,71 @@ class BasicDatabase extends Endpoint {
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {
     return await ObjectWithObject.findById(session, id);
+  }
+
+  Future<void> createSampleView(Session session) async {
+    var query = '''
+    CREATE OR REPLACE VIEW sample_view
+    AS SELECT cd.description, pd1.name AS "createdBy", pd2.name AS "modifiedBy"
+       FROM child_data cd JOIN parent_data pd1 
+       ON cd."createdBy" = pd1.id
+       LEFT JOIN parent_data pd2 
+       ON cd."modifiedBy" = pd2.id;
+    ''';
+    await session.db.query(query);
+  }
+
+  Future<void> createSampleDataForView(Session session) async {
+    var resetParentSequenceQuery = '''
+    ALTER SEQUENCE parent_data_id_seq RESTART WITH 1;
+    ''';
+    var resetChildSequenceQuery = '''
+    ALTER SEQUENCE child_data_id_seq RESTART WITH 1;
+    ''';
+    await session.db.query(resetParentSequenceQuery);
+    await session.db.query(resetChildSequenceQuery);
+
+    await ParentData.insert(
+        session,
+        ParentData(
+          name: 'John Doe',
+        ));
+    await ParentData.insert(
+        session,
+        ParentData(
+          name: 'Jane Doe',
+        ));
+    await ParentData.insert(
+        session,
+        ParentData(
+          name: 'Richard Roe',
+        ));
+
+    for (var i = 0; i < 10; i++) {
+      await ChildData.insert(
+          session,
+          ChildData(
+              description: '$i',
+              createdBy: Random().nextInt(3) + 1,
+              modifiedBy: Random().nextInt(3) + 1));
+    }
+  }
+
+  Future<void> deleteAllSampleDataForView(Session session) async {
+    await ChildData.delete(session, where: (t) => Constant(true));
+    await ParentData.delete(session, where: (t) => Constant(true));
+  }
+
+  Future<void> deleteChildDataWithId(Session session, int id) async {
+    await ChildData.delete(session, where: (t) => t.id.equals(id));
+  }
+
+  Future<SampleViewList?> readSampleView(Session session) async {
+    var result = await SampleView.find(session);
+    return SampleViewList(rows: result);
+  }
+
+  Future<int?> countSampleView(Session session) async {
+    return await SampleView.count(session);
   }
 }

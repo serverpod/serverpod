@@ -1,0 +1,6 @@
+class: SampleView
+view: sample_view
+fields:
+  description: String
+  createdBy: String
+  modifiedBy: String

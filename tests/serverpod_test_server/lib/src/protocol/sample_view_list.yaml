@@ -1,0 +1,3 @@
+class: SampleViewList
+fields:
+  rows: List<SampleView>

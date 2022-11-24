@@ -1,0 +1,4 @@
+class: ParentData
+table: parent_data
+fields:
+  name: String

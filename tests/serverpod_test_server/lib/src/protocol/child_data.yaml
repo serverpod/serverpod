@@ -1,0 +1,6 @@
+class: ChildData
+table: child_data
+fields:
+  description: String
+  createdBy: int, parent=parent_data
+  modifiedBy: int?, parent=parent_data

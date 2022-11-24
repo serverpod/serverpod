@@ -48,6 +48,44 @@ ALTER TABLE ONLY "object_with_object"
 
 
 --
+-- Class ParentData as table parent_data
+--
+
+CREATE TABLE "parent_data" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "parent_data"
+  ADD CONSTRAINT parent_data_pkey PRIMARY KEY (id);
+
+
+--
+-- Class ChildData as table child_data
+--
+
+CREATE TABLE "child_data" (
+  "id" serial,
+  "description" text NOT NULL,
+  "createdBy" integer NOT NULL,
+  "modifiedBy" integer
+);
+
+ALTER TABLE ONLY "child_data"
+  ADD CONSTRAINT child_data_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY "child_data"
+  ADD CONSTRAINT child_data_fk_0
+    FOREIGN KEY("createdBy")
+      REFERENCES parent_data(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "child_data"
+  ADD CONSTRAINT child_data_fk_1
+    FOREIGN KEY("modifiedBy")
+      REFERENCES parent_data(id)
+        ON DELETE CASCADE;
+
+--
 -- Class SimpleData as table simple_data
 --
 
