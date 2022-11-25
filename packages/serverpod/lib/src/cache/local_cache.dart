@@ -25,7 +25,7 @@ class LocalCache extends Cache {
     var entry = _CacheEntry(
       key: key,
       group: group,
-      serializedObject: object.allToJson(),
+      serializedObject: SerializationManager.encode(object),
       lifetime: lifetime,
     );
 
@@ -89,7 +89,7 @@ class LocalCache extends Cache {
       return null;
     }
 
-    return serializationManager.deserialize<T>(entry.serializedObject, t);
+    return serializationManager.decode<T>(entry.serializedObject);
   }
 
   @override
@@ -161,7 +161,7 @@ class LocalCache extends Cache {
 class _CacheEntry {
   final String key;
   final String? group;
-  final dynamic serializedObject;
+  final String serializedObject;
   final DateTime creationTime;
   final Duration? lifetime;
   DateTime? get expirationTime =>

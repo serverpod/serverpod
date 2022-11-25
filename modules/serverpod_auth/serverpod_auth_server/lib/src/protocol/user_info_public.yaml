@@ -1,0 +1,7 @@
+class: UserInfoPublic
+fields:
+  id: int?
+  userName: String
+  fullName: String?
+  created: DateTime
+  imageUrl: String?

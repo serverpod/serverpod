@@ -16,8 +16,8 @@ echo "serverpod"
 cd $BASE/packages/serverpod
 serverpod generate
 
-echo "serverpod/example/example_server"
-cd $BASE/packages/serverpod/example/example_server
+echo "examples/chat/chat_server"
+cd $BASE/examples/chat/chat_server
 serverpod generate
 
 # Templates

@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:14.1
+    ports:
+      - '8090:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: chat
+      POSTGRES_PASSWORD: "postgres_password"
+    volumes:
+      - chat_data:/var/lib/postgresql/data
+volumes:
+  chat_data:

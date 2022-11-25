@@ -1,0 +1,9 @@
+type: server
+
+client_package_path: ../chat_client
+
+modules:
+  serverpod_auth:
+    nickname: auth
+  serverpod_chat:
+    nickname: chat

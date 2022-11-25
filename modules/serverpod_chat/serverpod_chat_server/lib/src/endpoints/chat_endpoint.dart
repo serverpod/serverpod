@@ -41,7 +41,7 @@ class ChatEndpoint extends Endpoint {
     var chatSession = getUserObject(session) as _ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
-      // TODO: Check if unauthenticated users is ok
+      // Check if unauthenticated users is ok
       if (!ChatConfig.current.allowUnauthenticatedUsers &&
           (await session.auth.authenticatedUserId) == null) {
         await sendStreamMessage(
@@ -125,7 +125,7 @@ class ChatEndpoint extends Endpoint {
         message: message.message,
         time: DateTime.now(),
         sender: chatSession.userInfo!.id!,
-        senderInfo: chatSession.userInfo,
+        senderInfo: chatSession.userInfo?.toPublic(),
         removed: false,
         clientMessageId: message.clientMessageId,
         sent: true,
@@ -139,7 +139,7 @@ class ChatEndpoint extends Endpoint {
       session.messages.postMessage(
         _channelPrefix + message.channel,
         chatMessage,
-        global: !ChatConfig.current.postMessagesLocallyOnly,
+        global: ChatConfig.current.postMessagesGlobally,
       );
     } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to
@@ -214,7 +214,8 @@ class ChatEndpoint extends Endpoint {
   }
 
   Future<void> _formatChatMessage(Session session, ChatMessage message) async {
-    message.senderInfo = await Users.findUserByUserId(session, message.sender);
+    message.senderInfo =
+        (await Users.findUserByUserId(session, message.sender))?.toPublic();
   }
 
   Future<int> _getLastReadMessage(

@@ -24,14 +24,14 @@ class ChatConfig {
   /// Allow users to chat even though they aren't signed in.
   final bool allowUnauthenticatedUsers;
 
-  /// Post messages locally in the server only (i.e. do not use Redis).
-  final bool postMessagesLocallyOnly;
+  /// Post messages globally in the server cluster (i.e. use Redis).
+  final bool postMessagesGlobally;
 
   /// Create a new [ChatConfig].
   ChatConfig({
     ChatChannelAccessVerificationCallback? channelAccessVerification,
     this.allowUnauthenticatedUsers = false,
-    this.postMessagesLocallyOnly = false,
+    this.postMessagesGlobally = false,
   }) {
     this.channelAccessVerification =
         channelAccessVerification ?? (session, userId, channel) async => true;
