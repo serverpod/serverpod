@@ -1,28 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-class AuthenticationResponse extends SerializableEntity {
-  @override
-  String get className => 'serverpod_auth_server.AuthenticationResponse';
-
-  late bool success;
-  String? key;
-  int? keyId;
-  UserInfo? userInfo;
-  AuthenticationFailReason? failReason;
-
+class AuthenticationResponse extends _i1.SerializableEntity {
   AuthenticationResponse({
     required this.success,
     this.key,
@@ -31,38 +18,52 @@ class AuthenticationResponse extends SerializableEntity {
     this.failReason,
   });
 
-  AuthenticationResponse.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    success = _data['success']!;
-    key = _data['key'];
-    keyId = _data['keyId'];
-    userInfo = _data['userInfo'] != null
-        ? UserInfo?.fromSerialization(_data['userInfo'])
-        : null;
-    failReason = _data['failReason'] != null
-        ? AuthenticationFailReason?.fromSerialization(_data['failReason'])
-        : null;
+  factory AuthenticationResponse.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return AuthenticationResponse(
+      success:
+          serializationManager.deserialize<bool>(jsonSerialization['success']),
+      key: serializationManager.deserialize<String?>(jsonSerialization['key']),
+      keyId: serializationManager.deserialize<int?>(jsonSerialization['keyId']),
+      userInfo: serializationManager
+          .deserialize<_i2.UserInfo?>(jsonSerialization['userInfo']),
+      failReason:
+          serializationManager.deserialize<_i2.AuthenticationFailReason?>(
+              jsonSerialization['failReason']),
+    );
   }
 
+  bool success;
+
+  String? key;
+
+  int? keyId;
+
+  _i2.UserInfo? userInfo;
+
+  _i2.AuthenticationFailReason? failReason;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'success': success,
       'key': key,
       'keyId': keyId,
-      'userInfo': userInfo?.serialize(),
-      'failReason': failReason?.serialize(),
-    });
+      'userInfo': userInfo,
+      'failReason': failReason,
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'success': success,
       'key': key,
       'keyId': keyId,
-      'userInfo': userInfo?.serialize(),
-      'failReason': failReason?.serialize(),
-    });
+      'userInfo': userInfo,
+      'failReason': failReason,
+    };
   }
 }

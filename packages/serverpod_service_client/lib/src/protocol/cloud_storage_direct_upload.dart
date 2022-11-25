@@ -1,28 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class CloudStorageDirectUploadEntry extends SerializableEntity {
-  @override
-  String get className => 'CloudStorageDirectUploadEntry';
-
-  int? id;
-  late String storageId;
-  late String path;
-  late DateTime expiration;
-  late String authKey;
-
+class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   CloudStorageDirectUploadEntry({
     this.id,
     required this.storageId,
@@ -31,24 +17,40 @@ class CloudStorageDirectUploadEntry extends SerializableEntity {
     required this.authKey,
   });
 
-  CloudStorageDirectUploadEntry.fromSerialization(
-      Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    storageId = _data['storageId']!;
-    path = _data['path']!;
-    expiration = DateTime.tryParse(_data['expiration'])!;
-    authKey = _data['authKey']!;
+  factory CloudStorageDirectUploadEntry.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return CloudStorageDirectUploadEntry(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      storageId: serializationManager
+          .deserialize<String>(jsonSerialization['storageId']),
+      path: serializationManager.deserialize<String>(jsonSerialization['path']),
+      expiration: serializationManager
+          .deserialize<DateTime>(jsonSerialization['expiration']),
+      authKey: serializationManager
+          .deserialize<String>(jsonSerialization['authKey']),
+    );
   }
 
+  int? id;
+
+  String storageId;
+
+  String path;
+
+  DateTime expiration;
+
+  String authKey;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration.toUtc().toIso8601String(),
+      'expiration': expiration,
       'authKey': authKey,
-    });
+    };
   }
 }

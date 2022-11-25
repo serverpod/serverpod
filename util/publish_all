@@ -39,35 +39,6 @@ serverpod generate-pubspecs --version $VERSION --mode production
 
 echo "Publish packages"
 
-# cd $BASE/packages/serverpod_serialization
-# dart pub publish
-#
-# cd $BASE/packages/serverpod_client
-# dart pub publish
-#
-# cd $BASE/packages/serverpod_service_client
-# dart pub publish
-#
-# cd $BASE/packages/serverpod_shared
-# dart pub publish
-#
-# cd $BASE/tests/serverpod_test_module/serverpod_test_module_client
-# dart pub publish
-#
-# cd $BASE/tests/serverpod_test_client
-# dart pub publish
-#
-# cd $BASE/packages/serverpod
-# dart pub publish
-#
-# cd $BASE/packages/serverpod_relic
-# dart pub publish
-#
-# cd $BASE/templates/serverpod_templates
-# dart pub publish
-#
-# cd $BASE/tools/serverpod_cli
-# dart pub publish
 PCOUNT=0
 while read PACKAGE <&3; do
   if (($PCOUNT >= $PCOUNT_START));

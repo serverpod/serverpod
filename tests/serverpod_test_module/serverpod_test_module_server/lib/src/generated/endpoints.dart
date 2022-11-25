@@ -1,68 +1,80 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unnecessary_import
-// ignore_for_file: unused_import
+// ignore_for_file: implementation_imports
 
-import 'dart:typed_data' as typed_data;
-import 'package:serverpod/serverpod.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../endpoints/module_endpoint.dart' as _i2;
+import '../endpoints/streaming.dart' as _i3;
+import 'package:serverpod_test_module_server/src/generated/module_class.dart'
+    as _i4;
 
-import 'protocol.dart';
-
-import '../endpoints/module_endpoint.dart';
-import '../endpoints/streaming.dart';
-
-class Endpoints extends EndpointDispatch {
+class Endpoints extends _i1.EndpointDispatch {
   @override
-  void initializeEndpoints(Server server) {
-    var endpoints = <String, Endpoint>{
-      'module': ModuleEndpoint()
-        ..initialize(server, 'module', 'serverpod_test_module'),
-      'streaming': StreamingEndpoint()
-        ..initialize(server, 'streaming', 'serverpod_test_module'),
+  void initializeEndpoints(_i1.Server server) {
+    var endpoints = <String, _i1.Endpoint>{
+      'module': _i2.ModuleEndpoint()
+        ..initialize(
+          server,
+          'module',
+          'serverpod_test_module',
+        ),
+      'streaming': _i3.StreamingEndpoint()
+        ..initialize(
+          server,
+          'streaming',
+          'serverpod_test_module',
+        ),
     };
-
-    connectors['module'] = EndpointConnector(
+    connectors['module'] = _i1.EndpointConnector(
       name: 'module',
       endpoint: endpoints['module']!,
       methodConnectors: {
-        'hello': MethodConnector(
+        'hello': _i1.MethodConnector(
           name: 'hello',
           params: {
-            'name': ParameterDescription(
-                name: 'name', type: String, nullable: false),
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['module'] as ModuleEndpoint).hello(
-              session,
-              params['name'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['module'] as _i2.ModuleEndpoint).hello(
+            session,
+            params['name'],
+          ),
         ),
-        'modifyModuleObject': MethodConnector(
+        'modifyModuleObject': _i1.MethodConnector(
           name: 'modifyModuleObject',
           params: {
-            'object': ParameterDescription(
-                name: 'object', type: ModuleClass, nullable: false),
+            'object': _i1.ParameterDescription(
+              name: 'object',
+              type: _i1.getType<_i4.ModuleClass>(),
+              nullable: false,
+            )
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return (endpoints['module'] as ModuleEndpoint).modifyModuleObject(
-              session,
-              params['object'],
-            );
-          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['module'] as _i2.ModuleEndpoint).modifyModuleObject(
+            session,
+            params['object'],
+          ),
         ),
       },
     );
-
-    connectors['streaming'] = EndpointConnector(
+    connectors['streaming'] = _i1.EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
       methodConnectors: {},
     );
   }
-
-  @override
-  void registerModules(Serverpod pod) {}
 }

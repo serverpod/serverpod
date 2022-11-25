@@ -12,16 +12,16 @@ echo "serverpod"
 cd $BASE/packages/serverpod
 dart pub get
 
-echo "serverpod/example/example_client"
-cd $BASE/packages/serverpod/example/example_client
+echo "examples/chat/chat_client"
+cd $BASE/examples/chat/chat_client
 dart pub get
 
-echo "serverpod/example/example_flutter"
-cd $BASE/packages/serverpod/example/example_flutter
+echo "examples/chat/chat_flutter"
+cd $BASE/examples/chat/chat_flutter
 dart pub get
 
-echo "serverpod/example/example_server"
-cd $BASE/packages/serverpod/example/example_server
+echo "examples/chat/chat_server"
+cd $BASE/examples/chat/chat_server
 dart pub get
 
 echo "\nserverpod_client"

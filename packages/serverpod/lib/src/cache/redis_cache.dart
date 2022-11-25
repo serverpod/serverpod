@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:serverpod/src/cache/global_cache.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -30,7 +28,18 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  Future<SerializableEntity?> get(String key) async {
+  Future<bool> containsKey(String key) async {
+    assert(
+      redisController != null,
+      'Redis needs to be enabled to use this method',
+    );
+    var data = await redisController!.get(key);
+
+    return data != null;
+  }
+
+  @override
+  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
     assert(
       redisController != null,
       'Redis needs to be enabled to use this method',
@@ -40,9 +49,7 @@ class RedisCache extends GlobalCache {
       return null;
     }
 
-    Map<String, dynamic>? serialization =
-        jsonDecode(data).cast<String, dynamic>();
-    return serializationManager.createEntityFromSerialization(serialization);
+    return serializationManager.decode<T>(data, t);
   }
 
   @override
@@ -81,7 +88,7 @@ class RedisCache extends GlobalCache {
       'Redis needs to be enabled to use this method',
     );
 
-    var data = jsonEncode(object.serializeAll());
+    var data = SerializationManager.encode(object);
     await redisController!.set(key, data, lifetime: lifetime);
   }
 }

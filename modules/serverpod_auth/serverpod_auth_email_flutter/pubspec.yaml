@@ -4,7 +4,7 @@ publish_to: none
 
 name: serverpod_auth_email_flutter
 description: Sign in with email for the Serverpod auth module.
-version: 0.9.19
+version: 0.9.20
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -14,10 +14,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  email_validator: ^2.0.1
-  serverpod_auth_client: #^0.9.19
+  email_validator: ^2.1.17
+  serverpod_auth_client: #^0.9.20
     path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter: #^0.9.19
+  serverpod_auth_shared_flutter: #^0.9.20
     path: ../serverpod_auth_shared_flutter
 
 dev_dependencies:

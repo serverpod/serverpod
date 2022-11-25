@@ -1,40 +1,30 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod_client/serverpod_client.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'protocol.dart' as _i2;
 
-class SessionLogResult extends SerializableEntity {
-  @override
-  String get className => 'SessionLogResult';
+class SessionLogResult extends _i1.SerializableEntity {
+  SessionLogResult({required this.sessionLog});
 
-  late List<SessionLogInfo> sessionLog;
-
-  SessionLogResult({
-    required this.sessionLog,
-  });
-
-  SessionLogResult.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    sessionLog = _data['sessionLog']!
-        .map<SessionLogInfo>((a) => SessionLogInfo.fromSerialization(a))
-        ?.toList();
+  factory SessionLogResult.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return SessionLogResult(
+        sessionLog: serializationManager.deserialize<List<_i2.SessionLogInfo>>(
+            jsonSerialization['sessionLog']));
   }
 
+  List<_i2.SessionLogInfo> sessionLog;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
-      'sessionLog':
-          sessionLog.map((SessionLogInfo a) => a.serialize()).toList(),
-    });
+  Map<String, dynamic> toJson() {
+    return {'sessionLog': sessionLog};
   }
 }

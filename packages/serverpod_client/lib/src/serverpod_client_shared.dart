@@ -4,10 +4,6 @@ import 'dart:convert';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-/// Method called when errors occur in communication with the server.
-typedef ServerpodClientErrorCallback = void Function(
-    dynamic e, StackTrace stackTrace);
-
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
@@ -76,11 +72,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
-  /// Optional error handler. If the errorHandler is used, exceptions will not
-  /// be thrown when a call to the server fails, instead the errorHandler will
-  /// be called.
-  ServerpodClientErrorCallback? errorHandler;
-
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
@@ -130,7 +121,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic context,
-    this.errorHandler,
     this.authenticationKeyManager,
     this.logFailedCalls = true,
     this.streamingConnectionTimeout = const Duration(seconds: 5),
@@ -139,12 +129,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
         'host must include protocol, eg: https://example.com/');
-  }
-
-  /// Registers a module with the client. This is typically done from
-  /// generated code.
-  void registerModuleProtocol(SerializationManager protocol) {
-    serializationManager.merge(protocol);
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this
@@ -161,9 +145,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
 
     String endpoint = data['endpoint'];
-    Map objectData = data['object'];
-    var entity = serializationManager
-        .createEntityFromSerialization(objectData.cast<String, dynamic>());
+    Map<String, dynamic> objectData = data['object'];
+    var entity = serializationManager.deserializeByClassName(objectData);
     if (entity == null) {
       throw const ServerpodClientException('serializable entity is null', 0);
     }
@@ -186,13 +169,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   Future<void> _sendSerializableObjectToStream(
       String endpoint, SerializableEntity message) async {
-    var objectData = message.serialize();
     var data = {
       'endpoint': endpoint,
-      'object': objectData,
+      'object': {
+        'className': serializationManager.getClassNameForObject(message),
+        'data': message,
+      },
     };
 
-    var serialization = jsonEncode(data);
+    var serialization = SerializationManager.encode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -201,7 +186,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map<String, dynamic> args = const {},
   ]) async {
     var data = {'command': command, 'args': args};
-    var serialization = jsonEncode(data);
+    var serialization = SerializationManager.encode(data);
     await _sendRawWebSocketMessage(serialization);
   }
 
@@ -381,9 +366,9 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
   ModuleEndpointCaller(this.client);
 
   @override
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args) {
-    return client.callServerEndpoint(endpoint, method, returnTypeName, args);
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) {
+    return client.callServerEndpoint<T>(endpoint, method, args);
   }
 }
 
@@ -395,8 +380,8 @@ abstract class EndpointCaller {
 
   /// Calls a server endpoint method by its name, passing arguments in a map.
   /// Typically, this method is called by generated code.
-  Future<dynamic> callServerEndpoint(String endpoint, String method,
-      String returnTypeName, Map<String, dynamic> args);
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args);
 }
 
 /// This class connects endpoints on the server with the client, it also

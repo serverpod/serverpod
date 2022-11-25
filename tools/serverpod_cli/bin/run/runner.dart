@@ -4,7 +4,7 @@ import 'dart:io';
 import '../config_info/config_info.dart';
 import '../create/port_checker.dart';
 import '../generator/config.dart';
-import '../generator/dart_format.dart';
+import '../generator/generator.dart';
 import '../generator/protocol_analyzer.dart';
 import '../generator/protocol_generator.dart';
 import '../generator/code_analysis_collector.dart';
@@ -82,8 +82,8 @@ void performRun(bool verbose) async {
     verbose: verbose,
     protocolDefinition: protocolDefinition,
     collector: collector,
+    codeGenerator: (spec) => generateCode(spec, true),
   );
-  performDartFormat(verbose);
 
   // Analyze the code
   var errors = await performAnalysisGetSevereErrors();
@@ -205,16 +205,10 @@ Future<void> _generateAndReload(
         verbose: verbose,
         protocolDefinition: protocolDefinition,
         collector: collector,
+        codeGenerator: (spec) => generateCode(spec, true),
       );
     } catch (e, stackTrace) {
       print('Failed to generate protocol: $e');
-      print(stackTrace);
-    }
-
-    try {
-      performDartFormat(verbose);
-    } catch (e, stackTrace) {
-      print('Failed to dart format: $e');
       print(stackTrace);
     }
   }

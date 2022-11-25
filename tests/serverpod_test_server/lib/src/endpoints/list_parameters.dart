@@ -8,9 +8,28 @@ class ListParametersEndpoint extends Endpoint {
     return list;
   }
 
+  Future<List<List<int>>> returnIntListList(
+      Session session, List<List<int>> list) async {
+    return list;
+  }
+
   Future<List<int>?> returnIntListNullable(
     Session session,
     List<int>? list,
+  ) async {
+    return list;
+  }
+
+  Future<List<List<int>?>> returnIntListNullableList(
+    Session session,
+    List<List<int>?> list,
+  ) async {
+    return list;
+  }
+
+  Future<List<List<int>>?> returnIntListListNullable(
+    Session session,
+    List<List<int>>? list,
   ) async {
     return list;
   }

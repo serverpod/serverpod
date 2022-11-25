@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Make sure permissions are correct for the serverpod directory
+chown -R ec2-user:ec2-user /home/ec2-user/serverpod
+
+# Run pub get as ec2-user
+cd /home/ec2-user/serverpod/upload/chat_server/
+sudo -u ec2-user /usr/lib/dart/bin/dart pub get
+
+# Set correct permissions for start script
+chmod 755 aws/scripts/run_serverpod
+
+# Stop the server if it's running, copy files, and restart
+systemctl stop serverpod
+
+rm -rf /home/ec2-user/serverpod/active/
+cp -rp /home/ec2-user/serverpod/upload/ /home/ec2-user/serverpod/active/
+
+systemctl start serverpod

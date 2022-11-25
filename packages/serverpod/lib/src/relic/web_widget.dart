@@ -1,7 +1,6 @@
 import 'package:mustache_template/mustache.dart';
+import 'package:serverpod/serverpod.dart';
 import 'dart:convert';
-
-import 'templates.dart';
 
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
@@ -70,7 +69,7 @@ class WidgetJson extends AbstractWidget {
 
   @override
   String toString() {
-    return jsonEncode(object);
+    return SerializationManager.encode(object);
   }
 }
 

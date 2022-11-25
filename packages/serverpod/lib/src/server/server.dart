@@ -263,8 +263,7 @@ class Server {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedEntity =
-            serializationManager.serializeEntity(result.returnValue);
+        var serializedEntity = SerializationManager.encode(result.returnValue);
         request.response.write(serializedEntity);
       }
       await request.response.close();
@@ -326,7 +325,7 @@ class Server {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              webSocket.add(jsonEncode({'command': 'pong'}));
+              webSocket.add(SerializationManager.encode({'command': 'pong'}));
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
               session.updateAuthenticationKey(authKey);
@@ -336,11 +335,7 @@ class Server {
 
           // Handle messages passed to endpoints.
           var endpointName = data['endpoint'] as String;
-          var serialization = data['object'] as Map;
-          var message = serializationManager.createEntityFromSerialization(
-              serialization.cast<String, dynamic>());
-
-          if (message == null) throw Exception('Streamed message was null');
+          var serialization = data['object'] as Map<String, dynamic>;
 
           var endpointConnector = endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null) {
@@ -356,8 +351,15 @@ class Server {
             dynamic messageError;
             StackTrace? messageStackTrace;
 
+            SerializableEntity? message;
             try {
               session.sessionLogs.currentEndpoint = endpointName;
+
+              message =
+                  serializationManager.deserializeByClassName(serialization);
+
+              if (message == null) throw Exception('Streamed message was null');
+
               await endpointConnector.endpoint
                   .handleStreamMessage(session, message);
             } catch (e, s) {
@@ -389,7 +391,7 @@ class Server {
                 serverId: serverId,
                 messageId: session.currentMessageId,
                 endpoint: endpointName,
-                messageName: message.className,
+                messageName: serialization['className'],
                 duration: duration,
                 order: session.sessionLogs.currentLogOrderId,
                 error: messageError?.toString(),

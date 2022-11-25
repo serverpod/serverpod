@@ -107,7 +107,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findById<T>(
+  Future<T?> findById<T extends TableRow>(
     int id, {
     required Session session,
     Transaction? transaction,
@@ -122,7 +122,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> find<T>({
+  Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
     int? offset,
@@ -134,7 +134,7 @@ class DatabaseConnection {
     Transaction? transaction,
   }) async {
     assert(orderByList == null || orderBy == null);
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.find<MyTableClass>(where: ...);
@@ -175,7 +175,7 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow(tableName, rawRow[tableName]));
+        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -187,7 +187,7 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findSingleRow<T>({
+  Future<T?> findSingleRow<T extends TableRow>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -214,10 +214,9 @@ Current type was $T''');
     }
   }
 
-  TableRow? _formatTableRow(String tableName, Map<String, dynamic>? rawRow) {
-    String? className = poolManager.tableClassMapping[tableName];
-    if (className == null) return null;
-
+  //TODO: is this still needed?
+  T? _formatTableRow<T extends TableRow>(
+      String tableName, Map<String, dynamic>? rawRow) {
     var data = <String, dynamic>{};
 
     for (var columnName in rawRow!.keys) {
@@ -237,21 +236,18 @@ Current type was $T''');
       }
     }
 
-    var serialization = <String, dynamic>{'data': data, 'class': className};
-
-    return poolManager.serializationManager
-        .createEntityFromSerialization(serialization) as TableRow?;
+    return poolManager.serializationManager.deserialize<T>(data);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count<T>({
+  Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
     bool useCache = true,
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. numRows = await session.db.count<MyTableClass>();
@@ -295,7 +291,7 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase()['data'];
+    Map data = row.toJsonForDatabase();
 
     int? id = data['id'];
 
@@ -303,10 +299,6 @@ Current type was $T''');
 
     for (var column in data.keys as Iterable<String>) {
       if (column == 'id') continue;
-
-      if (data[column] is Map || data[column] is List) {
-        data[column] = jsonEncode(data[column]);
-      }
 
       var value = DatabasePoolManager.encoder.convert(data[column]);
 
@@ -338,7 +330,7 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.serializeForDatabase()['data'];
+    Map data = row.toJsonForDatabase();
 
     var columnsList = <String>[];
     var valueList = <String>[];
@@ -346,14 +338,9 @@ Current type was $T''');
     for (var column in data.keys as Iterable<String>) {
       if (column == 'id') continue;
 
-      if (data[column] is Map || data[column] is List) {
-        data[column] = jsonEncode(data[column]);
-      }
+      dynamic unformattedValue = data[column];
 
-      String value;
-      var unformattedValue = data[column];
-
-      value = DatabasePoolManager.encoder.convert(unformattedValue);
+      String value = DatabasePoolManager.encoder.convert(unformattedValue);
 
       columnsList.add('"$column"');
       valueList.add(value);
@@ -397,12 +384,12 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete<T>({
+  Future<int> delete<T extends TableRow>({
     required Expression where,
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
@@ -430,12 +417,12 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> deleteAndReturn<T>({
+  Future<List<T>> deleteAndReturn<T extends TableRow>({
     required Expression where,
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.typeTableMapping[T];
+    var table = session.serverpod.serializationManager.getTableForType(T);
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.deleteAndReturn<MyTableClass>(where: ...);
@@ -460,7 +447,7 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow(tableName, rawRow[tableName]));
+        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);

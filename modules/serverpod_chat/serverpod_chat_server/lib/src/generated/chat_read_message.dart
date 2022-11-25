@@ -1,80 +1,81 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
-// ignore_for_file: unused_import
-// ignore_for_file: unnecessary_import
-// ignore_for_file: overridden_fields
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: implementation_imports
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'dart:typed_data';
-import 'protocol.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
 
-class ChatReadMessage extends TableRow {
-  @override
-  String get className => 'serverpod_chat_server.ChatReadMessage';
-  @override
-  String get tableName => 'serverpod_chat_read_message';
-
-  static final t = ChatReadMessageTable();
-
-  @override
-  int? id;
-  late String channel;
-  late int userId;
-  late int lastReadMessageId;
-
+class ChatReadMessage extends _i1.TableRow {
   ChatReadMessage({
-    this.id,
+    int? id,
     required this.channel,
     required this.userId,
     required this.lastReadMessageId,
-  });
+  }) : super(id);
 
-  ChatReadMessage.fromSerialization(Map<String, dynamic> serialization) {
-    var _data = unwrapSerializationData(serialization);
-    id = _data['id'];
-    channel = _data['channel']!;
-    userId = _data['userId']!;
-    lastReadMessageId = _data['lastReadMessageId']!;
+  factory ChatReadMessage.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return ChatReadMessage(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      channel: serializationManager
+          .deserialize<String>(jsonSerialization['channel']),
+      userId:
+          serializationManager.deserialize<int>(jsonSerialization['userId']),
+      lastReadMessageId: serializationManager
+          .deserialize<int>(jsonSerialization['lastReadMessageId']),
+    );
   }
 
+  static final t = ChatReadMessageTable();
+
+  String channel;
+
+  int userId;
+
+  int lastReadMessageId;
+
   @override
-  Map<String, dynamic> serialize() {
-    return wrapSerializationData({
+  String get tableName => 'serverpod_chat_read_message';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeForDatabase() {
-    return wrapSerializationData({
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
       'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
-    });
+    };
   }
 
   @override
-  Map<String, dynamic> serializeAll() {
-    return wrapSerializationData({
+  Map<String, dynamic> allToJson() {
+    return {
       'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
-    });
+    };
   }
 
   @override
-  void setColumn(String columnName, value) {
+  void setColumn(
+    String columnName,
+    value,
+  ) {
     switch (columnName) {
       case 'id':
         id = value;
@@ -94,15 +95,15 @@ class ChatReadMessage extends TableRow {
   }
 
   static Future<List<ChatReadMessage>> find(
-    Session session, {
+    _i1.Session session, {
     ChatReadMessageExpressionBuilder? where,
     int? limit,
     int? offset,
-    Column? orderBy,
-    List<Order>? orderByList,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.find<ChatReadMessage>(
       where: where != null ? where(ChatReadMessage.t) : null,
@@ -117,13 +118,13 @@ class ChatReadMessage extends TableRow {
   }
 
   static Future<ChatReadMessage?> findSingleRow(
-    Session session, {
+    _i1.Session session, {
     ChatReadMessageExpressionBuilder? where,
     int? offset,
-    Column? orderBy,
+    _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.findSingleRow<ChatReadMessage>(
       where: where != null ? where(ChatReadMessage.t) : null,
@@ -135,14 +136,17 @@ class ChatReadMessage extends TableRow {
     );
   }
 
-  static Future<ChatReadMessage?> findById(Session session, int id) async {
+  static Future<ChatReadMessage?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
     return session.db.findById<ChatReadMessage>(id);
   }
 
   static Future<int> delete(
-    Session session, {
+    _i1.Session session, {
     required ChatReadMessageExpressionBuilder where,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ChatReadMessage>(
       where: where(ChatReadMessage.t),
@@ -151,9 +155,9 @@ class ChatReadMessage extends TableRow {
   }
 
   static Future<bool> deleteRow(
-    Session session,
+    _i1.Session session,
     ChatReadMessage row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
       row,
@@ -162,9 +166,9 @@ class ChatReadMessage extends TableRow {
   }
 
   static Future<bool> update(
-    Session session,
+    _i1.Session session,
     ChatReadMessage row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update(
       row,
@@ -173,19 +177,22 @@ class ChatReadMessage extends TableRow {
   }
 
   static Future<void> insert(
-    Session session,
+    _i1.Session session,
     ChatReadMessage row, {
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
-    return session.db.insert(row, transaction: transaction);
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
   }
 
   static Future<int> count(
-    Session session, {
+    _i1.Session session, {
     ChatReadMessageExpressionBuilder? where,
     int? limit,
     bool useCache = true,
-    Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<ChatReadMessage>(
       where: where != null ? where(ChatReadMessage.t) : null,
@@ -196,21 +203,22 @@ class ChatReadMessage extends TableRow {
   }
 }
 
-typedef ChatReadMessageExpressionBuilder = Expression Function(
-    ChatReadMessageTable t);
+typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
+    ChatReadMessageTable);
 
-class ChatReadMessageTable extends Table {
+class ChatReadMessageTable extends _i1.Table {
   ChatReadMessageTable() : super(tableName: 'serverpod_chat_read_message');
 
-  @override
-  String tableName = 'serverpod_chat_read_message';
-  final id = ColumnInt('id');
-  final channel = ColumnString('channel');
-  final userId = ColumnInt('userId');
-  final lastReadMessageId = ColumnInt('lastReadMessageId');
+  final id = _i1.ColumnInt('id');
+
+  final channel = _i1.ColumnString('channel');
+
+  final userId = _i1.ColumnInt('userId');
+
+  final lastReadMessageId = _i1.ColumnInt('lastReadMessageId');
 
   @override
-  List<Column> get columns => [
+  List<_i1.Column> get columns => [
         id,
         channel,
         userId,
