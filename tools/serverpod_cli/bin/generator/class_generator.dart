@@ -69,7 +69,7 @@ abstract class ClassGenerator {
       try {
         var out = generateFile(classDefinition);
 
-        outputFile.createSync();
+        outputFile.createSync(recursive: true);
         outputFile.writeAsStringSync(codeGenerator(out));
 
         collector.addGeneratedFile(outputFile);
@@ -82,7 +82,7 @@ abstract class ClassGenerator {
     // Generate factory class
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
     var out = generateFactory(classDefinitions, protocolDefinition);
-    outFile.createSync();
+    outFile.createSync(recursive: true);
     outFile.writeAsStringSync(codeGenerator(out));
     collector.addGeneratedFile(outFile);
 
