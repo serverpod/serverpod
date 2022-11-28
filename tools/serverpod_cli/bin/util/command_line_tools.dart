@@ -50,7 +50,7 @@ class CommandLineTools {
       {bool verbose = false}) async {
     var serverPath = p.join(dir.path, '${name}_server');
     printwwln();
-    printww('Setting up Docker and default database tables in $serverPath');
+    printww('Setting up Docker and default database tables in ${serverPath.split(Platform.pathSeparator).last}');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
     late ProcessResult result;
