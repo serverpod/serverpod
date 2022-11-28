@@ -16,7 +16,7 @@ class CommandLineTools {
       cf.args,
       workingDirectory: dir.path,
     );
-    if (verbose) print(result.stdout);
+    vPrint(verbose, result.stdout);
   }
 
   static void flutterCreate(Directory dir, {bool verbose = false}) {
@@ -28,7 +28,7 @@ class CommandLineTools {
       cf.args,
       workingDirectory: dir.path,
     );
-    if (verbose) print(result.stdout);
+    vPrint(verbose, result.stdout);
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -92,14 +92,14 @@ class CommandLineTools {
       ['setup-tables'],
       workingDirectory: serverPath,
     );
-    if (verbose) print(result.stdout);
+    vPrint(verbose, result.stdout);
 
     result = await Process.run(
       'rm',
       ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    if (verbose) print(result.stdout);
+    vPrint(verbose, result.stdout);
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {

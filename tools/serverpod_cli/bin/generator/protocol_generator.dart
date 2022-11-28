@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
+import '../util/print.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
@@ -19,26 +20,26 @@ Future<void> performGenerateProtocol({
   var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
 
   // Generate code for the client
-  if (verbose) print('Generating client endpoints');
+  vPrint(verbose, 'Generating client endpoints');
   var protocol = generator.generateClientEndpointCalls();
-  if (verbose) print(protocol);
+  vPrint(verbose, protocol.toString());
 
   var filePath = p.join(config.generatedClientProtocolPath, 'client.dart');
-  if (verbose) print('Writing: $filePath');
+  vPrint(verbose, 'Writing: $filePath');
   var outFile = File(filePath);
   outFile.createSync(recursive: true);
   outFile.writeAsStringSync(codeGenerator(protocol));
   collector.addGeneratedFile(outFile);
 
   // Generate server mappings with endpoint connectors
-  if (verbose) print('Generating server endpoint dispatch');
+  vPrint(verbose, 'Generating server endpoint dispatch');
   var endpointDispatch =
       codeGenerator(generator.generateServerEndpointDispatch());
-  if (verbose) print(endpointDispatch);
+  vPrint(verbose, endpointDispatch);
 
   var endpointsFilePath =
       p.join(config.generatedServerProtocolPath, 'endpoints.dart');
-  if (verbose) print('Writing: $endpointsFilePath');
+  vPrint(verbose, 'Writing: $endpointsFilePath');
   var endpointsFile = File(endpointsFilePath);
   endpointsFile.createSync();
   endpointsFile.writeAsStringSync(endpointDispatch);
@@ -47,7 +48,7 @@ Future<void> performGenerateProtocol({
   // Write endpoint definition
   var endpointDef = generator.generateEndpointDefinition();
   var endpointDefPath = p.join('generated', 'protocol.yaml');
-  if (verbose) print('Writing: $endpointDefPath');
+  vPrint(verbose, 'Writing: $endpointDefPath');
   var endpointsDefFile = File(endpointDefPath);
   endpointsDefFile.createSync(recursive: true);
   endpointsDefFile.writeAsStringSync(endpointDef);

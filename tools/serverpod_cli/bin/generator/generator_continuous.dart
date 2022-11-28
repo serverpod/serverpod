@@ -1,12 +1,13 @@
 import 'package:watcher/watcher.dart';
 
+import '../util/print.dart';
 import 'config.dart';
 import 'generator.dart';
 
 void performGenerateContinuously(bool verbose) {
   if (!config.load()) return;
 
-  if (verbose) print('Starting up continuous generator');
+  vPrint(verbose, 'Starting up continuous generator');
 
   _performGenerateClassesContinuously(verbose);
   _performGenereateProtocolContinuously(verbose);

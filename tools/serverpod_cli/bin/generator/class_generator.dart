@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import '../util/internal_error.dart';
+import '../util/print.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
@@ -17,7 +18,7 @@ void performGenerateClasses({
   required CodeGenerator codeGenerator,
 }) {
   // Generate server side code
-  if (verbose) print('Generating server side code.');
+  vPrint(verbose, 'Generating server side code.');
   var serverGenerator = ClassGeneratorDart(
     verbose: verbose,
     outputDirectoryPath: config.generatedServerProtocolPath,
@@ -28,7 +29,7 @@ void performGenerateClasses({
   serverGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 
   // Generate client side code
-  if (verbose) print('Generating Dart client side code.');
+  vPrint(verbose, 'Generating Dart client side code.');
   var clientGenerator = ClassGeneratorDart(
     verbose: verbose,
     outputDirectoryPath: config.generatedClientProtocolPath,

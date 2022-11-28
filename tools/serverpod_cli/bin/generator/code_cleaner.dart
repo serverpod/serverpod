@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../util/print.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
 
@@ -28,9 +29,7 @@ void _removeOldFilesInPath(
   bool verbose,
 ) {
   var directory = Directory(directoryPath);
-  if (verbose) {
-    print('Remove old files from $directory');
-  }
+  vPrint(verbose, 'Remove old files from $directory');
   var fileList = directory.listSync();
 
   for (var entity in fileList) {
@@ -40,9 +39,7 @@ void _removeOldFilesInPath(
     }
 
     if (!keepPaths.contains(entity.path)) {
-      if (verbose) {
-        print('Remove: $entity');
-      }
+      vPrint(verbose, 'Remove: $entity');
       entity.deleteSync();
     }
   }

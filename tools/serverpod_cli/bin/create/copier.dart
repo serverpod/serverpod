@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../util/print.dart';
+
 class Copier {
   Directory srcDir;
   Directory dstDir;
@@ -51,7 +53,7 @@ class Copier {
 
     var dstFileName =
         _replace(p.join(relativePath, fileName), fileNameReplacements);
-    if (verbose) print('  ${p.join(dstDir.path, relativePath, fileName)}');
+    vPrint(verbose, '  ${p.join(dstDir.path, relativePath, fileName)}');
 
     var dstFile = File(p.join(dstDir.path, dstFileName));
     var contents = srcFile.readAsStringSync();

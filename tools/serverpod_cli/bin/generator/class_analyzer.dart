@@ -1,14 +1,15 @@
 import 'dart:io';
 
-import 'package:yaml/yaml.dart';
-import 'package:yaml/src/error_listener.dart';
 import 'package:source_span/source_span.dart';
+import 'package:yaml/src/error_listener.dart';
+import 'package:yaml/yaml.dart';
 
+import '../util/print.dart';
 import '../util/string_validators.dart';
 import 'class_generator_dart.dart';
+import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'code_analysis_collector.dart';
 import 'types.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
@@ -24,11 +25,11 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
 
   for (var entity in sourceFileList) {
     if (entity is! File || !entity.path.endsWith('.yaml')) {
-      if (verbose) print('  - skipping file: ${entity.path}');
+      vPrint(verbose, '  - skipping file: ${entity.path}');
       continue;
     }
     // Process a file.
-    if (verbose) print('  - processing file: ${entity.path}');
+    vPrint(verbose, '  - processing file: ${entity.path}');
 
     var yaml = entity.readAsStringSync();
     var analyzer = ClassAnalyzer(

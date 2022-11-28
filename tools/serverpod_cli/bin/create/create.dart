@@ -84,23 +84,23 @@ Future<void> performCreate(
 
   print('Creating project $name...');
 
-  if (verbose) print('Creating directory: ${projectDir.path}');
+  vPrint(verbose, 'Creating directory: ${projectDir.path}');
   projectDir.createSync(recursive: true);
 
   var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
-  if (verbose) print('Creating directory: ${serverDir.path}');
+  vPrint(verbose, 'Creating directory: ${serverDir.path}');
   serverDir.createSync(recursive: true);
 
   var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
-  if (verbose) print('Creating directory: ${clientDir.path}');
+  vPrint(verbose, 'Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
     var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
-    if (verbose) print('Creating directory: ${flutterDir.path}');
+    vPrint(verbose, 'Creating directory: ${flutterDir.path}');
     flutterDir.createSync(recursive: true);
 
     var githubDir = Directory(p.join(projectDir.path, '.github'));
-    if (verbose) print('Creating directory: ${githubDir.path}');
+    vPrint(verbose, 'Creating directory: ${githubDir.path}');
     githubDir.createSync(recursive: true);
 
     // Copy server files
@@ -272,7 +272,7 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
-    if(verbose) print('');
+    vPrint(verbose);
 
     CommandLineTools.dartPubGet(serverDir);
     CommandLineTools.dartPubGet(clientDir);

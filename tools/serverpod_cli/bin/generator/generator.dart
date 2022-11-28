@@ -1,13 +1,14 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 
+import '../util/print.dart';
 import 'class_analyzer.dart';
 import 'class_generator.dart';
+import 'code_analysis_collector.dart';
 import 'code_cleaner.dart';
 import 'config.dart';
 import 'protocol_analyzer.dart';
 import 'protocol_generator.dart';
-import 'code_analysis_collector.dart';
 
 Future<void> performGenerate({
   required bool verbose,
@@ -23,9 +24,7 @@ Future<void> performGenerate({
 
   var collector = CodeAnalysisCollector();
 
-  if (verbose) {
-    print('Analyzing protocol yaml files.');
-  }
+  vPrint(verbose, 'Analyzing protocol yaml files.');
   var classDefinitions = performAnalyzeClasses(
     verbose: verbose,
     collector: collector,
@@ -40,9 +39,7 @@ Future<void> performGenerate({
     changedFiles.add(changedFile);
   }
 
-  if (verbose) {
-    print('Analyzing server code.');
-  }
+  vPrint(verbose, 'Analyzing server code.');
   var protocolDefinition = await performAnalyzeServerCode(
     verbose: verbose,
     collector: collector,
@@ -50,9 +47,7 @@ Future<void> performGenerate({
     changedFiles: changedFiles,
   );
 
-  if (verbose) {
-    print('Generating classes.');
-  }
+  vPrint(verbose, 'Generating classes.');
   performGenerateClasses(
     verbose: verbose,
     classDefinitions: classDefinitions,
@@ -64,9 +59,7 @@ Future<void> performGenerate({
   collector.printErrors();
   collector.clearErrors();
 
-  if (verbose) {
-    print('Generating protocol.');
-  }
+  vPrint(verbose, 'Generating protocol.');
   await performGenerateProtocol(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
@@ -74,9 +67,7 @@ Future<void> performGenerate({
     codeGenerator: generator,
   );
 
-  if (verbose) {
-    print('Cleaning up old files.');
-  }
+  vPrint(verbose, 'Cleaning up old files.');
   performRemoveOldFiles(
     verbose: verbose,
     collector: collector,
