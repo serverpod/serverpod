@@ -36,7 +36,7 @@ class Copier {
       if (entityName.startsWith('.')) continue;
 
       if (entity is File) {
-        _copyFile(entity, relativePath);
+        _copyFile(entity, relativePath, verbose: verbose);
       }
       if (entity is Directory) {
         var dirName = p.basename(entity.path);
@@ -45,13 +45,13 @@ class Copier {
     }
   }
 
-  void _copyFile(File srcFile, String relativePath) {
+  void _copyFile(File srcFile, String relativePath, {bool verbose = false}) {
     var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
 
     var dstFileName =
         _replace(p.join(relativePath, fileName), fileNameReplacements);
-    print('  ${p.join(dstDir.path, relativePath, fileName)}');
+    if (verbose) print('  ${p.join(dstDir.path, relativePath, fileName)}');
 
     var dstFile = File(p.join(dstDir.path, dstFileName));
     var contents = srcFile.readAsStringSync();

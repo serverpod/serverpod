@@ -272,11 +272,11 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
-    print('');
+    if(verbose) print('');
 
     CommandLineTools.dartPubGet(serverDir);
     CommandLineTools.dartPubGet(clientDir);
-    CommandLineTools.flutterCreate(flutterDir);
+    CommandLineTools.flutterCreate(flutterDir, verbose: verbose);
   } else if (template == 'module') {
     // Copy server files
     var copier = Copier(
@@ -355,7 +355,7 @@ Future<void> performCreate(
   if (dockerConfigured && template != 'module') {
     if (Platform.isWindows) {
       await CommandLineTools.cleanupForWindows(projectDir, name);
-      printwwln('');
+      printwwln();
       printww('====================');
       printww('SERVERPOD CREATED :D');
       printwwln('====================');
@@ -368,8 +368,8 @@ Future<void> performCreate(
       printww('');
     } else {
       // Create tables
-      await CommandLineTools.createTables(projectDir, name);
-      printwwln('');
+      await CommandLineTools.createTables(projectDir, name, verbose: verbose);
+      printwwln();
       printwwln('SERVERPOD CREATED 🥳');
       printwwln('All setup. You are ready to rock!');
       printwwln('Start your Serverpod by running:');

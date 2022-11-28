@@ -7,26 +7,28 @@ import 'print.dart';
 import 'windows.dart';
 
 class CommandLineTools {
-  static void dartPubGet(Directory dir) {
-    print('Running `dart pub get` in ${dir.path}');
+  static void dartPubGet(Directory dir, {bool verbose = false}) {
+    print(
+        'Running `dart pub get` in ${dir.path.split(Platform.pathSeparator).last}');
     var cf = _CommandFormatter('dart', ['pub', 'get']);
     var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+    if (verbose) print(result.stdout);
   }
 
-  static void flutterCreate(Directory dir) {
-    print('Running `flutter create .` in ${dir.path}');
+  static void flutterCreate(Directory dir, {bool verbose = false}) {
+    print(
+        'Running `flutter create .` in ${dir.path.split(Platform.pathSeparator).last}');
     var cf = _CommandFormatter('flutter', ['create', '.']);
     var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+    if (verbose) print(result.stdout);
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -44,8 +46,10 @@ class CommandLineTools {
     return result.exitCode == 0;
   }
 
-  static Future<void> createTables(Directory dir, String name) async {
+  static Future<void> createTables(Directory dir, String name,
+      {bool verbose = false}) async {
     var serverPath = p.join(dir.path, '${name}_server');
+    printwwln();
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
@@ -69,11 +73,18 @@ class CommandLineTools {
       workingDirectory: serverPath,
     );
 
-    unawaited(stdout.addStream(process.stdout));
-    unawaited(stderr.addStream(process.stderr));
+    if (verbose) {
+      unawaited(stdout.addStream(process.stdout));
+      unawaited(stderr.addStream(process.stderr));
+    }
 
     var exitCode = await process.exitCode;
-    print('Completed table setup exit code: $exitCode');
+    if (verbose) {
+      print(result.stdout);
+      print('Completed table setup exit code: $exitCode');
+    } else {
+      print('Tables created');
+    }
 
     print('Cleaning up');
     result = await Process.run(
@@ -81,14 +92,14 @@ class CommandLineTools {
       ['setup-tables'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+    if (verbose) print(result.stdout);
 
     result = await Process.run(
       'rm',
       ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+    if (verbose) print(result.stdout);
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {
