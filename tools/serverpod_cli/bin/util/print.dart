@@ -24,6 +24,7 @@ void printwwln([String string = '']) {
   printww('');
 }
 
+/// Verbose print statement
 void vPrint(bool verbose, [String string = '']) {
   if (verbose) {
     printww(string);
