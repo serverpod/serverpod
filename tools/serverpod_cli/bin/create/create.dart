@@ -25,6 +25,16 @@ Future<void> performCreate(
   String template,
   bool force,
 ) async {
+  // Check whether the project name is valid or not
+  for (int i = 0; i < name.length; i++) {
+    int ascii = name[i].codeUnitAt(0);
+    if (!((ascii >= 97 && ascii <= 122) || name[i] == '_')) {
+      print(
+          "Project Name can only contain lowercase letters and underscores..");
+      return;
+    }
+  }
+  
   // Check we are set to create a new project
   var usedPorts = <String, int>{};
   for (var serverDescription in _defaultPorts.keys) {
