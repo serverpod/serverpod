@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:source_span/source_span.dart';
-import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as p;
+import 'package:yaml/src/error_listener.dart';
+import 'package:source_span/source_span.dart';
+
 import '../util/string_validators.dart';
 import 'class_generator_dart.dart';
-import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
+import 'code_analysis_collector.dart';
 import 'types.dart';
 
 List<ProtocolFileDefinition> performAnalyzeClasses({
@@ -19,7 +19,7 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
 
   // Get list of all files in protocol source directory.
   var sourceDir = Directory(config.protocolSourcePath);
-  var sourceFileList = sourceDir.listSync(recursive: true);
+  var sourceFileList = sourceDir.listSync();
   sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
   for (var entity in sourceFileList) {
@@ -27,23 +27,15 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
       if (verbose) print('  - skipping file: ${entity.path}');
       continue;
     }
-    var otherDir = entity.path
-        .replaceAll(config.protocolSourcePath, '')
-        .split(Platform.pathSeparator);
-    String? subDirectory;
-    if (otherDir.length > 2) {
-      subDirectory = p.joinAll(otherDir.sublist(0, otherDir.length - 1));
-      print('- subDirectory: $subDirectory');
-    }
     // Process a file.
     if (verbose) print('  - processing file: ${entity.path}');
+
     var yaml = entity.readAsStringSync();
     var analyzer = ClassAnalyzer(
       yaml: yaml,
       sourceFileName: entity.path,
       outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
       collector: collector,
-      subDirectory: subDirectory,
     );
     var classDefinition = analyzer.analyze();
     if (classDefinition != null) {
@@ -89,14 +81,12 @@ class ClassAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
-  final String? subDirectory;
   final CodeAnalysisCollector collector;
 
   ClassAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
-    this.subDirectory,
     required this.collector,
   });
 
@@ -509,7 +499,6 @@ class ClassAnalyzer {
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
-      subDir: subDirectory,
     );
   }
 

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
-
 import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
@@ -64,14 +63,13 @@ abstract class ClassGenerator {
     for (var classDefinition in classDefinitions) {
       var outputFile = File(p.join(
         outputDirectoryPath,
-        classDefinition.subDir ?? '',
         '${classDefinition.fileName}$outputExtension',
       ));
 
       try {
         var out = generateFile(classDefinition);
 
-        outputFile.createSync(recursive: true);
+        outputFile.createSync();
         outputFile.writeAsStringSync(codeGenerator(out));
 
         collector.addGeneratedFile(outputFile);
@@ -84,7 +82,7 @@ abstract class ClassGenerator {
     // Generate factory class
     var outFile = File(p.join(outputDirectoryPath, 'protocol$outputExtension'));
     var out = generateFactory(classDefinitions, protocolDefinition);
-    outFile.createSync(recursive: true);
+    outFile.createSync();
     outFile.writeAsStringSync(codeGenerator(out));
     collector.addGeneratedFile(outFile);
 

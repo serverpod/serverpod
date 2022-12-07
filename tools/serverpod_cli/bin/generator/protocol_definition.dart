@@ -84,12 +84,10 @@ class IndexDefinition {
 abstract class ProtocolFileDefinition {
   final String fileName;
   final String className;
-  final String? subDir;
 
   ProtocolFileDefinition({
     required this.fileName,
     required this.className,
-    this.subDir,
   });
 }
 
@@ -104,7 +102,6 @@ class ClassDefinition extends ProtocolFileDefinition {
     required this.fields,
     this.tableName,
     this.indexes,
-    super.subDir,
   });
 }
 
@@ -115,6 +112,5 @@ class EnumDefinition extends ProtocolFileDefinition {
     required super.fileName,
     required super.className,
     required this.values,
-    super.subDir,
   });
 }
