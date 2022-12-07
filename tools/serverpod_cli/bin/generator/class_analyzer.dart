@@ -30,10 +30,10 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
     var otherFolder = entity.path
         .replaceAll(config.protocolSourcePath, '')
         .split(Platform.pathSeparator);
-    String? subFolder;
+    String? subDirectory;
     if (otherFolder.length > 2) {
-      subFolder = p.joinAll(otherFolder.sublist(0, otherFolder.length - 1));
-      if (verbose) print('Other folder: $subFolder');
+      subDirectory = p.joinAll(otherFolder.sublist(0, otherFolder.length - 1));
+      print('- subDirectory: $subDirectory');
     }
     // Process a file.
     if (verbose) print('  - processing file: ${entity.path}');
@@ -43,7 +43,7 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
       sourceFileName: entity.path,
       outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
       collector: collector,
-      subDirectory: subFolder,
+      subDirectory: subDirectory,
     );
     var classDefinition = analyzer.analyze();
     if (classDefinition != null) {
