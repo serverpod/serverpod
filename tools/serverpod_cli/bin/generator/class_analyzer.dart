@@ -27,12 +27,12 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
       if (verbose) print('  - skipping file: ${entity.path}');
       continue;
     }
-    var otherFolder = entity.path
+    var otherDir = entity.path
         .replaceAll(config.protocolSourcePath, '')
         .split(Platform.pathSeparator);
     String? subDirectory;
-    if (otherFolder.length > 2) {
-      subDirectory = p.joinAll(otherFolder.sublist(0, otherFolder.length - 1));
+    if (otherDir.length > 2) {
+      subDirectory = p.joinAll(otherDir.sublist(0, otherDir.length - 1));
       print('- subDirectory: $subDirectory');
     }
     // Process a file.
