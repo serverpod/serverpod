@@ -4,18 +4,10 @@
 echo "Starting docker"
 docker-compose up --build --detach
 
-if command -v netstat &> /dev/null
-then
-  while ! netstat -tna | grep 'LISTEN' | grep -q '.8090'; do
-    echo "Waiting for Postgres..."
-    sleep 2 # time in seconds, tune it as needed
-  done
-else
-  while ! ss -tulpn | grep LISTEN | grep :8090; do
-    echo "Waiting for Postgres..."
-    sleep 2
-  done
-fi
+while lsof -Pi :8090 -sTCP:LISTEN -t >/dev/null ; do
+  echo "Waiting for Postgres..."
+  sleep 2 # time in seconds, tune it as needed
+done
 
 sleep 2
 
