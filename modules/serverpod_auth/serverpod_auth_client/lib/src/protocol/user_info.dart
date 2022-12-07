@@ -18,9 +18,7 @@ class UserInfo extends _i1.SerializableEntity {
     required this.created,
     this.imageUrl,
     required this.scopeNames,
-    required this.active,
     required this.blocked,
-    this.suspendedUntil,
   });
 
   factory UserInfo.fromJson(
@@ -43,12 +41,8 @@ class UserInfo extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['imageUrl']),
       scopeNames: serializationManager
           .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      active:
-          serializationManager.deserialize<bool>(jsonSerialization['active']),
       blocked:
           serializationManager.deserialize<bool>(jsonSerialization['blocked']),
-      suspendedUntil: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['suspendedUntil']),
     );
   }
 
@@ -68,11 +62,7 @@ class UserInfo extends _i1.SerializableEntity {
 
   List<String> scopeNames;
 
-  bool active;
-
   bool blocked;
-
-  DateTime? suspendedUntil;
 
   @override
   Map<String, dynamic> toJson() {
@@ -85,9 +75,7 @@ class UserInfo extends _i1.SerializableEntity {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
     };
   }
 }

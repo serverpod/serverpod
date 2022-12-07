@@ -114,9 +114,7 @@ CREATE TABLE "serverpod_user_info" (
   "created" timestamp without time zone NOT NULL,
   "imageUrl" text,
   "scopeNames" json NOT NULL,
-  "active" boolean NOT NULL,
-  "blocked" boolean NOT NULL,
-  "suspendedUntil" timestamp without time zone
+  "blocked" boolean NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_user_info"
