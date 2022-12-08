@@ -26,13 +26,11 @@ Future<void> performCreate(
   bool force,
 ) async {
   // Check whether the project name is valid or not
-  for (int i = 0; i < name.length; i++) {
-    int ascii = name[i].codeUnitAt(0);
-    if (!((ascii >= 97 && ascii <= 122) || name[i] == '_')) {
-      print(
-          "Project Name can only contain lowercase letters and underscores..");
-      return;
-    }
+  RegExp namePattern = new RegExp(r'^[a-z][a-z0-9_]*');
+  if (namePattern.stringMatch(name).toString().length != name.length) {
+    print(
+        'Failed to create project. The project name may only contain lower case letters, numbers, and underscores.');
+    return;
   }
   
   // Check we are set to create a new project
