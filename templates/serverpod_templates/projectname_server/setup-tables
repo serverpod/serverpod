@@ -4,7 +4,7 @@
 echo "Starting docker"
 docker-compose up --build --detach
 
-while ! lsof -Pi :8090 -sTCP:LISTEN -t >/dev/null ; do
+while lsof -Pi :8090 -sTCP:LISTEN -t >/dev/null ; do
   echo "Waiting for Postgres..."
   sleep 2 # time in seconds, tune it as needed
 done
