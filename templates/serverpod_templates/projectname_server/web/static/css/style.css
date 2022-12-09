@@ -69,6 +69,8 @@ hr {
 .link-box {
     text-align: center;
     color: #999;
+    display: flex;
+    justify-content: space-around;
 }
 
 .link-box a {
