@@ -274,8 +274,8 @@ Future<void> performCreate(
 
     vPrint(verbose);
 
-    CommandLineTools.dartPubGet(serverDir);
-    CommandLineTools.dartPubGet(clientDir);
+    CommandLineTools.dartPubGet(serverDir, verbose: verbose);
+    CommandLineTools.dartPubGet(clientDir, verbose: verbose);
     CommandLineTools.flutterCreate(flutterDir, verbose: verbose);
   } else if (template == 'module') {
     // Copy server files
