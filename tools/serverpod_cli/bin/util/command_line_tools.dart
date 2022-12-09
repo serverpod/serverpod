@@ -16,7 +16,9 @@ class CommandLineTools {
       cf.args,
       workingDirectory: dir.path,
     );
-    vPrint(verbose, result.stdout);
+    result.stdout.toString().split('\n').forEach((line) {
+      vPrint(verbose, line);
+    });
   }
 
   static void flutterCreate(Directory dir, {bool verbose = false}) {
