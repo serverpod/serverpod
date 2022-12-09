@@ -48,7 +48,7 @@ test -f cli_test/cli_test_server/.gitignore
 test -f cli_test/cli_test_server/lib/server.dart
 test -f cli_test/cli_test_server/lib/src/endpoints/example_endpoint.dart
 test -f cli_test/cli_test_server/lib/src/generated/endpoints.dart
-test -f cli_test/cli_test_server/lib/src/generated/example_class.dart
+test -f cli_test/cli_test_server/lib/src/generated/example.dart
 
 # Client files
 test -f cli_test/cli_test_client/pubspec.yaml
@@ -71,7 +71,7 @@ cd ../..
 echo "### Verifying that generated files exists"
 test -f cli_test/cli_test_client/lib/src/protocol/client.dart
 test -f cli_test/cli_test_server/lib/src/generated/endpoints.dart
-test -f cli_test/cli_test_server/lib/src/generated/example_class.dart
+test -f cli_test/cli_test_server/lib/src/generated/example.dart
 
 echo "### Cleaning up"
 cd ..
