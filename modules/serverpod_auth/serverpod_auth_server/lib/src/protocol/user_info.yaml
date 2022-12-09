@@ -13,9 +13,7 @@ fields:
   created: DateTime
   imageUrl: String?
   scopeNames: List<String>
-  active: bool
   blocked: bool
-  suspendedUntil: DateTime?
 indexes:
   serverpod_user_info_user_identifier:
     fields: userIdentifier

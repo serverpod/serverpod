@@ -40,7 +40,6 @@ class Emails {
         userName: userName,
         created: DateTime.now(),
         scopeNames: [],
-        active: true,
         blocked: false,
       );
 

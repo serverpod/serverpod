@@ -41,7 +41,7 @@ Future<void> performGenerateProtocol({
       p.join(config.generatedServerProtocolPath, 'endpoints.dart');
   vPrint(verbose, 'Writing: $endpointsFilePath');
   var endpointsFile = File(endpointsFilePath);
-  endpointsFile.createSync();
+  endpointsFile.createSync(recursive: true);
   endpointsFile.writeAsStringSync(endpointDispatch);
   collector.addGeneratedFile(endpointsFile);
 

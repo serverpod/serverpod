@@ -21,7 +21,6 @@ class AuthenticationEndpoint extends Endpoint {
       userName: email.split('@')[0],
       created: DateTime.now(),
       scopeNames: [],
-      active: true,
       blocked: false,
     );
     await Users.createUser(session, userInfo);
@@ -41,7 +40,6 @@ class AuthenticationEndpoint extends Endpoint {
           userName: 'Test',
           created: DateTime.now(),
           scopeNames: [],
-          active: true,
           blocked: false,
         );
         userInfo = await Users.createUser(session, userInfo);

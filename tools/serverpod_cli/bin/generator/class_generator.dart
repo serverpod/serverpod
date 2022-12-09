@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
+
 import '../util/internal_error.dart';
 import '../util/print.dart';
 import 'class_generator_dart.dart';
@@ -64,6 +65,7 @@ abstract class ClassGenerator {
     for (var classDefinition in classDefinitions) {
       var outputFile = File(p.join(
         outputDirectoryPath,
+        classDefinition.subDir ?? '',
         '${classDefinition.fileName}$outputExtension',
       ));
 

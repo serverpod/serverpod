@@ -18,9 +18,7 @@ class UserInfo extends _i1.TableRow {
     required this.created,
     this.imageUrl,
     required this.scopeNames,
-    required this.active,
     required this.blocked,
-    this.suspendedUntil,
   }) : super(id);
 
   factory UserInfo.fromJson(
@@ -43,12 +41,8 @@ class UserInfo extends _i1.TableRow {
           .deserialize<String?>(jsonSerialization['imageUrl']),
       scopeNames: serializationManager
           .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      active:
-          serializationManager.deserialize<bool>(jsonSerialization['active']),
       blocked:
           serializationManager.deserialize<bool>(jsonSerialization['blocked']),
-      suspendedUntil: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['suspendedUntil']),
     );
   }
 
@@ -68,11 +62,7 @@ class UserInfo extends _i1.TableRow {
 
   List<String> scopeNames;
 
-  bool active;
-
   bool blocked;
-
-  DateTime? suspendedUntil;
 
   @override
   String get tableName => 'serverpod_user_info';
@@ -87,9 +77,7 @@ class UserInfo extends _i1.TableRow {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
     };
   }
 
@@ -104,9 +92,7 @@ class UserInfo extends _i1.TableRow {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
     };
   }
 
@@ -121,9 +107,7 @@ class UserInfo extends _i1.TableRow {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'active': active,
       'blocked': blocked,
-      'suspendedUntil': suspendedUntil,
     };
   }
 
@@ -157,14 +141,8 @@ class UserInfo extends _i1.TableRow {
       case 'scopeNames':
         scopeNames = value;
         return;
-      case 'active':
-        active = value;
-        return;
       case 'blocked':
         blocked = value;
-        return;
-      case 'suspendedUntil':
-        suspendedUntil = value;
         return;
       default:
         throw UnimplementedError();
@@ -301,11 +279,7 @@ class UserInfoTable extends _i1.Table {
 
   final scopeNames = _i1.ColumnSerializable('scopeNames');
 
-  final active = _i1.ColumnBool('active');
-
   final blocked = _i1.ColumnBool('blocked');
-
-  final suspendedUntil = _i1.ColumnDateTime('suspendedUntil');
 
   @override
   List<_i1.Column> get columns => [
@@ -317,9 +291,7 @@ class UserInfoTable extends _i1.Table {
         created,
         imageUrl,
         scopeNames,
-        active,
         blocked,
-        suspendedUntil,
       ];
 }
 
