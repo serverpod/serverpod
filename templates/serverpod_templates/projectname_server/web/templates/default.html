@@ -2,11 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>title</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Built with Serverpod</title>
+    <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
-    <img src="/static/serverpod-logo.svg" width="380">
-    <p style="margin-top: 16px">Made with <a href="https://serverpod.dev/">Serverpod - The missing server for Flutter</a>.</p>
+    <div class="content">
+      <div class="logo-box">
+        <img src="/images/serverpod-logo.svg" width="160" style="margin-top: 8px; margin-bottom: 12px;">
+        <p><a href="https://serverpod.dev/">The missing server for Flutter</a></p>
+      </div>
+      <hr>
+      <div class="info-box">
+        <p>Served at: {{served}}</p>
+        <p>Run mode: {{runmode}}</p>
+      </div>
+      <hr>
+      <div class="link-box">
+        <a href="https://serverpod.dev">Serverpod</a>
+        •
+        <a href="https://docs.serverpod.dev">Get Started</a>
+        •
+        <a href="https://github.com/serverpod/serverpod">Github</a>
+      </div>
+    </div>
   </body>
 </html>
