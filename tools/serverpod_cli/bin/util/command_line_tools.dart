@@ -30,7 +30,9 @@ class CommandLineTools {
       cf.args,
       workingDirectory: dir.path,
     );
-    vPrint(verbose, result.stdout);
+    result.stdout.toString().split('\n').forEach((line) {
+      vPrint(verbose, line);
+    });
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -63,7 +65,9 @@ class CommandLineTools {
         ['u+x', 'setup-tables'],
         workingDirectory: serverPath,
       );
-      print(result.stdout);
+      result.stdout.toString().split('\n').forEach((line) {
+        vPrint(verbose, line);
+      });
     }
 
     var process = await Process.start(
@@ -83,7 +87,9 @@ class CommandLineTools {
 
     var exitCode = await process.exitCode;
     if (verbose) {
-      print(result.stdout);
+      result.stdout.toString().split('\n').forEach((line) {
+        vPrint(verbose, line);
+      });
       print('Completed table setup exit code: $exitCode');
     } else {
       print('Tables created');
@@ -95,14 +101,18 @@ class CommandLineTools {
       ['setup-tables'],
       workingDirectory: serverPath,
     );
-    vPrint(verbose, result.stdout);
+    result.stdout.toString().split('\n').forEach((line) {
+      vPrint(verbose, line);
+    });
 
     result = await Process.run(
       'rm',
       ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    vPrint(verbose, result.stdout);
+    result.stdout.toString().split('\n').forEach((line) {
+      vPrint(verbose, line);
+    });
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {

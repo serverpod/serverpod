@@ -37,8 +37,12 @@ Future<void> performGenerateCerts(String runMode, bool verbose) async {
   //
   //   var result = await Process.run('openssl', args);
   //
-  //     vPrint(verbose, result.stdout);
-  //     vPrint(verbose, result.stderr);
+  //   result.stdout.toString().split('\n').forEach((line) {
+  //     vPrint(verbose, line);
+  //   });
+  //   result.stderr.toString().split('\n').forEach((line) {
+  //     vPrint(verbose, line);
+  //   });
   //
   //   File(certConfigFile).deleteSync();
   // }
