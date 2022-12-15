@@ -1,0 +1,18 @@
+#!/bin/bash
+cat > /lib/systemd/system/serverpod.service << EOF
+[Unit]
+Description=Serverpod server
+After=multi-user.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user
+ExecStart=/home/ec2-user/serverpod/active/auth_example_server/aws/scripts/run_serverpod
+Restart=always
+
+[Install]
+WantedBy=muti-user.target
+WantedBy=network-online.target
+EOF
+
+systemctl daemon-reload

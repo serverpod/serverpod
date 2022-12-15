@@ -7,6 +7,13 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// The Auth module's caller.
   final Caller caller;
 
+  /// Google clientId, if not specified through a GoogleService-Info.plist file.
+  final String? clientId;
+
+  /// Your server's clientId, if not specified through a
+  /// GoogleService-Info.plist file.
+  final String? serverClientId;
+
   /// Called if sign in is successful.
   final VoidCallback? onSignedIn;
 
@@ -27,18 +34,20 @@ class SignInWithGoogleButton extends StatefulWidget {
   final Alignment alignment;
 
   /// Redirect Uri as setup in Google console.
-  final Uri? redirectUri;
+  final Uri redirectUri;
 
   /// Creates a new Sign in with Google button.
   const SignInWithGoogleButton({
     required this.caller,
+    this.clientId,
+    this.serverClientId,
     this.onSignedIn,
     this.onFailure,
     this.debug = false,
     this.style,
     this.additionalScopes = const [],
     this.alignment = Alignment.centerLeft,
-    this.redirectUri,
+    required this.redirectUri,
   });
 
   @override
@@ -66,6 +75,8 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         signInWithGoogle(
           widget.caller,
           debug: widget.debug,
+          clientId: widget.clientId,
+          serverClientId: widget.serverClientId,
           additionalScopes: widget.additionalScopes,
           redirectUri: widget.redirectUri,
         ).then((UserInfo? userInfo) {
