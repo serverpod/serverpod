@@ -2,6 +2,7 @@ import 'package:auth_example_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
+/// A sample page showing information about the signed in user.
 class AccountPage extends StatelessWidget {
   const AccountPage({Key? key}) : super(key: key);
 
@@ -20,7 +21,7 @@ class AccountPage extends StatelessWidget {
           subtitle: Text(sessionManager.signedInUser!.email ?? ''),
         ),
         Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: ElevatedButton(
             onPressed: () {
               sessionManager.signOut();
