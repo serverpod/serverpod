@@ -54,11 +54,22 @@ class Copier {
     print('  ${p.join(dstDir.path, relativePath, fileName)}');
 
     var dstFile = File(p.join(dstDir.path, dstFileName));
-    var contents = srcFile.readAsStringSync();
-    contents = _replace(contents, replacements);
-    contents = _filterLines(contents, removePrefixes);
-    dstFile.createSync(recursive: true);
-    dstFile.writeAsStringSync(contents);
+    try {
+      var contents = srcFile.readAsStringSync();
+      contents = _replace(contents, replacements);
+      contents = _filterLines(contents, removePrefixes);
+      dstFile.createSync(recursive: true);
+      dstFile.writeAsStringSync(contents);
+    } on FileSystemException catch (e) {
+      if (e.message
+          .contains('Failed to decode data using encoding \'utf-8\'')) {
+        var contentBytes = srcFile.readAsBytesSync();
+        dstFile.createSync(recursive: true);
+        dstFile.writeAsBytesSync(contentBytes);
+      } else {
+        print('Failed writing a file due to : ${e.message}');
+      }
+    }
   }
 
   String _replace(String str, List<Replacement> replacements) {
