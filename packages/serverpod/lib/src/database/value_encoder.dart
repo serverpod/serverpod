@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 // ignore: implementation_imports
@@ -8,7 +9,10 @@ import 'package:serverpod/serverpod.dart';
 class ValueEncoder extends PostgresTextEncoder {
   @override
   String convert(value, {bool escapeStrings = true}) {
-    if (value is ByteData || value is DateTime) {
+    if (value is ByteData) {
+      var encoded = base64Encode(value.buffer.asUint8List());
+      return 'decode(\'$encoded\', \'base64\')';
+    } else if (value is DateTime) {
       return super.convert(SerializationManager.encode(value),
           escapeStrings: escapeStrings);
     } else if (value is String &&

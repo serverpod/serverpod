@@ -1059,6 +1059,12 @@ void main() {
       expect(result!.normal, equals('test normal'));
       expect(result.api, isNull);
     });
+
+    test('Write and read ByteData', () async {
+      var result = await client.basicDatabase.testByteDataStore();
+
+      expect(result, equals(true));
+    });
   });
 
   group('Async tasks', () {
