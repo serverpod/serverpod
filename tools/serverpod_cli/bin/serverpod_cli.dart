@@ -55,9 +55,10 @@ Future<void> _main(List<String> args) async {
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
     return;
   }
-  if (!await CommandLineTools.existsCommand('flutter')) {
+  if (!(await CommandLineTools.existsCommand('flutter') ||
+      await CommandLineTools.existsCommand('fvm'))) {
     print(
-        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+        'Failed to run serverpod. You need to have fvm or flutter installed in your \$PATH');
     return;
   }
 

@@ -18,9 +18,15 @@ class CommandLineTools {
     print(result.stdout);
   }
 
-  static void flutterCreate(Directory dir) {
-    print('Running `flutter create .` in ${dir.path}');
-    var cf = _CommandFormatter('flutter', ['create', '.']);
+  static void flutterCreate(Directory dir) async {
+    _CommandFormatter cf;
+    if (await existsCommand('flutter')) {
+      print('Running `flutter create .` in ${dir.path}');
+      cf = _CommandFormatter('flutter', ['create', '.']);
+    } else {
+      print('Running `fvm flutter create .` in ${dir.path}');
+      cf = _CommandFormatter('fvm', ['flutter', 'create', '.']);
+    }
     var result = Process.runSync(
       cf.command,
       cf.args,
