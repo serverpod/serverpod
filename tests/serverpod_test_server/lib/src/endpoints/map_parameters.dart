@@ -154,4 +154,18 @@ class MapParametersEndpoint extends Endpoint {
   ) async {
     return map;
   }
+
+  Future<Map<String, Duration>> returnDurationMap(
+    Session session,
+    Map<String, Duration> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<String, Duration?>> returnDurationMapNullableDurations(
+    Session session,
+    Map<String, Duration?> map,
+  ) async {
+    return map;
+  }
 }

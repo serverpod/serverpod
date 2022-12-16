@@ -17,11 +17,13 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     required this.stringMap,
     required this.dateTimeMap,
     required this.byteDataMap,
+    required this.durationMap,
     required this.nullableDataMap,
     required this.nullableIntMap,
     required this.nullableStringMap,
     required this.nullableDateTimeMap,
     required this.nullableByteDataMap,
+    required this.nullableDurationMap,
     required this.intIntMap,
   });
 
@@ -40,6 +42,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
           .deserialize<Map<String, DateTime>>(jsonSerialization['dateTimeMap']),
       byteDataMap: serializationManager.deserialize<Map<String, _i3.ByteData>>(
           jsonSerialization['byteDataMap']),
+      durationMap: serializationManager
+          .deserialize<Map<String, Duration>>(jsonSerialization['durationMap']),
       nullableDataMap:
           serializationManager.deserialize<Map<String, _i2.SimpleData?>>(
               jsonSerialization['nullableDataMap']),
@@ -53,6 +57,9 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       nullableByteDataMap:
           serializationManager.deserialize<Map<String, _i3.ByteData?>>(
               jsonSerialization['nullableByteDataMap']),
+      nullableDurationMap:
+          serializationManager.deserialize<Map<String, Duration?>>(
+              jsonSerialization['nullableDurationMap']),
       intIntMap: serializationManager
           .deserialize<Map<int, int>>(jsonSerialization['intIntMap']),
     );
@@ -68,6 +75,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<String, _i3.ByteData> byteDataMap;
 
+  Map<String, Duration> durationMap;
+
   Map<String, _i2.SimpleData?> nullableDataMap;
 
   Map<String, int?> nullableIntMap;
@@ -77,6 +86,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
   Map<String, DateTime?> nullableDateTimeMap;
 
   Map<String, _i3.ByteData?> nullableByteDataMap;
+
+  Map<String, Duration?> nullableDurationMap;
 
   Map<int, int> intIntMap;
 
@@ -88,11 +99,13 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'stringMap': stringMap,
       'dateTimeMap': dateTimeMap,
       'byteDataMap': byteDataMap,
+      'durationMap': durationMap,
       'nullableDataMap': nullableDataMap,
       'nullableIntMap': nullableIntMap,
       'nullableStringMap': nullableStringMap,
       'nullableDateTimeMap': nullableDateTimeMap,
       'nullableByteDataMap': nullableByteDataMap,
+      'nullableDurationMap': nullableDurationMap,
       'intIntMap': intIntMap,
     };
   }

@@ -26,6 +26,19 @@ ALTER TABLE ONLY "object_with_bytedata"
 
 
 --
+-- Class ObjectWithDuration as table object_with_duration
+--
+
+CREATE TABLE "object_with_duration" (
+  "id" serial,
+  "duration" json NOT NULL
+);
+
+ALTER TABLE ONLY "object_with_duration"
+  ADD CONSTRAINT object_with_duration_pkey PRIMARY KEY (id);
+
+
+--
 -- Class ObjectWithEnum as table object_with_enum
 --
 
@@ -84,7 +97,8 @@ CREATE TABLE "types" (
   "aDouble" double precision,
   "aDateTime" timestamp without time zone,
   "aString" text,
-  "aByteData" bytea
+  "aByteData" bytea,
+  "aDuration" json
 );
 
 ALTER TABLE ONLY "types"
