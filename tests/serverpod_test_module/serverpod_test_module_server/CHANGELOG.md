@@ -1,3 +1,12 @@
+## 0.9.21
+- Supports sub directories for protocol class files.
+- Updates dependencies for auth module.
+- Nicer default web page for new projects.
+- Adds authentication example.
+- Correctly inserts ByteData into the database.
+- Much improved documentation for authentication.
+- __Breaking changes__: The `active` and `suspendedUntil` fields of `UserInfo` in the auth module has been removed. These fields need to be removed from the database for authentication to work.
+
 ## 0.9.20
 - New serialization layer thanks to the extensive work of [Maximilian Fischer](https://github.com/fischerscode). This adds compatibility with custom serialization, such as [Freezed](https://pub.dev/packages/freezed). It also adds support for nested `Map`s and `List`s.
 - Updates examples.

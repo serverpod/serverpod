@@ -4,7 +4,7 @@ publish_to: none
 
 name: serverpod_flutter
 description: Flutter specific utilities for Serverpod.
-version: 0.9.20
+version: 0.9.21
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -15,7 +15,7 @@ environment:
 
 dependencies:
   connectivity_plus: ^2.3.7
-  serverpod_client: #^0.9.20
+  serverpod_client: #^0.9.21
     path: ../serverpod_client
   flutter:
     sdk: flutter

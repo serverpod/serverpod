@@ -2,4 +2,4 @@
 // templates/pubspecs directory.
 
 /// Current version of serverpod.
-const serverpodVersion = '0.9.20';
+const serverpodVersion = '0.9.21';
