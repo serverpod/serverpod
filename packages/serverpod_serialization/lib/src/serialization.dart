@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'bytedata_base64_ext.dart';
+import 'duration_ext.dart';
 
 /// The constructor takes JSON structure and turns it into a decoded
 /// [SerializableEntity].
@@ -69,6 +70,10 @@ abstract class SerializationManager {
       return (data as String).base64DecodedByteData()! as T;
     } else if (t == getType<ByteData?>()) {
       return (data as String?)?.base64DecodedByteData() as T;
+    } else if (t == Duration) {
+      return (data as String).tryDecodeDuration()! as T;
+    } else if (t == getType<Duration?>()) {
+      return (data as String?)?.tryDecodeDuration() as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -87,6 +92,8 @@ abstract class SerializationManager {
       return 'DateTime';
     } else if (data is ByteData) {
       return 'ByteData';
+    } else if (data is Duration) {
+      return 'Duration';
     }
     return null;
   }
@@ -107,6 +114,8 @@ abstract class SerializationManager {
         return deserialize<DateTime>(data['data']);
       case 'ByteData':
         return deserialize<ByteData>(data['data']);
+      case 'Duration':
+        return deserialize<Duration>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -137,6 +146,8 @@ abstract class SerializationManager {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {
           return nonEncodable.base64encodedString();
+        } else if (nonEncodable is Duration) {
+          return nonEncodable.toString();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})

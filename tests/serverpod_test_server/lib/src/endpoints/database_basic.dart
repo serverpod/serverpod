@@ -160,4 +160,27 @@ class BasicDatabase extends Endpoint {
 
     return true;
   }
+
+  Future<bool> testDurationStore(
+    Session session,
+  ) async {
+    // Clear database.
+    await ObjectWithDuration.delete(
+      session,
+      where: (t) => Constant(true),
+    );
+
+    // Create byte data.
+    var duration = const Duration(seconds: 1);
+
+    // Insert a row.
+    var row = ObjectWithDuration(duration: duration);
+    await ObjectWithDuration.insert(session, row);
+
+    // Fetch the row.
+    row = (await ObjectWithDuration.findSingleRow(session))!;
+
+    // Verify the data.
+    return row.duration == duration;
+  }
 }

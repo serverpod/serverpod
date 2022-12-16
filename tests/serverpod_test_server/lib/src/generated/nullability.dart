@@ -24,6 +24,8 @@ class Nullability extends _i1.SerializableEntity {
     this.aNullableDateTime,
     required this.aByteData,
     this.aNullableByteData,
+    required this.aDuration,
+    this.aNullableDuration,
     required this.anObject,
     this.aNullableObject,
     required this.anIntList,
@@ -42,6 +44,10 @@ class Nullability extends _i1.SerializableEntity {
     this.aNullableByteDataList,
     required this.aListWithNullableByteDatas,
     this.aNullableListWithNullableByteDatas,
+    required this.aDurationList,
+    this.aNullableDurationList,
+    required this.aListWithNullableDurations,
+    this.aNullableListWithNullableDurations,
     required this.anIntMap,
     this.aNullableIntMap,
     required this.aMapWithNullableInts,
@@ -75,6 +81,10 @@ class Nullability extends _i1.SerializableEntity {
           .deserialize<_i2.ByteData>(jsonSerialization['aByteData']),
       aNullableByteData: serializationManager
           .deserialize<_i2.ByteData?>(jsonSerialization['aNullableByteData']),
+      aDuration: serializationManager
+          .deserialize<Duration>(jsonSerialization['aDuration']),
+      aNullableDuration: serializationManager
+          .deserialize<Duration?>(jsonSerialization['aNullableDuration']),
       anObject: serializationManager
           .deserialize<_i3.SimpleData>(jsonSerialization['anObject']),
       aNullableObject: serializationManager
@@ -120,6 +130,16 @@ class Nullability extends _i1.SerializableEntity {
       aNullableListWithNullableByteDatas:
           serializationManager.deserialize<List<_i2.ByteData?>?>(
               jsonSerialization['aNullableListWithNullableByteDatas']),
+      aDurationList: serializationManager
+          .deserialize<List<Duration>>(jsonSerialization['aDurationList']),
+      aNullableDurationList: serializationManager.deserialize<List<Duration>?>(
+          jsonSerialization['aNullableDurationList']),
+      aListWithNullableDurations:
+          serializationManager.deserialize<List<Duration?>>(
+              jsonSerialization['aListWithNullableDurations']),
+      aNullableListWithNullableDurations:
+          serializationManager.deserialize<List<Duration?>?>(
+              jsonSerialization['aNullableListWithNullableDurations']),
       anIntMap: serializationManager
           .deserialize<Map<String, int>>(jsonSerialization['anIntMap']),
       aNullableIntMap: serializationManager
@@ -155,6 +175,10 @@ class Nullability extends _i1.SerializableEntity {
   _i2.ByteData aByteData;
 
   _i2.ByteData? aNullableByteData;
+
+  Duration aDuration;
+
+  Duration? aNullableDuration;
 
   _i3.SimpleData anObject;
 
@@ -192,6 +216,14 @@ class Nullability extends _i1.SerializableEntity {
 
   List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
 
+  List<Duration> aDurationList;
+
+  List<Duration>? aNullableDurationList;
+
+  List<Duration?> aListWithNullableDurations;
+
+  List<Duration?>? aNullableListWithNullableDurations;
+
   Map<String, int> anIntMap;
 
   Map<String, int>? aNullableIntMap;
@@ -215,6 +247,8 @@ class Nullability extends _i1.SerializableEntity {
       'aNullableDateTime': aNullableDateTime,
       'aByteData': aByteData,
       'aNullableByteData': aNullableByteData,
+      'aDuration': aDuration,
+      'aNullableDuration': aNullableDuration,
       'anObject': anObject,
       'aNullableObject': aNullableObject,
       'anIntList': anIntList,
@@ -233,6 +267,10 @@ class Nullability extends _i1.SerializableEntity {
       'aNullableByteDataList': aNullableByteDataList,
       'aListWithNullableByteDatas': aListWithNullableByteDatas,
       'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas,
+      'aDurationList': aDurationList,
+      'aNullableDurationList': aNullableDurationList,
+      'aListWithNullableDurations': aListWithNullableDurations,
+      'aNullableListWithNullableDurations': aNullableListWithNullableDurations,
       'anIntMap': anIntMap,
       'aNullableIntMap': aNullableIntMap,
       'aMapWithNullableInts': aMapWithNullableInts,
@@ -255,6 +293,8 @@ class Nullability extends _i1.SerializableEntity {
       'aNullableDateTime': aNullableDateTime,
       'aByteData': aByteData,
       'aNullableByteData': aNullableByteData,
+      'aDuration': aDuration,
+      'aNullableDuration': aNullableDuration,
       'anObject': anObject,
       'aNullableObject': aNullableObject,
       'anIntList': anIntList,
@@ -273,6 +313,10 @@ class Nullability extends _i1.SerializableEntity {
       'aNullableByteDataList': aNullableByteDataList,
       'aListWithNullableByteDatas': aListWithNullableByteDatas,
       'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas,
+      'aDurationList': aDurationList,
+      'aNullableDurationList': aNullableDurationList,
+      'aListWithNullableDurations': aListWithNullableDurations,
+      'aNullableListWithNullableDurations': aNullableListWithNullableDurations,
       'anIntMap': anIntMap,
       'aNullableIntMap': aNullableIntMap,
       'aMapWithNullableInts': aMapWithNullableInts,

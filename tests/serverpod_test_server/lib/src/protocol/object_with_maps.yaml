@@ -5,9 +5,11 @@ fields:
   stringMap: Map<String, String>
   dateTimeMap: Map<String, DateTime>
   byteDataMap: Map<String, ByteData>
+  durationMap: Map<String, Duration>
   nullableDataMap: Map<String, SimpleData?>
   nullableIntMap: Map<String, int?>
   nullableStringMap: Map<String, String?>
   nullableDateTimeMap: Map<String, DateTime?>
   nullableByteDataMap: Map<String, ByteData?>
+  nullableDurationMap: Map<String, Duration?>
   intIntMap: Map<int, int>
