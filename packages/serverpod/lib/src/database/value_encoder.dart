@@ -15,6 +15,9 @@ class ValueEncoder extends PostgresTextEncoder {
     } else if (value is DateTime) {
       return super.convert(SerializationManager.encode(value),
           escapeStrings: escapeStrings);
+    } else if (value is Duration) {
+      return super.convert(SerializationManager.encode(value),
+          escapeStrings: escapeStrings);
     } else if (value is String &&
         value.startsWith('decode(\'') &&
         value.endsWith('\', \'base64\')')) {

@@ -31,7 +31,7 @@ ALTER TABLE ONLY "object_with_bytedata"
 
 CREATE TABLE "object_with_duration" (
   "id" serial,
-  "duration" json NOT NULL
+  "duration" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "object_with_duration"
@@ -98,7 +98,7 @@ CREATE TABLE "types" (
   "aDateTime" timestamp without time zone,
   "aString" text,
   "aByteData" bytea,
-  "aDuration" json
+  "aDuration" bigint
 );
 
 ALTER TABLE ONLY "types"

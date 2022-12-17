@@ -201,56 +201,57 @@ void main() {
 
     test('Nullability with values', () {
       var nullability = Nullability(
-          anInt: 42,
-          aNullableInt: 42,
-          aDouble: 42.42,
-          aNullableDouble: 42.42,
-          aBool: true,
-          aNullableBool: true,
-          aString: 'foo',
-          aNullableString: 'foo',
-          aDateTime: DateTime.utc(1976),
-          aNullableDateTime: DateTime.utc(1976),
-          aByteData: createByteData(),
-          aNullableByteData: createByteData(),
-          anObject: SimpleData(num: 42),
-          aNullableObject: SimpleData(num: 42),
-          anIntList: [10, 20],
-          aNullableIntList: [10, 20],
-          aListWithNullableInts: [10, null],
-          aNullableListWithNullableInts: [10, null],
-          anObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-          aNullableObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-          aListWithNullableObjects: [SimpleData(num: 10), null],
-          aNullableListWithNullableObjects: [SimpleData(num: 10), null],
-          aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
-          aNullableDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
-          aListWithNullableDateTimes: [DateTime.utc(1976), null],
-          aNullableListWithNullableDateTimes: [DateTime.utc(1976), null],
-          aByteDataList: [createByteData(), createByteData()],
-          aNullableByteDataList: [createByteData(), createByteData()],
-          aListWithNullableByteDatas: [createByteData(), null],
-          aNullableListWithNullableByteDatas: [createByteData(), null],
-          anIntMap: {'0': 0, '1': 1, '2': 2},
-          aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
-          aDurationList: const [
-            Duration(seconds: 1),
-            Duration(minutes: 1),
-          ],
-          aListWithNullableDurations: const [
-            Duration(seconds: 1),
-            null,
-          ],
-          aNullableDurationList: const [
-            Duration(seconds: 1),
-            Duration(minutes: 1),
-          ],
-          aDuration: const Duration(seconds: 1),
-          aNullableDuration: const Duration(seconds: 1),
-          aNullableListWithNullableDurations: [
-            const Duration(seconds: 1),
-            null,
-          ]);
+        anInt: 42,
+        aNullableInt: 42,
+        aDouble: 42.42,
+        aNullableDouble: 42.42,
+        aBool: true,
+        aNullableBool: true,
+        aString: 'foo',
+        aNullableString: 'foo',
+        aDateTime: DateTime.utc(1976),
+        aNullableDateTime: DateTime.utc(1976),
+        aByteData: createByteData(),
+        aNullableByteData: createByteData(),
+        anObject: SimpleData(num: 42),
+        aNullableObject: SimpleData(num: 42),
+        anIntList: [10, 20],
+        aNullableIntList: [10, 20],
+        aListWithNullableInts: [10, null],
+        aNullableListWithNullableInts: [10, null],
+        anObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
+        aNullableObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
+        aListWithNullableObjects: [SimpleData(num: 10), null],
+        aNullableListWithNullableObjects: [SimpleData(num: 10), null],
+        aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
+        aNullableDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
+        aListWithNullableDateTimes: [DateTime.utc(1976), null],
+        aNullableListWithNullableDateTimes: [DateTime.utc(1976), null],
+        aByteDataList: [createByteData(), createByteData()],
+        aNullableByteDataList: [createByteData(), createByteData()],
+        aListWithNullableByteDatas: [createByteData(), null],
+        aNullableListWithNullableByteDatas: [createByteData(), null],
+        anIntMap: {'0': 0, '1': 1, '2': 2},
+        aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
+        aDurationList: const [
+          Duration(seconds: 1),
+          Duration(minutes: 1),
+        ],
+        aListWithNullableDurations: const [
+          Duration(seconds: 1),
+          null,
+        ],
+        aNullableDurationList: const [
+          Duration(seconds: 1),
+          Duration(minutes: 1),
+        ],
+        aDuration: const Duration(seconds: 1),
+        aNullableDuration: const Duration(seconds: 1),
+        aNullableListWithNullableDurations: [
+          const Duration(seconds: 1),
+          null,
+        ],
+      );
 
       var s = SerializationManager.encode(nullability);
       var unpacked = protocol.deserialize<Nullability>(jsonDecode(s));
@@ -308,49 +309,55 @@ void main() {
     });
 
     test('Map types', () {
-      var maps = ObjectWithMaps(
-        dataMap: {
-          '0': SimpleData(num: 0),
-          '1': SimpleData(num: 1),
-          '2': SimpleData(num: 2),
-        },
-        intMap: {'0': 0, '1': 1, '2': 2},
-        stringMap: {'0': 'String 0', '1': 'String 1', '2': 'String 2'},
-        dateTimeMap: {
-          '2020': DateTime.utc(2020),
-          '2021': DateTime.utc(2021),
-          '2022': DateTime.utc(2022),
-        },
-        byteDataMap: {
-          '0': createByteData(),
-          '1': createByteData(),
-        },
-        nullableDataMap: {
-          '0': SimpleData(num: 0),
-          '1': null,
-          '2': SimpleData(num: 2),
-        },
-        nullableIntMap: {'0': 0, '1': null, '2': 2},
-        nullableStringMap: {'0': 'null', '1': null, '2': 'String 2'},
-        nullableDateTimeMap: {
-          '2020': DateTime.utc(2020),
-          '2021': null,
-          '2022': DateTime.utc(2022),
-        },
-        nullableByteDataMap: {
-          '0': createByteData(),
-          '1': null,
-        },
-        intIntMap: {1: 1, 2: 4, 3: 9},
-        durationMap: {
-          '0': const Duration(seconds: 1),
-          '1': const Duration(minutes: 1),
-        },
-        nullableDurationMap: {
-          '0': const Duration(seconds: 1),
-          '1': null,
-        },
-      );
+      var maps = ObjectWithMaps(dataMap: {
+        '0': SimpleData(num: 0),
+        '1': SimpleData(num: 1),
+        '2': SimpleData(num: 2),
+      }, intMap: {
+        '0': 0,
+        '1': 1,
+        '2': 2
+      }, stringMap: {
+        '0': 'String 0',
+        '1': 'String 1',
+        '2': 'String 2'
+      }, dateTimeMap: {
+        '2020': DateTime.utc(2020),
+        '2021': DateTime.utc(2021),
+        '2022': DateTime.utc(2022),
+      }, byteDataMap: {
+        '0': createByteData(),
+        '1': createByteData(),
+      }, nullableDataMap: {
+        '0': SimpleData(num: 0),
+        '1': null,
+        '2': SimpleData(num: 2),
+      }, nullableIntMap: {
+        '0': 0,
+        '1': null,
+        '2': 2
+      }, nullableStringMap: {
+        '0': 'null',
+        '1': null,
+        '2': 'String 2'
+      }, nullableDateTimeMap: {
+        '2020': DateTime.utc(2020),
+        '2021': null,
+        '2022': DateTime.utc(2022),
+      }, nullableByteDataMap: {
+        '0': createByteData(),
+        '1': null,
+      }, intIntMap: {
+        1: 1,
+        2: 4,
+        3: 9
+      }, durationMap: {
+        '0': const Duration(seconds: 1),
+        '1': const Duration(minutes: 1),
+      }, nullableDurationMap: {
+        '0': const Duration(seconds: 1),
+        '1': null,
+      });
 
       var s = SerializationManager.encode(maps);
       var unpacked = protocol.deserialize<ObjectWithMaps>(jsonDecode(s));

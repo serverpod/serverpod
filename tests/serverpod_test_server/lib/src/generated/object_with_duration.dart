@@ -189,7 +189,7 @@ class ObjectWithDurationTable extends _i1.Table {
 
   final id = _i1.ColumnInt('id');
 
-  final duration = _i1.ColumnSerializable('duration');
+  final duration = _i1.ColumnDuration('duration');
 
   @override
   List<_i1.Column> get columns => [

@@ -154,6 +154,7 @@ class TypeDefinition {
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
+    if (className == 'Duration') return 'bigint';
 
     return 'json';
   }
@@ -167,6 +168,8 @@ class TypeDefinition {
     if (className == 'String') return 'ColumnString';
     if (className == 'DateTime') return 'ColumnDateTime';
     if (className == 'ByteData') return 'ColumnByteData';
+    if (className == 'Duration') return 'ColumnDuration';
+
     return 'ColumnSerializable';
   }
 

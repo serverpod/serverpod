@@ -266,7 +266,7 @@ class TypesTable extends _i1.Table {
 
   final aByteData = _i1.ColumnByteData('aByteData');
 
-  final aDuration = _i1.ColumnSerializable('aDuration');
+  final aDuration = _i1.ColumnDuration('aDuration');
 
   @override
   List<_i1.Column> get columns => [

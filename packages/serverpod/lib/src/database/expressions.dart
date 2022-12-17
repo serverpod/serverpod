@@ -270,13 +270,43 @@ class ColumnByteData extends Column {
   ColumnByteData(String name) : super(name, ByteData);
 }
 
+/// A [Column] holding [Duration].
+class ColumnDuration extends Column {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnDuration(String name) : super(name, Duration);
+
+  /// Creates an [Expression] checking if the value in the column equals the
+  /// specified value.
+  Expression equals(Duration? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NULL');
+    } else {
+      return Expression(
+        '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}',
+      );
+    }
+  }
+
+  /// Creates an [Expression] checking if the value in the column does not equal
+  /// the specified value.
+  Expression notEquals(Duration? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NOT NULL');
+    } else {
+      return Expression(
+        '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}',
+      );
+    }
+  }
+}
+
 /// A [Column] holding an [SerializableEntity]. The entity will be stored in the
 /// database as a json column.
 class ColumnSerializable extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(String name) : super(name, String);
 
-  // TODO: Add comparisons and possibly other operations
+// TODO: Add comparisons and possibly other operations
 }
 
 /// A constant [Expression].

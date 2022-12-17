@@ -732,6 +732,7 @@ void main() {
   group('Basic types', () {
     var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
     var duration = const Duration(seconds: 1);
+
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
       await client.simple.addToGlobalInt();
@@ -818,6 +819,7 @@ void main() {
     test('Write and read', () async {
       var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
       var duration = const Duration(seconds: 1);
+
       // TODO: Support ByteData in database store
       var types = Types(
         aBool: true,
