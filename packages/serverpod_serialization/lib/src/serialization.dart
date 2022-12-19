@@ -69,6 +69,8 @@ abstract class SerializationManager {
       return (data as String).base64DecodedByteData()! as T;
     } else if (t == getType<ByteData?>()) {
       return (data as String?)?.base64DecodedByteData() as T;
+    } else if (t == Uri || t == getType<Uri?>()) {
+      return Uri.tryParse(data ?? '') as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -87,6 +89,8 @@ abstract class SerializationManager {
       return 'DateTime';
     } else if (data is ByteData) {
       return 'ByteData';
+    } else if (data is Uri) {
+      return 'Uri';
     }
     return null;
   }
@@ -107,6 +111,8 @@ abstract class SerializationManager {
         return deserialize<DateTime>(data['data']);
       case 'ByteData':
         return deserialize<ByteData>(data['data']);
+      case 'Uri':
+        return deserialize<Uri>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
