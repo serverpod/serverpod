@@ -480,6 +480,12 @@ class _EndpointBasicDatabase extends _i1.EndpointRef {
         'getObjectWithObject',
         {'id': id},
       );
+
+  _i2.Future<bool> testByteDataStore() => caller.callServerEndpoint<bool>(
+        'basicDatabase',
+        'testByteDataStore',
+        {},
+      );
 }
 
 class _EndpointTransactionsDatabase extends _i1.EndpointRef {

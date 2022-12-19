@@ -8,8 +8,10 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
   bool debug = false,
+  String? clientId,
+  String? serverClientId,
   List<String> additionalScopes = const [],
-  Uri? redirectUri,
+  required Uri redirectUri,
 }) async {
   var scopes = [
     'email',
@@ -21,6 +23,8 @@ Future<UserInfo?> signInWithGoogle(
 
   var googleSignIn = GoogleSignIn(
     scopes: scopes,
+    clientId: clientId,
+    serverClientId: serverClientId,
   );
 
   try {

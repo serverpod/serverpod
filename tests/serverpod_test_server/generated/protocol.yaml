@@ -57,6 +57,7 @@ basicDatabase:
   - updateSimpleDataRow:
   - storeObjectWithObject:
   - getObjectWithObject:
+  - testByteDataStore:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:

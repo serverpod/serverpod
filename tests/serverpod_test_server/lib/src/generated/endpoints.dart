@@ -1191,6 +1191,16 @@ class Endpoints extends _i1.EndpointDispatch {
             params['id'],
           ),
         ),
+        'testByteDataStore': _i1.MethodConnector(
+          name: 'testByteDataStore',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .testByteDataStore(session),
+        ),
       },
     );
     connectors['transactionsDatabase'] = _i1.EndpointConnector(

@@ -1,0 +1,16 @@
+name: auth_example_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+
+dependencies:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_auth_server:
+      path: ../../../modules/serverpod_auth/serverpod_auth_server
+
+dev_dependencies:
+  lints: ^2.0.0
