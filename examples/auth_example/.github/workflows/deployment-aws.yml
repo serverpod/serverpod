@@ -1,0 +1,75 @@
+name: Deploy to AWS
+on:
+  push:
+    branches: [ deployment-aws-production, deployment-aws-staging ]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - 'staging'
+          - 'production'
+jobs:
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: 2.18.1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Create passwords file
+        working-directory: auth_example_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          pwd
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          ls config/
+
+      - name: Get Dart packages
+        working-directory: auth_example_server
+        run: dart pub get
+
+      - name: Compile server
+        working-directory: auth_example_server
+        run: dart compile kernel bin/main.dart
+
+      - name: Create CodeDeploy Deployment
+        id: deploy
+        env:
+          PROJECT_NAME: auth_example
+          AWS_NAME: auth-example
+          DEPLOYMENT_BUCKET: auth-example-deployment-1232970
+          TARGET: ${{ github.event.inputs.target }}
+        run: |
+          # Deploy server to AWS
+          TARGET="${TARGET:=${GITHUB_REF##*-}}"
+          echo "Deploying to target: $TARGET"
+          mkdir -p vendor
+          cp "${PROJECT_NAME}_server/aws/scripts/appspec.yml" appspec.yml
+          zip -r deployment.zip .
+          aws s3 cp deployment.zip "s3://${DEPLOYMENT_BUCKET}/deployment.zip"
+          aws deploy create-deployment \
+           --application-name "${AWS_NAME}-app" \
+           --deployment-group-name "${AWS_NAME}-${TARGET}-group" \
+           --deployment-config-name CodeDeployDefault.OneAtATime \
+           --s3-location "bucket=${DEPLOYMENT_BUCKET},key=deployment.zip,bundleType=zip"

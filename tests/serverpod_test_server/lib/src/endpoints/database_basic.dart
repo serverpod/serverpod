@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
@@ -125,5 +127,37 @@ class BasicDatabase extends Endpoint {
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {
     return await ObjectWithObject.findById(session, id);
+  }
+
+  Future<bool> testByteDataStore(
+    Session session,
+  ) async {
+    // Clear database.
+    await ObjectWithByteData.delete(
+      session,
+      where: (t) => Constant(true),
+    );
+
+    // Create byte data.
+    var byteData = ByteData(256);
+    for (var i = 0; i < 256; i += 1) {
+      byteData.setUint8(i, i);
+    }
+
+    // Insert a row.
+    var row = ObjectWithByteData(byteData: byteData);
+    await ObjectWithByteData.insert(session, row);
+
+    // Fetch the row.
+    row = (await ObjectWithByteData.findSingleRow(session))!;
+
+    // Verify the data.
+    for (var i = 0; i < 256; i += 1) {
+      if (row.byteData.getUint8(i) != i) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

@@ -13,6 +13,19 @@ ALTER TABLE ONLY "object_field_scopes"
 
 
 --
+-- Class ObjectWithByteData as table object_with_bytedata
+--
+
+CREATE TABLE "object_with_bytedata" (
+  "id" serial,
+  "byteData" bytea NOT NULL
+);
+
+ALTER TABLE ONLY "object_with_bytedata"
+  ADD CONSTRAINT object_with_bytedata_pkey PRIMARY KEY (id);
+
+
+--
 -- Class ObjectWithEnum as table object_with_enum
 --
 
