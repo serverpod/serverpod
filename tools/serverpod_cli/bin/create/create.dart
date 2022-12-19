@@ -19,12 +19,25 @@ const _defaultPorts = <String, int>{
   'Redis server': 8091,
 };
 
+bool isNameValid(String name) {
+  RegExp namePattern = new RegExp(r'^[0-9a-z]+(?:[0-9a-z]+|_[0-9a-z]+)*$');
+
+  return namePattern.stringMatch(name).toString().length == name.length;
+}
+
 Future<void> performCreate(
   String name,
   bool verbose,
   String template,
   bool force,
 ) async {
+  // Check whether the project name is valid
+   if(!isNameValid(name)){
+   print(
+        'Failed to create project. The project name may only contain lower case letters, numbers, and underscores.');
+    return;
+  }
+  
   // Check we are set to create a new project
   var usedPorts = <String, int>{};
   for (var serverDescription in _defaultPorts.keys) {
