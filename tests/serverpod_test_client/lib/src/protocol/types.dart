@@ -18,6 +18,7 @@ class Types extends _i1.SerializableEntity {
     this.aDateTime,
     this.aString,
     this.aByteData,
+    this.anUri,
   });
 
   factory Types.fromJson(
@@ -37,6 +38,7 @@ class Types extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['aString']),
       aByteData: serializationManager
           .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
+      anUri: serializationManager.deserialize<Uri?>(jsonSerialization['anUri']),
     );
   }
 
@@ -54,6 +56,8 @@ class Types extends _i1.SerializableEntity {
 
   _i2.ByteData? aByteData;
 
+  Uri? anUri;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -64,6 +68,7 @@ class Types extends _i1.SerializableEntity {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'anUri': anUri,
     };
   }
 }

@@ -150,6 +150,7 @@ class TypeDefinition {
     //TODO: add all suported types here
     if (className == 'String') return 'text';
     if (className == 'bool') return 'boolean';
+    if (className == 'Uri' || className == '_SimpleUri') return 'character varying';
     if (className == 'int' || isEnum) return 'integer';
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';

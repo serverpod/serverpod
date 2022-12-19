@@ -147,6 +147,8 @@ abstract class SerializationManager {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
               .toList();
+        } else if(nonEncodable is Uri){
+          return nonEncodable.toString();
         } else {
           return (nonEncodable as dynamic)?.toJson();
         }

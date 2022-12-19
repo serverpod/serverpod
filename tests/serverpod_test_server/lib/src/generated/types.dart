@@ -18,6 +18,7 @@ class Types extends _i1.TableRow {
     this.aDateTime,
     this.aString,
     this.aByteData,
+    this.anUri,
   }) : super(id);
 
   factory Types.fromJson(
@@ -37,6 +38,7 @@ class Types extends _i1.TableRow {
           .deserialize<String?>(jsonSerialization['aString']),
       aByteData: serializationManager
           .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
+      anUri: serializationManager.deserialize<Uri?>(jsonSerialization['anUri']),
     );
   }
 
@@ -54,6 +56,8 @@ class Types extends _i1.TableRow {
 
   _i2.ByteData? aByteData;
 
+  Uri? anUri;
+
   @override
   String get tableName => 'types';
   @override
@@ -66,6 +70,7 @@ class Types extends _i1.TableRow {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'anUri': anUri,
     };
   }
 
@@ -79,6 +84,7 @@ class Types extends _i1.TableRow {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'anUri': anUri,
     };
   }
 
@@ -92,6 +98,7 @@ class Types extends _i1.TableRow {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'anUri': anUri,
     };
   }
 
@@ -121,6 +128,9 @@ class Types extends _i1.TableRow {
         return;
       case 'aByteData':
         aByteData = value;
+        return;
+      case 'anUri':
+        anUri = value;
         return;
       default:
         throw UnimplementedError();
@@ -255,6 +265,8 @@ class TypesTable extends _i1.Table {
 
   final aByteData = _i1.ColumnByteData('aByteData');
 
+  final anUri = _i1.ColumnSerializable('anUri');
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -264,6 +276,7 @@ class TypesTable extends _i1.Table {
         aDateTime,
         aString,
         aByteData,
+        anUri,
       ];
 }
 

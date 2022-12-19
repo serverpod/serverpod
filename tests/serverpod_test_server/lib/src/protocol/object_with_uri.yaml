@@ -1,0 +1,4 @@
+class: ObjectWithUri
+table: object_with_uri
+fields:
+  url: Uri?

@@ -351,5 +351,18 @@ void main() {
       expect(unpacked.intIntMap[2], equals(4));
       expect(unpacked.intIntMap[3], equals(9));
     });
+    test('Uri types with Null and Non-null Uri data', () {
+      var nonNullUriObj = ObjectWithUri(
+        id: 0,
+        url: Uri(scheme: 'https',host: 'serverpod.dev'),
+      );
+      var nullUriObj = ObjectWithUri(id: 1);
+      var nonNullEncoded= SerializationManager.encode(nonNullUriObj);
+      var nullEncoded = SerializationManager.encode(nullUriObj);
+      var nonNullUnpacked = protocol.deserialize<ObjectWithUri>(jsonDecode(nonNullEncoded));
+      var nullUnpacked = protocol.deserialize<ObjectWithUri>(jsonDecode(nullEncoded));
+      expect(nonNullUnpacked.url, equals(Uri.parse('https://serverpod.dev')));
+      expect(nullUnpacked.url, equals(Uri()));
+    });
   });
 }

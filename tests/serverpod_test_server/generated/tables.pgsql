@@ -61,6 +61,19 @@ ALTER TABLE ONLY "object_with_object"
 
 
 --
+-- Class ObjectWithUri as table object_with_uri
+--
+
+CREATE TABLE "object_with_uri" (
+  "id" serial,
+  "url" character varying
+);
+
+ALTER TABLE ONLY "object_with_uri"
+  ADD CONSTRAINT object_with_uri_pkey PRIMARY KEY (id);
+
+
+--
 -- Class SimpleData as table simple_data
 --
 
@@ -84,7 +97,8 @@ CREATE TABLE "types" (
   "aDouble" double precision,
   "aDateTime" timestamp without time zone,
   "aString" text,
-  "aByteData" bytea
+  "aByteData" bytea,
+  "anUri" character varying
 );
 
 ALTER TABLE ONLY "types"
