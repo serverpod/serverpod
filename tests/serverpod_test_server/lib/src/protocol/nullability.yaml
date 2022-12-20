@@ -18,6 +18,9 @@ fields:
   aByteData: ByteData
   aNullableByteData: ByteData?
 
+  aDuration: Duration
+  aNullableDuration: Duration?
+
   anObject: SimpleData
   aNullableObject: SimpleData?
 
@@ -40,6 +43,11 @@ fields:
   aNullableByteDataList: List<ByteData>?
   aListWithNullableByteDatas: List<ByteData?>
   aNullableListWithNullableByteDatas: List<ByteData?>?
+
+  aDurationList: List<Duration>
+  aNullableDurationList: List<Duration>?
+  aListWithNullableDurations: List<Duration?>
+  aNullableListWithNullableDurations: List<Duration?>?
 
   anIntMap: Map<String,int>
   aNullableIntMap: Map<String,int>?

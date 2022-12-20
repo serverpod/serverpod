@@ -731,6 +731,7 @@ void main() {
 
   group('Basic types', () {
     var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
+    var duration = const Duration(seconds: 1);
 
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
@@ -803,11 +804,21 @@ void main() {
       var result = await client.basicTypes.testByteData(null);
       expect(result, isNull);
     });
+    test('Type Duration', () async {
+      var result = await client.basicTypes.testDuration(duration);
+      expect(result, equals(duration));
+    });
+
+    test('Type null Duration', () async {
+      var result = await client.basicTypes.testDuration(null);
+      expect(result, isNull);
+    });
   });
 
   group('Database', () {
     test('Write and read', () async {
       var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
+      var duration = const Duration(seconds: 1);
 
       // TODO: Support ByteData in database store
       var types = Types(
@@ -815,6 +826,7 @@ void main() {
         aDouble: 1.5,
         anInt: 42,
         aDateTime: dateTime,
+        aDuration: duration,
         aString: 'Foo',
         // aByteData: createByteData(),
       );
@@ -840,6 +852,7 @@ void main() {
         expect(storedTypes.aDouble, equals(1.5));
         expect(storedTypes.aString, equals('Foo'));
         expect(storedTypes.aDateTime, equals(dateTime));
+        expect(storedTypes.aDuration, equals(duration));
         // expect(storedTypes.aByteData!.lengthInBytes, equals(256));
       }
     });
@@ -868,6 +881,7 @@ void main() {
         expect(storedTypes.aDouble, isNull);
         expect(storedTypes.aString, isNull);
         expect(storedTypes.aDateTime, isNull);
+        expect(storedTypes.aDuration, isNull);
       }
     });
 

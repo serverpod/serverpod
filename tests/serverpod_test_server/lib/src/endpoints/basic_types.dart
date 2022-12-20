@@ -25,4 +25,8 @@ class BasicTypesEndpoint extends Endpoint {
   Future<ByteData?> testByteData(Session session, ByteData? value) async {
     return value;
   }
+
+  Future<Duration?> testDuration(Session session, Duration? value) async {
+    return value;
+  }
 }

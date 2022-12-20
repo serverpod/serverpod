@@ -145,4 +145,18 @@ class ListParametersEndpoint extends Endpoint {
   ) async {
     return list;
   }
+
+  Future<List<Duration>> returnDurationList(
+    Session session,
+    List<Duration> list,
+  ) async {
+    return list;
+  }
+
+  Future<List<Duration?>> returnDurationListNullableDurations(
+    Session session,
+    List<Duration?> list,
+  ) async {
+    return list;
+  }
 }
