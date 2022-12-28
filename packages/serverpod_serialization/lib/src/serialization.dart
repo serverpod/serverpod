@@ -56,7 +56,7 @@ abstract class SerializationManager {
     if (t == int || t == getType<int?>()) {
       return data;
     } else if (t == double || t == getType<double?>()) {
-      return data;
+      return (data as num?)?.toDouble() as T;
     } else if (t == String || t == getType<String?>()) {
       return data;
     } else if (t == bool || t == getType<bool?>()) {
