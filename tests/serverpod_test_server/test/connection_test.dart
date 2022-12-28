@@ -1113,12 +1113,7 @@ void main() {
       }
 
       expect(clientException, isNotNull);
-      if (identical(0, 0.0)) {
-        // Cannot always detect status code in web
-        expect(clientException!.statusCode, equals(-1));
-      } else {
-        expect(clientException!.statusCode, equals(500));
-      }
+      expect(clientException!.statusCode, equals(500));
     });
 
     test('Exception in call from database', () async {
@@ -1130,12 +1125,7 @@ void main() {
       }
 
       expect(clientException, isNotNull);
-      if (identical(0, 0.0)) {
-        // Cannot always detect status code in web
-        expect(clientException!.statusCode, equals(-1));
-      } else {
-        expect(clientException!.statusCode, equals(500));
-      }
+      expect(clientException!.statusCode, equals(500));
     });
 
     test('Exception in call from database being caugt', () async {
