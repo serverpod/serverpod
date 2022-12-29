@@ -5,7 +5,7 @@ echo Starting docker
 docker-compose up --build --detach
 
 :LOOP
-netstat -o -n -a | >nul findstr "8090" && (
+netstat -o -n -a | >nul findstr "5432" && (
     echo Waiting for Postgres...
     timeout /t 2 /nobreak > NUL
     goto :PORT_FOUND

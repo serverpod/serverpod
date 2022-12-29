@@ -6,12 +6,12 @@ docker-compose up --build --detach
 
 if command -v netstat &> /dev/null
 then
-  while ! netstat -tna | grep 'LISTEN' | grep -q '.8090'; do
+  while ! netstat -tna | grep 'LISTEN' | grep -q '.5432'; do
     echo "Waiting for Postgres..."
     sleep 2 # time in seconds, tune it as needed
   done
 else
-  while ! ss -tulpn | grep LISTEN | grep :8090; do
+  while ! ss -tulpn | grep LISTEN | grep :5432; do
     echo "Waiting for Postgres..."
     sleep 2
   done

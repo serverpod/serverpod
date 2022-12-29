@@ -15,8 +15,8 @@ const _defaultPorts = <String, int>{
   'Serverpod API': 8080,
   'Serverpod insights API': 8081,
   'Serverpod Relic web server': 8082,
-  'PostgreSQL server': 8090,
-  'Redis server': 8091,
+  'PostgreSQL server': 5432,
+  'Redis server': 6379,
 };
 
 Future<void> performCreate(

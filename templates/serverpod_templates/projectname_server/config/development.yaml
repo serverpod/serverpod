@@ -30,7 +30,7 @@ webServer:
 # This is the database setup for your server.
 database:
   host: localhost
-  port: 8090
+  port: 5432
   name: projectname
   user: postgres
 
@@ -38,4 +38,4 @@ database:
 redis:
   enabled: false
   host: localhost
-  port: 8091
+  port: 6379

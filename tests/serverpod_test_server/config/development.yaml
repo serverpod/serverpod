@@ -18,11 +18,11 @@ webServer:
 
 database:
   host: localhost
-  port: 8090
+  port: 5432
   name: serverpod_test
   user: postgres
 
 redis:
   enabled: true
   host: localhost
-  port: 8091
+  port: 6379

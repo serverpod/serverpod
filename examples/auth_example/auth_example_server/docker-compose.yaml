@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:14.1
     ports:
-      - '8090:5432'
+      - '5432:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: auth_example
@@ -14,7 +14,7 @@ services:
   redis:
     image: redis:6.2.6
     ports:
-      - '8091:6379'
+      - '6379:6379'
     command: redis-server --requirepass "V7YogaG9K2rnIpS1odXIKrqsW8kkfddt"
     environment:
       - REDIS_REPLICATION_MODE=master
