@@ -59,12 +59,12 @@ class CommandLineTools {
       print(result.stdout);
     }
 
+    var setupTablesScript = p.join(
+        serverPath, Platform.isWindows ? 'setup-tables.cmd' : 'setup-tables');
     var process = await Process.start(
       /// Windows has an issue with running batch file directly without the complete path.
       /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
-      Platform.isWindows
-          ? p.join(serverPath, 'setup-tables.cmd')
-          : './setup-tables',
+      setupTablesScript,
       [],
       workingDirectory: serverPath,
     );
@@ -73,34 +73,8 @@ class CommandLineTools {
     unawaited(stderr.addStream(process.stderr));
 
     var exitCode = await process.exitCode;
+    File(setupTablesScript).deleteSync();
     print('Completed table setup exit code: $exitCode');
-
-    print('Cleaning up');
-    result = await Process.run(
-      'rm',
-      ['setup-tables'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
-
-    result = await Process.run(
-      'rm',
-      ['setup-tables.cmd'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
-  }
-
-  static Future<void> cleanupForWindows(Directory dir, String name) async {
-    var serverPath = p.join(dir.path, '${name}_server');
-    print('Cleaning up');
-    var file = File(p.join(serverPath, 'setup-tables'));
-    try {
-      await file.delete();
-    } catch (e) {
-      print('Failed cleanup: $e');
-      print('file: $file');
-    }
   }
 }
 

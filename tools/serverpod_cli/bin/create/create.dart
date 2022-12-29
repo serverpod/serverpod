@@ -353,8 +353,8 @@ Future<void> performCreate(
   }
 
   if (dockerConfigured && template != 'module') {
+    await CommandLineTools.createTables(projectDir, name);
     if (Platform.isWindows) {
-      await CommandLineTools.cleanupForWindows(projectDir, name);
       printwwln('');
       printww('====================');
       printww('SERVERPOD CREATED :D');
@@ -362,13 +362,11 @@ Future<void> performCreate(
       printwwln('All setup. You are ready to rock!');
       printwwln('Start your Serverpod by running:');
       stdout.writeln('  \$ cd .\\${p.join(name, '${name}_server')}\\');
-      stdout.writeln('  \$ .\\setup-tables.cmd');
       stdout.writeln('  \$ docker-compose up --build --detach');
       stdout.writeln('  \$ dart .\\bin\\main.dart');
       printww('');
     } else {
       // Create tables
-      await CommandLineTools.createTables(projectDir, name);
       printwwln('');
       printwwln('SERVERPOD CREATED 🥳');
       printwwln('All setup. You are ready to rock!');
