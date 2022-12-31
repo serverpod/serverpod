@@ -11,24 +11,29 @@ import '../util/print.dart';
 import 'copier.dart';
 import 'port_checker.dart';
 
-const _defaultPorts = <String, int>{
-  'Serverpod API': 8080,
-  'Serverpod insights API': 8081,
-  'Serverpod Relic web server': 8082,
-  'PostgreSQL server': 8090,
-  'Redis server': 8091,
-};
+const _defaultPostgresPort = '8090';
+const _defaultRedisPort = '8091';
 
 Future<void> performCreate(
   String name,
   bool verbose,
   String template,
   bool force,
+  int postgresPort,
+  int redisPort,
 ) async {
+  var defaultPorts = <String, int>{
+    'Serverpod API': 8080,
+    'Serverpod insights API': 8081,
+    'Serverpod Relic web server': 8082,
+    'PostgreSQL server': postgresPort,
+    'Redis server': redisPort,
+  };
+
   // Check we are set to create a new project
   var usedPorts = <String, int>{};
-  for (var serverDescription in _defaultPorts.keys) {
-    var port = _defaultPorts[serverDescription]!;
+  for (var serverDescription in defaultPorts.keys) {
+    var port = defaultPorts[serverDescription]!;
 
     var available = await isNetworkPortAvailable(port);
     if (!available) {
@@ -45,7 +50,7 @@ Future<void> performCreate(
     var strIssue =
         'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create" and manually configure your Serverpod.';
     var strIssuePorts =
-        'One or more network ports Serverpod want to use are not available. The most likely reason is that you have another Serverpod project running, but it can also be another service.';
+        'One or more network ports Serverpod want to use are not available. The most likely reason is that you have another Serverpod project running, but it can also be another service. You can either stop the other service or change the ports used by Serverpod by passing the --postgresPort flag to "serverpod create".';
     var strIssueDocker =
         'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the -f flag added.';
 
@@ -140,6 +145,14 @@ Future<void> performCreate(
         Replacement(
           slotName: 'SERVICE_SECRET_PRODUCTION',
           replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: _defaultPostgresPort,
+          replacement: postgresPort.toString(),
+        ),
+        Replacement(
+          slotName: _defaultRedisPort,
+          replacement: redisPort.toString(),
         ),
         Replacement(
           slotName: 'DB_PASSWORD',

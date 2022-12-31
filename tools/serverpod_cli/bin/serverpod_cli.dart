@@ -115,6 +115,20 @@ Future<void> _main(List<String> args) async {
     help:
         'Template to use when creating a new project, valid options are "server" or "module"',
   );
+  createParser.addOption(
+    'postgresPort',
+    abbr: 'p',
+    defaultsTo: '8090',
+    mandatory: false,
+    help: 'Port to use for the postgres database',
+  );
+  createParser.addOption(
+    'redisPort',
+    abbr: 'r',
+    defaultsTo: '8091',
+    mandatory: false,
+    help: 'Port to use for the redis database',
+  );
   parser.addCommand(cmdCreate, createParser);
 
   // "generate" command
@@ -177,6 +191,8 @@ Future<void> _main(List<String> args) async {
       bool verbose = results.command!['verbose'];
       String template = results.command!['template'];
       bool force = results.command!['force'];
+      int pgPort = int.parse(results.command!['postgresPort']);
+      int redisPort = int.parse(results.command!['redisPort']);
 
       if (name == 'server' || name == 'module' || name == 'create') {
         _printUsage(parser);
@@ -186,7 +202,7 @@ Future<void> _main(List<String> args) async {
 
       var re = RegExp(r'^[a-z0-9_]+$');
       if (results.arguments.length > 1 && re.hasMatch(name)) {
-        await performCreate(name, verbose, template, force);
+        await performCreate(name, verbose, template, force, pgPort, redisPort);
         _analytics.cleanUp();
         return;
       }
