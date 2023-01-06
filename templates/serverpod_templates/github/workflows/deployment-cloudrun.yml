@@ -1,0 +1,93 @@
+name: Deploy to Cloud Run
+on:
+  push:
+    branches: [ deployment-cloudrun-production, deployment-cloudrun-staging ]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - 'staging'
+          - 'production'
+
+env:
+  PROJECT_ID: serverpod # TODO: update Google Cloud project id
+  GAR_LOCATION: asia-south1 # TODO: update Artifact Registry location
+  REPOSITORY: serverpod-docker-repo # TODO: update Artifact Registry repository name
+  REGION: asia-south1 # TODO: update Cloud Run service region
+
+
+
+jobs:
+  deploy:
+    name: Deploy to Google Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Setting Target Mode from Input
+        if: ${{ github.event.inputs.target != '' }}  
+        run: echo "TARGET=${{ github.event.inputs.target }}" >> $GITHUB_ENV  
+        
+      - name: Setting Target mode based on branch
+        if: ${{ github.event.inputs.target == '' }}
+        run: echo "TARGET=${GITHUB_REF##*-}" >> $GITHUB_ENV      
+  
+      - name: Set Image Name
+        run: echo "IMAGE_NAME=$(echo ${GITHUB_REPOSITORY##*/}_${GITHUB_REF##*/}_$TARGET | sed 's/[^a-zA-Z0-9]/_/g')" >> $GITHUB_ENV
+      
+      - name: Set Service Name
+        run: echo "SERVICE_NAME=$(echo $IMAGE_NAME | sed 's/[^a-zA-Z0-9]/-/g')" >> $GITHUB_ENV
+      
+      - name: Test
+        run: echo $SERVICE_NAME 
+
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
+      - name: Create passwords file
+        working-directory: projectname_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          pwd
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          ls config/
+          
+      - name: Configure Docker
+        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev
+
+      - name: Build the Docker image
+        run: "cd projectname_server && docker build -t $IMAGE_NAME . --build-arg mode=$TARGET"
+
+      - name: Tag the Docker image
+        run: docker tag $IMAGE_NAME ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/$IMAGE_NAME
+
+      - name: Push Docker image
+        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/$IMAGE_NAME
+
+      - id: deploy
+        name: Deploy Docker image to cloud run
+        uses: "google-github-actions/deploy-cloudrun@v0"
+        with:
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}
+          region: ${{ env.REGION }}
+          service: ${{ env.SERVICE_NAME }}
+          flags: 
+            --port=8080
+            --allow-unauthenticated
+
+      - name: "Use output"
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
