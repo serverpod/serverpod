@@ -1,3 +1,5 @@
+## 0.9.21
+- Add Cloud Run Support
 ## 0.9.20
 - New serialization layer thanks to the extensive work of [Maximilian Fischer](https://github.com/fischerscode). This adds compatibility with custom serialization, such as [Freezed](https://pub.dev/packages/freezed). It also adds support for nested `Map`s and `List`s.
 - Updates examples.
