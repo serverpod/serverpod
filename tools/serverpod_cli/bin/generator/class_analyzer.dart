@@ -140,11 +140,10 @@ class ClassAnalyzer {
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
     if (documentContents.nodes['class'] != null) {
-      return _analyzeClassFile(
-          documentContents, docsExtractor.getDocumentation);
+      return _analyzeClassFile(documentContents, docsExtractor);
     }
     if (documentContents.nodes['enum'] != null) {
-      return _analyzeEnumFile(documentContents, docsExtractor.getDocumentation);
+      return _analyzeEnumFile(documentContents, docsExtractor);
     }
 
     collector.addError(SourceSpanException(
@@ -154,8 +153,8 @@ class ClassAnalyzer {
     return null;
   }
 
-  ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents,
-      List<String>? Function(SourceLocation keyStart) docsExtractor) {
+  ProtocolFileDefinition? _analyzeClassFile(
+      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
       {'class', 'table', 'fields', 'indexes'},
@@ -172,8 +171,8 @@ class ClassAnalyzer {
       ));
       return null;
     }
-    var classDocumentation =
-        docsExtractor(documentContents.key('class')!.span.start);
+    var classDocumentation = docsExtractor
+        .getDocumentation(documentContents.key('class')!.span.start);
 
     var className = classNameNode.value;
     if (className is! String) {
@@ -253,7 +252,8 @@ class ClassAnalyzer {
         ));
         continue;
       }
-      var fieldDocumentation = docsExtractor(fieldNameNode.span.start);
+      var fieldDocumentation =
+          docsExtractor.getDocumentation(fieldNameNode.span.start);
       var fieldName = fieldNameNode.value;
       if (fieldName is! String) {
         collector.addError(SourceSpanException(
@@ -526,8 +526,8 @@ class ClassAnalyzer {
     );
   }
 
-  ProtocolFileDefinition? _analyzeEnumFile(YamlMap documentContents,
-      List<String>? Function(SourceLocation keyStart) docsExtractor) {
+  ProtocolFileDefinition? _analyzeEnumFile(
+      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
       {'enum', 'values'},
@@ -544,8 +544,8 @@ class ClassAnalyzer {
       ));
       return null;
     }
-    var enumDocumentation =
-        docsExtractor(documentContents.key('enum')!.span.start);
+    var enumDocumentation = docsExtractor
+        .getDocumentation(documentContents.key('enum')!.span.start);
 
     var className = classNameNode.value;
     if (className is! String) {
@@ -609,7 +609,8 @@ class ClassAnalyzer {
       }
       var start = valueNode.span.start;
       // 2 is the length of '- ' in '- enumValue'
-      var valueDocumentation = docsExtractor(SourceLocation(start.offset - 2,
+      var valueDocumentation = docsExtractor.getDocumentation(SourceLocation(
+          start.offset - 2,
           column: start.column - 2,
           line: start.line,
           sourceUrl: start.sourceUrl));
