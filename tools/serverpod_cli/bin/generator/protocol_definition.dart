@@ -1,5 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:path/path.dart' as p;
 
+import '../util/extensions.dart';
 import 'class_generator_dart.dart';
 import 'types.dart';
 
@@ -91,6 +93,13 @@ abstract class ProtocolFileDefinition {
     required this.className,
     this.subDir,
   });
+
+  /// Generate the file reference [String] to this file.
+  String fileRef() {
+    return p.posix
+        // ignore: prefer_interpolation_to_compose_strings
+        .joinAll(p.split('${(subDir + '/') ?? ''}$fileName.dart'));
+  }
 }
 
 class ClassDefinition extends ProtocolFileDefinition {

@@ -76,7 +76,8 @@ class ClassGeneratorDart extends ClassGenerator {
             if (field.shouldIncludeField(serverCode) &&
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
-                f.type = field.type.reference(serverCode);
+                f.type = field.type.reference(serverCode,
+                    subDirectory: classDefinition.subDir);
                 f.name = field.name;
               }));
             }
@@ -136,7 +137,8 @@ class ClassGeneratorDart extends ClassGenerator {
                         refer('jsonSerialization')
                             .index(literalString(field.name))
                       ], {}, [
-                        field.type.reference(serverCode)
+                        field.type.reference(serverCode,
+                            subDirectory: classDefinition.subDir)
                       ])
                 })
                 .returned
@@ -683,7 +685,13 @@ class ClassGeneratorDart extends ClassGenerator {
                     ..symbol = field.type.columnType
                     ..url = 'package:serverpod/serverpod.dart'
                     ..types.addAll(field.type.isEnum
-                        ? [field.type.reference(serverCode, false)]
+                        ? [
+                            field.type.reference(
+                              serverCode,
+                              nullable: false,
+                              subDirectory: classDefinition.subDir,
+                            )
+                          ]
                         : [])).call([literalString(field.name)]).code));
               }
             }
@@ -779,8 +787,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
     // exports
     library.directives.addAll([
-      for (var classInfo in classInfos)
-        Directive.export('${classInfo.fileName}.dart'),
+      for (var classInfo in classInfos) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -836,9 +843,8 @@ class ClassGeneratorDart extends ClassGenerator {
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
             for (var classInfo in classInfos)
-              refer(classInfo.className, '${classInfo.fileName}.dart'):
-                  Code.scope((a) =>
-                      '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+              refer(classInfo.className, classInfo.fileRef()): Code.scope(
+                  (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
                       '.fromJson(data'
                       '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
             for (var classInfo in classInfos)
@@ -846,11 +852,11 @@ class ClassGeneratorDart extends ClassGenerator {
                 TypeReference(
                   (b) => b
                     ..symbol = classInfo.className
-                    ..url = '${classInfo.fileName}.dart'
+                    ..url = classInfo.fileRef()
                     ..isNullable = true,
                 )
               ]): Code.scope((a) => '(data!=null?'
-                  '${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}'
+                  '${a(refer(classInfo.className, classInfo.fileRef()))}'
                   '.fromJson(data'
                   '${classInfo is ClassDefinition ? ',this' : ''})'
                   ':null)as T'),
@@ -914,7 +920,7 @@ class ClassGeneratorDart extends ClassGenerator {
                 'if(data is ${a(extraClass.reference(serverCode))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return super.getClassNameForObject(data);'),
         ])),
       Method((m) => m
@@ -940,7 +946,7 @@ class ClassGeneratorDart extends ClassGenerator {
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
-                'return deserialize<${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}>(data[\'data\']);}'),
+                'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
           const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
@@ -973,8 +979,8 @@ class ClassGeneratorDart extends ClassGenerator {
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
-                          'case ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}:'
-                          'return ${a(refer(classInfo.className, '${classInfo.fileName}.dart'))}.t;'),
+                          'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'
+                          'return ${a(refer(classInfo.className, classInfo.fileRef()))}.t;'),
                   const Code('}'),
                 ]),
               const Code('return null;'),

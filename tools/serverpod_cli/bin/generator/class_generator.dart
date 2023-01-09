@@ -62,11 +62,11 @@ abstract class ClassGenerator {
     required CodeGenerator codeGenerator,
   }) {
     for (var classDefinition in classDefinitions) {
-      var outputFile = File(p.join(
+      var outputFile = File(p.joinAll([
         outputDirectoryPath,
-        classDefinition.subDir ?? '',
-        '${classDefinition.fileName}$outputExtension',
-      ));
+        ...?classDefinition.subDir?.split('/'),
+        '${classDefinition.fileName}$outputExtension'
+      ]));
 
       try {
         var out = generateFile(classDefinition);
