@@ -581,7 +581,7 @@ class ClassAnalyzer {
       ));
       return null;
     }
-    var values = <EnumValue>[];
+    var values = <EnumValueDefinition>[];
     for (var valueNode in valuesNode.nodes) {
       if (valueNode is! YamlScalar) {
         collector.addError(SourceSpanException(
@@ -615,7 +615,7 @@ class ClassAnalyzer {
           line: start.line,
           sourceUrl: start.sourceUrl));
 
-      values.add(EnumValue(value, valueDocumentation));
+      values.add(EnumValueDefinition(value, valueDocumentation));
     }
 
     return EnumDefinition(

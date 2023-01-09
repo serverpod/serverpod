@@ -120,7 +120,7 @@ class ClassDefinition extends ProtocolFileDefinition {
 }
 
 class EnumDefinition extends ProtocolFileDefinition {
-  List<EnumValue> values;
+  List<EnumValueDefinition> values;
   final List<String>? documentation;
 
   EnumDefinition({
@@ -132,9 +132,9 @@ class EnumDefinition extends ProtocolFileDefinition {
   });
 }
 
-class EnumValue {
+class EnumValueDefinition {
   final String name;
   final List<String>? documentation;
 
-  EnumValue(this.name, [this.documentation]);
+  EnumValueDefinition(this.name, [this.documentation]);
 }

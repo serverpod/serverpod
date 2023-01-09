@@ -2,7 +2,7 @@ import 'package:code_builder/code_builder.dart';
 
 import 'class_generator.dart';
 import 'config.dart';
-import 'protocol_definition.dart' hide EnumValue;
+import 'protocol_definition.dart';
 import 'types.dart';
 
 String serverpodUrl(bool serverCode) {
