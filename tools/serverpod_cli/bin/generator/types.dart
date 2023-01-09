@@ -4,7 +4,6 @@ import 'package:code_builder/code_builder.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
-import '../util/extensions.dart';
 import 'class_generator_dart.dart';
 import 'config.dart';
 import 'protocol_definition.dart';

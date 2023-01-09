@@ -106,6 +106,7 @@ class ClassDefinition extends ProtocolFileDefinition {
   final String? tableName;
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
+  final List<String>? documentation;
 
   ClassDefinition({
     required super.fileName,
@@ -114,16 +115,26 @@ class ClassDefinition extends ProtocolFileDefinition {
     this.tableName,
     this.indexes,
     super.subDir,
+    this.documentation,
   });
 }
 
 class EnumDefinition extends ProtocolFileDefinition {
-  List<String> values;
+  List<EnumValue> values;
+  final List<String>? documentation;
 
   EnumDefinition({
     required super.fileName,
     required super.className,
     required this.values,
     super.subDir,
+    this.documentation,
   });
+}
+
+class EnumValue {
+  final String name;
+  final List<String>? documentation;
+
+  EnumValue(this.name, [this.documentation]);
 }

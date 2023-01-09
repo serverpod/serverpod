@@ -5,6 +5,8 @@ import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 import '../util/string_validators.dart';
+import '../util/extensions.dart';
+import '../util/yaml_docs.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
@@ -135,12 +137,14 @@ class ClassAnalyzer {
       ));
       return null;
     }
+    var docsExtractor = YamlDocumentationExtractor(yaml);
 
     if (documentContents.nodes['class'] != null) {
-      return _analyzeClassFile(documentContents);
+      return _analyzeClassFile(
+          documentContents, docsExtractor.getDocumentation);
     }
     if (documentContents.nodes['enum'] != null) {
-      return _analyzeEnumFile(documentContents);
+      return _analyzeEnumFile(documentContents, docsExtractor.getDocumentation);
     }
 
     collector.addError(SourceSpanException(
@@ -150,7 +154,8 @@ class ClassAnalyzer {
     return null;
   }
 
-  ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents) {
+  ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents,
+      List<String>? Function(SourceLocation keyStart) docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
       {'class', 'table', 'fields', 'indexes'},
@@ -167,6 +172,8 @@ class ClassAnalyzer {
       ));
       return null;
     }
+    var classDocumentation =
+        docsExtractor(documentContents.key('class')!.span.start);
 
     var className = classNameNode.value;
     if (className is! String) {
@@ -230,9 +237,11 @@ class ClassAnalyzer {
     // Add default id field, if object has database table.
     if (tableName != null) {
       fields.add(FieldDefinition(
-          name: 'id',
-          type: TypeDefinition.int.asNullable,
-          scope: FieldScope.all));
+        name: 'id',
+        type: TypeDefinition.int.asNullable,
+        scope: FieldScope.all,
+        documentation: ['/// The database ID.'],
+      ));
     }
 
     for (var fieldNameNode in fieldsNode.nodes.keys) {
@@ -244,6 +253,7 @@ class ClassAnalyzer {
         ));
         continue;
       }
+      var fieldDocumentation = docsExtractor(fieldNameNode.span.start);
       var fieldName = fieldNameNode.value;
       if (fieldName is! String) {
         collector.addError(SourceSpanException(
@@ -340,6 +350,7 @@ class ClassAnalyzer {
           scope: scope,
           type: typeResult.type..isEnum = isEnum,
           parentTable: parentTable,
+          documentation: fieldDocumentation,
         );
 
         fields.add(fieldDefinition);
@@ -511,10 +522,12 @@ class ClassAnalyzer {
       fields: fields,
       indexes: indexes,
       subDir: subDirectory,
+      documentation: classDocumentation,
     );
   }
 
-  ProtocolFileDefinition? _analyzeEnumFile(YamlMap documentContents) {
+  ProtocolFileDefinition? _analyzeEnumFile(YamlMap documentContents,
+      List<String>? Function(SourceLocation keyStart) docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
       {'enum', 'values'},
@@ -531,6 +544,8 @@ class ClassAnalyzer {
       ));
       return null;
     }
+    var enumDocumentation =
+        docsExtractor(documentContents.key('enum')!.span.start);
 
     var className = classNameNode.value;
     if (className is! String) {
@@ -566,7 +581,7 @@ class ClassAnalyzer {
       ));
       return null;
     }
-    var values = <String>[];
+    var values = <EnumValue>[];
     for (var valueNode in valuesNode.nodes) {
       if (valueNode is! YamlScalar) {
         collector.addError(SourceSpanException(
@@ -592,14 +607,21 @@ class ClassAnalyzer {
         ));
         return null;
       }
+      var start = valueNode.span.start;
+      // 2 is the length of '- ' in '- enumValue'
+      var valueDocumentation = docsExtractor(SourceLocation(start.offset - 2,
+          column: start.column - 2,
+          line: start.line,
+          sourceUrl: start.sourceUrl));
 
-      values.add(value);
+      values.add(EnumValue(value, valueDocumentation));
     }
 
     return EnumDefinition(
       fileName: outFileName,
       className: className,
       values: values,
+      documentation: enumDocumentation,
     );
   }
 
