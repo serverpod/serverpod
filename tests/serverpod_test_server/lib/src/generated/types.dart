@@ -11,6 +11,7 @@ import 'dart:typed_data' as _i2;
 
 class Types extends _i1.TableRow {
   Types({
+    /// The database ID.
     int? id,
     this.anInt,
     this.aBool,
@@ -252,6 +253,7 @@ typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 class TypesTable extends _i1.Table {
   TypesTable() : super(tableName: 'types');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final anInt = _i1.ColumnInt('anInt');

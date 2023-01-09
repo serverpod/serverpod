@@ -11,6 +11,7 @@ import 'dart:typed_data' as _i2;
 
 class ObjectWithByteData extends _i1.TableRow {
   ObjectWithByteData({
+    /// The database ID.
     int? id,
     required this.byteData,
   }) : super(id);
@@ -188,6 +189,7 @@ typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
 class ObjectWithByteDataTable extends _i1.Table {
   ObjectWithByteDataTable() : super(tableName: 'object_with_bytedata');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final byteData = _i1.ColumnByteData('byteData');

@@ -10,6 +10,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 class ObjectFieldScopes extends _i1.SerializableEntity {
   ObjectFieldScopes({
+    /// The database ID.
     this.id,
     required this.normal,
     this.api,
@@ -27,6 +28,7 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
   String normal;

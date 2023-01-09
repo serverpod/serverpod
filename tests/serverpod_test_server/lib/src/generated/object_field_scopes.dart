@@ -10,6 +10,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 class ObjectFieldScopes extends _i1.TableRow {
   ObjectFieldScopes({
+    /// The database ID.
     int? id,
     required this.normal,
     this.api,
@@ -203,6 +204,7 @@ typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
 class ObjectFieldScopesTable extends _i1.Table {
   ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final normal = _i1.ColumnString('normal');

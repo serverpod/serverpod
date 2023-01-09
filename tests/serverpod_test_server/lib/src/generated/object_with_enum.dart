@@ -11,6 +11,7 @@ import 'protocol.dart' as _i2;
 
 class ObjectWithEnum extends _i1.TableRow {
   ObjectWithEnum({
+    /// The database ID.
     int? id,
     required this.testEnum,
     this.nullableEnum,
@@ -232,6 +233,7 @@ typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
 class ObjectWithEnumTable extends _i1.Table {
   ObjectWithEnumTable() : super(tableName: 'object_with_enum');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final testEnum = _i1.ColumnEnum<_i2.TestEnum>('testEnum');

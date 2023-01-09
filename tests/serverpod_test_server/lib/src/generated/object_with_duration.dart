@@ -10,6 +10,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 class ObjectWithDuration extends _i1.TableRow {
   ObjectWithDuration({
+    /// The database ID.
     int? id,
     required this.duration,
   }) : super(id);
@@ -187,6 +188,7 @@ typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
 class ObjectWithDurationTable extends _i1.Table {
   ObjectWithDurationTable() : super(tableName: 'object_with_duration');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final duration = _i1.ColumnDuration('duration');

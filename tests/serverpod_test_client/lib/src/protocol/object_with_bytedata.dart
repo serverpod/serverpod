@@ -11,6 +11,7 @@ import 'dart:typed_data' as _i2;
 
 class ObjectWithByteData extends _i1.SerializableEntity {
   ObjectWithByteData({
+    /// The database ID.
     this.id,
     required this.byteData,
   });
@@ -26,6 +27,7 @@ class ObjectWithByteData extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
   _i2.ByteData byteData;
