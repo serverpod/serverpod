@@ -11,12 +11,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Just some simple data.
 class SimpleData extends _i1.TableRow {
   SimpleData({
-    /// The database ID.
     int? id,
-
-    /// The only field of [SimpleData]
-    ///
-    /// Second Value Extra Text
     required this.num,
   }) : super(id);
 

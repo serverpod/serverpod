@@ -11,7 +11,6 @@ import 'dart:typed_data' as _i2;
 
 class ObjectWithByteData extends _i1.TableRow {
   ObjectWithByteData({
-    /// The database ID.
     int? id,
     required this.byteData,
   }) : super(id);

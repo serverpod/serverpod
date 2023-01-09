@@ -10,7 +10,6 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 class ObjectWithDuration extends _i1.SerializableEntity {
   ObjectWithDuration({
-    /// The database ID.
     this.id,
     required this.duration,
   });

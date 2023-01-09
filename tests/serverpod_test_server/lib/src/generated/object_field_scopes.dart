@@ -10,7 +10,6 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 class ObjectFieldScopes extends _i1.TableRow {
   ObjectFieldScopes({
-    /// The database ID.
     int? id,
     required this.normal,
     this.api,

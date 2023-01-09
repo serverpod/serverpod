@@ -10,7 +10,6 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 class ObjectWithDuration extends _i1.TableRow {
   ObjectWithDuration({
-    /// The database ID.
     int? id,
     required this.duration,
   }) : super(id);

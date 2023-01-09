@@ -11,12 +11,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Just some simple data.
 class SimpleData extends _i1.SerializableEntity {
   SimpleData({
-    /// The database ID.
     this.id,
-
-    /// The only field of [SimpleData]
-    ///
-    /// Second Value Extra Text
     required this.num,
   });
 

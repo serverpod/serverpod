@@ -11,7 +11,6 @@ import 'protocol.dart' as _i2;
 
 class ObjectWithEnum extends _i1.TableRow {
   ObjectWithEnum({
-    /// The database ID.
     int? id,
     required this.testEnum,
     this.nullableEnum,

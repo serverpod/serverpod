@@ -11,7 +11,6 @@ import 'dart:typed_data' as _i2;
 
 class Types extends _i1.SerializableEntity {
   Types({
-    /// The database ID.
     this.id,
     this.anInt,
     this.aBool,

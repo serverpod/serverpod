@@ -11,7 +11,6 @@ import 'protocol.dart' as _i2;
 
 class ObjectWithObject extends _i1.SerializableEntity {
   ObjectWithObject({
-    /// The database ID.
     this.id,
     required this.data,
     this.nullableData,

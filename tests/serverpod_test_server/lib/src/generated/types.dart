@@ -11,7 +11,6 @@ import 'dart:typed_data' as _i2;
 
 class Types extends _i1.TableRow {
   Types({
-    /// The database ID.
     int? id,
     this.anInt,
     this.aBool,

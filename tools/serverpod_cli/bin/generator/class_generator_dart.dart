@@ -95,7 +95,6 @@ class ClassGeneratorDart extends ClassGenerator {
                   c.optionalParameters.add(Parameter((p) {
                     p.named = true;
                     p.name = 'id';
-                    p.docs.addAll(field.documentation ?? []);
                     p.type = TypeReference(
                       (t) => t
                         ..symbol = 'int'
@@ -108,7 +107,6 @@ class ClassGeneratorDart extends ClassGenerator {
                     p.required = !field.type.nullable;
                     p.toThis = true;
                     p.name = field.name;
-                    p.docs.addAll(field.documentation ?? []);
                   }));
                 }
               }

@@ -11,7 +11,6 @@ import 'protocol.dart' as _i2;
 
 class ObjectWithEnum extends _i1.SerializableEntity {
   ObjectWithEnum({
-    /// The database ID.
     this.id,
     required this.testEnum,
     this.nullableEnum,
