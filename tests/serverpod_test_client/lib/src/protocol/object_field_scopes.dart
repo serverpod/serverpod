@@ -27,6 +27,7 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
   String normal;

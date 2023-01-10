@@ -43,6 +43,7 @@ class Types extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
   int? anInt;

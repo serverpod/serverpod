@@ -203,6 +203,7 @@ typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
 class ObjectFieldScopesTable extends _i1.Table {
   ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final normal = _i1.ColumnString('normal');

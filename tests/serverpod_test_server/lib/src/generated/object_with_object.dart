@@ -245,6 +245,7 @@ typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
 class ObjectWithObjectTable extends _i1.Table {
   ObjectWithObjectTable() : super(tableName: 'object_with_object');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final data = _i1.ColumnSerializable('data');

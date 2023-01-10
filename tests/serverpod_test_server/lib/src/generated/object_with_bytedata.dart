@@ -188,6 +188,7 @@ typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
 class ObjectWithByteDataTable extends _i1.Table {
   ObjectWithByteDataTable() : super(tableName: 'object_with_bytedata');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final byteData = _i1.ColumnByteData('byteData');

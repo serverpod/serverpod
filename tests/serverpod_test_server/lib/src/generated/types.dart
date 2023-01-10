@@ -252,6 +252,7 @@ typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 class TypesTable extends _i1.Table {
   TypesTable() : super(tableName: 'types');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final anInt = _i1.ColumnInt('anInt');

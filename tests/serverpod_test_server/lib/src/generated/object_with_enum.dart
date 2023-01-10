@@ -232,6 +232,7 @@ typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
 class ObjectWithEnumTable extends _i1.Table {
   ObjectWithEnumTable() : super(tableName: 'object_with_enum');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final testEnum = _i1.ColumnEnum<_i2.TestEnum>('testEnum');

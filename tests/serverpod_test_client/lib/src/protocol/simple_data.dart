@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Just some simple data.
 class SimpleData extends _i1.SerializableEntity {
   SimpleData({
     this.id,
@@ -24,8 +25,12 @@ class SimpleData extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
+  /// The only field of [SimpleData]
+  ///
+  /// Second Value Extra Text
   int num;
 
   @override

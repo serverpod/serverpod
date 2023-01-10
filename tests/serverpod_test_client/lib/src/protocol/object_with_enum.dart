@@ -38,6 +38,7 @@ class ObjectWithEnum extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
   _i2.TestEnum testEnum;

@@ -43,6 +43,7 @@ class ObjectWithObject extends _i1.SerializableEntity {
     );
   }
 
+  /// The database ID.
   int? id;
 
   _i2.SimpleData data;

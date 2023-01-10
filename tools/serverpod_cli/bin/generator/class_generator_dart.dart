@@ -44,7 +44,9 @@ class ClassGeneratorDart extends ClassGenerator {
     var library = Library(
       (library) {
         library.body.add(Class((classBuilder) {
-          classBuilder.name = className;
+          classBuilder
+            ..name = className
+            ..docs.addAll(classDefinition.documentation ?? []);
 
           if (serverCode && tableName != null) {
             classBuilder.extend =
@@ -78,7 +80,9 @@ class ClassGeneratorDart extends ClassGenerator {
               classBuilder.fields.add(Field((f) {
                 f.type = field.type.reference(serverCode,
                     subDirectory: classDefinition.subDir);
-                f.name = field.name;
+                f
+                  ..name = field.name
+                  ..docs.addAll(field.documentation ?? []);
               }));
             }
           }
@@ -681,6 +685,7 @@ class ClassGeneratorDart extends ClassGenerator {
                 c.fields.add(Field((f) => f
                   ..modifier = FieldModifier.final$
                   ..name = field.name
+                  ..docs.addAll(field.documentation ?? [])
                   ..assignment = TypeReference((t) => t
                     ..symbol = field.type.columnType
                     ..url = 'package:serverpod/serverpod.dart'
@@ -737,11 +742,14 @@ class ClassGeneratorDart extends ClassGenerator {
       library.body.add(
         Enum((e) {
           e.name = enumName;
+          e.docs.addAll(enumDefinition.documentation ?? []);
           e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {
-                v.name = value;
+                v
+                  ..name = value.name
+                  ..docs.addAll(value.documentation ?? []);
               })
           ]);
 
@@ -756,7 +764,7 @@ class ClassGeneratorDart extends ClassGenerator {
                   ..statements.addAll([
                     const Code('switch(index){'),
                     for (int i = 0; i < enumDefinition.values.length; i++)
-                      Code('case $i: return ${enumDefinition.values[i]};'),
+                      Code('case $i: return ${enumDefinition.values[i].name};'),
                     const Code('default: return null;'),
                     const Code('}'),
                   ]))
@@ -1014,12 +1022,14 @@ class FieldDefinition {
 
   final FieldScope scope;
   final String? parentTable;
+  final List<String>? documentation;
 
   FieldDefinition({
     required this.name,
     required this.type,
     required this.scope,
     this.parentTable,
+    this.documentation,
   });
 
   bool shouldIncludeField(bool serverCode) {

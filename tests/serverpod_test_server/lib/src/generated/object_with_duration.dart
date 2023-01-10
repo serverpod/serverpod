@@ -187,6 +187,7 @@ typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
 class ObjectWithDurationTable extends _i1.Table {
   ObjectWithDurationTable() : super(tableName: 'object_with_duration');
 
+  /// The database ID.
   final id = _i1.ColumnInt('id');
 
   final duration = _i1.ColumnDuration('duration');
