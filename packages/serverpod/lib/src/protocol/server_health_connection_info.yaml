@@ -1,13 +1,29 @@
+### Represents a snapshot of the number of open connections the server currently
+### is handling. An entry is written every minute for each server. All health
+### data can be accessed through Serverpod Insights.
 class: ServerHealthConnectionInfo
 table: serverpod_health_connection_info
 fields:
+  ### The server associated with this connection info.
   serverId: String
-  type: int
+
+  ### The time when the connections was checked, granularity is one minute.
   timestamp: DateTime
+
+  ### Number of active connections currently open.
   active: int
+
+  ### Number of connections currently closing.
   closing: int
+
+  ### Number of connections currently idle.
   idle: int
+
+  ### The granularity of this timestamp, null represents 1 minute, other valid
+  ### values are 60 minutes and 1440 minutes (one day).
+  granularity: int
+
 indexes:
   serverpod_health_connection_info_timestamp_idx:
-    fields: timestamp, serverId, type
+    fields: timestamp, serverId, granularity
     unique: true

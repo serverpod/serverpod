@@ -224,6 +224,9 @@ typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
 class AuthKeyTable extends _i1.Table {
   AuthKeyTable() : super(tableName: 'serverpod_auth_key');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final userId = _i1.ColumnInt('userId');

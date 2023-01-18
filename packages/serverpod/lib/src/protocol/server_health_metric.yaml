@@ -1,11 +1,28 @@
+### Represents a snapshot of a specific health metric. An entry is written every
+### minute for each server. All health data can be accessed through Serverpod
+### Insights.
 class: ServerHealthMetric
 table: serverpod_health_metric
 fields:
+  ### The name of the metric.
   name: String
+
+  ### The server associated with this metric.
   serverId: String
+
+  ### The time when the connections was checked, granularity is one minute.
   timestamp: DateTime
+
+  ### True if the metric is healthy.
   isHealthy: bool
+
+  ### The value of the metric.
   value: double
+
+  ### The granularity of this timestamp, null represents 1 minute, other valid
+  ### values are 60 minutes and 1440 minutes (one day).
+  granularity: int
+
 indexes:
   serverpod_health_metric_timestamp_idx:
     fields: timestamp, serverId, name
