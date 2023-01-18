@@ -187,6 +187,9 @@ typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
 class ReadWriteTestEntryTable extends _i1.Table {
   ReadWriteTestEntryTable() : super(tableName: 'serverpod_readwrite_test');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final number = _i1.ColumnInt('number');

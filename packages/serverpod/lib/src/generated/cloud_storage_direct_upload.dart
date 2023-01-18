@@ -220,6 +220,9 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
   CloudStorageDirectUploadEntryTable()
       : super(tableName: 'serverpod_cloud_storage_direct_upload');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final storageId = _i1.ColumnString('storageId');

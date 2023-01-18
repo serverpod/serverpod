@@ -318,6 +318,9 @@ typedef SessionLogEntryExpressionBuilder = _i1.Expression Function(
 class SessionLogEntryTable extends _i1.Table {
   SessionLogEntryTable() : super(tableName: 'serverpod_session_log');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final serverId = _i1.ColumnString('serverId');
