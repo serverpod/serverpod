@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_email_flutter/src/signin_dialog.dart';
 
-/// Sign in with Apple button. When pressed, attempts to sign in with Google.
+/// Sign in with Email button. When pressed, a pop-up window appears with fields for entering login, email and password.
 class SignInWithEmailButton extends StatefulWidget {
   /// The Auth module's caller.
   final Caller caller;
@@ -16,7 +16,7 @@ class SignInWithEmailButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
-  /// Creates a new Sign in with Google button.
+  /// Creates a new Sign in with Email button.
   const SignInWithEmailButton({
     required this.caller,
     this.onSignedIn,
