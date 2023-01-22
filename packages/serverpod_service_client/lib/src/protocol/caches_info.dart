@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// High level information about the caches.
 class CachesInfo extends _i1.SerializableEntity {
   CachesInfo({
     required this.local,
@@ -30,10 +31,13 @@ class CachesInfo extends _i1.SerializableEntity {
     );
   }
 
+  /// Information about the local cache.
   _i2.CacheInfo local;
 
+  /// Information about the local priority cache.
   _i2.CacheInfo localPrio;
 
+  /// Information about the global cache.
   _i2.CacheInfo global;
 
   @override

@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// A log entry for a database query.
 class QueryLogEntry extends _i1.TableRow {
   QueryLogEntry({
     int? id,
@@ -52,24 +53,36 @@ class QueryLogEntry extends _i1.TableRow {
 
   static final t = QueryLogEntryTable();
 
+  /// The id of the server that handled the query.
   String serverId;
 
+  /// Id of the session this entry is associated with.
   int sessionLogId;
 
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
   int? messageId;
 
+  /// The query that was executed.
   String query;
 
+  /// The time it took to execute the query, in seconds.
   double duration;
 
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
   int? numRows;
 
+  /// Set if an exception was thrown during the execution of this query.
   String? error;
 
+  /// The stack trace of this query.
   String? stackTrace;
 
+  /// True if the execution of this query was considered slow.
   bool slow;
 
+  /// used for sorting the query log.
   int order;
 
   @override
@@ -289,24 +302,36 @@ class QueryLogEntryTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the server that handled the query.
   final serverId = _i1.ColumnString('serverId');
 
+  /// Id of the session this entry is associated with.
   final sessionLogId = _i1.ColumnInt('sessionLogId');
 
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
   final messageId = _i1.ColumnInt('messageId');
 
+  /// The query that was executed.
   final query = _i1.ColumnString('query');
 
+  /// The time it took to execute the query, in seconds.
   final duration = _i1.ColumnDouble('duration');
 
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
   final numRows = _i1.ColumnInt('numRows');
 
+  /// Set if an exception was thrown during the execution of this query.
   final error = _i1.ColumnString('error');
 
+  /// The stack trace of this query.
   final stackTrace = _i1.ColumnString('stackTrace');
 
+  /// True if the execution of this query was considered slow.
   final slow = _i1.ColumnBool('slow');
 
+  /// used for sorting the query log.
   final order = _i1.ColumnInt('order');
 
   @override

@@ -1,3 +1,5 @@
+### A list of log entries, used to return logging data.
 class: LogResult
 fields:
+  ### The log entries in this result.
   entries: List<LogEntry>

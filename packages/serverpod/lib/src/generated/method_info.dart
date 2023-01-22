@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Information about a server method.
 class MethodInfo extends _i1.TableRow {
   MethodInfo({
     int? id,
@@ -30,8 +31,10 @@ class MethodInfo extends _i1.TableRow {
 
   static final t = MethodInfoTable();
 
+  /// The endpoint of this method.
   String endpoint;
 
+  /// The name of this method.
   String method;
 
   @override
@@ -202,8 +205,10 @@ class MethodInfoTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The endpoint of this method.
   final endpoint = _i1.ColumnString('endpoint');
 
+  /// The name of this method.
   final method = _i1.ColumnString('method');
 
   @override

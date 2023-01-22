@@ -1,9 +1,23 @@
+### The log filter is used when searching for specific log entries.
 class: SessionLogFilter
 fields:
+  ### The endpoint to get logs from. Null will return logs from any endpoint.
   endpoint: String?
+
+  ### The method to get logs from. Null will return logs from any method.
   method: String?
+
+  ### The name of a future call to get logs from.
   futureCall: String?
+
+  ### If true, only return slow sessions.
   slow: bool
+
+  ### If true, only return sessions ending with an exception.
   error: bool
+
+  ### If true, only return open sessions.
   open: bool
+
+  ### Last session id to start the list of logs from. Used for pagination.
   lastSessionLogId: int?

@@ -1,11 +1,21 @@
+### A serialized future call with bindings to the database.
 class: FutureCallEntry
 table: serverpod_future_call
 
 fields:
+  ### Name of the future call. Used to find the correct method to call.
   name: String
+
+  ### Time to execute the call.
   time: DateTime
+
+  ### The serialized object, used as a parameter to the call.
   serializedObject: String?
+
+  ### The id of the server where the call was created.
   serverId: String
+
+  ### An optional identifier which can be used to cancel the call.
   identifier: String?
 
 indexes:

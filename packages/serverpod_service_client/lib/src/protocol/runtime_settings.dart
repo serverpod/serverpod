@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Runtime settings of the server.
 class RuntimeSettings extends _i1.SerializableEntity {
   RuntimeSettings({
     this.id,
@@ -41,12 +42,16 @@ class RuntimeSettings extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
+  /// Log settings.
   _i2.LogSettings logSettings;
 
+  /// List of log setting overrides.
   List<_i2.LogSettingsOverride> logSettingsOverrides;
 
+  /// True if service calls to Serverpod Insights should be logged.
   bool logServiceCalls;
 
+  /// True if malformed calls should be logged.
   bool logMalformedCalls;
 
   @override
