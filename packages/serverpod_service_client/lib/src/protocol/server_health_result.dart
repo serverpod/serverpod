@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Information about health and connection metrics.
 class ServerHealthResult extends _i1.SerializableEntity {
   ServerHealthResult({
     required this.metrics,
@@ -28,8 +29,10 @@ class ServerHealthResult extends _i1.SerializableEntity {
     );
   }
 
+  /// List of health metrics.
   List<_i2.ServerHealthMetric> metrics;
 
+  /// List of connection metrics.
   List<_i2.ServerHealthConnectionInfo> connectionInfos;
 
   @override

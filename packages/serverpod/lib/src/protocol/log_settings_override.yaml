@@ -1,6 +1,15 @@
+### Information about an override for log settings for either an entire
+### endpoint or a specific method.
 class: LogSettingsOverride
 fields:
+  ### Module to override settings for, null for main project.
   module: String?
+
+  ### Endpoint to override settings for.
   endpoint: String?
+
+  ### Method to override settings for.
   method: String?
+
+  ### Log settings override.
   logSettings: LogSettings

@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Runtime settings of the server.
 class RuntimeSettings extends _i1.TableRow {
   RuntimeSettings({
     int? id,
@@ -38,12 +39,16 @@ class RuntimeSettings extends _i1.TableRow {
 
   static final t = RuntimeSettingsTable();
 
+  /// Log settings.
   _i2.LogSettings logSettings;
 
+  /// List of log setting overrides.
   List<_i2.LogSettingsOverride> logSettingsOverrides;
 
+  /// True if service calls to Serverpod Insights should be logged.
   bool logServiceCalls;
 
+  /// True if malformed calls should be logged.
   bool logMalformedCalls;
 
   @override
@@ -227,12 +232,16 @@ class RuntimeSettingsTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// Log settings.
   final logSettings = _i1.ColumnSerializable('logSettings');
 
+  /// List of log setting overrides.
   final logSettingsOverrides = _i1.ColumnSerializable('logSettingsOverrides');
 
+  /// True if service calls to Serverpod Insights should be logged.
   final logServiceCalls = _i1.ColumnBool('logServiceCalls');
 
+  /// True if malformed calls should be logged.
   final logMalformedCalls = _i1.ColumnBool('logMalformedCalls');
 
   @override

@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Provides high level information about a cache.
 class CacheInfo extends _i1.SerializableEntity {
   CacheInfo({
     required this.numEntries,
@@ -29,10 +30,13 @@ class CacheInfo extends _i1.SerializableEntity {
     );
   }
 
+  /// Number of entries stored in the cache.
   int numEntries;
 
+  /// Maximum number of entries that can be stored in the cache.
   int maxEntries;
 
+  /// Optional list of keys used by the cache.
   List<String>? keys;
 
   @override

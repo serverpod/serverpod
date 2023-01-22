@@ -1,11 +1,23 @@
+### An entry in the database for an uploaded file.
 class: CloudStorageEntry
 table: serverpod_cloud_storage
 fields:
+  ### The storageId, typically `public` or `private`.
   storageId: String
+
+  ### The path where the file is stored.
   path: String
+
+  ### The time when the file was added.
   addedTime: DateTime
+
+  ### The time at which the file expires and can be deleted.
   expiration: DateTime?
+
+  ### The actual data of the uploaded file.
   byteData: ByteData
+
+  ### True if the file has been verified as uploaded.
   verified: bool
 indexes:
   serverpod_cloud_storage_path_idx:

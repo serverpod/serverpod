@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Provides a method of access for a user to authenticate with the server.
 class AuthKey extends _i1.SerializableEntity {
   AuthKey({
     this.id,
@@ -40,14 +41,20 @@ class AuthKey extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
+  /// The id of the user to provide access to.
   int userId;
 
+  /// The hashed version of the key.
   String hash;
 
+  /// The key sent to the server to authenticate.
   String? key;
 
+  /// The scopes this key provides access to.
   List<String> scopeNames;
 
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
   String method;
 
   @override

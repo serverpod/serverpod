@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Provides a method of access for a user to authenticate with the server.
 class AuthKey extends _i1.TableRow {
   AuthKey({
     int? id,
@@ -37,14 +38,20 @@ class AuthKey extends _i1.TableRow {
 
   static final t = AuthKeyTable();
 
+  /// The id of the user to provide access to.
   int userId;
 
+  /// The hashed version of the key.
   String hash;
 
+  /// The key sent to the server to authenticate.
   String? key;
 
+  /// The scopes this key provides access to.
   List<String> scopeNames;
 
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
   String method;
 
   @override
@@ -229,12 +236,17 @@ class AuthKeyTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the user to provide access to.
   final userId = _i1.ColumnInt('userId');
 
+  /// The hashed version of the key.
   final hash = _i1.ColumnString('hash');
 
+  /// The scopes this key provides access to.
   final scopeNames = _i1.ColumnSerializable('scopeNames');
 
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
   final method = _i1.ColumnString('method');
 
   @override

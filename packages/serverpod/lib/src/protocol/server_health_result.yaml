@@ -1,4 +1,8 @@
+### Information about health and connection metrics.
 class: ServerHealthResult
 fields:
+  ### List of health metrics.
   metrics: List<ServerHealthMetric>
+
+  ### List of connection metrics.
   connectionInfos: List<ServerHealthConnectionInfo>

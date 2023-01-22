@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Bindings to a log entry in the database.
 class LogEntry extends _i1.TableRow {
   LogEntry({
     int? id,
@@ -54,24 +55,34 @@ class LogEntry extends _i1.TableRow {
 
   static final t = LogEntryTable();
 
+  /// The id of the session this log entry is associated with.
   int sessionLogId;
 
+  /// The message id this entry is associated with, if in a streaming session.
   int? messageId;
 
+  /// Currently unused.
   String? reference;
 
+  /// The id of the server which created this log entry.
   String serverId;
 
+  /// Timpstamp of this log entry.
   DateTime time;
 
+  /// The log level of this entry.
   _i2.LogLevel logLevel;
 
+  /// The logging message.
   String message;
 
+  /// Optional error associated with this log entry.
   String? error;
 
+  /// Optional stack trace associated with this log entry.
   String? stackTrace;
 
+  /// The order of this log entry, used for sorting.
   int order;
 
   @override
@@ -290,24 +301,34 @@ class LogEntryTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the session this log entry is associated with.
   final sessionLogId = _i1.ColumnInt('sessionLogId');
 
+  /// The message id this entry is associated with, if in a streaming session.
   final messageId = _i1.ColumnInt('messageId');
 
+  /// Currently unused.
   final reference = _i1.ColumnString('reference');
 
+  /// The id of the server which created this log entry.
   final serverId = _i1.ColumnString('serverId');
 
+  /// Timpstamp of this log entry.
   final time = _i1.ColumnDateTime('time');
 
+  /// The log level of this entry.
   final logLevel = _i1.ColumnEnum<_i2.LogLevel>('logLevel');
 
+  /// The logging message.
   final message = _i1.ColumnString('message');
 
+  /// Optional error associated with this log entry.
   final error = _i1.ColumnString('error');
 
+  /// Optional stack trace associated with this log entry.
   final stackTrace = _i1.ColumnString('stackTrace');
 
+  /// The order of this log entry, used for sorting.
   final order = _i1.ColumnInt('order');
 
   @override

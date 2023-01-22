@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database mapping for a read/write test that is performed by the default
+/// health checks.
 class ReadWriteTestEntry extends _i1.TableRow {
   ReadWriteTestEntry({
     int? id,
@@ -27,6 +29,7 @@ class ReadWriteTestEntry extends _i1.TableRow {
 
   static final t = ReadWriteTestEntryTable();
 
+  /// A random number, to verify that the write/read was performed correctly.
   int number;
 
   @override
@@ -192,6 +195,7 @@ class ReadWriteTestEntryTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// A random number, to verify that the write/read was performed correctly.
   final number = _i1.ColumnInt('number');
 
   @override

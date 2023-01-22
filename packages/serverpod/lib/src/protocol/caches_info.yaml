@@ -1,5 +1,11 @@
+### High level information about the caches.
 class: CachesInfo
 fields:
+  ### Information about the local cache.
   local: CacheInfo
+
+  ### Information about the local priority cache.
   localPrio: CacheInfo
+
+  ### Information about the global cache.
   global: CacheInfo

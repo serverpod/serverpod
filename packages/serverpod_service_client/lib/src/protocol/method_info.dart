@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Information about a server method.
 class MethodInfo extends _i1.SerializableEntity {
   MethodInfo({
     this.id,
@@ -33,8 +34,10 @@ class MethodInfo extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
+  /// The endpoint of this method.
   String endpoint;
 
+  /// The name of this method.
   String method;
 
   @override

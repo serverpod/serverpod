@@ -1,3 +1,4 @@
+### Represents different log levels.
 enum: LogLevel
 values:
   - debug

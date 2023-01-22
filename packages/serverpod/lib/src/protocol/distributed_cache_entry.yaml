@@ -1,3 +1,5 @@
+### An entry in the distributed cache.
 class: DistributedCacheEntry
 fields:
+  ### The cached data.
   data: String

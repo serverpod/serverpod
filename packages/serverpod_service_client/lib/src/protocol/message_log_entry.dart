@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// A log entry for a message sent in a streaming session.
 class MessageLogEntry extends _i1.SerializableEntity {
   MessageLogEntry({
     this.id,
@@ -55,24 +56,36 @@ class MessageLogEntry extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
+  /// Id of the session this entry is associated with.
   int sessionLogId;
 
+  /// The id of the server that handled the message.
   String serverId;
 
+  /// The id of the message this entry is associcated with.
   int messageId;
 
+  /// The entpoint this message is associated with.
   String endpoint;
 
+  /// The class name of the message this entry is associated with.
   String messageName;
 
+  /// The duration of handling of this message.
   double duration;
 
+  /// Error is set if an error or exception was thrown during the handling of
+  /// this message.
   String? error;
 
+  /// The stack trace of an error that was thrown during the handling of this
+  /// message.
   String? stackTrace;
 
+  /// The handling of this message was slow.
   bool slow;
 
+  /// Used for sorting the message log.
   int order;
 
   @override

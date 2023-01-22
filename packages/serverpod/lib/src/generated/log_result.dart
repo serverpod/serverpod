@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// A list of log entries, used to return logging data.
 class LogResult extends _i1.SerializableEntity {
   LogResult({required this.entries});
 
@@ -21,6 +22,7 @@ class LogResult extends _i1.SerializableEntity {
             .deserialize<List<_i2.LogEntry>>(jsonSerialization['entries']));
   }
 
+  /// The log entries in this result.
   List<_i2.LogEntry> entries;
 
   @override
