@@ -1,6 +1,14 @@
+### Compounded information about a session log.
 class: SessionLogInfo
 fields:
+  ### The main session log entry.
   sessionLogEntry: SessionLogEntry
+
+  ### List of queries made during the session.
   queries: List<QueryLogEntry>
+
+  ### List of log entries made during the session.
   logs: List<LogEntry>
+
+  ### List of messages sent during the session.
   messages: List<MessageLogEntry>

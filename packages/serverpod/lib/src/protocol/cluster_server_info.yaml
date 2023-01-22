@@ -1,3 +1,5 @@
+### Information about a single server in a cluster.
 class: ClusterServerInfo
 fields:
+  ### The id of the server.
   serverId: String

@@ -1,16 +1,38 @@
+### A log entry for a database query.
 class: QueryLogEntry
 table: serverpod_query_log
 
 fields:
+  ### The id of the server that handled the query.
   serverId: String
+
+  ### Id of the session this entry is associated with.
   sessionLogId: int, parent=serverpod_session_log
+
+  ### The id of the message this entry is associcated with, if the query was
+  ### executed in a streaming session.
   messageId: int?
+
+  ### The query that was executed.
   query: String
+
+  ### The time it took to execute the query, in seconds.
   duration: double
+
+  ### Number of rows returned by this query. This can be null if the number is
+  ### not relevant.
   numRows: int?
+
+  ### Set if an exception was thrown during the execution of this query.
   error: String?
+
+  ### The stack trace of this query.
   stackTrace: String?
+
+  ### True if the execution of this query was considered slow.
   slow: bool
+
+  ### used for sorting the query log.
   order: int
 
 indexes:

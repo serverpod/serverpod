@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Log entry for a session.
 class SessionLogEntry extends _i1.TableRow {
   SessionLogEntry({
     int? id,
@@ -62,30 +63,47 @@ class SessionLogEntry extends _i1.TableRow {
 
   static final t = SessionLogEntryTable();
 
+  /// The id of the server that handled this session.
   String serverId;
 
+  /// The starting time of this session.
   DateTime time;
 
+  /// The module this session is associated with, if any.
   String? module;
 
+  /// The endpoint this session is associated with, if any.
   String? endpoint;
 
+  /// The method this session is associated with, if any.
   String? method;
 
+  /// The running time of this session. May be null if the session is still
+  /// active.
   double? duration;
 
+  /// The number of queries performed during this session.
   int? numQueries;
 
+  /// True if this session was slow to complete.
   bool? slow;
 
+  /// If the session ends with an exception, the error field will be set.
   String? error;
 
+  /// If the session ends with an exception, a stack trace will be set.
   String? stackTrace;
 
+  /// The id of an authenticated user associated with this session. The user id
+  /// is only set if it has been requested during the session. This means that
+  /// it can be null, even though the session was performed by an authenticated
+  /// user.
   int? authenticatedUserId;
 
+  /// True if the session is still open.
   bool? isOpen;
 
+  /// Timestamp of the last time this record was modified.
   DateTime touched;
 
   @override
@@ -323,30 +341,47 @@ class SessionLogEntryTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the server that handled this session.
   final serverId = _i1.ColumnString('serverId');
 
+  /// The starting time of this session.
   final time = _i1.ColumnDateTime('time');
 
+  /// The module this session is associated with, if any.
   final module = _i1.ColumnString('module');
 
+  /// The endpoint this session is associated with, if any.
   final endpoint = _i1.ColumnString('endpoint');
 
+  /// The method this session is associated with, if any.
   final method = _i1.ColumnString('method');
 
+  /// The running time of this session. May be null if the session is still
+  /// active.
   final duration = _i1.ColumnDouble('duration');
 
+  /// The number of queries performed during this session.
   final numQueries = _i1.ColumnInt('numQueries');
 
+  /// True if this session was slow to complete.
   final slow = _i1.ColumnBool('slow');
 
+  /// If the session ends with an exception, the error field will be set.
   final error = _i1.ColumnString('error');
 
+  /// If the session ends with an exception, a stack trace will be set.
   final stackTrace = _i1.ColumnString('stackTrace');
 
+  /// The id of an authenticated user associated with this session. The user id
+  /// is only set if it has been requested during the session. This means that
+  /// it can be null, even though the session was performed by an authenticated
+  /// user.
   final authenticatedUserId = _i1.ColumnInt('authenticatedUserId');
 
+  /// True if the session is still open.
   final isOpen = _i1.ColumnBool('isOpen');
 
+  /// Timestamp of the last time this record was modified.
   final touched = _i1.ColumnDateTime('touched');
 
   @override

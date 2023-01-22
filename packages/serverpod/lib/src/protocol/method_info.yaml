@@ -1,8 +1,12 @@
+### Information about a server method.
 class: MethodInfo
 table: serverpod_method
 
 fields:
+  ### The endpoint of this method.
   endpoint: String
+
+  ### The name of this method.
   method: String
 
 indexes:

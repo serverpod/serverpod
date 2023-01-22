@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// The log filter is used when searching for specific log entries.
 class SessionLogFilter extends _i1.SerializableEntity {
   SessionLogFilter({
     this.endpoint,
@@ -38,18 +39,25 @@ class SessionLogFilter extends _i1.SerializableEntity {
     );
   }
 
+  /// The endpoint to get logs from. Null will return logs from any endpoint.
   String? endpoint;
 
+  /// The method to get logs from. Null will return logs from any method.
   String? method;
 
+  /// The name of a future call to get logs from.
   String? futureCall;
 
+  /// If true, only return slow sessions.
   bool slow;
 
+  /// If true, only return sessions ending with an exception.
   bool error;
 
+  /// If true, only return open sessions.
   bool open;
 
+  /// Last session id to start the list of logs from. Used for pagination.
   int? lastSessionLogId;
 
   @override

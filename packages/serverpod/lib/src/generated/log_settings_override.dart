@@ -9,6 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Information about an override for log settings for either an entire
+/// endpoint or a specific method.
 class LogSettingsOverride extends _i1.SerializableEntity {
   LogSettingsOverride({
     this.module,
@@ -33,12 +35,16 @@ class LogSettingsOverride extends _i1.SerializableEntity {
     );
   }
 
+  /// Module to override settings for, null for main project.
   String? module;
 
+  /// Endpoint to override settings for.
   String? endpoint;
 
+  /// Method to override settings for.
   String? method;
 
+  /// Log settings override.
   _i2.LogSettings logSettings;
 
   @override

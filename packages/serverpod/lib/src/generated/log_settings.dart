@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Log settings for the server.
 class LogSettings extends _i1.SerializableEntity {
   LogSettings({
     required this.logLevel,
@@ -51,24 +52,35 @@ class LogSettings extends _i1.SerializableEntity {
     );
   }
 
+  /// Log level. Everything above this level will be logged.
   _i2.LogLevel logLevel;
 
+  /// True if all sessions should be logged.
   bool logAllSessions;
 
+  /// True if all queries should be logged.
   bool logAllQueries;
 
+  /// True if all slow sessions should be logged.
   bool logSlowSessions;
 
+  /// True if streaming sessions should be logged continuously. If set to false,
+  /// the logging will take place when the session is closed.
   bool logStreamingSessionsContinuously;
 
+  /// True if all slow queries should be logged.
   bool logSlowQueries;
 
+  /// True if all failed sessions should be logged.
   bool logFailedSessions;
 
+  /// True if all failed queries should be logged.
   bool logFailedQueries;
 
+  /// The duration in seconds for a session to be considered slow.
   double slowSessionDuration;
 
+  /// The duration in seconds for a query to be considered slow.
   double slowQueryDuration;
 
   @override

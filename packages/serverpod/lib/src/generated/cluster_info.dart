@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// Information about a cluster of servers.
 class ClusterInfo extends _i1.SerializableEntity {
   ClusterInfo({required this.servers});
 
@@ -21,6 +22,7 @@ class ClusterInfo extends _i1.SerializableEntity {
             jsonSerialization['servers']));
   }
 
+  /// List of servers in the cluster.
   List<_i2.ClusterServerInfo> servers;
 
   @override

@@ -1,7 +1,15 @@
+### Runtime settings of the server.
 class: RuntimeSettings
 table: serverpod_runtime_settings
 fields:
+  ### Log settings.
   logSettings: LogSettings
+
+  ### List of log setting overrides.
   logSettingsOverrides: List<LogSettingsOverride>
+
+  ### True if service calls to Serverpod Insights should be logged.
   logServiceCalls: bool
+
+  ### True if malformed calls should be logged.
   logMalformedCalls: bool

@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// An entry in the distributed cache.
 class DistributedCacheEntry extends _i1.SerializableEntity {
   DistributedCacheEntry({required this.data});
 
@@ -20,6 +21,7 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
             .deserialize<String>(jsonSerialization['data']));
   }
 
+  /// The cached data.
   String data;
 
   @override

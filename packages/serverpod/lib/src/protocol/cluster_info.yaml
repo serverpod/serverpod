@@ -1,3 +1,5 @@
+### Information about a cluster of servers.
 class: ClusterInfo
 fields:
+  ### List of servers in the cluster.
   servers: List<ClusterServerInfo>

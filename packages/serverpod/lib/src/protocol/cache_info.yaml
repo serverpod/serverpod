@@ -1,5 +1,11 @@
+### Provides high level information about a cache.
 class: CacheInfo
 fields:
+  ### Number of entries stored in the cache.
   numEntries: int
+
+  ### Maximum number of entries that can be stored in the cache.
   maxEntries: int
+
+  ### Optional list of keys used by the cache.
   keys: List<String>?

@@ -1,9 +1,17 @@
+### Connects a table for handling uploading of files.
 class: CloudStorageDirectUploadEntry
 table: serverpod_cloud_storage_direct_upload
 fields:
+  ### The storageId, typically `public` or `private`.
   storageId: String
+
+  ### The path where the file is stored.
   path: String
+
+  ### The expiration time of when the file can be uploaded.
   expiration: DateTime
+
+  ### Access key for retrieving a private file.
   authKey: String
 indexes:
   serverpod_cloud_storage_direct_upload_storage_path:
