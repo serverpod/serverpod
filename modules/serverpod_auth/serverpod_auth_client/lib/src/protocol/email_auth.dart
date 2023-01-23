@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Database bindings for a sign in with email.
 class EmailAuth extends _i1.SerializableEntity {
   EmailAuth({
     this.id,
@@ -30,12 +31,18 @@ class EmailAuth extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The id of the user, corresponds to the id field in [UserInfo].
   int userId;
 
+  /// The email of the user.
   String email;
 
+  /// The hashed password of the user.
   String hash;
 
   @override

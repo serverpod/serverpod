@@ -1,7 +1,11 @@
+### Database bindings for a Google refresh token.
 class: GoogleRefreshToken
 table: serverpod_google_refresh_token
 fields:
+  ### The user id associated with the token.
   userId: int
+
+  ### The token iteself.
   refreshToken: String
 indexes:
   serverpod_google_refresh_token_userId_idx:

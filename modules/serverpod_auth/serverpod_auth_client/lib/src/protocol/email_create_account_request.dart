@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// A request for creating an email signin. Created during the sign up process
+/// to keep track of the user's details and verification code.
 class EmailCreateAccountRequest extends _i1.SerializableEntity {
   EmailCreateAccountRequest({
     this.id,
@@ -33,14 +35,21 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The name of the user.
   String userName;
 
+  /// The email of the user.
   String email;
 
+  /// Hash of the user's requested password.
   String hash;
 
+  /// The verification code sent to the user.
   String verificationCode;
 
   @override

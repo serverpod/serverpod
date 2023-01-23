@@ -1,9 +1,18 @@
+### A request for creating an email signin. Created during the sign up process
+### to keep track of the user's details and verification code.
 class: EmailCreateAccountRequest
 table: serverpod_email_create_request
 fields:
+  ### The name of the user.
   userName: String
+
+  ### The email of the user.
   email: String
+
+  ### Hash of the user's requested password.
   hash: String
+
+  ### The verification code sent to the user.
   verificationCode: String
 indexes:
   serverpod_email_auth_create_account_request_idx:

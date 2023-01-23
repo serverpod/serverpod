@@ -1,3 +1,4 @@
+### Defines a reason for a failed sign in.
 enum: AuthenticationFailReason
 values:
   - invalidCredentials

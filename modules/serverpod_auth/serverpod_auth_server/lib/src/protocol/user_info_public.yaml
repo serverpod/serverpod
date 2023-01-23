@@ -1,7 +1,17 @@
+### Information about a user that can safely be publically accessible.
 class: UserInfoPublic
 fields:
+  ### Id of the user, if known.
   id: int?
+
+  ### The first name or nickname of the user.
   userName: String
+
+  ### The full name of the user.
   fullName: String?
+
+  ### The time when the user was created.
   created: DateTime
+
+  ### URL to the user's avatar.
   imageUrl: String?

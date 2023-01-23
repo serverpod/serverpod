@@ -1,5 +1,9 @@
+### Represents a chat channel.
 class: Channel
 table: channel
 fields:
+  ### The name of the channel.
   name: String
+
+  ### The id of the channel.
   channel: String

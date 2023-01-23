@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// A request for creating an email signin. Created during the sign up process
+/// to keep track of the user's details and verification code.
 class EmailCreateAccountRequest extends _i1.TableRow {
   EmailCreateAccountRequest({
     int? id,
@@ -35,12 +37,16 @@ class EmailCreateAccountRequest extends _i1.TableRow {
 
   static final t = EmailCreateAccountRequestTable();
 
+  /// The name of the user.
   String userName;
 
+  /// The email of the user.
   String email;
 
+  /// Hash of the user's requested password.
   String hash;
 
+  /// The verification code sent to the user.
   String verificationCode;
 
   @override
@@ -220,14 +226,21 @@ class EmailCreateAccountRequestTable extends _i1.Table {
   EmailCreateAccountRequestTable()
       : super(tableName: 'serverpod_email_create_request');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The name of the user.
   final userName = _i1.ColumnString('userName');
 
+  /// The email of the user.
   final email = _i1.ColumnString('email');
 
+  /// Hash of the user's requested password.
   final hash = _i1.ColumnString('hash');
 
+  /// The verification code sent to the user.
   final verificationCode = _i1.ColumnString('verificationCode');
 
   @override

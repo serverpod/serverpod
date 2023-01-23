@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Authentication info for Sign in with Apple.
 class AppleAuthInfo extends _i1.SerializableEntity {
   AppleAuthInfo({
     required this.userIdentifier,
@@ -38,16 +39,22 @@ class AppleAuthInfo extends _i1.SerializableEntity {
     );
   }
 
+  /// The unique user identifier.
   String userIdentifier;
 
+  /// User email, if available.
   String? email;
 
+  /// Full name of the user.
   String fullName;
 
+  /// Nickname or first name of the user.
   String nickname;
 
+  /// Identity token associated with the sign in.
   String identityToken;
 
+  /// Authorization code associated with the sign in.
   String authorizationCode;
 
   @override
