@@ -1,3 +1,12 @@
+## 0.9.22
+- Adds support for snake case in fields.
+- Adds support for Duration data types in serialized objects.
+- Correctly sets CORS headers on failed calls.
+- Correctly imports generated files in subdirectories.
+- Allows documentation in yaml files.
+- Adds documentation for all generated code.
+- __Breaking changes__: Optimizes health metric data. Requires updates to two database tables. Detailed migration instructions here: [https://github.com/serverpod/serverpod/discussions/567](https://github.com/serverpod/serverpod/discussions/567)
+
 ## 0.9.21
 - Supports sub directories for protocol class files.
 - Updates dependencies for auth module.
