@@ -1,4 +1,8 @@
+### A message indicating an attempt to join a channel.
 class: ChatJoinChannel
 fields:
+  ### The channel the user wants to join.
   channel: String
+
+  ### The name of the user.
   userName: String?

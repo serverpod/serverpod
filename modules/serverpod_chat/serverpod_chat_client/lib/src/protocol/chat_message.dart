@@ -10,6 +10,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/module.dart' as _i2;
 import 'protocol.dart' as _i3;
 
+/// A chat message.
 class ChatMessage extends _i1.SerializableEntity {
   ChatMessage({
     this.id,
@@ -51,24 +52,36 @@ class ChatMessage extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The channel this message was posted to.
   String channel;
 
+  /// The body of the message.
   String message;
 
+  /// The time when this message was posted.
   DateTime time;
 
+  /// The user id of the sender.
   int sender;
 
+  /// Information about the sender.
   _i2.UserInfoPublic? senderInfo;
 
+  /// True, if this message has been removed.
   bool removed;
 
+  /// The client message id, used to track if a message has been delivered.
   int? clientMessageId;
 
+  /// True if the message has been sent.
   bool? sent;
 
+  /// List of attachments associated with this message.
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
