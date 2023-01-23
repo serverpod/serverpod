@@ -8,6 +8,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Information about a user. The [UserInfo] should only be shared with the user
+/// itself as it may contain sensative information, such as the users email.
+/// If you need to share a user's info with other users, use the
+/// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
+/// toPublic() method.
 class UserInfo extends _i1.SerializableEntity {
   UserInfo({
     this.id,
@@ -46,22 +51,34 @@ class UserInfo extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// Unique identifier of the user, may contain different information depending
+  /// on how the user was created.
   String userIdentifier;
 
+  /// The first name of the user or the user's nickname.
   String userName;
 
+  /// The full name of the user.
   String? fullName;
 
+  /// The email of the user.
   String? email;
 
+  /// The time when this user was created.
   DateTime created;
 
+  /// A URL to the user's avatar.
   String? imageUrl;
 
+  /// List of scopes that this user can access.
   List<String> scopeNames;
 
+  /// True if the user is blocked from signing in.
   bool blocked;
 
   @override

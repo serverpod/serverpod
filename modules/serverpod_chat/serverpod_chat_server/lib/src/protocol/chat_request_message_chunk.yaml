@@ -1,4 +1,8 @@
+### Message to request a new chunk of messages from the server.
 class: ChatRequestMessageChunk
 fields:
+  ### The channel to request messages from.
   channel: String
+
+  ### The id of the last read message.
   lastMessageId: int

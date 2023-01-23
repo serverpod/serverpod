@@ -203,7 +203,9 @@ typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
 class ObjectFieldScopesTable extends _i1.Table {
   ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
 
-  /// The database ID.
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final normal = _i1.ColumnString('normal');

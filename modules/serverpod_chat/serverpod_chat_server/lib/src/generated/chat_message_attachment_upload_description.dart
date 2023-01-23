@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// A description for uploading an attachement.
 class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
   ChatMessageAttachmentUploadDescription({
     required this.filePath,
@@ -26,8 +27,11 @@ class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
     );
   }
 
+  /// The path where the file should be uploaded.
   String filePath;
 
+  /// The upload description, including any authentication keys required to do
+  /// the upload.
   String uploadDescription;
 
   @override

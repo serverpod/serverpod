@@ -1,4 +1,8 @@
+### Message being sent if a user failed to join a channel.
 class: ChatJoinChannelFailed
 fields:
+  ### The name of the channel the user attempted to join.
   channel: String
+
+  ### The reason of failure.
   reason: String

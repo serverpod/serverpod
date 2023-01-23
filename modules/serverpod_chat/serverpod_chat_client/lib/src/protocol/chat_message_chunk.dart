@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// A chunk of chat messages.
 class ChatMessageChunk extends _i1.SerializableEntity {
   ChatMessageChunk({
     required this.channel,
@@ -30,10 +31,13 @@ class ChatMessageChunk extends _i1.SerializableEntity {
     );
   }
 
+  /// The chat channel.
   String channel;
 
+  /// List of chat messages.
   List<_i2.ChatMessage> messages;
 
+  /// True if there are more chat messages to fetch from this channel.
   bool hasOlderMessages;
 
   @override

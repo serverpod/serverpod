@@ -1,6 +1,14 @@
+### A message passed to a user when it joins a channel.
 class: ChatJoinedChannel
 fields:
+  ### The channel the user joined.
   channel: String
+
+  ### Initial chunk of chat messages from the channel the user joined.
   initialMessageChunk: ChatMessageChunk
+
+  ### The id of the last read message.
   lastReadMessageId: int
+
+  ### The user info of the user who joined the channel.
   userInfo: module:auth:UserInfo

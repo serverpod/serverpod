@@ -1,8 +1,15 @@
+### Database table for tracking failed email sign-ins. Saves IP-address, time,
+### and email to be prevent brute force attacks.
 class: EmailFailedSignIn
 table: serverpod_email_failed_sign_in
 fields:
+  ### Email attempting to sign in with.
   email: String
+  
+  ### The time of the sign in attempt.
   time: DateTime
+
+  ### The IP address of the sign in attempt.
   ipAddress: String
 indexes:
   serverpod_email_failed_sign_in_email_idx:

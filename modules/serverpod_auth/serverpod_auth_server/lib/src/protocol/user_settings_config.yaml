@@ -1,7 +1,17 @@
+### User settings.
 class: UserSettingsConfig
 fields:
+  ### True if the user's nickname should be visible.
   canSeeUserName: bool
+
+  ### True if the user's full name should be visible.
   canSeeFullName: bool
+
+  ### True if the user should be able to edit its user name.
   canEditUserName: bool
+
+  ### True if the user should be able to edit its full name.
   canEditFullName: bool
+
+  ### True if the user should be able to upload a new user image.
   canEditUserImage: bool

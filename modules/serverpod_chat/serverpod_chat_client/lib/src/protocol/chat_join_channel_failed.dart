@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Message being sent if a user failed to join a channel.
 class ChatJoinChannelFailed extends _i1.SerializableEntity {
   ChatJoinChannelFailed({
     required this.channel,
@@ -26,8 +27,10 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
     );
   }
 
+  /// The name of the channel the user attempted to join.
   String channel;
 
+  /// The reason of failure.
   String reason;
 
   @override

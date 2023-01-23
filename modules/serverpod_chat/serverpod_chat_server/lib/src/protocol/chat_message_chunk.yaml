@@ -1,5 +1,11 @@
+### A chunk of chat messages.
 class: ChatMessageChunk
 fields:
+  ### The chat channel.
   channel: String
+
+  ### List of chat messages.
   messages: List<ChatMessage>
+
+  ### True if there are more chat messages to fetch from this channel.
   hasOlderMessages: bool

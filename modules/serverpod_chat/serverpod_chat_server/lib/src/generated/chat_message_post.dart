@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// A chat message post request.
 class ChatMessagePost extends _i1.SerializableEntity {
   ChatMessagePost({
     required this.channel,
@@ -34,12 +35,16 @@ class ChatMessagePost extends _i1.SerializableEntity {
     );
   }
 
+  /// The channel this message is posted to.
   String channel;
 
+  /// The body of the message.
   String message;
 
+  /// The client id of the message, used to track message deliveries.
   int clientMessageId;
 
+  /// List of attachments associated with this message.
   List<_i2.ChatMessageAttachment>? attachments;
 
   @override

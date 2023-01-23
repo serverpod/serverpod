@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Database bindings for a user image.
 class UserImage extends _i1.SerializableEntity {
   UserImage({
     this.id,
@@ -30,12 +31,18 @@ class UserImage extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The id of the user.
   int userId;
 
+  /// Version of the image. Increased by one for every uploaded image.
   int version;
 
+  /// The URL to the image.
   String url;
 
   @override

@@ -1,8 +1,14 @@
+### Database bindings for a user image.
 class: UserImage
 table: serverpod_user_image
 fields:
+  ### The id of the user.
   userId: int
+
+  ### Version of the image. Increased by one for every uploaded image.
   version: int
+
+  ### The URL to the image.
   url: String
 indexes:
   serverpod_user_image_user_id:

@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Represents a chat channel.
 class Channel extends _i1.TableRow {
   Channel({
     int? id,
@@ -29,8 +30,10 @@ class Channel extends _i1.TableRow {
 
   static final t = ChannelTable();
 
+  /// The name of the channel.
   String name;
 
+  /// The id of the channel.
   String channel;
 
   @override
@@ -196,10 +199,15 @@ typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 class ChannelTable extends _i1.Table {
   ChannelTable() : super(tableName: 'channel');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The name of the channel.
   final name = _i1.ColumnString('name');
 
+  /// The id of the channel.
   final channel = _i1.ColumnString('channel');
 
   @override

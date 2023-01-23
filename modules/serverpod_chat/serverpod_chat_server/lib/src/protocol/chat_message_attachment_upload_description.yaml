@@ -1,4 +1,9 @@
+### A description for uploading an attachement.
 class: ChatMessageAttachmentUploadDescription
 fields:
+  ### The path where the file should be uploaded.
   filePath: String
+
+  ### The upload description, including any authentication keys required to do
+  ### the upload.
   uploadDescription: String

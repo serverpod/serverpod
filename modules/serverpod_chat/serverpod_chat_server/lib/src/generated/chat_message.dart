@@ -10,6 +10,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/module.dart' as _i2;
 import 'protocol.dart' as _i3;
 
+/// A chat message.
 class ChatMessage extends _i1.TableRow {
   ChatMessage({
     int? id,
@@ -53,22 +54,31 @@ class ChatMessage extends _i1.TableRow {
 
   static final t = ChatMessageTable();
 
+  /// The channel this message was posted to.
   String channel;
 
+  /// The body of the message.
   String message;
 
+  /// The time when this message was posted.
   DateTime time;
 
+  /// The user id of the sender.
   int sender;
 
+  /// Information about the sender.
   _i2.UserInfoPublic? senderInfo;
 
+  /// True, if this message has been removed.
   bool removed;
 
+  /// The client message id, used to track if a message has been delivered.
   int? clientMessageId;
 
+  /// True if the message has been sent.
   bool? sent;
 
+  /// List of attachments associated with this message.
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
@@ -265,18 +275,27 @@ typedef ChatMessageExpressionBuilder = _i1.Expression Function(
 class ChatMessageTable extends _i1.Table {
   ChatMessageTable() : super(tableName: 'serverpod_chat_message');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The channel this message was posted to.
   final channel = _i1.ColumnString('channel');
 
+  /// The body of the message.
   final message = _i1.ColumnString('message');
 
+  /// The time when this message was posted.
   final time = _i1.ColumnDateTime('time');
 
+  /// The user id of the sender.
   final sender = _i1.ColumnInt('sender');
 
+  /// True, if this message has been removed.
   final removed = _i1.ColumnBool('removed');
 
+  /// List of attachments associated with this message.
   final attachments = _i1.ColumnSerializable('attachments');
 
   @override

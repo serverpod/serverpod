@@ -1,6 +1,14 @@
+### A chat message post request.
 class: ChatMessagePost
 fields:
+  ### The channel this message is posted to.
   channel: String
+
+  ### The body of the message.
   message: String
+
+  ### The client id of the message, used to track message deliveries.
   clientMessageId: int
+
+  ### List of attachments associated with this message.
   attachments: List<ChatMessageAttachment>?
