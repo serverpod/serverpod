@@ -38,6 +38,7 @@ class ClassGeneratorDart extends ClassGenerator {
   // Handle ordinary classes
   Library _generateClassFile(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
+    List<String> uniqueColumns = classDefinition.uniqueColumns ?? [];
     var className = classDefinition.className;
     var fields = classDefinition.fields;
 
@@ -68,6 +69,19 @@ class ClassGeneratorDart extends ClassGenerator {
                 ..lambda = true
                 ..body = Code('\'$tableName\''),
             ));
+
+            // add unique column List
+            if(uniqueColumns.isNotEmpty) {
+              classBuilder.methods.add(Method(
+                (m) => m
+                  ..name = 'uniqueColumns'
+                  ..annotations.add(refer('override'))
+                  ..type = MethodType.getter
+                  ..returns = refer('List<String>')
+                  ..lambda = true
+                  ..body = Code('[${uniqueColumns.join(', ')}]'),
+              ));
+            }
           } else {
             classBuilder.extend =
                 refer('SerializableEntity', serverpodUrl(serverCode));
@@ -591,6 +605,49 @@ class ClassGeneratorDart extends ClassGenerator {
                     .property('insert')
                     .call([
                       refer('row')
+                    ], {
+                      'transaction': refer('transaction'),
+                    })
+                    .returned
+                    .statement));
+
+              // upsert
+              classBuilder.methods.add(Method((m) => m
+                ..static = true
+                ..name = 'upsert'
+                ..returns = TypeReference(
+                  (r) => r
+                    ..symbol = 'Future'
+                    ..types.add(refer('void')),
+                )
+                ..requiredParameters.addAll([
+                  Parameter((p) => p
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart')
+                    ..name = 'session'),
+                  Parameter((p) => p
+                    ..type = refer(className)
+                    ..name = 'row'),
+                  Parameter((p) => p
+                    ..type = refer('List<String>')
+                    ..name = 'uniqueColumns'),
+                ])
+                ..optionalParameters.addAll([
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Transaction'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'transaction'
+                    ..named = true),
+                ])
+                ..modifier = MethodModifier.async
+                ..body = refer('session')
+                    .property('db')
+                    .property('insert')
+                    .call([
+                      refer('row'),
+                      refer('uniqueColumns')
                     ], {
                       'transaction': refer('transaction'),
                     })

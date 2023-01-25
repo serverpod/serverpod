@@ -518,13 +518,19 @@ class ClassAnalyzer {
         indexes.add(indexDefinition);
       }
     }
-
+    Set<String> uniqueColumns = <String>{};
+    for (var index in indexes ?? []) {
+      if (index.unique) {
+        uniqueColumns.addAll(index.fields);
+      }
+    }
     return ClassDefinition(
       className: className,
       tableName: tableName,
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
+      uniqueColumns: uniqueColumns.toList(),
       subDir: subDirectory,
       documentation: classDocumentation,
     );

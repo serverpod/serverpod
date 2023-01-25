@@ -106,6 +106,7 @@ class ClassDefinition extends ProtocolFileDefinition {
   final String? tableName;
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
+  final List<String>? uniqueColumns;
   final List<String>? documentation;
 
   ClassDefinition({
@@ -114,6 +115,7 @@ class ClassDefinition extends ProtocolFileDefinition {
     required this.fields,
     this.tableName,
     this.indexes,
+    this.uniqueColumns,
     super.subDir,
     this.documentation,
   });
