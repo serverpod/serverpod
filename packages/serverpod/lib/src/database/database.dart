@@ -216,6 +216,22 @@ class Database {
     return await conn.verifyFile(storageId, path, session: session);
   }
 
+    /// Inserts or update a single [TableRow].
+  Future<void> upsert(
+    TableRow row, 
+    List<String> uniqueColumns, {
+    Transaction? transaction,
+  }) async {
+    var conn = await databaseConnection;
+
+    await conn.upsert(
+      row,
+      session: session,
+      transaction: transaction, 
+      uniqueColumns: uniqueColumns,
+    );
+  }
+
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   Future<List<List<dynamic>>> query(

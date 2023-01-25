@@ -593,6 +593,85 @@ Current type was $T''');
     }
   }
 
+  Future<void> upsert(
+    TableRow row, {
+    required Session session,
+    required List<String> uniqueColumns,
+    Transaction? transaction,
+  }) async {
+    DateTime startTime = DateTime.now();
+
+    Map<String, dynamic> substitutionValues = {};
+
+    Map data = row.toJsonForDatabase();
+
+    List<String> columnsList = <String>[];
+    List<String> uniqueColumnsList = <String>[];
+    List<String> updateList = <String>[];
+
+    for (var column in data.keys as Iterable<String>) {
+      if (column == 'id') continue;
+
+      columnsList.add('"$column"');
+
+      if (uniqueColumns.contains(column)) {
+        uniqueColumnsList.add('"$column"');
+      } else {
+        updateList.add('"$column" = EXCLUDED."$column"');
+      }
+    }
+
+    List<String> valueList = <String>[];
+    int colNum = 0;
+    for (String column in data.keys as Iterable<String>) {
+      if (column == 'id') continue;
+
+      valueList.add('@col$colNum');
+      
+      substitutionValues['col$colNum'] = data[column];
+      
+      colNum++;
+    }
+    String values = valueList.join(', ');
+
+    String query =
+        'INSERT INTO ${row.tableName} (${columnsList.join(', ')}) VALUES ($values) ON CONFLICT (${uniqueColumnsList.join(', ')}) DO UPDATE SET ${updateList.join(', ')} RETURNING "id";';
+
+    late int insertedId;
+
+    try {
+
+      List<List<dynamic>> result;
+
+      PostgreSQLExecutionContext context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      result = await context.query(query, allowReuse: false, substitutionValues: substitutionValues);
+
+      if (result.length != 1) {
+        throw PostgreSQLException(
+            'Failed to insert row, updated number of rows is ${result.length} != 1');
+      }
+
+      var returnedRow = result[0];
+      if (returnedRow.length != 1) {
+        throw PostgreSQLException(
+            'Failed to insert row, updated number of columns is ${returnedRow.length} != 1');
+      }
+
+      insertedId = returnedRow[0];
+
+    } catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+
+    _logQuery(session, query, startTime, numRowsAffected: 1);
+
+    row.setColumn('id', insertedId);
+  }
+
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<List<dynamic>>> query(
     String query, {
