@@ -113,7 +113,7 @@ CREATE TABLE "serverpod_health_metric" (
 ALTER TABLE ONLY "serverpod_health_metric"
   ADD CONSTRAINT serverpod_health_metric_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_metric" USING btree ("timestamp", "serverId", "name");
+CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_metric" USING btree ("timestamp", "serverId", "name", "granularity");
 
 
 --

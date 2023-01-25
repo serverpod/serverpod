@@ -25,5 +25,5 @@ fields:
 
 indexes:
   serverpod_health_metric_timestamp_idx:
-    fields: timestamp, serverId, name
+    fields: timestamp, serverId, name, granularity
     unique: true
