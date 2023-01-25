@@ -104,25 +104,26 @@ class BasicDatabase extends Endpoint {
     );
   }
 
-  Future<void> upsertDataWithUniqueFields(Session session,
-    int row, int unique) async {
-      var data = DataWithUniqueFields(
-        num: row,
-        uniqueField: unique,
-      await DataWithUniqueFields.upsert(session, data);
-    }
+  Future<void> upsertDataWithUniqueFields(
+      Session session, int row, int unique) async {
+    var data = DataWithUniqueFields(
+      num: row,
+      uniqueField: unique,
+    );
+    await DataWithUniqueFields.upsert(session, data);
   }
 
   Future<int?> countDataWithUniqueFields(Session session) async {
     return await DataWithUniqueFields.count(session);
   }
 
-  Future<void> createDataWithUniqueFields(Session session, int row, int unique) async {
+  Future<void> createDataWithUniqueFields(
+      Session session, int row, int unique) async {
     var data = DataWithUniqueFields(
-        num: row,
-        uniqueField: unique,
-      );
-      await DataWithUniqueFields.insert(session, data);
+      num: row,
+      uniqueField: unique,
+    );
+    await DataWithUniqueFields.insert(session, data);
   }
 
   Future<void> deleteAllDataWithUniqueFields(Session session) async {
