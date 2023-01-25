@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 
@@ -101,6 +102,19 @@ class BasicDatabase extends Endpoint {
     return SimpleDataList(
       rows: rows,
     );
+  }
+
+  Future<bool?> upsertSimpeDataRow(Session session,
+    int numRows) async {
+       var rng = Random();
+      int unique = rng.nextInt(10);
+      for (var i = 0; i < numRows; i++) {
+      var data = DataWithUniqueFields(
+        num: i,
+        uniqueField: unique,
+      );
+      await DataWithUniqueFields.upsert(session, data);
+    }
   }
 
   Future<bool?> updateSimpleDataRow(
