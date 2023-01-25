@@ -71,7 +71,7 @@ class ClassGeneratorDart extends ClassGenerator {
             ));
 
             // add unique column List
-            if(uniqueColumns.isNotEmpty) {
+            if (uniqueColumns.isNotEmpty) {
               classBuilder.methods.add(Method(
                 (m) => m
                   ..name = 'uniqueColumns'

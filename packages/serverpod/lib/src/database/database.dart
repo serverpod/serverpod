@@ -216,9 +216,9 @@ class Database {
     return await conn.verifyFile(storageId, path, session: session);
   }
 
-    /// Inserts or update a single [TableRow].
+  /// Inserts or update a single [TableRow].
   Future<void> upsert(
-    TableRow row, 
+    TableRow row,
     List<String> uniqueColumns, {
     Transaction? transaction,
   }) async {
@@ -227,7 +227,7 @@ class Database {
     await conn.upsert(
       row,
       session: session,
-      transaction: transaction, 
+      transaction: transaction,
       uniqueColumns: uniqueColumns,
     );
   }

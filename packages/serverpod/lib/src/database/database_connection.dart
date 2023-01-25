@@ -593,6 +593,8 @@ Current type was $T''');
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead
+  /// Try to insert the row, if it already exists, update it.
   Future<void> upsert(
     TableRow row, {
     required Session session,
@@ -627,9 +629,9 @@ Current type was $T''');
       if (column == 'id') continue;
 
       valueList.add('@col$colNum');
-      
+
       substitutionValues['col$colNum'] = data[column];
-      
+
       colNum++;
     }
     String values = valueList.join(', ');
@@ -640,14 +642,14 @@ Current type was $T''');
     late int insertedId;
 
     try {
-
       List<List<dynamic>> result;
 
       PostgreSQLExecutionContext context = transaction != null
           ? transaction.postgresContext
           : postgresConnection;
 
-      result = await context.query(query, allowReuse: false, substitutionValues: substitutionValues);
+      result = await context.query(query,
+          allowReuse: false, substitutionValues: substitutionValues);
 
       if (result.length != 1) {
         throw PostgreSQLException(
@@ -661,7 +663,6 @@ Current type was $T''');
       }
 
       insertedId = returnedRow[0];
-
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
