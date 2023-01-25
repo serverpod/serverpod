@@ -1,0 +1,10 @@
+### Just some simple data.
+class: DataWithUniqueFields
+table: data_with_unique_fields
+fields:
+  num: int
+  uniqueField: int
+indexes:
+  uniqueFiels:
+    unique: true
+    fields: uniqueField

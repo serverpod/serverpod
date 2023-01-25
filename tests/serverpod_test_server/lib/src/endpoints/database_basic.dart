@@ -104,17 +104,38 @@ class BasicDatabase extends Endpoint {
     );
   }
 
-  Future<bool?> upsertSimpeDataRow(Session session,
-    int numRows) async {
-       var rng = Random();
-      int unique = rng.nextInt(10);
-      for (var i = 0; i < numRows; i++) {
+  Future<void> upsertDataWithUniqueFields(Session session,
+    int row, int unique) async {
       var data = DataWithUniqueFields(
-        num: i,
+        num: row,
         uniqueField: unique,
-      );
       await DataWithUniqueFields.upsert(session, data);
     }
+  }
+
+  Future<int?> countDataWithUniqueFields(Session session) async {
+    return await DataWithUniqueFields.count(session);
+  }
+
+  Future<void> createDataWithUniqueFields(Session session, int row, int unique) async {
+    var data = DataWithUniqueFields(
+        num: row,
+        uniqueField: unique,
+      );
+      await DataWithUniqueFields.insert(session, data);
+  }
+
+  Future<void> deleteAllDataWithUniqueFields(Session session) async {
+    await DataWithUniqueFields.delete(session, where: (t) => Constant(true));
+  }
+
+  Future<bool?> findDataWithUniqueFields(Session session, int num) async {
+    var data = await DataWithUniqueFields.findSingleRow(
+      session,
+      where: (t) => t.unique.equals(num),
+    );
+
+    return data;
   }
 
   Future<bool?> updateSimpleDataRow(

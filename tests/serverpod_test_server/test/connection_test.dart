@@ -1,3 +1,5 @@
+import 'dart:html';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -10,6 +12,16 @@ import 'config.dart';
 Future<void> setupTestData(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
   await client.basicDatabase.createSimpleTestData(100);
+}
+
+Future<int> setupTestDataWithUniqueFields(Client client) async {
+  await client.basicDatabase.deleteAllSimpleTestData();
+  var rng = Random();
+  int last = rng.nextInt(15) + 5;
+  for(int i = 0; i < last; ++i) {
+    await client.basicDatabase.createDataWithUniqueFields(i,i);
+  }
+  return last;
 }
 
 ByteData createByteData() {
@@ -984,6 +996,34 @@ void main() {
       expect(list.rows.length, equals(20));
       expect(list.rows.first.num, equals(0));
       expect(list.rows.last.num, equals(19));
+    });
+
+    test('Upsert row', () async {
+      int rows = await setupTestDataWithUniqueFields(client);
+
+      var firstCount = await client.basicDatabase.countDataWithUniqueFields();
+      expect(firstCount, isNotNull);
+      expect(firstCount, equals(rows));
+
+      var secondCount = await client.basicDatabase.upsertDataWithUniqueFields(rows + 1, rows + 1);
+      expect(secondCount, isNotNull);
+      expect(secondCount, equals(rows + 1));
+
+      var list = await client.basicDatabase
+          .findDataWithUniqueFields(rows + 1);
+      expect(list, isNotNull);
+      expect(list!.rows.length, equals(rows + 1));
+      expect(list!.rows.num, equals(rows + 1));
+
+      var thirdCount = await client.basicDatabase.upsertDataWithUniqueFields(rows + 2, rows + 1);
+      expect(thirdCount, isNotNull);
+      expect(thirdCount, equals(rows + 1));
+
+      var list = await client.basicDatabase
+          .findDataWithUniqueFields(rows + 1);
+      expect(list, isNotNull);
+      expect(list!.rows.length, equals(rows + 1));
+      expect(list!.rows.num, equals(rows + 2));
     });
 
     test('Update row', () async {
