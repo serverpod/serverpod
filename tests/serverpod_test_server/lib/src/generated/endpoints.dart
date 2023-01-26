@@ -1146,6 +1146,95 @@ class Endpoints extends _i1.EndpointDispatch {
             params['descending'],
           ),
         ),
+        'upsertDataWithUniqueFields': _i1.MethodConnector(
+          name: 'upsertDataWithUniqueFields',
+          params: {
+            'row': _i1.ParameterDescription(
+              name: 'row',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'unique': _i1.ParameterDescription(
+              name: 'unique',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .upsertDataWithUniqueFields(
+            session,
+            params['row'],
+            params['unique'],
+          ),
+        ),
+        'countDataWithUniqueFields': _i1.MethodConnector(
+          name: 'countDataWithUniqueFields',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .countDataWithUniqueFields(session),
+        ),
+        'createDataWithUniqueFields': _i1.MethodConnector(
+          name: 'createDataWithUniqueFields',
+          params: {
+            'row': _i1.ParameterDescription(
+              name: 'row',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'unique': _i1.ParameterDescription(
+              name: 'unique',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .createDataWithUniqueFields(
+            session,
+            params['row'],
+            params['unique'],
+          ),
+        ),
+        'deleteAllDataWithUniqueFields': _i1.MethodConnector(
+          name: 'deleteAllDataWithUniqueFields',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteAllDataWithUniqueFields(session),
+        ),
+        'findDataWithUniqueFields': _i1.MethodConnector(
+          name: 'findDataWithUniqueFields',
+          params: {
+            'num': _i1.ParameterDescription(
+              name: 'num',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findDataWithUniqueFields(
+            session,
+            params['num'],
+          ),
+        ),
         'updateSimpleDataRow': _i1.MethodConnector(
           name: 'updateSimpleDataRow',
           params: {

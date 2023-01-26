@@ -35,6 +35,8 @@ class ReadWriteTestEntry extends _i1.TableRow {
   @override
   String get tableName => 'serverpod_readwrite_test';
   @override
+  List<String> get uniqueColumns => [];
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -164,6 +166,19 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }) async {
     return session.db.insert(
       row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> upsert(
+    _i1.Session session,
+    ReadWriteTestEntry row,
+    List<String> uniqueColumns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert(
+      row,
+      uniqueColumns,
       transaction: transaction,
     );
   }

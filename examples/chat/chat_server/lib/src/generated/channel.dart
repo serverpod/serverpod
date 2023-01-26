@@ -39,6 +39,8 @@ class Channel extends _i1.TableRow {
   @override
   String get tableName => 'channel';
   @override
+  List<String> get uniqueColumns => [];
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -174,6 +176,19 @@ class Channel extends _i1.TableRow {
   }) async {
     return session.db.insert(
       row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> upsert(
+    _i1.Session session,
+    Channel row,
+    List<String> uniqueColumns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert(
+      row,
+      uniqueColumns,
       transaction: transaction,
     );
   }

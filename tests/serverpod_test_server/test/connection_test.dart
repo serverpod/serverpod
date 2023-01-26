@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -18,8 +17,8 @@ Future<int> setupTestDataWithUniqueFields(Client client) async {
   await client.basicDatabase.deleteAllSimpleTestData();
   var rng = Random();
   int last = rng.nextInt(15) + 5;
-  for(int i = 0; i < last; ++i) {
-    await client.basicDatabase.createDataWithUniqueFields(i,i);
+  for (int i = 0; i < last; ++i) {
+    await client.basicDatabase.createDataWithUniqueFields(i, i);
   }
   return last;
 }
@@ -1005,25 +1004,27 @@ void main() {
       expect(firstCount, isNotNull);
       expect(firstCount, equals(rows));
 
-      var secondCount = await client.basicDatabase.upsertDataWithUniqueFields(rows + 1, rows + 1);
+      await client.basicDatabase.upsertDataWithUniqueFields(rows + 1, rows + 1);
+
+      var secondCount = await client.basicDatabase.countDataWithUniqueFields();
       expect(secondCount, isNotNull);
       expect(secondCount, equals(rows + 1));
 
-      var list = await client.basicDatabase
-          .findDataWithUniqueFields(rows + 1);
+      var list = await client.basicDatabase.findDataWithUniqueFields(rows + 1);
       expect(list, isNotNull);
-      expect(list!.rows.length, equals(rows + 1));
-      expect(list!.rows.num, equals(rows + 1));
+      expect(list.length, equals(1));
+      expect(list.first.num, equals(rows + 1));
 
-      var thirdCount = await client.basicDatabase.upsertDataWithUniqueFields(rows + 2, rows + 1);
+      await client.basicDatabase.upsertDataWithUniqueFields(rows + 2, rows + 1);
+      var thirdCount = await client.basicDatabase.countDataWithUniqueFields();
       expect(thirdCount, isNotNull);
       expect(thirdCount, equals(rows + 1));
 
-      var list = await client.basicDatabase
-          .findDataWithUniqueFields(rows + 1);
-      expect(list, isNotNull);
-      expect(list!.rows.length, equals(rows + 1));
-      expect(list!.rows.num, equals(rows + 2));
+      var newList =
+          await client.basicDatabase.findDataWithUniqueFields(rows + 1);
+      expect(newList, isNotNull);
+      expect(newList.length, equals(rows + 1));
+      expect(newList.first.num, equals(rows + 2));
     });
 
     test('Update row', () async {

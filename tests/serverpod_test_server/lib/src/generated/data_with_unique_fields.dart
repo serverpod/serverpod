@@ -8,46 +8,42 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectFieldScopes extends _i1.TableRow {
-  ObjectFieldScopes({
+/// Just some simple data.
+class DataWithUniqueFields extends _i1.TableRow {
+  DataWithUniqueFields({
     int? id,
-    required this.normal,
-    this.api,
-    this.database,
+    required this.num,
+    required this.uniqueField,
   }) : super(id);
 
-  factory ObjectFieldScopes.fromJson(
+  factory DataWithUniqueFields.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return ObjectFieldScopes(
+    return DataWithUniqueFields(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      normal:
-          serializationManager.deserialize<String>(jsonSerialization['normal']),
-      api: serializationManager.deserialize<String?>(jsonSerialization['api']),
-      database: serializationManager
-          .deserialize<String?>(jsonSerialization['database']),
+      num: serializationManager.deserialize<int>(jsonSerialization['num']),
+      uniqueField: serializationManager
+          .deserialize<int>(jsonSerialization['uniqueField']),
     );
   }
 
-  static final t = ObjectFieldScopesTable();
+  static final t = DataWithUniqueFieldsTable();
 
-  String normal;
+  int num;
 
-  String? api;
-
-  String? database;
+  int uniqueField;
 
   @override
-  String get tableName => 'object_field_scopes';
+  String get tableName => 'data_with_unique_fields';
   @override
-  List<String> get uniqueColumns => [];
+  List<String> get uniqueColumns => ['uniqueField'];
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'normal': normal,
-      'api': api,
+      'num': num,
+      'uniqueField': uniqueField,
     };
   }
 
@@ -55,8 +51,8 @@ class ObjectFieldScopes extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'normal': normal,
-      'database': database,
+      'num': num,
+      'uniqueField': uniqueField,
     };
   }
 
@@ -64,9 +60,8 @@ class ObjectFieldScopes extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'normal': normal,
-      'api': api,
-      'database': database,
+      'num': num,
+      'uniqueField': uniqueField,
     };
   }
 
@@ -79,20 +74,20 @@ class ObjectFieldScopes extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'normal':
-        normal = value;
+      case 'num':
+        num = value;
         return;
-      case 'database':
-        database = value;
+      case 'uniqueField':
+        uniqueField = value;
         return;
       default:
         throw UnimplementedError();
     }
   }
 
-  static Future<List<ObjectFieldScopes>> find(
+  static Future<List<DataWithUniqueFields>> find(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    DataWithUniqueFieldsExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -101,8 +96,8 @@ class ObjectFieldScopes extends _i1.TableRow {
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectFieldScopes>(
-      where: where != null ? where(ObjectFieldScopes.t) : null,
+    return session.db.find<DataWithUniqueFields>(
+      where: where != null ? where(DataWithUniqueFields.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -113,17 +108,17 @@ class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
-  static Future<ObjectFieldScopes?> findSingleRow(
+  static Future<DataWithUniqueFields?> findSingleRow(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    DataWithUniqueFieldsExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<ObjectFieldScopes>(
-      where: where != null ? where(ObjectFieldScopes.t) : null,
+    return session.db.findSingleRow<DataWithUniqueFields>(
+      where: where != null ? where(DataWithUniqueFields.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -132,27 +127,27 @@ class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
-  static Future<ObjectFieldScopes?> findById(
+  static Future<DataWithUniqueFields?> findById(
     _i1.Session session,
     int id,
   ) async {
-    return session.db.findById<ObjectFieldScopes>(id);
+    return session.db.findById<DataWithUniqueFields>(id);
   }
 
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectFieldScopesExpressionBuilder where,
+    required DataWithUniqueFieldsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectFieldScopes>(
-      where: where(ObjectFieldScopes.t),
+    return session.db.delete<DataWithUniqueFields>(
+      where: where(DataWithUniqueFields.t),
       transaction: transaction,
     );
   }
 
   static Future<bool> deleteRow(
     _i1.Session session,
-    ObjectFieldScopes row, {
+    DataWithUniqueFields row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -163,7 +158,7 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   static Future<bool> update(
     _i1.Session session,
-    ObjectFieldScopes row, {
+    DataWithUniqueFields row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -174,7 +169,7 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   static Future<void> insert(
     _i1.Session session,
-    ObjectFieldScopes row, {
+    DataWithUniqueFields row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -185,7 +180,7 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   static Future<void> upsert(
     _i1.Session session,
-    ObjectFieldScopes row,
+    DataWithUniqueFields row,
     List<String> uniqueColumns, {
     _i1.Transaction? transaction,
   }) async {
@@ -198,13 +193,13 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   static Future<int> count(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    DataWithUniqueFieldsExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectFieldScopes>(
-      where: where != null ? where(ObjectFieldScopes.t) : null,
+    return session.db.count<DataWithUniqueFields>(
+      where: where != null ? where(DataWithUniqueFields.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
@@ -212,28 +207,28 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 }
 
-typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
-    ObjectFieldScopesTable);
+typedef DataWithUniqueFieldsExpressionBuilder = _i1.Expression Function(
+    DataWithUniqueFieldsTable);
 
-class ObjectFieldScopesTable extends _i1.Table {
-  ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
+class DataWithUniqueFieldsTable extends _i1.Table {
+  DataWithUniqueFieldsTable() : super(tableName: 'data_with_unique_fields');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
-  final normal = _i1.ColumnString('normal');
+  final num = _i1.ColumnInt('num');
 
-  final database = _i1.ColumnString('database');
+  final uniqueField = _i1.ColumnInt('uniqueField');
 
   @override
   List<_i1.Column> get columns => [
         id,
-        normal,
-        database,
+        num,
+        uniqueField,
       ];
 }
 
-@Deprecated('Use ObjectFieldScopesTable.t instead.')
-ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
+@Deprecated('Use DataWithUniqueFieldsTable.t instead.')
+DataWithUniqueFieldsTable tDataWithUniqueFields = DataWithUniqueFieldsTable();

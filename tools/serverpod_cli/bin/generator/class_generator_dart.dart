@@ -71,17 +71,17 @@ class ClassGeneratorDart extends ClassGenerator {
             ));
 
             // add unique column List
-            if (uniqueColumns.isNotEmpty) {
-              classBuilder.methods.add(Method(
-                (m) => m
-                  ..name = 'uniqueColumns'
-                  ..annotations.add(refer('override'))
-                  ..type = MethodType.getter
-                  ..returns = refer('List<String>')
-                  ..lambda = true
-                  ..body = Code('[${uniqueColumns.join(', ')}]'),
-              ));
-            }
+            classBuilder.methods.add(Method(
+              (m) => m
+                ..name = 'uniqueColumns'
+                ..annotations.add(refer('override'))
+                ..type = MethodType.getter
+                ..returns = refer('List<String>')
+                ..lambda = true
+                ..body = uniqueColumns.isNotEmpty
+                    ? Code('[\'${uniqueColumns.join('\', \'')}\']')
+                    : const Code('[]'),
+            ));
           } else {
             classBuilder.extend =
                 refer('SerializableEntity', serverpodUrl(serverCode));
@@ -644,7 +644,7 @@ class ClassGeneratorDart extends ClassGenerator {
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
                     .property('db')
-                    .property('insert')
+                    .property('upsert')
                     .call([
                       refer('row'),
                       refer('uniqueColumns')

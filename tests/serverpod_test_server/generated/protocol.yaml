@@ -55,6 +55,11 @@ basicDatabase:
   - deleteSimpleTestDataLessThan:
   - findAndDeleteSimpleTestData:
   - findSimpleDataRowsLessThan:
+  - upsertDataWithUniqueFields:
+  - countDataWithUniqueFields:
+  - createDataWithUniqueFields:
+  - deleteAllDataWithUniqueFields:
+  - findDataWithUniqueFields:
   - updateSimpleDataRow:
   - storeObjectWithObject:
   - getObjectWithObject:

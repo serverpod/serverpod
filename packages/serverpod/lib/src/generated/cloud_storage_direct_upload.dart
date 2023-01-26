@@ -51,6 +51,8 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
   @override
   String get tableName => 'serverpod_cloud_storage_direct_upload';
   @override
+  List<String> get uniqueColumns => ['storageId', 'path'];
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -198,6 +200,19 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
   }) async {
     return session.db.insert(
       row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> upsert(
+    _i1.Session session,
+    CloudStorageDirectUploadEntry row,
+    List<String> uniqueColumns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert(
+      row,
+      uniqueColumns,
       transaction: transaction,
     );
   }

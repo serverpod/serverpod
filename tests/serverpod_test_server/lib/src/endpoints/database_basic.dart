@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 
@@ -110,7 +109,7 @@ class BasicDatabase extends Endpoint {
       num: row,
       uniqueField: unique,
     );
-    await DataWithUniqueFields.upsert(session, data);
+    await DataWithUniqueFields.upsert(session, data, data.uniqueColumns);
   }
 
   Future<int?> countDataWithUniqueFields(Session session) async {
@@ -130,10 +129,11 @@ class BasicDatabase extends Endpoint {
     await DataWithUniqueFields.delete(session, where: (t) => Constant(true));
   }
 
-  Future<bool?> findDataWithUniqueFields(Session session, int num) async {
-    var data = await DataWithUniqueFields.findSingleRow(
+  Future<List<DataWithUniqueFields>> findDataWithUniqueFields(
+      Session session, int num) async {
+    var data = await DataWithUniqueFields.find(
       session,
-      where: (t) => t.unique.equals(num),
+      where: (t) => t.uniqueField.equals(num),
     );
 
     return data;

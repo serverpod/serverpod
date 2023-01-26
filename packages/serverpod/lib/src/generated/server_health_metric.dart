@@ -66,6 +66,8 @@ class ServerHealthMetric extends _i1.TableRow {
   @override
   String get tableName => 'serverpod_health_metric';
   @override
+  List<String> get uniqueColumns => ['timestamp', 'serverId', 'name'];
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -225,6 +227,19 @@ class ServerHealthMetric extends _i1.TableRow {
   }) async {
     return session.db.insert(
       row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> upsert(
+    _i1.Session session,
+    ServerHealthMetric row,
+    List<String> uniqueColumns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert(
+      row,
+      uniqueColumns,
       transaction: transaction,
     );
   }

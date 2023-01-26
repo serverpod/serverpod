@@ -14,6 +14,9 @@ abstract class TableRow extends SerializableEntity {
   /// The name of the table that contains this row.
   String get tableName;
 
+  /// A list of uniqueColumns names
+  List<String> get uniqueColumns;
+
   /// Will create a serialization of with the fields that are stored in the
   /// database only.
   //TODO: better name

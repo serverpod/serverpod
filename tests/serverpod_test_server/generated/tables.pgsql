@@ -1,4 +1,20 @@
 --
+-- Class DataWithUniqueFields as table data_with_unique_fields
+--
+
+CREATE TABLE "data_with_unique_fields" (
+  "id" serial,
+  "num" integer NOT NULL,
+  "uniqueField" integer NOT NULL
+);
+
+ALTER TABLE ONLY "data_with_unique_fields"
+  ADD CONSTRAINT data_with_unique_fields_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX uniqueFiels ON "data_with_unique_fields" USING btree ("uniqueField");
+
+
+--
 -- Class ObjectFieldScopes as table object_field_scopes
 --
 

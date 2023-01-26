@@ -54,6 +54,8 @@ class RuntimeSettings extends _i1.TableRow {
   @override
   String get tableName => 'serverpod_runtime_settings';
   @override
+  List<String> get uniqueColumns => [];
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -201,6 +203,19 @@ class RuntimeSettings extends _i1.TableRow {
   }) async {
     return session.db.insert(
       row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> upsert(
+    _i1.Session session,
+    RuntimeSettings row,
+    List<String> uniqueColumns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert(
+      row,
+      uniqueColumns,
       transaction: transaction,
     );
   }
