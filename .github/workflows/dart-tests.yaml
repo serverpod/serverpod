@@ -6,6 +6,7 @@ on:
       - main
       - dev
       - tests
+      - stable-1.0
   pull_request:
     branches:
       - main
