@@ -1023,7 +1023,7 @@ void main() {
       var newList =
           await client.basicDatabase.findDataWithUniqueFields(rows + 1);
       expect(newList, isNotNull);
-      expect(newList.length, equals(rows + 1));
+      expect(newList.length, equals(1));
       expect(newList.first.num, equals(rows + 2));
     });
 
