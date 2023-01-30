@@ -1,3 +1,7 @@
+## 1.0.0
+- First stable release! :D
+- Fixes incorrectly set database index on health metrics.
+
 ## 0.9.22
 - Adds support for snake case in fields.
 - Adds support for Duration data types in serialized objects.
