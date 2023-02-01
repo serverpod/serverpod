@@ -119,6 +119,19 @@ class ClassDefinition extends ProtocolFileDefinition {
   });
 }
 
+class ExceptionDefinition extends ProtocolFileDefinition {
+  final List<FieldDefinition> fields;
+  final List<String>? documentation;
+
+  ExceptionDefinition({
+    required super.fileName,
+    required super.className,
+    required this.fields,
+    super.subDir,
+    this.documentation,
+  });
+}
+
 class EnumDefinition extends ProtocolFileDefinition {
   List<EnumValueDefinition> values;
   final List<String>? documentation;

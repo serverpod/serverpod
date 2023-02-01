@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 
 import 'class_generator.dart';
@@ -30,6 +31,10 @@ class ClassGeneratorDart extends ClassGenerator {
     }
     if (protocolFileDefinition is EnumDefinition) {
       return _generateEnumFile(protocolFileDefinition);
+    }
+
+    if (protocolFileDefinition is ExceptionDefinition) {
+      return _generateExceptionFile(protocolFileDefinition);
     }
 
     throw Exception('Unsupported protocol file type.');
@@ -857,10 +862,10 @@ class ClassGeneratorDart extends ClassGenerator {
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
             for (var classInfo in classInfos)
-              refer(classInfo.className, classInfo.fileRef()): Code.scope(
-                  (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                      '.fromJson(data'
-                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
+              refer(classInfo.className, classInfo.fileRef()): Code.scope((a) =>
+                  '${a(refer(classInfo.className, classInfo.fileRef()))}'
+                  '.fromJson(data'
+                  '${classInfo is ClassDefinition || classInfo is ExceptionDefinition ? ',this' : ''}) as T'),
             for (var classInfo in classInfos)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
@@ -872,7 +877,7 @@ class ClassGeneratorDart extends ClassGenerator {
               ]): Code.scope((a) => '(data!=null?'
                   '${a(refer(classInfo.className, classInfo.fileRef()))}'
                   '.fromJson(data'
-                  '${classInfo is ClassDefinition ? ',this' : ''})'
+                  '${classInfo is ClassDefinition || classInfo is ExceptionDefinition ? ',this' : ''})'
                   ':null)as T'),
           }..addEntries([
                   for (var classInfo in classInfos)
@@ -1053,5 +1058,106 @@ class FieldDefinition {
     assert(serverCode);
     if (scope == FieldScope.all || scope == FieldScope.database) return true;
     return false;
+  }
+}
+
+extension on ClassGeneratorDart {
+  Library _generateExceptionFile(ExceptionDefinition classDefinition) {
+    var className = classDefinition.className;
+    var fields = classDefinition.fields;
+
+    var library = Library(
+      (library) {
+        library.body.add(Class((classBuilder) {
+          classBuilder
+            ..name = className
+            ..docs.addAll(classDefinition.documentation ?? []);
+
+          classBuilder.extend =
+              refer('SerializableEntity', serverpodUrl(serverCode));
+          classBuilder.implements = ListBuilder([refer('Exception')]);
+
+          // Fields
+          for (var field in fields) {
+            if (field.shouldIncludeField(serverCode) &&
+                !(field.name == 'id' && serverCode)) {
+              classBuilder.fields.add(Field((f) {
+                f.type = field.type.reference(serverCode,
+                    subDirectory: classDefinition.subDir);
+                f
+                  ..name = field.name
+                  ..docs.addAll(field.documentation ?? []);
+              }));
+            }
+          }
+
+          // Default constructor
+          classBuilder.constructors.add(Constructor((c) {
+            for (var field in fields) {
+              if (field.shouldIncludeField(serverCode)) {
+                c.optionalParameters.add(Parameter((p) {
+                  p.named = true;
+                  p.required = !field.type.nullable;
+                  p.toThis = true;
+                  p.name = field.name;
+                }));
+              }
+            }
+          }));
+
+          // Deserialization
+          classBuilder.constructors.add(Constructor((c) {
+            c.factory = true;
+            c.name = 'fromJson';
+            c.requiredParameters.addAll([
+              Parameter((p) {
+                p.name = 'jsonSerialization';
+                p.type = refer('Map<String,dynamic>');
+              }),
+              Parameter((p) {
+                p.name = 'serializationManager';
+                p.type =
+                    refer('SerializationManager', serverpodUrl(serverCode));
+              }),
+            ]);
+            c.body = refer(className)
+                .call([], {
+                  for (var field in fields)
+                    if (field.shouldIncludeField(serverCode))
+                      field.name: refer('serializationManager')
+                          .property('deserialize')
+                          .call([
+                        refer('jsonSerialization')
+                            .index(literalString(field.name))
+                      ], {}, [
+                        field.type.reference(serverCode,
+                            subDirectory: classDefinition.subDir)
+                      ])
+                })
+                .returned
+                .statement;
+          }));
+
+          // Serialization
+          classBuilder.methods.add(Method(
+            (m) {
+              m.returns = refer('Map<String,dynamic>');
+              m.name = 'toJson';
+              m.annotations.add(refer('override'));
+
+              m.body = literalMap(
+                {
+                  for (var field in fields)
+                    if (field.shouldSerializeField(serverCode))
+                      literalString(field.name): refer(field.name)
+                },
+              ).returned.statement;
+            },
+          ));
+        }));
+      },
+    );
+
+    return library;
   }
 }
