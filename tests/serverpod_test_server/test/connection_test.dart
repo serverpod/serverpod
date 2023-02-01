@@ -1091,8 +1091,8 @@ void main() {
       await client.basicDatabase.deleteChildDataWithId(1);
       var countAfterDelete = await client.basicDatabase.countSampleView();
       expect(countAfterDelete, equals(9));
-	});
-	
+    });
+
     test('Write and read ByteData', () async {
       var result = await client.basicDatabase.testByteDataStore();
 
