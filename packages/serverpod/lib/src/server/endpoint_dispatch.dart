@@ -119,6 +119,8 @@ abstract class EndpointDispatch {
         result,
         sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
       );
+    } on SerializableEntity catch (exception) {
+      return ExceptionResult(entity: exception);
     } catch (e, stackTrace) {
       // Something did not work out
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
@@ -298,4 +300,18 @@ class ResultStatusCode extends Result {
   String toString() {
     return 'Status Code: $statusCode';
   }
+}
+
+/// The result of a failed [Endpoint] method call, with a custom exception.
+class ExceptionResult<T extends SerializableEntity> extends Result {
+  /// The exception to be returned to the client.
+  final T entity;
+
+  /// Creates a new [ExceptionResult].
+  ExceptionResult({
+    required this.entity,
+  });
+
+  @override
+  String toString() => 'ExceptionResult(entity: $entity)';
 }

@@ -847,6 +847,12 @@ class ClassGeneratorDart extends ClassGenerator {
           ..type = refer('Type?')))
         ..body = Block.of([
           const Code('t ??= T;'),
+          Block.of([
+            const Code(
+                'if (data is Map<String, dynamic> && data["className"] != null && data["exception"] == true) {'),
+            const Code('throw deserializeByClassName(data);'),
+            const Code('}'),
+          ]),
           const Code(
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
