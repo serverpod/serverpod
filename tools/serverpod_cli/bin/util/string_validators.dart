@@ -14,8 +14,7 @@ class StringValidators {
 
   static bool isValidTableName(String name) => _snakeCaseTester.hasMatch(name);
 
-  static bool isValidViewName(String name) =>
-      _lowerSnakeCaseTester.hasMatch(name);
+  static bool isValidViewName(String name) => _snakeCaseTester.hasMatch(name);
 
   static bool isValidTableIndexName(String name) =>
       _mixedSnakeCaseTester.hasMatch(name);

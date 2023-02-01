@@ -17,11 +17,7 @@ doc/api/
 .DS_Store
 .atom/
 .idea
-.packages
-.pub/
-build/
 ios/.generated/
-pubspec.lock
 .flutter-plugins
 .flutter-plugins-dependencies
 .dart_tool
@@ -32,3 +28,4 @@ tests/temp
 templates/serverpod_templates/projectname_flutter/android
 templates/serverpod_templates/projectname_flutter/ios
 templates/serverpod_templates/projectname_flutter/macos
+/.history/

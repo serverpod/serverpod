@@ -1209,6 +1209,75 @@ class Endpoints extends _i1.EndpointDispatch {
             params['id'],
           ),
         ),
+        'createSampleView': _i1.MethodConnector(
+          name: 'createSampleView',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .createSampleView(session),
+        ),
+        'createSampleDataForView': _i1.MethodConnector(
+          name: 'createSampleDataForView',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .createSampleDataForView(session),
+        ),
+        'deleteAllSampleDataForView': _i1.MethodConnector(
+          name: 'deleteAllSampleDataForView',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteAllSampleDataForView(session),
+        ),
+        'deleteChildDataWithId': _i1.MethodConnector(
+          name: 'deleteChildDataWithId',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteChildDataWithId(
+            session,
+            params['id'],
+          ),
+        ),
+        'readSampleView': _i1.MethodConnector(
+          name: 'readSampleView',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .readSampleView(session),
+        ),
+        'countSampleView': _i1.MethodConnector(
+          name: 'countSampleView',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .countSampleView(session),
+        ),
         'testByteDataStore': _i1.MethodConnector(
           name: 'testByteDataStore',
           params: {},

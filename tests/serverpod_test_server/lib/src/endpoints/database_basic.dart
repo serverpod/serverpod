@@ -187,7 +187,7 @@ class BasicDatabase extends Endpoint {
     await ChildData.delete(session, where: (t) => t.id.equals(id));
   }
 
-  Future<SampleViewList?> readSampleView(Session session) async {
+  Future<SampleViewList> readSampleView(Session session) async {
     var result = await SampleView.find(session);
     return SampleViewList(rows: result);
   }

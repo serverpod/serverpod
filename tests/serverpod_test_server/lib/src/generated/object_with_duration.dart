@@ -86,6 +86,7 @@ class ObjectWithDuration extends _i1.TableRow {
     return session.db.find<ObjectWithDuration>(
       where: where != null ? where(ObjectWithDuration.t) : null,
       limit: limit,
+      viewTable: false,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,

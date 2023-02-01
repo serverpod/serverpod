@@ -186,6 +186,9 @@ typedef ParentDataExpressionBuilder = _i1.Expression Function(ParentDataTable);
 class ParentDataTable extends _i1.Table {
   ParentDataTable() : super(tableName: 'parent_data');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final name = _i1.ColumnString('name');

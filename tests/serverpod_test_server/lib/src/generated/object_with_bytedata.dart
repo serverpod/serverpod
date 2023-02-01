@@ -87,6 +87,7 @@ class ObjectWithByteData extends _i1.TableRow {
     return session.db.find<ObjectWithByteData>(
       where: where != null ? where(ObjectWithByteData.t) : null,
       limit: limit,
+      viewTable: false,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
