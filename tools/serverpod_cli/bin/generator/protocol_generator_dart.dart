@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 
@@ -238,31 +237,6 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                             refer('modules').property(module.nickname),
                     }).code,
                 ),
-              Method(
-                (m) => m
-                  ..name = 'callServerEndpoint<T>'
-                  ..annotations.add(
-                    refer('override'),
-                  )
-                  ..returns = TypeReference((type) => type.symbol = 'Future<T>')
-                  ..requiredParameters = ListBuilder([
-                    Parameter((p) => p
-                      ..type = refer('String')
-                      ..name = 'endpoint'),
-                    Parameter((p) => p
-                      ..type = refer('String')
-                      ..name = 'method'),
-                    Parameter((p) => p
-                      ..type = refer('Map<String, dynamic>')
-                      ..name = 'args'),
-                  ])
-                  ..modifier = MethodModifier.async
-                  ..body = Block.of([
-                    const Code(
-                        'final result = await super.callServerEndpoint(endpoint, method, args);'),
-                    const Code('return result;'),
-                  ]),
-              ),
             ],
           ),
       ),
