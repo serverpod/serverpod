@@ -1,5 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:path/path.dart' as p;
 
+import '../util/extensions.dart';
 import 'class_generator_dart.dart';
 import 'types.dart';
 
@@ -84,11 +86,20 @@ class IndexDefinition {
 abstract class ProtocolFileDefinition {
   final String fileName;
   final String className;
+  final String? subDir;
 
   ProtocolFileDefinition({
     required this.fileName,
     required this.className,
+    this.subDir,
   });
+
+  /// Generate the file reference [String] to this file.
+  String fileRef() {
+    return p.posix
+        // ignore: prefer_interpolation_to_compose_strings
+        .joinAll(p.split('${(subDir + '/') ?? ''}$fileName.dart'));
+  }
 }
 
 class ClassDefinition extends ProtocolFileDefinition {
@@ -96,6 +107,7 @@ class ClassDefinition extends ProtocolFileDefinition {
   final String? viewName;
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
+  final List<String>? documentation;
 
   ClassDefinition({
     required super.fileName,
@@ -104,15 +116,27 @@ class ClassDefinition extends ProtocolFileDefinition {
     this.tableName,
     this.viewName,
     this.indexes,
+    super.subDir,
+    this.documentation,
   });
 }
 
 class EnumDefinition extends ProtocolFileDefinition {
-  List<String> values;
+  List<EnumValueDefinition> values;
+  final List<String>? documentation;
 
   EnumDefinition({
     required super.fileName,
     required super.className,
     required this.values,
+    super.subDir,
+    this.documentation,
   });
+}
+
+class EnumValueDefinition {
+  final String name;
+  final List<String>? documentation;
+
+  EnumValueDefinition(this.name, [this.documentation]);
 }

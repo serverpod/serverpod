@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// A serialized future call with bindings to the database.
 class FutureCallEntry extends _i1.SerializableEntity {
   FutureCallEntry({
     this.id,
@@ -36,16 +37,24 @@ class FutureCallEntry extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// Name of the future call. Used to find the correct method to call.
   String name;
 
+  /// Time to execute the call.
   DateTime time;
 
+  /// The serialized object, used as a parameter to the call.
   String? serializedObject;
 
+  /// The id of the server where the call was created.
   String serverId;
 
+  /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
   @override

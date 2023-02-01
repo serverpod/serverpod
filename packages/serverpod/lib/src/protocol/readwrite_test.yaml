@@ -1,4 +1,7 @@
+### Database mapping for a read/write test that is performed by the default
+### health checks.
 class: ReadWriteTestEntry
 table: serverpod_readwrite_test
 fields:
+  ### A random number, to verify that the write/read was performed correctly.
   number: int

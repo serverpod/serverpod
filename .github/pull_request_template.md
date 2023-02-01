@@ -5,7 +5,7 @@ _List which issues are fixed by this PR. You must list at least one issue._
 ## Pre-launch Checklist
 
 - [ ] I read the [Contribute](https://docs.serverpod.dev/contribute) page and followed the process outlined there for submitting PRs.
-- [ ] This update cointains only one single feature or bug fix and nothing else. (If you are submitting multiple fixes, please make multiple PRs.)
+- [ ] This update contains only one single feature or bug fix and nothing else. (If you are submitting multiple fixes, please make multiple PRs.)
 - [ ] I read and followed the [Dart Style Guide](https://dart.dev/guides/language/effective-dart/style) and formatted the code with [dart format](https://dart.dev/tools/dart-format).
 - [ ] I listed at least one issue that this PR fixes in the description above.
 - [ ] I updated/added relevant documentation (doc comments with `///`), and made sure that the documentation follows the same style as other Serverpod documentation. I checked spelling and grammar.

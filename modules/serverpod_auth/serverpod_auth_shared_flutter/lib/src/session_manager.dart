@@ -7,7 +7,7 @@ import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
-const _prefsVersion = 1;
+const _prefsVersion = 2;
 
 /// The [SessionManager] keeps track of and manages the signed-in state of the
 /// user. Use the [instance] method to get access to the singleton instance.

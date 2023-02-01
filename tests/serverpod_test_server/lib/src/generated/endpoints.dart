@@ -437,6 +437,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
+        'testDuration': _i1.MethodConnector(
+          name: 'testDuration',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<Duration?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testDuration(
+            session,
+            params['value'],
+          ),
+        ),
       },
     );
     connectors['cloudStorage'] = _i1.EndpointConnector(
@@ -1191,74 +1209,25 @@ class Endpoints extends _i1.EndpointDispatch {
             params['id'],
           ),
         ),
-        'createSampleView': _i1.MethodConnector(
-          name: 'createSampleView',
+        'testByteDataStore': _i1.MethodConnector(
+          name: 'testByteDataStore',
           params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
               (endpoints['basicDatabase'] as _i8.BasicDatabase)
-                  .createSampleView(session),
+                  .testByteDataStore(session),
         ),
-        'createSampleDataForView': _i1.MethodConnector(
-          name: 'createSampleDataForView',
+        'testDurationStore': _i1.MethodConnector(
+          name: 'testDurationStore',
           params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
               (endpoints['basicDatabase'] as _i8.BasicDatabase)
-                  .createSampleDataForView(session),
-        ),
-        'deleteAllSampleDataForView': _i1.MethodConnector(
-          name: 'deleteAllSampleDataForView',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['basicDatabase'] as _i8.BasicDatabase)
-                  .deleteAllSampleDataForView(session),
-        ),
-        'deleteChildDataWithId': _i1.MethodConnector(
-          name: 'deleteChildDataWithId',
-          params: {
-            'id': _i1.ParameterDescription(
-              name: 'id',
-              type: _i1.getType<int>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['basicDatabase'] as _i8.BasicDatabase)
-                  .deleteChildDataWithId(
-            session,
-            params['id'],
-          ),
-        ),
-        'readSampleView': _i1.MethodConnector(
-          name: 'readSampleView',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['basicDatabase'] as _i8.BasicDatabase)
-                  .readSampleView(session),
-        ),
-        'countSampleView': _i1.MethodConnector(
-          name: 'countSampleView',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['basicDatabase'] as _i8.BasicDatabase)
-                  .countSampleView(session),
+                  .testDurationStore(session),
         ),
       },
     );
@@ -1839,6 +1808,44 @@ class Endpoints extends _i1.EndpointDispatch {
             params['list'],
           ),
         ),
+        'returnDurationList': _i1.MethodConnector(
+          name: 'returnDurationList',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<Duration>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnDurationList(
+            session,
+            params['list'],
+          ),
+        ),
+        'returnDurationListNullableDurations': _i1.MethodConnector(
+          name: 'returnDurationListNullableDurations',
+          params: {
+            'list': _i1.ParameterDescription(
+              name: 'list',
+              type: _i1.getType<List<Duration?>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['listParameters'] as _i13.ListParametersEndpoint)
+                  .returnDurationListNullableDurations(
+            session,
+            params['list'],
+          ),
+        ),
       },
     );
     connectors['logging'] = _i1.EndpointConnector(
@@ -2349,6 +2356,44 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
                   .returnNullableSimpleDataMapNullableSimpleData(
+            session,
+            params['map'],
+          ),
+        ),
+        'returnDurationMap': _i1.MethodConnector(
+          name: 'returnDurationMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, Duration>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnDurationMap(
+            session,
+            params['map'],
+          ),
+        ),
+        'returnDurationMapNullableDurations': _i1.MethodConnector(
+          name: 'returnDurationMapNullableDurations',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, Duration?>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i16.MapParametersEndpoint)
+                  .returnDurationMapNullableDurations(
             session,
             params['map'],
           ),

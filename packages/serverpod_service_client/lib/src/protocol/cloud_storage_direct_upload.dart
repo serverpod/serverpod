@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Connects a table for handling uploading of files.
 class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   CloudStorageDirectUploadEntry({
     this.id,
@@ -33,14 +34,21 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The storageId, typically `public` or `private`.
   String storageId;
 
+  /// The path where the file is stored.
   String path;
 
+  /// The expiration time of when the file can be uploaded.
   DateTime expiration;
 
+  /// Access key for retrieving a private file.
   String authKey;
 
   @override

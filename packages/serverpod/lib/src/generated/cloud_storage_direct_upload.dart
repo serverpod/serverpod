@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Connects a table for handling uploading of files.
 class CloudStorageDirectUploadEntry extends _i1.TableRow {
   CloudStorageDirectUploadEntry({
     int? id,
@@ -35,12 +36,16 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
 
   static final t = CloudStorageDirectUploadEntryTable();
 
+  /// The storageId, typically `public` or `private`.
   String storageId;
 
+  /// The path where the file is stored.
   String path;
 
+  /// The expiration time of when the file can be uploaded.
   DateTime expiration;
 
+  /// Access key for retrieving a private file.
   String authKey;
 
   @override
@@ -221,14 +226,21 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
   CloudStorageDirectUploadEntryTable()
       : super(tableName: 'serverpod_cloud_storage_direct_upload');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The storageId, typically `public` or `private`.
   final storageId = _i1.ColumnString('storageId');
 
+  /// The path where the file is stored.
   final path = _i1.ColumnString('path');
 
+  /// The expiration time of when the file can be uploaded.
   final expiration = _i1.ColumnDateTime('expiration');
 
+  /// Access key for retrieving a private file.
   final authKey = _i1.ColumnString('authKey');
 
   @override

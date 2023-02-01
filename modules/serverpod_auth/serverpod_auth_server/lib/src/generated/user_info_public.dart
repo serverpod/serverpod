@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Information about a user that can safely be publically accessible.
 class UserInfoPublic extends _i1.SerializableEntity {
   UserInfoPublic({
     this.id,
@@ -34,14 +35,19 @@ class UserInfoPublic extends _i1.SerializableEntity {
     );
   }
 
+  /// Id of the user, if known.
   int? id;
 
+  /// The first name or nickname of the user.
   String userName;
 
+  /// The full name of the user.
   String? fullName;
 
+  /// The time when the user was created.
   DateTime created;
 
+  /// URL to the user's avatar.
   String? imageUrl;
 
   @override

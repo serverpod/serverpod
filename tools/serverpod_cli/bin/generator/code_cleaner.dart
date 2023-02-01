@@ -31,7 +31,7 @@ void _removeOldFilesInPath(
   if (verbose) {
     print('Remove old files from $directory');
   }
-  var fileList = directory.listSync();
+  var fileList = directory.listSync(recursive: true);
 
   for (var entity in fileList) {
     // Only check Dart files.

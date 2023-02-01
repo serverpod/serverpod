@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database bindings for a user image.
 class UserImage extends _i1.TableRow {
   UserImage({
     int? id,
@@ -32,10 +33,13 @@ class UserImage extends _i1.TableRow {
 
   static final t = UserImageTable();
 
+  /// The id of the user.
   int userId;
 
+  /// Version of the image. Increased by one for every uploaded image.
   int version;
 
+  /// The URL to the image.
   String url;
 
   @override
@@ -208,12 +212,18 @@ typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 class UserImageTable extends _i1.Table {
   UserImageTable() : super(tableName: 'serverpod_user_image');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the user.
   final userId = _i1.ColumnInt('userId');
 
+  /// Version of the image. Increased by one for every uploaded image.
   final version = _i1.ColumnInt('version');
 
+  /// The URL to the image.
   final url = _i1.ColumnString('url');
 
   @override

@@ -1,0 +1,5 @@
+#!/bin/sh
+RUNMODE=$(cat /home/ec2-user/runmode)
+SERVER_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+cd /home/ec2-user/serverpod/active/auth_example_server
+/usr/lib/dart/bin/dart --old_gen_heap_size=0  run bin/main.dill --mode $RUNMODE --server-id $SERVER_ID > /home/ec2-user/serverpod.log 2> /home/ec2-user/serverpod.err

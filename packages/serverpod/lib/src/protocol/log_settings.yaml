@@ -1,12 +1,33 @@
+### Log settings for the server.
 class: LogSettings
 fields:
+  ### Log level. Everything above this level will be logged.
   logLevel: LogLevel
+
+  ### True if all sessions should be logged.
   logAllSessions: bool
+
+  ### True if all queries should be logged.
   logAllQueries: bool
+
+  ### True if all slow sessions should be logged.
   logSlowSessions: bool
+
+  ### True if streaming sessions should be logged continuously. If set to false,
+  ### the logging will take place when the session is closed.
   logStreamingSessionsContinuously: bool
+
+  ### True if all slow queries should be logged.
   logSlowQueries: bool
+
+  ### True if all failed sessions should be logged.
   logFailedSessions: bool
+
+  ### True if all failed queries should be logged.
   logFailedQueries: bool
+
+  ### The duration in seconds for a session to be considered slow.
   slowSessionDuration: double
+
+  ### The duration in seconds for a query to be considered slow.
   slowQueryDuration: double

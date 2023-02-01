@@ -33,6 +33,7 @@ void main() {
       expect(unpacked.aDouble, isNull);
       expect(unpacked.aDateTime, isNull);
       expect(unpacked.aByteData, isNull);
+      expect(unpacked.aDuration, isNull);
     });
 
     test('Basic types with values', () {
@@ -43,6 +44,7 @@ void main() {
         aDouble: 42.42,
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
+        aDuration: const Duration(seconds: 1),
       );
       var s = SerializationManager.encode(types);
       var unpacked = protocol.deserialize<Types>(jsonDecode(s));
@@ -51,6 +53,7 @@ void main() {
       expect(unpacked.aString, equals('42'));
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
+      expect(unpacked.aDuration, equals(const Duration(seconds: 1)));
       expect(unpacked.aByteData!.lengthInBytes, equals(256));
       for (var i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
@@ -115,6 +118,15 @@ void main() {
         aListWithNullableByteDatas: [createByteData(), null],
         anIntMap: {'0': 0, '1': 1, '2': 2},
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
+        aDuration: const Duration(seconds: 1),
+        aDurationList: const [
+          Duration(seconds: 1),
+          Duration(minutes: 1),
+        ],
+        aListWithNullableDurations: const [
+          Duration(seconds: 1),
+          null,
+        ],
       );
 
       var s = SerializationManager.encode(nullability);
@@ -126,6 +138,7 @@ void main() {
       expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aByteData.lengthInBytes, equals(256));
       expect(unpacked.anObject.num, equals(42));
+      expect(unpacked.aDuration, equals(const Duration(seconds: 1)));
 
       expect(unpacked.anIntList.length, equals(2));
       expect(unpacked.anIntList[0], equals(10));
@@ -156,6 +169,10 @@ void main() {
           unpacked.aListWithNullableByteDatas[0]!.lengthInBytes, equals(256));
       expect(unpacked.aListWithNullableByteDatas[1], isNull);
 
+      expect(unpacked.aListWithNullableDurations.length, equals(2));
+      expect(unpacked.aListWithNullableDurations[0]!.inSeconds, equals(1));
+      expect(unpacked.aListWithNullableDurations[1], isNull);
+
       expect(unpacked.aNullableInt, isNull);
       expect(unpacked.aNullableDouble, isNull);
       expect(unpacked.aNullableBool, isNull);
@@ -163,6 +180,7 @@ void main() {
       expect(unpacked.aNullableDateTime, isNull);
       expect(unpacked.aNullableByteData, isNull);
       expect(unpacked.aNullableObject, isNull);
+      expect(unpacked.aNullableDuration, isNull);
 
       expect(unpacked.aNullableListWithNullableInts, isNull);
       expect(unpacked.aNullableIntList, isNull);
@@ -170,6 +188,7 @@ void main() {
       expect(unpacked.aNullableObjectList, isNull);
       expect(unpacked.aNullableDateTimeList, isNull);
       expect(unpacked.aNullableListWithNullableDateTimes, isNull);
+      expect(unpacked.aNullableListWithNullableDurations, isNull);
 
       expect(unpacked.anIntMap['0'], equals(0));
       expect(unpacked.anIntMap['1'], equals(1));
@@ -214,6 +233,24 @@ void main() {
         aNullableListWithNullableByteDatas: [createByteData(), null],
         anIntMap: {'0': 0, '1': 1, '2': 2},
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
+        aDurationList: const [
+          Duration(seconds: 1),
+          Duration(minutes: 1),
+        ],
+        aListWithNullableDurations: const [
+          Duration(seconds: 1),
+          null,
+        ],
+        aNullableDurationList: const [
+          Duration(seconds: 1),
+          Duration(minutes: 1),
+        ],
+        aDuration: const Duration(seconds: 1),
+        aNullableDuration: const Duration(seconds: 1),
+        aNullableListWithNullableDurations: [
+          const Duration(seconds: 1),
+          null,
+        ],
       );
 
       var s = SerializationManager.encode(nullability);
@@ -225,6 +262,7 @@ void main() {
       expect(unpacked.aNullableDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aNullableByteData!.lengthInBytes, equals(256));
       expect(unpacked.aNullableObject!.num, equals(42));
+      expect(unpacked.aNullableDuration, equals(const Duration(seconds: 1)));
 
       expect(unpacked.aNullableIntList!.length, equals(2));
       expect(unpacked.aNullableIntList![0], equals(10));
@@ -259,6 +297,15 @@ void main() {
       expect(unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes,
           equals(256));
       expect(unpacked.aNullableListWithNullableByteDatas![1], isNull);
+
+      expect(unpacked.aNullableDurationList!.length, equals(2));
+      expect(unpacked.aNullableDurationList![0].inSeconds, equals(1));
+      expect(unpacked.aNullableDurationList![1].inMinutes, equals(1));
+
+      expect(unpacked.aNullableListWithNullableDurations!.length, equals(2));
+      expect(unpacked.aNullableListWithNullableDurations![0]!.inSeconds,
+          equals(1));
+      expect(unpacked.aNullableListWithNullableDurations![1], isNull);
     });
 
     test('Map types', () {
@@ -304,6 +351,12 @@ void main() {
         1: 1,
         2: 4,
         3: 9
+      }, durationMap: {
+        '0': const Duration(seconds: 1),
+        '1': const Duration(minutes: 1),
+      }, nullableDurationMap: {
+        '0': const Duration(seconds: 1),
+        '1': null,
       });
 
       var s = SerializationManager.encode(maps);
@@ -327,6 +380,9 @@ void main() {
       expect(unpacked.byteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.byteDataMap['1']!.lengthInBytes, equals(256));
 
+      expect(unpacked.durationMap['0']!.inSeconds, equals(1));
+      expect(unpacked.durationMap['1']!.inMinutes, equals(1));
+
       expect(unpacked.nullableDataMap['0']!.num, equals(0));
       expect(unpacked.nullableDataMap['1'], isNull);
       expect(unpacked.nullableDataMap['2']!.num, equals(2));
@@ -345,6 +401,9 @@ void main() {
 
       expect(unpacked.nullableByteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.nullableByteDataMap['1'], isNull);
+
+      expect(unpacked.nullableDurationMap['0']!.inSeconds, equals(1));
+      expect(unpacked.nullableDurationMap['1'], isNull);
 
       expect(unpacked.intIntMap.length, equals(3));
       expect(unpacked.intIntMap[1], equals(1));

@@ -1,8 +1,20 @@
+### Authentication info for Sign in with Apple.
 class: AppleAuthInfo
 fields:
+  ### The unique user identifier.
   userIdentifier: String
+
+  ### User email, if available.
   email: String?
+
+  ### Full name of the user.
   fullName: String
+
+  ### Nickname or first name of the user.
   nickname: String
+
+  ### Identity token associated with the sign in.
   identityToken: String
+
+  ### Authorization code associated with the sign in.
   authorizationCode: String

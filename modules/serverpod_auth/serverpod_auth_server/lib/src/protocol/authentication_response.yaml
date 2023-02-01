@@ -1,7 +1,19 @@
+### Provides a response to an authentication attempt.
 class: AuthenticationResponse
 fields:
+  ### True if the authentication was successful.
   success: bool
+
+  ### The key associated with a successful authentication.
   key: String?
+
+  ### The id of the key associated with a successful authentication.
   keyId: int?
+
+  ### The [UserInfo] of the authenticated user, only set if the authentication
+  ### was successful.
   userInfo: UserInfo?
+
+  ### Reason for a failed authentication attempt, only set if the authentication
+  ### failed.
   failReason: AuthenticationFailReason?

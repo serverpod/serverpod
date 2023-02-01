@@ -153,6 +153,13 @@ class _EndpointBasicTypes extends _i1.EndpointRef {
         'testByteData',
         {'value': value},
       );
+
+  _i2.Future<Duration?> testDuration(Duration? value) =>
+      caller.callServerEndpoint<Duration?>(
+        'basicTypes',
+        'testDuration',
+        {'value': value},
+      );
 }
 
 class _EndpointCloudStorage extends _i1.EndpointRef {
@@ -521,6 +528,18 @@ class _EndpointBasicDatabase extends _i1.EndpointRef {
         'countSampleView',
         {},
       );
+
+  _i2.Future<bool> testByteDataStore() => caller.callServerEndpoint<bool>(
+        'basicDatabase',
+        'testByteDataStore',
+        {},
+      );
+
+  _i2.Future<bool> testDurationStore() => caller.callServerEndpoint<bool>(
+        'basicDatabase',
+        'testDurationStore',
+        {},
+      );
 }
 
 class _EndpointTransactionsDatabase extends _i1.EndpointRef {
@@ -787,6 +806,21 @@ class _EndpointListParameters extends _i1.EndpointRef {
             'returnNullableSimpleDataListNullableSimpleData',
             {'list': list},
           );
+
+  _i2.Future<List<Duration>> returnDurationList(List<Duration> list) =>
+      caller.callServerEndpoint<List<Duration>>(
+        'listParameters',
+        'returnDurationList',
+        {'list': list},
+      );
+
+  _i2.Future<List<Duration?>> returnDurationListNullableDurations(
+          List<Duration?> list) =>
+      caller.callServerEndpoint<List<Duration?>>(
+        'listParameters',
+        'returnDurationListNullableDurations',
+        {'list': list},
+      );
 }
 
 class _EndpointLogging extends _i1.EndpointRef {
@@ -1013,6 +1047,22 @@ class _EndpointMapParameters extends _i1.EndpointRef {
             'returnNullableSimpleDataMapNullableSimpleData',
             {'map': map},
           );
+
+  _i2.Future<Map<String, Duration>> returnDurationMap(
+          Map<String, Duration> map) =>
+      caller.callServerEndpoint<Map<String, Duration>>(
+        'mapParameters',
+        'returnDurationMap',
+        {'map': map},
+      );
+
+  _i2.Future<Map<String, Duration?>> returnDurationMapNullableDurations(
+          Map<String, Duration?> map) =>
+      caller.callServerEndpoint<Map<String, Duration?>>(
+        'mapParameters',
+        'returnDurationMapNullableDurations',
+        {'map': map},
+      );
 }
 
 class _EndpointModuleSerialization extends _i1.EndpointRef {

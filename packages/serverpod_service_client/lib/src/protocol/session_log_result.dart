@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+/// A list of SessionLogInfo.
 class SessionLogResult extends _i1.SerializableEntity {
   SessionLogResult({required this.sessionLog});
 
@@ -21,6 +22,7 @@ class SessionLogResult extends _i1.SerializableEntity {
             jsonSerialization['sessionLog']));
   }
 
+  /// The list of SessionLogInfo.
   List<_i2.SessionLogInfo> sessionLog;
 
   @override

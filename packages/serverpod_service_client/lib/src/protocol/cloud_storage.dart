@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
+/// An entry in the database for an uploaded file.
 class CloudStorageEntry extends _i1.SerializableEntity {
   CloudStorageEntry({
     this.id,
@@ -40,18 +41,27 @@ class CloudStorageEntry extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The storageId, typically `public` or `private`.
   String storageId;
 
+  /// The path where the file is stored.
   String path;
 
+  /// The time when the file was added.
   DateTime addedTime;
 
+  /// The time at which the file expires and can be deleted.
   DateTime? expiration;
 
+  /// The actual data of the uploaded file.
   _i2.ByteData byteData;
 
+  /// True if the file has been verified as uploaded.
   bool verified;
 
   @override

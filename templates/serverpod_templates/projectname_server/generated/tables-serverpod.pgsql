@@ -83,17 +83,17 @@ CREATE INDEX serverpod_future_call_identifier_idx ON "serverpod_future_call" USI
 CREATE TABLE "serverpod_health_connection_info" (
   "id" serial,
   "serverId" text NOT NULL,
-  "type" integer NOT NULL,
   "timestamp" timestamp without time zone NOT NULL,
   "active" integer NOT NULL,
   "closing" integer NOT NULL,
-  "idle" integer NOT NULL
+  "idle" integer NOT NULL,
+  "granularity" integer NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_health_connection_info"
   ADD CONSTRAINT serverpod_health_connection_info_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX serverpod_health_connection_info_timestamp_idx ON "serverpod_health_connection_info" USING btree ("timestamp", "serverId", "type");
+CREATE UNIQUE INDEX serverpod_health_connection_info_timestamp_idx ON "serverpod_health_connection_info" USING btree ("timestamp", "serverId", "granularity");
 
 
 --
@@ -106,13 +106,14 @@ CREATE TABLE "serverpod_health_metric" (
   "serverId" text NOT NULL,
   "timestamp" timestamp without time zone NOT NULL,
   "isHealthy" boolean NOT NULL,
-  "value" double precision NOT NULL
+  "value" double precision NOT NULL,
+  "granularity" integer NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_health_metric"
   ADD CONSTRAINT serverpod_health_metric_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_metric" USING btree ("timestamp", "serverId", "name");
+CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_metric" USING btree ("timestamp", "serverId", "name", "granularity");
 
 
 --

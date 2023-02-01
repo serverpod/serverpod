@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database table for tracking failed email sign-ins. Saves IP-address, time,
+/// and email to be prevent brute force attacks.
 class EmailFailedSignIn extends _i1.TableRow {
   EmailFailedSignIn({
     int? id,
@@ -33,10 +35,13 @@ class EmailFailedSignIn extends _i1.TableRow {
 
   static final t = EmailFailedSignInTable();
 
+  /// Email attempting to sign in with.
   String email;
 
+  /// The time of the sign in attempt.
   DateTime time;
 
+  /// The IP address of the sign in attempt.
   String ipAddress;
 
   @override
@@ -210,12 +215,18 @@ typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
 class EmailFailedSignInTable extends _i1.Table {
   EmailFailedSignInTable() : super(tableName: 'serverpod_email_failed_sign_in');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// Email attempting to sign in with.
   final email = _i1.ColumnString('email');
 
+  /// The time of the sign in attempt.
   final time = _i1.ColumnDateTime('time');
 
+  /// The IP address of the sign in attempt.
   final ipAddress = _i1.ColumnString('ipAddress');
 
   @override

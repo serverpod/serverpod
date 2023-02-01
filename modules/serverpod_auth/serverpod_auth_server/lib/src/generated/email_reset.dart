@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database bindings for an email reset.
 class EmailReset extends _i1.TableRow {
   EmailReset({
     int? id,
@@ -33,10 +34,13 @@ class EmailReset extends _i1.TableRow {
 
   static final t = EmailResetTable();
 
+  /// The id of the user that is resetting his/her password.
   int userId;
 
+  /// The verification code for the password reset.
   String verificationCode;
 
+  /// The expiration time for the password reset.
   DateTime expiration;
 
   @override
@@ -209,12 +213,18 @@ typedef EmailResetExpressionBuilder = _i1.Expression Function(EmailResetTable);
 class EmailResetTable extends _i1.Table {
   EmailResetTable() : super(tableName: 'serverpod_email_reset');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the user that is resetting his/her password.
   final userId = _i1.ColumnInt('userId');
 
+  /// The verification code for the password reset.
   final verificationCode = _i1.ColumnString('verificationCode');
 
+  /// The expiration time for the password reset.
   final expiration = _i1.ColumnDateTime('expiration');
 
   @override

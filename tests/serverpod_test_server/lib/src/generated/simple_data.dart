@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Just some simple data.
 class SimpleData extends _i1.TableRow {
   SimpleData({
     int? id,
@@ -26,6 +27,9 @@ class SimpleData extends _i1.TableRow {
 
   static final t = SimpleDataTable();
 
+  /// The only field of [SimpleData]
+  ///
+  /// Second Value Extra Text
   int num;
 
   @override
@@ -186,8 +190,14 @@ typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
 class SimpleDataTable extends _i1.Table {
   SimpleDataTable() : super(tableName: 'simple_data');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The only field of [SimpleData]
+  ///
+  /// Second Value Extra Text
   final num = _i1.ColumnInt('num');
 
   @override

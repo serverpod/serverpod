@@ -133,6 +133,9 @@ class Server {
   }
 
   Future<void> _handleRequest(HttpRequest request) async {
+    // Set Access-Control-Allow-Origin, required for Flutter web.
+    request.response.headers.add('Access-Control-Allow-Origin', '*');
+
     Uri uri;
 
     try {
@@ -252,9 +255,6 @@ class Server {
         request.response.headers.contentType =
             ContentType('application', 'json', charset: 'utf-8');
       }
-
-      // Set Access-Control-Allow-Origin, required for Flutter web.
-      request.response.headers.add('Access-Control-Allow-Origin', '*');
 
       // Send the response
       if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {

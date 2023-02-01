@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Database mapping for a read/write test that is performed by the default
+/// health checks.
 class ReadWriteTestEntry extends _i1.SerializableEntity {
   ReadWriteTestEntry({
     this.id,
@@ -25,8 +27,12 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// A random number, to verify that the write/read was performed correctly.
   int number;
 
   @override

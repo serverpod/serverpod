@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// A log entry for a database query.
 class QueryLogEntry extends _i1.SerializableEntity {
   QueryLogEntry({
     this.id,
@@ -50,26 +51,41 @@ class QueryLogEntry extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
+  /// The id of the server that handled the query.
   String serverId;
 
+  /// Id of the session this entry is associated with.
   int sessionLogId;
 
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
   int? messageId;
 
+  /// The query that was executed.
   String query;
 
+  /// The time it took to execute the query, in seconds.
   double duration;
 
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
   int? numRows;
 
+  /// Set if an exception was thrown during the execution of this query.
   String? error;
 
+  /// The stack trace of this query.
   String? stackTrace;
 
+  /// True if the execution of this query was considered slow.
   bool slow;
 
+  /// used for sorting the query log.
   int order;
 
   @override

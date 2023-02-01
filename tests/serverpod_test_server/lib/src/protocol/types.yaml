@@ -7,3 +7,4 @@ fields:
   aDateTime: DateTime?
   aString: String?
   aByteData: ByteData?
+  aDuration: Duration?

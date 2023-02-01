@@ -1,3 +1,5 @@
+### A list of SessionLogInfo.
 class: SessionLogResult
 fields:
+  ### The list of SessionLogInfo.
   sessionLog: List<SessionLogInfo>

@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+files:
+  - source: /vendor/
+    destination: /home/ec2-user/serverpod/upload/vendor/
+  - source: /auth_example_server/
+    destination: /home/ec2-user/serverpod/upload/auth_example_server/
+hooks:
+  BeforeInstall:
+    - location: auth_example_server/aws/scripts/install_dependencies
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: auth_example_server/aws/scripts/start_server
+      timeout: 300
+      runas: root

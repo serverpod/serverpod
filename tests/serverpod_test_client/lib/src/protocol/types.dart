@@ -18,6 +18,7 @@ class Types extends _i1.SerializableEntity {
     this.aDateTime,
     this.aString,
     this.aByteData,
+    this.aDuration,
   });
 
   factory Types.fromJson(
@@ -37,9 +38,14 @@ class Types extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['aString']),
       aByteData: serializationManager
           .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
+      aDuration: serializationManager
+          .deserialize<Duration?>(jsonSerialization['aDuration']),
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
   int? anInt;
@@ -54,6 +60,8 @@ class Types extends _i1.SerializableEntity {
 
   _i2.ByteData? aByteData;
 
+  Duration? aDuration;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -64,6 +72,7 @@ class Types extends _i1.SerializableEntity {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'aDuration': aDuration,
     };
   }
 }

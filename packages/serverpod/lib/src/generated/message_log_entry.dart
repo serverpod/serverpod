@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// A log entry for a message sent in a streaming session.
 class MessageLogEntry extends _i1.TableRow {
   MessageLogEntry({
     int? id,
@@ -52,24 +53,36 @@ class MessageLogEntry extends _i1.TableRow {
 
   static final t = MessageLogEntryTable();
 
+  /// Id of the session this entry is associated with.
   int sessionLogId;
 
+  /// The id of the server that handled the message.
   String serverId;
 
+  /// The id of the message this entry is associcated with.
   int messageId;
 
+  /// The entpoint this message is associated with.
   String endpoint;
 
+  /// The class name of the message this entry is associated with.
   String messageName;
 
+  /// The duration of handling of this message.
   double duration;
 
+  /// Error is set if an error or exception was thrown during the handling of
+  /// this message.
   String? error;
 
+  /// The stack trace of an error that was thrown during the handling of this
+  /// message.
   String? stackTrace;
 
+  /// The handling of this message was slow.
   bool slow;
 
+  /// Used for sorting the message log.
   int order;
 
   @override
@@ -285,26 +298,41 @@ typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
 class MessageLogEntryTable extends _i1.Table {
   MessageLogEntryTable() : super(tableName: 'serverpod_message_log');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// Id of the session this entry is associated with.
   final sessionLogId = _i1.ColumnInt('sessionLogId');
 
+  /// The id of the server that handled the message.
   final serverId = _i1.ColumnString('serverId');
 
+  /// The id of the message this entry is associcated with.
   final messageId = _i1.ColumnInt('messageId');
 
+  /// The entpoint this message is associated with.
   final endpoint = _i1.ColumnString('endpoint');
 
+  /// The class name of the message this entry is associated with.
   final messageName = _i1.ColumnString('messageName');
 
+  /// The duration of handling of this message.
   final duration = _i1.ColumnDouble('duration');
 
+  /// Error is set if an error or exception was thrown during the handling of
+  /// this message.
   final error = _i1.ColumnString('error');
 
+  /// The stack trace of an error that was thrown during the handling of this
+  /// message.
   final stackTrace = _i1.ColumnString('stackTrace');
 
+  /// The handling of this message was slow.
   final slow = _i1.ColumnBool('slow');
 
+  /// Used for sorting the message log.
   final order = _i1.ColumnInt('order');
 
   @override

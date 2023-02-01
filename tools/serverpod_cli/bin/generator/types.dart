@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:source_span/source_span.dart';
+import 'package:path/path.dart' as p;
 
 import 'class_generator_dart.dart';
 import 'config.dart';
@@ -91,7 +92,11 @@ class TypeDefinition {
       );
 
   /// Generate a [TypeReference] from this definition.
-  TypeReference reference(bool serverCode, [bool? nullable]) {
+  TypeReference reference(
+    bool serverCode, {
+    bool? nullable,
+    String? subDirectory,
+  }) {
     return TypeReference(
       (t) {
         if (url?.startsWith('module:') ?? false) {
@@ -117,7 +122,10 @@ class TypeDefinition {
               'package:${serverCode ? config.serverPackage : config.clientPackage}/${split[1]}';
         } else if (url == 'protocol') {
           // protocol: reference
-          t.url = 'protocol.dart';
+          t.url = p.posix.joinAll([
+            ...p.split(subDirectory ?? '').map((e) => '..'),
+            'protocol.dart'
+          ]);
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
@@ -154,6 +162,7 @@ class TypeDefinition {
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
+    if (className == 'Duration') return 'bigint';
 
     return 'json';
   }
@@ -167,6 +176,8 @@ class TypeDefinition {
     if (className == 'String') return 'ColumnString';
     if (className == 'DateTime') return 'ColumnDateTime';
     if (className == 'ByteData') return 'ColumnByteData';
+    if (className == 'Duration') return 'ColumnDuration';
+
     return 'ColumnSerializable';
   }
 

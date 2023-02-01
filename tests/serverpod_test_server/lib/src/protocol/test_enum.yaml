@@ -1,5 +1,12 @@
+### Just an test enum.
 enum: TestEnum
 values:
+  ### The first value of [TestEnum].
   - one
+  # No Documentation (1)
+  ### Second Value
+  # No Documentation (2)
+  ###
+  ### Second Value Extra Text
   - two
   - three

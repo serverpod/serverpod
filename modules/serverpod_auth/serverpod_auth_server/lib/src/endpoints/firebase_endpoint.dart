@@ -63,7 +63,6 @@ class FirebaseEndpoint extends Endpoint {
           fullName: fullName,
           created: DateTime.now().toUtc(),
           scopeNames: [],
-          active: true,
           blocked: false,
         );
         userInfo = await Users.createUser(session, userInfo, _authMethod);

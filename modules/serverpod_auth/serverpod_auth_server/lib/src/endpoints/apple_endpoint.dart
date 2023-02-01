@@ -89,7 +89,6 @@ class AppleEndpoint extends Endpoint {
         userName: name,
         fullName: fullName,
         email: email,
-        active: true,
         blocked: false,
         created: DateTime.now().toUtc(),
         scopeNames: [],

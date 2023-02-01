@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database bindings for a Google refresh token.
 class GoogleRefreshToken extends _i1.TableRow {
   GoogleRefreshToken({
     int? id,
@@ -30,8 +31,10 @@ class GoogleRefreshToken extends _i1.TableRow {
 
   static final t = GoogleRefreshTokenTable();
 
+  /// The user id associated with the token.
   int userId;
 
+  /// The token iteself.
   String refreshToken;
 
   @override
@@ -200,10 +203,15 @@ class GoogleRefreshTokenTable extends _i1.Table {
   GoogleRefreshTokenTable()
       : super(tableName: 'serverpod_google_refresh_token');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The user id associated with the token.
   final userId = _i1.ColumnInt('userId');
 
+  /// The token iteself.
   final refreshToken = _i1.ColumnString('refreshToken');
 
   @override

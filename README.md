@@ -14,7 +14,7 @@ Every design decision made in Serverpod aims to minimize the amount of code you 
 Serverpod automatically generates your protocol and client-side code by analyzing your server. Calling a remote endpoint is as easy as making a local method call.
 
 ### World-class logging
-Stop struggling. You no longer need to search through endless server logs. Pinpoint exceptions and slow database queries in an easy-to-use user interface with a single click. _The visual interface is coming soon._
+Stop struggling. You no longer need to search through endless server logs. Pinpoint exceptions and slow database queries in an easy-to-use user interface with a single click.
 
 ### Built-in caching
 Cut down on your database costs. Don't save all your data permanently when you don't have to. Serverpod comes with a high-performance distributed cache built right in. Any serializable objects can be cached locally on your server or using Redis if you need to use the same cache across a cluster of servers.
@@ -35,7 +35,7 @@ Pass serialized objects through authenticated sockets. Push messages from your s
 Serverpod's future calls replace complicated cron jobs. Call a method anytime in the future or after a specified delay. The calls persist even if the server is restarted.
 
 ### Health checks
-Monitor the database and external services that you are using. Write custom health checks and get notified when something goes wrong. _This feature is coming soon in the visual interface._
+Monitor the database and external services that you are using. Write custom health checks and get notified when something goes wrong.
 
 ### Easy deployment
 Serverpod comes with Terraform scripts for AWS which makes it very quick to deploy your server. We are still working on scripts for Google Cloud and other platforms. Please get in touch with us if you want to [contribute](https://docs.serverpod.dev/contribute).

@@ -9,6 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
+/// An entry in the database for an uploaded file.
 class CloudStorageEntry extends _i1.TableRow {
   CloudStorageEntry({
     int? id,
@@ -42,16 +43,22 @@ class CloudStorageEntry extends _i1.TableRow {
 
   static final t = CloudStorageEntryTable();
 
+  /// The storageId, typically `public` or `private`.
   String storageId;
 
+  /// The path where the file is stored.
   String path;
 
+  /// The time when the file was added.
   DateTime addedTime;
 
+  /// The time at which the file expires and can be deleted.
   DateTime? expiration;
 
+  /// The actual data of the uploaded file.
   _i2.ByteData byteData;
 
+  /// True if the file has been verified as uploaded.
   bool verified;
 
   @override
@@ -243,18 +250,27 @@ typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
 class CloudStorageEntryTable extends _i1.Table {
   CloudStorageEntryTable() : super(tableName: 'serverpod_cloud_storage');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The storageId, typically `public` or `private`.
   final storageId = _i1.ColumnString('storageId');
 
+  /// The path where the file is stored.
   final path = _i1.ColumnString('path');
 
+  /// The time when the file was added.
   final addedTime = _i1.ColumnDateTime('addedTime');
 
+  /// The time at which the file expires and can be deleted.
   final expiration = _i1.ColumnDateTime('expiration');
 
+  /// The actual data of the uploaded file.
   final byteData = _i1.ColumnByteData('byteData');
 
+  /// True if the file has been verified as uploaded.
   final verified = _i1.ColumnBool('verified');
 
   @override

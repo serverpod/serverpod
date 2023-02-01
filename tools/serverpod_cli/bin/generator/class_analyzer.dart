@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:yaml/yaml.dart';
-import 'package:yaml/src/error_listener.dart';
 import 'package:source_span/source_span.dart';
-
+import 'package:yaml/src/error_listener.dart';
+import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as p;
 import '../util/string_validators.dart';
+import '../util/extensions.dart';
+import '../util/yaml_docs.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
@@ -19,7 +21,7 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
 
   // Get list of all files in protocol source directory.
   var sourceDir = Directory(config.protocolSourcePath);
-  var sourceFileList = sourceDir.listSync();
+  var sourceFileList = sourceDir.listSync(recursive: true);
   sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
   for (var entity in sourceFileList) {
@@ -27,15 +29,24 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
       if (verbose) print('  - skipping file: ${entity.path}');
       continue;
     }
+    var otherDir = entity.path
+        .replaceAll(config.protocolSourcePath, '')
+        .split(Platform.pathSeparator)
+        .skipWhile((value) => value.isEmpty);
+    String? subDirectory;
+    if (otherDir.length > 1) {
+      subDirectory = p.joinAll(otherDir.take(otherDir.length - 1));
+      print('- subDirectory: ${p.joinAll(otherDir.take(otherDir.length - 1))}');
+    }
     // Process a file.
     if (verbose) print('  - processing file: ${entity.path}');
-
     var yaml = entity.readAsStringSync();
     var analyzer = ClassAnalyzer(
       yaml: yaml,
       sourceFileName: entity.path,
       outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
       collector: collector,
+      subDirectory: subDirectory,
     );
     var classDefinition = analyzer.analyze();
     if (classDefinition != null) {
@@ -81,12 +92,14 @@ class ClassAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
+  final String? subDirectory;
   final CodeAnalysisCollector collector;
 
   ClassAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
+    this.subDirectory,
     required this.collector,
   });
 
@@ -124,12 +137,13 @@ class ClassAnalyzer {
       ));
       return null;
     }
+    var docsExtractor = YamlDocumentationExtractor(yaml);
 
     if (documentContents.nodes['class'] != null) {
-      return _analyzeClassFile(documentContents);
+      return _analyzeClassFile(documentContents, docsExtractor);
     }
     if (documentContents.nodes['enum'] != null) {
-      return _analyzeEnumFile(documentContents);
+      return _analyzeEnumFile(documentContents, docsExtractor);
     }
 
     collector.addError(SourceSpanException(
@@ -139,7 +153,8 @@ class ClassAnalyzer {
     return null;
   }
 
-  ProtocolFileDefinition? _analyzeClassFile(YamlMap documentContents) {
+  ProtocolFileDefinition? _analyzeClassFile(
+      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
       {'class', 'table', 'fields', 'indexes', 'view'},
@@ -156,6 +171,8 @@ class ClassAnalyzer {
       ));
       return null;
     }
+    var classDocumentation = docsExtractor
+        .getDocumentation(documentContents.key('class')!.span.start);
 
     var className = classNameNode.value;
     if (className is! String) {
@@ -249,9 +266,15 @@ class ClassAnalyzer {
     // Add default id field, if object has database table.
     if (tableName != null) {
       fields.add(FieldDefinition(
-          name: 'id',
-          type: TypeDefinition.int.asNullable,
-          scope: FieldScope.all));
+        name: 'id',
+        type: TypeDefinition.int.asNullable,
+        scope: FieldScope.all,
+        documentation: [
+          '/// The database id, set if the object has been inserted into the',
+          '/// database or if it has been fetched from the database. Otherwise,',
+          '/// the id will be null.',
+        ],
+      ));
     }
 
     for (var fieldNameNode in fieldsNode.nodes.keys) {
@@ -263,6 +286,8 @@ class ClassAnalyzer {
         ));
         continue;
       }
+      var fieldDocumentation =
+          docsExtractor.getDocumentation(fieldNameNode.span.start);
       var fieldName = fieldNameNode.value;
       if (fieldName is! String) {
         collector.addError(SourceSpanException(
@@ -359,6 +384,7 @@ class ClassAnalyzer {
           scope: scope,
           type: typeResult.type..isEnum = isEnum,
           parentTable: parentTable,
+          documentation: fieldDocumentation,
         );
 
         fields.add(fieldDefinition);
@@ -530,10 +556,13 @@ class ClassAnalyzer {
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
+      subDir: subDirectory,
+      documentation: classDocumentation,
     );
   }
 
-  ProtocolFileDefinition? _analyzeEnumFile(YamlMap documentContents) {
+  ProtocolFileDefinition? _analyzeEnumFile(
+      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
       {'enum', 'values'},
@@ -550,6 +579,8 @@ class ClassAnalyzer {
       ));
       return null;
     }
+    var enumDocumentation = docsExtractor
+        .getDocumentation(documentContents.key('enum')!.span.start);
 
     var className = classNameNode.value;
     if (className is! String) {
@@ -585,7 +616,7 @@ class ClassAnalyzer {
       ));
       return null;
     }
-    var values = <String>[];
+    var values = <EnumValueDefinition>[];
     for (var valueNode in valuesNode.nodes) {
       if (valueNode is! YamlScalar) {
         collector.addError(SourceSpanException(
@@ -611,14 +642,22 @@ class ClassAnalyzer {
         ));
         return null;
       }
+      var start = valueNode.span.start;
+      // 2 is the length of '- ' in '- enumValue'
+      var valueDocumentation = docsExtractor.getDocumentation(SourceLocation(
+          start.offset - 2,
+          column: start.column - 2,
+          line: start.line,
+          sourceUrl: start.sourceUrl));
 
-      values.add(value);
+      values.add(EnumValueDefinition(value, valueDocumentation));
     }
 
     return EnumDefinition(
       fileName: outFileName,
       className: className,
       values: values,
+      documentation: enumDocumentation,
     );
   }
 

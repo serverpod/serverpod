@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Information about a single server in a cluster.
 class ClusterServerInfo extends _i1.SerializableEntity {
   ClusterServerInfo({required this.serverId});
 
@@ -20,6 +21,7 @@ class ClusterServerInfo extends _i1.SerializableEntity {
             .deserialize<String>(jsonSerialization['serverId']));
   }
 
+  /// The id of the server.
   String serverId;
 
   @override

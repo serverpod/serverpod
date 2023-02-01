@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Indicates that a user wants to leave a channel.
 class ChatLeaveChannel extends _i1.SerializableEntity {
   ChatLeaveChannel({required this.channel});
 
@@ -20,6 +21,7 @@ class ChatLeaveChannel extends _i1.SerializableEntity {
             .deserialize<String>(jsonSerialization['channel']));
   }
 
+  /// The name of the channel to leave.
   String channel;
 
   @override

@@ -18,6 +18,7 @@ class Types extends _i1.TableRow {
     this.aDateTime,
     this.aString,
     this.aByteData,
+    this.aDuration,
   }) : super(id);
 
   factory Types.fromJson(
@@ -37,6 +38,8 @@ class Types extends _i1.TableRow {
           .deserialize<String?>(jsonSerialization['aString']),
       aByteData: serializationManager
           .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
+      aDuration: serializationManager
+          .deserialize<Duration?>(jsonSerialization['aDuration']),
     );
   }
 
@@ -54,6 +57,8 @@ class Types extends _i1.TableRow {
 
   _i2.ByteData? aByteData;
 
+  Duration? aDuration;
+
   @override
   String get tableName => 'types';
   @override
@@ -66,6 +71,7 @@ class Types extends _i1.TableRow {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'aDuration': aDuration,
     };
   }
 
@@ -79,6 +85,7 @@ class Types extends _i1.TableRow {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'aDuration': aDuration,
     };
   }
 
@@ -92,6 +99,7 @@ class Types extends _i1.TableRow {
       'aDateTime': aDateTime,
       'aString': aString,
       'aByteData': aByteData,
+      'aDuration': aDuration,
     };
   }
 
@@ -121,6 +129,9 @@ class Types extends _i1.TableRow {
         return;
       case 'aByteData':
         aByteData = value;
+        return;
+      case 'aDuration':
+        aDuration = value;
         return;
       default:
         throw UnimplementedError();
@@ -242,6 +253,9 @@ typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 class TypesTable extends _i1.Table {
   TypesTable() : super(tableName: 'types');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
   final anInt = _i1.ColumnInt('anInt');
@@ -256,6 +270,8 @@ class TypesTable extends _i1.Table {
 
   final aByteData = _i1.ColumnByteData('aByteData');
 
+  final aDuration = _i1.ColumnDuration('aDuration');
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -265,6 +281,7 @@ class TypesTable extends _i1.Table {
         aDateTime,
         aString,
         aByteData,
+        aDuration,
       ];
 }
 

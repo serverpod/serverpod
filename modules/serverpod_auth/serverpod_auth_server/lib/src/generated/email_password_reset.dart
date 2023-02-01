@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Information about an email password reset.
 class EmailPasswordReset extends _i1.SerializableEntity {
   EmailPasswordReset({
     required this.userName,
@@ -26,8 +27,10 @@ class EmailPasswordReset extends _i1.SerializableEntity {
     );
   }
 
+  /// The user name of the user.
   String userName;
 
+  /// The email of the user.
   String email;
 
   @override

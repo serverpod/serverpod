@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database bindings for a sign in with email.
 class EmailAuth extends _i1.TableRow {
   EmailAuth({
     int? id,
@@ -32,10 +33,13 @@ class EmailAuth extends _i1.TableRow {
 
   static final t = EmailAuthTable();
 
+  /// The id of the user, corresponds to the id field in [UserInfo].
   int userId;
 
+  /// The email of the user.
   String email;
 
+  /// The hashed password of the user.
   String hash;
 
   @override
@@ -208,12 +212,18 @@ typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
 class EmailAuthTable extends _i1.Table {
   EmailAuthTable() : super(tableName: 'serverpod_email_auth');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The id of the user, corresponds to the id field in [UserInfo].
   final userId = _i1.ColumnInt('userId');
 
+  /// The email of the user.
   final email = _i1.ColumnString('email');
 
+  /// The hashed password of the user.
   final hash = _i1.ColumnString('hash');
 
   @override

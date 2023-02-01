@@ -8,6 +8,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Represents a snapshot of a specific health metric. An entry is written every
+/// minute for each server. All health data can be accessed through Serverpod
+/// Insights.
 class ServerHealthMetric extends _i1.TableRow {
   ServerHealthMetric({
     int? id,
@@ -16,6 +19,7 @@ class ServerHealthMetric extends _i1.TableRow {
     required this.timestamp,
     required this.isHealthy,
     required this.value,
+    required this.granularity,
   }) : super(id);
 
   factory ServerHealthMetric.fromJson(
@@ -33,20 +37,31 @@ class ServerHealthMetric extends _i1.TableRow {
           .deserialize<bool>(jsonSerialization['isHealthy']),
       value:
           serializationManager.deserialize<double>(jsonSerialization['value']),
+      granularity: serializationManager
+          .deserialize<int>(jsonSerialization['granularity']),
     );
   }
 
   static final t = ServerHealthMetricTable();
 
+  /// The name of the metric.
   String name;
 
+  /// The server associated with this metric.
   String serverId;
 
+  /// The time when the connections was checked, granularity is one minute.
   DateTime timestamp;
 
+  /// True if the metric is healthy.
   bool isHealthy;
 
+  /// The value of the metric.
   double value;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  int granularity;
 
   @override
   String get tableName => 'serverpod_health_metric';
@@ -59,6 +74,7 @@ class ServerHealthMetric extends _i1.TableRow {
       'timestamp': timestamp,
       'isHealthy': isHealthy,
       'value': value,
+      'granularity': granularity,
     };
   }
 
@@ -71,6 +87,7 @@ class ServerHealthMetric extends _i1.TableRow {
       'timestamp': timestamp,
       'isHealthy': isHealthy,
       'value': value,
+      'granularity': granularity,
     };
   }
 
@@ -83,6 +100,7 @@ class ServerHealthMetric extends _i1.TableRow {
       'timestamp': timestamp,
       'isHealthy': isHealthy,
       'value': value,
+      'granularity': granularity,
     };
   }
 
@@ -109,6 +127,9 @@ class ServerHealthMetric extends _i1.TableRow {
         return;
       case 'value':
         value = value;
+        return;
+      case 'granularity':
+        granularity = value;
         return;
       default:
         throw UnimplementedError();
@@ -231,17 +252,29 @@ typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
 class ServerHealthMetricTable extends _i1.Table {
   ServerHealthMetricTable() : super(tableName: 'serverpod_health_metric');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The name of the metric.
   final name = _i1.ColumnString('name');
 
+  /// The server associated with this metric.
   final serverId = _i1.ColumnString('serverId');
 
+  /// The time when the connections was checked, granularity is one minute.
   final timestamp = _i1.ColumnDateTime('timestamp');
 
+  /// True if the metric is healthy.
   final isHealthy = _i1.ColumnBool('isHealthy');
 
+  /// The value of the metric.
   final value = _i1.ColumnDouble('value');
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  final granularity = _i1.ColumnInt('granularity');
 
   @override
   List<_i1.Column> get columns => [
@@ -251,6 +284,7 @@ class ServerHealthMetricTable extends _i1.Table {
         timestamp,
         isHealthy,
         value,
+        granularity,
       ];
 }
 

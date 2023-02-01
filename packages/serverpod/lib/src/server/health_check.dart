@@ -77,6 +77,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         timestamp: timestamp,
         value: dbResponseTime,
         isHealthy: dbHealthy,
+        granularity: 1,
       ),
       if (cpuLoad != null)
         ServerHealthMetric(
@@ -85,6 +86,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
           timestamp: timestamp,
           value: cpuLoad,
           isHealthy: true,
+          granularity: 1,
         ),
       if (memoryUsage != null)
         ServerHealthMetric(
@@ -93,16 +95,17 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
           timestamp: timestamp,
           value: memoryUsage,
           isHealthy: true,
+          granularity: 1,
         ),
     ],
     connectionInfos: [
       ServerHealthConnectionInfo(
         serverId: pod.serverId,
-        type: 0,
         timestamp: timestamp,
         active: connectionsInfo.active,
         closing: connectionsInfo.closing,
         idle: connectionsInfo.idle,
+        granularity: 1,
       )
     ],
   );

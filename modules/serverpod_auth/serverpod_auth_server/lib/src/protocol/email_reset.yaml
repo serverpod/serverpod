@@ -1,8 +1,14 @@
+### Database bindings for an email reset.
 class: EmailReset
 table: serverpod_email_reset
 fields:
+  ### The id of the user that is resetting his/her password.
   userId: int
+
+  ### The verification code for the password reset.
   verificationCode: String
+
+  ### The expiration time for the password reset.
   expiration: DateTime
 indexes:
   serverpod_email_reset_verification_idx:

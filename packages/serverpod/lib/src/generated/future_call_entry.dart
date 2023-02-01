@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// A serialized future call with bindings to the database.
 class FutureCallEntry extends _i1.TableRow {
   FutureCallEntry({
     int? id,
@@ -38,14 +39,19 @@ class FutureCallEntry extends _i1.TableRow {
 
   static final t = FutureCallEntryTable();
 
+  /// Name of the future call. Used to find the correct method to call.
   String name;
 
+  /// Time to execute the call.
   DateTime time;
 
+  /// The serialized object, used as a parameter to the call.
   String? serializedObject;
 
+  /// The id of the server where the call was created.
   String serverId;
 
+  /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
   @override
@@ -231,16 +237,24 @@ typedef FutureCallEntryExpressionBuilder = _i1.Expression Function(
 class FutureCallEntryTable extends _i1.Table {
   FutureCallEntryTable() : super(tableName: 'serverpod_future_call');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// Name of the future call. Used to find the correct method to call.
   final name = _i1.ColumnString('name');
 
+  /// Time to execute the call.
   final time = _i1.ColumnDateTime('time');
 
+  /// The serialized object, used as a parameter to the call.
   final serializedObject = _i1.ColumnString('serializedObject');
 
+  /// The id of the server where the call was created.
   final serverId = _i1.ColumnString('serverId');
 
+  /// An optional identifier which can be used to cancel the call.
   final identifier = _i1.ColumnString('identifier');
 
   @override

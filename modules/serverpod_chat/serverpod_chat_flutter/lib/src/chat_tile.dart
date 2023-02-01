@@ -79,13 +79,13 @@ class DefaultChatTile extends StatelessWidget {
                       children: [
                         Text(
                           message.senderInfo?.userName ?? 'Unknown sender',
-                          style: Theme.of(context).textTheme.headline6,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
                             _formatTime(message.time),
-                            style: Theme.of(context).textTheme.caption,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),
                       ],
@@ -98,7 +98,7 @@ class DefaultChatTile extends StatelessWidget {
                     linkColor: Colors.lightBlue[300]!,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText2!
+                        .bodyMedium!
                         .copyWith(height: 1.5),
                   ),
                 if (attachmentTiles.isNotEmpty)
@@ -138,7 +138,7 @@ class DefaultChatTile extends StatelessWidget {
               child: Text(
                 _formatDay(message.time),
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.caption!.color,
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                 ),
               ),
             ),
@@ -251,7 +251,7 @@ class _AttachmentTileState extends State<_AttachmentTile> {
                     padding: const EdgeInsets.only(right: 8),
                     child: Icon(
                       _iconForName(widget.attachment.fileName),
-                      color: Theme.of(context).textTheme.bodyText2!.color,
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
                     ),
                   ),
                   Expanded(
@@ -259,7 +259,7 @@ class _AttachmentTileState extends State<_AttachmentTile> {
                       widget.attachment.fileName,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ],
@@ -287,7 +287,7 @@ class _AttachmentTileState extends State<_AttachmentTile> {
                   padding: const EdgeInsets.only(right: 8),
                   child: Icon(
                     _iconForName(widget.attachment.fileName),
-                    color: Theme.of(context).textTheme.bodyText2!.color,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                   ),
                 ),
                 Expanded(
@@ -295,7 +295,7 @@ class _AttachmentTileState extends State<_AttachmentTile> {
                     widget.attachment.fileName,
                     maxLines: 1,
                     overflow: TextOverflow.clip,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ],

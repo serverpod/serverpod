@@ -56,7 +56,7 @@ abstract class SerializationManager {
     if (t == int || t == getType<int?>()) {
       return data;
     } else if (t == double || t == getType<double?>()) {
-      return data;
+      return (data as num?)?.toDouble() as T;
     } else if (t == String || t == getType<String?>()) {
       return data;
     } else if (t == bool || t == getType<bool?>()) {
@@ -69,6 +69,10 @@ abstract class SerializationManager {
       return (data as String).base64DecodedByteData()! as T;
     } else if (t == getType<ByteData?>()) {
       return (data as String?)?.base64DecodedByteData() as T;
+    } else if (t == Duration) {
+      return Duration(milliseconds: (data as int)) as T;
+    } else if (t == getType<Duration?>()) {
+      return data == null ? data : Duration(milliseconds: (data as int)) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -87,6 +91,8 @@ abstract class SerializationManager {
       return 'DateTime';
     } else if (data is ByteData) {
       return 'ByteData';
+    } else if (data is Duration) {
+      return 'Duration';
     }
     return null;
   }
@@ -107,6 +113,8 @@ abstract class SerializationManager {
         return deserialize<DateTime>(data['data']);
       case 'ByteData':
         return deserialize<ByteData>(data['data']);
+      case 'Duration':
+        return deserialize<Duration>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -137,6 +145,8 @@ abstract class SerializationManager {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {
           return nonEncodable.base64encodedString();
+        } else if (nonEncodable is Duration) {
+          return nonEncodable.inMilliseconds;
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})

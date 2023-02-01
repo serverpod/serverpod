@@ -1,0 +1,7 @@
+type: server
+
+client_package_path: ../auth_example_client
+
+modules:
+  serverpod_auth:
+    nickname: auth

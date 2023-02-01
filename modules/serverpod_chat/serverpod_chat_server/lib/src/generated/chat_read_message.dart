@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Message to notifiy the server that messages have been read.
 class ChatReadMessage extends _i1.TableRow {
   ChatReadMessage({
     int? id,
@@ -33,10 +34,13 @@ class ChatReadMessage extends _i1.TableRow {
 
   static final t = ChatReadMessageTable();
 
+  /// The channel this that has been read.
   String channel;
 
+  /// The id of the user that read the messages.
   int userId;
 
+  /// The id of the last read message.
   int lastReadMessageId;
 
   @override
@@ -210,12 +214,18 @@ typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
 class ChatReadMessageTable extends _i1.Table {
   ChatReadMessageTable() : super(tableName: 'serverpod_chat_read_message');
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   final id = _i1.ColumnInt('id');
 
+  /// The channel this that has been read.
   final channel = _i1.ColumnString('channel');
 
+  /// The id of the user that read the messages.
   final userId = _i1.ColumnInt('userId');
 
+  /// The id of the last read message.
   final lastReadMessageId = _i1.ColumnInt('lastReadMessageId');
 
   @override

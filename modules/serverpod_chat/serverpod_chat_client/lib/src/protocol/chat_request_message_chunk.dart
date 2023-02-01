@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Message to request a new chunk of messages from the server.
 class ChatRequestMessageChunk extends _i1.SerializableEntity {
   ChatRequestMessageChunk({
     required this.channel,
@@ -26,8 +27,10 @@ class ChatRequestMessageChunk extends _i1.SerializableEntity {
     );
   }
 
+  /// The channel to request messages from.
   String channel;
 
+  /// The id of the last read message.
   int lastMessageId;
 
   @override

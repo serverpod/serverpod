@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// User settings.
 class UserSettingsConfig extends _i1.SerializableEntity {
   UserSettingsConfig({
     required this.canSeeUserName,
@@ -35,14 +36,19 @@ class UserSettingsConfig extends _i1.SerializableEntity {
     );
   }
 
+  /// True if the user's nickname should be visible.
   bool canSeeUserName;
 
+  /// True if the user's full name should be visible.
   bool canSeeFullName;
 
+  /// True if the user should be able to edit its user name.
   bool canEditUserName;
 
+  /// True if the user should be able to edit its full name.
   bool canEditFullName;
 
+  /// True if the user should be able to upload a new user image.
   bool canEditUserImage;
 
   @override

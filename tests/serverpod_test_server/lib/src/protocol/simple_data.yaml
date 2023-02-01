@@ -1,4 +1,10 @@
+### Just some simple data.
 class: SimpleData
 table: simple_data
 fields:
+  # No Documentation (1)
+  ### The only field of [SimpleData]
+  # No Documentation (2)
+  ###
+  ### Second Value Extra Text
   num: int

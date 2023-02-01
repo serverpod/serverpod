@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// A message indicating an attempt to join a channel.
 class ChatJoinChannel extends _i1.SerializableEntity {
   ChatJoinChannel({
     required this.channel,
@@ -26,8 +27,10 @@ class ChatJoinChannel extends _i1.SerializableEntity {
     );
   }
 
+  /// The channel the user wants to join.
   String channel;
 
+  /// The name of the user.
   String? userName;
 
   @override

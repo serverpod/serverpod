@@ -14,6 +14,7 @@ basicTypes:
   - testDateTime:
   - testString:
   - testByteData:
+  - testDuration:
 cloudStorage:
   - reset:
   - storePublicFile:
@@ -63,6 +64,8 @@ basicDatabase:
   - deleteChildDataWithId:
   - readSampleView:
   - countSampleView:
+  - testByteDataStore:
+  - testDurationStore:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
@@ -99,6 +102,8 @@ listParameters:
   - returnSimpleDataListNullableSimpleData:
   - returnSimpleDataListNullable:
   - returnNullableSimpleDataListNullableSimpleData:
+  - returnDurationList:
+  - returnDurationListNullableDurations:
 logging:
   - logInfo:
   - logDebugAndInfoAndError:
@@ -128,6 +133,8 @@ mapParameters:
   - returnSimpleDataMapNullableSimpleData:
   - returnSimpleDataMapNullable:
   - returnNullableSimpleDataMapNullableSimpleData:
+  - returnDurationMap:
+  - returnDurationMapNullableDurations:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:

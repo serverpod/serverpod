@@ -1,8 +1,14 @@
+### Database bindings for a sign in with email.
 class: EmailAuth
 table: serverpod_email_auth
 fields:
+  ### The id of the user, corresponds to the id field in [UserInfo].
   userId: int
+
+  ### The email of the user.
   email: String
+
+  ### The hashed password of the user.
   hash: String
 indexes:
   serverpod_email_auth_email:

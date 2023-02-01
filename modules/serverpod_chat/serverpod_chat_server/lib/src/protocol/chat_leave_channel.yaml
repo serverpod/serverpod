@@ -1,3 +1,5 @@
+### Indicates that a user wants to leave a channel.
 class: ChatLeaveChannel
 fields:
+  ### The name of the channel to leave.
   channel: String

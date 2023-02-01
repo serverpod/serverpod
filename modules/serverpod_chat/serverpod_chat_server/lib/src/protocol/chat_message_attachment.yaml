@@ -1,8 +1,20 @@
+### An attachement to a chat message. Typically an image or a file.
 class: ChatMessageAttachment
 fields:
+  ### The name of the file.
   fileName: String
+
+  ### The URL to the file.
   url: String
+
+  ### The content type of the file.
   contentType: String
+
+  ### URL to an image preview of the file, if available.
   previewImage: String?
+
+  ### The width of the image preview, if available.
   previewWidth: int?
+
+  ### The height of the image preview, if available.
   previewHeight: int?
