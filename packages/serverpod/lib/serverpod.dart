@@ -10,8 +10,6 @@ export 'package:serverpod/server.dart';
 export 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 export 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 export 'package:serverpod/src/generated/log_level.dart';
-// Exceptions
-export 'package:serverpod/src/util/exceptions.dart';
 export 'package:serverpod/src/util/http_request_extension.dart';
 // Serialization and logging
 export 'package:serverpod_serialization/serverpod_serialization.dart';

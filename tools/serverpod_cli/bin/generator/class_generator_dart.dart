@@ -1062,6 +1062,7 @@ class FieldDefinition {
 }
 
 extension on ClassGeneratorDart {
+  /// Implementation for exception #486
   Library _generateExceptionFile(ExceptionDefinition classDefinition) {
     var className = classDefinition.className;
     var fields = classDefinition.fields;
@@ -1075,7 +1076,8 @@ extension on ClassGeneratorDart {
 
           classBuilder.extend =
               refer('SerializableEntity', serverpodUrl(serverCode));
-          classBuilder.implements = ListBuilder([refer('Exception')]);
+          classBuilder.implements = ListBuilder(
+              [refer('ServerpodException', serverpodUrl(serverCode))]);
 
           // Fields
           for (var field in fields) {
