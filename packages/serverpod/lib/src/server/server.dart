@@ -251,7 +251,7 @@ class Server {
       return;
     } else if (result is ExceptionResult) {
       request.response.headers.contentType = ContentType.json;
-      request.response.statusCode = HttpStatus.badRequest;
+      request.response.statusCode = HttpStatus.internalServerError;
 
       var serializedEntity = SerializationManager.encode(result.data);
       request.response.write(serializedEntity);

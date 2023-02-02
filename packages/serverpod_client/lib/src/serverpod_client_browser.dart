@@ -82,20 +82,25 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   void _checkForServerException(String? data) {
-    if (data == null) return;
+    Map<String, dynamic> json = _safeMap(data) ?? {};
+    bool isException = json['exception'] ?? false;
+    if (!isException) return;
+    String className = json['className'] ?? '';
+    const baseException = ServerpodException();
+    if (className == baseException.runtimeType.toString()) {
+      throw baseException;
+    } else {
+      throw serializationManager.deserializeByClassName(json);
+    }
+  }
+
+  Map<String, dynamic>? _safeMap(String? data) {
     try {
-      Map<String, dynamic> json = jsonDecode(data);
-      bool isException = json['exception'] ?? false;
-      if (!isException) return;
-      String className = json['className'] ?? '';
-      const baseException = ServerpodException();
-      if (className == baseException.runtimeType.toString()) {
-        throw baseException;
-      } else {
-        throw serializationManager.deserializeByClassName(json);
-      }
+      if (data == null) return null;
+      return jsonDecode(data);
     } catch (e) {
-      rethrow;
+      print(e);
+      return null;
     }
   }
 

@@ -121,6 +121,10 @@ abstract class EndpointDispatch {
       );
     } on ServerpodException catch (exception) {
       return ExceptionResult(entity: exception);
+    } on Exception catch (e, stackTrace) {
+      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
     } catch (e, stackTrace) {
       // Something did not work out
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
