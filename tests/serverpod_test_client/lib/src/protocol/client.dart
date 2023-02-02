@@ -529,6 +529,20 @@ class _EndpointTransactionsDatabase extends _i1.EndpointRef {
       );
 }
 
+class _EndpointExceptionApproach extends _i1.EndpointRef {
+  _EndpointExceptionApproach(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'exceptionApproach';
+
+  _i2.Future<String> checkUserExist(int userId) =>
+      caller.callServerEndpoint<String>(
+        'exceptionApproach',
+        'checkUserExist',
+        {'userId': userId},
+      );
+}
+
 class _EndpointFailedCalls extends _i1.EndpointRef {
   _EndpointFailedCalls(_i1.EndpointCaller caller) : super(caller);
 
@@ -1268,6 +1282,7 @@ class Client extends _i1.ServerpodClient {
     customTypes = _EndpointCustomTypes(this);
     basicDatabase = _EndpointBasicDatabase(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
+    exceptionApproach = _EndpointExceptionApproach(this);
     failedCalls = _EndpointFailedCalls(this);
     fieldScopes = _EndpointFieldScopes(this);
     futureCalls = _EndpointFutureCalls(this);
@@ -1301,6 +1316,8 @@ class Client extends _i1.ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
 
   late final _EndpointTransactionsDatabase transactionsDatabase;
+
+  late final _EndpointExceptionApproach exceptionApproach;
 
   late final _EndpointFailedCalls failedCalls;
 
@@ -1344,6 +1361,7 @@ class Client extends _i1.ServerpodClient {
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
+        'exceptionApproach': exceptionApproach,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,
         'futureCalls': futureCalls,

@@ -63,6 +63,8 @@ basicDatabase:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+exceptionApproach:
+  - checkUserExist:
 failedCalls:
   - failedCall:
   - failedDatabaseQuery:
