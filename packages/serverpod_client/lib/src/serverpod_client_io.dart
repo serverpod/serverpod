@@ -80,6 +80,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
+        _checkForServerException(data);
         throw (ServerpodClientException(data, response.statusCode));
       }
 
@@ -95,6 +96,29 @@ abstract class ServerpodClient extends ServerpodClientShared {
       }
 
       rethrow;
+    }
+  }
+
+  void _checkForServerException(String? data) {
+    Map<String, dynamic> json = _safeMap(data) ?? {};
+    bool isException = json['exception'] ?? false;
+    if (!isException) return;
+    String className = json['className'] ?? '';
+    const baseException = ServerpodException();
+    if (className == baseException.runtimeType.toString()) {
+      throw baseException;
+    } else {
+      throw serializationManager.deserializeByClassName(json);
+    }
+  }
+
+  Map<String, dynamic>? _safeMap(String? data) {
+    try {
+      if (data == null) return null;
+      return jsonDecode(data);
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 
