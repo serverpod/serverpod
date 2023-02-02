@@ -119,7 +119,7 @@ abstract class EndpointDispatch {
         result,
         sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
       );
-    } on SerializableEntity catch (exception) {
+    } on ServerpodException catch (exception) {
       return ExceptionResult(entity: exception);
     } catch (e, stackTrace) {
       // Something did not work out
@@ -303,7 +303,7 @@ class ResultStatusCode extends Result {
 }
 
 /// The result of a failed [Endpoint] method call, with a custom exception.
-class ExceptionResult<T extends SerializableEntity> extends Result {
+class ExceptionResult<T extends ServerpodException> extends Result {
   /// The exception to be returned to the client.
   final T entity;
 
@@ -314,4 +314,19 @@ class ExceptionResult<T extends SerializableEntity> extends Result {
 
   @override
   String toString() => 'ExceptionResult(entity: $entity)';
+
+  /// Convert exception body to Map
+  Map<String, dynamic> get body => entity is SerializableEntity
+      ? (entity as SerializableEntity).toJson()
+      : {};
+
+  /// Get class name of an exception
+  String get className => entity.runtimeType.toString();
+
+  /// Serialized data
+  Map<String, dynamic> get data => {
+        'className': className,
+        'data': body,
+        'exception': true,
+      };
 }

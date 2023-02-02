@@ -250,16 +250,10 @@ class Server {
       await request.response.close();
       return;
     } else if (result is ExceptionResult) {
-      // Create an exception body
-      var data = {
-        'className': result.entity.runtimeType.toString(),
-        'data': result.entity.toJson(),
-        'exception': true
-      };
-      // Set content type.
-      request.response.headers.contentType =
-          ContentType('application', 'json', charset: 'utf-8');
-      var serializedEntity = SerializationManager.encode(data);
+      request.response.headers.contentType = ContentType.json;
+      request.response.statusCode = HttpStatus.badRequest;
+
+      var serializedEntity = SerializationManager.encode(result.data);
       request.response.write(serializedEntity);
       await request.response.close();
     } else if (result is ResultSuccess) {

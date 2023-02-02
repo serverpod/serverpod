@@ -6,4 +6,9 @@
 class ServerpodException implements Exception {
   /// Const constructor to pass empty exception with `statusCode 500`
   const ServerpodException();
+
+  @override
+  String toString() {
+    return 'ServerpodException: Internal server error';
+  }
 }

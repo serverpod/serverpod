@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -57,6 +58,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       data = response.body;
 
       if (response.statusCode != 200) {
+        _checkForServerException(data);
         throw (ServerpodClientException(data, response.statusCode));
       }
 
@@ -75,6 +77,24 @@ abstract class ServerpodClient extends ServerpodClientShared {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
+      rethrow;
+    }
+  }
+
+  void _checkForServerException(String? data) {
+    if (data == null) return;
+    try {
+      Map<String, dynamic> json = jsonDecode(data);
+      bool isException = json['exception'] ?? false;
+      if (!isException) return;
+      String className = json['className'] ?? '';
+      const baseException = ServerpodException();
+      if (className == baseException.runtimeType.toString()) {
+        throw baseException;
+      } else {
+        throw serializationManager.deserializeByClassName(json);
+      }
+    } catch (e) {
       rethrow;
     }
   }
