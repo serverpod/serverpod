@@ -16,6 +16,7 @@ dependencies:
   code_builder: ^4.3.0
   colorize: ^3.0.0
   dart_style: ^2.2.4
+  logger: ^1.1.0
   http: ^0.13.3
   intl: ^0.17.0
   recase: ^4.0.0

@@ -14,6 +14,7 @@ import 'internal_tools/generate_pubspecs.dart';
 import 'shared/environment.dart';
 import 'util/command_line_tools.dart';
 import 'util/internal_error.dart';
+import 'util/promt_to_update.dart';
 import 'util/version.dart';
 
 const cmdCreate = 'create';
@@ -60,6 +61,8 @@ Future<void> _main(List<String> args) async {
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
     return;
   }
+
+  await promtToUpdateIfNeeded();
 
   if (!loadEnvironmentVars()) {
     return;
