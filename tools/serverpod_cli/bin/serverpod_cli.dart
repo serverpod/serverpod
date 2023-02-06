@@ -103,11 +103,6 @@ Future<void> _main(List<String> args) async {
   var upgradeParser = ArgParser();
   upgradeParser.addFlag('verbose',
       abbr: 'v', negatable: false, help: 'Output more detailed information');
-  upgradeParser.addOption(
-    'version',
-    help:
-        'Please ented the version of Serverpod CLI that needs to be activated',
-  );
   parser.addCommand(cmdUpgrade, upgradeParser);
 
   // "create" command
@@ -212,8 +207,7 @@ Future<void> _main(List<String> args) async {
 
     if (results.command!.name == cmdUpgrade) {
       bool verbose = results.command!['verbose'];
-      String? version = results.command?['version'];
-      await updateCLI(verbose: verbose, versionConstraint: version);
+      await updateCLI(verbose: verbose);
       return;
     }
 

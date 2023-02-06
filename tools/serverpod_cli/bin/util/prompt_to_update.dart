@@ -14,15 +14,52 @@ Future<void> promptToUpdateIfNeeded() async {
     if (currentVersion == null || packageName == null) return;
     _Package? package = await _PackageService.getLatestPackage(packageName);
     if (package == null) return;
-    bool isUpToDate = package.version == 'currentVersion';
+    bool isUpToDate = package.version == currentVersion;
 
     if (!isUpToDate) {
       print('');
-      print(promptMessage(package.version));
+      print(_promptMessage(package.version));
       print('');
     }
   } catch (e) {
     print(e);
+  }
+}
+
+/// Update Serverpod CLI to the latest available version
+Future<void> updateCLI({bool verbose = false}) async {
+  try {
+    String? currentVersion = _getPackageVersion();
+    String? packageName = _getPackageName();
+    if (currentVersion == null || packageName == null) return;
+    _Package? package = await _PackageService.getLatestPackage(packageName);
+    if (package == null) return;
+    if (package.version == currentVersion) {
+      return printww('Serverpod is up to date 😉');
+    }
+    ProcessResult upgrade = await Process.run(
+      'dart',
+      [
+        'pub',
+        'global',
+        'activate',
+        'serverpod',
+      ],
+    );
+    if (upgrade.exitCode == 0) {
+      stdout.write(upgrade.stdout);
+      stderr.write(upgrade.stderr);
+      printwwln('Serverpod CLI upgraded successfully');
+      return;
+    } else {
+      if (verbose) printwwln(upgrade.stderr.toString());
+      printwwln('Something went wrong, Failed to upgrade Serverpod CLI.');
+      return;
+    }
+  } on Exception catch (e) {
+    if (verbose) printwwln(e.toString());
+    printwwln('Something went wrong, Failed to upgrade Serverpod CLI.');
+    return;
   }
 }
 
@@ -45,44 +82,6 @@ String? _getPackageName() {
   YamlMap? package = _getcurrentPackage();
 
   return package?.nodes['name']?.value.toString();
-}
-
-Future<void> updateCLI(
-    {String? versionConstraint, bool verbose = false}) async {
-  try {
-    String? currentVersion = _getPackageVersion();
-    String? packageName = _getPackageName();
-    if (currentVersion == null || packageName == null) return;
-    _Package? package = await _PackageService.getLatestPackage(packageName);
-    if (package == null) return;
-    if (package.version == currentVersion) {
-      printww('Serverpod is up to date 😉');
-    }
-    ProcessResult upgrade = await Process.run(
-      'dart',
-      [
-        'pub',
-        'global',
-        'activate',
-        'serverpod',
-        if (versionConstraint != null) versionConstraint,
-      ],
-    );
-    if (upgrade.exitCode == 0) {
-      stdout.write(upgrade.stdout);
-      stderr.write(upgrade.stderr);
-      printwwln('Serverpod CLI upgraded successfully');
-      return;
-    } else {
-      if (verbose) printwwln(upgrade.stderr.toString());
-      printwwln('Something went wrong, Failed to upgrade Serverpod CLI.');
-      return;
-    }
-  } on Exception catch (e) {
-    if (verbose) printwwln(e.toString());
-    printwwln('Something went wrong, Failed to upgrade Serverpod CLI.');
-    return;
-  }
 }
 
 abstract class _PackageService {
@@ -108,7 +107,7 @@ class _Package {
   });
 }
 
-String promptMessage(String version) {
+String _promptMessage(String version) {
   var versionLine =
       '│ A new version $version of Serverpod is available!                                              │';
   if (versionLine.length > 89) {
