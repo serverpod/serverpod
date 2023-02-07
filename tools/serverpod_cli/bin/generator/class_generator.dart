@@ -34,9 +34,8 @@ void performGenerateClasses({
     verbose: verbose,
     outputDirectoryPath: config.generatedClientProtocolPath,
     serverCode: false,
-    classDefinitions: classDefinitions
-        .where((definition) => !definition.serverSideOnly)
-        .toList(),
+    classDefinitions:
+        classDefinitions.where((definition) => !definition.serverOnly).toList(),
     protocolDefinition: protocolDefinition,
   );
   clientGenerator.generate(collector: collector, codeGenerator: codeGenerator);

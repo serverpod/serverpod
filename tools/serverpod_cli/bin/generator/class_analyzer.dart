@@ -157,7 +157,7 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'serverSideOnly', 'fields', 'indexes'},
+      {'class', 'table', 'serverOnly', 'fields', 'indexes'},
     )) {
       return null;
     }
@@ -212,9 +212,8 @@ class ClassAnalyzer {
       }
     }
 
-    // Validate and get `serverSideOnly`
-    bool serverSideOnly =
-        _validateAndParseServerSideOnly(documentContents, collector);
+    // Validate and get `serverOnly`
+    bool serverOnly = _validateAndParseServerOnly(documentContents, collector);
 
     // Validate fields map exists.
     var fieldsNode = documentContents.nodes['fields'];
@@ -531,7 +530,7 @@ class ClassAnalyzer {
       indexes: indexes,
       subDir: subDirectory,
       documentation: classDocumentation,
-      serverSideOnly: serverSideOnly,
+      serverOnly: serverOnly,
     );
   }
 
@@ -539,7 +538,7 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'enum', 'serverSideOnly', 'values'},
+      {'enum', 'serverOnly', 'values'},
     )) {
       return null;
     }
@@ -573,9 +572,8 @@ class ClassAnalyzer {
       return null;
     }
 
-    // Validate and get `serverSideOnly`
-    bool serverSideOnly =
-        _validateAndParseServerSideOnly(documentContents, collector);
+    // Validate and get `serverOnly`
+    bool serverOnly = _validateAndParseServerOnly(documentContents, collector);
 
     // Validate enum values.
     var valuesNode = documentContents.nodes['values'];
@@ -636,7 +634,7 @@ class ClassAnalyzer {
       className: className,
       values: values,
       documentation: enumDocumentation,
-      serverSideOnly: serverSideOnly,
+      serverOnly: serverOnly,
     );
   }
 
@@ -669,17 +667,17 @@ class ClassAnalyzer {
     return true;
   }
 
-  bool _validateAndParseServerSideOnly(
+  bool _validateAndParseServerOnly(
       YamlMap documentContents, CodeAnalysisCollector collector) {
-    var serverSideOnlyNode = documentContents.nodes['serverSideOnly'];
-    if (serverSideOnlyNode != null) {
-      if (serverSideOnlyNode.value is! bool) {
+    var serverOnlyNode = documentContents.nodes['serverOnly'];
+    if (serverOnlyNode != null) {
+      if (serverOnlyNode.value is! bool) {
         collector.addError(SourceSpanException(
-          'The "serverSideOnly" property must be a bool.',
-          serverSideOnlyNode.span,
+          'The "serverOnly" property must be a bool.',
+          serverOnlyNode.span,
         ));
       } else {
-        return serverSideOnlyNode.value;
+        return serverOnlyNode.value;
       }
     }
     return false; // default to false
