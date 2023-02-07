@@ -675,7 +675,7 @@ class ClassAnalyzer {
     if (serverSideOnlyNode != null) {
       if (serverSideOnlyNode.value is! bool) {
         collector.addError(SourceSpanException(
-          'The "serverSideOnly" property must be a Boolean.',
+          'The "serverSideOnly" property must be a bool.',
           serverSideOnlyNode.span,
         ));
       } else {
