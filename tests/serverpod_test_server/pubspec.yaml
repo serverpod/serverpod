@@ -30,3 +30,4 @@ dev_dependencies:
     path: ../serverpod_test_module/serverpod_test_module_client
   serverpod_service_client:
     path: ../../packages/serverpod_service_client
+  expect_error: ^1.0.5
