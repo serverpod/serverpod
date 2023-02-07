@@ -157,7 +157,7 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'fields', 'indexes'},
+      {'class', 'table', 'serverSideOnly', 'fields', 'indexes'},
     )) {
       return null;
     }
@@ -211,6 +211,10 @@ class ClassAnalyzer {
         tableName = null;
       }
     }
+
+    // Validate and get `serverSideOnly`
+    bool serverSideOnly =
+        _validateAndParseServerSideOnly(documentContents, collector);
 
     // Validate fields map exists.
     var fieldsNode = documentContents.nodes['fields'];
@@ -527,6 +531,7 @@ class ClassAnalyzer {
       indexes: indexes,
       subDir: subDirectory,
       documentation: classDocumentation,
+      serverSideOnly: serverSideOnly,
     );
   }
 
@@ -534,7 +539,7 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'enum', 'values'},
+      {'enum', 'serverSideOnly', 'values'},
     )) {
       return null;
     }
@@ -567,6 +572,10 @@ class ClassAnalyzer {
       ));
       return null;
     }
+
+    // Validate and get `serverSideOnly`
+    bool serverSideOnly =
+        _validateAndParseServerSideOnly(documentContents, collector);
 
     // Validate enum values.
     var valuesNode = documentContents.nodes['values'];
@@ -627,6 +636,7 @@ class ClassAnalyzer {
       className: className,
       values: values,
       documentation: enumDocumentation,
+      serverSideOnly: serverSideOnly,
     );
   }
 
@@ -657,5 +667,21 @@ class ClassAnalyzer {
     }
 
     return true;
+  }
+
+  bool _validateAndParseServerSideOnly(
+      YamlMap documentContents, CodeAnalysisCollector collector) {
+    var serverSideOnlyNode = documentContents.nodes['serverSideOnly'];
+    if (serverSideOnlyNode != null) {
+      if (serverSideOnlyNode.value is! bool) {
+        collector.addError(SourceSpanException(
+          'The "serverSideOnly" property must be a Boolean.',
+          serverSideOnlyNode.span,
+        ));
+      } else {
+        return serverSideOnlyNode.value;
+      }
+    }
+    return false; // default to false
   }
 }
