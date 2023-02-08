@@ -9,7 +9,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 class UserNotFound extends _i1.SerializableEntity
-    implements _i1.ServerpodException {
+    implements _i1.SerializableException {
   UserNotFound({required this.message});
 
   factory UserNotFound.fromJson(

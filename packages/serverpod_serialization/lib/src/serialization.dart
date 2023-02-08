@@ -5,8 +5,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'bytedata_base64_ext.dart';
-
 /// The constructor takes JSON structure and turns it into a decoded
 /// [SerializableEntity].
 typedef constructor<T> = T Function(
@@ -93,6 +91,8 @@ abstract class SerializationManager {
       return 'ByteData';
     } else if (data is Duration) {
       return 'Duration';
+    } else if (data is SerializableException) {
+      return 'SerializableException';
     }
     return null;
   }
@@ -115,6 +115,8 @@ abstract class SerializationManager {
         return deserialize<ByteData>(data['data']);
       case 'Duration':
         return deserialize<Duration>(data['data']);
+      case 'SerializableException':
+        return SerializableException();
     }
     throw FormatException('No deserialization found for type named $className');
   }

@@ -6,7 +6,7 @@ class ExceptionApproach extends Endpoint {
     if (userId == -1) {
       throw UserNotFound(message: 'User with id: $userId not found');
     } else if (userId == 0) {
-      throw const ServerpodException();
+      throw SerializableException();
     }
     return 'Success';
   }

@@ -27,7 +27,7 @@ void main() {
         exception = e;
       }
 
-      expect(exception is test_client.ServerpodException, true);
+      expect(exception is test_client.SerializableException, true);
     });
 
     test('Working with UserNotFoundException exception', () async {

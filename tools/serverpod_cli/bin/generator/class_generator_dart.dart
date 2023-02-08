@@ -1071,7 +1071,7 @@ extension on ClassGeneratorDart {
           classBuilder.extend =
               refer('SerializableEntity', serverpodUrl(serverCode));
           classBuilder.implements = ListBuilder(
-              [refer('ServerpodException', serverpodUrl(serverCode))]);
+              [refer('SerializableException', serverpodUrl(serverCode))]);
 
           // Fields
           for (var field in fields) {
