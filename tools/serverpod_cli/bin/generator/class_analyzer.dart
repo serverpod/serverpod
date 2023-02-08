@@ -163,11 +163,15 @@ class ClassAnalyzer {
       return null;
     }
 
+    String classKeyword = 'class';
+    String exceptionKeyword = 'exception';
+
     // Validate class name exists and is correct.
-    YamlNode? classNameNodePrivate = documentContents.nodes['class'];
-    YamlNode? exceptionNodePrivate = documentContents.nodes['exception'];
+    YamlNode? classNameNodePrivate = documentContents.nodes[classKeyword];
+    YamlNode? exceptionNodePrivate = documentContents.nodes[exceptionKeyword];
     YamlNode? workingNode = classNameNodePrivate ?? exceptionNodePrivate;
-    String type = classNameNodePrivate != null ? 'class' : 'exception';
+    String type =
+        classNameNodePrivate != null ? classKeyword : exceptionKeyword;
     if (workingNode == null) {
       collector.addError(SourceSpanException(
         'No "$type" property is defined.',
@@ -200,7 +204,7 @@ class ClassAnalyzer {
     String? tableName;
     var tableNameNode = documentContents.nodes['table'];
     if (tableNameNode != null) {
-      if (type == 'exception') {
+      if (type == exceptionKeyword) {
         collector.addError(SourceSpanException(
           'The "$type" can\'t have a "table" property',
           tableNameNode.span,
@@ -531,23 +535,16 @@ class ClassAnalyzer {
       }
     }
 
-    if (type == 'class') {
-      return ClassDefinition(
-        className: className,
-        tableName: tableName,
-        fileName: outFileName,
-        fields: fields,
-        indexes: indexes,
-        subDir: subDirectory,
-        documentation: classDocumentation,
-      );
-    } else {
-      return ExceptionDefinition(
-        fileName: outFileName,
-        className: className,
-        fields: fields,
-      );
-    }
+    return ClassDefinition(
+      className: className,
+      tableName: tableName,
+      fileName: outFileName,
+      fields: fields,
+      indexes: indexes,
+      subDir: subDirectory,
+      documentation: classDocumentation,
+      isException: type == exceptionKeyword,
+    );
   }
 
   ProtocolFileDefinition? _analyzeEnumFile(

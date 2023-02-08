@@ -107,26 +107,15 @@ class ClassDefinition extends ProtocolFileDefinition {
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
   final List<String>? documentation;
+  final bool isException;
 
   ClassDefinition({
     required super.fileName,
     required super.className,
     required this.fields,
+    required this.isException,
     this.tableName,
     this.indexes,
-    super.subDir,
-    this.documentation,
-  });
-}
-
-class ExceptionDefinition extends ProtocolFileDefinition {
-  final List<FieldDefinition> fields;
-  final List<String>? documentation;
-
-  ExceptionDefinition({
-    required super.fileName,
-    required super.className,
-    required this.fields,
     super.subDir,
     this.documentation,
   });
