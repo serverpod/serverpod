@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
-
-import '../util/extensions.dart';
+import 'package:path/path.dart' as p;
 import '../util/string_validators.dart';
+import '../util/extensions.dart';
 import '../util/yaml_docs.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
