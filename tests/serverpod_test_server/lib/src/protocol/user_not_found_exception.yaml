@@ -1,3 +1,0 @@
-exception: UserNotFound
-fields:
-  message: String

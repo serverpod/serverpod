@@ -15,7 +15,7 @@ import '../endpoints/cloud_storage_s3.dart' as _i6;
 import '../endpoints/custom_types.dart' as _i7;
 import '../endpoints/database_basic.dart' as _i8;
 import '../endpoints/database_transactions.dart' as _i9;
-import '../endpoints/exception_approach.dart' as _i10;
+import '../endpoints/exception_test_endpoint.dart' as _i10;
 import '../endpoints/failed_calls.dart' as _i11;
 import '../endpoints/field_scopes.dart' as _i12;
 import '../endpoints/future_calls.dart' as _i13;
@@ -99,10 +99,10 @@ class Endpoints extends _i1.EndpointDispatch {
           'transactionsDatabase',
           null,
         ),
-      'exceptionApproach': _i10.ExceptionApproach()
+      'exceptionTest': _i10.ExceptionTestEndpoint()
         ..initialize(
           server,
-          'exceptionApproach',
+          'exceptionTest',
           null,
         ),
       'failedCalls': _i11.FailedCallsEndpoint()
@@ -1296,29 +1296,50 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['exceptionApproach'] = _i1.EndpointConnector(
-      name: 'exceptionApproach',
-      endpoint: endpoints['exceptionApproach']!,
+    connectors['exceptionTest'] = _i1.EndpointConnector(
+      name: 'exceptionTest',
+      endpoint: endpoints['exceptionTest']!,
       methodConnectors: {
-        'checkUserExist': _i1.MethodConnector(
-          name: 'checkUserExist',
-          params: {
-            'userId': _i1.ParameterDescription(
-              name: 'userId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            )
-          },
+        'throwSerializableException': _i1.MethodConnector(
+          name: 'throwSerializableException',
+          params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionApproach'] as _i10.ExceptionApproach)
-                  .checkUserExist(
-            session,
-            params['userId'],
-          ),
-        )
+              (endpoints['exceptionTest'] as _i10.ExceptionTestEndpoint)
+                  .throwSerializableException(session),
+        ),
+        'throwNormalException': _i1.MethodConnector(
+          name: 'throwNormalException',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exceptionTest'] as _i10.ExceptionTestEndpoint)
+                  .throwNormalException(session),
+        ),
+        'throwExceptionWithData': _i1.MethodConnector(
+          name: 'throwExceptionWithData',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exceptionTest'] as _i10.ExceptionTestEndpoint)
+                  .throwExceptionWithData(session),
+        ),
+        'workingWithoutException': _i1.MethodConnector(
+          name: 'workingWithoutException',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exceptionTest'] as _i10.ExceptionTestEndpoint)
+                  .workingWithoutException(session),
+        ),
       },
     );
     connectors['failedCalls'] = _i1.EndpointConnector(

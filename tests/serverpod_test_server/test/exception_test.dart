@@ -1,5 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart'
     as test_client;
+import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
 import 'config.dart';
@@ -12,17 +13,13 @@ void main() {
   setUp(() {});
 
   group('Exception tests', () {
-    const successUserId = 1;
-    const unknownErrorUserId = 0;
-    const failureUserId = -1;
     test('Working without exception', () async {
-      expect(await client.exceptionApproach.checkUserExist(successUserId),
-          'Success');
+      expect(await client.exceptionTest.workingWithoutException(), 'Success');
     });
-    test('Working with ServerpodException exception', () async {
+    test('Working with SerializableException', () async {
       dynamic exception;
       try {
-        await client.exceptionApproach.checkUserExist(unknownErrorUserId);
+        await client.exceptionTest.throwSerializableException();
       } catch (e) {
         exception = e;
       }
@@ -30,26 +27,31 @@ void main() {
       expect(exception is test_client.SerializableException, true);
     });
 
-    test('Working with UserNotFoundException exception', () async {
+    test('Working with ExceptionWithData exception', () async {
       dynamic exception;
       try {
-        await client.exceptionApproach.checkUserExist(failureUserId);
+        await client.exceptionTest.throwExceptionWithData();
       } catch (e) {
         exception = e;
       }
 
-      expect(exception is test_client.UserNotFound, true);
+      expect(exception is test_client.ExceptionWithData, true);
     });
 
     test('Catch specific type', () async {
-      String message = '';
+      ExceptionWithData? exceptionWithData;
       try {
-        await client.exceptionApproach.checkUserExist(failureUserId);
-      } on test_client.UserNotFound catch (e) {
-        message = e.message;
+        await client.exceptionTest.throwExceptionWithData();
+      } on test_client.ExceptionWithData catch (e) {
+        exceptionWithData = e;
       }
 
-      expect(message, 'User with id: $failureUserId not found');
+      expect(exceptionWithData?.message, 'Throwing an exception');
+      expect(exceptionWithData?.errorFields, [
+        'first line error',
+        'second line error',
+      ]);
+      expect(exceptionWithData?.someNullableField, 1);
     });
   });
 }

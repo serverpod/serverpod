@@ -8,18 +8,18 @@
 library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'nullability.dart' as _i2;
-import 'object_field_scopes.dart' as _i3;
-import 'object_with_bytedata.dart' as _i4;
-import 'object_with_duration.dart' as _i5;
-import 'object_with_enum.dart' as _i6;
-import 'object_with_maps.dart' as _i7;
-import 'object_with_object.dart' as _i8;
-import 'simple_data.dart' as _i9;
-import 'simple_data_list.dart' as _i10;
-import 'test_enum.dart' as _i11;
-import 'types.dart' as _i12;
-import 'user_not_found_exception.dart' as _i13;
+import 'exception_with_data.dart' as _i2;
+import 'nullability.dart' as _i3;
+import 'object_field_scopes.dart' as _i4;
+import 'object_with_bytedata.dart' as _i5;
+import 'object_with_duration.dart' as _i6;
+import 'object_with_enum.dart' as _i7;
+import 'object_with_maps.dart' as _i8;
+import 'object_with_object.dart' as _i9;
+import 'simple_data.dart' as _i10;
+import 'simple_data_list.dart' as _i11;
+import 'test_enum.dart' as _i12;
+import 'types.dart' as _i13;
 import 'protocol.dart' as _i14;
 import 'dart:typed_data' as _i15;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i16;
@@ -29,6 +29,7 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i19;
 import 'package:serverpod_test_module_server/module.dart' as _i20;
 import 'package:serverpod_auth_server/module.dart' as _i21;
 import 'package:serverpod/protocol.dart' as _i22;
+export 'exception_with_data.dart';
 export 'nullability.dart';
 export 'object_field_scopes.dart';
 export 'object_with_bytedata.dart';
@@ -39,8 +40,7 @@ export 'object_with_object.dart';
 export 'simple_data.dart';
 export 'simple_data_list.dart';
 export 'test_enum.dart';
-export 'types.dart';
-export 'user_not_found_exception.dart'; // ignore_for_file: equal_keys_in_map
+export 'types.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -60,85 +60,85 @@ class Protocol extends _i1.SerializationManagerServer {
     if (customConstructors.containsKey(t)) {
       return customConstructors[t]!(data, this) as T;
     }
-    if (t == _i2.Nullability) {
-      return _i2.Nullability.fromJson(data, this) as T;
+    if (t == _i2.ExceptionWithData) {
+      return _i2.ExceptionWithData.fromJson(data, this) as T;
     }
-    if (t == _i3.ObjectFieldScopes) {
-      return _i3.ObjectFieldScopes.fromJson(data, this) as T;
+    if (t == _i3.Nullability) {
+      return _i3.Nullability.fromJson(data, this) as T;
     }
-    if (t == _i4.ObjectWithByteData) {
-      return _i4.ObjectWithByteData.fromJson(data, this) as T;
+    if (t == _i4.ObjectFieldScopes) {
+      return _i4.ObjectFieldScopes.fromJson(data, this) as T;
     }
-    if (t == _i5.ObjectWithDuration) {
-      return _i5.ObjectWithDuration.fromJson(data, this) as T;
+    if (t == _i5.ObjectWithByteData) {
+      return _i5.ObjectWithByteData.fromJson(data, this) as T;
     }
-    if (t == _i6.ObjectWithEnum) {
-      return _i6.ObjectWithEnum.fromJson(data, this) as T;
+    if (t == _i6.ObjectWithDuration) {
+      return _i6.ObjectWithDuration.fromJson(data, this) as T;
     }
-    if (t == _i7.ObjectWithMaps) {
-      return _i7.ObjectWithMaps.fromJson(data, this) as T;
+    if (t == _i7.ObjectWithEnum) {
+      return _i7.ObjectWithEnum.fromJson(data, this) as T;
     }
-    if (t == _i8.ObjectWithObject) {
-      return _i8.ObjectWithObject.fromJson(data, this) as T;
+    if (t == _i8.ObjectWithMaps) {
+      return _i8.ObjectWithMaps.fromJson(data, this) as T;
     }
-    if (t == _i9.SimpleData) {
-      return _i9.SimpleData.fromJson(data, this) as T;
+    if (t == _i9.ObjectWithObject) {
+      return _i9.ObjectWithObject.fromJson(data, this) as T;
     }
-    if (t == _i10.SimpleDataList) {
-      return _i10.SimpleDataList.fromJson(data, this) as T;
+    if (t == _i10.SimpleData) {
+      return _i10.SimpleData.fromJson(data, this) as T;
     }
-    if (t == _i11.TestEnum) {
-      return _i11.TestEnum.fromJson(data) as T;
+    if (t == _i11.SimpleDataList) {
+      return _i11.SimpleDataList.fromJson(data, this) as T;
     }
-    if (t == _i12.Types) {
-      return _i12.Types.fromJson(data, this) as T;
+    if (t == _i12.TestEnum) {
+      return _i12.TestEnum.fromJson(data) as T;
     }
-    if (t == _i13.UserNotFound) {
-      return _i13.UserNotFound.fromJson(data, this) as T;
+    if (t == _i13.Types) {
+      return _i13.Types.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i2.Nullability?>()) {
-      return (data != null ? _i2.Nullability.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i3.ObjectFieldScopes?>()) {
-      return (data != null ? _i3.ObjectFieldScopes.fromJson(data, this) : null)
+    if (t == _i1.getType<_i2.ExceptionWithData?>()) {
+      return (data != null ? _i2.ExceptionWithData.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i4.ObjectWithByteData?>()) {
-      return (data != null ? _i4.ObjectWithByteData.fromJson(data, this) : null)
+    if (t == _i1.getType<_i3.Nullability?>()) {
+      return (data != null ? _i3.Nullability.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i4.ObjectFieldScopes?>()) {
+      return (data != null ? _i4.ObjectFieldScopes.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i5.ObjectWithDuration?>()) {
-      return (data != null ? _i5.ObjectWithDuration.fromJson(data, this) : null)
+    if (t == _i1.getType<_i5.ObjectWithByteData?>()) {
+      return (data != null ? _i5.ObjectWithByteData.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i6.ObjectWithEnum?>()) {
-      return (data != null ? _i6.ObjectWithEnum.fromJson(data, this) : null)
+    if (t == _i1.getType<_i6.ObjectWithDuration?>()) {
+      return (data != null ? _i6.ObjectWithDuration.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i7.ObjectWithMaps?>()) {
-      return (data != null ? _i7.ObjectWithMaps.fromJson(data, this) : null)
+    if (t == _i1.getType<_i7.ObjectWithEnum?>()) {
+      return (data != null ? _i7.ObjectWithEnum.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i8.ObjectWithObject?>()) {
-      return (data != null ? _i8.ObjectWithObject.fromJson(data, this) : null)
+    if (t == _i1.getType<_i8.ObjectWithMaps?>()) {
+      return (data != null ? _i8.ObjectWithMaps.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i9.SimpleData?>()) {
-      return (data != null ? _i9.SimpleData.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i10.SimpleDataList?>()) {
-      return (data != null ? _i10.SimpleDataList.fromJson(data, this) : null)
+    if (t == _i1.getType<_i9.ObjectWithObject?>()) {
+      return (data != null ? _i9.ObjectWithObject.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.TestEnum?>()) {
-      return (data != null ? _i11.TestEnum.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.SimpleData?>()) {
+      return (data != null ? _i10.SimpleData.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i12.Types?>()) {
-      return (data != null ? _i12.Types.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i13.UserNotFound?>()) {
-      return (data != null ? _i13.UserNotFound.fromJson(data, this) : null)
+    if (t == _i1.getType<_i11.SimpleDataList?>()) {
+      return (data != null ? _i11.SimpleDataList.fromJson(data, this) : null)
           as T;
+    }
+    if (t == _i1.getType<_i12.TestEnum?>()) {
+      return (data != null ? _i12.TestEnum.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i13.Types?>()) {
+      return (data != null ? _i13.Types.fromJson(data, this) : null) as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
@@ -655,41 +655,41 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i19.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
-    if (data is _i2.Nullability) {
+    if (data is _i2.ExceptionWithData) {
+      return 'ExceptionWithData';
+    }
+    if (data is _i3.Nullability) {
       return 'Nullability';
     }
-    if (data is _i3.ObjectFieldScopes) {
+    if (data is _i4.ObjectFieldScopes) {
       return 'ObjectFieldScopes';
     }
-    if (data is _i4.ObjectWithByteData) {
+    if (data is _i5.ObjectWithByteData) {
       return 'ObjectWithByteData';
     }
-    if (data is _i5.ObjectWithDuration) {
+    if (data is _i6.ObjectWithDuration) {
       return 'ObjectWithDuration';
     }
-    if (data is _i6.ObjectWithEnum) {
+    if (data is _i7.ObjectWithEnum) {
       return 'ObjectWithEnum';
     }
-    if (data is _i7.ObjectWithMaps) {
+    if (data is _i8.ObjectWithMaps) {
       return 'ObjectWithMaps';
     }
-    if (data is _i8.ObjectWithObject) {
+    if (data is _i9.ObjectWithObject) {
       return 'ObjectWithObject';
     }
-    if (data is _i9.SimpleData) {
+    if (data is _i10.SimpleData) {
       return 'SimpleData';
     }
-    if (data is _i10.SimpleDataList) {
+    if (data is _i11.SimpleDataList) {
       return 'SimpleDataList';
     }
-    if (data is _i11.TestEnum) {
+    if (data is _i12.TestEnum) {
       return 'TestEnum';
     }
-    if (data is _i12.Types) {
+    if (data is _i13.Types) {
       return 'Types';
-    }
-    if (data is _i13.UserNotFound) {
-      return 'UserNotFound';
     }
     return super.getClassNameForObject(data);
   }
@@ -713,41 +713,41 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'FreezedCustomClass') {
       return deserialize<_i19.FreezedCustomClass>(data['data']);
     }
+    if (data['className'] == 'ExceptionWithData') {
+      return deserialize<_i2.ExceptionWithData>(data['data']);
+    }
     if (data['className'] == 'Nullability') {
-      return deserialize<_i2.Nullability>(data['data']);
+      return deserialize<_i3.Nullability>(data['data']);
     }
     if (data['className'] == 'ObjectFieldScopes') {
-      return deserialize<_i3.ObjectFieldScopes>(data['data']);
+      return deserialize<_i4.ObjectFieldScopes>(data['data']);
     }
     if (data['className'] == 'ObjectWithByteData') {
-      return deserialize<_i4.ObjectWithByteData>(data['data']);
+      return deserialize<_i5.ObjectWithByteData>(data['data']);
     }
     if (data['className'] == 'ObjectWithDuration') {
-      return deserialize<_i5.ObjectWithDuration>(data['data']);
+      return deserialize<_i6.ObjectWithDuration>(data['data']);
     }
     if (data['className'] == 'ObjectWithEnum') {
-      return deserialize<_i6.ObjectWithEnum>(data['data']);
+      return deserialize<_i7.ObjectWithEnum>(data['data']);
     }
     if (data['className'] == 'ObjectWithMaps') {
-      return deserialize<_i7.ObjectWithMaps>(data['data']);
+      return deserialize<_i8.ObjectWithMaps>(data['data']);
     }
     if (data['className'] == 'ObjectWithObject') {
-      return deserialize<_i8.ObjectWithObject>(data['data']);
+      return deserialize<_i9.ObjectWithObject>(data['data']);
     }
     if (data['className'] == 'SimpleData') {
-      return deserialize<_i9.SimpleData>(data['data']);
+      return deserialize<_i10.SimpleData>(data['data']);
     }
     if (data['className'] == 'SimpleDataList') {
-      return deserialize<_i10.SimpleDataList>(data['data']);
+      return deserialize<_i11.SimpleDataList>(data['data']);
     }
     if (data['className'] == 'TestEnum') {
-      return deserialize<_i11.TestEnum>(data['data']);
+      return deserialize<_i12.TestEnum>(data['data']);
     }
     if (data['className'] == 'Types') {
-      return deserialize<_i12.Types>(data['data']);
-    }
-    if (data['className'] == 'UserNotFound') {
-      return deserialize<_i13.UserNotFound>(data['data']);
+      return deserialize<_i13.Types>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -773,20 +773,20 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i3.ObjectFieldScopes:
-        return _i3.ObjectFieldScopes.t;
-      case _i4.ObjectWithByteData:
-        return _i4.ObjectWithByteData.t;
-      case _i5.ObjectWithDuration:
-        return _i5.ObjectWithDuration.t;
-      case _i6.ObjectWithEnum:
-        return _i6.ObjectWithEnum.t;
-      case _i8.ObjectWithObject:
-        return _i8.ObjectWithObject.t;
-      case _i9.SimpleData:
-        return _i9.SimpleData.t;
-      case _i12.Types:
-        return _i12.Types.t;
+      case _i4.ObjectFieldScopes:
+        return _i4.ObjectFieldScopes.t;
+      case _i5.ObjectWithByteData:
+        return _i5.ObjectWithByteData.t;
+      case _i6.ObjectWithDuration:
+        return _i6.ObjectWithDuration.t;
+      case _i7.ObjectWithEnum:
+        return _i7.ObjectWithEnum.t;
+      case _i9.ObjectWithObject:
+        return _i9.ObjectWithObject.t;
+      case _i10.SimpleData:
+        return _i10.SimpleData.t;
+      case _i13.Types:
+        return _i13.Types.t;
     }
     return null;
   }

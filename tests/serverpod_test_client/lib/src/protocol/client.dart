@@ -529,17 +529,38 @@ class _EndpointTransactionsDatabase extends _i1.EndpointRef {
       );
 }
 
-class _EndpointExceptionApproach extends _i1.EndpointRef {
-  _EndpointExceptionApproach(_i1.EndpointCaller caller) : super(caller);
+class _EndpointExceptionTest extends _i1.EndpointRef {
+  _EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'exceptionApproach';
+  String get name => 'exceptionTest';
 
-  _i2.Future<String> checkUserExist(int userId) =>
+  _i2.Future<String> throwSerializableException() =>
       caller.callServerEndpoint<String>(
-        'exceptionApproach',
-        'checkUserExist',
-        {'userId': userId},
+        'exceptionTest',
+        'throwSerializableException',
+        {},
+      );
+
+  _i2.Future<String> throwNormalException() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'throwNormalException',
+        {},
+      );
+
+  _i2.Future<String> throwExceptionWithData() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'throwExceptionWithData',
+        {},
+      );
+
+  _i2.Future<String> workingWithoutException() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'workingWithoutException',
+        {},
       );
 }
 
@@ -1282,7 +1303,7 @@ class Client extends _i1.ServerpodClient {
     customTypes = _EndpointCustomTypes(this);
     basicDatabase = _EndpointBasicDatabase(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
-    exceptionApproach = _EndpointExceptionApproach(this);
+    exceptionTest = _EndpointExceptionTest(this);
     failedCalls = _EndpointFailedCalls(this);
     fieldScopes = _EndpointFieldScopes(this);
     futureCalls = _EndpointFutureCalls(this);
@@ -1317,7 +1338,7 @@ class Client extends _i1.ServerpodClient {
 
   late final _EndpointTransactionsDatabase transactionsDatabase;
 
-  late final _EndpointExceptionApproach exceptionApproach;
+  late final _EndpointExceptionTest exceptionTest;
 
   late final _EndpointFailedCalls failedCalls;
 
@@ -1361,7 +1382,7 @@ class Client extends _i1.ServerpodClient {
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
-        'exceptionApproach': exceptionApproach,
+        'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,
         'futureCalls': futureCalls,
