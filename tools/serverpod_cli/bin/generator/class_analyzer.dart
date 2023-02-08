@@ -139,14 +139,12 @@ class ClassAnalyzer {
     }
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
-    if (documentContents.nodes['class'] != null) {
+    if (documentContents.nodes['class'] != null ||
+        documentContents.nodes['exception'] != null) {
       return _analyzeClassFile(documentContents, docsExtractor);
     }
     if (documentContents.nodes['enum'] != null) {
       return _analyzeEnumFile(documentContents, docsExtractor);
-    }
-    if (documentContents.nodes['exception'] != null) {
-      return _analyzeExceptionFile(documentContents, docsExtractor);
     }
 
     collector.addError(SourceSpanException(
@@ -160,36 +158,40 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'fields', 'indexes'},
+      {'class', 'table', 'fields', 'indexes', 'exception'},
     )) {
       return null;
     }
 
     // Validate class name exists and is correct.
-    var classNameNode = documentContents.nodes['class'];
-    if (classNameNode == null) {
+    YamlNode? classNameNodePrivate = documentContents.nodes['class'];
+    YamlNode? exceptionNodePrivate = documentContents.nodes['exception'];
+    YamlNode? workingNode = classNameNodePrivate ?? exceptionNodePrivate;
+    String type = classNameNodePrivate != null ? 'class' : 'exception';
+    if (workingNode == null) {
       collector.addError(SourceSpanException(
-        'No "class" property is defined.',
+        'No "$type" property is defined.',
         documentContents.span,
       ));
       return null;
     }
-    var classDocumentation = docsExtractor
-        .getDocumentation(documentContents.key('class')!.span.start);
 
-    var className = classNameNode.value;
+    var classDocumentation =
+        docsExtractor.getDocumentation(documentContents.key(type)!.span.start);
+
+    var className = workingNode.value;
     if (className is! String) {
       collector.addError(SourceSpanException(
-        'The "class" property must be a String.',
-        classNameNode.span,
+        'The "$type" property must be a String.',
+        workingNode.span,
       ));
       return null;
     }
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "class" property must be a valid class name (e.g. CamelCaseString).',
-        classNameNode.span,
+        'The "$type" property must be a valid class name (e.g. CamelCaseString).',
+        workingNode.span,
       ));
       return null;
     }
@@ -198,6 +200,13 @@ class ClassAnalyzer {
     String? tableName;
     var tableNameNode = documentContents.nodes['table'];
     if (tableNameNode != null) {
+      if (type == 'exception') {
+        collector.addError(SourceSpanException(
+          'The "$type" can\'t have a "table" property',
+          tableNameNode.span,
+        ));
+        return null;
+      }
       tableName = tableNameNode.value;
       if (tableName is! String) {
         collector.addError(SourceSpanException(
@@ -522,15 +531,23 @@ class ClassAnalyzer {
       }
     }
 
-    return ClassDefinition(
-      className: className,
-      tableName: tableName,
-      fileName: outFileName,
-      fields: fields,
-      indexes: indexes,
-      subDir: subDirectory,
-      documentation: classDocumentation,
-    );
+    if (type == 'class') {
+      return ClassDefinition(
+        className: className,
+        tableName: tableName,
+        fileName: outFileName,
+        fields: fields,
+        indexes: indexes,
+        subDir: subDirectory,
+        documentation: classDocumentation,
+      );
+    } else {
+      return ExceptionDefinition(
+        fileName: outFileName,
+        className: className,
+        fields: fields,
+      );
+    }
   }
 
   ProtocolFileDefinition? _analyzeEnumFile(
@@ -660,176 +677,5 @@ class ClassAnalyzer {
     }
 
     return true;
-  }
-}
-
-extension on ClassAnalyzer {
-  ProtocolFileDefinition? _analyzeExceptionFile(
-      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
-    if (!_containsOnlyValidKeys(
-      documentContents,
-      {'exception', 'fields'},
-    )) {
-      return null;
-    }
-
-    // Validate class name exists and is correct.
-    var classNameNode = documentContents.nodes['exception'];
-    if (classNameNode == null) {
-      collector.addError(SourceSpanException(
-        'No "exception" property is defined.',
-        documentContents.span,
-      ));
-      return null;
-    }
-    var classDocumentation = docsExtractor
-        .getDocumentation(documentContents.key('exception')!.span.start);
-
-    var className = classNameNode.value;
-    if (className is! String) {
-      collector.addError(SourceSpanException(
-        'The "exception" property must be a String.',
-        classNameNode.span,
-      ));
-      return null;
-    }
-
-    if (!StringValidators.isValidClassName(className)) {
-      collector.addError(SourceSpanException(
-        'The "exception" property must be a valid class name (e.g. CamelCaseString).',
-        classNameNode.span,
-      ));
-      return null;
-    }
-
-    // Validate fields map exists.
-    var fieldsNode = documentContents.nodes['fields'];
-    if (fieldsNode == null) {
-      collector.addError(SourceSpanException(
-        'No "fields" property is defined.',
-        documentContents.span,
-      ));
-      return null;
-    }
-
-    if (fieldsNode is! YamlMap) {
-      collector.addError(SourceSpanException(
-        'The "fields" property must be a Map.',
-        documentContents.span,
-      ));
-      return null;
-    }
-
-    // Validate and add fields.
-    var fields = <FieldDefinition>[];
-
-    for (var fieldNameNode in fieldsNode.nodes.keys) {
-      // Validate field name.
-      if (fieldNameNode is! YamlScalar) {
-        collector.addError(SourceSpanException(
-          'Keys of "fields" Map must be of type String.',
-          fieldNameNode.span,
-        ));
-        continue;
-      }
-      var fieldDocumentation =
-          docsExtractor.getDocumentation(fieldNameNode.span.start);
-      var fieldName = fieldNameNode.value;
-      if (fieldName is! String) {
-        collector.addError(SourceSpanException(
-          'Keys of "fields" Map must be of type String.',
-          fieldNameNode.span,
-        ));
-        continue;
-      }
-      if (!StringValidators.isValidFieldName(fieldName)) {
-        collector.addError(SourceSpanException(
-          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
-          fieldNameNode.span,
-        ));
-        continue;
-      }
-
-      // Field name checks out, let's validate the argument.
-      var fieldDescriptionNode = fieldsNode.nodes[fieldNameNode];
-      if (fieldDescriptionNode == null) {
-        collector.addError(SourceSpanException(
-          'Field description is missing.',
-          fieldNameNode.span,
-        ));
-        continue;
-      }
-
-      var fieldDescription = fieldDescriptionNode.value;
-      if (fieldDescription is! String) {
-        collector.addError(SourceSpanException(
-          'Field description must be of type String.',
-          fieldDescriptionNode.span,
-        ));
-        continue;
-      }
-
-      try {
-        fieldDescription = fieldDescription.replaceAll(' ', '');
-        var typeResult = parseAndAnalyzeType(
-          fieldDescription,
-          sourceSpan: fieldDescriptionNode.span,
-        );
-
-        var fieldOptions =
-            fieldDescription.substring(typeResult.parsedPosition).split(',');
-
-        if (fieldOptions
-                .where((option) => option == 'database' || option == 'api')
-                .length >
-            1) {
-          collector.addError(SourceSpanException(
-            'The field scope (database or api) must at most be set once.',
-            fieldDescriptionNode.span,
-          ));
-          continue;
-        }
-
-        var scope = fieldOptions.any((option) => option == 'database')
-            ? FieldScope.database
-            : fieldOptions.any((option) => option == 'api')
-                ? FieldScope.api
-                : FieldScope.all;
-
-        if (fieldOptions.where((option) => option.startsWith('parent')).length >
-            1) {
-          collector.addError(SourceSpanException(
-            'Only one parent must be set.',
-            fieldDescriptionNode.span,
-          ));
-          continue;
-        }
-
-        var fieldDefinition = FieldDefinition(
-          name: fieldName,
-          scope: scope,
-          type: typeResult.type,
-          documentation: fieldDocumentation,
-        );
-
-        fields.add(fieldDefinition);
-      } catch (e) {
-        collector.addError(SourceSpanException(
-          'Field description is invalid.',
-          fieldDescriptionNode.span,
-        ));
-        continue;
-      }
-
-      // TODO: Better type checks.
-    }
-
-    return ExceptionDefinition(
-      className: className,
-      fileName: outFileName,
-      fields: fields,
-      subDir: subDirectory,
-      documentation: classDocumentation,
-    );
   }
 }
