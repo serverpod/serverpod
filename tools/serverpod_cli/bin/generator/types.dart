@@ -149,7 +149,8 @@ class TypeDefinition {
         }
         t.isNullable = nullable ?? this.nullable;
         t.symbol = className;
-        t.types.addAll(generics.map((e) => e.reference(serverCode)));
+        t.types.addAll(generics
+            .map((e) => e.reference(serverCode, subDirectory: subDirectory)));
       },
     );
   }

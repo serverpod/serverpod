@@ -644,6 +644,7 @@ class ClassAnalyzer {
       className: className,
       values: values,
       documentation: enumDocumentation,
+      subDir: subDirectory,
     );
   }
 
