@@ -8,7 +8,7 @@ import 'package:serverpod/serverpod.dart';
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
 class ValueEncoder extends PostgresTextEncoder {
   @override
-  String convert(value, {bool escapeStrings = true}) {
+  String convert(dynamic value, {bool escapeStrings = true}) {
     if (value is ByteData) {
       var encoded = base64Encode(value.buffer.asUint8List());
       return 'decode(\'$encoded\', \'base64\')';
