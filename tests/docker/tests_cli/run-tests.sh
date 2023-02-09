@@ -49,23 +49,23 @@ test -f cli_test/cli_test_server/lib/server.dart
 test -f cli_test/cli_test_server/lib/src/endpoints/example_endpoint.dart
 test -f cli_test/cli_test_server/lib/src/generated/endpoints.dart
 test -f cli_test/cli_test_server/lib/src/generated/example.dart
-test -f cli_test/cli_test_server/lib/src/generated/serverOnly/default_server_only_class.dart
-test -f cli_test/cli_test_server/lib/src/generated/serverOnly/default_server_only_enum.dart
-test -f cli_test/cli_test_server/lib/src/generated/serverOnly/not_server_only_class.dart
-test -f cli_test/cli_test_server/lib/src/generated/serverOnly/not_server_only_enum.dart
-test -f cli_test/cli_test_server/lib/src/generated/serverOnly/server_only_class.dart
-test -f cli_test/cli_test_server/lib/src/generated/serverOnly/server_only_enum.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/default_server_only_class.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/default_server_only_enum.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/not_server_only_class.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/not_server_only_enum.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/server_only_class.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/server_only_enum.dart
 
 # Client files
 test -f cli_test/cli_test_client/pubspec.yaml
 test -f cli_test/cli_test_client/lib/cli_test_client.dart
 test -f cli_test/cli_test_client/lib/src/protocol/client.dart
-test -f cli_test/cli_test_server/lib/src/protocol/serverOnly/default_server_only_class.dart
-test -f cli_test/cli_test_server/lib/src/protocol/serverOnly/default_server_only_enum.dart
-test -f cli_test/cli_test_server/lib/src/protocol/serverOnly/not_server_only_class.dart
-test -f cli_test/cli_test_server/lib/src/protocol/serverOnly/not_server_only_enum.dart
-[ ! -f cli_test/cli_test_server/lib/src/protocol/serverOnly/server_only_class.dart ]
-[ ! -f cli_test/cli_test_server/lib/src/protocol/serverOnly/server_only_enum.dart ]
+test -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/default_server_only_class.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/default_server_only_enum.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/not_server_only_class.dart
+test -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/not_server_only_enum.dart
+[ ! -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/server_only_class.dart ]
+[ ! -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/server_only_enum.dart ]
 
 # Flutter files
 test -f cli_test/cli_test_flutter/pubspec.yaml
