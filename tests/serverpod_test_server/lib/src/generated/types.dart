@@ -19,6 +19,7 @@ class Types extends _i1.TableRow {
     this.aString,
     this.aByteData,
     this.aDuration,
+    this.aUuid,
   }) : super(id);
 
   factory Types.fromJson(
@@ -40,6 +41,8 @@ class Types extends _i1.TableRow {
           .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
       aDuration: serializationManager
           .deserialize<Duration?>(jsonSerialization['aDuration']),
+      aUuid:
+          serializationManager.deserialize<String?>(jsonSerialization['aUuid']),
     );
   }
 
@@ -59,6 +62,8 @@ class Types extends _i1.TableRow {
 
   Duration? aDuration;
 
+  String? aUuid;
+
   @override
   String get tableName => 'types';
   @override
@@ -72,6 +77,7 @@ class Types extends _i1.TableRow {
       'aString': aString,
       'aByteData': aByteData,
       'aDuration': aDuration,
+      'aUuid': aUuid,
     };
   }
 
@@ -86,6 +92,7 @@ class Types extends _i1.TableRow {
       'aString': aString,
       'aByteData': aByteData,
       'aDuration': aDuration,
+      'aUuid': aUuid,
     };
   }
 
@@ -100,6 +107,7 @@ class Types extends _i1.TableRow {
       'aString': aString,
       'aByteData': aByteData,
       'aDuration': aDuration,
+      'aUuid': aUuid,
     };
   }
 
@@ -132,6 +140,9 @@ class Types extends _i1.TableRow {
         return;
       case 'aDuration':
         aDuration = value;
+        return;
+      case 'aUuid':
+        aUuid = value;
         return;
       default:
         throw UnimplementedError();
@@ -271,6 +282,8 @@ class TypesTable extends _i1.Table {
 
   final aDuration = _i1.ColumnDuration('aDuration');
 
+  final aUuid = _i1.ColumnUUID('aUuid');
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -281,6 +294,7 @@ class TypesTable extends _i1.Table {
         aString,
         aByteData,
         aDuration,
+        aUuid,
       ];
 }
 

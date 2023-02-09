@@ -8,3 +8,4 @@ fields:
   aString: String?
   aByteData: ByteData?
   aDuration: Duration?
+  aUuid: _uuid?

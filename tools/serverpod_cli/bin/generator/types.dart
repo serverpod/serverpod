@@ -8,10 +8,21 @@ import 'class_generator_dart.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 
+const _uuidIdentifier = '_uuid';
+
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
+  /// The class name of the type, or `_uuid`.
+  final String _className;
+
   /// The class name of the type.
-  final String className;
+  String get className {
+    if (_className == _uuidIdentifier) {
+      return 'String';
+    } else {
+      return _className;
+    }
+  }
 
   /// The generics the type has.
   final List<TypeDefinition> generics;
@@ -29,14 +40,14 @@ class TypeDefinition {
   bool isEnum;
 
   TypeDefinition({
-    required this.className,
+    required String className,
     this.generics = const [],
     required this.nullable,
     this.url,
     this.dartType,
     this.customClass = false,
     this.isEnum = false,
-  });
+  }) : _className = className;
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
@@ -82,7 +93,7 @@ class TypeDefinition {
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
 
   TypeDefinition get asNullable => TypeDefinition(
-        className: className,
+        className: _className,
         url: url,
         nullable: true,
         customClass: customClass,
@@ -157,6 +168,7 @@ class TypeDefinition {
 
   String get databaseType {
     //TODO: add all suported types here
+    if (_className == _uuidIdentifier) return 'uuid';
     if (className == 'String') return 'text';
     if (className == 'bool') return 'boolean';
     if (className == 'int' || isEnum) return 'integer';
@@ -170,6 +182,7 @@ class TypeDefinition {
 
   String get columnType {
     //TODO: add all suported types here
+    if (_className == _uuidIdentifier) return 'ColumnUUID';
     if (className == 'int') return 'ColumnInt';
     if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
@@ -302,7 +315,7 @@ class TypeDefinition {
   TypeDefinition applyProtocolReferences(
       List<ProtocolFileDefinition> classDefinitions) {
     return TypeDefinition(
-        className: className,
+        className: _className,
         nullable: nullable,
         customClass: customClass,
         dartType: dartType,
@@ -310,10 +323,10 @@ class TypeDefinition {
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
         isEnum: isEnum,
-        url:
-            url == null && classDefinitions.any((c) => c.className == className)
-                ? 'protocol'
-                : url);
+        url: url == null &&
+                classDefinitions.any((c) => c.className == _className)
+            ? 'protocol'
+            : url);
   }
 
   @override

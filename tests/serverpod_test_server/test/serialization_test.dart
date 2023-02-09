@@ -34,6 +34,7 @@ void main() {
       expect(unpacked.aDateTime, isNull);
       expect(unpacked.aByteData, isNull);
       expect(unpacked.aDuration, isNull);
+      expect(unpacked.aUuid, isNull);
     });
 
     test('Basic types with values', () {
@@ -45,6 +46,7 @@ void main() {
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
         aDuration: const Duration(seconds: 1),
+        aUuid: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       );
       var s = SerializationManager.encode(types);
       var unpacked = protocol.deserialize<Types>(jsonDecode(s));
@@ -54,6 +56,7 @@ void main() {
       expect(unpacked.aDouble, equals(42.42));
       expect(unpacked.aDateTime, equals(DateTime.utc(1976)));
       expect(unpacked.aDuration, equals(const Duration(seconds: 1)));
+      expect(unpacked.aUuid, equals('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
       expect(unpacked.aByteData!.lengthInBytes, equals(256));
       for (var i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
