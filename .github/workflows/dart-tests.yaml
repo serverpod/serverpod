@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1.3
         with:
-          sdk: 2.17.7
+          sdk: 2.19.0
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.3.10"
+          flutter-version: "3.7.0"
       # - name: Setup Firebase dummy file
       #   run: mv packages/serverpod/example/example_flutter/lib/firebase_options_dummy.dart packages/serverpod/example/example_flutter/lib/firebase_options.dart
       - name: Install dependencies
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.3.10"
+          flutter-version: "3.7.0"
       - name: Run serverpod generate
         run: util/run_tests_update_pubspecs
 
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.3.10"
+          flutter-version: "3.7.0"
 
       - name: Run single server tests
         run: util/run_tests_single_server
@@ -80,6 +80,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.3.10"
+          flutter-version: "3.7.0"
       - name: Run CLI tests
         run: util/run_tests_cli
