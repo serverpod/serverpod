@@ -30,9 +30,13 @@ dynamic getExceptionFrom({
   required SerializationManager serializationManager,
   required int statusCode,
 }) {
-  dynamic dataObject = serializationManager.decodeWithType(data);
-  if (dataObject is SerializableException) {
-    return dataObject;
+  try {
+    dynamic dataObject = serializationManager.decodeWithType(data);
+    if (dataObject is SerializableException) {
+      return dataObject;
+    }
+    return (ServerpodClientException(data, statusCode));
+  } catch (e) {
+    return (ServerpodClientException(data, statusCode));
   }
-  return (ServerpodClientException(data, statusCode));
 }
