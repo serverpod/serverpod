@@ -19,8 +19,7 @@ class ValueEncoder extends PostgresTextEncoder {
       return super.convert(SerializationManager.encode(input),
           escapeStrings: escapeStrings);
     } else if (input is UuidValue) {
-      return super.convert(SerializationManager.encode(input),
-          escapeStrings: escapeStrings);
+      return "'${input.uuid}'";
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {
