@@ -188,7 +188,7 @@ void main() {
 
       expect(unpacked.aListWithNullableUuids.length, equals(2));
       expect(unpacked.aListWithNullableUuids[0],
-          equals('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.aListWithNullableUuids[1], isNull);
 
       expect(unpacked.aNullableInt, isNull);
