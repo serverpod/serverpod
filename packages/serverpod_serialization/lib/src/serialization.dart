@@ -73,7 +73,7 @@ abstract class SerializationManager {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
     } else if (t == UuidValue) {
       return UuidValue(data as String) as T;
-    } else if (t == getType<Duration?>()) {
+    } else if (t == getType<UuidValue?>()) {
       return data == null ? data : UuidValue(data as String) as T;
     }
     throw FormatException('No deserialization found for type $t');
