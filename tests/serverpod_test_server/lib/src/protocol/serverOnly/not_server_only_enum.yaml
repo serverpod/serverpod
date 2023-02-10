@@ -1,0 +1,5 @@
+enum: NotServerOnlyEnum
+serverOnly: false
+values:
+  - foo
+  - bar

@@ -158,7 +158,7 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'fields', 'indexes', 'exception'},
+      {'class', 'table', 'serverOnly', 'fields', 'indexes', 'exception'},
     )) {
       return null;
     }
@@ -227,6 +227,9 @@ class ClassAnalyzer {
         tableName = null;
       }
     }
+
+    // Validate and get `serverOnly`
+    bool serverOnly = _validateAndParseServerOnly(documentContents, collector);
 
     // Validate fields map exists.
     var fieldsNode = documentContents.nodes['fields'];
@@ -544,6 +547,7 @@ class ClassAnalyzer {
       subDir: subDirectory,
       documentation: classDocumentation,
       isException: type == exceptionKeyword,
+      serverOnly: serverOnly,
     );
   }
 
@@ -551,7 +555,7 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'enum', 'values'},
+      {'enum', 'serverOnly', 'values'},
     )) {
       return null;
     }
@@ -584,6 +588,9 @@ class ClassAnalyzer {
       ));
       return null;
     }
+
+    // Validate and get `serverOnly`
+    bool serverOnly = _validateAndParseServerOnly(documentContents, collector);
 
     // Validate enum values.
     var valuesNode = documentContents.nodes['values'];
@@ -645,6 +652,7 @@ class ClassAnalyzer {
       values: values,
       documentation: enumDocumentation,
       subDir: subDirectory,
+      serverOnly: serverOnly,
     );
   }
 
@@ -675,5 +683,21 @@ class ClassAnalyzer {
     }
 
     return true;
+  }
+
+  bool _validateAndParseServerOnly(
+      YamlMap documentContents, CodeAnalysisCollector collector) {
+    var serverOnlyNode = documentContents.nodes['serverOnly'];
+    if (serverOnlyNode != null) {
+      if (serverOnlyNode.value is! bool) {
+        collector.addError(SourceSpanException(
+          'The "serverOnly" property must be a bool.',
+          serverOnlyNode.span,
+        ));
+      } else {
+        return serverOnlyNode.value;
+      }
+    }
+    return false; // default to false
   }
 }

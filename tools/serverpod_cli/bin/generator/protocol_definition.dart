@@ -87,10 +87,12 @@ abstract class ProtocolFileDefinition {
   final String fileName;
   final String className;
   final String? subDir;
+  final bool serverOnly;
 
   ProtocolFileDefinition({
     required this.fileName,
     required this.className,
+    required this.serverOnly,
     this.subDir,
   });
 
@@ -113,6 +115,7 @@ class ClassDefinition extends ProtocolFileDefinition {
     required super.fileName,
     required super.className,
     required this.fields,
+    required super.serverOnly,
     required this.isException,
     this.tableName,
     this.indexes,
@@ -129,6 +132,7 @@ class EnumDefinition extends ProtocolFileDefinition {
     required super.fileName,
     required super.className,
     required this.values,
+    required super.serverOnly,
     super.subDir,
     this.documentation,
   });

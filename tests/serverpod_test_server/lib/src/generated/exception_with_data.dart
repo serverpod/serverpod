@@ -50,4 +50,14 @@ class ExceptionWithData extends _i1.SerializableEntity
       'someNullableField': someNullableField,
     };
   }
+
+  @override
+  Map<String, dynamic> allToJson() {
+    return {
+      'message': message,
+      'creationDate': creationDate,
+      'errorFields': errorFields,
+      'someNullableField': someNullableField,
+    };
+  }
 }
