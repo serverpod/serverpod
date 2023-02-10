@@ -249,6 +249,13 @@ class Server {
       request.response.statusCode = result.statusCode;
       await request.response.close();
       return;
+    } else if (result is ExceptionResult) {
+      request.response.headers.contentType = ContentType.json;
+      request.response.statusCode = HttpStatus.internalServerError;
+
+      var serializedEntity = serializationManager.encodeWithType(result.entity);
+      request.response.write(serializedEntity);
+      await request.response.close();
     } else if (result is ResultSuccess) {
       // Set content type.
       if (!result.sendByteDataAsRaw) {
