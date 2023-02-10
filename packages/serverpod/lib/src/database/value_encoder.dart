@@ -18,6 +18,9 @@ class ValueEncoder extends PostgresTextEncoder {
     } else if (input is Duration) {
       return super.convert(SerializationManager.encode(input),
           escapeStrings: escapeStrings);
+    } else if (input is UuidValue) {
+      return super.convert(SerializationManager.encode(input),
+          escapeStrings: escapeStrings);
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {

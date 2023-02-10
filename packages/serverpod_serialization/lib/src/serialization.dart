@@ -73,6 +73,10 @@ abstract class SerializationManager {
       return Duration(milliseconds: (data as int)) as T;
     } else if (t == getType<Duration?>()) {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
+    } else if (t == UuidValue) {
+      return UuidValue(data as String) as T;
+    } else if (t == getType<Duration?>()) {
+      return data == null ? data : UuidValue(data as String) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -93,6 +97,8 @@ abstract class SerializationManager {
       return 'ByteData';
     } else if (data is Duration) {
       return 'Duration';
+    } else if (data is UuidValue) {
+      return 'UuidValue';
     }
     return null;
   }
@@ -115,6 +121,8 @@ abstract class SerializationManager {
         return deserialize<ByteData>(data['data']);
       case 'Duration':
         return deserialize<Duration>(data['data']);
+      case 'UuidValue':
+        return deserialize<UuidValue>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -147,6 +155,8 @@ abstract class SerializationManager {
           return nonEncodable.base64encodedString();
         } else if (nonEncodable is Duration) {
           return nonEncodable.inMilliseconds;
+        } else if (nonEncodable is UuidValue) {
+          return nonEncodable.uuid;
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
