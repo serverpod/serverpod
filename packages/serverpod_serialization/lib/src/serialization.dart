@@ -5,8 +5,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'bytedata_base64_ext.dart';
-
 /// The constructor takes JSON structure and turns it into a decoded
 /// [SerializableEntity].
 typedef constructor<T> = T Function(
