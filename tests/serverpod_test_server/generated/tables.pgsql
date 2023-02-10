@@ -74,6 +74,20 @@ ALTER TABLE ONLY "object_with_object"
 
 
 --
+-- Class ObjectWithUuid as table object_with_uuid
+--
+
+CREATE TABLE "object_with_uuid" (
+  "id" serial,
+  "uuid" uuid NOT NULL,
+  "uuidNullable" uuid
+);
+
+ALTER TABLE ONLY "object_with_uuid"
+  ADD CONSTRAINT object_with_uuid_pkey PRIMARY KEY (id);
+
+
+--
 -- Class SimpleData as table simple_data
 --
 
@@ -98,7 +112,8 @@ CREATE TABLE "types" (
   "aDateTime" timestamp without time zone,
   "aString" text,
   "aByteData" bytea,
-  "aDuration" bigint
+  "aDuration" bigint,
+  "aUuid" uuid
 );
 
 ALTER TABLE ONLY "types"

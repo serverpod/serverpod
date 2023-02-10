@@ -112,7 +112,8 @@ class TypeDefinition {
           }
           t.url =
               'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
-        } else if (url == 'serverpod') {
+        } else if (url == 'serverpod' ||
+            (url == null && ['UuidValue'].contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -164,6 +165,7 @@ class TypeDefinition {
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
+    if (className == 'UuidValue') return 'uuid';
 
     return 'json';
   }
@@ -178,6 +180,7 @@ class TypeDefinition {
     if (className == 'DateTime') return 'ColumnDateTime';
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
+    if (className == 'UuidValue') return 'ColumnUuid';
 
     return 'ColumnSerializable';
   }
