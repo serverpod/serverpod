@@ -433,13 +433,13 @@ void main() {
       expect(unpacked.byteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.byteDataMap['1']!.lengthInBytes, equals(256));
 
-      expect(unpacked.durationMap['0']!.inSeconds,
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
-      expect(unpacked.durationMap['1']!.inMinutes,
-          equals(UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
+      expect(unpacked.durationMap['0']!.inSeconds, equals(equals(1)));
+      expect(unpacked.durationMap['1']!.inMinutes, equals(equals(1)));
 
-      expect(unpacked.uuidMap['0'], equals(1));
-      expect(unpacked.uuidMap['1'], equals(1));
+      expect(unpacked.uuidMap['0'],
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(unpacked.uuidMap['1'],
+          equals(UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
 
       expect(unpacked.nullableDataMap['0']!.num, equals(0));
       expect(unpacked.nullableDataMap['1'], isNull);
