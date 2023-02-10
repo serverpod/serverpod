@@ -139,7 +139,8 @@ class ClassAnalyzer {
     }
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
-    if (documentContents.nodes['class'] != null) {
+    if (documentContents.nodes['class'] != null ||
+        documentContents.nodes['exception'] != null) {
       return _analyzeClassFile(documentContents, docsExtractor);
     }
     if (documentContents.nodes['enum'] != null) {
@@ -157,36 +158,44 @@ class ClassAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'fields', 'indexes'},
+      {'class', 'table', 'fields', 'indexes', 'exception'},
     )) {
       return null;
     }
 
+    String classKeyword = 'class';
+    String exceptionKeyword = 'exception';
+
     // Validate class name exists and is correct.
-    var classNameNode = documentContents.nodes['class'];
-    if (classNameNode == null) {
+    YamlNode? classNameNodePrivate = documentContents.nodes[classKeyword];
+    YamlNode? exceptionNodePrivate = documentContents.nodes[exceptionKeyword];
+    YamlNode? workingNode = classNameNodePrivate ?? exceptionNodePrivate;
+    String type =
+        classNameNodePrivate != null ? classKeyword : exceptionKeyword;
+    if (workingNode == null) {
       collector.addError(SourceSpanException(
-        'No "class" property is defined.',
+        'No "$type" property is defined.',
         documentContents.span,
       ));
       return null;
     }
-    var classDocumentation = docsExtractor
-        .getDocumentation(documentContents.key('class')!.span.start);
 
-    var className = classNameNode.value;
+    var classDocumentation =
+        docsExtractor.getDocumentation(documentContents.key(type)!.span.start);
+
+    var className = workingNode.value;
     if (className is! String) {
       collector.addError(SourceSpanException(
-        'The "class" property must be a String.',
-        classNameNode.span,
+        'The "$type" property must be a String.',
+        workingNode.span,
       ));
       return null;
     }
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "class" property must be a valid class name (e.g. CamelCaseString).',
-        classNameNode.span,
+        'The "$type" property must be a valid class name (e.g. CamelCaseString).',
+        workingNode.span,
       ));
       return null;
     }
@@ -195,6 +204,13 @@ class ClassAnalyzer {
     String? tableName;
     var tableNameNode = documentContents.nodes['table'];
     if (tableNameNode != null) {
+      if (type == exceptionKeyword) {
+        collector.addError(SourceSpanException(
+          'The "$type" can\'t have a "table" property',
+          tableNameNode.span,
+        ));
+        return null;
+      }
       tableName = tableNameNode.value;
       if (tableName is! String) {
         collector.addError(SourceSpanException(
@@ -527,6 +543,7 @@ class ClassAnalyzer {
       indexes: indexes,
       subDir: subDirectory,
       documentation: classDocumentation,
+      isException: type == exceptionKeyword,
     );
   }
 

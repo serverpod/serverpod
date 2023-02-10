@@ -63,6 +63,11 @@ basicDatabase:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+exceptionTest:
+  - throwSerializableException:
+  - throwNormalException:
+  - throwExceptionWithData:
+  - workingWithoutException:
 failedCalls:
   - failedCall:
   - failedDatabaseQuery:

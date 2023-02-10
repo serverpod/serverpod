@@ -1,0 +1,6 @@
+exception: ExceptionWithData
+fields:
+  message: String
+  creationDate: DateTime
+  errorFields: List<String>
+  someNullableField: int?
