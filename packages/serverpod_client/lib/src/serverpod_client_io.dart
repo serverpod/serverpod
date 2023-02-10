@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'auth_key_manager.dart';
-import 'serverpod_client_exception.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
@@ -80,7 +79,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
-        throw (ServerpodClientException(data, response.statusCode));
+        throw getExceptionFrom(
+          data: data,
+          serializationManager: serializationManager,
+          statusCode: response.statusCode,
+        );
       }
 
       if (T == getType<void>()) {

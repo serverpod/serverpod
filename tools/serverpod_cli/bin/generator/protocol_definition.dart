@@ -109,12 +109,14 @@ class ClassDefinition extends ProtocolFileDefinition {
   final List<FieldDefinition> fields;
   final List<IndexDefinition>? indexes;
   final List<String>? documentation;
+  final bool isException;
 
   ClassDefinition({
     required super.fileName,
     required super.className,
     required this.fields,
     required super.serverOnly,
+    required this.isException,
     this.tableName,
     this.indexes,
     super.subDir,

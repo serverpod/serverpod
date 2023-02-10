@@ -1,5 +1,7 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import 'serverpod_client_exception.dart';
+
 /// Encodes arguments for serialization.
 String formatArgs(
     Map<String, dynamic> args, String? authorizationKey, String method) {
@@ -21,3 +23,20 @@ T parseData<T>(
 
 /// A helper method, that just 'returns' void.
 void returnVoid() {}
+
+/// Trying to parse an exception from a failure response
+dynamic getExceptionFrom({
+  required String data,
+  required SerializationManager serializationManager,
+  required int statusCode,
+}) {
+  try {
+    dynamic dataObject = serializationManager.decodeWithType(data);
+    if (dataObject is SerializableException) {
+      return dataObject;
+    }
+    return (ServerpodClientException(data, statusCode));
+  } catch (e) {
+    return (ServerpodClientException(data, statusCode));
+  }
+}
