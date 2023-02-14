@@ -11,10 +11,12 @@ final _contentTypeMapping = <String, ContentType>{
   '.css': ContentType('text', 'css'),
   '.png': ContentType('image', 'png'),
   '.jpg': ContentType('image', 'jpeg'),
+  '.jpeg': ContentType('image', 'jpeg'),
   '.svg': ContentType('image', 'svg+xml'),
   '.ttf': ContentType('application', 'x-font-ttf'),
   '.woff': ContentType('application', 'x-font-woff'),
   '.mp3': ContentType('audio', 'mpeg'),
+  '.pdf': ContentType('application', 'pdf'),
 };
 
 /// Route for serving a directory of static files.
