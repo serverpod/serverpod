@@ -268,8 +268,8 @@ class _ServerRunner {
 // class _DockerRunner {
 //   Future<void> start(bool verbose) async {
 //     await Process.start(
-//       'docker-compose',
-//       ['up', '--build'],
+//       'docker',
+//       ['compose', 'up', '--build'],
 //     );
 
 //     // TODO: Check if it is possible to also pipe docker output to stdout.

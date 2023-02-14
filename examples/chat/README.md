@@ -5,7 +5,7 @@ To run the example on your local machine, make sure you have Serverpod installed
 
 ```bash
 cd chat/chat_server
-docker-compose up --build --detach
+docker compose up --build --detach
 ```
 
 Now, you need to add the required database tables to your docker container, which is running Postgres. You must add the tables from the chat module, the auth module, and the chat example itself. You can find the SQL code to do so here:
