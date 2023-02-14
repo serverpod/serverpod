@@ -217,7 +217,7 @@ Future<void> _main(List<String> args) async {
     //   if (Platform.isWindows) {
     //     printwwln(
     //         'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
-    //     stdout.writeln('  \$ docker-compose up --build --detach');
+    //     stdout.writeln('  \$ docker compose up --build --detach');
     //     stdout.writeln('  \$ dart .\\bin\\main.dart');
     //     printww('');
     //   } else {
