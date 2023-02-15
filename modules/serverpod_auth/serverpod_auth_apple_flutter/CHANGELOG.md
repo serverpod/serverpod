@@ -1,3 +1,9 @@
+## 1.0.1
+- Fixes import of generics in subdirectories.
+- Generated enums now respect their subdirectories.
+- Masks out passwords in email debug logging.
+- Replaces deprecated `docker-compose` with `docker compose`
+
 ## 1.0.0
 - First stable release! :D
 - Fixes incorrectly set database index on health metrics.

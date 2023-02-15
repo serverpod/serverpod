@@ -4,7 +4,7 @@ publish_to: none
 
 name: serverpod_chat_client
 description: Serverpod chat module client.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -12,7 +12,7 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: '>=2.17.0 <3.0.0'
 dependencies:
-  serverpod_client: #^1.0.0
+  serverpod_client: #^1.0.1
     path: ../../../packages/serverpod_client
-  serverpod_auth_client: #^1.0.0
+  serverpod_auth_client: #^1.0.1
     path: ../../serverpod_auth/serverpod_auth_client
