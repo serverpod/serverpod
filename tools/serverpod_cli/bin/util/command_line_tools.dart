@@ -46,6 +46,7 @@ class CommandLineTools {
 
   static Future<void> createTables(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
+    var tablesFileName = Platform.isWindows ? 'setup-tables.cmd' : 'setup-tables';
     printww('Setting up Docker and default database tables in $serverPath');
     printww(
         'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
@@ -53,7 +54,7 @@ class CommandLineTools {
     if (!Platform.isWindows) {
       result = await Process.run(
         'chmod',
-        ['u+x', 'setup-tables'],
+        ['u+x', tablesFileName],
         workingDirectory: serverPath,
       );
       print(result.stdout);
@@ -63,8 +64,8 @@ class CommandLineTools {
       /// Windows has an issue with running batch file directly without the complete path.
       /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
       Platform.isWindows
-          ? p.join(serverPath, 'setup-tables.cmd')
-          : './setup-tables',
+          ? p.join(serverPath, tablesFileName)
+          : './$tablesFileName',
       [],
       workingDirectory: serverPath,
     );
@@ -74,33 +75,21 @@ class CommandLineTools {
 
     var exitCode = await process.exitCode;
     print('Completed table setup exit code: $exitCode');
-
-    print('Cleaning up');
-    result = await Process.run(
-      'rm',
-      ['setup-tables'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
-
-    result = await Process.run(
-      'rm',
-      ['setup-tables.cmd'],
-      workingDirectory: serverPath,
-    );
-    print(result.stdout);
+    await cleanup(serverPath, name, tablesFileName);
   }
 
-  static Future<void> cleanupForWindows(Directory dir, String name) async {
+  static Future<void> cleanup(Directory dir, String name, String fileName) async {
     var serverPath = p.join(dir.path, '${name}_server');
     print('Cleaning up');
-    var file = File(p.join(serverPath, 'setup-tables.cmd'));
+    var file = File(p.join(serverPath, fileName));
     try {
       await file.delete();
     } catch (e) {
       print('Failed cleanup: $e');
       print('file: $file');
+      return;
     }
+    print('Clean up done');
   }
 }
 

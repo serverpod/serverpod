@@ -355,7 +355,6 @@ Future<void> performCreate(
   if (dockerConfigured && template != 'module') {
     await CommandLineTools.createTables(projectDir, name);
     if (Platform.isWindows) {
-      await CommandLineTools.cleanupForWindows(projectDir, name);
       printwwln('');
       printww('====================');
       printww('SERVERPOD CREATED :D');
