@@ -363,7 +363,6 @@ Future<void> performCreate(
       printwwln('All setup. You are ready to rock!');
       printwwln('Start your Serverpod by running:');
       stdout.writeln('  \$ cd .\\${p.join(name, '${name}_server')}\\');
-      stdout.writeln('  \$ .\\setup-tables.cmd');
       stdout.writeln('  \$ docker compose up --build --detach');
       stdout.writeln('  \$ dart .\\bin\\main.dart');
       printww('');
