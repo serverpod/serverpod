@@ -75,13 +75,12 @@ class CommandLineTools {
 
     var exitCode = await process.exitCode;
     print('Completed table setup exit code: $exitCode');
-    await cleanup(serverPath, name, tablesFileName);
+    await cleanup(serverPath, tablesFileName);
   }
 
-  static Future<void> cleanup(String dirPath, String name, String fileName) async {
-    var serverPath = p.join(dirPath, '${name}_server');
+  static Future<void> cleanup(String path, String fileName) async {
     print('Cleaning up');
-    var file = File(p.join(serverPath, fileName));
+    var file = File(p.join(path, fileName));
     try {
       await file.delete();
     } catch (e) {
