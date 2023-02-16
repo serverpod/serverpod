@@ -78,8 +78,8 @@ class CommandLineTools {
     await cleanup(serverPath, name, tablesFileName);
   }
 
-  static Future<void> cleanup(Directory dir, String name, String fileName) async {
-    var serverPath = p.join(dir.path, '${name}_server');
+  static Future<void> cleanup(String dirPath, String name, String fileName) async {
+    var serverPath = p.join(dirPath, '${name}_server');
     print('Cleaning up');
     var file = File(p.join(serverPath, fileName));
     try {
