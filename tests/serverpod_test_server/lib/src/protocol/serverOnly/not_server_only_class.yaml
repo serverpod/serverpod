@@ -1,0 +1,4 @@
+class: NotServerOnlyClass
+serverOnly: false
+fields:
+  foo: String

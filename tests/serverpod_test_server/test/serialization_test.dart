@@ -34,6 +34,7 @@ void main() {
       expect(unpacked.aDateTime, isNull);
       expect(unpacked.aByteData, isNull);
       expect(unpacked.aDuration, isNull);
+      expect(unpacked.aUuid, isNull);
     });
 
     test('Basic types with values', () {
@@ -45,6 +46,7 @@ void main() {
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
         aDuration: const Duration(seconds: 1),
+        aUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
       );
       var s = SerializationManager.encode(types);
       var unpacked = protocol.deserialize<Types>(jsonDecode(s));
@@ -58,6 +60,8 @@ void main() {
       for (var i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
       }
+      expect(unpacked.aUuid,
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
     });
 
     test('Object with enum', () {
@@ -127,6 +131,15 @@ void main() {
           Duration(seconds: 1),
           null,
         ],
+        aUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aUuidList: [
+          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+        ],
+        aListWithNullableUuids: [
+          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          null,
+        ],
       );
 
       var s = SerializationManager.encode(nullability);
@@ -173,6 +186,11 @@ void main() {
       expect(unpacked.aListWithNullableDurations[0]!.inSeconds, equals(1));
       expect(unpacked.aListWithNullableDurations[1], isNull);
 
+      expect(unpacked.aListWithNullableUuids.length, equals(2));
+      expect(unpacked.aListWithNullableUuids[0],
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(unpacked.aListWithNullableUuids[1], isNull);
+
       expect(unpacked.aNullableInt, isNull);
       expect(unpacked.aNullableDouble, isNull);
       expect(unpacked.aNullableBool, isNull);
@@ -181,6 +199,7 @@ void main() {
       expect(unpacked.aNullableByteData, isNull);
       expect(unpacked.aNullableObject, isNull);
       expect(unpacked.aNullableDuration, isNull);
+      expect(unpacked.aNullableUuid, isNull);
 
       expect(unpacked.aNullableListWithNullableInts, isNull);
       expect(unpacked.aNullableIntList, isNull);
@@ -189,6 +208,7 @@ void main() {
       expect(unpacked.aNullableDateTimeList, isNull);
       expect(unpacked.aNullableListWithNullableDateTimes, isNull);
       expect(unpacked.aNullableListWithNullableDurations, isNull);
+      expect(unpacked.aNullableListWithNullableUuids, isNull);
 
       expect(unpacked.anIntMap['0'], equals(0));
       expect(unpacked.anIntMap['1'], equals(1));
@@ -251,6 +271,24 @@ void main() {
           const Duration(seconds: 1),
           null,
         ],
+        aUuidList: [
+          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+        ],
+        aListWithNullableUuids: [
+          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          null,
+        ],
+        aNullableUuidList: [
+          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+        ],
+        aUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aNullableUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aNullableListWithNullableUuids: [
+          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          null,
+        ],
       );
 
       var s = SerializationManager.encode(nullability);
@@ -263,6 +301,8 @@ void main() {
       expect(unpacked.aNullableByteData!.lengthInBytes, equals(256));
       expect(unpacked.aNullableObject!.num, equals(42));
       expect(unpacked.aNullableDuration, equals(const Duration(seconds: 1)));
+      expect(unpacked.aNullableUuid,
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
 
       expect(unpacked.aNullableIntList!.length, equals(2));
       expect(unpacked.aNullableIntList![0], equals(10));
@@ -302,62 +342,75 @@ void main() {
       expect(unpacked.aNullableDurationList![0].inSeconds, equals(1));
       expect(unpacked.aNullableDurationList![1].inMinutes, equals(1));
 
+      expect(unpacked.aNullableUuidList!.length, equals(2));
+      expect(unpacked.aNullableUuidList![0],
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(unpacked.aNullableUuidList![1],
+          equals(UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
+
       expect(unpacked.aNullableListWithNullableDurations!.length, equals(2));
       expect(unpacked.aNullableListWithNullableDurations![0]!.inSeconds,
           equals(1));
       expect(unpacked.aNullableListWithNullableDurations![1], isNull);
+
+      expect(unpacked.aNullableListWithNullableUuids!.length, equals(2));
+      expect(unpacked.aNullableListWithNullableUuids![0],
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(unpacked.aNullableListWithNullableUuids![1], isNull);
     });
 
     test('Map types', () {
-      var maps = ObjectWithMaps(dataMap: {
-        '0': SimpleData(num: 0),
-        '1': SimpleData(num: 1),
-        '2': SimpleData(num: 2),
-      }, intMap: {
-        '0': 0,
-        '1': 1,
-        '2': 2
-      }, stringMap: {
-        '0': 'String 0',
-        '1': 'String 1',
-        '2': 'String 2'
-      }, dateTimeMap: {
-        '2020': DateTime.utc(2020),
-        '2021': DateTime.utc(2021),
-        '2022': DateTime.utc(2022),
-      }, byteDataMap: {
-        '0': createByteData(),
-        '1': createByteData(),
-      }, nullableDataMap: {
-        '0': SimpleData(num: 0),
-        '1': null,
-        '2': SimpleData(num: 2),
-      }, nullableIntMap: {
-        '0': 0,
-        '1': null,
-        '2': 2
-      }, nullableStringMap: {
-        '0': 'null',
-        '1': null,
-        '2': 'String 2'
-      }, nullableDateTimeMap: {
-        '2020': DateTime.utc(2020),
-        '2021': null,
-        '2022': DateTime.utc(2022),
-      }, nullableByteDataMap: {
-        '0': createByteData(),
-        '1': null,
-      }, intIntMap: {
-        1: 1,
-        2: 4,
-        3: 9
-      }, durationMap: {
-        '0': const Duration(seconds: 1),
-        '1': const Duration(minutes: 1),
-      }, nullableDurationMap: {
-        '0': const Duration(seconds: 1),
-        '1': null,
-      });
+      var maps = ObjectWithMaps(
+        dataMap: {
+          '0': SimpleData(num: 0),
+          '1': SimpleData(num: 1),
+          '2': SimpleData(num: 2),
+        },
+        intMap: {'0': 0, '1': 1, '2': 2},
+        stringMap: {'0': 'String 0', '1': 'String 1', '2': 'String 2'},
+        dateTimeMap: {
+          '2020': DateTime.utc(2020),
+          '2021': DateTime.utc(2021),
+          '2022': DateTime.utc(2022),
+        },
+        byteDataMap: {
+          '0': createByteData(),
+          '1': createByteData(),
+        },
+        nullableDataMap: {
+          '0': SimpleData(num: 0),
+          '1': null,
+          '2': SimpleData(num: 2),
+        },
+        nullableIntMap: {'0': 0, '1': null, '2': 2},
+        nullableStringMap: {'0': 'null', '1': null, '2': 'String 2'},
+        nullableDateTimeMap: {
+          '2020': DateTime.utc(2020),
+          '2021': null,
+          '2022': DateTime.utc(2022),
+        },
+        nullableByteDataMap: {
+          '0': createByteData(),
+          '1': null,
+        },
+        intIntMap: {1: 1, 2: 4, 3: 9},
+        durationMap: {
+          '0': const Duration(seconds: 1),
+          '1': const Duration(minutes: 1),
+        },
+        nullableDurationMap: {
+          '0': const Duration(seconds: 1),
+          '1': null,
+        },
+        uuidMap: {
+          '0': UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          '1': UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
+        },
+        nullableUuidMap: {
+          '0': UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          '1': null,
+        },
+      );
 
       var s = SerializationManager.encode(maps);
       var unpacked = protocol.deserialize<ObjectWithMaps>(jsonDecode(s));
@@ -380,8 +433,13 @@ void main() {
       expect(unpacked.byteDataMap['0']!.lengthInBytes, equals(256));
       expect(unpacked.byteDataMap['1']!.lengthInBytes, equals(256));
 
-      expect(unpacked.durationMap['0']!.inSeconds, equals(1));
-      expect(unpacked.durationMap['1']!.inMinutes, equals(1));
+      expect(unpacked.durationMap['0']!.inSeconds, equals(equals(1)));
+      expect(unpacked.durationMap['1']!.inMinutes, equals(equals(1)));
+
+      expect(unpacked.uuidMap['0'],
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(unpacked.uuidMap['1'],
+          equals(UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
 
       expect(unpacked.nullableDataMap['0']!.num, equals(0));
       expect(unpacked.nullableDataMap['1'], isNull);
@@ -404,6 +462,10 @@ void main() {
 
       expect(unpacked.nullableDurationMap['0']!.inSeconds, equals(1));
       expect(unpacked.nullableDurationMap['1'], isNull);
+
+      expect(unpacked.nullableUuidMap['0']!,
+          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(unpacked.nullableUuidMap['1'], isNull);
 
       expect(unpacked.intIntMap.length, equals(3));
       expect(unpacked.intIntMap[1], equals(1));

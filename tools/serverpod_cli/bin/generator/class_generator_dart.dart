@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 
 import 'class_generator.dart';
@@ -47,6 +48,10 @@ class ClassGeneratorDart extends ClassGenerator {
           classBuilder
             ..name = className
             ..docs.addAll(classDefinition.documentation ?? []);
+          if (classDefinition.isException) {
+            classBuilder.implements = ListBuilder(
+                [refer('SerializableException', serverpodUrl(serverCode))]);
+          }
 
           if (serverCode && tableName != null) {
             classBuilder.extend =

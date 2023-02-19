@@ -21,6 +21,9 @@ fields:
   aDuration: Duration
   aNullableDuration: Duration?
 
+  aUuid: UuidValue
+  aNullableUuid: UuidValue?
+
   anObject: SimpleData
   aNullableObject: SimpleData?
 
@@ -48,6 +51,11 @@ fields:
   aNullableDurationList: List<Duration>?
   aListWithNullableDurations: List<Duration?>
   aNullableListWithNullableDurations: List<Duration?>?
+
+  aUuidList: List<UuidValue>
+  aNullableUuidList: List<UuidValue>?
+  aListWithNullableUuids: List<UuidValue?>
+  aNullableListWithNullableUuids: List<UuidValue?>?
 
   anIntMap: Map<String,int>
   aNullableIntMap: Map<String,int>?

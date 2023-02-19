@@ -19,7 +19,7 @@ class EmailEndpoint extends Endpoint {
     email = email.toLowerCase();
     password = password.trim();
 
-    session.log('authenticate $email / $password', level: LogLevel.debug);
+    session.log('authenticate $email / XXXXXXXX', level: LogLevel.debug);
 
     // Fetch password entry
     var entry = await session.db.findSingleRow<EmailAuth>(
