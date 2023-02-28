@@ -30,11 +30,9 @@ Future<UserInfo?> signInWithFirebase({
 
                   try {
                     var idToken = await user.getIdToken();
-                    var serverResponse =
-                        await caller.firebase.authenticate(idToken);
+                    var serverResponse = await caller.firebase.authenticate(idToken);
 
-                    if (!serverResponse.success &&
-                        serverResponse.userInfo != null) {
+                    if (!serverResponse.success && serverResponse.userInfo != null) {
                       // Failed to sign in.
                       completer.complete(null);
                       return;
