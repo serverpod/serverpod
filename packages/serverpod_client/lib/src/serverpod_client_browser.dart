@@ -57,7 +57,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       data = response.body;
 
       if (response.statusCode != 200) {
-        throw (ServerpodClientException(data, response.statusCode));
+        throw getExceptionFrom(
+          data: data,
+          serializationManager: serializationManager,
+          statusCode: response.statusCode,
+        );
       }
 
       if (T == getType<void>()) {

@@ -18,12 +18,14 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     required this.dateTimeMap,
     required this.byteDataMap,
     required this.durationMap,
+    required this.uuidMap,
     required this.nullableDataMap,
     required this.nullableIntMap,
     required this.nullableStringMap,
     required this.nullableDateTimeMap,
     required this.nullableByteDataMap,
     required this.nullableDurationMap,
+    required this.nullableUuidMap,
     required this.intIntMap,
   });
 
@@ -44,6 +46,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
           jsonSerialization['byteDataMap']),
       durationMap: serializationManager
           .deserialize<Map<String, Duration>>(jsonSerialization['durationMap']),
+      uuidMap: serializationManager.deserialize<Map<String, _i1.UuidValue>>(
+          jsonSerialization['uuidMap']),
       nullableDataMap:
           serializationManager.deserialize<Map<String, _i2.SimpleData?>>(
               jsonSerialization['nullableDataMap']),
@@ -60,6 +64,9 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       nullableDurationMap:
           serializationManager.deserialize<Map<String, Duration?>>(
               jsonSerialization['nullableDurationMap']),
+      nullableUuidMap:
+          serializationManager.deserialize<Map<String, _i1.UuidValue?>>(
+              jsonSerialization['nullableUuidMap']),
       intIntMap: serializationManager
           .deserialize<Map<int, int>>(jsonSerialization['intIntMap']),
     );
@@ -77,6 +84,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<String, Duration> durationMap;
 
+  Map<String, _i1.UuidValue> uuidMap;
+
   Map<String, _i2.SimpleData?> nullableDataMap;
 
   Map<String, int?> nullableIntMap;
@@ -89,6 +98,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<String, Duration?> nullableDurationMap;
 
+  Map<String, _i1.UuidValue?> nullableUuidMap;
+
   Map<int, int> intIntMap;
 
   @override
@@ -100,12 +111,14 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'dateTimeMap': dateTimeMap,
       'byteDataMap': byteDataMap,
       'durationMap': durationMap,
+      'uuidMap': uuidMap,
       'nullableDataMap': nullableDataMap,
       'nullableIntMap': nullableIntMap,
       'nullableStringMap': nullableStringMap,
       'nullableDateTimeMap': nullableDateTimeMap,
       'nullableByteDataMap': nullableByteDataMap,
       'nullableDurationMap': nullableDurationMap,
+      'nullableUuidMap': nullableUuidMap,
       'intIntMap': intIntMap,
     };
   }
@@ -119,12 +132,14 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'dateTimeMap': dateTimeMap,
       'byteDataMap': byteDataMap,
       'durationMap': durationMap,
+      'uuidMap': uuidMap,
       'nullableDataMap': nullableDataMap,
       'nullableIntMap': nullableIntMap,
       'nullableStringMap': nullableStringMap,
       'nullableDateTimeMap': nullableDateTimeMap,
       'nullableByteDataMap': nullableByteDataMap,
       'nullableDurationMap': nullableDurationMap,
+      'nullableUuidMap': nullableUuidMap,
       'intIntMap': intIntMap,
     };
   }

@@ -10,23 +10,24 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/module.dart' as _i3;
 import 'dart:typed_data' as _i4;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i5;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i6;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i7;
-import 'package:serverpod_test_client/src/protocol/types.dart' as _i8;
+import 'package:uuid/uuid.dart' as _i5;
+import 'package:serverpod_test_client/src/custom_classes.dart' as _i6;
+import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i7;
+import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i8;
+import 'package:serverpod_test_client/src/protocol/types.dart' as _i9;
 import 'package:serverpod_test_client/src/protocol/object_with_enum.dart'
-    as _i9;
-import 'package:serverpod_test_client/src/protocol/simple_data_list.dart'
     as _i10;
-import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
+import 'package:serverpod_test_client/src/protocol/simple_data_list.dart'
     as _i11;
-import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
+import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
     as _i12;
-import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i13;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i14;
-import 'package:serverpod_test_module_client/module.dart' as _i15;
-import 'dart:io' as _i16;
-import 'protocol.dart' as _i17;
+import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
+    as _i13;
+import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i14;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i15;
+import 'package:serverpod_test_module_client/module.dart' as _i16;
+import 'dart:io' as _i17;
+import 'protocol.dart' as _i18;
 
 class _EndpointAsyncTasks extends _i1.EndpointRef {
   _EndpointAsyncTasks(_i1.EndpointCaller caller) : super(caller);
@@ -156,6 +157,13 @@ class _EndpointBasicTypes extends _i1.EndpointRef {
       caller.callServerEndpoint<Duration?>(
         'basicTypes',
         'testDuration',
+        {'value': value},
+      );
+
+  _i2.Future<_i5.UuidValue?> testUuid(_i5.UuidValue? value) =>
+      caller.callServerEndpoint<_i5.UuidValue?>(
+        'basicTypes',
+        'testUuid',
         {'value': value},
       );
 }
@@ -296,63 +304,63 @@ class _EndpointCustomTypes extends _i1.EndpointRef {
   @override
   String get name => 'customTypes';
 
-  _i2.Future<_i5.CustomClass> returnCustomClass(_i5.CustomClass data) =>
-      caller.callServerEndpoint<_i5.CustomClass>(
+  _i2.Future<_i6.CustomClass> returnCustomClass(_i6.CustomClass data) =>
+      caller.callServerEndpoint<_i6.CustomClass>(
         'customTypes',
         'returnCustomClass',
         {'data': data},
       );
 
-  _i2.Future<_i5.CustomClass?> returnCustomClassNullable(
-          _i5.CustomClass? data) =>
-      caller.callServerEndpoint<_i5.CustomClass?>(
+  _i2.Future<_i6.CustomClass?> returnCustomClassNullable(
+          _i6.CustomClass? data) =>
+      caller.callServerEndpoint<_i6.CustomClass?>(
         'customTypes',
         'returnCustomClassNullable',
         {'data': data},
       );
 
-  _i2.Future<_i5.CustomClass2> returnCustomClass2(_i5.CustomClass2 data) =>
-      caller.callServerEndpoint<_i5.CustomClass2>(
+  _i2.Future<_i6.CustomClass2> returnCustomClass2(_i6.CustomClass2 data) =>
+      caller.callServerEndpoint<_i6.CustomClass2>(
         'customTypes',
         'returnCustomClass2',
         {'data': data},
       );
 
-  _i2.Future<_i5.CustomClass2?> returnCustomClass2Nullable(
-          _i5.CustomClass2? data) =>
-      caller.callServerEndpoint<_i5.CustomClass2?>(
+  _i2.Future<_i6.CustomClass2?> returnCustomClass2Nullable(
+          _i6.CustomClass2? data) =>
+      caller.callServerEndpoint<_i6.CustomClass2?>(
         'customTypes',
         'returnCustomClass2Nullable',
         {'data': data},
       );
 
-  _i2.Future<_i6.ExternalCustomClass> returnExternalCustomClass(
-          _i6.ExternalCustomClass data) =>
-      caller.callServerEndpoint<_i6.ExternalCustomClass>(
+  _i2.Future<_i7.ExternalCustomClass> returnExternalCustomClass(
+          _i7.ExternalCustomClass data) =>
+      caller.callServerEndpoint<_i7.ExternalCustomClass>(
         'customTypes',
         'returnExternalCustomClass',
         {'data': data},
       );
 
-  _i2.Future<_i6.ExternalCustomClass?> returnExternalCustomClassNullable(
-          _i6.ExternalCustomClass? data) =>
-      caller.callServerEndpoint<_i6.ExternalCustomClass?>(
+  _i2.Future<_i7.ExternalCustomClass?> returnExternalCustomClassNullable(
+          _i7.ExternalCustomClass? data) =>
+      caller.callServerEndpoint<_i7.ExternalCustomClass?>(
         'customTypes',
         'returnExternalCustomClassNullable',
         {'data': data},
       );
 
-  _i2.Future<_i7.FreezedCustomClass> returnFreezedCustomClass(
-          _i7.FreezedCustomClass data) =>
-      caller.callServerEndpoint<_i7.FreezedCustomClass>(
+  _i2.Future<_i8.FreezedCustomClass> returnFreezedCustomClass(
+          _i8.FreezedCustomClass data) =>
+      caller.callServerEndpoint<_i8.FreezedCustomClass>(
         'customTypes',
         'returnFreezedCustomClass',
         {'data': data},
       );
 
-  _i2.Future<_i7.FreezedCustomClass?> returnFreezedCustomClassNullable(
-          _i7.FreezedCustomClass? data) =>
-      caller.callServerEndpoint<_i7.FreezedCustomClass?>(
+  _i2.Future<_i8.FreezedCustomClass?> returnFreezedCustomClassNullable(
+          _i8.FreezedCustomClass? data) =>
+      caller.callServerEndpoint<_i8.FreezedCustomClass?>(
         'customTypes',
         'returnFreezedCustomClassNullable',
         {'data': data},
@@ -365,29 +373,29 @@ class _EndpointBasicDatabase extends _i1.EndpointRef {
   @override
   String get name => 'basicDatabase';
 
-  _i2.Future<int?> storeTypes(_i8.Types types) =>
+  _i2.Future<int?> storeTypes(_i9.Types types) =>
       caller.callServerEndpoint<int?>(
         'basicDatabase',
         'storeTypes',
         {'types': types},
       );
 
-  _i2.Future<_i8.Types?> getTypes(int id) =>
-      caller.callServerEndpoint<_i8.Types?>(
+  _i2.Future<_i9.Types?> getTypes(int id) =>
+      caller.callServerEndpoint<_i9.Types?>(
         'basicDatabase',
         'getTypes',
         {'id': id},
       );
 
-  _i2.Future<int?> storeObjectWithEnum(_i9.ObjectWithEnum object) =>
+  _i2.Future<int?> storeObjectWithEnum(_i10.ObjectWithEnum object) =>
       caller.callServerEndpoint<int?>(
         'basicDatabase',
         'storeObjectWithEnum',
         {'object': object},
       );
 
-  _i2.Future<_i9.ObjectWithEnum?> getObjectWithEnum(int id) =>
-      caller.callServerEndpoint<_i9.ObjectWithEnum?>(
+  _i2.Future<_i10.ObjectWithEnum?> getObjectWithEnum(int id) =>
+      caller.callServerEndpoint<_i10.ObjectWithEnum?>(
         'basicDatabase',
         'getObjectWithEnum',
         {'id': id},
@@ -444,13 +452,13 @@ class _EndpointBasicDatabase extends _i1.EndpointRef {
         {'num': num},
       );
 
-  _i2.Future<_i10.SimpleDataList?> findSimpleDataRowsLessThan(
+  _i2.Future<_i11.SimpleDataList?> findSimpleDataRowsLessThan(
     int num,
     int offset,
     int limit,
     bool descending,
   ) =>
-      caller.callServerEndpoint<_i10.SimpleDataList?>(
+      caller.callServerEndpoint<_i11.SimpleDataList?>(
         'basicDatabase',
         'findSimpleDataRowsLessThan',
         {
@@ -474,15 +482,15 @@ class _EndpointBasicDatabase extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<int?> storeObjectWithObject(_i11.ObjectWithObject object) =>
+  _i2.Future<int?> storeObjectWithObject(_i12.ObjectWithObject object) =>
       caller.callServerEndpoint<int?>(
         'basicDatabase',
         'storeObjectWithObject',
         {'object': object},
       );
 
-  _i2.Future<_i11.ObjectWithObject?> getObjectWithObject(int id) =>
-      caller.callServerEndpoint<_i11.ObjectWithObject?>(
+  _i2.Future<_i12.ObjectWithObject?> getObjectWithObject(int id) =>
+      caller.callServerEndpoint<_i12.ObjectWithObject?>(
         'basicDatabase',
         'getObjectWithObject',
         {'id': id},
@@ -526,6 +534,41 @@ class _EndpointTransactionsDatabase extends _i1.EndpointRef {
           'numInsert': numInsert,
           'numDelete': numDelete,
         },
+      );
+}
+
+class _EndpointExceptionTest extends _i1.EndpointRef {
+  _EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'exceptionTest';
+
+  _i2.Future<String> throwSerializableException() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'throwSerializableException',
+        {},
+      );
+
+  _i2.Future<String> throwNormalException() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'throwNormalException',
+        {},
+      );
+
+  _i2.Future<String> throwExceptionWithData() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'throwExceptionWithData',
+        {},
+      );
+
+  _i2.Future<String> workingWithoutException() =>
+      caller.callServerEndpoint<String>(
+        'exceptionTest',
+        'workingWithoutException',
+        {},
       );
 }
 
@@ -573,15 +616,15 @@ class _EndpointFieldScopes extends _i1.EndpointRef {
   @override
   String get name => 'fieldScopes';
 
-  _i2.Future<void> storeObject(_i12.ObjectFieldScopes object) =>
+  _i2.Future<void> storeObject(_i13.ObjectFieldScopes object) =>
       caller.callServerEndpoint<void>(
         'fieldScopes',
         'storeObject',
         {'object': object},
       );
 
-  _i2.Future<_i12.ObjectFieldScopes?> retrieveObject() =>
-      caller.callServerEndpoint<_i12.ObjectFieldScopes?>(
+  _i2.Future<_i13.ObjectFieldScopes?> retrieveObject() =>
+      caller.callServerEndpoint<_i13.ObjectFieldScopes?>(
         'fieldScopes',
         'retrieveObject',
         {},
@@ -594,7 +637,7 @@ class _EndpointFutureCalls extends _i1.EndpointRef {
   @override
   String get name => 'futureCalls';
 
-  _i2.Future<void> makeFutureCall(_i13.SimpleData? data) =>
+  _i2.Future<void> makeFutureCall(_i14.SimpleData? data) =>
       caller.callServerEndpoint<void>(
         'futureCalls',
         'makeFutureCall',
@@ -733,34 +776,34 @@ class _EndpointListParameters extends _i1.EndpointRef {
         {'list': list},
       );
 
-  _i2.Future<List<_i13.SimpleData>> returnSimpleDataList(
-          List<_i13.SimpleData> list) =>
-      caller.callServerEndpoint<List<_i13.SimpleData>>(
+  _i2.Future<List<_i14.SimpleData>> returnSimpleDataList(
+          List<_i14.SimpleData> list) =>
+      caller.callServerEndpoint<List<_i14.SimpleData>>(
         'listParameters',
         'returnSimpleDataList',
         {'list': list},
       );
 
-  _i2.Future<List<_i13.SimpleData?>> returnSimpleDataListNullableSimpleData(
-          List<_i13.SimpleData?> list) =>
-      caller.callServerEndpoint<List<_i13.SimpleData?>>(
+  _i2.Future<List<_i14.SimpleData?>> returnSimpleDataListNullableSimpleData(
+          List<_i14.SimpleData?> list) =>
+      caller.callServerEndpoint<List<_i14.SimpleData?>>(
         'listParameters',
         'returnSimpleDataListNullableSimpleData',
         {'list': list},
       );
 
-  _i2.Future<List<_i13.SimpleData>?> returnSimpleDataListNullable(
-          List<_i13.SimpleData>? list) =>
-      caller.callServerEndpoint<List<_i13.SimpleData>?>(
+  _i2.Future<List<_i14.SimpleData>?> returnSimpleDataListNullable(
+          List<_i14.SimpleData>? list) =>
+      caller.callServerEndpoint<List<_i14.SimpleData>?>(
         'listParameters',
         'returnSimpleDataListNullable',
         {'list': list},
       );
 
-  _i2.Future<List<_i13.SimpleData?>?>
+  _i2.Future<List<_i14.SimpleData?>?>
       returnNullableSimpleDataListNullableSimpleData(
-              List<_i13.SimpleData?>? list) =>
-          caller.callServerEndpoint<List<_i13.SimpleData?>?>(
+              List<_i14.SimpleData?>? list) =>
+          caller.callServerEndpoint<List<_i14.SimpleData?>?>(
             'listParameters',
             'returnNullableSimpleDataListNullableSimpleData',
             {'list': list},
@@ -880,17 +923,17 @@ class _EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
-  _i2.Future<Map<_i14.TestEnum, int>> returnEnumIntMap(
-          Map<_i14.TestEnum, int> map) =>
-      caller.callServerEndpoint<Map<_i14.TestEnum, int>>(
+  _i2.Future<Map<_i15.TestEnum, int>> returnEnumIntMap(
+          Map<_i15.TestEnum, int> map) =>
+      caller.callServerEndpoint<Map<_i15.TestEnum, int>>(
         'mapParameters',
         'returnEnumIntMap',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i14.TestEnum>> returnEnumMap(
-          Map<String, _i14.TestEnum> map) =>
-      caller.callServerEndpoint<Map<String, _i14.TestEnum>>(
+  _i2.Future<Map<String, _i15.TestEnum>> returnEnumMap(
+          Map<String, _i15.TestEnum> map) =>
+      caller.callServerEndpoint<Map<String, _i15.TestEnum>>(
         'mapParameters',
         'returnEnumMap',
         {'map': map},
@@ -973,35 +1016,35 @@ class _EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i13.SimpleData>> returnSimpleDataMap(
-          Map<String, _i13.SimpleData> map) =>
-      caller.callServerEndpoint<Map<String, _i13.SimpleData>>(
+  _i2.Future<Map<String, _i14.SimpleData>> returnSimpleDataMap(
+          Map<String, _i14.SimpleData> map) =>
+      caller.callServerEndpoint<Map<String, _i14.SimpleData>>(
         'mapParameters',
         'returnSimpleDataMap',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i13.SimpleData?>>
+  _i2.Future<Map<String, _i14.SimpleData?>>
       returnSimpleDataMapNullableSimpleData(
-              Map<String, _i13.SimpleData?> map) =>
-          caller.callServerEndpoint<Map<String, _i13.SimpleData?>>(
+              Map<String, _i14.SimpleData?> map) =>
+          caller.callServerEndpoint<Map<String, _i14.SimpleData?>>(
             'mapParameters',
             'returnSimpleDataMapNullableSimpleData',
             {'map': map},
           );
 
-  _i2.Future<Map<String, _i13.SimpleData>?> returnSimpleDataMapNullable(
-          Map<String, _i13.SimpleData>? map) =>
-      caller.callServerEndpoint<Map<String, _i13.SimpleData>?>(
+  _i2.Future<Map<String, _i14.SimpleData>?> returnSimpleDataMapNullable(
+          Map<String, _i14.SimpleData>? map) =>
+      caller.callServerEndpoint<Map<String, _i14.SimpleData>?>(
         'mapParameters',
         'returnSimpleDataMapNullable',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i13.SimpleData?>?>
+  _i2.Future<Map<String, _i14.SimpleData?>?>
       returnNullableSimpleDataMapNullableSimpleData(
-              Map<String, _i13.SimpleData?>? map) =>
-          caller.callServerEndpoint<Map<String, _i13.SimpleData?>?>(
+              Map<String, _i14.SimpleData?>? map) =>
+          caller.callServerEndpoint<Map<String, _i14.SimpleData?>?>(
             'mapParameters',
             'returnNullableSimpleDataMapNullableSimpleData',
             {'map': map},
@@ -1036,8 +1079,8 @@ class _EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i15.ModuleClass> modifyModuleObject(_i15.ModuleClass object) =>
-      caller.callServerEndpoint<_i15.ModuleClass>(
+  _i2.Future<_i16.ModuleClass> modifyModuleObject(_i16.ModuleClass object) =>
+      caller.callServerEndpoint<_i16.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
@@ -1103,7 +1146,7 @@ class _EndpointRedis extends _i1.EndpointRef {
 
   _i2.Future<void> setSimpleData(
     String key,
-    _i13.SimpleData data,
+    _i14.SimpleData data,
   ) =>
       caller.callServerEndpoint<void>(
         'redis',
@@ -1116,7 +1159,7 @@ class _EndpointRedis extends _i1.EndpointRef {
 
   _i2.Future<void> setSimpleDataWithLifetime(
     String key,
-    _i13.SimpleData data,
+    _i14.SimpleData data,
   ) =>
       caller.callServerEndpoint<void>(
         'redis',
@@ -1127,8 +1170,8 @@ class _EndpointRedis extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i13.SimpleData?> getSimpleData(String key) =>
-      caller.callServerEndpoint<_i13.SimpleData?>(
+  _i2.Future<_i14.SimpleData?> getSimpleData(String key) =>
+      caller.callServerEndpoint<_i14.SimpleData?>(
         'redis',
         'getSimpleData',
         {'key': key},
@@ -1147,8 +1190,8 @@ class _EndpointRedis extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i13.SimpleData?> listenToChannel(String channel) =>
-      caller.callServerEndpoint<_i13.SimpleData?>(
+  _i2.Future<_i14.SimpleData?> listenToChannel(String channel) =>
+      caller.callServerEndpoint<_i14.SimpleData?>(
         'redis',
         'listenToChannel',
         {'channel': channel},
@@ -1156,7 +1199,7 @@ class _EndpointRedis extends _i1.EndpointRef {
 
   _i2.Future<void> postToChannel(
     String channel,
-    _i13.SimpleData data,
+    _i14.SimpleData data,
   ) =>
       caller.callServerEndpoint<void>(
         'redis',
@@ -1240,11 +1283,11 @@ class _EndpointStreamingLogging extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    module = _i15.Caller(client);
+    module = _i16.Caller(client);
     auth = _i3.Caller(client);
   }
 
-  late final _i15.Caller module;
+  late final _i16.Caller module;
 
   late final _i3.Caller auth;
 }
@@ -1252,11 +1295,11 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i16.SecurityContext? context,
+    _i17.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i17.Protocol(),
+          _i18.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
@@ -1268,6 +1311,7 @@ class Client extends _i1.ServerpodClient {
     customTypes = _EndpointCustomTypes(this);
     basicDatabase = _EndpointBasicDatabase(this);
     transactionsDatabase = _EndpointTransactionsDatabase(this);
+    exceptionTest = _EndpointExceptionTest(this);
     failedCalls = _EndpointFailedCalls(this);
     fieldScopes = _EndpointFieldScopes(this);
     futureCalls = _EndpointFutureCalls(this);
@@ -1301,6 +1345,8 @@ class Client extends _i1.ServerpodClient {
   late final _EndpointBasicDatabase basicDatabase;
 
   late final _EndpointTransactionsDatabase transactionsDatabase;
+
+  late final _EndpointExceptionTest exceptionTest;
 
   late final _EndpointFailedCalls failedCalls;
 
@@ -1344,6 +1390,7 @@ class Client extends _i1.ServerpodClient {
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
+        'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,
         'futureCalls': futureCalls,
