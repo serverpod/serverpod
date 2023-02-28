@@ -13,12 +13,12 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
-  firebase_auth: ^4.1.2
-  firebase_core: ^2.2.0
+  firebase_auth: ^4.2.9
+  firebase_core: ^2.7.0
+  firebase_ui_auth: ^1.1.14
   flutter:
     sdk: flutter
-  flutterfire_ui: ^0.4.3+20
-  material_design_icons_flutter: ">=5.0.6996 < 6.0.0"
+  material_design_icons_flutter: ">=5.0.6996 <6.0.7096"
   serverpod_auth_client: #^VERSION
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^VERSION
@@ -27,7 +27,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lints: ^2.0.0
+  lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
