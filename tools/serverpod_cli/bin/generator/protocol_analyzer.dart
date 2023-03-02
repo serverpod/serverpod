@@ -124,7 +124,7 @@ class ProtocolAnalyzer {
         for (var element in topElements) {
           if (element is ClassElement) {
             var className = element.name;
-            var superclassName = element.supertype!.element.name;
+            var superclassName = element.supertype!.element2.name;
             var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
