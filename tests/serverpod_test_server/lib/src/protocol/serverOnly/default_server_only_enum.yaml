@@ -1,0 +1,4 @@
+enum: DefaultServerOnlyEnum
+values:
+  - foo
+  - bar

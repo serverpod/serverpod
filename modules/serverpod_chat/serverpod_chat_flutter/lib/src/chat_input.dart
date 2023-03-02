@@ -140,7 +140,7 @@ class ChatInputState extends State<ChatInput> {
                     widget.enableAttachments)
                   IconButton(
                     icon: Icon(widget.iconAttach),
-                    color: Theme.of(context).textTheme.caption!.color,
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                     onPressed: _uploadingAttachment ? null : _attachFile,
                     iconSize: 18,
                   ),
@@ -148,7 +148,7 @@ class ChatInputState extends State<ChatInput> {
                   padding: const EdgeInsets.only(right: 8),
                   child: IconButton(
                     icon: Icon(widget.iconSend),
-                    color: Theme.of(context).textTheme.caption!.color,
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                     onPressed: _uploadingAttachment ? null : _sendTextMessage,
                     iconSize: 18,
                   ),
@@ -298,7 +298,7 @@ class _AttachmentTile extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8),
                 child: Icon(
                   _iconForName(fileName),
-                  color: Theme.of(context).textTheme.bodyText2!.color,
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
                 ),
               ),
               Expanded(
@@ -306,7 +306,7 @@ class _AttachmentTile extends StatelessWidget {
                   fileName,
                   maxLines: 1,
                   overflow: TextOverflow.clip,
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               if (loading)
@@ -324,7 +324,7 @@ class _AttachmentTile extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     onPressed: onDelete,
                     icon: const Icon(Icons.close_rounded),
-                    color: Theme.of(context).textTheme.caption!.color,
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
             ],

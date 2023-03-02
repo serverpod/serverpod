@@ -66,7 +66,8 @@ class ServerHealthMetric extends _i1.TableRow {
   @override
   String get tableName => 'serverpod_health_metric';
   @override
-  List<String> get uniqueColumns => ['timestamp', 'serverId', 'name'];
+  List<String> get uniqueColumns =>
+      ['timestamp', 'serverId', 'name', 'granularity'];
   @override
   Map<String, dynamic> toJson() {
     return {

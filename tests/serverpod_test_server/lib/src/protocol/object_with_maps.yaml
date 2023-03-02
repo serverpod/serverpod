@@ -6,10 +6,12 @@ fields:
   dateTimeMap: Map<String, DateTime>
   byteDataMap: Map<String, ByteData>
   durationMap: Map<String, Duration>
+  uuidMap: Map<String, UuidValue>
   nullableDataMap: Map<String, SimpleData?>
   nullableIntMap: Map<String, int?>
   nullableStringMap: Map<String, String?>
   nullableDateTimeMap: Map<String, DateTime?>
   nullableByteDataMap: Map<String, ByteData?>
   nullableDurationMap: Map<String, Duration?>
+  nullableUuidMap: Map<String, UuidValue?>
   intIntMap: Map<int, int>

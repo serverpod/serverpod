@@ -113,7 +113,7 @@ class _CompactSettings extends StatelessWidget {
                   userName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 if (fullName != null)
                   Padding(
@@ -122,8 +122,8 @@ class _CompactSettings extends StatelessWidget {
                       fullName!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            color: Theme.of(context).textTheme.caption!.color,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall!.color,
                           ),
                     ),
                   ),
@@ -168,7 +168,7 @@ class _LargeSettings extends StatelessWidget {
             userName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         if (fullName != null)
@@ -178,8 +178,8 @@ class _LargeSettings extends StatelessWidget {
               fullName!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    color: Theme.of(context).textTheme.caption!.color,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
             ),
           ),

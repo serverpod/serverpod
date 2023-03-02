@@ -743,6 +743,7 @@ void main() {
   group('Basic types', () {
     var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
     var duration = const Duration(seconds: 1);
+    var uuid = UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
 
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
@@ -824,12 +825,23 @@ void main() {
       var result = await client.basicTypes.testDuration(null);
       expect(result, isNull);
     });
+
+    test('Type UuidValue', () async {
+      var result = await client.basicTypes.testUuid(uuid);
+      expect(result, equals(uuid));
+    });
+
+    test('Type null UuidValue', () async {
+      var result = await client.basicTypes.testUuid(null);
+      expect(result, isNull);
+    });
   });
 
   group('Database', () {
     test('Write and read', () async {
       var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
       var duration = const Duration(seconds: 1);
+      var uuid = UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
 
       // TODO: Support ByteData in database store
       var types = Types(
@@ -839,6 +851,7 @@ void main() {
         aDateTime: dateTime,
         aDuration: duration,
         aString: 'Foo',
+        aUuid: uuid,
         // aByteData: createByteData(),
       );
 
@@ -864,6 +877,7 @@ void main() {
         expect(storedTypes.aString, equals('Foo'));
         expect(storedTypes.aDateTime, equals(dateTime));
         expect(storedTypes.aDuration, equals(duration));
+        expect(storedTypes.aUuid, equals(uuid));
         // expect(storedTypes.aByteData!.lengthInBytes, equals(256));
       }
     });
@@ -893,6 +907,7 @@ void main() {
         expect(storedTypes.aString, isNull);
         expect(storedTypes.aDateTime, isNull);
         expect(storedTypes.aDuration, isNull);
+        expect(storedTypes.aUuid, isNull);
       }
     });
 

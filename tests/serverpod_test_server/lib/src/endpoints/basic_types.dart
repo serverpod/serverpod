@@ -29,4 +29,8 @@ class BasicTypesEndpoint extends Endpoint {
   Future<Duration?> testDuration(Session session, Duration? value) async {
     return value;
   }
+
+  Future<UuidValue?> testUuid(Session session, UuidValue? value) async {
+    return value;
+  }
 }

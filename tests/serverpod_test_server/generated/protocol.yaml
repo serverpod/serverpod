@@ -15,6 +15,7 @@ basicTypes:
   - testString:
   - testByteData:
   - testDuration:
+  - testUuid:
 cloudStorage:
   - reset:
   - storePublicFile:
@@ -68,6 +69,11 @@ basicDatabase:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+exceptionTest:
+  - throwSerializableException:
+  - throwNormalException:
+  - throwExceptionWithData:
+  - workingWithoutException:
 failedCalls:
   - failedCall:
   - failedDatabaseQuery:

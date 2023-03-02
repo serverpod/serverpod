@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:flutterfire_ui/auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 
 /// Attempts to Sign in with Firebase. If successful, a [UserInfo] is returned.
 /// If the attempt is not a success, null is returned.
 Future<UserInfo?> signInWithFirebase({
   required Caller caller,
-  required List<ProviderConfiguration> providerConfigs,
+  required List<AuthProvider> authProviders,
   required BuildContext context,
   bool debug = false,
 }) async {
@@ -20,7 +20,7 @@ Future<UserInfo?> signInWithFirebase({
       MaterialPageRoute(
         builder: (context) {
           return SignInScreen(
-            providerConfigs: providerConfigs,
+            providers: authProviders,
             actions: [
               AuthStateChangeAction<SignedIn>((context, state) async {
                 if (state.user == null) {
@@ -35,7 +35,7 @@ Future<UserInfo?> signInWithFirebase({
 
                     if (!serverResponse.success &&
                         serverResponse.userInfo != null) {
-                      // Faild to sign in.
+                      // Failed to sign in.
                       completer.complete(null);
                       return;
                     }
