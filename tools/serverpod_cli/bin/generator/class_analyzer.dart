@@ -6,6 +6,7 @@ import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 import '../util/string_validators.dart';
 import '../util/extensions.dart';
+import '../util/subdirectory_extraction.dart';
 import '../util/yaml_docs.dart';
 import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
@@ -29,15 +30,9 @@ List<ProtocolFileDefinition> performAnalyzeClasses({
       if (verbose) print('  - skipping file: ${entity.path}');
       continue;
     }
-    var otherDir = entity.path
-        .replaceAll(config.protocolSourcePath, '')
-        .split(Platform.pathSeparator)
-        .skipWhile((value) => value.isEmpty);
-    String? subDirectory;
-    if (otherDir.length > 1) {
-      subDirectory = p.joinAll(otherDir.take(otherDir.length - 1));
-      print('- subDirectory: ${p.joinAll(otherDir.take(otherDir.length - 1))}');
-    }
+    String? subDirectory = extractSubdirectoryFromRelativePath(
+        entity.path, config.protocolSourcePath);
+
     // Process a file.
     if (verbose) print('  - processing file: ${entity.path}');
     var yaml = entity.readAsStringSync();

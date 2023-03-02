@@ -61,8 +61,15 @@ abstract class ProtocolGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
-    String endpointPath(EndpointDefinition endpoint) =>
-        '../endpoints/${p.basename(endpoint.fileName)}';
+    String endpointPath(EndpointDefinition endpoint) {
+      var subDir = endpoint.subDir;
+      return p.posix.joinAll([
+        '..',
+        'endpoints',
+        if (subDir != null) ...p.split(subDir),
+        p.basename(endpoint.fileName),
+      ]);
+    }
 
     // Endpoint class
     library.body.add(

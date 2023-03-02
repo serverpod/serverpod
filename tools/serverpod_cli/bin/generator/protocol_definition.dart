@@ -21,6 +21,7 @@ class EndpointDefinition {
   final String className;
   final String fileName;
   final List<MethodDefinition> methods;
+  final String? subDir;
 
   EndpointDefinition({
     required this.name,
@@ -28,6 +29,7 @@ class EndpointDefinition {
     required this.methods,
     required this.className,
     required this.fileName,
+    required this.subDir,
   });
 }
 
