@@ -160,3 +160,7 @@ simple:
   - getGlobalInt:
 streaming:
 streamingLogging:
+subSubDirTest:
+  - testMethod:
+subDirTest:
+  - testMethod:

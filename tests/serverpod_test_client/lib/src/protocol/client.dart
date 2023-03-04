@@ -1281,6 +1281,32 @@ class _EndpointStreamingLogging extends _i1.EndpointRef {
   String get name => 'streamingLogging';
 }
 
+class _EndpointSubSubDirTest extends _i1.EndpointRef {
+  _EndpointSubSubDirTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'subSubDirTest';
+
+  _i2.Future<String> testMethod() => caller.callServerEndpoint<String>(
+        'subSubDirTest',
+        'testMethod',
+        {},
+      );
+}
+
+class _EndpointSubDirTest extends _i1.EndpointRef {
+  _EndpointSubDirTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'subDirTest';
+
+  _i2.Future<String> testMethod() => caller.callServerEndpoint<String>(
+        'subDirTest',
+        'testMethod',
+        {},
+      );
+}
+
 class _Modules {
   _Modules(Client client) {
     module = _i16.Caller(client);
@@ -1327,6 +1353,8 @@ class Client extends _i1.ServerpodClient {
     simple = _EndpointSimple(this);
     streaming = _EndpointStreaming(this);
     streamingLogging = _EndpointStreamingLogging(this);
+    subSubDirTest = _EndpointSubSubDirTest(this);
+    subDirTest = _EndpointSubDirTest(this);
     modules = _Modules(this);
   }
 
@@ -1378,6 +1406,10 @@ class Client extends _i1.ServerpodClient {
 
   late final _EndpointStreamingLogging streamingLogging;
 
+  late final _EndpointSubSubDirTest subSubDirTest;
+
+  late final _EndpointSubDirTest subDirTest;
+
   late final _Modules modules;
 
   @override
@@ -1406,6 +1438,8 @@ class Client extends _i1.ServerpodClient {
         'simple': simple,
         'streaming': streaming,
         'streamingLogging': streamingLogging,
+        'subSubDirTest': subSubDirTest,
+        'subDirTest': subDirTest,
       };
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
