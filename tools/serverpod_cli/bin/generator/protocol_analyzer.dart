@@ -9,6 +9,7 @@ import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:source_span/source_span.dart';
 
+import '../util/subdirectory_extraction.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
 import 'code_analysis_collector.dart';
@@ -112,6 +113,9 @@ class ProtocolAnalyzer {
         }
         filePaths.add(filePath);
 
+        var subdirectory = extractSubdirectoryFromRelativePath(
+            filePath, context.contextRoot.root.path);
+
         var library = await context.currentSession.getResolvedLibrary(filePath);
         library as ResolvedLibraryResult;
         var element = library.element;
@@ -186,6 +190,7 @@ class ProtocolAnalyzer {
                 className: className,
                 methods: methodDefs,
                 fileName: filePath,
+                subDir: subdirectory,
               );
               endpointDefs.add(endpointDef);
             }
