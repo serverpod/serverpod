@@ -41,6 +41,7 @@ cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_client/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_flutter/CHANGELOG.md
 
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
+cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md
 
 echo "Copying README.md"
 cp README.md packages/serverpod/README.md
@@ -70,6 +71,7 @@ cp README_subpackage.md modules/serverpod_chat/serverpod_chat_client/README.md
 cp README_subpackage.md modules/serverpod_chat/serverpod_chat_flutter/README.md
 
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3/README.md
+cp README_subpackage.md integrations/serverpod_cloud_storage_gcp/README.md
 
 echo "Copy tables"
 cp packages/serverpod/generated/tables.pgsql templates/serverpod_templates/projectname_server/generated/tables-serverpod.pgsql
