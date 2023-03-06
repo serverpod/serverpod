@@ -45,3 +45,4 @@ dart analyze --fatal-infos templates/serverpod_templates/modulename_client
 dart analyze --fatal-infos templates/serverpod_templates/modulename_server
 
 dart analyze --fatal-infos integrations/serverpod_cloud_storage_s3
+dart analyze --fatal-infos integrations/serverpod_cloud_storage_gcp
