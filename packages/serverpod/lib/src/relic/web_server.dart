@@ -114,12 +114,11 @@ class WebServer {
       }
     }
 
-    // TODO: Fix body
     var session = MethodCallSession(
       server: serverpod.server,
       uri: uri,
       endpointName: 'webserver',
-      body: '',
+      body: await Route.getBody(request),
       authenticationKey: authenticationKey,
       httpRequest: request,
     );
@@ -224,46 +223,59 @@ abstract class Route {
     }
   }
 
-  // TODO: May want to create another abstraction layer here, to handle other
-  // types of responses too. Or at least clarify the naming of the method.
+  /// Returns the body of the request, handle JSON as first class citizen
+  static Future<String> getBody(HttpRequest request) async {
+    var rawBody = await _readBody(request) ?? '';
+    if (rawBody.isEmpty) return rawBody;
+
+    try {
+      json.decode(rawBody);
+    } on FormatException catch (_) {
+      // no json
+      if (request.headers.contentType?.subType.contains('form-urlencoded') ==
+          true) {
+        return _convertToJsonBody(rawBody);
+      }
+    }
+    return rawBody;
+  }
 
   /// Returns the body of the request, assuming it is standard URL encoded form
   /// post request.
-  static Future<Map<String, String>> getBody(HttpRequest request) async {
-    var body = await _readBody(request);
-
+  static Future<String> _convertToJsonBody(String body) async {
     var params = <String, String>{};
 
-    if (body != null) {
-      var encodedParams = body.split('&');
-      for (var encodedParam in encodedParams) {
-        var comps = encodedParam.split('=');
-        if (comps.length != 2) {
-          continue;
-        }
-
-        var name = Uri.decodeQueryComponent(comps[0]);
-        var value = Uri.decodeQueryComponent(comps[1]);
-
-        params[name] = value;
+    var encodedParams = body.split('&');
+    for (var encodedParam in encodedParams) {
+      var comps = encodedParam.split('=');
+      if (comps.length != 2) {
+        continue;
       }
+
+      var name = Uri.decodeQueryComponent(comps[0]);
+      var value = Uri.decodeQueryComponent(comps[1]);
+
+      params[name] = value;
     }
 
-    return params;
+    return json.encode(params);
   }
 
+  /// For custom body retrieval use this method explicitly
   static Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > 10240) {
-        return null;
-      }
-      data += segment;
+    var listUint8List = await request.asBroadcastStream().toList();
+    if (listUint8List.isEmpty) return null;
+
+    var length = 0;
+    var sb = StringBuffer('');
+    for (var uInt8List in listUint8List) {
+      length += uInt8List.length;
+      if (length > 10240) return null;
+
+      sb.write(const Utf8Decoder().convert(uInt8List));
     }
-    return const Utf8Decoder().convert(data);
+
+    return sb.toString();
   }
 }
 
