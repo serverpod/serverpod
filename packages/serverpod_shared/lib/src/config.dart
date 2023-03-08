@@ -133,11 +133,15 @@ class DatabaseConfig {
   /// Database name.
   late final String name;
 
+  /// True if the database is running on a unix socket.
+  late final bool isUnixSocket;
+
   DatabaseConfig._(Map dbSetup, Map<String, String> passwords) {
     host = dbSetup['host']!;
     port = dbSetup['port']!;
     name = dbSetup['name']!;
     user = dbSetup['user']!;
+    isUnixSocket = dbSetup['isUnixSocket'] ?? false;
     assert(passwords['database'] != null, 'Database password is missing');
     password = passwords['database']!;
   }

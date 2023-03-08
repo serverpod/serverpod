@@ -39,11 +39,12 @@ class DatabasePoolManager {
     // Setup database connection pool
     _pgPool = PgPool(
       PgEndpoint(
-          host: config.host,
-          port: config.port,
-          database: config.name,
-          username: config.user,
-          password: config.password),
+        host: config.host,
+        port: config.port,
+        database: config.name,
+        username: config.user,
+        password: config.password,
+      ),
       settings: poolSettings,
     );
   }
