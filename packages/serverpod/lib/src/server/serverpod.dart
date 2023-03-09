@@ -290,6 +290,8 @@ class Serverpod {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion mode: $_runMode time: ${DateTime.now().toUtc()}',
     );
+
+    stdout.writeln(config.toString());
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
