@@ -153,6 +153,7 @@ class DatabaseConfig {
     str += 'database port: $port\n';
     str += 'database name: $name\n';
     str += 'database user: $user\n';
+    str += 'database unix socket: $isUnixSocket\n';
     str += 'database pass: ********\n';
     return str;
   }
