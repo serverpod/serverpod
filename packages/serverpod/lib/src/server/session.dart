@@ -147,6 +147,9 @@ abstract class Session {
       stderr.writeln('Failed to close session: $e');
       stderr.writeln('$stackTrace');
     }
+
+    await db.close();
+
     return null;
   }
 

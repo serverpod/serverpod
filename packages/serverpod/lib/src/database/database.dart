@@ -25,7 +25,19 @@ class Database {
       return DatabaseConnection(session.server.databaseConfig);
     } else {
       // Use non-pooled connection if we are running in a serverless role.
-      return DatabaseConnection.nonPooled(session.server.databaseConfig);
+      var connection =
+          DatabaseConnection.nonPooled(session.server.databaseConfig);
+      await connection.open();
+      return connection;
+    }
+  }
+
+  /// Closes the database connection. This is only needed if the server is
+  /// running in a serverless role. Typically, this is done automatically
+  /// by the [Session] and you should not call this method.
+  Future<void> close() async {
+    if (_databaseConnection != null) {
+      return _databaseConnection!.close();
     }
   }
 
