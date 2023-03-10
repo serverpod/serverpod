@@ -17,7 +17,6 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'method_lookup.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -191,10 +190,6 @@ class Serverpod {
     }
   }
 
-  /// Maps [Endpoint] methods to integer ids. Persistent through restarts and
-  /// updates to the server, and consistent between servers in the same cluster.
-  final MethodLookup methodLookup = MethodLookup('generated/protocol.yaml');
-
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
 
@@ -280,10 +275,7 @@ class Serverpod {
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
     stdout.writeln(commandLineArgs.toString());
-
-    if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
-      stdout.writeln(config.toString());
-    }
+    logVerbose(config.toString());
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
@@ -297,17 +289,22 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      // Runtime settings
+      // Load runtime settings.
       var session = await createSession(enableLogging: false);
       try {
+        logVerbose('Loading runtime settings.');
+
         _runtimeSettings =
             await session.db.findSingleRow<internal.RuntimeSettings>();
         if (_runtimeSettings == null) {
-          // Store default settings
+          logVerbose('Runtime settings not found, creting default settings.');
+
+          // Store default settings.
           _runtimeSettings = _defaultRuntimeSettings;
           await session.db.insert(_runtimeSettings!);
+        } else {
+          logVerbose('Runtime settings loaded.');
         }
-        _logManager = LogManager(_runtimeSettings!);
       } catch (e, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Failed to connect to database.');
@@ -315,20 +312,17 @@ class Serverpod {
         stderr.writeln('$stackTrace');
       }
 
-      try {
-        await methodLookup.load(session);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      }
+      // Setup log manager.
+      _logManager = LogManager(_runtimeSettings!);
 
       await session.close();
 
       // Connect to Redis
       if (redisController != null) {
+        logVerbose('Connecting to Redis.');
         await redisController!.start();
+      } else {
+        logVerbose('Redis is disabled, skipping.');
       }
 
       // Start servers.
@@ -342,22 +336,18 @@ class Serverpod {
 
         /// Web server.
         if (webServer.routes.isNotEmpty) {
+          logVerbose('Starting web server.');
           await webServer.start();
-        } else if (commandLineArgs.loggingMode ==
-            ServerpodLoggingMode.verbose) {
-          stdout.writeln('No routes configured for web server, skipping.');
+        } else {
+          logVerbose('No routes configured for web server, skipping.');
         }
 
-        if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
-          stdout.writeln('All servers started.');
-        }
+        logVerbose('All servers started.');
       }
 
       // Start maintenance tasks.
       if (commandLineArgs.role == ServerpodRole.monolith) {
-        if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
-          stdout.writeln('Starting maintenance tasks.');
-        }
+        logVerbose('Starting maintenance tasks.');
 
         // Start future calls
         _futureCallManager.start();
@@ -366,9 +356,7 @@ class Serverpod {
         await _healthCheckManager.start();
       }
 
-      if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
-        stdout.writeln('Serverpod start complete.');
-      }
+      logVerbose('Serverpod start complete.');
 
       // TODO: Run maintenance tasks once if in maintenance role.
     }, (e, stackTrace) {
@@ -488,5 +476,13 @@ class Serverpod {
     _futureCallManager.stop();
     _healthCheckManager.stop;
     exit(0);
+  }
+
+  /// Logs a message to the console if the logging command line argument is set
+  /// to verbose.
+  void logVerbose(String message) {
+    if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+      stdout.writeln(message);
+    }
   }
 }

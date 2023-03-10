@@ -116,23 +116,18 @@ class Server {
   }
 
   void _runServer(HttpServer httpServer) async {
-    if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
-      stdout.writeln(
-        'runServer address: ${httpServer.address}, port: ${httpServer.port}',
-      );
-    }
+    serverpod.logVerbose(
+      'runServer address: ${httpServer.address}, port: ${httpServer.port}',
+    );
 
     _httpServer = httpServer;
     httpServer.autoCompress = true;
 
     try {
       await for (var request in httpServer) {
-        if (serverpod.commandLineArgs.loggingMode ==
-            ServerpodLoggingMode.verbose) {
-          stdout.writeln(
-            'received request: ${request.method} ${request.uri.path}',
-          );
-        }
+        serverpod.logVerbose(
+          'received request: ${request.method} ${request.uri.path}',
+        );
 
         try {
           _handleRequest(request);
@@ -155,11 +150,8 @@ class Server {
   }
 
   void _handleRequest(HttpRequest request) async {
-    if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
-      stdout.writeln(
-        'handleRequest: ${request.method} ${request.uri.path}',
-      );
-    }
+    serverpod
+        .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
     // Set Access-Control-Allow-Origin, required for Flutter web.
     request.response.headers.add('Access-Control-Allow-Origin', '*');
