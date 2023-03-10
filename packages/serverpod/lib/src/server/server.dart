@@ -134,7 +134,7 @@ class Server {
   }
 
   Future<void> _handleRequest(HttpRequest request) async {
-    if (serverpod.runtimeArgs.loggingMode == ServerpodLoggingMode.verbose) {
+    if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(
         '${DateTime.now().toUtc()} handleRequest: ${request.method} ${request.uri.path}',
       );

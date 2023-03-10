@@ -51,7 +51,7 @@ class Serverpod {
   String get runMode => _runMode;
 
   /// The parsed runtime arguments passed to Serverpod at startup.
-  late final RuntimeArgs runtimeArgs;
+  late final CommandLineArgs commandLineArgs;
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
@@ -221,9 +221,9 @@ class Serverpod {
     _logManager = LogManager(_defaultRuntimeSettings);
 
     // Read command line arguments.
-    runtimeArgs = RuntimeArgs(args);
-    _runMode = runtimeArgs.runMode;
-    serverId = runtimeArgs.serverId;
+    commandLineArgs = CommandLineArgs(args);
+    _runMode = commandLineArgs.runMode;
+    serverId = commandLineArgs.serverId;
 
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
@@ -280,9 +280,9 @@ class Serverpod {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, time: ${DateTime.now().toUtc()}',
     );
-    stdout.writeln(runtimeArgs.toString());
+    stdout.writeln(commandLineArgs.toString());
 
-    if (runtimeArgs.loggingMode == ServerpodLoggingMode.verbose) {
+    if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(config.toString());
     }
   }
@@ -333,8 +333,8 @@ class Serverpod {
       }
 
       // Start servers.
-      if (runtimeArgs.role == ServerpodRole.monolith ||
-          runtimeArgs.role == ServerpodRole.serverless) {
+      if (commandLineArgs.role == ServerpodRole.monolith ||
+          commandLineArgs.role == ServerpodRole.serverless) {
         await _startServiceServer();
 
         await server.start();
@@ -345,7 +345,7 @@ class Serverpod {
       }
 
       // Start maintenance tasks.
-      if (runtimeArgs.role == ServerpodRole.monolith) {
+      if (commandLineArgs.role == ServerpodRole.monolith) {
         // Start future calls
         _futureCallManager.start();
 

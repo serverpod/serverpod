@@ -34,7 +34,7 @@ enum ServerpodLoggingMode {
 }
 
 /// Parses the command line arguments passed to Serverpod.
-class RuntimeArgs {
+class CommandLineArgs {
   /// The run mode of the server. This can be set to either [development],
   /// [staging], or [production]. Depending on where the server is deployed.
   late final String runMode;
@@ -54,8 +54,8 @@ class RuntimeArgs {
   late final String serverId;
 
   /// Parses the command line arguments passed to Serverpod and creates a
-  /// [RuntimeArgs] object.
-  RuntimeArgs(List<String> args) {
+  /// [CommandLineArgs] object.
+  CommandLineArgs(List<String> args) {
     try {
       var argParser = ArgParser()
         ..addOption(
