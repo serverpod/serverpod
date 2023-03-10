@@ -75,7 +75,7 @@ class CommandLineArgs {
         )
         ..addOption(
           'logging',
-          abbr: 'i',
+          abbr: 'l',
           allowed: ['normal', 'verbose'],
           defaultsTo: 'normal',
         )
@@ -112,7 +112,7 @@ class CommandLineArgs {
       }
     } catch (e) {
       stdout.writeln(
-        'Failed to parse command line arguments. Using default values.',
+        'Failed to parse command line arguments. Using default values. $e',
       );
       runMode = ServerpodRunMode.development;
       serverId = 'default';
