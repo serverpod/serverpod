@@ -334,10 +334,13 @@ class Serverpod {
       // Start servers.
       if (commandLineArgs.role == ServerpodRole.monolith ||
           commandLineArgs.role == ServerpodRole.serverless) {
+        // Serverpod Insights.
         await _startServiceServer();
 
+        // Main API server.
         await server.start();
 
+        /// Web server.
         if (webServer.routes.isNotEmpty) {
           await webServer.start();
         } else if (commandLineArgs.loggingMode ==
