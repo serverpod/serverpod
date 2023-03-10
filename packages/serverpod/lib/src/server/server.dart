@@ -118,7 +118,7 @@ class Server {
   void _runServer(HttpServer httpServer) async {
     if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(
-        '${DateTime.now().toUtc()} runServer $name on port $port',
+        'runServer address: ${httpServer.address}, port: ${httpServer.port}',
       );
     }
 
@@ -127,6 +127,13 @@ class Server {
 
     try {
       await for (var request in httpServer) {
+        if (serverpod.commandLineArgs.loggingMode ==
+            ServerpodLoggingMode.verbose) {
+          stdout.writeln(
+            'received request: ${request.method} ${request.uri.path}',
+          );
+        }
+
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
@@ -150,7 +157,7 @@ class Server {
   void _handleRequest(HttpRequest request) async {
     if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(
-        '${DateTime.now().toUtc()} handleRequest: ${request.method} ${request.uri.path}',
+        'handleRequest: ${request.method} ${request.uri.path}',
       );
     }
 
