@@ -31,23 +31,23 @@ class DatabaseConnection {
     postgresConnection = poolManager.pool;
   }
 
-  // static PostgreSQLConnection? _nonPooledConnection;
-  // static bool _nonPooledConnectionIsOpened = false;
+  static PostgreSQLConnection? _nonPooledConnection;
+  static bool _nonPooledConnectionIsOpened = false;
 
   /// Creates a new non-pooled database connection from the configuration. For
   /// cases this shouldn't be called directly, use the db object in the
   /// [Session] to access the database. This version of the database connection
   /// is used when the server is having the serverless role.
   DatabaseConnection.nonPooled(this.poolManager) {
-    // if (_nonPooledConnection != null) {
-    //   Serverpod.instance?.logVerbose('Reusing non-pooled database connection.');
-    //   postgresConnection = _nonPooledConnection!;
-    //   return;
-    // }
+    if (_nonPooledConnection != null) {
+      Serverpod.instance?.logVerbose('Reusing non-pooled database connection.');
+      postgresConnection = _nonPooledConnection!;
+      return;
+    }
 
     Serverpod.instance?.logVerbose('Creating non-pooled database connection.');
 
-    postgresConnection = PostgreSQLConnection(
+    _nonPooledConnection = PostgreSQLConnection(
       poolManager.config.host,
       poolManager.config.port,
       poolManager.config.name,
@@ -62,9 +62,9 @@ class DatabaseConnection {
   /// object in the [Session] to access the database.
   Future<void> open() async {
     if (postgresConnection is PostgreSQLConnection) {
-      // if (_nonPooledConnectionIsOpened) return;
+      if (_nonPooledConnectionIsOpened) return;
       await (postgresConnection as PostgreSQLConnection).open();
-      // _nonPooledConnectionIsOpened = true;
+      _nonPooledConnectionIsOpened = true;
     }
   }
 
@@ -72,13 +72,13 @@ class DatabaseConnection {
   /// connections. For most cases this shouldn't be called directly, use the db
   /// object in the [Session] to access the database.
   Future<void> close() async {
-    if (postgresConnection is PostgreSQLConnection) {
-      var connection = postgresConnection as PostgreSQLConnection;
-      if (connection.isClosed) {
-        return;
-      }
-      await (postgresConnection as PostgreSQLConnection).close();
-    }
+    // if (postgresConnection is PostgreSQLConnection) {
+    //   var connection = postgresConnection as PostgreSQLConnection;
+    //   if (connection.isClosed) {
+    //     return;
+    //   }
+    //   await (postgresConnection as PostgreSQLConnection).close();
+    // }
   }
 
   /// Returns a list of names of all tables in the current database.
