@@ -149,7 +149,7 @@ abstract class Session {
       stderr.writeln('$stackTrace');
     }
 
-    await db.close();
+    // await db.close();
 
     return sessionId;
   }

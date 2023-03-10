@@ -318,10 +318,43 @@ class Serverpod {
         return;
       }
 
-      // Setup log manager.
-      _logManager = LogManager(_runtimeSettings!);
+      await session.close();
+
+      // Load runtime settings. DEBUG
+      session = await createSession(enableLogging: false);
+      try {
+        logVerbose('Loading runtime settings.');
+
+        _runtimeSettings =
+            await session.db.findSingleRow<internal.RuntimeSettings>();
+        if (_runtimeSettings == null) {
+          logVerbose('Runtime settings not found, creting default settings.');
+
+          // Store default settings.
+          _runtimeSettings = _defaultRuntimeSettings;
+          await session.db.insert(_runtimeSettings!);
+        } else {
+          logVerbose('Runtime settings loaded.');
+        }
+      } catch (e, stackTrace) {
+        stderr.writeln(
+          '${DateTime.now().toUtc()} Failed to connect to the database. Aborting.',
+        );
+
+        stderr.writeln(config.database.toString());
+
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+
+        return;
+      }
 
       await session.close();
+
+      // TODO: END DEBUG
+
+      // Setup log manager.
+      _logManager = LogManager(_runtimeSettings!);
 
       // Connect to Redis
       if (redisController != null) {

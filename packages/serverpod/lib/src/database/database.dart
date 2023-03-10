@@ -29,7 +29,7 @@ class Database {
       if (_databaseConnection != null) return _databaseConnection!;
       _databaseConnection =
           DatabaseConnection.nonPooled(session.server.databaseConfig);
-      Serverpod.instance?.logVerbose('Opening database connection.');
+
       await _databaseConnection!.open();
       return _databaseConnection!;
     }
@@ -38,13 +38,13 @@ class Database {
   /// Closes the database connection. This is only needed if the server is
   /// running in a serverless role. Typically, this is done automatically
   /// by the [Session] and you should not call this method.
-  Future<void> close() async {
-    Serverpod.instance?.logVerbose('Closing database connection.');
-    // if (_databaseConnection != null) {
-    //   Serverpod.instance?.logVerbose('Closing database connection.');
-    //   await _databaseConnection!.close();
-    // }
-  }
+  // Future<void> close() async {
+  // Serverpod.instance?.logVerbose('Closing database connection.');
+  // if (_databaseConnection != null) {
+  //   Serverpod.instance?.logVerbose('Closing database connection.');
+  //   await _databaseConnection!.close();
+  // }
+  // }
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.

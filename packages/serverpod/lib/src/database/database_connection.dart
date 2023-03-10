@@ -65,6 +65,7 @@ class DatabaseConnection {
   Future<void> open() async {
     if (postgresConnection is PostgreSQLConnection) {
       if (_nonPooledConnectionIsOpened) return;
+      Serverpod.instance?.logVerbose('Opening database connection.');
       await (postgresConnection as PostgreSQLConnection).open();
       _nonPooledConnectionIsOpened = true;
     }
@@ -73,15 +74,15 @@ class DatabaseConnection {
   /// Closes the connection to the database, only valid for non-pooled
   /// connections. For most cases this shouldn't be called directly, use the db
   /// object in the [Session] to access the database.
-  Future<void> close() async {
-    // if (postgresConnection is PostgreSQLConnection) {
-    //   var connection = postgresConnection as PostgreSQLConnection;
-    //   if (connection.isClosed) {
-    //     return;
-    //   }
-    //   await (postgresConnection as PostgreSQLConnection).close();
-    // }
-  }
+  // Future<void> close() async {
+  // if (postgresConnection is PostgreSQLConnection) {
+  //   var connection = postgresConnection as PostgreSQLConnection;
+  //   if (connection.isClosed) {
+  //     return;
+  //   }
+  //   await (postgresConnection as PostgreSQLConnection).close();
+  // }
+  // }
 
   /// Returns a list of names of all tables in the current database.
   Future<List<String>> getTableNames() async {
