@@ -340,16 +340,31 @@ class Serverpod {
 
         if (webServer.routes.isNotEmpty) {
           await webServer.start();
+        } else if (commandLineArgs.loggingMode ==
+            ServerpodLoggingMode.verbose) {
+          stdout.writeln('No routes configured for web server, skipping.');
+        }
+
+        if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+          stdout.writeln('All servers started.');
         }
       }
 
       // Start maintenance tasks.
       if (commandLineArgs.role == ServerpodRole.monolith) {
+        if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+          stdout.writeln('Starting maintenance tasks.');
+        }
+
         // Start future calls
         _futureCallManager.start();
 
         // Start health check manager
         await _healthCheckManager.start();
+      }
+
+      if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+        stdout.writeln('Serverpod start complete.');
       }
 
       // TODO: Run maintenance tasks once if in maintenance role.

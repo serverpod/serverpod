@@ -109,6 +109,12 @@ class Server {
   }
 
   void _runServer(HttpServer httpServer) {
+    if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+      stdout.writeln(
+        '${DateTime.now().toUtc()} runServer $name on port $port',
+      );
+    }
+
     _httpServer = httpServer;
     httpServer.autoCompress = true;
     httpServer.listen(
