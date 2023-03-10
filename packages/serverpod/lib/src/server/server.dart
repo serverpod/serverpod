@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/server/runtime_args.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 
 import '../cache/caches.dart';
 
