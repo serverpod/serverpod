@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/runtime_args.dart';
 
 import '../cache/caches.dart';
 
@@ -133,6 +134,12 @@ class Server {
   }
 
   Future<void> _handleRequest(HttpRequest request) async {
+    if (serverpod.runtimeArgs.loggingMode == ServerpodLoggingMode.verbose) {
+      stdout.writeln(
+        '${DateTime.now().toUtc()} handleRequest: ${request.method} ${request.uri.path}',
+      );
+    }
+
     // Set Access-Control-Allow-Origin, required for Flutter web.
     request.response.headers.add('Access-Control-Allow-Origin', '*');
 

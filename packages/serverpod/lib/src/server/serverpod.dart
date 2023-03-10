@@ -10,6 +10,7 @@ import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
+import 'package:serverpod/src/server/runtime_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -48,6 +49,9 @@ class Serverpod {
 
   /// The servers run mode as specified in [ServerpodRunMode].
   String get runMode => _runMode;
+
+  /// The parsed runtime arguments passed to Serverpod at startup.
+  late final RuntimeArgs runtimeArgs;
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
@@ -212,28 +216,14 @@ class Serverpod {
   }) {
     _internalSerializationManager = internal.Protocol();
 
-    // Create a temporary log manager with default settings, until we have loaded settings from the database.
+    // Create a temporary log manager with default settings, until we have
+    // loaded settings from the database.
     _logManager = LogManager(_defaultRuntimeSettings);
 
-    // Read command line arguments
-    try {
-      var argParser = ArgParser()
-        ..addOption('mode',
-            abbr: 'm',
-            allowed: [
-              ServerpodRunMode.development,
-              ServerpodRunMode.staging,
-              ServerpodRunMode.production,
-            ],
-            defaultsTo: ServerpodRunMode.development)
-        ..addOption('server-id', abbr: 'i', defaultsTo: 'default');
-      var results = argParser.parse(args);
-      _runMode = results['mode'];
-      serverId = results['server-id'];
-    } catch (e) {
-      stdout.writeln('Unknown run mode, defaulting to development');
-      _runMode = ServerpodRunMode.development;
-    }
+    // Read command line arguments.
+    runtimeArgs = RuntimeArgs(args);
+    _runMode = runtimeArgs.runMode;
+    serverId = runtimeArgs.serverId;
 
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
@@ -286,12 +276,15 @@ class Serverpod {
     // Create web server.
     webServer = WebServer(serverpod: this);
 
-    // Print version
+    // Print version and runtime arguments.
     stdout.writeln(
-      'SERVERPOD version: $serverpodVersion mode: $_runMode time: ${DateTime.now().toUtc()}',
+      'SERVERPOD version: $serverpodVersion, time: ${DateTime.now().toUtc()}',
     );
+    stdout.writeln(runtimeArgs.toString());
 
-    stdout.writeln(config.toString());
+    if (runtimeArgs.loggingMode == ServerpodLoggingMode.verbose) {
+      stdout.writeln(config.toString());
+    }
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
@@ -339,20 +332,28 @@ class Serverpod {
         await redisController!.start();
       }
 
-      // Start servers
-      await _startServiceServer();
+      // Start servers.
+      if (runtimeArgs.role == ServerpodRole.monolith ||
+          runtimeArgs.role == ServerpodRole.serverless) {
+        await _startServiceServer();
 
-      await server.start();
+        await server.start();
 
-      if (webServer.routes.isNotEmpty) {
-        await webServer.start();
+        if (webServer.routes.isNotEmpty) {
+          await webServer.start();
+        }
       }
 
-      // Start future calls
-      _futureCallManager.start();
+      // Start maintenance tasks.
+      if (runtimeArgs.role == ServerpodRole.monolith) {
+        // Start future calls
+        _futureCallManager.start();
 
-      // Start health check manager
-      await _healthCheckManager.start();
+        // Start health check manager
+        await _healthCheckManager.start();
+      }
+
+      // TODO: Run maintenance tasks once if in maintenance role.
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
