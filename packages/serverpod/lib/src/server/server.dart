@@ -115,7 +115,7 @@ class Server {
     stdout.writeln('$name listening on port $port');
   }
 
-  void _runServer(HttpServer httpServer) {
+  void _runServer(HttpServer httpServer) async {
     if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(
         '${DateTime.now().toUtc()} runServer $name on port $port',
@@ -124,29 +124,30 @@ class Server {
 
     _httpServer = httpServer;
     httpServer.autoCompress = true;
-    httpServer.listen(
-      (HttpRequest request) {
+
+    try {
+      await for (var request in httpServer) {
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
           stderr.writeln(
-              '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.');
+            '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.',
+          );
           stderr.writeln('$e');
           stderr.writeln('$stackTrace');
         }
-      },
-      onError: (e, StackTrace stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      },
-    ).onDone(() {
-      stdout.writeln('$name stopped');
-    });
+      }
+    } catch (e, stackTrace) {
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+    }
+
+    stdout.writeln('$name stopped');
   }
 
-  Future<void> _handleRequest(HttpRequest request) async {
+  void _handleRequest(HttpRequest request) async {
     if (serverpod.commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(
         '${DateTime.now().toUtc()} handleRequest: ${request.method} ${request.uri.path}',
