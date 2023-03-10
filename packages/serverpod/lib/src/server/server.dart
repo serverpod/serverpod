@@ -86,22 +86,29 @@ class Server {
   /// Starts the server.
   Future<void> start() async {
     if (securityContext != null) {
-      await HttpServer.bindSecure(
-              InternetAddress.anyIPv6, port, securityContext!)
-          .then(_runServer, onError: (e, StackTrace stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      });
-    } else {
-      await HttpServer.bind(InternetAddress.anyIPv6, port).then(_runServer,
-          onError: (e, StackTrace stackTrace) {
+      try {
+        var httpServer = await HttpServer.bindSecure(
+          InternetAddress.anyIPv6,
+          port,
+          securityContext!,
+        );
+        _runServer(httpServer);
+      } catch (e, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
-      });
+      }
+    } else {
+      try {
+        var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
+        _runServer(httpServer);
+      } catch (e, stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+      }
     }
 
     _running = true;
