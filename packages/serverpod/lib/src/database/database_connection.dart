@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -25,14 +26,27 @@ class DatabaseConnection {
   /// cases this shouldn't be called directly, use the db object in the
   /// [Session] to access the database.
   DatabaseConnection(this.poolManager) {
+    Serverpod.instance?.logVerbose('Creating pooled database connection.');
+    // print(StackTrace.current);
     postgresConnection = poolManager.pool;
   }
+
+  // static PostgreSQLConnection? _nonPooledConnection;
+  // static bool _nonPooledConnectionIsOpened = false;
 
   /// Creates a new non-pooled database connection from the configuration. For
   /// cases this shouldn't be called directly, use the db object in the
   /// [Session] to access the database. This version of the database connection
   /// is used when the server is having the serverless role.
   DatabaseConnection.nonPooled(this.poolManager) {
+    // if (_nonPooledConnection != null) {
+    //   Serverpod.instance?.logVerbose('Reusing non-pooled database connection.');
+    //   postgresConnection = _nonPooledConnection!;
+    //   return;
+    // }
+
+    Serverpod.instance?.logVerbose('Creating non-pooled database connection.');
+
     postgresConnection = PostgreSQLConnection(
       poolManager.config.host,
       poolManager.config.port,
@@ -48,7 +62,9 @@ class DatabaseConnection {
   /// object in the [Session] to access the database.
   Future<void> open() async {
     if (postgresConnection is PostgreSQLConnection) {
+      // if (_nonPooledConnectionIsOpened) return;
       await (postgresConnection as PostgreSQLConnection).open();
+      // _nonPooledConnectionIsOpened = true;
     }
   }
 

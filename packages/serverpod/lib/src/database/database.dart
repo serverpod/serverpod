@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 
 import '../server/session.dart';
 import 'database_connection.dart';
@@ -18,17 +19,19 @@ class Database {
 
   /// The [DatabaseConnection] currently used to access the database.
   Future<DatabaseConnection> get databaseConnection async {
-    if (_databaseConnection != null) return _databaseConnection!;
-
     if (session.serverpod.commandLineArgs.role == ServerpodRole.monolith) {
       // Use pooled connection if we are running as a monolith.
-      return DatabaseConnection(session.server.databaseConfig);
+      if (_databaseConnection != null) return _databaseConnection!;
+      _databaseConnection = DatabaseConnection(session.server.databaseConfig);
+      return _databaseConnection!;
     } else {
       // Use non-pooled connection if we are running in a serverless role.
-      var connection =
+      if (_databaseConnection != null) return _databaseConnection!;
+      _databaseConnection =
           DatabaseConnection.nonPooled(session.server.databaseConfig);
-      await connection.open();
-      return connection;
+      Serverpod.instance?.logVerbose('Opening database connection.');
+      await _databaseConnection!.open();
+      return _databaseConnection!;
     }
   }
 
@@ -36,9 +39,11 @@ class Database {
   /// running in a serverless role. Typically, this is done automatically
   /// by the [Session] and you should not call this method.
   Future<void> close() async {
-    if (_databaseConnection != null) {
-      return _databaseConnection!.close();
-    }
+    Serverpod.instance?.logVerbose('Closing database connection.');
+    // if (_databaseConnection != null) {
+    //   Serverpod.instance?.logVerbose('Closing database connection.');
+    //   await _databaseConnection!.close();
+    // }
   }
 
   /// Creates a new [Database] object. Typically, this is done automatically

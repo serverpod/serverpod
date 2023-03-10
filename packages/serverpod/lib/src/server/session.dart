@@ -135,9 +135,10 @@ abstract class Session {
     if (_closed) return null;
     _closed = true;
 
+    int? sessionId;
     try {
       server.messageCentral.removeListenersForSession(this);
-      return await server.serverpod.logManager.finalizeSessionLog(
+      sessionId = await server.serverpod.logManager.finalizeSessionLog(
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
@@ -150,7 +151,7 @@ abstract class Session {
 
     await db.close();
 
-    return null;
+    return sessionId;
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written

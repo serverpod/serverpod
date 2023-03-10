@@ -77,13 +77,13 @@ class CommandLineArgs {
           'logging',
           abbr: 'l',
           allowed: ['normal', 'verbose'],
-          defaultsTo: 'normal',
+          defaultsTo: 'verbose',
         )
         ..addOption(
           'role',
           abbr: 'r',
           allowed: ['monolith', 'serverless', 'maintenance'],
-          defaultsTo: 'monolith',
+          defaultsTo: 'serverless',
         );
       var results = argParser.parse(args);
 
