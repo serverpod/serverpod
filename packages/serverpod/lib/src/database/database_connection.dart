@@ -19,13 +19,28 @@ class DatabaseConnection {
   final DatabasePoolManager poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  late PgPool postgresConnection;
+  late PostgreSQLExecutionContext postgresConnection;
 
-  /// Creates a new database connection from the configuration. For most cases
-  /// this shouldn't be called directly, use the db object in the [Session] to
-  /// access the database.
+  /// Creates a new pooled database connection from the configuration. For most
+  /// cases this shouldn't be called directly, use the db object in the
+  /// [Session] to access the database.
   DatabaseConnection(this.poolManager) {
     postgresConnection = poolManager.pool;
+  }
+
+  /// Creates a new non-pooled database connection from the configuration. For
+  /// cases this shouldn't be called directly, use the db object in the
+  /// [Session] to access the database. This version of the database connection
+  /// is used when the server is having the serverless role.
+  DatabaseConnection.nonPooled(this.poolManager) {
+    postgresConnection = PostgreSQLConnection(
+      poolManager.config.host,
+      poolManager.config.port,
+      poolManager.config.name,
+      username: poolManager.config.user,
+      password: poolManager.config.password,
+      isUnixSocket: poolManager.config.isUnixSocket,
+    );
   }
 
   /// Returns a list of names of all tables in the current database.
@@ -671,15 +686,40 @@ Current type was $T''');
     FutureOr<R> Function()? orElse,
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) {
-    return postgresConnection.runTx<R>(
-      (ctx) {
-        var transaction = Transaction._(ctx);
-        return transactionFunction(transaction);
-      },
-      retryOptions: retryOptions,
-      orElse: orElse,
-      retryIf: retryIf,
-    );
+    if (postgresConnection is PgPool) {
+      var pool = postgresConnection as PgPool;
+      return pool.runTx<R>(
+        (ctx) {
+          var transaction = Transaction._(ctx);
+          return transactionFunction(transaction);
+        },
+        retryOptions: retryOptions,
+        orElse: orElse,
+        retryIf: retryIf,
+      );
+    } else {
+      // TODO: Handle retryOptions, orElse, and retryIf
+      assert(
+        retryOptions == null,
+        'retryOptions not supported when running in serverless mode.',
+      );
+      assert(
+        orElse == null,
+        'orElse not supported when running in serverless mode.',
+      );
+      assert(
+        retryIf == null,
+        'retryIf not supported when running in serverless mode.',
+      );
+      var connection = postgresConnection as PostgreSQLConnection;
+
+      return connection.transaction(
+        (ctx) {
+          var transaction = Transaction._(ctx);
+          return transactionFunction(transaction);
+        },
+      ) as Future<R>;
+    }
   }
 }
 

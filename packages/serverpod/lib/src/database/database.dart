@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 
 import '../server/session.dart';
 import 'database_connection.dart';
@@ -18,7 +19,14 @@ class Database {
   /// The [DatabaseConnection] currently used to access the database.
   Future<DatabaseConnection> get databaseConnection async {
     if (_databaseConnection != null) return _databaseConnection!;
-    return DatabaseConnection(session.server.databaseConfig);
+
+    if (session.serverpod.commandLineArgs.role == ServerpodRole.monolith) {
+      // Use pooled connection if we are running as a monolith.
+      return DatabaseConnection(session.server.databaseConfig);
+    } else {
+      // Use non-pooled connection if we are running in a serverless role.
+      return DatabaseConnection.nonPooled(session.server.databaseConfig);
+    }
   }
 
   /// Creates a new [Database] object. Typically, this is done automatically

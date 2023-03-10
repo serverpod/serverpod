@@ -307,9 +307,15 @@ class Serverpod {
         }
       } catch (e, stackTrace) {
         stderr.writeln(
-            '${DateTime.now().toUtc()} Failed to connect to database.');
+          '${DateTime.now().toUtc()} Failed to connect to the database. Aborting.',
+        );
+
+        stderr.writeln(config.database.toString());
+
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
+
+        return;
       }
 
       // Setup log manager.
