@@ -55,6 +55,8 @@ class DatabaseConnection {
       password: poolManager.config.password,
       isUnixSocket: poolManager.config.isUnixSocket,
     );
+
+    postgresConnection = _nonPooledConnection!;
   }
 
   /// Opens the connection to the database, only valid for non-pooled
