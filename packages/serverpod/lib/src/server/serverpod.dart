@@ -277,7 +277,7 @@ class Serverpod {
 
     // Print version and runtime arguments.
     stdout.writeln(
-      'SERVERPOD version: $serverpodVersion, time: ${DateTime.now().toUtc()}',
+      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
     stdout.writeln(commandLineArgs.toString());
 
