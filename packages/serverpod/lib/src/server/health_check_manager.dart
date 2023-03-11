@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 import 'package:system_resources/system_resources.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
 
@@ -13,11 +15,12 @@ import 'package:serverpod/src/util/date_time_extension.dart';
 /// the server configuration.
 class HealthCheckManager {
   final Serverpod _pod;
+  final VoidCallback onCompleted;
   bool _running = false;
   Timer? _timer;
 
   /// Creates a new [HealthCheckManager].
-  HealthCheckManager(this._pod);
+  HealthCheckManager(this._pod, this.onCompleted);
 
   /// Starts the health check manager.
   Future<void> start() async {
@@ -39,6 +42,10 @@ class HealthCheckManager {
   }
 
   void _performHealthCheck() async {
+    if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+      stdout.writeln('Performing health checks.');
+    }
+
     var session = await _pod.createSession(enableLogging: false);
     var numHealthChecks = 0;
 
@@ -66,7 +73,13 @@ class HealthCheckManager {
 
     await _optimizeHealthCheckData(numHealthChecks);
 
-    _scheduleNextCheck();
+    // If we are running in maintenance mode, we don't want to schedule the next
+    // health check, as it should only be run once.
+    if (_pod.commandLineArgs.role == ServerpodRole.monolith) {
+      _scheduleNextCheck();
+    } else if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+      onCompleted();
+    }
   }
 
   void _scheduleNextCheck() {

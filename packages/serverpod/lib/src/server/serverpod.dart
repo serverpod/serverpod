@@ -260,12 +260,19 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     // Setup future calls
-    _futureCallManager = FutureCallManager(server, serializationManager);
+    _futureCallManager = FutureCallManager(
+      server,
+      serializationManager,
+      _onCompletedFutureCalls,
+    );
 
     _instance = this;
 
     // Setup health check manager
-    _healthCheckManager = HealthCheckManager(this);
+    _healthCheckManager = HealthCheckManager(
+      this,
+      _onCompletedHealthChecks,
+    );
 
     // Create web server.
     webServer = WebServer(serverpod: this);
@@ -360,8 +367,10 @@ class Serverpod {
         logVerbose('All servers started.');
       }
 
-      // Start maintenance tasks.
-      if (commandLineArgs.role == ServerpodRole.monolith) {
+      // Start maintenance tasks. If we are running in maintenance mode, we
+      // will only run the maintenance tasks once.
+      if (commandLineArgs.role == ServerpodRole.monolith ||
+          commandLineArgs.role == ServerpodRole.maintenance) {
         logVerbose('Starting maintenance tasks.');
 
         // Start future calls
@@ -383,6 +392,28 @@ class Serverpod {
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
     });
+  }
+
+  bool _completedHealthChecks = false;
+  bool _completedFutureCalls = false;
+
+  void _onCompletedHealthChecks() {
+    logVerbose('Health checks completed.');
+    _completedHealthChecks = true;
+    _checkMaintenanceTasksCompletion();
+  }
+
+  void _onCompletedFutureCalls() {
+    logVerbose('Future calls completed.');
+    _completedFutureCalls = true;
+    _checkMaintenanceTasksCompletion();
+  }
+
+  void _checkMaintenanceTasksCompletion() {
+    if (_completedFutureCalls && _completedHealthChecks) {
+      stdout.writeln('All maintenance tasks completed. Exiting.');
+      exit(0);
+    }
   }
 
   Future<void> _startServiceServer() async {
