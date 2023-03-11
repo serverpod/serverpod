@@ -314,6 +314,9 @@ class Serverpod {
 
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
+
+        _runtimeSettings = _defaultRuntimeSettings;
+        logVerbose('Using default runtime settings.');
       }
 
       await session.close();
