@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -20,69 +19,14 @@ class DatabaseConnection {
   final DatabasePoolManager poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  late PostgreSQLExecutionContext postgresConnection;
+  late PgPool postgresConnection;
 
-  /// Creates a new pooled database connection from the configuration. For most
-  /// cases this shouldn't be called directly, use the db object in the
-  /// [Session] to access the database.
+  /// Creates a new database connection from the configuration. For most cases
+  /// this shouldn't be called directly, use the db object in the [Session] to
+  /// access the database.
   DatabaseConnection(this.poolManager) {
-    Serverpod.instance?.logVerbose('Creating pooled database connection.');
-    // print(StackTrace.current);
     postgresConnection = poolManager.pool;
   }
-
-  static PostgreSQLConnection? _nonPooledConnection;
-  static bool _nonPooledConnectionIsOpened = false;
-
-  /// Creates a new non-pooled database connection from the configuration. For
-  /// cases this shouldn't be called directly, use the db object in the
-  /// [Session] to access the database. This version of the database connection
-  /// is used when the server is having the serverless role.
-  DatabaseConnection.nonPooled(this.poolManager) {
-    if (_nonPooledConnection != null) {
-      Serverpod.instance?.logVerbose('Reusing non-pooled database connection.');
-      postgresConnection = _nonPooledConnection!;
-      return;
-    }
-
-    Serverpod.instance?.logVerbose('Creating non-pooled database connection.');
-
-    _nonPooledConnection = PostgreSQLConnection(
-      poolManager.config.host,
-      poolManager.config.port,
-      poolManager.config.name,
-      username: poolManager.config.user,
-      password: poolManager.config.password,
-      isUnixSocket: poolManager.config.isUnixSocket,
-    );
-
-    postgresConnection = _nonPooledConnection!;
-  }
-
-  /// Opens the connection to the database, only valid for non-pooled
-  /// connections. For most cases this shouldn't be called directly, use the db
-  /// object in the [Session] to access the database.
-  Future<void> open() async {
-    if (postgresConnection is PostgreSQLConnection) {
-      if (_nonPooledConnectionIsOpened) return;
-      Serverpod.instance?.logVerbose('Opening database connection.');
-      await (postgresConnection as PostgreSQLConnection).open();
-      _nonPooledConnectionIsOpened = true;
-    }
-  }
-
-  /// Closes the connection to the database, only valid for non-pooled
-  /// connections. For most cases this shouldn't be called directly, use the db
-  /// object in the [Session] to access the database.
-  // Future<void> close() async {
-  // if (postgresConnection is PostgreSQLConnection) {
-  //   var connection = postgresConnection as PostgreSQLConnection;
-  //   if (connection.isClosed) {
-  //     return;
-  //   }
-  //   await (postgresConnection as PostgreSQLConnection).close();
-  // }
-  // }
 
   /// Returns a list of names of all tables in the current database.
   Future<List<String>> getTableNames() async {
@@ -727,40 +671,15 @@ Current type was $T''');
     FutureOr<R> Function()? orElse,
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) {
-    if (postgresConnection is PgPool) {
-      var pool = postgresConnection as PgPool;
-      return pool.runTx<R>(
-        (ctx) {
-          var transaction = Transaction._(ctx);
-          return transactionFunction(transaction);
-        },
-        retryOptions: retryOptions,
-        orElse: orElse,
-        retryIf: retryIf,
-      );
-    } else {
-      // TODO: Handle retryOptions, orElse, and retryIf
-      assert(
-        retryOptions == null,
-        'retryOptions not supported when running in serverless mode.',
-      );
-      assert(
-        orElse == null,
-        'orElse not supported when running in serverless mode.',
-      );
-      assert(
-        retryIf == null,
-        'retryIf not supported when running in serverless mode.',
-      );
-      var connection = postgresConnection as PostgreSQLConnection;
-
-      return connection.transaction(
-        (ctx) {
-          var transaction = Transaction._(ctx);
-          return transactionFunction(transaction);
-        },
-      ) as Future<R>;
-    }
+    return postgresConnection.runTx<R>(
+      (ctx) {
+        var transaction = Transaction._(ctx);
+        return transactionFunction(transaction);
+      },
+      retryOptions: retryOptions,
+      orElse: orElse,
+      retryIf: retryIf,
+    );
   }
 }
 

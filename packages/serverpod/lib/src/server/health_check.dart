@@ -43,7 +43,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     var startTime = DateTime.now();
     var rnd = Random().nextInt(1000000);
 
-    // var databaseConnection = await pod.databaseConfig.createAndOpenConnection();
+    var databaseConnection = pod.databaseConfig.createConnection();
 
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(
@@ -51,28 +51,21 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     );
 
     var session = await pod.createSession(enableLogging: false);
-    await session.db.insert(entry);
-    // await databaseConnection.insert(entry, session: session);
+    await databaseConnection.insert(entry, session: session);
 
     // Read entry
-    // entry = await databaseConnection.findById<ReadWriteTestEntry>(entry.id!,
-    //     session: session);
-    // await session.close();
+    entry = await databaseConnection.findById<ReadWriteTestEntry>(entry.id!,
+        session: session);
+    await session.close();
 
     // Verify random number
-    // dbHealthy = entry?.number == rnd;
-    dbHealthy = true;
+    dbHealthy = entry?.number == rnd;
 
     dbResponseTime =
         DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-
-    // await databaseConnection.close();
   }
   // ignore: empty_catches
-  catch (e, stackTrace) {
-    print(e);
-    print(stackTrace);
-  }
+  catch (e) {}
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
 

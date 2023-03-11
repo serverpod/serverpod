@@ -1,8 +1,5 @@
-import 'package:meta/meta.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:postgres_pool/postgres_pool.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -47,7 +44,6 @@ class DatabasePoolManager {
         database: config.name,
         username: config.user,
         password: config.password,
-        isUnixSocket: config.isUnixSocket,
       ),
       settings: poolSettings,
     );
@@ -56,17 +52,5 @@ class DatabasePoolManager {
   /// Used internally by the [Server]. Creates a new connection to the database.
   /// Typically, the [Database] provided by the [Session] object should be used
   /// to connect with the database.
-  @internal
-  Future<DatabaseConnection> createAndOpenConnection() async {
-    var role =
-        Serverpod.instance?.commandLineArgs.role ?? ServerpodRole.serverless;
-
-    if (role == ServerpodRole.monolith) {
-      return DatabaseConnection(this);
-    } else {
-      var connection = DatabaseConnection.nonPooled(this);
-      await connection.open();
-      return connection;
-    }
-  }
+  DatabaseConnection createConnection() => DatabaseConnection(this);
 }
