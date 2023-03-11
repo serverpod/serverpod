@@ -289,37 +289,45 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      // Load runtime settings.
-      var session = await createSession(enableLogging: false);
-      try {
-        logVerbose('Loading runtime settings.');
+      // Load runtime settings and check connection to the database.
+      bool databaseConnectionIsUp = false;
+      bool printedDatabaseConnectionError = false;
 
-        _runtimeSettings =
-            await session.db.findSingleRow<internal.RuntimeSettings>();
-        if (_runtimeSettings == null) {
-          logVerbose('Runtime settings not found, creting default settings.');
+      while (!databaseConnectionIsUp) {
+        var session = await createSession(enableLogging: false);
+        try {
+          logVerbose('Loading runtime settings.');
 
-          // Store default settings.
-          _runtimeSettings = _defaultRuntimeSettings;
-          await session.db.insert(_runtimeSettings!);
-        } else {
-          logVerbose('Runtime settings loaded.');
+          _runtimeSettings =
+              await session.db.findSingleRow<internal.RuntimeSettings>();
+          if (_runtimeSettings == null) {
+            logVerbose('Runtime settings not found, creting default settings.');
+
+            // Store default settings.
+            _runtimeSettings = _defaultRuntimeSettings;
+            await session.db.insert(_runtimeSettings!);
+          } else {
+            logVerbose('Runtime settings loaded.');
+          }
+
+          // We successfully connected to the database.
+          databaseConnectionIsUp = true;
+        } catch (e) {
+          // Write connection error to stderr.
+          stderr.writeln(
+            'Failed to connect to the database. Retrying in 10 seconds. $e',
+          );
+          if (!printedDatabaseConnectionError) {
+            stderr.writeln('Database configuration:');
+            stderr.writeln(config.database.toString());
+            printedDatabaseConnectionError = true;
+          }
+
+          await Future.delayed(const Duration(seconds: 10));
         }
-      } catch (e, stackTrace) {
-        stderr.writeln(
-          '${DateTime.now().toUtc()} Failed to connect to the database.',
-        );
 
-        stderr.writeln(config.database.toString());
-
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-
-        _runtimeSettings = _defaultRuntimeSettings;
-        logVerbose('Using default runtime settings.');
+        await session.close();
       }
-
-      await session.close();
 
       // Setup log manager.
       _logManager = LogManager(_runtimeSettings!);
