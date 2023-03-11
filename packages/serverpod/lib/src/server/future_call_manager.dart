@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_client/serverpod_client.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
 import 'future_call.dart';
@@ -16,7 +15,11 @@ import 'session.dart';
 /// [Serverpod] is restarted.
 class FutureCallManager {
   final Server _server;
+
+  /// Called when pending future calls have been completed, if the server is
+  /// running in [ServerpodRole.maintenance] mode.
   final VoidCallback onCompleted;
+
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;

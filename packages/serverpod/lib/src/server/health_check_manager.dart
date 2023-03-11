@@ -15,7 +15,11 @@ import 'package:serverpod/src/util/date_time_extension.dart';
 /// the server configuration.
 class HealthCheckManager {
   final Serverpod _pod;
+
+  /// Called when health checks have been completed, if the server is
+  /// running in [ServerpodRole.maintenance] mode.
   final VoidCallback onCompleted;
+
   bool _running = false;
   Timer? _timer;
 
