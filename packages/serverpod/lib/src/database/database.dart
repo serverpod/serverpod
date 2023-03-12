@@ -17,8 +17,8 @@ class Database {
 
   /// The [DatabaseConnection] currently used to access the database.
   Future<DatabaseConnection> get databaseConnection async {
-    if (_databaseConnection != null) return _databaseConnection!;
-    return DatabaseConnection(session.server.databaseConfig);
+    _databaseConnection ??= DatabaseConnection(session.server.databaseConfig);
+    return _databaseConnection!;
   }
 
   /// Creates a new [Database] object. Typically, this is done automatically
