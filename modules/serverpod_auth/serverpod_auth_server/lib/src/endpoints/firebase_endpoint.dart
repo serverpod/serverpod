@@ -61,6 +61,7 @@ class FirebaseEndpoint extends Endpoint {
           userIdentifier: userIdentifier,
           userName: userName,
           fullName: fullName,
+          email: email,
           created: DateTime.now().toUtc(),
           scopeNames: [],
           blocked: false,
