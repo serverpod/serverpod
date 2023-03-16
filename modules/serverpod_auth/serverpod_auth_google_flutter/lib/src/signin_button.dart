@@ -70,6 +70,7 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
+        final navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithGoogle(
@@ -81,7 +82,7 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           redirectUri: widget.redirectUri,
         ).then((UserInfo? userInfo) {
           // Pop the loading barrier
-          Navigator.of(context).pop();
+          navigator.pop();
 
           // Notify the parent.
           if (userInfo != null) {
