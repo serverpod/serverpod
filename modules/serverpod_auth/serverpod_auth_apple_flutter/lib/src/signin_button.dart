@@ -47,13 +47,14 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
+        final navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithApple(
           widget.caller,
         ).then((UserInfo? userInfo) {
           // Pop the loading barrier
-          Navigator.of(context).pop();
+          navigator.pop();
 
           // Notify the parent.
           if (userInfo != null) {
