@@ -14,9 +14,6 @@ fields:
   ### The expiry date of the token.
   expiresAt: DateTime
 
-  ## The redirect URI
-  redirectUri: String
-
 indexes:
   serverpod_facebook_long_lived_token_idx:
     fields: userId

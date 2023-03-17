@@ -77,8 +77,7 @@ CREATE TABLE "serverpod_facebook_long_lived_token" (
   "userId" integer NOT NULL,
   "fbProfileId" text NOT NULL,
   "token" text NOT NULL,
-  "expiresAt" timestamp without time zone NOT NULL,
-  "redirectUri" text NOT NULL
+  "expiresAt" timestamp without time zone NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_facebook_long_lived_token"

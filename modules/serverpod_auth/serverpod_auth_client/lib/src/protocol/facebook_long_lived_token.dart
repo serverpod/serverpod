@@ -16,7 +16,6 @@ class FacebookLongLivedToken extends _i1.SerializableEntity {
     required this.fbProfileId,
     required this.token,
     required this.expiresAt,
-    required this.redirectUri,
   });
 
   factory FacebookLongLivedToken.fromJson(
@@ -33,8 +32,6 @@ class FacebookLongLivedToken extends _i1.SerializableEntity {
           serializationManager.deserialize<String>(jsonSerialization['token']),
       expiresAt: serializationManager
           .deserialize<DateTime>(jsonSerialization['expiresAt']),
-      redirectUri: serializationManager
-          .deserialize<String>(jsonSerialization['redirectUri']),
     );
   }
 
@@ -55,8 +52,6 @@ class FacebookLongLivedToken extends _i1.SerializableEntity {
   /// The expiry date of the token.
   DateTime expiresAt;
 
-  String redirectUri;
-
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -65,7 +60,6 @@ class FacebookLongLivedToken extends _i1.SerializableEntity {
       'fbProfileId': fbProfileId,
       'token': token,
       'expiresAt': expiresAt,
-      'redirectUri': redirectUri,
     };
   }
 }

@@ -171,7 +171,6 @@ class FacebookEndpoint extends Endpoint {
       fbProfileId: profileId,
       expiresAt: longLivedAccessTokenExpiresAt,
       token: longLivedAccessToken,
-      redirectUri: redirectUri,
     );
     if (await FacebookLongLivedToken.findSingleRow(session,
             where: (t) => t.userId.equals(userInfo.id!)) ==

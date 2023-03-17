@@ -16,7 +16,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
     required this.fbProfileId,
     required this.token,
     required this.expiresAt,
-    required this.redirectUri,
   }) : super(id);
 
   factory FacebookLongLivedToken.fromJson(
@@ -33,8 +32,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
           serializationManager.deserialize<String>(jsonSerialization['token']),
       expiresAt: serializationManager
           .deserialize<DateTime>(jsonSerialization['expiresAt']),
-      redirectUri: serializationManager
-          .deserialize<String>(jsonSerialization['redirectUri']),
     );
   }
 
@@ -52,8 +49,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
   /// The expiry date of the token.
   DateTime expiresAt;
 
-  String redirectUri;
-
   @override
   String get tableName => 'serverpod_facebook_long_lived_token';
   @override
@@ -64,7 +59,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
       'fbProfileId': fbProfileId,
       'token': token,
       'expiresAt': expiresAt,
-      'redirectUri': redirectUri,
     };
   }
 
@@ -76,7 +70,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
       'fbProfileId': fbProfileId,
       'token': token,
       'expiresAt': expiresAt,
-      'redirectUri': redirectUri,
     };
   }
 
@@ -88,7 +81,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
       'fbProfileId': fbProfileId,
       'token': token,
       'expiresAt': expiresAt,
-      'redirectUri': redirectUri,
     };
   }
 
@@ -112,9 +104,6 @@ class FacebookLongLivedToken extends _i1.TableRow {
         return;
       case 'expiresAt':
         expiresAt = value;
-        return;
-      case 'redirectUri':
-        redirectUri = value;
         return;
       default:
         throw UnimplementedError();
@@ -254,8 +243,6 @@ class FacebookLongLivedTokenTable extends _i1.Table {
   /// The expiry date of the token.
   final expiresAt = _i1.ColumnDateTime('expiresAt');
 
-  final redirectUri = _i1.ColumnString('redirectUri');
-
   @override
   List<_i1.Column> get columns => [
         id,
@@ -263,7 +250,6 @@ class FacebookLongLivedTokenTable extends _i1.Table {
         fbProfileId,
         token,
         expiresAt,
-        redirectUri,
       ];
 }
 
