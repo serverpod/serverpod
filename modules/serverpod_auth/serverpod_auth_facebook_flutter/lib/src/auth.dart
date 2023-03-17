@@ -29,8 +29,9 @@ _initialize(String? appId) async {
 /// Attempts to Sign in with Facebook. If successful, a [UserInfo] is returned.
 /// If the attempt is not a success, null is returned.
 ///
-/// `appIdForWebOrDesktop` only needs to be provided for Web and desktop builds.
-/// Android and iOS will read this from their property file.
+/// `appIdForWebOrDesktop` is the Facebook app_id, and it only needs to be
+/// provided for Web and desktop builds. Android and iOS builds will read this
+/// from their property files.
 Future<UserInfo?> signInWithFacebook(
   Caller caller, {
   bool debug = false,
@@ -50,8 +51,7 @@ Future<UserInfo?> signInWithFacebook(
 
   try {
     // Sign in with Facebook.
-    final LoginResult result =
-        await FacebookAuth.instance.login(permissions: scopes);
+    var result = await FacebookAuth.instance.login(permissions: scopes);
     if (result.status != LoginStatus.success) {
       if (kDebugMode) {
         print(
@@ -99,8 +99,7 @@ Future<UserInfo?> signInWithFacebook(
     }
 
     // Authenticate with the Serverpod server.
-    AuthenticationResponse serverResponse =
-        await caller.facebook.authenticateWithAccessToken(
+    var serverResponse = await caller.facebook.authenticateWithAccessToken(
       accessToken.token,
       redirectUri.toString(),
     );
