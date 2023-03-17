@@ -52,10 +52,9 @@ class FacebookEndpoint extends Endpoint {
       );
     }
 
-    var debugTokenResponse =
-        await http.get(Uri.parse('$_graphURL/oauth/debug_token'
-            '?input_token=$userAccessToken'
-            '&access_token=$appAccessToken'));
+    var debugTokenResponse = await http.get(Uri.parse('$_graphURL/debug_token'
+        '?input_token=$userAccessToken'
+        '&access_token=$appAccessToken'));
 
     if (debugTokenResponse.statusCode != 200) {
       session.log(
