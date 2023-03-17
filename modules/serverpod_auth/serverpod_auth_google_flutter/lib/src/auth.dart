@@ -25,6 +25,7 @@ Future<UserInfo?> signInWithGoogle(
     scopes: scopes,
     clientId: clientId,
     serverClientId: serverClientId,
+    forceCodeForRefreshToken: true,
   );
 
   try {
