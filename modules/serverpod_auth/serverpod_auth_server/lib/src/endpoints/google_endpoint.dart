@@ -270,7 +270,7 @@ Future<AccessCredentials> _obtainAccessCredentialsViaCodeExchange(
       'access_type': 'offline', // Added
     },
   );
-  final accessToken = parseAccessToken(jsonMap);
+  final accessToken = _parseAccessToken(jsonMap);
 
   final idToken = jsonMap['id_token'] as String?;
   final refreshToken = jsonMap['refresh_token'] as String?;
@@ -290,4 +290,19 @@ Future<AccessCredentials> _obtainAccessCredentialsViaCodeExchange(
     scopes,
     idToken: idToken,
   );
+}
+
+AccessToken _parseAccessToken(Map<String, dynamic> jsonMap) {
+  final tokenType = jsonMap['token_type'];
+  final accessToken = jsonMap['access_token'];
+  final expiresIn = jsonMap['expires_in'];
+
+  if (accessToken is! String || expiresIn is! int || tokenType != 'Bearer') {
+    throw ServerRequestFailedException(
+      'Failed to exchange authorization code. Invalid server response.',
+      responseContent: jsonMap,
+    );
+  }
+
+  return AccessToken('Bearer', accessToken, expiryDate(expiresIn));
 }
