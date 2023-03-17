@@ -227,7 +227,7 @@ class _GoogleUtils {
     var clientId = ClientId(secret.clientId, secret.clientSecret);
     var client = http.Client();
 
-    var credentials = await obtainAccessCredentialsViaCodeExchange(
+    var credentials = await _obtainAccessCredentialsViaCodeExchange(
       client,
       clientId,
       authenticationCode,
@@ -241,4 +241,53 @@ class _GoogleUtils {
       closeUnderlyingClient: true,
     );
   }
+}
+
+// A modification of obtainAccessCredentialsViaCodeExchange from
+// googleapis_auth-1.3.1/lib/src/oauth2_flows/auth_code.dart
+// to require the user to consent to offline access, so that a refresh token
+// is always sent. Without this, the second and subsequent time that a user
+// tries to log in with Google, an exception is thrown:
+// "'package:googleapis_auth/src/auth_http_utils.dart': Failed assertion:
+// 'credentials.refreshToken != null': is not true."
+// See: https://stackoverflow.com/a/10857806/3950982
+Future<AccessCredentials> _obtainAccessCredentialsViaCodeExchange(
+  http.Client client,
+  ClientId clientId,
+  String code, {
+  String redirectUrl = 'postmessage',
+  String? codeVerifier,
+}) async {
+  final jsonMap = await client.oauthTokenRequest(
+    {
+      'client_id': clientId.identifier,
+      'client_secret': clientId.secret ?? '',
+      'code': code,
+      if (codeVerifier != null) 'code_verifier': codeVerifier,
+      'grant_type': 'authorization_code',
+      'redirect_uri': redirectUrl,
+      'prompt': 'consent', // Added
+      'access_type': 'offline', // Added
+    },
+  );
+  final accessToken = parseAccessToken(jsonMap);
+
+  final idToken = jsonMap['id_token'] as String?;
+  final refreshToken = jsonMap['refresh_token'] as String?;
+
+  final scope = jsonMap['scope'];
+  if (scope is! String) {
+    throw ServerRequestFailedException(
+      'The response did not include a `scope` value of type `String`.',
+      responseContent: json,
+    );
+  }
+  final scopes = scope.split(' ').toList();
+
+  return AccessCredentials(
+    accessToken,
+    refreshToken,
+    scopes,
+    idToken: idToken,
+  );
 }

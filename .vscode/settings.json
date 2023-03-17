@@ -1,0 +1,10 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "workbench.colorCustomizations": {
+        "tab.activeBorder": "#ffff00",
+        "tab.unfocusedActiveBorder": "#000000"
+    }
+}
