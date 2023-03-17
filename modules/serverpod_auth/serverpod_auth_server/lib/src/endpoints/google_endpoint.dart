@@ -307,7 +307,7 @@ AccessToken _parseAccessToken(Map<String, dynamic> jsonMap) {
   return AccessToken('Bearer', accessToken, expiryDate(expiresIn));
 }
 
-extension ClientExtensions on Client {
+extension ClientExtensions on http.Client {
   Future<Map<String, dynamic>> oauthTokenRequest(
     Map<String, String> postValues,
   ) async {
