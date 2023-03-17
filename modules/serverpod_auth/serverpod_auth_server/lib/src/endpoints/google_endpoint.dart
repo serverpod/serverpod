@@ -306,3 +306,21 @@ AccessToken _parseAccessToken(Map<String, dynamic> jsonMap) {
 
   return AccessToken('Bearer', accessToken, expiryDate(expiresIn));
 }
+
+extension ClientExtensions on Client {
+  Future<Map<String, dynamic>> oauthTokenRequest(
+    Map<String, String> postValues,
+  ) async {
+    final body = Stream<List<int>>.value(
+      ascii.encode(
+        postValues.entries
+            .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+            .join('&'),
+      ),
+    );
+    final request = RequestImpl('POST', googleOauth2TokenEndpoint, body)
+      ..headers['content-type'] = _contentTypeUrlEncoded;
+
+    return requestJson(request, 'Failed to obtain access credentials.');
+  }
+}
