@@ -142,7 +142,9 @@ class FacebookEndpoint extends Endpoint {
         firstName == null ||
         image == null ||
         email == null) {
-      session.log('Could not get public profile info for user',
+      session.log(
+          'Could not get all required profile information for user: '
+          'email, first_name, name, profile_pic',
           level: LogLevel.debug);
       return AuthenticationResponse(
         success: false,

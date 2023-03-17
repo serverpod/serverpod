@@ -25,6 +25,8 @@ You also need to create a with the Facebook app id and app secret, at the path `
 
 These values can be obtained from the Facebook app developer console.
 
+You will also need to configure your Facebook app in the developer console to give permission for the app to fetch the following information: email, first_name, name, profile_pic. (Otherwise login will fail.)
+
 You can log into Facebook in your Serverpod app's Flutter frontend using `SignInWithFacebookButton`, or you can directly call the `signInWithFacebook` method.
 
 ### Limitations
