@@ -152,6 +152,29 @@ class _EndpointEmail extends _i1.EndpointRef {
       );
 }
 
+/// Endpoint for handling Sign in with Facebook.
+class _EndpointFacebook extends _i1.EndpointRef {
+  _EndpointFacebook(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth.facebook';
+
+  /// Authenticates a user with Facebook using the access token obtained
+  /// on the client.
+  _i2.Future<_i4.AuthenticationResponse> authenticateWithAccessToken(
+    String userAccessToken,
+    String redirectUri,
+  ) =>
+      caller.callServerEndpoint<_i4.AuthenticationResponse>(
+        'serverpod_auth.facebook',
+        'authenticateWithAccessToken',
+        {
+          'userAccessToken': userAccessToken,
+          'redirectUri': redirectUri,
+        },
+      );
+}
+
 /// Endpoint for handling Sign in with Firebase.
 class _EndpointFirebase extends _i1.EndpointRef {
   _EndpointFirebase(_i1.EndpointCaller caller) : super(caller);
@@ -275,6 +298,7 @@ class Caller extends _i1.ModuleEndpointCaller {
     admin = _EndpointAdmin(this);
     apple = _EndpointApple(this);
     email = _EndpointEmail(this);
+    facebook = _EndpointFacebook(this);
     firebase = _EndpointFirebase(this);
     google = _EndpointGoogle(this);
     status = _EndpointStatus(this);
@@ -286,6 +310,8 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final _EndpointApple apple;
 
   late final _EndpointEmail email;
+
+  late final _EndpointFacebook facebook;
 
   late final _EndpointFirebase firebase;
 
@@ -300,6 +326,7 @@ class Caller extends _i1.ModuleEndpointCaller {
         'serverpod_auth.admin': admin,
         'serverpod_auth.apple': apple,
         'serverpod_auth.email': email,
+        'serverpod_auth.facebook': facebook,
         'serverpod_auth.firebase': firebase,
         'serverpod_auth.google': google,
         'serverpod_auth.status': status,

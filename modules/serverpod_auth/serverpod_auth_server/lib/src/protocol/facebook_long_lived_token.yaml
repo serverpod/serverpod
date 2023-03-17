@@ -1,0 +1,23 @@
+### Database bindings for a Facebook long-lived server token.
+class: FacebookLongLivedToken
+table: serverpod_facebook_long_lived_token
+fields:
+  ### The Serverpod user id associated with the token.
+  userId: int
+
+  ### The Facebook profile id.
+  fbProfileId: String
+
+  ### The Facebook long-lived token.
+  token: String
+
+  ### The expiry date of the token.
+  expiresAt: DateTime
+
+  ## The redirect URI
+  redirectUri: String
+
+indexes:
+  serverpod_facebook_long_lived_token_idx:
+    fields: userId
+    unique: true
