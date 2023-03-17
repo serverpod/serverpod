@@ -144,7 +144,7 @@ class FacebookEndpoint extends Endpoint {
         email == null) {
       session.log(
           'Could not get all required profile information for user: '
-          'email, first_name, name, profile_pic',
+          'email=$email, first_name=$firstName, name=$name, profile_pic=$image',
           level: LogLevel.debug);
       return AuthenticationResponse(
         success: false,
