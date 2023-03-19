@@ -157,6 +157,8 @@ abstract class SerializationManager {
           return nonEncodable.base64encodedString();
         } else if (nonEncodable is Duration) {
           return nonEncodable.inMilliseconds;
+        } else if (nonEncodable is List) {
+          return nonEncodable.toString();
         } else if (nonEncodable is UuidValue) {
           return nonEncodable.uuid;
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {

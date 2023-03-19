@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
@@ -337,6 +338,22 @@ class ColumnSerializable extends Column {
   ColumnSerializable(String name) : super(name, String);
 
 // TODO: Add comparisons and possibly other operations
+
+  /// Creates an [Expression] checking if the value[List] in the column intersects
+  /// with the given value[List]
+  Expression intersects(List? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NULL');
+    } else {
+      try {
+        return Expression(
+            'ARRAY(SELECT jsonb_array_elements_text("$columnName"::jsonb)) && ARRAY(SELECT jsonb_array_elements_text(${DatabasePoolManager.encoder.convert(value)}::jsonb))');
+      } catch (e) {
+        log(e.toString());
+        return Expression('"$columnName" IS NULL');
+      }
+    }
+  }
 }
 
 /// A constant [Expression].
