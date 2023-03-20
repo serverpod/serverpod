@@ -843,6 +843,89 @@ class ClassGeneratorDart extends ClassGenerator {
         ..type = refer('Protocol')
         ..modifier = FieldModifier.final$
         ..assignment = const Code('Protocol._()')),
+      if (serverCode)
+        Field(
+          (f) => f
+            ..name = 'desiredDatabaseStructure'
+            ..static = true
+            ..modifier = FieldModifier.final$
+            ..assignment =
+                refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
+                    .call([], {
+              'tables': literalList([
+                for (var classDefinition in classDefinitions)
+                  if (classDefinition is ClassDefinition &&
+                      classDefinition.tableName != null)
+                    refer('TableDefinition', serverpodProtocolUrl(serverCode))
+                        .call([], {
+                      'name': literalString(classDefinition.tableName!),
+                      'columns': literalList([
+                        for (var column in classDefinition.fields)
+                          refer('ColumnDefinition',
+                                  serverpodProtocolUrl(serverCode))
+                              .call([], {
+                            'name': literalString(column.name),
+                            'columnType': refer(
+                                'ColumnType.${column.type.databaseTypeEnum}',
+                                serverpodProtocolUrl(serverCode)),
+                            'isNullable': literalBool(column.type.nullable),
+                          })
+                      ]),
+                      'primaryKey': literalList([literalString('id')]),
+                      'foreignKeys': literalList([
+                        for (var i = 0;
+                            i <
+                                classDefinition.fields
+                                    .where((field) => field.parentTable != null)
+                                    .length;
+                            i++)
+                          () {
+                            var column = classDefinition.fields
+                                .where((field) => field.parentTable != null)
+                                .toList()[i];
+                            return refer('ForeignKeyDefinition',
+                                    serverpodProtocolUrl(serverCode))
+                                .call([], {
+                              'constraintName': literalString(
+                                  '${classDefinition.tableName!}_fk_$i'),
+                              'column': literalString(column.name),
+                              'referenceTable':
+                                  literalString(column.parentTable!),
+                              'referenceColumn': literalString('id'),
+                              'onUpdate': literalNull,
+                              'onDelete': refer('ForeignKeyAction.cascade',
+                                  serverpodProtocolUrl(serverCode)),
+                            });
+                          }(),
+                      ]),
+                      'indexes': literalList([
+                        for (var index
+                            in classDefinition.indexes ?? <IndexDefinition>[])
+                          refer('IndexDefinition',
+                                  serverpodProtocolUrl(serverCode))
+                              .call([], {
+                            'indexName': literalString(index.name),
+                            'fields': literalList([
+                              for (var field in index.fields)
+                                literalString(field)
+                            ]),
+                            'type': literalString(index.type),
+                            'isUnique': literalBool(index.unique),
+                          }),
+                      ]),
+                    }),
+                for (var module in config.modules)
+                  refer('Protocol.desiredDatabaseStructure',
+                          module.url(serverCode))
+                      .call([]).spread,
+                if (config.name != 'serverpod' &&
+                    config.type == PackageType.server)
+                  refer('Protocol.desiredDatabaseStructure',
+                          serverpodProtocolUrl(serverCode))
+                      .call([]).spread,
+              ]),
+            }).code,
+        ),
     ]);
     protocol.methods.addAll([
       Method((m) => m
@@ -1004,87 +1087,6 @@ class ClassGeneratorDart extends ClassGenerator {
                 ]),
               const Code('return null;'),
             ]),
-        ),
-      if (serverCode)
-        Method(
-          (m) => m
-            ..name = 'getDesiredDatabaseStructure'
-            ..static = true
-            ..returns = TypeReference((t) => t
-              ..symbol = 'List'
-              ..types.add(
-                  refer('TableDefinition', serverpodProtocolUrl(serverCode))))
-            ..body = literalList([
-              for (var classDefinition in classDefinitions)
-                if (classDefinition is ClassDefinition &&
-                    classDefinition.tableName != null)
-                  refer('TableDefinition', serverpodProtocolUrl(serverCode))
-                      .call([], {
-                    'name': literalString(classDefinition.tableName!),
-                    'columns': literalList([
-                      for (var column in classDefinition.fields)
-                        refer('ColumnDefinition',
-                                serverpodProtocolUrl(serverCode))
-                            .call([], {
-                          'name': literalString(column.name),
-                          'columnType': refer(
-                              'ColumnType.${column.type.databaseTypeEnum}',
-                              serverpodProtocolUrl(serverCode)),
-                          'isNullable': literalBool(column.type.nullable),
-                        })
-                    ]),
-                    'primaryKey': literalList([literalString('id')]),
-                    'foreignKeys': literalList([
-                      for (var i = 0;
-                          i <
-                              classDefinition.fields
-                                  .where((field) => field.parentTable != null)
-                                  .length;
-                          i++)
-                        () {
-                          var column = classDefinition.fields
-                              .where((field) => field.parentTable != null)
-                              .toList()[i];
-                          return refer('ForeignKeyDefinition',
-                                  serverpodProtocolUrl(serverCode))
-                              .call([], {
-                            'constraintName': literalString(
-                                '${classDefinition.tableName!}_fk_$i'),
-                            'column': literalString(column.name),
-                            'referenceTable':
-                                literalString(column.parentTable!),
-                            'referenceColumn': literalString('id'),
-                            'onUpdate': literalNull,
-                            'onDelete': refer('ForeignKeyAction.cascade',
-                                serverpodProtocolUrl(serverCode)),
-                          });
-                        }(),
-                    ]),
-                    'indexes': literalList([
-                      for (var index
-                          in classDefinition.indexes ?? <IndexDefinition>[])
-                        refer('IndexDefinition',
-                                serverpodProtocolUrl(serverCode))
-                            .call([], {
-                          'indexName': literalString(index.name),
-                          'fields': literalList([
-                            for (var field in index.fields) literalString(field)
-                          ]),
-                          'type': literalString(index.type),
-                          'isUnique': literalBool(index.unique),
-                        }),
-                    ]),
-                  }),
-              for (var module in config.modules)
-                refer('Protocol.getDesiredDatabaseStructure',
-                        module.url(serverCode))
-                    .call([]).spread,
-              if (config.name != 'serverpod' &&
-                  config.type == PackageType.server)
-                refer('Protocol.getDesiredDatabaseStructure',
-                        serverpodProtocolUrl(serverCode))
-                    .call([]).spread,
-            ]).code,
         ),
     ]);
 
