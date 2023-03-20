@@ -17,8 +17,10 @@ import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
 import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
-import 'dart:io' as _i8;
-import 'protocol.dart' as _i9;
+import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
+    as _i8;
+import 'dart:io' as _i9;
+import 'protocol.dart' as _i10;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -122,16 +124,23 @@ class _EndpointInsights extends _i1.EndpointRef {
         'hotReload',
         {},
       );
+
+  _i2.Future<List<_i8.TableDefinition>> getCurrentDatabaseStructure() =>
+      caller.callServerEndpoint<List<_i8.TableDefinition>>(
+        'insights',
+        'getCurrentDatabaseStructure',
+        {},
+      );
 }
 
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i8.SecurityContext? context,
+    _i9.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i9.Protocol(),
+          _i10.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {

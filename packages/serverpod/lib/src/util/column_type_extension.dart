@@ -12,6 +12,9 @@ extension ExtendedColumnType on ColumnType {
         return value;
       }
     }
+    if (target == 'serial') {
+      return ColumnType.integer;
+    }
     return ColumnType.unknown;
   }
 }

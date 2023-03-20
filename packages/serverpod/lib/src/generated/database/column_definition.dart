@@ -15,6 +15,7 @@ class ColumnDefinition extends _i1.SerializableEntity {
     required this.name,
     required this.columnType,
     required this.isNullable,
+    this.columnDefault,
   });
 
   factory ColumnDefinition.fromJson(
@@ -27,6 +28,8 @@ class ColumnDefinition extends _i1.SerializableEntity {
           .deserialize<_i2.ColumnType>(jsonSerialization['columnType']),
       isNullable: serializationManager
           .deserialize<bool>(jsonSerialization['isNullable']),
+      columnDefault: serializationManager
+          .deserialize<String?>(jsonSerialization['columnDefault']),
     );
   }
 
@@ -39,12 +42,16 @@ class ColumnDefinition extends _i1.SerializableEntity {
   /// Whether this column is nullable.
   bool isNullable;
 
+  /// The default for the column.
+  String? columnDefault;
+
   @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'columnType': columnType,
       'isNullable': isNullable,
+      'columnDefault': columnDefault,
     };
   }
 
@@ -54,6 +61,7 @@ class ColumnDefinition extends _i1.SerializableEntity {
       'name': name,
       'columnType': columnType,
       'isNullable': isNullable,
+      'columnDefault': columnDefault,
     };
   }
 }
