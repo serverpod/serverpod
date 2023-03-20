@@ -84,7 +84,6 @@ class SignInWithFacebookButtonState extends State<SignInWithFacebookButton> {
             widget.onFailure?.call();
           }
         }).onError((error, stackTrace) {
-          print('Sign in error: $error');
           widget.onFailure?.call();
         }).whenComplete(() =>
             // Pop the loading barrier
