@@ -47,15 +47,12 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
-        final navigator = Navigator.of(context, rootNavigator: true);
+        var navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithApple(
           widget.caller,
         ).then((UserInfo? userInfo) {
-          // Pop the loading barrier
-          navigator.pop();
-
           // Notify the parent.
           if (userInfo != null) {
             if (widget.onSignedIn != null) {
@@ -66,7 +63,9 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
               widget.onFailure!();
             }
           }
-        });
+        }).whenComplete(() =>
+            // Pop the loading barrier
+            navigator.pop());
       },
       label: const Text('Sign in with Apple'),
       icon: const Icon(MdiIcons.apple),

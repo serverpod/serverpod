@@ -70,7 +70,7 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
-        final navigator = Navigator.of(context, rootNavigator: true);
+        var navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithGoogle(
@@ -81,9 +81,6 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           additionalScopes: widget.additionalScopes,
           redirectUri: widget.redirectUri,
         ).then((UserInfo? userInfo) {
-          // Pop the loading barrier
-          navigator.pop();
-
           // Notify the parent.
           if (userInfo != null) {
             if (widget.onSignedIn != null) {
@@ -94,7 +91,9 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
               widget.onFailure!();
             }
           }
-        });
+        }).whenComplete(() =>
+            // Pop the loading barrier
+            navigator.pop());
       },
       label: const Text('Sign in with Google'),
       icon: Image.asset(
