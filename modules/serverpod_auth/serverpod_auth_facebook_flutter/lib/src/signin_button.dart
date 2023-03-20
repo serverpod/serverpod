@@ -67,7 +67,7 @@ class SignInWithFacebookButtonState extends State<SignInWithFacebookButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
-        final navigator = Navigator.of(context, rootNavigator: true);
+        var navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithFacebook(
@@ -77,9 +77,6 @@ class SignInWithFacebookButtonState extends State<SignInWithFacebookButton> {
           additionalScopes: widget.additionalScopes,
           redirectUri: widget.redirectUri,
         ).then((UserInfo? userInfo) {
-          // Pop the loading barrier
-          navigator.pop();
-
           // Notify the parent.
           if (userInfo != null) {
             if (widget.onSignedIn != null) {
@@ -90,7 +87,9 @@ class SignInWithFacebookButtonState extends State<SignInWithFacebookButton> {
               widget.onFailure!();
             }
           }
-        });
+        }).whenComplete(() =>
+            // Pop the loading barrier
+            navigator.pop());
       },
       label: const Text('Sign in with Facebook'),
       icon: Image.asset(
