@@ -98,7 +98,14 @@ Future<UserInfo?> signInWithGoogle(
     if (kDebugMode) print('serverpod_auth_google: Signing out from google');
     await googleSignIn.signOut();
 
-    if (kDebugMode) await googleSignIn.disconnect();
+    if (kDebugMode) {
+      try {
+        await googleSignIn.disconnect();
+      } catch (e) {
+        // Print without stacktrace (this seems to fail every time, #735)
+        print('serverpod_auth_google: $e');
+      }
+    }
 
     if (kDebugMode) {
       print(
