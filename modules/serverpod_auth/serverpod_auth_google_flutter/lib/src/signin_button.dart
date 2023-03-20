@@ -83,14 +83,13 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         ).then((UserInfo? userInfo) {
           // Notify the parent.
           if (userInfo != null) {
-            if (widget.onSignedIn != null) {
-              widget.onSignedIn!();
-            }
+            widget.onSignedIn?.call();
           } else {
-            if (widget.onFailure != null) {
-              widget.onFailure!();
-            }
+            widget.onFailure?.call();
           }
+        }).onError((error, stackTrace) {
+          print('Sign in error: $error');
+          widget.onFailure?.call();
         }).whenComplete(() =>
             // Pop the loading barrier
             navigator.pop());
