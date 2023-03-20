@@ -13,6 +13,7 @@ import '../protocol.dart' as _i2;
 class TableDefinition extends _i1.SerializableEntity {
   TableDefinition({
     required this.name,
+    required this.schema,
     required this.columns,
     this.primaryKey,
     required this.foreignKeys,
@@ -25,6 +26,8 @@ class TableDefinition extends _i1.SerializableEntity {
   ) {
     return TableDefinition(
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      schema:
+          serializationManager.deserialize<String>(jsonSerialization['schema']),
       columns: serializationManager.deserialize<List<_i2.ColumnDefinition>>(
           jsonSerialization['columns']),
       primaryKey: serializationManager
@@ -37,8 +40,11 @@ class TableDefinition extends _i1.SerializableEntity {
     );
   }
 
-  /// The table name
+  /// The table name.
   String name;
+
+  /// The schema this table is in.
+  String schema;
 
   /// All the columns of this table.
   List<_i2.ColumnDefinition> columns;
@@ -56,6 +62,7 @@ class TableDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'schema': schema,
       'columns': columns,
       'primaryKey': primaryKey,
       'foreignKeys': foreignKeys,
@@ -67,6 +74,7 @@ class TableDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'name': name,
+      'schema': schema,
       'columns': columns,
       'primaryKey': primaryKey,
       'foreignKeys': foreignKeys,

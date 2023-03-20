@@ -27,6 +27,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'channel',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

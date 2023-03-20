@@ -68,6 +68,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'object_field_scopes',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -96,6 +97,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_bytedata',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -114,6 +116,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_duration',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -132,6 +135,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_enum',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -170,6 +174,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_object',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -213,6 +218,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_uuid',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -236,6 +242,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'simple_data',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -254,6 +261,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'types',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

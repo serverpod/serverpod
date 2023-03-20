@@ -46,6 +46,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_chat_message',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -111,6 +112,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_chat_read_message',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

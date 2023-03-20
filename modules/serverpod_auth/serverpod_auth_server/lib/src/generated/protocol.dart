@@ -48,6 +48,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_email_auth',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -83,6 +84,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_create_request',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -123,6 +125,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_failed_sign_in',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -164,6 +167,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_reset',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -199,6 +203,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_google_refresh_token',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -229,6 +234,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_image',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -267,6 +273,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_info',
+      schema: 'public',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

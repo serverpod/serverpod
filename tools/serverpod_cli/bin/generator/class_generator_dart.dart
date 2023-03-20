@@ -859,6 +859,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     refer('TableDefinition', serverpodProtocolUrl(serverCode))
                         .call([], {
                       'name': literalString(classDefinition.tableName!),
+                      'schema': literalString('public'),
                       'columns': literalList([
                         for (var column in classDefinition.fields)
                           refer('ColumnDefinition',

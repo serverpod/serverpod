@@ -6,8 +6,10 @@
 ### The definition of a (desired) table in the database.
 class: TableDefinition
 fields:
-  ### The table name
+  ### The table name.
   name: String
+  ### The schema this table is in.
+  schema: String
   ### All the columns of this table.
   columns: List<ColumnDefinition>
   ### The elements are the columns.
