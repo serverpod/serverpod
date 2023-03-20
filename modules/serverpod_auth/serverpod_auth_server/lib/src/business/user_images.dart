@@ -28,7 +28,7 @@ class UserImages {
 
     var imageSize = AuthConfig.current.userImageSize;
     if (image.width != imageSize || image.height != imageSize) {
-      image = copyResizeCropSquare(image, imageSize);
+      image = copyResizeCropSquare(image, size: imageSize);
     }
 
     var imageData = _encodeImage(image);
@@ -146,7 +146,7 @@ int _colorFromHexStr(String hexStr) {
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
 Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
   var imageSize = AuthConfig.current.userImageSize;
-  var image = Image(256, 256);
+  var image = Image(width: 256, height: 256);
 
   var font = roboto_138;
 
@@ -159,21 +159,24 @@ Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
   // Draw the image.
   var chWidth = font.characters[charCode]!.width;
   var chHeight = font.characters[charCode]!.height;
-  var chOffsetY = font.characters[charCode]!.yoffset;
-  var chOffsetX = font.characters[charCode]!.xoffset;
+  var chOffsetY = font.characters[charCode]!.yOffset;
+  var chOffsetX = font.characters[charCode]!.xOffset;
   var xPos = 128 - chWidth ~/ 2;
   var yPos = 128 - chHeight ~/ 2;
 
   // Pick color based on user id from the default colors (from material design).
+  var color =
+      _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length];
   fill(image,
-      _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length]);
+      color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
+          color & 0xff, (color >> 24) & 0xff));
 
   // Draw the character on top of the solid filled image.
-  drawString(image, font, xPos - chOffsetX, yPos - chOffsetY,
-      String.fromCharCode(charCode));
+  drawString(image, String.fromCharCode(charCode),
+      font: font, x: xPos - chOffsetX, y: yPos - chOffsetY);
 
   // Resize image if it's not the preferred size.
-  if (imageSize != 256) image = copyResizeCropSquare(image, imageSize);
+  if (imageSize != 256) image = copyResizeCropSquare(image, size: imageSize);
 
   return image;
 }
