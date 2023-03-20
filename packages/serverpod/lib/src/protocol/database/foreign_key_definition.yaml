@@ -4,13 +4,15 @@ class: ForeignKeyDefinition
 fields:
   ### The name of the constraint.
   constraintName: String
-  ### The constraint column
-  column: String
+  ### The constraint columns
+  columns: List<String>
   ### The table of the reference.
   referenceTable: String
   ### The column of the reference in the [referenceTable].
-  referenceColumn: String
+  referenceColumns: List<String>
   ### The action, when the referred row is updated.
   onUpdate: ForeignKeyAction?
   ### The action, when the referred row is deleted.
   onDelete: ForeignKeyAction?
+  ### The match type of the foreign key
+  matchType: ForeignKeyMatchType?

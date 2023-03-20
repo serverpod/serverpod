@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+enum: ForeignKeyMatchType
+values:
+  - full
+  - partial
+  - simple

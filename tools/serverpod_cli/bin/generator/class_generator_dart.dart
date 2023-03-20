@@ -872,7 +872,6 @@ class ClassGeneratorDart extends ClassGenerator {
                             'isNullable': literalBool(column.type.nullable),
                           })
                       ]),
-                      'primaryKey': literalList([literalString('id')]),
                       'foreignKeys': literalList([
                         for (var i = 0;
                             i <
@@ -889,41 +888,74 @@ class ClassGeneratorDart extends ClassGenerator {
                                 .call([], {
                               'constraintName': literalString(
                                   '${classDefinition.tableName!}_fk_$i'),
-                              'column': literalString(column.name),
+                              'columns': literalList([
+                                literalString(column.name),
+                              ]),
                               'referenceTable':
                                   literalString(column.parentTable!),
-                              'referenceColumn': literalString('id'),
+                              'referenceColumns': literalList([
+                                literalString('id'),
+                              ]),
                               'onUpdate': literalNull,
                               'onDelete': refer('ForeignKeyAction.cascade',
                                   serverpodProtocolUrl(serverCode)),
+                              'matchType': literalNull,
                             });
                           }(),
                       ]),
                       'indexes': literalList([
+                        refer('IndexDefinition',
+                                serverpodProtocolUrl(serverCode))
+                            .call([], {
+                          'indexName': literalString(
+                              '${classDefinition.tableName!}_pkey'),
+                          'tableSpace': literalNull,
+                          'elements': literalList([
+                            refer('IndexElementDefinition',
+                                    serverpodProtocolUrl(serverCode))
+                                .call([], {
+                              'type': refer('IndexElementDefinitionType.column',
+                                  serverpodProtocolUrl(serverCode)),
+                              'definition': literalString('id'),
+                            }),
+                          ]),
+                          'type': literalString('btree'),
+                          'isUnique': literalTrue,
+                          'isPrimary': literalTrue,
+                        }),
                         for (var index
                             in classDefinition.indexes ?? <IndexDefinition>[])
                           refer('IndexDefinition',
                                   serverpodProtocolUrl(serverCode))
                               .call([], {
                             'indexName': literalString(index.name),
-                            'fields': literalList([
+                            'tableSpace': literalNull,
+                            'elements': literalList([
                               for (var field in index.fields)
-                                literalString(field)
+                                refer('IndexElementDefinition',
+                                        serverpodProtocolUrl(serverCode))
+                                    .call([], {
+                                  'type': refer(
+                                      'IndexElementDefinitionType.column',
+                                      serverpodProtocolUrl(serverCode)),
+                                  'definition': literalString(field),
+                                })
                             ]),
                             'type': literalString(index.type),
                             'isUnique': literalBool(index.unique),
+                            'isPrimary': literalFalse,
                           }),
                       ]),
                     }),
                 for (var module in config.modules)
-                  refer('Protocol.desiredDatabaseStructure',
+                  refer('Protocol.desiredDatabaseStructure.tables',
                           module.url(serverCode))
-                      .call([]).spread,
+                      .spread,
                 if (config.name != 'serverpod' &&
                     config.type == PackageType.server)
-                  refer('Protocol.desiredDatabaseStructure',
+                  refer('Protocol.desiredDatabaseStructure.tables',
                           serverpodProtocolUrl(serverCode))
-                      .call([]).spread,
+                      .spread,
               ]),
             }).code,
         ),

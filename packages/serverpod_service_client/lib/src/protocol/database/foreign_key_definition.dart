@@ -12,11 +12,12 @@ import '../protocol.dart' as _i2;
 class ForeignKeyDefinition extends _i1.SerializableEntity {
   ForeignKeyDefinition({
     required this.constraintName,
-    required this.column,
+    required this.columns,
     required this.referenceTable,
-    required this.referenceColumn,
+    required this.referenceColumns,
     this.onUpdate,
     this.onDelete,
+    this.matchType,
   });
 
   factory ForeignKeyDefinition.fromJson(
@@ -26,30 +27,32 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
     return ForeignKeyDefinition(
       constraintName: serializationManager
           .deserialize<String>(jsonSerialization['constraintName']),
-      column:
-          serializationManager.deserialize<String>(jsonSerialization['column']),
+      columns: serializationManager
+          .deserialize<List<String>>(jsonSerialization['columns']),
       referenceTable: serializationManager
           .deserialize<String>(jsonSerialization['referenceTable']),
-      referenceColumn: serializationManager
-          .deserialize<String>(jsonSerialization['referenceColumn']),
+      referenceColumns: serializationManager
+          .deserialize<List<String>>(jsonSerialization['referenceColumns']),
       onUpdate: serializationManager
           .deserialize<_i2.ForeignKeyAction?>(jsonSerialization['onUpdate']),
       onDelete: serializationManager
           .deserialize<_i2.ForeignKeyAction?>(jsonSerialization['onDelete']),
+      matchType: serializationManager.deserialize<_i2.ForeignKeyMatchType?>(
+          jsonSerialization['matchType']),
     );
   }
 
   /// The name of the constraint.
   String constraintName;
 
-  /// The constraint column
-  String column;
+  /// The constraint columns
+  List<String> columns;
 
   /// The table of the reference.
   String referenceTable;
 
   /// The column of the reference in the [referenceTable].
-  String referenceColumn;
+  List<String> referenceColumns;
 
   /// The action, when the referred row is updated.
   _i2.ForeignKeyAction? onUpdate;
@@ -57,15 +60,19 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
   /// The action, when the referred row is deleted.
   _i2.ForeignKeyAction? onDelete;
 
+  /// The match type of the foreign key
+  _i2.ForeignKeyMatchType? matchType;
+
   @override
   Map<String, dynamic> toJson() {
     return {
       'constraintName': constraintName,
-      'column': column,
+      'columns': columns,
       'referenceTable': referenceTable,
-      'referenceColumn': referenceColumn,
+      'referenceColumns': referenceColumns,
       'onUpdate': onUpdate,
       'onDelete': onDelete,
+      'matchType': matchType,
     };
   }
 }

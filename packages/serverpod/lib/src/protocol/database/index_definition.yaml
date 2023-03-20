@@ -5,9 +5,16 @@ class: IndexDefinition
 fields:
   ### The user defined name of the index
   indexName: String
-  ### The fields, that are a part of this index.
-  fields: List<String>
+  ### The tablespace this index is stored in.
+  ### If null, the index is in the databases default tablespace.
+  tableSpace: String?
+  ### The elements, that are a part of this index.
+  elements: List<IndexElementDefinition>
   ### The type of the index
   type: String
   ### Whether the index is unique.
   isUnique: bool
+  ### Whether this index is the one for the primary key.
+  isPrimary: bool
+  ### The predicate of this partial index, if it is one.
+  predicate: String?

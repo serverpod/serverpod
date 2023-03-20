@@ -11,9 +11,6 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// All the types, that are possible for columns.
 /// Contains all the values of [TypeDefinition.databaseType]
 enum ColumnType with _i1.SerializableEntity {
-  /// Used for auto incrementing ids
-  serial,
-
   /// Dart type: [String]
   text,
 
@@ -48,26 +45,24 @@ enum ColumnType with _i1.SerializableEntity {
   static ColumnType? fromJson(int index) {
     switch (index) {
       case 0:
-        return serial;
-      case 1:
         return text;
-      case 2:
+      case 1:
         return boolean;
-      case 3:
+      case 2:
         return integer;
-      case 4:
+      case 3:
         return doublePrecision;
-      case 5:
+      case 4:
         return timestampWithoutTimeZone;
-      case 6:
+      case 5:
         return bytea;
-      case 7:
+      case 6:
         return bigint;
-      case 8:
+      case 7:
         return uuid;
-      case 9:
+      case 8:
         return json;
-      case 10:
+      case 9:
         return unknown;
       default:
         return null;

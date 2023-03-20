@@ -14,8 +14,9 @@ class TableDefinition extends _i1.SerializableEntity {
   TableDefinition({
     required this.name,
     required this.schema,
+    this.tableSpace,
+    this.defaultExpression,
     required this.columns,
-    this.primaryKey,
     required this.foreignKeys,
     required this.indexes,
   });
@@ -28,10 +29,12 @@ class TableDefinition extends _i1.SerializableEntity {
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       schema:
           serializationManager.deserialize<String>(jsonSerialization['schema']),
+      tableSpace: serializationManager
+          .deserialize<String?>(jsonSerialization['tableSpace']),
+      defaultExpression: serializationManager
+          .deserialize<String?>(jsonSerialization['defaultExpression']),
       columns: serializationManager.deserialize<List<_i2.ColumnDefinition>>(
           jsonSerialization['columns']),
-      primaryKey: serializationManager
-          .deserialize<List<String>?>(jsonSerialization['primaryKey']),
       foreignKeys:
           serializationManager.deserialize<List<_i2.ForeignKeyDefinition>>(
               jsonSerialization['foreignKeys']),
@@ -46,11 +49,15 @@ class TableDefinition extends _i1.SerializableEntity {
   /// The schema this table is in.
   String schema;
 
+  /// The tablespace this table is stored in.
+  /// If null, the table is in the databases default tablespace.
+  String? tableSpace;
+
+  /// Default expression of the column
+  String? defaultExpression;
+
   /// All the columns of this table.
   List<_i2.ColumnDefinition> columns;
-
-  /// The elements are the columns.
-  List<String>? primaryKey;
 
   /// All the foreign keys.
   List<_i2.ForeignKeyDefinition> foreignKeys;
@@ -63,8 +70,9 @@ class TableDefinition extends _i1.SerializableEntity {
     return {
       'name': name,
       'schema': schema,
+      'tableSpace': tableSpace,
+      'defaultExpression': defaultExpression,
       'columns': columns,
-      'primaryKey': primaryKey,
       'foreignKeys': foreignKeys,
       'indexes': indexes,
     };

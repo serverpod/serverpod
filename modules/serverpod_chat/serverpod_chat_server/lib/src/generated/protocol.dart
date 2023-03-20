@@ -99,15 +99,34 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
+          indexName: 'serverpod_chat_message_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
           indexName: 'serverpod_chat_message_channel_idx',
-          fields: ['channel'],
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'channel',
+            )
+          ],
           type: 'btree',
           isUnique: false,
-        )
+          isPrimary: false,
+        ),
       ],
     ),
     _i2.TableDefinition(
@@ -135,21 +154,41 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_chat_read_message_channel_user_idx',
-          fields: [
-            'channel',
-            'userId',
+          indexName: 'serverpod_chat_read_message_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
           ],
           type: 'btree',
           isUnique: true,
-        )
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_chat_read_message_channel_user_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'channel',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
       ],
     ),
-    ..._i3.Protocol.desiredDatabaseStructure(),
+    ..._i3.Protocol.desiredDatabaseStructure.tables,
   ]);
 
   @override

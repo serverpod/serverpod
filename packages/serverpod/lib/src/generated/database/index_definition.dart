@@ -7,14 +7,18 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) index in the database.
 class IndexDefinition extends _i1.SerializableEntity {
   IndexDefinition({
     required this.indexName,
-    required this.fields,
+    this.tableSpace,
+    required this.elements,
     required this.type,
     required this.isUnique,
+    required this.isPrimary,
+    this.predicate,
   });
 
   factory IndexDefinition.fromJson(
@@ -24,19 +28,30 @@ class IndexDefinition extends _i1.SerializableEntity {
     return IndexDefinition(
       indexName: serializationManager
           .deserialize<String>(jsonSerialization['indexName']),
-      fields: serializationManager
-          .deserialize<List<String>>(jsonSerialization['fields']),
+      tableSpace: serializationManager
+          .deserialize<String?>(jsonSerialization['tableSpace']),
+      elements:
+          serializationManager.deserialize<List<_i2.IndexElementDefinition>>(
+              jsonSerialization['elements']),
       type: serializationManager.deserialize<String>(jsonSerialization['type']),
       isUnique:
           serializationManager.deserialize<bool>(jsonSerialization['isUnique']),
+      isPrimary: serializationManager
+          .deserialize<bool>(jsonSerialization['isPrimary']),
+      predicate: serializationManager
+          .deserialize<String?>(jsonSerialization['predicate']),
     );
   }
 
   /// The user defined name of the index
   String indexName;
 
-  /// The fields, that are a part of this index.
-  List<String> fields;
+  /// The tablespace this index is stored in.
+  /// If null, the index is in the databases default tablespace.
+  String? tableSpace;
+
+  /// The elements, that are a part of this index.
+  List<_i2.IndexElementDefinition> elements;
 
   /// The type of the index
   String type;
@@ -44,13 +59,22 @@ class IndexDefinition extends _i1.SerializableEntity {
   /// Whether the index is unique.
   bool isUnique;
 
+  /// Whether this index is the one for the primary key.
+  bool isPrimary;
+
+  /// The predicate of this partial index, if it is one.
+  String? predicate;
+
   @override
   Map<String, dynamic> toJson() {
     return {
       'indexName': indexName,
-      'fields': fields,
+      'tableSpace': tableSpace,
+      'elements': elements,
       'type': type,
       'isUnique': isUnique,
+      'isPrimary': isPrimary,
+      'predicate': predicate,
     };
   }
 
@@ -58,9 +82,12 @@ class IndexDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'indexName': indexName,
-      'fields': fields,
+      'tableSpace': tableSpace,
+      'elements': elements,
       'type': type,
       'isUnique': isUnique,
+      'isPrimary': isPrimary,
+      'predicate': predicate,
     };
   }
 }

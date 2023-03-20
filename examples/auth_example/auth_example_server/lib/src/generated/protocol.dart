@@ -23,8 +23,8 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: [
-    ..._i3.Protocol.desiredDatabaseStructure(),
-    ..._i2.Protocol.desiredDatabaseStructure(),
+    ..._i3.Protocol.desiredDatabaseStructure.tables,
+    ..._i2.Protocol.desiredDatabaseStructure.tables,
   ]);
 
   @override

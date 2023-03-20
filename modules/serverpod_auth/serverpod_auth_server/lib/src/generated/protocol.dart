@@ -71,15 +71,34 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_email_auth_email',
-          fields: ['email'],
+          indexName: 'serverpod_email_auth_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
           type: 'btree',
           isUnique: true,
-        )
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_auth_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
       ],
     ),
     _i2.TableDefinition(
@@ -112,15 +131,34 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_email_auth_create_account_request_idx',
-          fields: ['email'],
+          indexName: 'serverpod_email_create_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
           type: 'btree',
           isUnique: true,
-        )
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_auth_create_account_request_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
       ],
     ),
     _i2.TableDefinition(
@@ -148,20 +186,46 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
+          indexName: 'serverpod_email_failed_sign_in_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
           indexName: 'serverpod_email_failed_sign_in_email_idx',
-          fields: ['email'],
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_failed_sign_in_time_idx',
-          fields: ['time'],
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'time',
+            )
+          ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
         ),
       ],
     ),
@@ -190,15 +254,34 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_email_reset_verification_idx',
-          fields: ['verificationCode'],
+          indexName: 'serverpod_email_reset_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
           type: 'btree',
           isUnique: true,
-        )
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_reset_verification_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'verificationCode',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
       ],
     ),
     _i2.TableDefinition(
@@ -221,15 +304,34 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_google_refresh_token_userId_idx',
-          fields: ['userId'],
+          indexName: 'serverpod_google_refresh_token_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
           type: 'btree',
           isUnique: true,
-        )
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_google_refresh_token_userId_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
       ],
     ),
     _i2.TableDefinition(
@@ -257,18 +359,38 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
+          indexName: 'serverpod_user_image_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
           indexName: 'serverpod_user_image_user_id',
-          fields: [
-            'userId',
-            'version',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'version',
+            ),
           ],
           type: 'btree',
           isUnique: false,
-        )
+          isPrimary: false,
+        ),
       ],
     ),
     _i2.TableDefinition(
@@ -321,20 +443,46 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_user_info_user_identifier',
-          fields: ['userIdentifier'],
+          indexName: 'serverpod_user_info_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
           type: 'btree',
           isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_info_user_identifier',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_user_info_email',
-          fields: ['email'],
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
         ),
       ],
     ),

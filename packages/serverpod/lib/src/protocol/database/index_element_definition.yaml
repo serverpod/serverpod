@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+
+### Defines an element of an index.
+class: IndexElementDefinition
+fields:
+  ### The type of this index element.
+  type: IndexElementDefinitionType
+  ### Depending on the [type], this is either a column name or an expression.
+  definition: String

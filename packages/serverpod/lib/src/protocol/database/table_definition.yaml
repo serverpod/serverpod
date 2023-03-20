@@ -10,11 +10,13 @@ fields:
   name: String
   ### The schema this table is in.
   schema: String
+  ### The tablespace this table is stored in.
+  ### If null, the table is in the databases default tablespace.
+  tableSpace: String?
+  ### Default expression of the column
+  defaultExpression: String?
   ### All the columns of this table.
   columns: List<ColumnDefinition>
-  ### The elements are the columns.
-  #! See the note at the top of the file.
-  primaryKey: List<String>?
   ### All the foreign keys.
   #! See the note at the top of the file.
   foreignKeys: List<ForeignKeyDefinition>

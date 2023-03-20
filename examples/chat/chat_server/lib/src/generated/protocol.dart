@@ -45,13 +45,26 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
         ),
       ],
-      primaryKey: ['id'],
       foreignKeys: [],
-      indexes: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'channel_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
     ),
-    ..._i3.Protocol.desiredDatabaseStructure(),
-    ..._i4.Protocol.desiredDatabaseStructure(),
-    ..._i2.Protocol.desiredDatabaseStructure(),
+    ..._i3.Protocol.desiredDatabaseStructure.tables,
+    ..._i4.Protocol.desiredDatabaseStructure.tables,
+    ..._i2.Protocol.desiredDatabaseStructure.tables,
   ]);
 
   @override

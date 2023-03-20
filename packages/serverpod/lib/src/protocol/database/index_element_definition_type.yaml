@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+
+### Used to specify how the definition of an [IndexElementDefinition]
+### should be interpreted.
+enum: IndexElementDefinitionType
+values:
+  ### Indicates, that the definition of an [IndexElementDefinition]
+  ### referees to a column.
+  - column
+  ### Indicates, that the definition of an [IndexElementDefinition]
+  ### is a (complex) expression.
+  - expression

@@ -4,8 +4,6 @@
 ### Contains all the values of [TypeDefinition.databaseType]
 enum: ColumnType
 values:
-  ### Used for auto incrementing ids
-  - serial
   ### Dart type: [String]
   - text
   ### Dart type: [bool]
