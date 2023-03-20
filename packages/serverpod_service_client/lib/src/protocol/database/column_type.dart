@@ -24,10 +24,10 @@ enum ColumnType with _i1.SerializableEntity {
   integer,
 
   /// Dart type: [double]
-  double_precision,
+  doublePrecision,
 
   /// Dart type: [DateTime]
-  timestamp_without_time_zone,
+  timestampWithoutTimeZone,
 
   /// Dart type: [ByteData]
   bytea,
@@ -37,6 +37,9 @@ enum ColumnType with _i1.SerializableEntity {
 
   /// Dart type: [UuidValue]
   uuid,
+
+  /// Esp. for serializable objects.
+  json,
 
   /// Used for unknown types, that have never been
   /// used by Serverpod.
@@ -53,9 +56,9 @@ enum ColumnType with _i1.SerializableEntity {
       case 3:
         return integer;
       case 4:
-        return double_precision;
+        return doublePrecision;
       case 5:
-        return timestamp_without_time_zone;
+        return timestampWithoutTimeZone;
       case 6:
         return bytea;
       case 7:
@@ -63,6 +66,8 @@ enum ColumnType with _i1.SerializableEntity {
       case 8:
         return uuid;
       case 9:
+        return json;
+      case 10:
         return unknown;
       default:
         return null;

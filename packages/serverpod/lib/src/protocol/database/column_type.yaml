@@ -13,15 +13,17 @@ values:
   ### Dart type: [int]
   - integer
   ### Dart type: [double]
-  - double_precision
+  - doublePrecision
   ### Dart type: [DateTime]
-  - timestamp_without_time_zone
+  - timestampWithoutTimeZone
   ### Dart type: [ByteData]
   - bytea
   ### Dart type: [Duration]
   - bigint
   ### Dart type: [UuidValue]
   - uuid
+  ### Esp. for serializable objects.
+  - json
   ### Used for unknown types, that have never been
   ### used by Serverpod.
   - unknown

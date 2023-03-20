@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
+import 'package:super_string/super_string.dart';
 
 import 'class_generator_dart.dart';
 import 'config.dart';
@@ -168,6 +169,16 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'uuid';
 
     return 'json';
+  }
+
+  String get databaseTypeEnum {
+    return databaseType.split(' ').fold('', (previousValue, element) {
+      if (previousValue.isEmpty) {
+        return element;
+      } else {
+        return '$previousValue${element.capitalize()}';
+      }
+    });
   }
 
   String get columnType {
