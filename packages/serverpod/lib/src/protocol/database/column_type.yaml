@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+
+### All the types, that are possible for columns.
+### Contains all the values of [TypeDefinition.databaseType]
+enum: ColumnType
+values:
+  ### Used for auto incrementing ids
+  - serial
+  ### Dart type: [String]
+  - text
+  ### Dart type: [bool]
+  - boolean
+  ### Dart type: [int]
+  - integer
+  ### Dart type: [double]
+  - double_precision
+  ### Dart type: [DateTime]
+  - timestamp_without_time_zone
+  ### Dart type: [ByteData]
+  - bytea
+  ### Dart type: [Duration]
+  - bigint
+  ### Dart type: [UuidValue]
+  - uuid
+  ### Used for unknown types, that have never been
+  ### used by Serverpod.
+  - unknown

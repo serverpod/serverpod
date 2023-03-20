@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+
+class: ForeignKeyDefinition
+fields:
+  ### The name of the constraint.
+  constraintName: String
+  ### The constraint column
+  column: String
+  ### The table of the reference.
+  referenceTable: String
+  ### The column of the reference in the [referenceTable].
+  referenceColumn: String
+  ### The action, when the referred row is updated.
+  onUpdate: ForeignKeyAction?
+  ### The action, when the referred row is deleted.
+  onDelete: ForeignKeyAction?

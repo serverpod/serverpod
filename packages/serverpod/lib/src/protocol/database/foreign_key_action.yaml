@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+enum: ForeignKeyAction
+values:
+  - setNull
+  - setDefault
+  - restrict
+  - noAction
+  - cascade

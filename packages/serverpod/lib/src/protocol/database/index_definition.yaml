@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+
+### The definition of a (desired) index in the database.
+class: IndexDefinition
+fields:
+  ### The user defined name of the index
+  indexName: String
+  ### The fields, that are a part of this index.
+  fields: List<String>
+  ### The type of the index
+  type: String
+  ### Whether the index is unique.
+  isUnique: bool
