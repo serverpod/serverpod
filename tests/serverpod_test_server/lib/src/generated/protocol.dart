@@ -929,4 +929,249 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  static List<_i29.TableDefinition> getDesiredDatabaseStructure() => [
+        _i29.TableDefinition(
+          name: 'object_field_scopes',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'normal',
+              columnType: _i29.ColumnType.text,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'api',
+              columnType: _i29.ColumnType.text,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'database',
+              columnType: _i29.ColumnType.text,
+              isNullable: true,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'object_with_bytedata',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'byteData',
+              columnType: _i29.ColumnType.bytea,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'object_with_duration',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'duration',
+              columnType: _i29.ColumnType.bigint,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'object_with_enum',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'testEnum',
+              columnType: _i29.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'nullableEnum',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'enumList',
+              columnType: _i29.ColumnType.json,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'nullableEnumList',
+              columnType: _i29.ColumnType.json,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'enumListList',
+              columnType: _i29.ColumnType.json,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'object_with_object',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'data',
+              columnType: _i29.ColumnType.json,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'nullableData',
+              columnType: _i29.ColumnType.json,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'dataList',
+              columnType: _i29.ColumnType.json,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'nullableDataList',
+              columnType: _i29.ColumnType.json,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'listWithNullableData',
+              columnType: _i29.ColumnType.json,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'nullableListWithNullableData',
+              columnType: _i29.ColumnType.json,
+              isNullable: true,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'object_with_uuid',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'uuid',
+              columnType: _i29.ColumnType.uuid,
+              isNullable: false,
+            ),
+            _i29.ColumnDefinition(
+              name: 'uuidNullable',
+              columnType: _i29.ColumnType.uuid,
+              isNullable: true,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'simple_data',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'num',
+              columnType: _i29.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i29.TableDefinition(
+          name: 'types',
+          columns: [
+            _i29.ColumnDefinition(
+              name: 'id',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'anInt',
+              columnType: _i29.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aBool',
+              columnType: _i29.ColumnType.boolean,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aDouble',
+              columnType: _i29.ColumnType.doublePrecision,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aDateTime',
+              columnType: _i29.ColumnType.timestampWithoutTimeZone,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aString',
+              columnType: _i29.ColumnType.text,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aByteData',
+              columnType: _i29.ColumnType.bytea,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aDuration',
+              columnType: _i29.ColumnType.bigint,
+              isNullable: true,
+            ),
+            _i29.ColumnDefinition(
+              name: 'aUuid',
+              columnType: _i29.ColumnType.uuid,
+              isNullable: true,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i27.Protocol.getDesiredDatabaseStructure(),
+        _i28.Protocol.getDesiredDatabaseStructure(),
+        _i29.Protocol.getDesiredDatabaseStructure(),
+      ];
 }

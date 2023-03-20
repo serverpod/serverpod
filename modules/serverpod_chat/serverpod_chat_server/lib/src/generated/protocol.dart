@@ -269,4 +269,112 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  static List<_i15.TableDefinition> getDesiredDatabaseStructure() => [
+        _i15.TableDefinition(
+          name: 'serverpod_chat_message',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'channel',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'message',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'time',
+              columnType: _i15.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'sender',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'senderInfo',
+              columnType: _i15.ColumnType.json,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'removed',
+              columnType: _i15.ColumnType.boolean,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'clientMessageId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'sent',
+              columnType: _i15.ColumnType.boolean,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'attachments',
+              columnType: _i15.ColumnType.json,
+              isNullable: true,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_chat_message_channel_idx',
+              fields: ['channel'],
+              type: 'btree',
+              isUnique: false,
+            )
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_chat_read_message',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'channel',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'lastReadMessageId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_chat_read_message_channel_user_idx',
+              fields: [
+                'channel',
+                'userId',
+              ],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i14.Protocol.getDesiredDatabaseStructure(),
+        _i15.Protocol.getDesiredDatabaseStructure(),
+      ];
 }

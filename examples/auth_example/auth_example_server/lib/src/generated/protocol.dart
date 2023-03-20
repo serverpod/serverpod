@@ -87,4 +87,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  static List<_i4.TableDefinition> getDesiredDatabaseStructure() => [
+        _i3.Protocol.getDesiredDatabaseStructure(),
+        _i4.Protocol.getDesiredDatabaseStructure(),
+      ];
 }

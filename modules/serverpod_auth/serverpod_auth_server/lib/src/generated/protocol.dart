@@ -269,4 +269,293 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  static List<_i15.TableDefinition> getDesiredDatabaseStructure() => [
+        _i15.TableDefinition(
+          name: 'serverpod_email_auth',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'email',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'hash',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_email_auth_email',
+              fields: ['email'],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_email_create_request',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userName',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'email',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'hash',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'verificationCode',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_email_auth_create_account_request_idx',
+              fields: ['email'],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_email_failed_sign_in',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'email',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'time',
+              columnType: _i15.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'ipAddress',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_email_failed_sign_in_email_idx',
+              fields: ['email'],
+              type: 'btree',
+              isUnique: false,
+            ),
+            _i15.IndexDefinition(
+              indexName: 'serverpod_email_failed_sign_in_time_idx',
+              fields: ['time'],
+              type: 'btree',
+              isUnique: false,
+            ),
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_email_reset',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'verificationCode',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'expiration',
+              columnType: _i15.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_email_reset_verification_idx',
+              fields: ['verificationCode'],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_google_refresh_token',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'refreshToken',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_google_refresh_token_userId_idx',
+              fields: ['userId'],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_user_image',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userId',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'version',
+              columnType: _i15.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'url',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_user_image_user_id',
+              fields: [
+                'userId',
+                'version',
+              ],
+              type: 'btree',
+              isUnique: false,
+            )
+          ],
+        ),
+        _i15.TableDefinition(
+          name: 'serverpod_user_info',
+          columns: [
+            _i15.ColumnDefinition(
+              name: 'id',
+              columnType: _i15.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userIdentifier',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'userName',
+              columnType: _i15.ColumnType.text,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'fullName',
+              columnType: _i15.ColumnType.text,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'email',
+              columnType: _i15.ColumnType.text,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'created',
+              columnType: _i15.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'imageUrl',
+              columnType: _i15.ColumnType.text,
+              isNullable: true,
+            ),
+            _i15.ColumnDefinition(
+              name: 'scopeNames',
+              columnType: _i15.ColumnType.json,
+              isNullable: false,
+            ),
+            _i15.ColumnDefinition(
+              name: 'blocked',
+              columnType: _i15.ColumnType.boolean,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i15.IndexDefinition(
+              indexName: 'serverpod_user_info_user_identifier',
+              fields: ['userIdentifier'],
+              type: 'btree',
+              isUnique: true,
+            ),
+            _i15.IndexDefinition(
+              indexName: 'serverpod_user_info_email',
+              fields: ['email'],
+              type: 'btree',
+              isUnique: false,
+            ),
+          ],
+        ),
+        _i15.Protocol.getDesiredDatabaseStructure(),
+      ];
 }

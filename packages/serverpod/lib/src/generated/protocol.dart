@@ -41,6 +41,7 @@ import 'session_log_filter.dart' as _i31;
 import 'session_log_info.dart' as _i32;
 import 'session_log_result.dart' as _i33;
 import 'protocol.dart' as _i34;
+import 'package:serverpod/protocol.dart' as _i35;
 export 'auth_key.dart';
 export 'cache_info.dart';
 export 'caches_info.dart';
@@ -618,4 +619,731 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  static List<_i35.TableDefinition> getDesiredDatabaseStructure() => [
+        _i35.TableDefinition(
+          name: 'serverpod_auth_key',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'userId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'hash',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'key',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'scopeNames',
+              columnType: _i35.ColumnType.json,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'method',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_auth_key_userId_idx',
+              fields: ['userId'],
+              type: 'btree',
+              isUnique: false,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_cloud_storage',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'storageId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'path',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'addedTime',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'expiration',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'byteData',
+              columnType: _i35.ColumnType.bytea,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'verified',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_cloud_storage_path_idx',
+              fields: [
+                'storageId',
+                'path',
+              ],
+              type: 'btree',
+              isUnique: true,
+            ),
+            _i35.IndexDefinition(
+              indexName: 'serverpod_cloud_storage_expiration',
+              fields: ['expiration'],
+              type: 'btree',
+              isUnique: false,
+            ),
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_cloud_storage_direct_upload',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'storageId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'path',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'expiration',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'authKey',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_cloud_storage_direct_upload_storage_path',
+              fields: [
+                'storageId',
+                'path',
+              ],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_future_call',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'name',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'time',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serializedObject',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'identifier',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_future_call_time_idx',
+              fields: ['time'],
+              type: 'btree',
+              isUnique: false,
+            ),
+            _i35.IndexDefinition(
+              indexName: 'serverpod_future_call_serverId_idx',
+              fields: ['serverId'],
+              type: 'btree',
+              isUnique: false,
+            ),
+            _i35.IndexDefinition(
+              indexName: 'serverpod_future_call_identifier_idx',
+              fields: ['identifier'],
+              type: 'btree',
+              isUnique: false,
+            ),
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_log',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'sessionLogId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'messageId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'reference',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'time',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'logLevel',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'message',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'error',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'stackTrace',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'order',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [
+            _i35.ForeignKeyDefinition(
+              constraintName: 'serverpod_log_fk_0',
+              column: 'sessionLogId',
+              referenceTable: 'serverpod_session_log',
+              referenceColumn: 'id',
+              onUpdate: null,
+              onDelete: _i35.ForeignKeyAction.cascade,
+            )
+          ],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_log_sessionLogId_idx',
+              fields: ['sessionLogId'],
+              type: 'btree',
+              isUnique: false,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_message_log',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'sessionLogId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'messageId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'endpoint',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'messageName',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'duration',
+              columnType: _i35.ColumnType.doublePrecision,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'error',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'stackTrace',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'slow',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'order',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [
+            _i35.ForeignKeyDefinition(
+              constraintName: 'serverpod_message_log_fk_0',
+              column: 'sessionLogId',
+              referenceTable: 'serverpod_session_log',
+              referenceColumn: 'id',
+              onUpdate: null,
+              onDelete: _i35.ForeignKeyAction.cascade,
+            )
+          ],
+          indexes: [],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_method',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'endpoint',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'method',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_method_endpoint_method_idx',
+              fields: [
+                'endpoint',
+                'method',
+              ],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_query_log',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'sessionLogId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'messageId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'query',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'duration',
+              columnType: _i35.ColumnType.doublePrecision,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'numRows',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'error',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'stackTrace',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'slow',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'order',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [
+            _i35.ForeignKeyDefinition(
+              constraintName: 'serverpod_query_log_fk_0',
+              column: 'sessionLogId',
+              referenceTable: 'serverpod_session_log',
+              referenceColumn: 'id',
+              onUpdate: null,
+              onDelete: _i35.ForeignKeyAction.cascade,
+            )
+          ],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_query_log_sessionLogId_idx',
+              fields: ['sessionLogId'],
+              type: 'btree',
+              isUnique: false,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_readwrite_test',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'number',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_runtime_settings',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'logSettings',
+              columnType: _i35.ColumnType.json,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'logSettingsOverrides',
+              columnType: _i35.ColumnType.json,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'logServiceCalls',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'logMalformedCalls',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_health_connection_info',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'timestamp',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'active',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'closing',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'idle',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'granularity',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_health_connection_info_timestamp_idx',
+              fields: [
+                'timestamp',
+                'serverId',
+                'granularity',
+              ],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_health_metric',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'name',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'timestamp',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'isHealthy',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'value',
+              columnType: _i35.ColumnType.doublePrecision,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'granularity',
+              columnType: _i35.ColumnType.integer,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_health_metric_timestamp_idx',
+              fields: [
+                'timestamp',
+                'serverId',
+                'name',
+                'granularity',
+              ],
+              type: 'btree',
+              isUnique: true,
+            )
+          ],
+        ),
+        _i35.TableDefinition(
+          name: 'serverpod_session_log',
+          columns: [
+            _i35.ColumnDefinition(
+              name: 'id',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'serverId',
+              columnType: _i35.ColumnType.text,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'time',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+            _i35.ColumnDefinition(
+              name: 'module',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'endpoint',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'method',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'duration',
+              columnType: _i35.ColumnType.doublePrecision,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'numQueries',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'slow',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'error',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'stackTrace',
+              columnType: _i35.ColumnType.text,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'authenticatedUserId',
+              columnType: _i35.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'isOpen',
+              columnType: _i35.ColumnType.boolean,
+              isNullable: true,
+            ),
+            _i35.ColumnDefinition(
+              name: 'touched',
+              columnType: _i35.ColumnType.timestampWithoutTimeZone,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [
+            _i35.IndexDefinition(
+              indexName: 'serverpod_session_log_serverid_idx',
+              fields: ['serverId'],
+              type: 'btree',
+              isUnique: false,
+            ),
+            _i35.IndexDefinition(
+              indexName: 'serverpod_session_log_touched_idx',
+              fields: ['touched'],
+              type: 'btree',
+              isUnique: false,
+            ),
+            _i35.IndexDefinition(
+              indexName: 'serverpod_session_log_isopen_idx',
+              fields: ['isOpen'],
+              type: 'btree',
+              isUnique: false,
+            ),
+          ],
+        ),
+      ];
 }

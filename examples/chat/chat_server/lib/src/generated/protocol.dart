@@ -114,4 +114,33 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  static List<_i6.TableDefinition> getDesiredDatabaseStructure() => [
+        _i6.TableDefinition(
+          name: 'channel',
+          columns: [
+            _i6.ColumnDefinition(
+              name: 'id',
+              columnType: _i6.ColumnType.integer,
+              isNullable: true,
+            ),
+            _i6.ColumnDefinition(
+              name: 'name',
+              columnType: _i6.ColumnType.text,
+              isNullable: false,
+            ),
+            _i6.ColumnDefinition(
+              name: 'channel',
+              columnType: _i6.ColumnType.text,
+              isNullable: false,
+            ),
+          ],
+          primaryKey: ['id'],
+          foreignKeys: [],
+          indexes: [],
+        ),
+        _i4.Protocol.getDesiredDatabaseStructure(),
+        _i5.Protocol.getDesiredDatabaseStructure(),
+        _i6.Protocol.getDesiredDatabaseStructure(),
+      ];
 }
