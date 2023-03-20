@@ -20,7 +20,7 @@ dependencies:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^VERSION
     path: ../serverpod_auth_shared_flutter
-  sign_in_with_apple: ^3.3.0
+  sign_in_with_apple: ^4.3.0
 
 dev_dependencies:
   flutter_test:

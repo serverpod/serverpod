@@ -20,7 +20,7 @@ dependencies:
   googleapis: ^7.0.0
   googleapis_auth: ^1.3.0
   http: ^0.13.0
-  image: ^3.0.2
+  image: ^4.0.15
   jose: ^0.3.2
 
 dev_dependencies:
