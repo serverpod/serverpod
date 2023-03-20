@@ -1078,11 +1078,11 @@ class ClassGeneratorDart extends ClassGenerator {
               for (var module in config.modules)
                 refer('Protocol.getDesiredDatabaseStructure',
                         module.url(serverCode))
-                    .call([]),
+                    .call([]).spread,
               if (config.name != 'serverpod')
                 refer('Protocol.getDesiredDatabaseStructure',
                         serverpodProtocolUrl(serverCode))
-                    .call([]),
+                    .call([]).spread,
             ]).code,
         ),
     ]);

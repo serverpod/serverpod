@@ -556,6 +556,6 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
           ],
         ),
-        _i15.Protocol.getDesiredDatabaseStructure(),
+        ..._i15.Protocol.getDesiredDatabaseStructure(),
       ];
 }

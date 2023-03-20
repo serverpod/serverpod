@@ -139,8 +139,8 @@ class Protocol extends _i1.SerializationManagerServer {
           foreignKeys: [],
           indexes: [],
         ),
-        _i4.Protocol.getDesiredDatabaseStructure(),
-        _i5.Protocol.getDesiredDatabaseStructure(),
-        _i6.Protocol.getDesiredDatabaseStructure(),
+        ..._i4.Protocol.getDesiredDatabaseStructure(),
+        ..._i5.Protocol.getDesiredDatabaseStructure(),
+        ..._i6.Protocol.getDesiredDatabaseStructure(),
       ];
 }
