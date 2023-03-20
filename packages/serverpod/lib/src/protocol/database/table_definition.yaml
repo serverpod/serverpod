@@ -13,8 +13,6 @@ fields:
   ### The tablespace this table is stored in.
   ### If null, the table is in the databases default tablespace.
   tableSpace: String?
-  ### Default expression of the column
-  defaultExpression: String?
   ### All the columns of this table.
   columns: List<ColumnDefinition>
   ### All the foreign keys.

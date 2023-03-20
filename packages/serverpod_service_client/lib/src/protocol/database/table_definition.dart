@@ -15,7 +15,6 @@ class TableDefinition extends _i1.SerializableEntity {
     required this.name,
     required this.schema,
     this.tableSpace,
-    this.defaultExpression,
     required this.columns,
     required this.foreignKeys,
     required this.indexes,
@@ -31,8 +30,6 @@ class TableDefinition extends _i1.SerializableEntity {
           serializationManager.deserialize<String>(jsonSerialization['schema']),
       tableSpace: serializationManager
           .deserialize<String?>(jsonSerialization['tableSpace']),
-      defaultExpression: serializationManager
-          .deserialize<String?>(jsonSerialization['defaultExpression']),
       columns: serializationManager.deserialize<List<_i2.ColumnDefinition>>(
           jsonSerialization['columns']),
       foreignKeys:
@@ -53,9 +50,6 @@ class TableDefinition extends _i1.SerializableEntity {
   /// If null, the table is in the databases default tablespace.
   String? tableSpace;
 
-  /// Default expression of the column
-  String? defaultExpression;
-
   /// All the columns of this table.
   List<_i2.ColumnDefinition> columns;
 
@@ -71,7 +65,6 @@ class TableDefinition extends _i1.SerializableEntity {
       'name': name,
       'schema': schema,
       'tableSpace': tableSpace,
-      'defaultExpression': defaultExpression,
       'columns': columns,
       'foreignKeys': foreignKeys,
       'indexes': indexes,

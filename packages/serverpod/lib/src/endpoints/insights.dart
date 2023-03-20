@@ -273,6 +273,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND n.nspname = '$schemaName';
         );
       }));
     } catch (e) {
+      //TODO: remove this... Only used for debugging
       print(e);
       rethrow;
     }
