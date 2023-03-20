@@ -1079,7 +1079,8 @@ class ClassGeneratorDart extends ClassGenerator {
                 refer('Protocol.getDesiredDatabaseStructure',
                         module.url(serverCode))
                     .call([]).spread,
-              if (config.name != 'serverpod')
+              if (config.name != 'serverpod' &&
+                  config.type == PackageType.server)
                 refer('Protocol.getDesiredDatabaseStructure',
                         serverpodProtocolUrl(serverCode))
                     .call([]).spread,
