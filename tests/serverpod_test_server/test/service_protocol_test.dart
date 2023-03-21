@@ -1,4 +1,3 @@
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -440,7 +439,118 @@ void main() {
         expect(columnsWithScopes, containsAll(['int?', 'String', 'String?']));
       });
     });
+
+    group('current definition', () {
+      test('matches desired', () async {
+        var desired =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+        var current =
+            await serviceClient.insights.getCurrentDatabaseDefinition();
+
+        current.matchesDesired(desired);
+      });
+    });
   });
+}
+
+extension on service.DatabaseDefinition {
+  void matchesDesired(service.DatabaseDefinition desired) {
+    expect(name, isNotNull);
+    expect(tables, hasLength(desired.tables.length));
+    expect(tables.map((e) => e.name),
+        containsAll(desired.tables.map((e) => e.name)));
+
+    for (var table in tables) {
+      table.matchesDesired(
+          desired.tables.firstWhere((e) => e.name == table.name));
+    }
+  }
+}
+
+extension on service.TableDefinition {
+  void matchesDesired(service.TableDefinition desired) {
+    expect(name, desired.name);
+    expect(schema, desired.schema);
+    expect(desired.managed, isNotNull);
+    if (desired.managed!) {
+      expect(managed, isNull);
+      expect(tableSpace, desired.tableSpace);
+
+      expect(columns, hasLength(desired.columns.length));
+      expect(columns.map((e) => e.name),
+          containsAll(desired.columns.map((e) => e.name)));
+      for (var column in columns) {
+        column.matchesDesired(
+            desired.columns.firstWhere((e) => e.name == column.name));
+      }
+
+      expect(columns, hasLength(desired.columns.length));
+      expect(columns.map((e) => e.name),
+          containsAll(desired.columns.map((e) => e.name)));
+      for (var column in columns) {
+        column.matchesDesired(
+            desired.columns.firstWhere((e) => e.name == column.name));
+      }
+
+      expect(foreignKeys, hasLength(desired.foreignKeys.length));
+      expect(foreignKeys.map((e) => e.constraintName),
+          containsAll(desired.foreignKeys.map((e) => e.constraintName)));
+      for (var foreignKey in foreignKeys) {
+        foreignKey.matchesDesired(desired.foreignKeys
+            .firstWhere((e) => e.constraintName == foreignKey.constraintName));
+      }
+
+      expect(indexes, hasLength(desired.indexes.length));
+      expect(indexes.map((e) => e.indexName),
+          containsAll(desired.indexes.map((e) => e.indexName)));
+      for (var index in indexes) {
+        index.matchesDesired(
+            desired.indexes.firstWhere((e) => e.indexName == index.indexName));
+      }
+    }
+  }
+}
+
+extension on service.ColumnDefinition {
+  void matchesDesired(service.ColumnDefinition desired) {
+    expect(name, desired.name);
+    if (name != 'id') {
+      expect(columnDefault, desired.columnDefault);
+    }
+    expect(columnType, desired.columnType);
+    expect(dartType, isNull);
+    expect(isNullable, desired.isNullable);
+  }
+}
+
+extension on service.ForeignKeyDefinition {
+  void matchesDesired(service.ForeignKeyDefinition desired) {
+    expect(constraintName, desired.constraintName);
+    expect(matchType, desired.matchType ?? service.ForeignKeyMatchType.simple);
+    expect(onUpdate, desired.onUpdate ?? service.ForeignKeyAction.noAction);
+    expect(onDelete, desired.onDelete ?? service.ForeignKeyAction.noAction);
+    expect(referenceTable, desired.referenceTable);
+    expect(columns, hasLength(desired.columns.length));
+    expect(columns, containsAllInOrder(desired.columns));
+    expect(referenceColumns, hasLength(desired.referenceColumns.length));
+    expect(referenceColumns, containsAllInOrder(desired.referenceColumns));
+  }
+}
+
+extension on service.IndexDefinition {
+  void matchesDesired(service.IndexDefinition desired) {
+    expect(indexName, desired.indexName);
+    expect(tableSpace, desired.tableSpace);
+    expect(isPrimary, desired.isPrimary);
+    expect(isUnique, desired.isUnique);
+    expect(this.predicate, desired.predicate);
+    expect(type, desired.type);
+    expect(elements, hasLength(desired.elements.length));
+    for (var i = 0; i < elements.length; i++) {
+      expect(elements[i].type, desired.elements[i].type);
+      expect(elements[i].definition, desired.elements[i].definition);
+    }
+  }
 }
 
 class ServiceKeyManager extends AuthenticationKeyManager {
