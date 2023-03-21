@@ -862,16 +862,18 @@ class ClassGeneratorDart extends ClassGenerator {
                       'schema': literalString('public'),
                       'columns': literalList([
                         for (var column in classDefinition.fields)
-                          refer('ColumnDefinition',
-                                  serverpodProtocolUrl(serverCode))
-                              .call([], {
-                            'name': literalString(column.name),
-                            'columnType': refer(
-                                'ColumnType.${column.type.databaseTypeEnum}',
-                                serverpodProtocolUrl(serverCode)),
-                            'isNullable': literalBool(column.type.nullable),
-                            'dartType': literalString(column.type.toString()),
-                          }),
+                          if (column
+                              .shouldSerializeFieldForDatabase(serverCode))
+                            refer('ColumnDefinition',
+                                    serverpodProtocolUrl(serverCode))
+                                .call([], {
+                              'name': literalString(column.name),
+                              'columnType': refer(
+                                  'ColumnType.${column.type.databaseTypeEnum}',
+                                  serverpodProtocolUrl(serverCode)),
+                              'isNullable': literalBool(column.type.nullable),
+                              'dartType': literalString(column.type.toString()),
+                            }),
                       ]),
                       'foreignKeys': literalList([
                         for (var i = 0;

@@ -79,28 +79,10 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
-          name: 'senderInfo',
-          columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'module:auth:UserInfoPublic?',
-        ),
-        _i2.ColumnDefinition(
           name: 'removed',
           columnType: _i2.ColumnType.boolean,
           isNullable: false,
           dartType: 'bool',
-        ),
-        _i2.ColumnDefinition(
-          name: 'clientMessageId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sent',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: true,
-          dartType: 'bool?',
         ),
         _i2.ColumnDefinition(
           name: 'attachments',
