@@ -79,6 +79,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_field_scopes_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'normal',
@@ -120,6 +121,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_bytedata_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'byteData',
@@ -155,6 +157,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_duration_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'duration',
@@ -190,6 +193,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_enum_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'testEnum',
@@ -249,6 +253,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_index_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'indexed',
@@ -307,6 +312,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_object_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'data',
@@ -372,6 +378,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_parent_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'other',
@@ -417,6 +424,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'object_with_uuid_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'uuid',
@@ -458,6 +466,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'simple_data_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'num',
@@ -493,6 +502,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'types_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'anInt',

@@ -102,6 +102,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_auth_key_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -168,6 +169,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_cloud_storage_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'storageId',
@@ -263,6 +266,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_cloud_storage_direct_upload_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'storageId',
@@ -333,6 +338,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_future_call_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -431,6 +437,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_log_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'sessionLogId',
@@ -543,6 +550,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_message_log_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'sessionLogId',
@@ -642,6 +650,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_method_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'endpoint',
@@ -700,6 +709,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_query_log_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'serverId',
@@ -812,6 +822,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_readwrite_test_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'number',
@@ -847,6 +859,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_runtime_settings_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'logSettings',
@@ -900,6 +914,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_health_connection_info_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'serverId',
@@ -986,6 +1002,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_health_metric_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -1076,6 +1094,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_session_log_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'serverId',

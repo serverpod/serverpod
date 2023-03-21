@@ -875,6 +875,9 @@ class ClassGeneratorDart extends ClassGenerator {
                               'isNullable': literalBool(
                                   column.name != 'id' && column.type.nullable),
                               'dartType': literalString(column.type.toString()),
+                              if (column.name == 'id')
+                                'columnDefault': literalString(
+                                    "nextval('${classDefinition.tableName!}_id_seq'::regclass)"),
                             }),
                       ]),
                       'foreignKeys': literalList([

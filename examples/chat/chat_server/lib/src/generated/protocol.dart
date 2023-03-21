@@ -34,6 +34,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'name',

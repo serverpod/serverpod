@@ -514,9 +514,7 @@ extension on service.TableDefinition {
 extension on service.ColumnDefinition {
   void matchesDesired(service.ColumnDefinition desired) {
     expect(name, desired.name);
-    if (name != 'id') {
-      expect(columnDefault, desired.columnDefault);
-    }
+    expect(columnDefault, desired.columnDefault);
     expect(columnType, desired.columnType);
     expect(dartType, isNull);
     expect(isNullable, desired.isNullable);

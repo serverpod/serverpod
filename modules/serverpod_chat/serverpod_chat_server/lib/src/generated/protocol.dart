@@ -53,6 +53,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_chat_message_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'channel',
@@ -131,6 +132,8 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.integer,
           isNullable: false,
           dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_chat_read_message_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'channel',
