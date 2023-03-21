@@ -20,3 +20,6 @@ fields:
   foreignKeys: List<ForeignKeyDefinition>
   ### All the indexes of this table.
   indexes: List<IndexDefinition>
+  ### Indicates if the table should be managed by Serverpod.
+  ### Null, if this is unknown.
+  managedByServerpod: bool?

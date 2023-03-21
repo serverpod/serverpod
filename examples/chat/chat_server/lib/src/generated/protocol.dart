@@ -64,6 +64,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
+      managedByServerpod: true,
     ),
     ..._i3.Protocol.desiredDatabaseStructure.tables,
     ..._i4.Protocol.desiredDatabaseStructure.tables,

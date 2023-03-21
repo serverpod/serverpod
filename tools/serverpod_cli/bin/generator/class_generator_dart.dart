@@ -947,6 +947,8 @@ class ClassGeneratorDart extends ClassGenerator {
                             'isPrimary': literalFalse,
                           }),
                       ]),
+                      'managedByServerpod':
+                          literalTrue, //TODO: Add an option in the yaml-protocol specification for this.
                     }),
                 for (var module in config.modules)
                   refer('Protocol.desiredDatabaseStructure.tables',

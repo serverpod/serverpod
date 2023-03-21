@@ -18,6 +18,7 @@ class TableDefinition extends _i1.SerializableEntity {
     required this.columns,
     required this.foreignKeys,
     required this.indexes,
+    this.managedByServerpod,
   });
 
   factory TableDefinition.fromJson(
@@ -37,6 +38,8 @@ class TableDefinition extends _i1.SerializableEntity {
               jsonSerialization['foreignKeys']),
       indexes: serializationManager
           .deserialize<List<_i2.IndexDefinition>>(jsonSerialization['indexes']),
+      managedByServerpod: serializationManager
+          .deserialize<bool?>(jsonSerialization['managedByServerpod']),
     );
   }
 
@@ -59,6 +62,10 @@ class TableDefinition extends _i1.SerializableEntity {
   /// All the indexes of this table.
   List<_i2.IndexDefinition> indexes;
 
+  /// Indicates if the table should be managed by Serverpod.
+  /// Null, if this is unknown.
+  bool? managedByServerpod;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -68,6 +75,7 @@ class TableDefinition extends _i1.SerializableEntity {
       'columns': columns,
       'foreignKeys': foreignKeys,
       'indexes': indexes,
+      'managedByServerpod': managedByServerpod,
     };
   }
 }
