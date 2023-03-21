@@ -498,11 +498,15 @@ extension on service.TableDefinition {
       }
 
       expect(indexes, hasLength(definition.indexes.length));
-      expect(indexes.map((e) => e.indexName),
-          containsAll(definition.indexes.map((e) => e.indexName)));
+      // Converting to lower case, since Serverpod does not quote index names in the generated SQL.
+      expect(
+        indexes.map((e) => e.indexName.toLowerCase()),
+        containsAll(definition.indexes.map((e) => e.indexName.toLowerCase())),
+      );
       for (var index in indexes) {
-        index.matchesDefinition(definition.indexes
-            .firstWhere((e) => e.indexName == index.indexName));
+        // Converting to lower case, since Serverpod does not quote index names in the generated SQL.
+        index.matchesDefinition(definition.indexes.firstWhere(
+            (e) => e.indexName.toLowerCase() == index.indexName.toLowerCase()));
       }
     }
   }
@@ -535,7 +539,8 @@ extension on service.ForeignKeyDefinition {
 
 extension on service.IndexDefinition {
   void matchesDefinition(service.IndexDefinition definition) {
-    expect(indexName, definition.indexName);
+    // Converting to lower case, since Serverpod does not quote index names in the generated SQL.
+    expect(indexName.toLowerCase(), definition.indexName.toLowerCase());
     expect(tableSpace, definition.tableSpace);
     expect(isPrimary, definition.isPrimary);
     expect(isUnique, definition.isUnique);
