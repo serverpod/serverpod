@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
-
 class: ObjectWithIndex
 table: object_with_index
 fields:
