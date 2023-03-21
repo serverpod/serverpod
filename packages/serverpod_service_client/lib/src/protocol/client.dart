@@ -17,7 +17,7 @@ import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
 import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
-import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
+import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
     as _i8;
 import 'dart:io' as _i9;
 import 'protocol.dart' as _i10;
@@ -125,8 +125,8 @@ class _EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i8.TableDefinition>> getCurrentDatabaseStructure() =>
-      caller.callServerEndpoint<List<_i8.TableDefinition>>(
+  _i2.Future<_i8.DatabaseDefinition> getCurrentDatabaseStructure() =>
+      caller.callServerEndpoint<_i8.DatabaseDefinition>(
         'insights',
         'getCurrentDatabaseStructure',
         {},
