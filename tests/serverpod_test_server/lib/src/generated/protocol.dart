@@ -111,7 +111,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'object_with_bytedata',
@@ -146,7 +146,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'object_with_duration',
@@ -181,7 +181,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'object_with_enum',
@@ -240,7 +240,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'object_with_object',
@@ -305,7 +305,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'object_with_uuid',
@@ -346,7 +346,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'simple_data',
@@ -381,7 +381,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'types',
@@ -458,7 +458,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     ..._i3.Protocol.desiredDatabaseDefinition.tables,
     ..._i4.Protocol.desiredDatabaseDefinition.tables,

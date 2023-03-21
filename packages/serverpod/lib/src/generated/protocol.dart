@@ -163,7 +163,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_cloud_storage',
@@ -258,7 +258,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_cloud_storage_direct_upload',
@@ -328,7 +328,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_future_call',
@@ -426,7 +426,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_log',
@@ -538,7 +538,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_message_log',
@@ -637,7 +637,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_method',
@@ -695,7 +695,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_query_log',
@@ -807,7 +807,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_readwrite_test',
@@ -842,7 +842,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_runtime_settings',
@@ -895,7 +895,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_health_connection_info',
@@ -981,7 +981,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_health_metric',
@@ -1071,7 +1071,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
     _i2.TableDefinition(
       name: 'serverpod_session_log',
@@ -1217,7 +1217,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managedByServerpod: true,
+      managed: true,
     ),
   ]);
 

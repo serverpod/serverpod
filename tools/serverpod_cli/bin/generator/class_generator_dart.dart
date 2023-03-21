@@ -947,7 +947,7 @@ class ClassGeneratorDart extends ClassGenerator {
                             'isPrimary': literalFalse,
                           }),
                       ]),
-                      'managedByServerpod':
+                      'managed':
                           literalTrue, //TODO: Add an option in the yaml-protocol specification for this.
                     }),
                 for (var module in config.modules)

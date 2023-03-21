@@ -22,4 +22,4 @@ fields:
   indexes: List<IndexDefinition>
   ### Indicates if the table should be managed by Serverpod.
   ### Null, if this is unknown.
-  managedByServerpod: bool?
+  managed: bool?
