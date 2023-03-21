@@ -178,7 +178,20 @@ class InsightsEndpoint extends Endpoint {
     }
     return await HotReloader.hotReload();
   }
-  Future<DatabaseDefinition> getCurrentDatabaseStructure(
+
+  /// Returns the desired structure of the database.
+  /// See also:
+  /// - [getCurrentDatabaseDefinition]
+  Future<DatabaseDefinition> getDesiredDatabaseDefinition(
+      Session session) async {
+    return session.serverpod.serializationManager
+        .getDesiredDatabaseDefinition();
+  }
+
+  /// Returns the current structure of the database.
+  /// See also:
+  /// - [getDesiredDatabaseDefinition]
+  Future<DatabaseDefinition> getCurrentDatabaseDefinition(
       Session session) async {
     try {
       return DatabaseDefinition(

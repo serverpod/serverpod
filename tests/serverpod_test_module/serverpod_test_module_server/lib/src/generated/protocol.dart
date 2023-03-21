@@ -21,7 +21,7 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: []);
+  static final desiredDatabaseDefinition = _i2.DatabaseDefinition(tables: []);
 
   @override
   T deserialize<T>(
@@ -70,4 +70,8 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  @override
+  _i2.DatabaseDefinition getDesiredDatabaseDefinition() =>
+      desiredDatabaseDefinition;
 }

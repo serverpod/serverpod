@@ -125,10 +125,23 @@ class _EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i8.DatabaseDefinition> getCurrentDatabaseStructure() =>
+  /// Returns the desired structure of the database.
+  /// See also:
+  /// - [getCurrentDatabaseDefinition]
+  _i2.Future<_i8.DatabaseDefinition> getDesiredDatabaseDefinition() =>
       caller.callServerEndpoint<_i8.DatabaseDefinition>(
         'insights',
-        'getCurrentDatabaseStructure',
+        'getDesiredDatabaseDefinition',
+        {},
+      );
+
+  /// Returns the current structure of the database.
+  /// See also:
+  /// - [getDesiredDatabaseDefinition]
+  _i2.Future<_i8.DatabaseDefinition> getCurrentDatabaseDefinition() =>
+      caller.callServerEndpoint<_i8.DatabaseDefinition>(
+        'insights',
+        'getCurrentDatabaseDefinition',
         {},
       );
 }

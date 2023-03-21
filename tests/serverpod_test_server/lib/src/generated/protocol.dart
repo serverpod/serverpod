@@ -65,7 +65,7 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final desiredDatabaseStructure = _i2.DatabaseDefinition(tables: [
+  static final desiredDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'object_field_scopes',
       schema: 'public',
@@ -460,9 +460,9 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managedByServerpod: true,
     ),
-    ..._i3.Protocol.desiredDatabaseStructure.tables,
-    ..._i4.Protocol.desiredDatabaseStructure.tables,
-    ..._i2.Protocol.desiredDatabaseStructure.tables,
+    ..._i3.Protocol.desiredDatabaseDefinition.tables,
+    ..._i4.Protocol.desiredDatabaseDefinition.tables,
+    ..._i2.Protocol.desiredDatabaseDefinition.tables,
   ]);
 
   @override
@@ -1329,4 +1329,8 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     return null;
   }
+
+  @override
+  _i2.DatabaseDefinition getDesiredDatabaseDefinition() =>
+      desiredDatabaseDefinition;
 }

@@ -1,3 +1,4 @@
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// The [SerializationManager] is responsible for creating objects from a
@@ -7,4 +8,7 @@ import 'package:serverpod/serverpod.dart';
 abstract class SerializationManagerServer extends SerializationManager {
   /// Maps [Type]s to subclasses of [Table].
   Table? getTableForType(Type t);
+
+  /// The desired structure of the database.
+  DatabaseDefinition getDesiredDatabaseDefinition();
 }
