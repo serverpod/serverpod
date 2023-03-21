@@ -246,6 +246,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
             type: index[7],
             isUnique: index[2],
             isPrimary: index[3],
+            //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
             predicate: index[6],
           );
         }).toList();
@@ -328,6 +329,7 @@ extension on String {
 
 extension on String {
   String get unquote {
+    //TODO: Handle " that are inside an expression.
     if (startsWith('"') && endsWith('"')) {
       return substring(1, length - 1);
     } else {
