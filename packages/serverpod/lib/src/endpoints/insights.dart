@@ -203,6 +203,7 @@ ORDER BY ordinal_position;
                   columnType: ExtendedColumnType.fromSqlType(e[3]),
                   isNullable: e[2] == 'YES'))
               .toList();
+          var indexes = (await session.db.query('''
 SELECT i.relname, ts.spcname, indisunique, indisprimary,
 ARRAY(
        SELECT pg_get_indexdef(indexrelid, k + 1, true)
