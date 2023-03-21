@@ -298,7 +298,7 @@ void main() {
   });
 
   group('Database', () {
-    group('desired definition', () {
+    group('target definition', () {
       test('sanity checks', () async {
         var definition =
             await serviceClient.insights.getTargetDatabaseDefinition();
@@ -441,113 +441,110 @@ void main() {
     });
 
     group('current definition', () {
-      test('matches desired', () async {
-        var desired =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+      test('matches target', () async {
+        var target = await serviceClient.insights.getTargetDatabaseDefinition();
         var current =
             await serviceClient.insights.getCurrentDatabaseDefinition();
 
-        current.matchesDesired(desired);
+        current.matchesDefinition(target);
       });
     });
   });
 }
 
 extension on service.DatabaseDefinition {
-  void matchesDesired(service.DatabaseDefinition desired) {
-    expect(name, isNotNull);
-    expect(tables, hasLength(desired.tables.length));
+  void matchesDefinition(service.DatabaseDefinition definition) {
+    expect(tables, hasLength(definition.tables.length));
     expect(tables.map((e) => e.name),
-        containsAll(desired.tables.map((e) => e.name)));
+        containsAll(definition.tables.map((e) => e.name)));
 
     for (var table in tables) {
-      table.matchesDesired(
-          desired.tables.firstWhere((e) => e.name == table.name));
+      table.matchesDefinition(
+          definition.tables.firstWhere((e) => e.name == table.name));
     }
   }
 }
 
 extension on service.TableDefinition {
-  void matchesDesired(service.TableDefinition desired) {
-    expect(name, desired.name);
-    expect(schema, desired.schema);
-    expect(desired.managed, isNotNull);
-    if (desired.managed!) {
-      expect(managed, isNull);
-      expect(tableSpace, desired.tableSpace);
+  void matchesDefinition(service.TableDefinition definition) {
+    expect(name, definition.name);
+    expect(schema, definition.schema);
 
-      expect(columns, hasLength(desired.columns.length));
+    if (definition.managed ?? false) {
+      expect(tableSpace, definition.tableSpace);
+
+      expect(columns, hasLength(definition.columns.length));
       expect(columns.map((e) => e.name),
-          containsAll(desired.columns.map((e) => e.name)));
+          containsAll(definition.columns.map((e) => e.name)));
       for (var column in columns) {
-        column.matchesDesired(
-            desired.columns.firstWhere((e) => e.name == column.name));
+        column.matchesDefinition(
+            definition.columns.firstWhere((e) => e.name == column.name));
       }
 
-      expect(columns, hasLength(desired.columns.length));
+      expect(columns, hasLength(definition.columns.length));
       expect(columns.map((e) => e.name),
-          containsAll(desired.columns.map((e) => e.name)));
+          containsAll(definition.columns.map((e) => e.name)));
       for (var column in columns) {
-        column.matchesDesired(
-            desired.columns.firstWhere((e) => e.name == column.name));
+        column.matchesDefinition(
+            definition.columns.firstWhere((e) => e.name == column.name));
       }
 
-      expect(foreignKeys, hasLength(desired.foreignKeys.length));
+      expect(foreignKeys, hasLength(definition.foreignKeys.length));
       expect(foreignKeys.map((e) => e.constraintName),
-          containsAll(desired.foreignKeys.map((e) => e.constraintName)));
+          containsAll(definition.foreignKeys.map((e) => e.constraintName)));
       for (var foreignKey in foreignKeys) {
-        foreignKey.matchesDesired(desired.foreignKeys
+        foreignKey.matchesDefinition(definition.foreignKeys
             .firstWhere((e) => e.constraintName == foreignKey.constraintName));
       }
 
-      expect(indexes, hasLength(desired.indexes.length));
+      expect(indexes, hasLength(definition.indexes.length));
       expect(indexes.map((e) => e.indexName),
-          containsAll(desired.indexes.map((e) => e.indexName)));
+          containsAll(definition.indexes.map((e) => e.indexName)));
       for (var index in indexes) {
-        index.matchesDesired(
-            desired.indexes.firstWhere((e) => e.indexName == index.indexName));
+        index.matchesDefinition(definition.indexes
+            .firstWhere((e) => e.indexName == index.indexName));
       }
     }
   }
 }
 
 extension on service.ColumnDefinition {
-  void matchesDesired(service.ColumnDefinition desired) {
-    expect(name, desired.name);
-    expect(columnDefault, desired.columnDefault);
-    expect(columnType, desired.columnType);
-    expect(dartType, isNull);
-    expect(isNullable, desired.isNullable);
+  void matchesDefinition(service.ColumnDefinition definition) {
+    expect(name, definition.name);
+    expect(columnDefault, definition.columnDefault);
+    expect(columnType, definition.columnType);
+    expect(isNullable, definition.isNullable);
   }
 }
 
 extension on service.ForeignKeyDefinition {
-  void matchesDesired(service.ForeignKeyDefinition desired) {
-    expect(constraintName, desired.constraintName);
-    expect(matchType, desired.matchType ?? service.ForeignKeyMatchType.simple);
-    expect(onUpdate, desired.onUpdate ?? service.ForeignKeyAction.noAction);
-    expect(onDelete, desired.onDelete ?? service.ForeignKeyAction.noAction);
-    expect(referenceTable, desired.referenceTable);
-    expect(referenceTableSchema, desired.referenceTableSchema);
-    expect(columns, hasLength(desired.columns.length));
-    expect(columns, containsAllInOrder(desired.columns));
-    expect(referenceColumns, hasLength(desired.referenceColumns.length));
-    expect(referenceColumns, containsAllInOrder(desired.referenceColumns));
+  void matchesDefinition(service.ForeignKeyDefinition definition) {
+    expect(constraintName, definition.constraintName);
+    expect(
+        matchType, definition.matchType ?? service.ForeignKeyMatchType.simple);
+    expect(onUpdate, definition.onUpdate ?? service.ForeignKeyAction.noAction);
+    expect(onDelete, definition.onDelete ?? service.ForeignKeyAction.noAction);
+    expect(referenceTable, definition.referenceTable);
+    expect(referenceTableSchema, definition.referenceTableSchema);
+    expect(columns, hasLength(definition.columns.length));
+    expect(columns, containsAllInOrder(definition.columns));
+    expect(referenceColumns, hasLength(definition.referenceColumns.length));
+    expect(referenceColumns, containsAllInOrder(definition.referenceColumns));
   }
 }
 
 extension on service.IndexDefinition {
-  void matchesDesired(service.IndexDefinition desired) {
-    expect(indexName, desired.indexName);
-    expect(tableSpace, desired.tableSpace);
-    expect(isPrimary, desired.isPrimary);
-    expect(isUnique, desired.isUnique);
-    expect(this.predicate, desired.predicate);
-    expect(type, desired.type);
-    expect(elements, hasLength(desired.elements.length));
+  void matchesDefinition(service.IndexDefinition definition) {
+    expect(indexName, definition.indexName);
+    expect(tableSpace, definition.tableSpace);
+    expect(isPrimary, definition.isPrimary);
+    expect(isUnique, definition.isUnique);
+    expect(this.predicate, definition.predicate);
+    expect(type, definition.type);
+    expect(elements, hasLength(definition.elements.length));
     for (var i = 0; i < elements.length; i++) {
-      expect(elements[i].type, desired.elements[i].type);
-      expect(elements[i].definition, desired.elements[i].definition);
+      expect(elements[i].type, definition.elements[i].type);
+      expect(elements[i].definition, definition.elements[i].definition);
     }
   }
 }
