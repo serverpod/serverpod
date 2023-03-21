@@ -144,7 +144,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_key_userId_idx',
+          indexName: 'serverpod_auth_key_userid_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -394,7 +394,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_future_call_serverId_idx',
+          indexName: 'serverpod_future_call_serverid_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -519,7 +519,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_log_sessionLogId_idx',
+          indexName: 'serverpod_log_sessionlogid_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -788,7 +788,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_query_log_sessionLogId_idx',
+          indexName: 'serverpod_query_log_sessionlogid_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(

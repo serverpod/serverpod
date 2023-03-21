@@ -344,7 +344,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_google_refresh_token_userId_idx',
+          indexName: 'serverpod_google_refresh_token_userid_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
