@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:super_string/super_string.dart';
 
 final Random _random = Random.secure();
 
@@ -15,7 +16,7 @@ String databaseTypeToLowerCamelCase(String databaseType) {
     if (previousValue.isEmpty || element.isEmpty) {
       return '$previousValue${element.toLowerCase()}';
     } else {
-      return '$previousValue${element.substring(0, 1).toUpperCase()}${element.substring(1).toLowerCase()}';
+      return '$previousValue${element.capitalize()}';
     }
   });
 }
