@@ -3,7 +3,9 @@ import 'package:serverpod/src/database/database.dart';
 
 import '../util/column_type_extension.dart';
 
+/// Analyzes the structure of [Database]s.
 class DatabaseAnalyzer {
+  /// Analyze the structure of the [database].
   static Future<DatabaseDefinition> analyze(Database database) async {
     return DatabaseDefinition(
       name: (await database.query('SELECT current_database();')).first.first,
