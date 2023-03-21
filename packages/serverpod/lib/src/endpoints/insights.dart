@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/column_type_extension.dart';
@@ -191,7 +190,8 @@ class InsightsEndpoint extends Endpoint {
           var schemaName = tableInfo.first;
           var tableName = tableInfo.last;
 
-          var columns = (await session.db.query('''
+          var columns = (await session.db.query(
+                  '''
 SELECT column_name, column_default, is_nullable, data_type
 FROM information_schema.columns
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
@@ -203,7 +203,9 @@ ORDER BY ordinal_position;
                   columnType: ExtendedColumnType.fromSqlType(e[3]),
                   isNullable: e[2] == 'YES'))
               .toList();
-          var indexes = (await session.db.query('''
+
+          var indexes = (await session.db.query(
+                  '''
 SELECT i.relname, ts.spcname, indisunique, indisprimary,
 ARRAY(
        SELECT pg_get_indexdef(indexrelid, k + 1, true)
@@ -218,7 +220,8 @@ JOIN pg_class i ON i.oid = indexrelid
 LEFT JOIN pg_tablespace as ts ON i.reltablespace = ts.oid
 JOIN pg_am am ON am.oid=i.relam
 WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
-''')).map((index) {
+'''))
+              .map((index) {
             return IndexDefinition(
               indexName: index[0],
               tableSpace: index[1],
@@ -236,7 +239,8 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
             );
           }).toList();
 
-          var foreignKeys = (await session.db.query('''
+          var foreignKeys = (await session.db.query(
+                  '''
 SELECT conname, confupdtype, confdeltype, confmatchtype,
 ARRAY(
        SELECT attname::text
