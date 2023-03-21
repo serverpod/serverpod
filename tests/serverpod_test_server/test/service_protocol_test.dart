@@ -528,6 +528,7 @@ extension on service.ForeignKeyDefinition {
     expect(onUpdate, desired.onUpdate ?? service.ForeignKeyAction.noAction);
     expect(onDelete, desired.onDelete ?? service.ForeignKeyAction.noAction);
     expect(referenceTable, desired.referenceTable);
+    expect(referenceTableSchema, desired.referenceTableSchema);
     expect(columns, hasLength(desired.columns.length));
     expect(columns, containsAllInOrder(desired.columns));
     expect(referenceColumns, hasLength(desired.referenceColumns.length));

@@ -903,6 +903,7 @@ class ClassGeneratorDart extends ClassGenerator {
                               ]),
                               'referenceTable':
                                   literalString(column.parentTable!),
+                              'referenceTableSchema': literalString('public'),
                               'referenceColumns': literalList([
                                 literalString('id'),
                               ]),

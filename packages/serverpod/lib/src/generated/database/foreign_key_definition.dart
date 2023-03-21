@@ -15,6 +15,7 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
     required this.constraintName,
     required this.columns,
     required this.referenceTable,
+    required this.referenceTableSchema,
     required this.referenceColumns,
     this.onUpdate,
     this.onDelete,
@@ -32,6 +33,8 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
           .deserialize<List<String>>(jsonSerialization['columns']),
       referenceTable: serializationManager
           .deserialize<String>(jsonSerialization['referenceTable']),
+      referenceTableSchema: serializationManager
+          .deserialize<String>(jsonSerialization['referenceTableSchema']),
       referenceColumns: serializationManager
           .deserialize<List<String>>(jsonSerialization['referenceColumns']),
       onUpdate: serializationManager
@@ -52,6 +55,9 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
   /// The table of the reference.
   String referenceTable;
 
+  /// The schema of the referenced table.
+  String referenceTableSchema;
+
   /// The column of the reference in the [referenceTable].
   List<String> referenceColumns;
 
@@ -70,6 +76,7 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
       'constraintName': constraintName,
       'columns': columns,
       'referenceTable': referenceTable,
+      'referenceTableSchema': referenceTableSchema,
       'referenceColumns': referenceColumns,
       'onUpdate': onUpdate,
       'onDelete': onDelete,
@@ -83,6 +90,7 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
       'constraintName': constraintName,
       'columns': columns,
       'referenceTable': referenceTable,
+      'referenceTableSchema': referenceTableSchema,
       'referenceColumns': referenceColumns,
       'onUpdate': onUpdate,
       'onDelete': onDelete,

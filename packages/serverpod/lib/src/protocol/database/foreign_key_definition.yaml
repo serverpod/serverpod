@@ -7,6 +7,8 @@ fields:
   columns: List<String>
   ### The table of the reference.
   referenceTable: String
+  ### The schema of the referenced table.
+  referenceTableSchema: String
   ### The column of the reference in the [referenceTable].
   referenceColumns: List<String>
   ### The action, when the referred row is updated.

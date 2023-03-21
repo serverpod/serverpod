@@ -392,6 +392,7 @@ class Protocol extends _i1.SerializationManagerServer {
           constraintName: 'object_with_parent_fk_0',
           columns: ['other'],
           referenceTable: 'object_field_scopes',
+          referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: null,
           onDelete: _i2.ForeignKeyAction.cascade,

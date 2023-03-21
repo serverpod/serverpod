@@ -103,15 +103,17 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         var foreignKeys = (await database.query(
 // We want to get the constraint name (0), on update type (1),
 // on delete type (2), match type (3), constraint columns (4)
-// referred table (5) and referred columns (6) for each foreign key.
+// referenced table (5), namespace / schema of the referenced table (6),
+// referenced columns (7) for each foreign key.
 //
 // Most data is in the pg_constraint table.
 // Join pg_class as t (table) to filter by the table name.
-// Join pg_class as r (referred) to get the name of the referred table.
-// Join pg_namespace as n (namespace) to filter by the namespace / schema name of the table.
+// Join pg_class as r (referenced) to get the name of the referenced table.
+// Join pg_namespace as nt (namespace table) to filter by the namespace / schema name of the table.
+// Join pg_namespace as nr (namespace referenced) to get the namespace / schema of the referenced table.
 //
 // The first ARRAY resolves the column name for each of the columns in conkey.
-// The second ARRAY resolves the column name for each of the referred columns in confkey.
+// The second ARRAY resolves the column name for each of the referenced columns in confkey.
                 '''
 SELECT conname, confupdtype, confdeltype, confmatchtype,
 ARRAY(
@@ -119,7 +121,7 @@ ARRAY(
        FROM unnest(conkey) as i
        JOIN pg_attribute ON attrelid = t.oid AND attnum = i
        ) as conkey,
-r.relname,
+r.relname, nr.nspname,
 ARRAY(
        SELECT attname::text
        FROM unnest(confkey) as i
@@ -128,14 +130,16 @@ ARRAY(
 FROM pg_constraint
 JOIN pg_class t ON t.oid = conrelid
 JOIN pg_class r ON r.oid = confrelid
-JOIN pg_namespace n ON n.oid = t.relnamespace
-WHERE contype = 'f' AND t.relname = '$tableName' AND n.nspname = '$schemaName';
+JOIN pg_namespace nt ON nt.oid = t.relnamespace
+JOIN pg_namespace nr ON nr.oid = r.relnamespace
+WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
 '''))
             .map((key) => ForeignKeyDefinition(
                   constraintName: key[0],
                   columns: key[4],
                   referenceTable: key[5],
-                  referenceColumns: key[6],
+                  referenceTableSchema: key[6],
+                  referenceColumns: key[7],
                   onUpdate: (key[1] as String).toForeignKeyAction(),
                   onDelete: (key[2] as String).toForeignKeyAction(),
                   matchType: (key[3] as String).toForeignKeyMatchType(),
