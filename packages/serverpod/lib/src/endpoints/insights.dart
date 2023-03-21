@@ -244,7 +244,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
                       type: index[5][i]
                           ? IndexElementDefinitionType.column
                           : IndexElementDefinitionType.expression,
-                      definition: index[4][i])),
+                      definition: (index[4][i] as String).unquote)),
               type: index[7],
               isUnique: index[2],
               isPrimary: index[3],
@@ -329,6 +329,16 @@ extension on String {
         return ForeignKeyMatchType.simple;
       default:
         return null;
+    }
+  }
+}
+
+extension on String {
+  String get unquote {
+    if (startsWith('"') && endsWith('"')) {
+      return substring(1, length - 1);
+    } else {
+      return this;
     }
   }
 }
