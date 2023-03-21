@@ -91,7 +91,8 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
                     type: index[5][i]
                         ? IndexElementDefinitionType.column
                         : IndexElementDefinitionType.expression,
-                    definition: (index[4][i] as String).unquote)),
+                    definition:
+                        (index[4][i] as String).removeSurroundingQuotes)),
             type: index[7],
             isUnique: index[2],
             isPrimary: index[3],
@@ -190,8 +191,11 @@ extension on String {
   }
 }
 
+/// Utility tools used by the [DatabaseAnalyzer].
 extension on String {
-  String get unquote {
+  /// Removes the surrounding quotes if the string
+  /// starts and ends with ".
+  String get removeSurroundingQuotes {
     //TODO: Handle " that are inside an expression.
     if (startsWith('"') && endsWith('"')) {
       return substring(1, length - 1);
