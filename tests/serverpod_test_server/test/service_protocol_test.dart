@@ -1,3 +1,4 @@
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -294,6 +295,148 @@ void main() {
 
       // Expect us to find an exception in the 6th logged message
       expect(logResult.sessionLog[0].messages[5].error, isNotNull);
+    });
+  });
+
+  group('Database', () {
+    group('desired definition', () {
+      test('sanity checks', () async {
+        var definition =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+
+        expect(definition.tables.map((e) => e.name),
+            contains('object_field_scopes'));
+        var table = definition.tables
+            .firstWhere((e) => e.name == 'object_field_scopes');
+        expect(table.schema, 'public');
+        expect(table.tableSpace, null);
+        expect(table.columns, hasLength(3));
+        expect(table.managed, true);
+        expect(table.foreignKeys, hasLength(0));
+        expect(table.indexes, hasLength(1));
+
+        expect(definition.tables.every((t) => t.indexes.isNotEmpty), true);
+      });
+      test('contains selected tables', () async {
+        var definition =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+
+        const expectedTables = [
+          'object_field_scopes',
+          'object_with_bytedata',
+          'object_with_duration',
+          'object_with_enum',
+          'object_with_object',
+          'serverpod_user_info', // Part of the auth module
+          'serverpod_future_call', // From serverpod
+        ];
+
+        for (var expectedTable in expectedTables) {
+          expect(
+              definition.tables.where((table) => table.name == expectedTable),
+              hasLength(1));
+        }
+      });
+      test('columns only contains database fields', () async {
+        var definition =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+
+        var columns = definition.tables
+            .firstWhere((table) => table.name == 'object_field_scopes')
+            .columns
+            .map((c) => c.name)
+            .toList();
+        expect(columns, hasLength(3));
+        expect(columns, containsAll(['id', 'normal', 'database']));
+      });
+
+      test('foreign keys', () async {
+        var definition =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+
+        var table = definition.tables
+            .firstWhere((table) => table.name == 'object_with_parent');
+
+        expect(table.foreignKeys, hasLength(1));
+        expect(
+            table.foreignKeys.first.constraintName, 'object_with_parent_fk_0');
+        expect(table.foreignKeys.first.referenceTable, 'object_field_scopes');
+        expect(table.foreignKeys.first.onUpdate, isNull);
+        expect(
+            table.foreignKeys.first.onDelete, service.ForeignKeyAction.cascade);
+        expect(table.foreignKeys.first.matchType, isNull);
+        expect(table.foreignKeys.first.columns, hasLength(1));
+        expect(table.foreignKeys.first.columns.first, 'other');
+        expect(table.foreignKeys.first.referenceColumns, hasLength(1));
+        expect(table.foreignKeys.first.referenceColumns.first, 'id');
+      });
+
+      test('indexes', () async {
+        var definition =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+
+        var table = definition.tables
+            .firstWhere((table) => table.name == 'object_with_index');
+
+        expect(table.indexes, hasLength(2));
+        expect(table.indexes[0].indexName, 'object_with_index_pkey');
+        expect(table.indexes[0].isPrimary, true);
+        expect(table.indexes[0].isUnique, true);
+        expect(table.indexes[0].predicate, isNull);
+        expect(table.indexes[0].tableSpace, isNull);
+        expect(table.indexes[0].type, 'btree');
+        expect(table.indexes[0].elements, hasLength(1));
+        expect(table.indexes[0].elements.first.type,
+            service.IndexElementDefinitionType.column);
+        expect(table.indexes[0].elements.first.definition, 'id');
+
+        expect(table.indexes[1].indexName, 'object_with_index_test_index');
+        expect(table.indexes[1].isPrimary, false);
+        expect(table.indexes[1].isUnique, false);
+        expect(table.indexes[1].predicate, isNull);
+        expect(table.indexes[1].tableSpace, isNull);
+        expect(table.indexes[1].type, 'hash');
+        expect(table.indexes[1].elements, hasLength(2));
+        expect(table.indexes[1].elements[0].type,
+            service.IndexElementDefinitionType.column);
+        expect(table.indexes[1].elements[0].definition, 'indexed');
+        expect(table.indexes[1].elements[1].type,
+            service.IndexElementDefinitionType.column);
+        expect(table.indexes[1].elements[1].definition, 'indexed2');
+      });
+
+      test('validate dart types', () async {
+        var definition =
+            await serviceClient.insights.getDesiredDatabaseDefinition();
+
+        var columns = definition.tables
+            .firstWhere((table) => table.name == 'object_with_object')
+            .columns
+            .map((c) => c.dartType)
+            .toList();
+
+        expect(columns, hasLength(7));
+        expect(
+            columns,
+            containsAll([
+              'int?',
+              'protocol:SimpleData',
+              'protocol:SimpleData?',
+              'List<protocol:SimpleData>',
+              'List<protocol:SimpleData>?',
+              'List<protocol:SimpleData?>',
+              'List<protocol:SimpleData?>?',
+            ]));
+
+        var columnsWithScopes = definition.tables
+            .firstWhere((table) => table.name == 'object_field_scopes')
+            .columns
+            .map((c) => c.dartType)
+            .toList();
+
+        expect(columnsWithScopes, hasLength(3));
+        expect(columnsWithScopes, containsAll(['int?', 'String', 'String?']));
+      });
     });
   });
 }

@@ -56,6 +56,22 @@ ALTER TABLE ONLY "object_with_enum"
 
 
 --
+-- Class ObjectWithIndex as table object_with_index
+--
+
+CREATE TABLE "object_with_index" (
+  "id" serial,
+  "indexed" integer NOT NULL,
+  "indexed2" integer NOT NULL
+);
+
+ALTER TABLE ONLY "object_with_index"
+  ADD CONSTRAINT object_with_index_pkey PRIMARY KEY (id);
+
+CREATE INDEX object_with_index_test_index ON "object_with_index" USING hash ("indexed", "indexed2");
+
+
+--
 -- Class ObjectWithObject as table object_with_object
 --
 
@@ -72,6 +88,24 @@ CREATE TABLE "object_with_object" (
 ALTER TABLE ONLY "object_with_object"
   ADD CONSTRAINT object_with_object_pkey PRIMARY KEY (id);
 
+
+--
+-- Class ObjectWithParent as table object_with_parent
+--
+
+CREATE TABLE "object_with_parent" (
+  "id" serial,
+  "other" integer NOT NULL
+);
+
+ALTER TABLE ONLY "object_with_parent"
+  ADD CONSTRAINT object_with_parent_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY "object_with_parent"
+  ADD CONSTRAINT object_with_parent_fk_0
+    FOREIGN KEY("other")
+      REFERENCES object_field_scopes(id)
+        ON DELETE CASCADE;
 
 --
 -- Class ObjectWithUuid as table object_with_uuid
