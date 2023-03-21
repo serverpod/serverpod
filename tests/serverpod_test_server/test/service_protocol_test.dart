@@ -301,7 +301,7 @@ void main() {
     group('desired definition', () {
       test('sanity checks', () async {
         var definition =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
 
         expect(definition.tables.map((e) => e.name),
             contains('object_field_scopes'));
@@ -320,7 +320,7 @@ void main() {
       });
       test('contains selected tables', () async {
         var definition =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
 
         const expectedTables = [
           'object_field_scopes',
@@ -340,7 +340,7 @@ void main() {
       });
       test('columns only contains database fields', () async {
         var definition =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
 
         var columns = definition.tables
             .firstWhere((table) => table.name == 'object_field_scopes')
@@ -353,7 +353,7 @@ void main() {
 
       test('foreign keys', () async {
         var definition =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
 
         var table = definition.tables
             .firstWhere((table) => table.name == 'object_with_parent');
@@ -374,7 +374,7 @@ void main() {
 
       test('indexes', () async {
         var definition =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
 
         var table = definition.tables
             .firstWhere((table) => table.name == 'object_with_index');
@@ -408,7 +408,7 @@ void main() {
 
       test('validate dart types', () async {
         var definition =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
 
         var columns = definition.tables
             .firstWhere((table) => table.name == 'object_with_object')
@@ -443,7 +443,7 @@ void main() {
     group('current definition', () {
       test('matches desired', () async {
         var desired =
-            await serviceClient.insights.getDesiredDatabaseDefinition();
+            await serviceClient.insights.getTargetDatabaseDefinition();
         var current =
             await serviceClient.insights.getCurrentDatabaseDefinition();
 

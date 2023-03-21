@@ -9,5 +9,5 @@ insights:
   - checkHealth:
   - getHealthData:
   - hotReload:
-  - getDesiredDatabaseDefinition:
+  - getTargetDatabaseDefinition:
   - getCurrentDatabaseDefinition:

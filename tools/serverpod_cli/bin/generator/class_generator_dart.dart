@@ -846,7 +846,7 @@ class ClassGeneratorDart extends ClassGenerator {
       if (serverCode)
         Field(
           (f) => f
-            ..name = 'desiredDatabaseDefinition'
+            ..name = 'targetDatabaseDefinition'
             ..static = true
             ..modifier = FieldModifier.final$
             ..assignment =
@@ -964,12 +964,12 @@ class ClassGeneratorDart extends ClassGenerator {
                           literalTrue, //TODO: Add an option in the yaml-protocol specification for this.
                     }),
                 for (var module in config.modules)
-                  refer('Protocol.desiredDatabaseDefinition.tables',
+                  refer('Protocol.targetDatabaseDefinition.tables',
                           module.url(serverCode))
                       .spread,
                 if (config.name != 'serverpod' &&
                     config.type == PackageType.server)
-                  refer('Protocol.desiredDatabaseDefinition.tables',
+                  refer('Protocol.targetDatabaseDefinition.tables',
                           serverpodProtocolUrl(serverCode))
                       .spread,
               ]),
@@ -1140,12 +1140,12 @@ class ClassGeneratorDart extends ClassGenerator {
       if (serverCode)
         Method(
           (m) => m
-            ..name = 'getDesiredDatabaseDefinition'
+            ..name = 'getTargetDatabaseDefinition'
             ..annotations.add(refer('override'))
             ..returns = TypeReference((t) => t
               ..symbol = 'DatabaseDefinition'
               ..url = serverpodProtocolUrl(serverCode))
-            ..body = refer('desiredDatabaseDefinition').code,
+            ..body = refer('targetDatabaseDefinition').code,
         ),
     ]);
 

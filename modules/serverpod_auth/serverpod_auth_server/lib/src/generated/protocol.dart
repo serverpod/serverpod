@@ -45,7 +45,7 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final desiredDatabaseDefinition = _i2.DatabaseDefinition(tables: [
+  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_email_auth',
       schema: 'public',
@@ -764,6 +764,6 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  _i2.DatabaseDefinition getDesiredDatabaseDefinition() =>
-      desiredDatabaseDefinition;
+  _i2.DatabaseDefinition getTargetDatabaseDefinition() =>
+      targetDatabaseDefinition;
 }

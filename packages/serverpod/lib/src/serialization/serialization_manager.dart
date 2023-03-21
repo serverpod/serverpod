@@ -10,5 +10,5 @@ abstract class SerializationManagerServer extends SerializationManager {
   Table? getTableForType(Type t);
 
   /// The desired structure of the database.
-  DatabaseDefinition getDesiredDatabaseDefinition();
+  DatabaseDefinition getTargetDatabaseDefinition();
 }
