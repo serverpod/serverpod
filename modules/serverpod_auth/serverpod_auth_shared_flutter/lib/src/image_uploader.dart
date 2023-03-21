@@ -44,7 +44,7 @@ class ImageUploader {
             interpolation: img.Interpolation.average);
       }
 
-      image = img.copyResizeCropSquare(image, imageSize);
+      image = img.copyResizeCropSquare(image, size: imageSize);
 
       // Encode as png
       var encoded = img.encodePng(image);
