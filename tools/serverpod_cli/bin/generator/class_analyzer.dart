@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as p;
 import '../util/string_validators.dart';
 import '../util/extensions.dart';
 import '../util/subdirectory_extraction.dart';
