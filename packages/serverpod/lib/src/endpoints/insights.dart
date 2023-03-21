@@ -179,29 +179,30 @@ class InsightsEndpoint extends Endpoint {
     }
     return await HotReloader.hotReload();
   }
-  Future<List<TableDefinition>> getCurrentDatabaseStructure(
+  Future<DatabaseDefinition> getCurrentDatabaseStructure(
       Session session) async {
     try {
-      return await Future.wait((await session.db.query(
-              "SELECT schemaname, tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';"))
-          .map((tableInfo) async {
-        var schemaName = tableInfo.first;
-        var tableName = tableInfo.last;
+      return DatabaseDefinition(
+        name:
+            (await session.db.query('SELECT current_database();')).first.first,
+        tables: await Future.wait((await session.db.query(
+                "SELECT schemaname, tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';"))
+            .map((tableInfo) async {
+          var schemaName = tableInfo.first;
+          var tableName = tableInfo.last;
 
-        var columns = (await session.db.query('''
+          var columns = (await session.db.query('''
 SELECT column_name, column_default, is_nullable, data_type
 FROM information_schema.columns
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
 ORDER BY ordinal_position;
 '''))
-            .map((e) => ColumnDefinition(
-                name: e[0],
-                columnDefault: e[1],
-                columnType: ExtendedColumnType.fromSqlType(e[3]),
-                isNullable: e[2] == 'YES'))
-            .toList();
-
-        var indexes = (await session.db.query('''
+              .map((e) => ColumnDefinition(
+                  name: e[0],
+                  columnDefault: e[1],
+                  columnType: ExtendedColumnType.fromSqlType(e[3]),
+                  isNullable: e[2] == 'YES'))
+              .toList();
 SELECT i.relname, ts.spcname, indisunique, indisprimary,
 ARRAY(
        SELECT pg_get_indexdef(indexrelid, k + 1, true)
@@ -217,24 +218,24 @@ LEFT JOIN pg_tablespace as ts ON i.reltablespace = ts.oid
 JOIN pg_am am ON am.oid=i.relam
 WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 ''')).map((index) {
-          return IndexDefinition(
-            indexName: index[0],
-            tableSpace: index[1],
-            elements: List.generate(
-                index[4].length,
-                (i) => IndexElementDefinition(
-                    type: index[5][i]
-                        ? IndexElementDefinitionType.column
-                        : IndexElementDefinitionType.expression,
-                    definition: index[4][i])),
-            type: index[7],
-            isUnique: index[2],
-            isPrimary: index[3],
-            predicate: index[6],
-          );
-        }).toList();
+            return IndexDefinition(
+              indexName: index[0],
+              tableSpace: index[1],
+              elements: List.generate(
+                  index[4].length,
+                  (i) => IndexElementDefinition(
+                      type: index[5][i]
+                          ? IndexElementDefinitionType.column
+                          : IndexElementDefinitionType.expression,
+                      definition: index[4][i])),
+              type: index[7],
+              isUnique: index[2],
+              isPrimary: index[3],
+              predicate: index[6],
+            );
+          }).toList();
 
-        var foreignKeys = (await session.db.query('''
+          var foreignKeys = (await session.db.query('''
 SELECT conname, confupdtype, confdeltype, confmatchtype,
 ARRAY(
        SELECT attname::text
@@ -253,25 +254,26 @@ JOIN pg_class r ON r.oid = confrelid
 JOIN pg_namespace n ON n.oid = t.relnamespace
 WHERE contype = 'f' AND t.relname = '$tableName' AND n.nspname = '$schemaName';
 '''))
-            .map((key) => ForeignKeyDefinition(
-                  constraintName: key[0],
-                  columns: key[4],
-                  referenceTable: key[5],
-                  referenceColumns: key[6],
-                  onUpdate: (key[1] as String).toForeignKeyAction(),
-                  onDelete: (key[2] as String).toForeignKeyAction(),
-                  matchType: (key[3] as String).toForeignKeyMatchType(),
-                ))
-            .toList();
+              .map((key) => ForeignKeyDefinition(
+                    constraintName: key[0],
+                    columns: key[4],
+                    referenceTable: key[5],
+                    referenceColumns: key[6],
+                    onUpdate: (key[1] as String).toForeignKeyAction(),
+                    onDelete: (key[2] as String).toForeignKeyAction(),
+                    matchType: (key[3] as String).toForeignKeyMatchType(),
+                  ))
+              .toList();
 
-        return TableDefinition(
-          name: tableName,
-          schema: schemaName,
-          columns: columns,
-          foreignKeys: foreignKeys,
-          indexes: indexes,
-        );
-      }));
+          return TableDefinition(
+            name: tableName,
+            schema: schemaName,
+            columns: columns,
+            foreignKeys: foreignKeys,
+            indexes: indexes,
+          );
+        })),
+      );
     } catch (e) {
       //TODO: remove this... Only used for debugging
       print(e);
