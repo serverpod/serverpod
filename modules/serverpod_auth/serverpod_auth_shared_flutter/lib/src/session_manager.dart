@@ -87,10 +87,11 @@ class SessionManager with ChangeNotifier {
   bool get isSignedIn => signedInUser != null;
 
   /// Initializes the session manager by reading the current state from
-  /// shared preferences.
-  Future<void> initialize() async {
+  /// shared preferences. The returned bool is true if the session was
+  /// initialized, or false if the server could not be reached.
+  Future<bool> initialize() async {
     await _loadSharedPrefs();
-    unawaited(refreshSession());
+    return refreshSession();
   }
 
   /// Signs the user out from all connected devices. Returns true if successful.
