@@ -68,7 +68,7 @@ CREATE TABLE "object_with_index" (
 ALTER TABLE ONLY "object_with_index"
   ADD CONSTRAINT object_with_index_pkey PRIMARY KEY (id);
 
-CREATE INDEX object_with_index_test_index ON "object_with_index" USING hash ("indexed", "indexed2");
+CREATE INDEX object_with_index_test_index ON "object_with_index" USING brin ("indexed", "indexed2");
 
 
 --

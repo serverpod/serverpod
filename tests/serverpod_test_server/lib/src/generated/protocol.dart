@@ -291,7 +291,7 @@ class Protocol extends _i1.SerializationManagerServer {
               definition: 'indexed2',
             ),
           ],
-          type: 'hash',
+          type: 'brin',
           isUnique: false,
           isPrimary: false,
         ),

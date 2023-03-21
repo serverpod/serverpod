@@ -8,4 +8,4 @@ fields:
 indexes:
   object_with_index_test_index:
     fields: indexed,indexed2
-    type: hash
+    type: brin
