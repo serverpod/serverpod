@@ -1,8 +1,21 @@
-# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
+### Describes how to react if the row a foreign key refers to changes / is deleted.
 enum: ForeignKeyAction
 values:
+  ### [setNull] specifies that the appropriate values
+  ### of a row referencing an other one should be set to
+  ### null on update or deletion.
   - setNull
+  ### [setNull] specifies that the appropriate values
+  ### of a row referencing an other one should be set to
+  ### the default value on update or deletion.
   - setDefault
+  ### Prevent the change from occurring.
   - restrict
+  ### Same as [restrict], but allows the check to be deferred
+  ### until later in the transaction.
+  ###
+  ### [noAction] is the default
   - noAction
+  ### [cascade] specifies that deletion or updating of a
+  ### referred row, should be propagated down.
   - cascade

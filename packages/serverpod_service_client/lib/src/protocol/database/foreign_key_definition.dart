@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
+/// Represents a foreign key.
 class ForeignKeyDefinition extends _i1.SerializableEntity {
   ForeignKeyDefinition({
     required this.constraintName,

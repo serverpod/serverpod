@@ -1,5 +1,4 @@
-# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
-
+### Represents a foreign key.
 class: ForeignKeyDefinition
 fields:
   ### The name of the constraint.

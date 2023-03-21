@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
-
 ### The definition of a (desired) index in the database.
 class: IndexDefinition
 fields:

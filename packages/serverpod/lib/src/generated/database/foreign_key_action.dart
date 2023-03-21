@@ -8,11 +8,29 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Describes how to react if the row a foreign key refers to changes / is deleted.
 enum ForeignKeyAction with _i1.SerializableEntity {
+  /// [setNull] specifies that the appropriate values
+  /// of a row referencing an other one should be set to
+  /// null on update or deletion.
   setNull,
+
+  /// [setNull] specifies that the appropriate values
+  /// of a row referencing an other one should be set to
+  /// the default value on update or deletion.
   setDefault,
+
+  /// Prevent the change from occurring.
   restrict,
+
+  /// Same as [restrict], but allows the check to be deferred
+  /// until later in the transaction.
+  ///
+  /// [noAction] is the default
   noAction,
+
+  /// [cascade] specifies that deletion or updating of a
+  /// referred row, should be propagated down.
   cascade;
 
   static ForeignKeyAction? fromJson(int index) {

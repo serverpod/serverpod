@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://go.fischerscode.com/serverpod-schema
-
 ### Used to specify how the definition of an [IndexElementDefinition]
 ### should be interpreted.
 enum: IndexElementDefinitionType
