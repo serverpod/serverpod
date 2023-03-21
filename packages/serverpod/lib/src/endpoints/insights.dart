@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/util/column_type_extension.dart';
 
 import '../../serverpod.dart';
 import '../cache/cache.dart';
