@@ -16,6 +16,7 @@ class ColumnDefinition extends _i1.SerializableEntity {
     required this.columnType,
     required this.isNullable,
     this.columnDefault,
+    this.dartType,
   });
 
   factory ColumnDefinition.fromJson(
@@ -30,6 +31,8 @@ class ColumnDefinition extends _i1.SerializableEntity {
           .deserialize<bool>(jsonSerialization['isNullable']),
       columnDefault: serializationManager
           .deserialize<String?>(jsonSerialization['columnDefault']),
+      dartType: serializationManager
+          .deserialize<String?>(jsonSerialization['dartType']),
     );
   }
 
@@ -45,6 +48,11 @@ class ColumnDefinition extends _i1.SerializableEntity {
   /// The default for the column.
   String? columnDefault;
 
+  /// The (dart) type specified in the yaml file.
+  /// Is nullable, since this is not available when
+  /// analyzing the database.
+  String? dartType;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -52,6 +60,7 @@ class ColumnDefinition extends _i1.SerializableEntity {
       'columnType': columnType,
       'isNullable': isNullable,
       'columnDefault': columnDefault,
+      'dartType': dartType,
     };
   }
 }

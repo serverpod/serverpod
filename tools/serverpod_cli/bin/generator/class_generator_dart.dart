@@ -870,7 +870,8 @@ class ClassGeneratorDart extends ClassGenerator {
                                 'ColumnType.${column.type.databaseTypeEnum}',
                                 serverpodProtocolUrl(serverCode)),
                             'isNullable': literalBool(column.type.nullable),
-                          })
+                            'dartType': literalString(column.type.toString()),
+                          }),
                       ]),
                       'foreignKeys': literalList([
                         for (var i = 0;

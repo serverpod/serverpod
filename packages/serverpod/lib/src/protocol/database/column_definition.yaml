@@ -15,8 +15,7 @@ fields:
   ### The default for the column.
   columnDefault: String?
 
-  # ? Maybe not even needed
-  # ### The (dart) type specified in the yaml file.
-  # ### Is nullable, since this is not available when
-  # ### analyzing the database.
-  # dartType: String?
+  ### The (dart) type specified in the yaml file.
+  ### Is nullable, since this is not available when
+  ### analyzing the database.
+  dartType: String?
