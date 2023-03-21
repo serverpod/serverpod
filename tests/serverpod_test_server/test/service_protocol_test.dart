@@ -311,6 +311,8 @@ void main() {
         expect(table.schema, 'public');
         expect(table.tableSpace, null);
         expect(table.columns, hasLength(3));
+        expect(table.columns.first.name, 'id');
+        expect(table.columns.first.isNullable, false);
         expect(table.managed, true);
         expect(table.foreignKeys, hasLength(0));
         expect(table.indexes, hasLength(1));

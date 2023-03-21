@@ -871,7 +871,9 @@ class ClassGeneratorDart extends ClassGenerator {
                               'columnType': refer(
                                   'ColumnType.${column.type.databaseTypeEnum}',
                                   serverpodProtocolUrl(serverCode)),
-                              'isNullable': literalBool(column.type.nullable),
+                              // The id column is not null, since it is auto incrementing.
+                              'isNullable': literalBool(
+                                  column.name != 'id' && column.type.nullable),
                               'dartType': literalString(column.type.toString()),
                             }),
                       ]),

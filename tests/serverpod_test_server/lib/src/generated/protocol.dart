@@ -77,7 +77,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -118,7 +118,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -153,7 +153,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -188,7 +188,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -247,7 +247,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -305,7 +305,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -370,7 +370,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -415,7 +415,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -456,7 +456,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
@@ -491,7 +491,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'id',
           columnType: _i2.ColumnType.integer,
-          isNullable: true,
+          isNullable: false,
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
