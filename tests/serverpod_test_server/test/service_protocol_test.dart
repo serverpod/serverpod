@@ -396,7 +396,7 @@ void main() {
         expect(table.indexes[1].isUnique, false);
         expect(table.indexes[1].predicate, isNull);
         expect(table.indexes[1].tableSpace, isNull);
-        expect(table.indexes[1].type, 'hash');
+        expect(table.indexes[1].type, 'brin');
         expect(table.indexes[1].elements, hasLength(2));
         expect(table.indexes[1].elements[0].type,
             service.IndexElementDefinitionType.column);
