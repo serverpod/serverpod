@@ -892,7 +892,7 @@ class ClassGeneratorDart extends ClassGenerator {
                                     serverpodProtocolUrl(serverCode))
                                 .call([], {
                               'constraintName': literalString(
-                                  //! Converting to lower case, since Serverpod does not quote constraint names in the generated SQL.
+                                  // Converting to lower case, since Serverpod does not quote constraint names in the generated SQL.
                                   '${classDefinition.tableName!}_fk_$i'
                                       .toLowerCase()),
                               'columns': literalList([
@@ -915,7 +915,7 @@ class ClassGeneratorDart extends ClassGenerator {
                                 serverpodProtocolUrl(serverCode))
                             .call([], {
                           'indexName': literalString(
-                              //! Converting to lower case, since Serverpod does not quote index names in the generated SQL.
+                              // Converting to lower case, since Serverpod does not quote index names in the generated SQL.
                               '${classDefinition.tableName!}_pkey'
                                   .toLowerCase()),
                           'tableSpace': literalNull,
@@ -937,7 +937,7 @@ class ClassGeneratorDart extends ClassGenerator {
                           refer('IndexDefinition',
                                   serverpodProtocolUrl(serverCode))
                               .call([], {
-                            //! Converting to lower case, since Serverpod does not quote index names in the generated SQL.
+                            // Converting to lower case, since Serverpod does not quote index names in the generated SQL.
                             'indexName':
                                 literalString(index.name.toLowerCase()),
                             'tableSpace': literalNull,
