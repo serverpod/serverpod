@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 
-import '../analyzer/file_analyzer.dart';
+import '../analyzer/yaml/file_analyzer.dart';
 import 'class_generator.dart';
 import 'code_cleaner.dart';
 import 'config.dart';
@@ -25,7 +25,7 @@ Future<void> performGenerate({
   if (verbose) {
     print('Analyzing protocol yaml files.');
   }
-  var classDefinitions = ProtocolFileAnalyzer.analyzeFiles(
+  var classDefinitions = ProtocolYamlFileAnalyzer.analyzeFiles(
     verbose: verbose,
     collector: collector,
     config: config,

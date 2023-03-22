@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
 
 import '../util/internal_error.dart';
 import 'class_generator_dart.dart';
@@ -8,7 +9,7 @@ import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'generator.dart';
 import 'pgsql_generator.dart';
-import 'protocol_definition.dart';
+import '../analyzer/protocol_definition.dart';
 
 void performGenerateClasses({
   required bool verbose,

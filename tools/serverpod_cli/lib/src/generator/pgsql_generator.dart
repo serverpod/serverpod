@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'protocol_definition.dart';
+import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
+
+import '../analyzer/protocol_definition.dart';
 
 class PgsqlGenerator {
   final List<ProtocolFileDefinition> classInfos;

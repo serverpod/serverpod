@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
-import '../util/string_validators.dart';
-import '../util/extensions.dart';
-import '../util/subdirectory_extraction.dart';
-import '../util/yaml_docs.dart';
-import '../generator/code_analysis_collector.dart';
-import '../generator/config.dart';
-import '../generator/protocol_definition.dart';
-import '../generator/types.dart';
+import '../../util/string_validators.dart';
+import '../../util/extensions.dart';
+import '../../util/subdirectory_extraction.dart';
+import '../../util/yaml_docs.dart';
+import '../../generator/code_analysis_collector.dart';
+import '../../generator/config.dart';
+import '../../generator/types.dart';
+import 'definitions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
   var pathComponents = path.split(Platform.pathSeparator);
@@ -20,14 +20,15 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 }
 
 /// Used to analyze a singe yaml protocol file.
-class ProtocolFileAnalyzer {
+class ProtocolYamlFileAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
   final String? subDirectory;
   final CodeAnalysisCollector collector;
 
-  ProtocolFileAnalyzer({
+  /// Create a new [ProtocolYamlFileAnalyzer].
+  ProtocolYamlFileAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -59,7 +60,7 @@ class ProtocolFileAnalyzer {
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
       var yaml = entity.readAsStringSync();
-      var analyzer = ProtocolFileAnalyzer(
+      var analyzer = ProtocolYamlFileAnalyzer(
         yaml: yaml,
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
@@ -524,7 +525,7 @@ class ProtocolFileAnalyzer {
           unique = uniqueVal;
         }
 
-        var indexDefinition = IndexDefinition.parsed(
+        var indexDefinition = IndexDefinition(
           name: indexName,
           type: type,
           unique: unique,
