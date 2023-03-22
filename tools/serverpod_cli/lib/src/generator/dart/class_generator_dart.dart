@@ -807,10 +807,13 @@ class ClassGeneratorDart {
 
     library.name = 'protocol';
 
+    var entities = protocolDefinition.entities
+        .where((entity) => serverCode || !entity.serverOnly)
+        .toList();
+
     // exports
     library.directives.addAll([
-      for (var classInfo in protocolDefinition.entities)
-        Directive.export(classInfo.fileRef()),
+      for (var classInfo in entities) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -857,7 +860,7 @@ class ClassGeneratorDart {
                 refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
                     .call([], {
               'tables': literalList([
-                for (var classDefinition in protocolDefinition.entities)
+                for (var classDefinition in entities)
                   if (classDefinition is ProtocolClassDefinition &&
                       classDefinition.tableName != null)
                     refer('TableDefinition', serverpodProtocolUrl(serverCode))
@@ -992,12 +995,12 @@ class ClassGeneratorDart {
           const Code(
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
-            for (var classInfo in protocolDefinition.entities)
+            for (var classInfo in entities)
               refer(classInfo.className, classInfo.fileRef()): Code.scope((a) =>
                   '${a(refer(classInfo.className, classInfo.fileRef()))}'
                   '.fromJson(data'
                   '${classInfo is ProtocolClassDefinition ? ',this' : ''}) as T'),
-            for (var classInfo in protocolDefinition.entities)
+            for (var classInfo in entities)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
@@ -1011,7 +1014,7 @@ class ClassGeneratorDart {
                   '${classInfo is ProtocolClassDefinition ? ',this' : ''})'
                   ':null)as T'),
           }..addEntries([
-                  for (var classInfo in protocolDefinition.entities)
+                  for (var classInfo in entities)
                     if (classInfo is ProtocolClassDefinition)
                       for (var field in classInfo.fields)
                         ...field.type.generateDeserialization(serverCode,
@@ -1074,7 +1077,7 @@ class ClassGeneratorDart {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in protocolDefinition.entities)
+          for (var classInfo in entities)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return super.getClassNameForObject(data);'),
@@ -1099,7 +1102,7 @@ class ClassGeneratorDart {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
-          for (var classInfo in protocolDefinition.entities)
+          for (var classInfo in entities)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
@@ -1127,12 +1130,12 @@ class ClassGeneratorDart {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              if (protocolDefinition.entities.any((classInfo) =>
+              if (entities.any((classInfo) =>
                   classInfo is ProtocolClassDefinition &&
                   classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
-                  for (var classInfo in protocolDefinition.entities)
+                  for (var classInfo in entities)
                     if (classInfo is ProtocolClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>

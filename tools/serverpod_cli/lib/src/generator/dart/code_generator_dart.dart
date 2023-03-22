@@ -25,6 +25,7 @@ class DartCodeGenerator extends CodeGenerator {
       config: config,
     );
     return {
+      // Server
       for (var protocolFile in protocolDefinition.entities)
         p.joinAll([
           config.relativeGeneratedServerProtocolPath,
@@ -37,6 +38,12 @@ class DartCodeGenerator extends CodeGenerator {
           () async => serverClassGenerator
               .generateProtocol(verbose: verbose)
               .generateCode(true),
+      p.join(config.relativeGeneratedServerProtocolPath, 'endpoints.dart'):
+          () async => serverClassGenerator
+              .generateServerEndpointDispatch()
+              .generateCode(true),
+
+      // Client
       for (var protocolFile in protocolDefinition.entities)
         if (!protocolFile.serverOnly)
           p.joinAll([
@@ -47,12 +54,8 @@ class DartCodeGenerator extends CodeGenerator {
               .generateEntityFile(protocolFile)
               .generateCode(true),
       p.joinAll([config.relativeGeneratedClientProtocolPath, 'protocol.dart']):
-          () async => serverClassGenerator
+          () async => clientClassGenerator
               .generateProtocol(verbose: verbose)
-              .generateCode(true),
-      p.join(config.relativeGeneratedServerProtocolPath, 'endpoints.dart'):
-          () async => serverClassGenerator
-              .generateServerEndpointDispatch()
               .generateCode(true),
       p.join(config.relativeGeneratedClientProtocolPath, 'client.dart'):
           () async => clientClassGenerator
@@ -64,22 +67,19 @@ class DartCodeGenerator extends CodeGenerator {
 
 extension on Library {
   String generateCode(bool dartFormat) {
-    var code = (toBuilder()
-          ..ignoreForFile.addAll([
-            'library_private_types_in_public_api',
-            'public_member_api_docs',
-            'implementation_imports',
-          ])
-          ..comments.addAll([
-            '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */',
-            '/*   To generate run: "serverpod generate"    */',
-          ]))
-        .build()
-        .accept(DartEmitter.scoped(useNullSafetySyntax: true))
-        .toString();
+    var code = accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString();
     if (dartFormat) {
       try {
-        return DartFormatter().format(code);
+        return DartFormatter().format('''
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: implementation_imports
+
+$code
+''');
       } on FormatterException catch (e) {
         printww(e.toString());
       }
