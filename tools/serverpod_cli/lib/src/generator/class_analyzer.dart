@@ -14,69 +14,6 @@ import 'config.dart';
 import 'protocol_definition.dart';
 import 'types.dart';
 
-List<ProtocolFileDefinition> performAnalyzeClasses({
-  bool verbose = true,
-  required CodeAnalysisCollector collector,
-  required GeneratorConfig config,
-}) {
-  var classDefinitions = <ProtocolFileDefinition>[];
-
-  // Get list of all files in protocol source directory.
-  var sourceDir = Directory(config.protocolSourcePath);
-  var sourceFileList = sourceDir.listSync(recursive: true);
-  sourceFileList.sort((a, b) => a.path.compareTo(b.path));
-
-  for (var entity in sourceFileList) {
-    if (entity is! File || !entity.path.endsWith('.yaml')) {
-      if (verbose) print('  - skipping file: ${entity.path}');
-      continue;
-    }
-    String? subDirectory = extractSubdirectoryFromRelativePath(
-        entity.path, config.protocolSourcePath);
-
-    // Process a file.
-    if (verbose) print('  - processing file: ${entity.path}');
-    var yaml = entity.readAsStringSync();
-    var analyzer = ClassAnalyzer(
-      yaml: yaml,
-      sourceFileName: entity.path,
-      outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
-      collector: collector,
-      subDirectory: subDirectory,
-    );
-    var classDefinition = analyzer.analyze();
-    if (classDefinition != null) {
-      classDefinitions.add(classDefinition);
-    }
-  }
-
-  //Detect protocol references
-  for (var classDefinition in classDefinitions) {
-    if (classDefinition is ClassDefinition) {
-      for (var fieldDefinition in classDefinition.fields) {
-        fieldDefinition.type =
-            fieldDefinition.type.applyProtocolReferences(classDefinitions);
-      }
-    }
-  }
-
-  // Detect enum fields
-  for (var classDefinition in classDefinitions) {
-    if (classDefinition is ClassDefinition) {
-      for (var fieldDefinition in classDefinition.fields) {
-        if (fieldDefinition.type.url == 'protocol' &&
-            classDefinitions
-                .whereType<EnumDefinition>()
-                .any((e) => e.className == fieldDefinition.type.className)) {
-          fieldDefinition.type.isEnum = true;
-        }
-      }
-    }
-  }
-
-  return classDefinitions;
-}
-
 String _transformFileNameWithoutPathOrExtension(String path) {
   var pathComponents = path.split(Platform.pathSeparator);
   var fileName = pathComponents.last;
@@ -84,14 +21,15 @@ String _transformFileNameWithoutPathOrExtension(String path) {
   return fileName;
 }
 
-class ClassAnalyzer {
+/// Used to analyze a singe yaml protocol file.
+class ProtocolFileAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
   final String? subDirectory;
   final CodeAnalysisCollector collector;
 
-  ClassAnalyzer({
+  ProtocolFileAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -99,7 +37,71 @@ class ClassAnalyzer {
     required this.collector,
   });
 
-  ProtocolFileDefinition? analyze() {
+  /// Used to analyze all yaml files int the protocol directory.
+  static List<ProtocolFileDefinition> analyzeFiles({
+    bool verbose = true,
+    required CodeAnalysisCollector collector,
+    required GeneratorConfig config,
+  }) {
+    var classDefinitions = <ProtocolFileDefinition>[];
+
+    // Get list of all files in protocol source directory.
+    var sourceDir = Directory(config.protocolSourcePath);
+    var sourceFileList = sourceDir.listSync(recursive: true);
+    sourceFileList.sort((a, b) => a.path.compareTo(b.path));
+
+    for (var entity in sourceFileList) {
+      if (entity is! File || !entity.path.endsWith('.yaml')) {
+        if (verbose) print('  - skipping file: ${entity.path}');
+        continue;
+      }
+      String? subDirectory = extractSubdirectoryFromRelativePath(
+          entity.path, config.protocolSourcePath);
+
+      // Process a file.
+      if (verbose) print('  - processing file: ${entity.path}');
+      var yaml = entity.readAsStringSync();
+      var analyzer = ProtocolFileAnalyzer(
+        yaml: yaml,
+        sourceFileName: entity.path,
+        outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
+        collector: collector,
+        subDirectory: subDirectory,
+      );
+      var classDefinition = analyzer._analyze();
+      if (classDefinition != null) {
+        classDefinitions.add(classDefinition);
+      }
+    }
+
+    //Detect protocol references
+    for (var classDefinition in classDefinitions) {
+      if (classDefinition is ClassDefinition) {
+        for (var fieldDefinition in classDefinition.fields) {
+          fieldDefinition.type =
+              fieldDefinition.type.applyProtocolReferences(classDefinitions);
+        }
+      }
+    }
+
+    // Detect enum fields
+    for (var classDefinition in classDefinitions) {
+      if (classDefinition is ClassDefinition) {
+        for (var fieldDefinition in classDefinition.fields) {
+          if (fieldDefinition.type.url == 'protocol' &&
+              classDefinitions
+                  .whereType<EnumDefinition>()
+                  .any((e) => e.className == fieldDefinition.type.className)) {
+            fieldDefinition.type.isEnum = true;
+          }
+        }
+      }
+    }
+
+    return classDefinitions;
+  }
+
+  ProtocolFileDefinition? _analyze() {
     var yamlErrorCollector = ErrorCollector();
 
     YamlDocument document;

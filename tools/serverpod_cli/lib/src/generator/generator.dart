@@ -25,7 +25,7 @@ Future<void> performGenerate({
   if (verbose) {
     print('Analyzing protocol yaml files.');
   }
-  var classDefinitions = performAnalyzeClasses(
+  var classDefinitions = ProtocolFileAnalyzer.analyzeFiles(
     verbose: verbose,
     collector: collector,
     config: config,
