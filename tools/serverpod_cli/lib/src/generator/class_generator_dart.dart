@@ -4,7 +4,6 @@ import 'package:code_builder/code_builder.dart';
 import 'class_generator.dart';
 import 'config.dart';
 import 'protocol_definition.dart';
-import 'types.dart';
 
 String serverpodUrl(bool serverCode) {
   return serverCode
@@ -798,7 +797,7 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   @override
-  Library generateFactory(List<ProtocolFileDefinition> classInfos,
+  Library generateFactory(List<ProtocolFileDefinition> protocolFileDefinitions,
       ProtocolDefinition protocolDefinition) {
     var library = LibraryBuilder();
 
@@ -808,7 +807,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
     // exports
     library.directives.addAll([
-      for (var classInfo in classInfos) Directive.export(classInfo.fileRef()),
+      for (var classInfo in protocolFileDefinitions) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -990,12 +989,12 @@ class ClassGeneratorDart extends ClassGenerator {
           const Code(
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
-            for (var classInfo in classInfos)
+            for (var classInfo in protocolFileDefinitions)
               refer(classInfo.className, classInfo.fileRef()): Code.scope(
                   (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
                       '.fromJson(data'
                       '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
-            for (var classInfo in classInfos)
+            for (var classInfo in protocolFileDefinitions)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
@@ -1009,7 +1008,7 @@ class ClassGeneratorDart extends ClassGenerator {
                   '${classInfo is ClassDefinition ? ',this' : ''})'
                   ':null)as T'),
           }..addEntries([
-                  for (var classInfo in classInfos)
+                  for (var classInfo in protocolFileDefinitions)
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields)
                         ...field.type.generateDeserialization(serverCode,
@@ -1072,7 +1071,7 @@ class ClassGeneratorDart extends ClassGenerator {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in classInfos)
+          for (var classInfo in protocolFileDefinitions)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return super.getClassNameForObject(data);'),
@@ -1097,7 +1096,7 @@ class ClassGeneratorDart extends ClassGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
-          for (var classInfo in classInfos)
+          for (var classInfo in protocolFileDefinitions)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
@@ -1125,11 +1124,11 @@ class ClassGeneratorDart extends ClassGenerator {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              if (classInfos.any((classInfo) =>
+              if (protocolFileDefinitions.any((classInfo) =>
                   classInfo is ClassDefinition && classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
-                  for (var classInfo in classInfos)
+                  for (var classInfo in protocolFileDefinitions)
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>

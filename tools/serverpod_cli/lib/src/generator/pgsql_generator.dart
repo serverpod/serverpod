@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'class_generator_dart.dart';
 import 'protocol_definition.dart';
 
 class PgsqlGenerator {

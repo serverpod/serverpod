@@ -110,6 +110,6 @@ abstract class ClassGenerator {
 
   Library generateFile(ProtocolFileDefinition protocolFileDefinition);
 
-  Library generateFactory(List<ProtocolFileDefinition> classNames,
+  Library generateFactory(List<ProtocolFileDefinition> protocolFileDefinitions,
       ProtocolDefinition protocolDefinition);
 }

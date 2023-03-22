@@ -2,7 +2,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:path/path.dart' as p;
 
 import '../util/extensions.dart';
-import 'class_generator_dart.dart';
 import 'types.dart';
 
 class ProtocolDefinition {
