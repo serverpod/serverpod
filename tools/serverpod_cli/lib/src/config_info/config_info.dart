@@ -17,22 +17,4 @@ class ConfigInfo {
       authenticationKeyManager: keyManager,
     );
   }
-
-  void printAddress() {
-    // TODO: Fix
-    // if (serverId != null) {
-    //   print(config.cluster[serverId]!.address);
-    // } else {
-    //   for (var id in config.cluster.keys) {
-    //     print(config.cluster[id]!.address);
-    //   }
-    // }
-  }
-
-  void printIds() {
-    // TODO: Fix
-    // for (var id in config.cluster.keys) {
-    //   print('$id');
-    // }
-  }
 }
