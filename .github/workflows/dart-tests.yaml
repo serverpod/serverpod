@@ -7,7 +7,6 @@ on:
       - dev
       - tests
       - stable-1.0
-      - fix-770 
   pull_request:
     branches:
       - main
