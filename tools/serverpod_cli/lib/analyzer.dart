@@ -2,7 +2,7 @@
 library analyzer;
 
 export 'src/generator/config.dart' show GeneratorConfig;
-export 'src/generator/class_analyzer.dart' show ProtocolFileAnalyzer;
+export 'src/analyzer/file_analyzer.dart' show ProtocolFileAnalyzer;
 export 'src/generator/code_analysis_collector.dart' show CodeAnalysisCollector;
 export 'package:source_span/source_span.dart'
     show SourceSpanException; // The collector uses them.

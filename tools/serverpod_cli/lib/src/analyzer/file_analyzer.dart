@@ -7,10 +7,10 @@ import '../util/string_validators.dart';
 import '../util/extensions.dart';
 import '../util/subdirectory_extraction.dart';
 import '../util/yaml_docs.dart';
-import 'code_analysis_collector.dart';
-import 'config.dart';
-import 'protocol_definition.dart';
-import 'types.dart';
+import '../generator/code_analysis_collector.dart';
+import '../generator/config.dart';
+import '../generator/protocol_definition.dart';
+import '../generator/types.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
   var pathComponents = path.split(Platform.pathSeparator);
