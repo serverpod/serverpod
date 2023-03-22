@@ -1,10 +1,12 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
+import 'package:path/path.dart' as p;
 
-import 'class_generator.dart';
-import 'config.dart';
-import '../analyzer/dart/definitions.dart';
+import '../config.dart';
+import '../../analyzer/dart/definitions.dart';
 
 String serverpodUrl(bool serverCode) {
   return serverCode
@@ -18,24 +20,23 @@ String serverpodProtocolUrl(bool serverCode) {
       : 'package:serverpod_client/serverpod_client.dart';
 }
 
-class ClassGeneratorDart extends ClassGenerator {
-  @override
-  String get outputExtension => '.dart';
+class ClassGeneratorDart {
+  final bool serverCode;
+
+  final ProtocolDefinition protocolDefinition;
+  final GeneratorConfig config;
 
   ClassGeneratorDart({
-    required super.verbose,
-    required super.serverCode,
-    required super.classDefinitions,
-    required super.protocolDefinition,
-    required super.config,
+    required this.serverCode,
+    required this.protocolDefinition,
+    required this.config,
   });
 
-  @override
-  Library generateFile(ProtocolFileDefinition protocolFileDefinition) {
-    if (protocolFileDefinition is ClassDefinition) {
+  Library generateEntityFile(ProtocolEntityDefinition protocolFileDefinition) {
+    if (protocolFileDefinition is ProtocolClassDefinition) {
       return _generateClassFile(protocolFileDefinition);
     }
-    if (protocolFileDefinition is EnumDefinition) {
+    if (protocolFileDefinition is ProtocolEnumDefinition) {
       return _generateEnumFile(protocolFileDefinition);
     }
 
@@ -43,7 +44,7 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   // Handle ordinary classes
-  Library _generateClassFile(ClassDefinition classDefinition) {
+  Library _generateClassFile(ProtocolClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
@@ -748,7 +749,7 @@ class ClassGeneratorDart extends ClassGenerator {
   }
 
   // Handle enums.
-  Library _generateEnumFile(EnumDefinition enumDefinition) {
+  Library _generateEnumFile(ProtocolEnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
 
     var library = Library((library) {
@@ -797,9 +798,9 @@ class ClassGeneratorDart extends ClassGenerator {
     return library;
   }
 
-  @override
-  Library generateFactory(List<ProtocolFileDefinition> protocolFileDefinitions,
-      ProtocolDefinition protocolDefinition) {
+  Library generateProtocol({
+    bool verbose = false,
+  }) {
     var library = LibraryBuilder();
 
     library.body.add(const Code('// ignore_for_file: equal_keys_in_map\n'));
@@ -808,7 +809,7 @@ class ClassGeneratorDart extends ClassGenerator {
 
     // exports
     library.directives.addAll([
-      for (var classInfo in protocolFileDefinitions)
+      for (var classInfo in protocolDefinition.entities)
         Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
@@ -856,8 +857,8 @@ class ClassGeneratorDart extends ClassGenerator {
                 refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
                     .call([], {
               'tables': literalList([
-                for (var classDefinition in classDefinitions)
-                  if (classDefinition is ClassDefinition &&
+                for (var classDefinition in protocolDefinition.entities)
+                  if (classDefinition is ProtocolClassDefinition &&
                       classDefinition.tableName != null)
                     refer('TableDefinition', serverpodProtocolUrl(serverCode))
                         .call([], {
@@ -935,8 +936,8 @@ class ClassGeneratorDart extends ClassGenerator {
                           'isUnique': literalTrue,
                           'isPrimary': literalTrue,
                         }),
-                        for (var index
-                            in classDefinition.indexes ?? <IndexDefinition>[])
+                        for (var index in classDefinition.indexes ??
+                            <ProtocolIndexDefinition>[])
                           refer('IndexDefinition',
                                   serverpodProtocolUrl(serverCode))
                               .call([], {
@@ -991,12 +992,12 @@ class ClassGeneratorDart extends ClassGenerator {
           const Code(
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
-            for (var classInfo in protocolFileDefinitions)
-              refer(classInfo.className, classInfo.fileRef()): Code.scope(
-                  (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                      '.fromJson(data'
-                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
-            for (var classInfo in protocolFileDefinitions)
+            for (var classInfo in protocolDefinition.entities)
+              refer(classInfo.className, classInfo.fileRef()): Code.scope((a) =>
+                  '${a(refer(classInfo.className, classInfo.fileRef()))}'
+                  '.fromJson(data'
+                  '${classInfo is ProtocolClassDefinition ? ',this' : ''}) as T'),
+            for (var classInfo in protocolDefinition.entities)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
@@ -1007,11 +1008,11 @@ class ClassGeneratorDart extends ClassGenerator {
               ]): Code.scope((a) => '(data!=null?'
                   '${a(refer(classInfo.className, classInfo.fileRef()))}'
                   '.fromJson(data'
-                  '${classInfo is ClassDefinition ? ',this' : ''})'
+                  '${classInfo is ProtocolClassDefinition ? ',this' : ''})'
                   ':null)as T'),
           }..addEntries([
-                  for (var classInfo in protocolFileDefinitions)
-                    if (classInfo is ClassDefinition)
+                  for (var classInfo in protocolDefinition.entities)
+                    if (classInfo is ProtocolClassDefinition)
                       for (var field in classInfo.fields)
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
@@ -1073,7 +1074,7 @@ class ClassGeneratorDart extends ClassGenerator {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in protocolFileDefinitions)
+          for (var classInfo in protocolDefinition.entities)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return super.getClassNameForObject(data);'),
@@ -1098,7 +1099,7 @@ class ClassGeneratorDart extends ClassGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
-          for (var classInfo in protocolFileDefinitions)
+          for (var classInfo in protocolDefinition.entities)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
@@ -1126,12 +1127,13 @@ class ClassGeneratorDart extends ClassGenerator {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              if (protocolFileDefinitions.any((classInfo) =>
-                  classInfo is ClassDefinition && classInfo.tableName != null))
+              if (protocolDefinition.entities.any((classInfo) =>
+                  classInfo is ProtocolClassDefinition &&
+                  classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
-                  for (var classInfo in protocolFileDefinitions)
-                    if (classInfo is ClassDefinition &&
+                  for (var classInfo in protocolDefinition.entities)
+                    if (classInfo is ProtocolClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'
@@ -1164,5 +1166,392 @@ class ClassGeneratorDart extends ClassGenerator {
     } else {
       return '${config.serverPackage}.';
     }
+  }
+
+  Library generateServerEndpointDispatch() {
+    var library = LibraryBuilder();
+
+    String endpointPath(EndpointDefinition endpoint) {
+      var subDir = endpoint.subDir;
+      return p.posix.joinAll([
+        '..',
+        'endpoints',
+        if (subDir != null) ...p.split(subDir),
+        p.basename(endpoint.filePath),
+      ]);
+    }
+
+    // Endpoint class
+    library.body.add(
+      Class(
+        (c) => c
+          ..name = 'Endpoints'
+          ..extend = refer('EndpointDispatch', serverpodUrl(true))
+          // Init method
+          ..methods.add(
+            Method.returnsVoid(
+              (m) => m
+                ..name = 'initializeEndpoints'
+                ..annotations.add(refer('override'))
+                ..requiredParameters.add(Parameter(((p) => p
+                  ..name = 'server'
+                  ..type = refer('Server', serverpodUrl(true)))))
+                ..body = Block.of([
+                  // Endpoints lookup map
+                  refer('var endpoints')
+                      .assign(literalMap({
+                        for (var endpoint in protocolDefinition.endpoints)
+                          endpoint.name:
+                              refer(endpoint.className, endpointPath(endpoint))
+                                  .call([])
+                                  .cascade('initialize')
+                                  .call([
+                                    refer('server'),
+                                    literalString(endpoint.name),
+                                    config.type == PackageType.server
+                                        ? refer('null')
+                                        : literalString(config.name)
+                                  ])
+                      }, refer('String'),
+                          refer('Endpoint', serverpodUrl(true))))
+                      .statement,
+                  // Connectors
+                  for (var endpoint in protocolDefinition.endpoints)
+                    refer('connectors')
+                        .index(literalString(endpoint.name))
+                        .assign(refer('EndpointConnector', serverpodUrl(true))
+                            .call([], {
+                          'name': literalString(endpoint.name),
+                          'endpoint': refer('endpoints')
+                              .index(literalString(endpoint.name))
+                              .nullChecked,
+                          'methodConnectors': literalMap({
+                            for (var method in endpoint.methods)
+                              literalString(method.name):
+                                  refer('MethodConnector', serverpodUrl(true))
+                                      .call([], {
+                                'name': literalString(method.name),
+                                'params': literalMap({
+                                  for (var param in [
+                                    ...method.parameters,
+                                    ...method.parametersPositional,
+                                    ...method.parametersNamed,
+                                  ])
+                                    literalString(param.name): refer(
+                                            'ParameterDescription',
+                                            serverpodUrl(true))
+                                        .call([], {
+                                      'name': literalString(param.name),
+                                      'type':
+                                          refer('getType', serverpodUrl(true))
+                                              .call([], {}, [
+                                        param.type
+                                            .reference(true, config: config)
+                                      ]),
+                                      'nullable':
+                                          literalBool(param.type.nullable),
+                                    })
+                                }),
+                                'call': Method(
+                                  (m) => m
+                                    ..requiredParameters.addAll([
+                                      Parameter((p) => p
+                                        ..name = 'session'
+                                        ..type = refer(
+                                            'Session', serverpodUrl(true))),
+                                      Parameter((p) => p
+                                        ..name = 'params'
+                                        ..type = TypeReference((t) => t
+                                          ..symbol = 'Map'
+                                          ..types.addAll([
+                                            refer('String'),
+                                            refer('dynamic'),
+                                          ])))
+                                    ])
+                                    ..modifier = MethodModifier.async
+                                    ..body = refer('endpoints')
+                                        .index(literalString(endpoint.name))
+                                        .asA(refer(endpoint.className,
+                                            endpointPath(endpoint)))
+                                        .property(method.name)
+                                        .call([
+                                      refer('session'),
+                                      for (var param in [
+                                        ...method.parameters,
+                                        ...method.parametersPositional
+                                      ])
+                                        refer('params')
+                                            .index(literalString(param.name)),
+                                    ], {
+                                      for (var param in [
+                                        ...method.parametersNamed
+                                      ])
+                                        param.name: refer('params')
+                                            .index(literalString(param.name)),
+                                    }).code,
+                                ).closure,
+                              }),
+                          })
+                        }))
+                        .statement,
+                  // Hook up modules
+                  for (var module in config.modules)
+                    refer('modules')
+                        .index(literalString(module.name))
+                        .assign(refer('Endpoints',
+                                'package:${module.serverPackage}/module.dart')
+                            .call([])
+                            .cascade('initializeEndpoints')
+                            .call([refer('server')]))
+                        .statement,
+                ]),
+            ),
+          ),
+      ),
+    );
+
+    return library.build();
+  }
+
+  Library generateClientEndpointCalls() {
+    var library = LibraryBuilder();
+
+    var hasModules =
+        config.modules.isNotEmpty && config.type == PackageType.server;
+
+    var modulePrefix =
+        config.type == PackageType.server ? '' : '${config.name}.';
+
+    for (var endpointDef in protocolDefinition.endpoints) {
+      var endpointClassName = _endpointClassName(endpointDef.name);
+
+      library.body.add(
+        Class((endpoint) {
+          endpoint
+            ..docs.add(endpointDef.documentationComment ?? '')
+            ..name = endpointClassName
+            ..extend = refer('EndpointRef', serverpodUrl(false));
+
+          endpoint.methods.add(Method((m) => m
+            ..annotations.add(refer('override'))
+            ..name = 'name'
+            ..type = MethodType.getter
+            ..returns = refer('String')
+            ..body = literalString('$modulePrefix${endpointDef.name}').code));
+
+          endpoint.constructors.add(Constructor((c) => c
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'caller'
+              ..type = refer('EndpointCaller',
+                  'package:serverpod_client/serverpod_client.dart')))
+            ..initializers.add(refer('super').call([refer('caller')]).code)));
+
+          for (var methodDef in endpointDef.methods) {
+            var requiredParams = methodDef.parameters;
+            var optionalParams = methodDef.parametersPositional;
+            var namedParameters = methodDef.parametersNamed;
+            var returnType = methodDef.returnType;
+
+            endpoint.methods.add(
+              Method(
+                (m) => m
+                  ..docs.add(methodDef.documentationComment ?? '')
+                  ..returns = returnType.reference(false, config: config)
+                  ..name = methodDef.name
+                  ..requiredParameters.addAll([
+                    for (var parameterDef in requiredParams)
+                      Parameter((p) => p
+                        ..name = parameterDef.name
+                        ..type =
+                            parameterDef.type.reference(false, config: config))
+                  ])
+                  ..optionalParameters.addAll([
+                    for (var parameterDef in optionalParams)
+                      Parameter((p) => p
+                        ..named = false
+                        ..name = parameterDef.name
+                        ..type =
+                            parameterDef.type.reference(false, config: config)),
+                    for (var parameterDef in namedParameters)
+                      Parameter((p) => p
+                        ..named = true
+                        ..required = parameterDef.required
+                        ..name = parameterDef.name
+                        ..type =
+                            parameterDef.type.reference(false, config: config))
+                  ])
+                  ..body = refer('caller').property('callServerEndpoint').call([
+                    literalString('$modulePrefix${endpointDef.name}'),
+                    literalString(methodDef.name),
+                    literalMap({
+                      for (var parameterDef in requiredParams)
+                        literalString(parameterDef.name):
+                            refer(parameterDef.name),
+                      for (var parameterDef in optionalParams)
+                        literalString(parameterDef.name):
+                            refer(parameterDef.name),
+                      for (var parameterDef in namedParameters)
+                        literalString(parameterDef.name):
+                            refer(parameterDef.name),
+                    })
+                  ], {}, [
+                    methodDef.returnType.generics.first
+                        .reference(false, config: config)
+                  ]).code,
+              ),
+            );
+          }
+        }),
+      );
+    }
+
+    if (hasModules) {
+      library.body.add(
+        Class((c) => c
+          ..name = '_Modules'
+          ..fields.addAll([
+            for (var module in config.modules)
+              Field((f) => f
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..name = module.nickname
+                ..type = refer('Caller', module.url(false))),
+          ])
+          ..constructors.add(
+            Constructor((c) => c
+              ..requiredParameters.add(Parameter((p) => p
+                ..type = refer('Client')
+                ..name = 'client'))
+              ..body = Block.of([
+                for (var module in config.modules)
+                  refer(module.nickname)
+                      .assign(refer('Caller', module.url(false))
+                          .call([refer('client')]))
+                      .statement,
+              ])),
+          )),
+      );
+    }
+
+    library.body.add(
+      Class(
+        (c) => c
+          ..name = config.type == PackageType.server ? 'Client' : 'Caller'
+          ..extend = config.type == PackageType.server
+              ? refer('ServerpodClient', serverpodUrl(false))
+              : refer('ModuleEndpointCaller', serverpodUrl(false))
+          ..fields.addAll([
+            for (var endpointDef in protocolDefinition.endpoints)
+              Field((f) => f
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..name = endpointDef.name
+                ..type = refer(_endpointClassName(endpointDef.name))),
+            if (hasModules)
+              Field((f) => f
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..name = 'modules'
+                ..type = refer('_Modules')),
+          ])
+          ..constructors.add(
+            Constructor((c) {
+              if (config.type == PackageType.server) {
+                c
+                  ..requiredParameters.add(Parameter((p) => p
+                    ..type = refer('String')
+                    ..name = 'host'))
+                  ..optionalParameters.addAll([
+                    Parameter((p) => p
+                      ..name = 'context'
+                      ..named = true
+                      ..type = TypeReference((t) => t
+                        ..symbol = 'SecurityContext'
+                        ..url = 'dart:io'
+                        ..isNullable = true)),
+                    Parameter((p) => p
+                      ..name = 'authenticationKeyManager'
+                      ..named = true
+                      ..type = TypeReference((t) => t
+                        ..symbol = 'AuthenticationKeyManager'
+                        ..url = serverpodUrl(false)
+                        ..isNullable = true)),
+                  ])
+                  ..initializers.add(refer('super').call([
+                    refer('host'),
+                    refer('Protocol', 'protocol.dart').call([])
+                  ], {
+                    'context': refer('context'),
+                    'authenticationKeyManager':
+                        refer('authenticationKeyManager'),
+                  }).code);
+              } else {
+                c
+                  ..requiredParameters.add(Parameter((p) => p
+                    ..type = refer('ServerpodClientShared', serverpodUrl(false))
+                    ..name = 'client'))
+                  ..initializers
+                      .add(refer('super').call([refer('client')]).code);
+              }
+              c.body = Block.of([
+                for (var endpointDef in protocolDefinition.endpoints)
+                  refer(endpointDef.name)
+                      .assign(refer(_endpointClassName(endpointDef.name))
+                          .call([refer('this')]))
+                      .statement,
+                if (hasModules)
+                  refer('modules')
+                      .assign(refer('_Modules').call([refer('this')]))
+                      .statement,
+              ]);
+            }),
+          )
+          ..methods.addAll(
+            [
+              Method(
+                (m) => m
+                  ..name = 'endpointRefLookup'
+                  ..annotations.add(refer('override'))
+                  ..type = MethodType.getter
+                  ..returns = TypeReference((t) => t
+                    ..symbol = 'Map'
+                    ..types.addAll([
+                      refer('String'),
+                      refer('EndpointRef', serverpodUrl(false)),
+                    ]))
+                  ..body = literalMap({
+                    for (var endpointDef in protocolDefinition.endpoints)
+                      '$modulePrefix${endpointDef.name}':
+                          refer(endpointDef.name)
+                  }).code,
+              ),
+              if (config.type == PackageType.server)
+                Method(
+                  (m) => m
+                    ..name = 'moduleLookup'
+                    ..annotations.add(refer('override'))
+                    ..type = MethodType.getter
+                    ..returns = TypeReference((t) => t
+                      ..symbol = 'Map'
+                      ..types.addAll([
+                        refer('String'),
+                        refer('ModuleEndpointCaller', serverpodUrl(false)),
+                      ]))
+                    ..body = literalMap({
+                      for (var module in config.modules)
+                        module.nickname:
+                            refer('modules').property(module.nickname),
+                    }).code,
+                ),
+            ],
+          ),
+      ),
+    );
+
+    return library.build();
+  }
+
+  String _endpointClassName(String endpointName) {
+    return '_Endpoint${ReCase(endpointName).pascalCase}';
   }
 }

@@ -5,13 +5,13 @@ import 'package:serverpod_cli/src/generator/types.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
-abstract class ProtocolFileDefinition {
+abstract class ProtocolEntityDefinition {
   final String fileName;
   final String className;
   final String? subDir;
   final bool serverOnly;
 
-  ProtocolFileDefinition({
+  ProtocolEntityDefinition({
     required this.fileName,
     required this.className,
     required this.serverOnly,
@@ -30,19 +30,19 @@ abstract class ProtocolFileDefinition {
 /// protocol directory defining a class or exception.
 ///
 /// See also:
-/// - [EnumDefinition]
-class ClassDefinition extends ProtocolFileDefinition {
+/// - [ProtocolEnumDefinition]
+class ProtocolClassDefinition extends ProtocolEntityDefinition {
   /// If set, the name of the table, this class should be stored in,
   /// in the database.
   final String? tableName;
 
   /// The fields of this class / exception.
-  final List<FieldDefinition> fields;
+  final List<ProtocolFieldDefinition> fields;
 
   /// The indexes that should be created for the table [tableName]
   /// representing this class.
   /// The index over the primary key `id` is not part of this list.
-  final List<IndexDefinition>? indexes;
+  final List<ProtocolIndexDefinition>? indexes;
 
   /// The documentation of this class, line by line.
   final List<String>? documentation;
@@ -50,8 +50,8 @@ class ClassDefinition extends ProtocolFileDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
-  /// Create a new [ClassDefinition].
-  ClassDefinition({
+  /// Create a new [ProtocolClassDefinition].
+  ProtocolClassDefinition({
     required super.fileName,
     required super.className,
     required this.fields,
@@ -64,8 +64,8 @@ class ClassDefinition extends ProtocolFileDefinition {
   });
 }
 
-/// Describes a single field of a [ClassDefinition].
-class FieldDefinition {
+/// Describes a single field of a [ProtocolClassDefinition].
+class ProtocolFieldDefinition {
   /// The name of the field.
   final String name;
 
@@ -77,8 +77,8 @@ class FieldDefinition {
   /// in a certain context.
   ///
   /// See also:
-  /// - [FieldScope]
-  final FieldScope scope;
+  /// - [ProtocolFieldScope]
+  final ProtocolFieldScope scope;
 
   /// If this column should have a foreign key,
   /// then [parentTable] contains the referenced table.
@@ -88,8 +88,8 @@ class FieldDefinition {
   /// The documentation of this field, line by line.
   final List<String>? documentation;
 
-  /// Create a new [FieldDefinition].
-  FieldDefinition({
+  /// Create a new [ProtocolFieldDefinition].
+  ProtocolFieldDefinition({
     required this.name,
     required this.type,
     required this.scope,
@@ -105,7 +105,8 @@ class FieldDefinition {
   /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     if (serverCode) return true;
-    if (scope == FieldScope.all || scope == FieldScope.api) return true;
+    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.api)
+      return true;
     return false;
   }
 
@@ -116,7 +117,8 @@ class FieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    if (scope == FieldScope.all || scope == FieldScope.api) return true;
+    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.api)
+      return true;
     return false;
   }
 
@@ -129,13 +131,14 @@ class FieldDefinition {
   /// - [shouldSerializeField]
   bool shouldSerializeFieldForDatabase(bool serverCode) {
     assert(serverCode);
-    if (scope == FieldScope.all || scope == FieldScope.database) return true;
+    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.database)
+      return true;
     return false;
   }
 }
 
 /// The scope where a field should be present.
-enum FieldScope {
+enum ProtocolFieldScope {
   /// Only include the associated field
   database,
   api,
@@ -144,7 +147,7 @@ enum FieldScope {
 
 /// The definition of an index for a file,
 /// that is also stored in the database.
-class IndexDefinition {
+class ProtocolIndexDefinition {
   /// The name of the index.
   final String name;
 
@@ -159,8 +162,8 @@ class IndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
-  /// Create a new [IndexDefinition].
-  IndexDefinition({
+  /// Create a new [ProtocolIndexDefinition].
+  ProtocolIndexDefinition({
     required this.name,
     required this.type,
     required this.unique,
@@ -170,16 +173,16 @@ class IndexDefinition {
 
 /// A representation of a yaml file in the
 /// protocol directory defining an enum.
-class EnumDefinition extends ProtocolFileDefinition {
+class ProtocolEnumDefinition extends ProtocolEntityDefinition {
   /// All the values of the enum.
   /// This also contains possible documentation for them.
-  List<EnumValueDefinition> values;
+  List<ProtocolEnumValueDefinition> values;
 
   /// The documentation for this enum, line by line.
   final List<String>? documentation;
 
-  /// Create a new [EnumDefinition].
-  EnumDefinition({
+  /// Create a new [ProtocolEnumDefinition].
+  ProtocolEnumDefinition({
     required super.fileName,
     required super.className,
     required this.values,
@@ -189,14 +192,14 @@ class EnumDefinition extends ProtocolFileDefinition {
   });
 }
 
-/// A representation of a single value of a [EnumDefinition].
-class EnumValueDefinition {
+/// A representation of a single value of a [ProtocolEnumDefinition].
+class ProtocolEnumValueDefinition {
   /// The name of the enums value.
   final String name;
 
   /// The documentation for this value, line by line.
   final List<String>? documentation;
 
-  /// Create a new [EnumValueDefinition].
-  EnumValueDefinition(this.name, [this.documentation]);
+  /// Create a new [ProtocolEnumValueDefinition].
+  ProtocolEnumValueDefinition(this.name, [this.documentation]);
 }

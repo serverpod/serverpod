@@ -6,9 +6,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
-import 'class_generator_dart.dart';
+import 'dart/class_generator_dart.dart';
 import 'config.dart';
-import '../analyzer/dart/definitions.dart';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -325,7 +324,7 @@ class TypeDefinition {
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
   TypeDefinition applyProtocolReferences(
-      List<ProtocolFileDefinition> classDefinitions) {
+      List<ProtocolEntityDefinition> classDefinitions) {
     return TypeDefinition(
         className: className,
         nullable: nullable,

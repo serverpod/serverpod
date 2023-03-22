@@ -7,7 +7,7 @@ import '../../util/string_validators.dart';
 import '../../util/extensions.dart';
 import '../../util/subdirectory_extraction.dart';
 import '../../util/yaml_docs.dart';
-import '../../generator/code_analysis_collector.dart';
+import '../code_analysis_collector.dart';
 import '../../generator/config.dart';
 import '../../generator/types.dart';
 import 'definitions.dart';
@@ -20,15 +20,15 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 }
 
 /// Used to analyze a singe yaml protocol file.
-class ProtocolYamlFileAnalyzer {
+class ProtocolEntityAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
   final String? subDirectory;
   final CodeAnalysisCollector collector;
 
-  /// Create a new [ProtocolYamlFileAnalyzer].
-  ProtocolYamlFileAnalyzer({
+  /// Create a new [ProtocolEntityAnalyzer].
+  ProtocolEntityAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -37,16 +37,17 @@ class ProtocolYamlFileAnalyzer {
   });
 
   /// Analyze all yaml files int the protocol directory.
-  static List<ProtocolFileDefinition> analyzeFiles({
+  static Future<List<ProtocolEntityDefinition>> analyzeFiles({
     bool verbose = true,
     required CodeAnalysisCollector collector,
     required GeneratorConfig config,
-  }) {
-    var classDefinitions = <ProtocolFileDefinition>[];
+    required Directory protocolDirectory,
+  }) async {
+    var classDefinitions = <ProtocolEntityDefinition>[];
 
     // Get list of all files in protocol source directory.
-    var sourceDir = Directory(config.protocolSourcePath);
-    var sourceFileList = sourceDir.listSync(recursive: true);
+    var sourceDir = protocolDirectory;
+    var sourceFileList = await sourceDir.list(recursive: true).toList();
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
     for (var entity in sourceFileList) {
@@ -54,13 +55,14 @@ class ProtocolYamlFileAnalyzer {
         if (verbose) print('  - skipping file: ${entity.path}');
         continue;
       }
+      //TODO: maybe do this by using protocolDirectory?
       String? subDirectory = extractSubdirectoryFromRelativePath(
-          entity.path, config.protocolSourcePath);
+          entity.path, config.relativeProtocolSourcePath);
 
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
-      var yaml = entity.readAsStringSync();
-      var analyzer = ProtocolYamlFileAnalyzer(
+      var yaml = await entity.readAsString();
+      var analyzer = ProtocolEntityAnalyzer(
         yaml: yaml,
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
@@ -75,7 +77,7 @@ class ProtocolYamlFileAnalyzer {
 
     //Detect protocol references
     for (var classDefinition in classDefinitions) {
-      if (classDefinition is ClassDefinition) {
+      if (classDefinition is ProtocolClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           fieldDefinition.type =
               fieldDefinition.type.applyProtocolReferences(classDefinitions);
@@ -85,11 +87,11 @@ class ProtocolYamlFileAnalyzer {
 
     // Detect enum fields
     for (var classDefinition in classDefinitions) {
-      if (classDefinition is ClassDefinition) {
+      if (classDefinition is ProtocolClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           if (fieldDefinition.type.url == 'protocol' &&
               classDefinitions
-                  .whereType<EnumDefinition>()
+                  .whereType<ProtocolEnumDefinition>()
                   .any((e) => e.className == fieldDefinition.type.className)) {
             fieldDefinition.type.isEnum = true;
           }
@@ -100,7 +102,7 @@ class ProtocolYamlFileAnalyzer {
     return classDefinitions;
   }
 
-  ProtocolFileDefinition? _analyze() {
+  ProtocolEntityDefinition? _analyze() {
     var yamlErrorCollector = ErrorCollector();
 
     YamlDocument document;
@@ -151,7 +153,7 @@ class ProtocolYamlFileAnalyzer {
     return null;
   }
 
-  ProtocolFileDefinition? _analyzeClassFile(
+  ProtocolEntityDefinition? _analyzeClassFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
@@ -247,14 +249,14 @@ class ProtocolYamlFileAnalyzer {
     }
 
     // Validate and add fields.
-    var fields = <FieldDefinition>[];
+    var fields = <ProtocolFieldDefinition>[];
 
     // Add default id field, if object has database table.
     if (tableName != null) {
-      fields.add(FieldDefinition(
+      fields.add(ProtocolFieldDefinition(
         name: 'id',
         type: TypeDefinition.int.asNullable,
-        scope: FieldScope.all,
+        scope: ProtocolFieldScope.all,
         documentation: [
           '/// The database id, set if the object has been inserted into the',
           '/// database or if it has been fetched from the database. Otherwise,',
@@ -331,10 +333,10 @@ class ProtocolYamlFileAnalyzer {
         }
 
         var scope = fieldOptions.any((option) => option == 'database')
-            ? FieldScope.database
+            ? ProtocolFieldScope.database
             : fieldOptions.any((option) => option == 'api')
-                ? FieldScope.api
-                : FieldScope.all;
+                ? ProtocolFieldScope.api
+                : ProtocolFieldScope.all;
 
         if (fieldOptions.where((option) => option.startsWith('parent')).length >
             1) {
@@ -365,7 +367,7 @@ class ProtocolYamlFileAnalyzer {
         var isEnum =
             fieldOptions.whereType<String?>().any((option) => option == 'enum');
 
-        var fieldDefinition = FieldDefinition(
+        var fieldDefinition = ProtocolFieldDefinition(
           name: fieldName,
           scope: scope,
           type: typeResult.type..isEnum = isEnum,
@@ -387,13 +389,13 @@ class ProtocolYamlFileAnalyzer {
 
     var validDatabaseFieldNames = <String>{};
     for (var field in fields) {
-      if (field.scope != FieldScope.api) {
+      if (field.scope != ProtocolFieldScope.api) {
         validDatabaseFieldNames.add(field.name);
       }
     }
 
     // Validate indexes.
-    List<IndexDefinition>? indexes;
+    List<ProtocolIndexDefinition>? indexes;
 
     var indexesNode = documentContents.nodes['indexes'];
     if (indexesNode != null) {
@@ -525,7 +527,7 @@ class ProtocolYamlFileAnalyzer {
           unique = uniqueVal;
         }
 
-        var indexDefinition = IndexDefinition(
+        var indexDefinition = ProtocolIndexDefinition(
           name: indexName,
           type: type,
           unique: unique,
@@ -535,7 +537,7 @@ class ProtocolYamlFileAnalyzer {
       }
     }
 
-    return ClassDefinition(
+    return ProtocolClassDefinition(
       className: className,
       tableName: tableName,
       fileName: outFileName,
@@ -548,7 +550,7 @@ class ProtocolYamlFileAnalyzer {
     );
   }
 
-  ProtocolFileDefinition? _analyzeEnumFile(
+  ProtocolEntityDefinition? _analyzeEnumFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
@@ -606,7 +608,7 @@ class ProtocolYamlFileAnalyzer {
       ));
       return null;
     }
-    var values = <EnumValueDefinition>[];
+    var values = <ProtocolEnumValueDefinition>[];
     for (var valueNode in valuesNode.nodes) {
       if (valueNode is! YamlScalar) {
         collector.addError(SourceSpanException(
@@ -640,10 +642,10 @@ class ProtocolYamlFileAnalyzer {
           line: start.line,
           sourceUrl: start.sourceUrl));
 
-      values.add(EnumValueDefinition(value, valueDocumentation));
+      values.add(ProtocolEnumValueDefinition(value, valueDocumentation));
     }
 
-    return EnumDefinition(
+    return ProtocolEnumDefinition(
       fileName: outFileName,
       className: className,
       values: values,

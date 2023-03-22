@@ -1,0 +1,89 @@
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generator/dart/class_generator_dart.dart';
+import 'package:serverpod_cli/src/util/print.dart';
+
+/// A [CodeGenerator], that generates dart code.
+class DartCodeGenerator extends CodeGenerator {
+  @override
+  Map<String, Future<String> Function()> generateCode({
+    required bool verbose,
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+  }) {
+    var serverClassGenerator = ClassGeneratorDart(
+      serverCode: true,
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+    var clientClassGenerator = ClassGeneratorDart(
+      serverCode: false,
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+    return {
+      for (var protocolFile in protocolDefinition.entities)
+        p.joinAll([
+          config.relativeGeneratedServerProtocolPath,
+          ...?protocolFile.subDir?.split('/'),
+          protocolFile.fileName,
+        ]): () async => serverClassGenerator
+            .generateEntityFile(protocolFile)
+            .generateCode(true),
+      p.joinAll([config.relativeGeneratedServerProtocolPath, 'protocol.dart']):
+          () async => serverClassGenerator
+              .generateProtocol(verbose: verbose)
+              .generateCode(true),
+      for (var protocolFile in protocolDefinition.entities)
+        if (!protocolFile.serverOnly)
+          p.joinAll([
+            config.relativeGeneratedServerProtocolPath,
+            ...?protocolFile.subDir?.split('/'),
+            protocolFile.fileName,
+          ]): () async => clientClassGenerator
+              .generateEntityFile(protocolFile)
+              .generateCode(true),
+      p.joinAll([config.relativeGeneratedClientProtocolPath, 'protocol.dart']):
+          () async => serverClassGenerator
+              .generateProtocol(verbose: verbose)
+              .generateCode(true),
+      p.join(config.relativeGeneratedServerProtocolPath, 'endpoints.dart'):
+          () async => serverClassGenerator
+              .generateServerEndpointDispatch()
+              .generateCode(true),
+      p.join(config.relativeGeneratedClientProtocolPath, 'client.dart'):
+          () async => clientClassGenerator
+              .generateClientEndpointCalls()
+              .generateCode(true),
+    };
+  }
+}
+
+extension on Library {
+  String generateCode(bool dartFormat) {
+    var code = (toBuilder()
+          ..ignoreForFile.addAll([
+            'library_private_types_in_public_api',
+            'public_member_api_docs',
+            'implementation_imports',
+          ])
+          ..comments.addAll([
+            '/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */',
+            '/*   To generate run: "serverpod generate"    */',
+          ]))
+        .build()
+        .accept(DartEmitter.scoped(useNullSafetySyntax: true))
+        .toString();
+    if (dartFormat) {
+      try {
+        return DartFormatter().format(code);
+      } on FormatterException catch (e) {
+        printww(e.toString());
+      }
+    }
+    return code;
+  }
+}

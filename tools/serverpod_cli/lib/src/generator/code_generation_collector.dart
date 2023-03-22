@@ -1,16 +1,18 @@
 import 'dart:io';
 
-import 'package:source_span/source_span.dart';
+import 'package:serverpod_cli/analyzer.dart';
 
-class CodeAnalysisCollector {
+class CodeGenerationCollector extends CodeAnalysisCollector {
   final List<SourceSpanException> errors = [];
 
   final Set<File> generatedFiles = {};
 
+  @override
   void addError(SourceSpanException error) {
     errors.add(error);
   }
 
+  @override
   void addErrors(List<SourceSpanException> errors) {
     this.errors.addAll(errors);
   }
@@ -29,6 +31,7 @@ class CodeAnalysisCollector {
     return out;
   }
 
+  @override
   void printErrors() {
     if (errors.isEmpty) {
       return;
@@ -36,6 +39,7 @@ class CodeAnalysisCollector {
     stdout.write(toString());
   }
 
+  @override
   void clearErrors() {
     errors.clear();
   }

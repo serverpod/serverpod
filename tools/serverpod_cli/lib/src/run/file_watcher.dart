@@ -14,9 +14,9 @@ class SourceFileWatcher {
   });
 
   Future<void> watch(bool verbose) async {
-    var watcherClasses = DirectoryWatcher(config.libSourcePath);
+    var watcherClasses = DirectoryWatcher(config.relativeLibSourcePath);
     await for (WatchEvent event in watcherClasses.events) {
-      if (event.path.startsWith(config.generatedServerProtocolPath)) {
+      if (event.path.startsWith(config.relativeGeneratedServerProtocolPath)) {
         continue;
       }
       switch (event.type) {
@@ -32,7 +32,7 @@ class SourceFileWatcher {
   }
 
   bool _isPathInProtocol(String path) =>
-      (path.startsWith('${config.protocolSourcePath}/') ||
-          path.startsWith('${config.endpointsSourcePath}/')) &&
+      (path.startsWith('${config.relativeProtocolSourcePath}/') ||
+          path.startsWith('${config.relativeEndpointsSourcePath}/')) &&
       (path.endsWith('.dart') || path.endsWith('.yaml'));
 }

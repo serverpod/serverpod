@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'code_analysis_collector.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 
 void performRemoveOldFiles({
   required bool verbose,
-  required CodeAnalysisCollector collector,
+  required CodeGenerationCollector collector,
   required String generatedServerProtocolPath,
   required String generatedClientProtocolPath,
 }) {

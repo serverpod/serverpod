@@ -12,7 +12,7 @@ import 'package:source_span/source_span.dart';
 import '../../util/subdirectory_extraction.dart';
 import '../../generator/config.dart';
 import 'definitions.dart';
-import '../../generator/code_analysis_collector.dart';
+import '../code_analysis_collector.dart';
 import '../../generator/types.dart';
 
 const _excludedMethodNameSet = {
@@ -25,15 +25,14 @@ const _excludedMethodNameSet = {
 };
 
 /// Analyzes dart files for the protocol specification.
-class ProtocolDartFileAnalyzer {
+class EndpointsAnalyzer {
   final Directory endpointDirectory;
   late AnalysisContextCollection collection;
 
-  /// Create a new [ProtocolDartFileAnalyzer], analyzing
-  /// all dart files in [filePath].
+  /// Create a new [EndpointsAnalyzer], analyzing
+  /// all dart files in the [endpointDirectory].
   //TODO: Make ProtocolDartFileAnalyzer testable
-  ProtocolDartFileAnalyzer(String filePath)
-      : endpointDirectory = Directory(filePath) {
+  EndpointsAnalyzer(this.endpointDirectory) {
     collection = AnalysisContextCollection(
       includedPaths: [endpointDirectory.absolute.path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
@@ -65,7 +64,7 @@ class ProtocolDartFileAnalyzer {
 
   /// Analyze all files in the [endpointDirectory].
   /// Use [changedFiles] to mark files, that need reloading.
-  Future<ProtocolDefinition> analyze({
+  Future<List<EndpointDefinition>> analyze({
     required bool verbose,
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
@@ -82,7 +81,6 @@ class ProtocolDartFileAnalyzer {
     }
 
     var endpointDefs = <EndpointDefinition>[];
-    var filePaths = <String>[];
 
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
@@ -91,7 +89,6 @@ class ProtocolDartFileAnalyzer {
         if (!filePath.endsWith('.dart')) {
           continue;
         }
-        filePaths.add(filePath);
 
         var subdirectory = extractSubdirectoryFromRelativePath(
             filePath, context.contextRoot.root.path);
@@ -169,7 +166,7 @@ class ProtocolDartFileAnalyzer {
                 documentationComment: classDocumentationComment,
                 className: className,
                 methods: methodDefs,
-                fileName: filePath,
+                filePath: filePath,
                 subDir: subdirectory,
               );
               endpointDefs.add(endpointDef);
@@ -179,12 +176,7 @@ class ProtocolDartFileAnalyzer {
       }
     }
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpointDefs,
-      filePaths: filePaths,
-    );
-
-    return protocolDefinition;
+    return endpointDefs;
   }
 
   String _formatEndpointName(String className) {

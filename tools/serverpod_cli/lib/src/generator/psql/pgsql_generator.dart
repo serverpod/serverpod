@@ -1,38 +1,43 @@
-import 'dart:io';
-
+import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
+import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:serverpod_cli/src/generator/config.dart';
+import 'package:path/path.dart' as p;
 
-import '../analyzer/dart/definitions.dart';
+class PgsqlGenerator extends CodeGenerator {
+  PgsqlGenerator();
 
-class PgsqlGenerator {
-  final List<ProtocolFileDefinition> classInfos;
-  final String outPath;
+  @override
+  Map<String, Future<String> Function()> generateCode(
+      {required bool verbose,
+      required ProtocolDefinition protocolDefinition,
+      required GeneratorConfig config}) {
+    return {
+      p.join('generated', 'tables.pgsql'): () async =>
+          _generate(protocolDefinition),
+    };
+  }
 
-  PgsqlGenerator({
-    required this.classInfos,
-    required this.outPath,
-  });
-
-  void generate() {
+  String _generate(ProtocolDefinition protocolDefinition) {
     var out = '';
 
-    var tableInfoList = classInfos.toList();
+    var tableInfoList = protocolDefinition.entities.toList();
     tableInfoList.removeWhere(
-      (element) => (element is! ClassDefinition) || element.tableName == null,
+      (element) =>
+          (element is! ProtocolClassDefinition) || element.tableName == null,
     );
     _sortClassInfos(tableInfoList.cast());
 
     for (var tableInfo in tableInfoList) {
-      if (tableInfo is ClassDefinition && tableInfo.tableName != null) {
+      if (tableInfo is ProtocolClassDefinition && tableInfo.tableName != null) {
         out += _generatePgsql(tableInfo);
       }
     }
 
-    var outFile = File(outPath);
-    outFile.writeAsStringSync(out);
+    return out;
   }
 
-  void _sortClassInfos(List<ClassDefinition> tableInfos) {
+  void _sortClassInfos(List<ProtocolClassDefinition> tableInfos) {
     // First sort by name to make sure that we get consistant output
     tableInfos.sort((a, b) => a.tableName!.compareTo(b.tableName!));
 
@@ -79,7 +84,7 @@ class PgsqlGenerator {
     }
   }
 
-  String _generatePgsql(ClassDefinition classInfo) {
+  String _generatePgsql(ProtocolClassDefinition classInfo) {
     var out = '';
 
     // Header
@@ -97,7 +102,7 @@ class PgsqlGenerator {
       if (field.name == 'id') continue;
 
       // Skip fields that are API only
-      if (field.scope == FieldScope.api) continue;
+      if (field.scope == ProtocolFieldScope.api) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';

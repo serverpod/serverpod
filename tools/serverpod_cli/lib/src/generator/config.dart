@@ -19,13 +19,14 @@ class GeneratorConfig {
   late String clientPackage;
   late bool clientDependsOnServiceClient;
 
-  final String libSourcePath = 'lib';
-  final String protocolSourcePath = p.join('lib', 'src', 'protocol');
-  final String endpointsSourcePath = p.join('lib', 'src', 'endpoints');
+  final String relativeLibSourcePath = 'lib';
+  final String relativeProtocolSourcePath = p.join('lib', 'src', 'protocol');
+  final String relativeEndpointsSourcePath = p.join('lib', 'src', 'endpoints');
 
-  late String clientPackagePath;
-  late String generatedClientProtocolPath;
-  final String generatedServerProtocolPath = p.join('lib', 'src', 'generated');
+  late String relativeClientPackagePath;
+  late String relativeGeneratedClientProtocolPath;
+  final String relativeGeneratedServerProtocolPath =
+      p.join('lib', 'src', 'generated');
 
   List<ModuleConfig> modules = [];
 
@@ -84,9 +85,9 @@ class GeneratorConfig {
       throw const FormatException(
           'Option "client_package_path" is required in config/generator.yaml');
     }
-    clientPackagePath = generatorConfig['client_package_path'];
+    relativeClientPackagePath = generatorConfig['client_package_path'];
     try {
-      var file = File(p.join(clientPackagePath, 'pubspec.yaml'));
+      var file = File(p.join(relativeClientPackagePath, 'pubspec.yaml'));
       var yamlStr = file.readAsStringSync();
       var yaml = loadYaml(yamlStr);
       clientPackage = yaml['name'];
@@ -97,8 +98,8 @@ class GeneratorConfig {
           'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
       return false;
     }
-    generatedClientProtocolPath =
-        p.join(clientPackagePath, 'lib', 'src', 'protocol');
+    relativeGeneratedClientProtocolPath =
+        p.join(relativeClientPackagePath, 'lib', 'src', 'protocol');
 
     // Load module settings
     modules = [];
@@ -141,10 +142,10 @@ class GeneratorConfig {
   @override
   String toString() {
     var str = '''type: $type
-sourceProtocol: $protocolSourcePath
-sourceEndpoints: $endpointsSourcePath
-generatedClientDart: $generatedClientProtocolPath
-generatedServerProtocol: $generatedServerProtocolPath
+sourceProtocol: $relativeProtocolSourcePath
+sourceEndpoints: $relativeEndpointsSourcePath
+generatedClientDart: $relativeGeneratedClientProtocolPath
+generatedServerProtocol: $relativeGeneratedServerProtocolPath
 ''';
     if (modules.isNotEmpty) {
       str += '\nmodules:\n\n';

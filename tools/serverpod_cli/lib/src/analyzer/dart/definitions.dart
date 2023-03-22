@@ -1,25 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:serverpod_cli/src/analyzer/yaml/file_analyzer.dart';
 
 import '../../generator/types.dart';
-
-/// Defines a projects protocol.
-/// This does not include stuff the [ProtocolYamlFileAnalyzer] analyzed.
-class ProtocolDefinition {
-  /// The endpoints that are a part of this protocol.
-  /// This does not include endpoints from other modules or package:serverpod.
-  final List<EndpointDefinition> endpoints;
-
-  /// The file paths the [endpoints] are defined in.
-  //TODO: Maybe this should be part of the endpoint definition.
-  final List<String> filePaths;
-
-  /// Create a new [ProtocolDefinition].
-  const ProtocolDefinition({
-    required this.endpoints,
-    required this.filePaths,
-  });
-}
 
 /// Describes a single endpoint.
 ///
@@ -35,8 +16,8 @@ class EndpointDefinition {
   /// The actual class name of the endpoint.
   final String className;
 
-  /// The file name, the endpoint is stored in.
-  final String fileName;
+  /// The file path, the endpoint is stored in.
+  final String filePath;
 
   /// The methods this endpoint defines.
   final List<MethodDefinition> methods;
@@ -51,7 +32,7 @@ class EndpointDefinition {
     required this.documentationComment,
     required this.methods,
     required this.className,
-    required this.fileName,
+    required this.filePath,
     required this.subDir,
   });
 }
