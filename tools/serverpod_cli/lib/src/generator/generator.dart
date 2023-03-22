@@ -91,8 +91,7 @@ Future<void> performGenerate({
 typedef CodeGenerator = String Function(Spec spec);
 
 String generateCode(Spec spec, bool dartFormat) {
-  String code =
-      '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+  String code = '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: library_private_types_in_public_api
