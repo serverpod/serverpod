@@ -27,6 +27,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
+  /// True if this type references a enum.
   bool isEnum;
 
   TypeDefinition({

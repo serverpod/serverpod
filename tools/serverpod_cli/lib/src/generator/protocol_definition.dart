@@ -126,6 +126,46 @@ class ClassDefinition extends ProtocolFileDefinition {
   });
 }
 
+enum FieldScope {
+  database,
+  api,
+  all,
+}
+
+class FieldDefinition {
+  final String name;
+  TypeDefinition type;
+
+  final FieldScope scope;
+  final String? parentTable;
+  final List<String>? documentation;
+
+  FieldDefinition({
+    required this.name,
+    required this.type,
+    required this.scope,
+    this.parentTable,
+    this.documentation,
+  });
+
+  bool shouldIncludeField(bool serverCode) {
+    if (serverCode) return true;
+    if (scope == FieldScope.all || scope == FieldScope.api) return true;
+    return false;
+  }
+
+  bool shouldSerializeField(bool serverCode) {
+    if (scope == FieldScope.all || scope == FieldScope.api) return true;
+    return false;
+  }
+
+  bool shouldSerializeFieldForDatabase(bool serverCode) {
+    assert(serverCode);
+    if (scope == FieldScope.all || scope == FieldScope.database) return true;
+    return false;
+  }
+}
+
 class EnumDefinition extends ProtocolFileDefinition {
   List<EnumValueDefinition> values;
   final List<String>? documentation;
