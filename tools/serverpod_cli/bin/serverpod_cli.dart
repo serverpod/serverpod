@@ -4,17 +4,17 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
-import 'analytics/analytics.dart';
-import 'create/create.dart';
-import 'downloads/resource_manager.dart';
-import 'generated/version.dart';
-import 'generator/generator.dart';
-import 'generator/generator_continuous.dart';
-import 'internal_tools/generate_pubspecs.dart';
-import 'shared/environment.dart';
-import 'util/command_line_tools.dart';
-import 'util/internal_error.dart';
-import 'util/version.dart';
+import 'package:serverpod_cli/src/analytics/analytics.dart';
+import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/downloads/resource_manager.dart';
+import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/generator.dart';
+import 'package:serverpod_cli/src/generator/generator_continuous.dart';
+import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
+import 'package:serverpod_cli/src/shared/environment.dart';
+import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/version.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
