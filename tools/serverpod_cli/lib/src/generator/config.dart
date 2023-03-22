@@ -85,7 +85,8 @@ class GeneratorConfig {
       throw const FormatException(
           'Option "client_package_path" is required in config/generator.yaml');
     }
-    relativeClientPackagePath = generatorConfig['client_package_path'];
+    relativeClientPackagePath =
+        p.joinAll(p.split(generatorConfig['client_package_path']));
     try {
       var file = File(p.join(relativeClientPackagePath, 'pubspec.yaml'));
       var yamlStr = file.readAsStringSync();

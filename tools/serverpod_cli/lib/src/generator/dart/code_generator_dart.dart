@@ -29,7 +29,7 @@ class DartCodeGenerator extends CodeGenerator {
         p.joinAll([
           config.relativeGeneratedServerProtocolPath,
           ...?protocolFile.subDir?.split('/'),
-          protocolFile.fileName,
+          '${protocolFile.fileName}.dart',
         ]): () async => serverClassGenerator
             .generateEntityFile(protocolFile)
             .generateCode(true),
@@ -40,9 +40,9 @@ class DartCodeGenerator extends CodeGenerator {
       for (var protocolFile in protocolDefinition.entities)
         if (!protocolFile.serverOnly)
           p.joinAll([
-            config.relativeGeneratedServerProtocolPath,
+            config.relativeGeneratedClientProtocolPath,
             ...?protocolFile.subDir?.split('/'),
-            protocolFile.fileName,
+            '${protocolFile.fileName}.dart',
           ]): () async => clientClassGenerator
               .generateEntityFile(protocolFile)
               .generateCode(true),
