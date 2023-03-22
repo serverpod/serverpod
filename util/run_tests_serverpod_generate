@@ -25,6 +25,8 @@ dart pub global activate -s path .
 
 cd $SERVERPOD_HOME
 
+util/pub_get_all
+
 util/generate_all
 
 util/ensure_no_changes
