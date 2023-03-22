@@ -125,7 +125,13 @@ class _EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
-  /// Returns the desired structure of the database.
+  /// Returns the target structure of the database defined in the
+  /// yaml files of the protocol folder.
+  /// This includes the developers project, all used modules
+  /// and the main serverpod package.
+  ///
+  /// This information can be used for database migration.
+  ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
   _i2.Future<_i8.DatabaseDefinition> getTargetDatabaseDefinition() =>
@@ -135,7 +141,11 @@ class _EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
-  /// Returns the current structure of the database.
+  /// Returns the structure of the live database by
+  /// extracting it using SQL.
+  ///
+  /// This information can be used for database migration.
+  ///
   /// See also:
   /// - [getTargetDatabaseDefinition]
   _i2.Future<_i8.DatabaseDefinition> getLiveDatabaseDefinition() =>

@@ -179,7 +179,13 @@ class InsightsEndpoint extends Endpoint {
     return await HotReloader.hotReload();
   }
 
-  /// Returns the desired structure of the database.
+  /// Returns the target structure of the database defined in the
+  /// yaml files of the protocol folder.
+  /// This includes the developers project, all used modules
+  /// and the main serverpod package.
+  ///
+  /// This information can be used for database migration.
+  ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
   Future<DatabaseDefinition> getTargetDatabaseDefinition(
@@ -187,7 +193,11 @@ class InsightsEndpoint extends Endpoint {
     return session.serverpod.serializationManager.getTargetDatabaseDefinition();
   }
 
-  /// Returns the current structure of the database.
+  /// Returns the structure of the live database by
+  /// extracting it using SQL.
+  ///
+  /// This information can be used for database migration.
+  ///
   /// See also:
   /// - [getTargetDatabaseDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
