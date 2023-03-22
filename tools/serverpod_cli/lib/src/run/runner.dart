@@ -18,7 +18,10 @@ void performRun(bool verbose) async {
   // TODO: Fix Docker management
   bool runDocker = false;
 
-  if (!config.load()) return;
+  var config = GeneratorConfig.load();
+  if (config == null) {
+    return;
+  }
 
   var configInfo = ConfigInfo('development');
 
@@ -76,6 +79,7 @@ void performRun(bool verbose) async {
     verbose: verbose,
     collector: collector,
     changedFiles: {},
+    config: config,
   );
   collector.printErrors();
   await performGenerateProtocol(
@@ -83,10 +87,11 @@ void performRun(bool verbose) async {
     protocolDefinition: protocolDefinition,
     collector: collector,
     codeGenerator: (spec) => generateCode(spec, true),
+    config: config,
   );
 
   // Analyze the code
-  var errors = await performAnalysisGetSevereErrors();
+  var errors = await performAnalysisGetSevereErrors(config);
   if (errors.isNotEmpty) {
     for (var error in errors) {
       print(error);
@@ -124,6 +129,7 @@ void performRun(bool verbose) async {
               protocolWasDirty,
               configInfo,
               serverRunner,
+              config: config,
             );
 
             generatingAndReloading = false;
@@ -135,6 +141,7 @@ void performRun(bool verbose) async {
     onRemovedProtocolFile: (removedPath) async {
       // TODO: remove corresponding file
     },
+    config: config,
   );
 
   // Start Docker.
@@ -179,8 +186,9 @@ Future<void> _generateAndReload(
   bool verbose,
   bool generate,
   ConfigInfo configInfo,
-  _ServerRunner runner,
-) async {
+  _ServerRunner runner, {
+  required GeneratorConfig config,
+}) async {
   print('');
   print('Attempting to generate code and restart server. Hang tight.');
 
@@ -199,6 +207,7 @@ Future<void> _generateAndReload(
         verbose: verbose,
         collector: collector,
         changedFiles: {},
+        config: config,
       );
       collector.printErrors();
       await performGenerateProtocol(
@@ -206,6 +215,7 @@ Future<void> _generateAndReload(
         protocolDefinition: protocolDefinition,
         collector: collector,
         codeGenerator: (spec) => generateCode(spec, true),
+        config: config,
       );
     } catch (e, stackTrace) {
       print('Failed to generate protocol: $e');
@@ -216,7 +226,7 @@ Future<void> _generateAndReload(
   try {
     // TODO: Implement real hot reload
     // Check if server code is valid before restarting.
-    var errors = await performAnalysisGetSevereErrors();
+    var errors = await performAnalysisGetSevereErrors(config);
 
     if (errors.isNotEmpty) {
       print('Server restart failed.');

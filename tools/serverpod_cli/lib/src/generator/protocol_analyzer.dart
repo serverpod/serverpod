@@ -31,6 +31,7 @@ Future<ProtocolDefinition> performAnalyzeServerCode({
   required CodeAnalysisCollector collector,
   bool requestNewAnalyzer = true,
   required Set<String> changedFiles,
+  required GeneratorConfig config,
 }) async {
   // Invalidate the old analyzer if requested to do so.
   if (requestNewAnalyzer) {
@@ -59,7 +60,8 @@ Future<ProtocolDefinition> performAnalyzeServerCode({
   );
 }
 
-Future<List<String>> performAnalysisGetSevereErrors() async {
+Future<List<String>> performAnalysisGetSevereErrors(
+    GeneratorConfig config) async {
   _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
   return await _analyzer!.getErrors();
 }

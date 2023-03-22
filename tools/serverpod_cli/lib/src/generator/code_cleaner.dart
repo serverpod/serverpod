@@ -1,22 +1,23 @@
 import 'dart:io';
 
 import 'code_analysis_collector.dart';
-import 'config.dart';
 
 void performRemoveOldFiles({
   required bool verbose,
   required CodeAnalysisCollector collector,
+  required String generatedServerProtocolPath,
+  required String generatedClientProtocolPath,
 }) {
   var keepFilePaths = collector.generatedFiles.map((e) => e.path).toSet();
 
   _removeOldFilesInPath(
-    config.generatedServerProtocolPath,
+    generatedServerProtocolPath,
     keepFilePaths,
     verbose,
   );
 
   _removeOldFilesInPath(
-    config.generatedClientProtocolPath,
+    generatedClientProtocolPath,
     keepFilePaths,
     verbose,
   );

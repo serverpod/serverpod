@@ -5,10 +5,12 @@ import '../generator/config.dart';
 class SourceFileWatcher {
   final Future<void> Function(String path, bool isProtocol) onChangedSourceFile;
   final Future<void> Function(String path) onRemovedProtocolFile;
+  final GeneratorConfig config;
 
   SourceFileWatcher({
     required this.onChangedSourceFile,
     required this.onRemovedProtocolFile,
+    required this.config,
   });
 
   Future<void> watch(bool verbose) async {

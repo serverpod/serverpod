@@ -6,8 +6,6 @@ import 'package:path/path.dart' as p;
 
 import 'types.dart';
 
-var config = GeneratorConfig();
-
 enum PackageType {
   server,
   module,
@@ -35,7 +33,18 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   List<TypeDefinition> extraClasses = [];
 
-  bool load([String dir = '']) {
+  /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
+  static GeneratorConfig? load([String dir = '']) {
+    var config = GeneratorConfig();
+    if (config._load(dir)) {
+      return config;
+    } else {
+      return null;
+    }
+  }
+
+  //TODO: at some point this should be directly done in load.
+  bool _load([String dir = '']) {
     Map? pubspec;
     try {
       var file = File(p.join(dir, 'pubspec.yaml'));
@@ -167,8 +176,7 @@ class ModuleConfig {
 nickname: $nickname
 clientPackage: $clientPackage
 serverPackage: $serverPackage;
-config:
-$config''';
+''';
   }
 }
 

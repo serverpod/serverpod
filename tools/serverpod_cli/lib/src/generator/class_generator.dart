@@ -16,15 +16,16 @@ void performGenerateClasses({
   required CodeAnalysisCollector collector,
   required ProtocolDefinition protocolDefinition,
   required CodeGenerator codeGenerator,
+  required GeneratorConfig config,
 }) {
   // Generate server side code
   if (verbose) print('Generating server side code.');
   var serverGenerator = ClassGeneratorDart(
     verbose: verbose,
-    outputDirectoryPath: config.generatedServerProtocolPath,
     serverCode: true,
     classDefinitions: classDefinitions,
     protocolDefinition: protocolDefinition,
+    config: config,
   );
   serverGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 
@@ -32,31 +33,39 @@ void performGenerateClasses({
   if (verbose) print('Generating Dart client side code.');
   var clientGenerator = ClassGeneratorDart(
     verbose: verbose,
-    outputDirectoryPath: config.generatedClientProtocolPath,
     serverCode: false,
     classDefinitions:
         classDefinitions.where((definition) => !definition.serverOnly).toList(),
     protocolDefinition: protocolDefinition,
+    config: config,
   );
   clientGenerator.generate(collector: collector, codeGenerator: codeGenerator);
 }
 
 abstract class ClassGenerator {
-  final String outputDirectoryPath;
   final bool verbose;
   final bool serverCode;
   final List<ProtocolFileDefinition> classDefinitions;
   final ProtocolDefinition protocolDefinition;
+  final GeneratorConfig config;
 
   ClassGenerator({
     required this.verbose,
     required this.classDefinitions,
-    required this.outputDirectoryPath,
     required this.serverCode,
     required this.protocolDefinition,
+    required this.config,
   });
 
   String get outputExtension;
+
+  String get outputDirectoryPath {
+    if (serverCode) {
+      return config.generatedServerProtocolPath;
+    } else {
+      return config.generatedClientProtocolPath;
+    }
+  }
 
   void generate({
     required CodeAnalysisCollector collector,
@@ -99,7 +108,7 @@ abstract class ClassGenerator {
     }
   }
 
-  Library generateFile(ProtocolFileDefinition classDefinition);
+  Library generateFile(ProtocolFileDefinition protocolFileDefinition);
 
   Library generateFactory(List<ProtocolFileDefinition> classNames,
       ProtocolDefinition protocolDefinition);

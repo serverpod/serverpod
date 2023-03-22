@@ -3,12 +3,13 @@ import 'package:recase/recase.dart';
 
 import 'class_generator_dart.dart';
 import 'config.dart';
-import 'protocol_definition.dart';
 import 'protocol_generator.dart';
 
 class ProtocolGeneratorDart extends ProtocolGenerator {
-  ProtocolGeneratorDart({required ProtocolDefinition protocolDefinition})
-      : super(protocolDefinition: protocolDefinition);
+  ProtocolGeneratorDart({
+    required super.protocolDefinition,
+    required super.config,
+  });
 
   @override
   Library generateClientEndpointCalls() {
@@ -54,26 +55,29 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
               Method(
                 (m) => m
                   ..docs.add(methodDef.documentationComment ?? '')
-                  ..returns = returnType.reference(false)
+                  ..returns = returnType.reference(false, config: config)
                   ..name = methodDef.name
                   ..requiredParameters.addAll([
                     for (var parameterDef in requiredParams)
                       Parameter((p) => p
                         ..name = parameterDef.name
-                        ..type = parameterDef.type.reference(false))
+                        ..type =
+                            parameterDef.type.reference(false, config: config))
                   ])
                   ..optionalParameters.addAll([
                     for (var parameterDef in optionalParams)
                       Parameter((p) => p
                         ..named = false
                         ..name = parameterDef.name
-                        ..type = parameterDef.type.reference(false)),
+                        ..type =
+                            parameterDef.type.reference(false, config: config)),
                     for (var parameterDef in namedParameters)
                       Parameter((p) => p
                         ..named = true
                         ..required = parameterDef.required
                         ..name = parameterDef.name
-                        ..type = parameterDef.type.reference(false))
+                        ..type =
+                            parameterDef.type.reference(false, config: config))
                   ])
                   ..body = refer('caller').property('callServerEndpoint').call([
                     literalString('$modulePrefix${endpointDef.name}'),
@@ -90,7 +94,8 @@ class ProtocolGeneratorDart extends ProtocolGenerator {
                             refer(parameterDef.name),
                     })
                   ], {}, [
-                    methodDef.returnType.generics.first.reference(false)
+                    methodDef.returnType.generics.first
+                        .reference(false, config: config)
                   ]).code,
               ),
             );

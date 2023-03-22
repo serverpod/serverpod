@@ -23,11 +23,11 @@ class ClassGeneratorDart extends ClassGenerator {
   String get outputExtension => '.dart';
 
   ClassGeneratorDart({
-    required super.outputDirectoryPath,
     required super.verbose,
     required super.serverCode,
     required super.classDefinitions,
     required super.protocolDefinition,
+    required super.config,
   });
 
   @override
@@ -90,7 +90,7 @@ class ClassGeneratorDart extends ClassGenerator {
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
                 f.type = field.type.reference(serverCode,
-                    subDirectory: classDefinition.subDir);
+                    subDirectory: classDefinition.subDir, config: config);
                 f
                   ..name = field.name
                   ..docs.addAll(field.documentation ?? []);
@@ -153,7 +153,8 @@ class ClassGeneratorDart extends ClassGenerator {
                             .index(literalString(field.name))
                       ], {}, [
                         field.type.reference(serverCode,
-                            subDirectory: classDefinition.subDir)
+                            subDirectory: classDefinition.subDir,
+                            config: config)
                       ])
                 })
                 .returned
@@ -706,6 +707,7 @@ class ClassGeneratorDart extends ClassGenerator {
                               serverCode,
                               nullable: false,
                               subDirectory: classDefinition.subDir,
+                              config: config,
                             )
                           ]
                         : [])).call([literalString(field.name)]).code));
@@ -1010,23 +1012,29 @@ class ClassGeneratorDart extends ClassGenerator {
                   for (var classInfo in classInfos)
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields)
-                        ...field.type.generateDeserialization(serverCode),
+                        ...field.type.generateDeserialization(serverCode,
+                            config: config),
                   for (var endPoint in protocolDefinition.endpoints)
                     for (var method in endPoint.methods) ...[
                       ...method.returnType
                           .stripFuture()
-                          .generateDeserialization(serverCode),
+                          .generateDeserialization(serverCode, config: config),
                       for (var parameter in method.parameters)
-                        ...parameter.type.generateDeserialization(serverCode),
+                        ...parameter.type.generateDeserialization(serverCode,
+                            config: config),
                       for (var parameter in method.parametersPositional)
-                        ...parameter.type.generateDeserialization(serverCode),
+                        ...parameter.type.generateDeserialization(serverCode,
+                            config: config),
                       for (var parameter in method.parametersNamed)
-                        ...parameter.type.generateDeserialization(serverCode),
+                        ...parameter.type.generateDeserialization(serverCode,
+                            config: config),
                     ],
                   for (var extraClass in config.extraClasses)
-                    ...extraClass.generateDeserialization(serverCode),
+                    ...extraClass.generateDeserialization(serverCode,
+                        config: config),
                   for (var extraClass in config.extraClasses)
-                    ...extraClass.asNullable.generateDeserialization(serverCode)
+                    ...extraClass.asNullable
+                        .generateDeserialization(serverCode, config: config)
                 ]))
               .entries
               .map((e) => Block.of([
@@ -1063,7 +1071,7 @@ class ClassGeneratorDart extends ClassGenerator {
             ]),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode))}) {return \'${extraClass.className}\';}'),
+                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
@@ -1088,7 +1096,7 @@ class ClassGeneratorDart extends ClassGenerator {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
-                'return deserialize<${a(extraClass.reference(serverCode))}>(data[\'data\']);}'),
+                'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
           for (var classInfo in classInfos)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'

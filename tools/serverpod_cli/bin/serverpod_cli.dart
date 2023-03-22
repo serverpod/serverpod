@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/config.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
@@ -198,12 +199,18 @@ Future<void> _main(List<String> args) async {
       var verbose = results.command!['verbose'];
       var watch = results.command!['watch'];
 
+      var config = GeneratorConfig.load();
+      if (config == null) {
+        return;
+      }
+
       await performGenerate(
         verbose: verbose,
+        config: config,
       );
       if (watch) {
         print('Initial code generation complete. Listening for changes.');
-        performGenerateContinuously(verbose);
+        performGenerateContinuously(verbose, config);
       } else {
         print('Done.');
       }

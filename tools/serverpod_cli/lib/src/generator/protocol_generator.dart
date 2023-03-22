@@ -15,8 +15,12 @@ Future<void> performGenerateProtocol({
   required ProtocolDefinition protocolDefinition,
   required CodeAnalysisCollector collector,
   required CodeGenerator codeGenerator,
+  required GeneratorConfig config,
 }) async {
-  var generator = ProtocolGeneratorDart(protocolDefinition: protocolDefinition);
+  var generator = ProtocolGeneratorDart(
+    protocolDefinition: protocolDefinition,
+    config: config,
+  );
 
   // Generate code for the client
   if (verbose) print('Generating client endpoints');
@@ -55,8 +59,12 @@ Future<void> performGenerateProtocol({
 
 abstract class ProtocolGenerator {
   final ProtocolDefinition protocolDefinition;
+  final GeneratorConfig config;
 
-  ProtocolGenerator({required this.protocolDefinition});
+  ProtocolGenerator({
+    required this.protocolDefinition,
+    required this.config,
+  });
 
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
@@ -134,8 +142,10 @@ abstract class ProtocolGenerator {
                                       'name': literalString(param.name),
                                       'type':
                                           refer('getType', serverpodUrl(true))
-                                              .call([], {},
-                                                  [param.type.reference(true)]),
+                                              .call([], {}, [
+                                        param.type
+                                            .reference(true, config: config)
+                                      ]),
                                       'nullable':
                                           literalBool(param.type.nullable),
                                     })

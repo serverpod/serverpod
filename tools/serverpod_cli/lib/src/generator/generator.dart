@@ -14,9 +14,8 @@ Future<void> performGenerate({
   bool dartFormat = true,
   bool requestNewAnalyzer = true,
   String? changedFile,
+  required GeneratorConfig config,
 }) async {
-  if (!config.load()) return;
-
   String generator(spec) => generateCode(spec, dartFormat);
 
   print('Running serverpod generate.');
@@ -29,6 +28,7 @@ Future<void> performGenerate({
   var classDefinitions = performAnalyzeClasses(
     verbose: verbose,
     collector: collector,
+    config: config,
   );
 
   collector.printErrors();
@@ -48,6 +48,7 @@ Future<void> performGenerate({
     collector: collector,
     requestNewAnalyzer: requestNewAnalyzer,
     changedFiles: changedFiles,
+    config: config,
   );
 
   if (verbose) {
@@ -59,6 +60,7 @@ Future<void> performGenerate({
     collector: collector,
     protocolDefinition: protocolDefinition,
     codeGenerator: generator,
+    config: config,
   );
 
   collector.printErrors();
@@ -72,6 +74,7 @@ Future<void> performGenerate({
     protocolDefinition: protocolDefinition,
     collector: collector,
     codeGenerator: generator,
+    config: config,
   );
 
   if (verbose) {
@@ -80,13 +83,16 @@ Future<void> performGenerate({
   performRemoveOldFiles(
     verbose: verbose,
     collector: collector,
+    generatedServerProtocolPath: config.generatedServerProtocolPath,
+    generatedClientProtocolPath: config.generatedClientProtocolPath,
   );
 }
 
 typedef CodeGenerator = String Function(Spec spec);
 
 String generateCode(Spec spec, bool dartFormat) {
-  String code = '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+  String code =
+      '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
 // ignore_for_file: library_private_types_in_public_api

@@ -17,6 +17,7 @@ import 'types.dart';
 List<ProtocolFileDefinition> performAnalyzeClasses({
   bool verbose = true,
   required CodeAnalysisCollector collector,
+  required GeneratorConfig config,
 }) {
   var classDefinitions = <ProtocolFileDefinition>[];
 

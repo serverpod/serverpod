@@ -97,6 +97,7 @@ class TypeDefinition {
     bool serverCode, {
     bool? nullable,
     String? subDirectory,
+    required GeneratorConfig config,
   }) {
     return TypeReference(
       (t) {
@@ -151,8 +152,11 @@ class TypeDefinition {
         }
         t.isNullable = nullable ?? this.nullable;
         t.symbol = className;
-        t.types.addAll(generics
-            .map((e) => e.reference(serverCode, subDirectory: subDirectory)));
+        t.types.addAll(generics.map((e) => e.reference(
+              serverCode,
+              subDirectory: subDirectory,
+              config: config,
+            )));
       },
     );
   }
@@ -200,14 +204,17 @@ class TypeDefinition {
   }
 
   /// Generates the constructors for List and Map types
-  List<MapEntry<Expression, Code>> generateDeserialization(bool serverCode) {
+  List<MapEntry<Expression, Code>> generateDeserialization(
+    bool serverCode, {
+    required GeneratorConfig config,
+  }) {
     if ((className == 'List' || className == 'Set') && generics.length == 1) {
       return [
         MapEntry(
           nullable
               ? refer('getType', serverpodUrl(serverCode))
-                  .call([], {}, [reference(serverCode)])
-              : reference(serverCode),
+                  .call([], {}, [reference(serverCode, config: config)])
+              : reference(serverCode, config: config),
           Block.of([
             nullable
                 ? Block.of([
@@ -215,28 +222,28 @@ class TypeDefinition {
                     const Code('(data!=null?'
                         '(data as List).map((e) =>'
                         'deserialize<'),
-                    generics.first.reference(serverCode).code,
+                    generics.first.reference(serverCode, config: config).code,
                     Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
                         ':null) as dynamic')
                   ])
                 : Block.of([
                     const Code('(data as List).map((e) =>'
                         'deserialize<'),
-                    generics.first.reference(serverCode).code,
+                    generics.first.reference(serverCode, config: config).code,
                     Code(
                         '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as dynamic'),
                   ])
           ]),
         ),
-        ...generics.first.generateDeserialization(serverCode),
+        ...generics.first.generateDeserialization(serverCode, config: config),
       ];
     } else if (className == 'Map' && generics.length == 2) {
       return [
         MapEntry(
           nullable
               ? refer('getType', serverpodUrl(serverCode))
-                  .call([], {}, [reference(serverCode)])
-              : reference(serverCode),
+                  .call([], {}, [reference(serverCode, config: config)])
+              : reference(serverCode, config: config),
           Block.of([
             generics.first.className == 'String'
                 ? nullable
@@ -245,18 +252,22 @@ class TypeDefinition {
                         const Code('(data!=null?'
                             '(data as Map).map((k,v) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(k),deserialize<'),
-                        generics[1].reference(serverCode).code,
+                        generics[1].reference(serverCode, config: config).code,
                         const Code('>(v)))' ':null) as dynamic')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
                         const Code('(data as Map).map((k,v) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(k),deserialize<'),
-                        generics[1].reference(serverCode).code,
+                        generics[1].reference(serverCode, config: config).code,
                         const Code('>(v))) as dynamic')
                       ])
                 : // Key is not String -> stored as list of map entries
@@ -266,37 +277,41 @@ class TypeDefinition {
                         const Code('(data!=null?'
                             'Map.fromEntries((data as List).map((e) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(e[\'k\']),deserialize<'),
-                        generics[1].reference(serverCode).code,
+                        generics[1].reference(serverCode, config: config).code,
                         const Code('>(e[\'v\']))))' ':null) as dynamic')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
                         const Code('Map.fromEntries((data as List).map((e) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(e[\'k\']),deserialize<'),
-                        generics[1].reference(serverCode).code,
+                        generics[1].reference(serverCode, config: config).code,
                         const Code('>(e[\'v\'])))) as dynamic')
                       ])
           ]),
         ),
-        ...generics.first.generateDeserialization(serverCode),
-        ...generics[1].generateDeserialization(serverCode),
+        ...generics.first.generateDeserialization(serverCode, config: config),
+        ...generics[1].generateDeserialization(serverCode, config: config),
       ];
     } else if (customClass) {
       return [
         MapEntry(
             nullable
                 ? refer('getType', serverpodUrl(serverCode))
-                    .call([], {}, [reference(serverCode)])
-                : reference(serverCode),
+                    .call([], {}, [reference(serverCode, config: config)])
+                : reference(serverCode, config: config),
             Code.scope((a) => nullable
                 ? '(data!=null?'
-                    '${a(reference(serverCode))}.fromJson(data,this)'
+                    '${a(reference(serverCode, config: config))}.fromJson(data,this)'
                     ':null)as T'
-                : '${a(reference(serverCode))}.fromJson(data,this) as T'))
+                : '${a(reference(serverCode, config: config))}.fromJson(data,this) as T'))
       ];
     } else {
       return [];
