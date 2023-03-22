@@ -58,7 +58,7 @@ export 'serverOnly/server_only_enum.dart';
 export 'simple_data.dart';
 export 'simple_data_list.dart';
 export 'test_enum.dart';
-export 'types.dart'; // ignore_for_file: equal_keys_in_map
+export 'types.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();

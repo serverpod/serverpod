@@ -32,7 +32,7 @@ export 'chat_message_attachment_upload_description.dart';
 export 'chat_message_chunk.dart';
 export 'chat_message_post.dart';
 export 'chat_read_message.dart';
-export 'chat_request_message_chunk.dart'; // ignore_for_file: equal_keys_in_map
+export 'chat_request_message_chunk.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();

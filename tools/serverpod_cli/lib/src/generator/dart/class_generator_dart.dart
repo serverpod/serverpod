@@ -803,8 +803,6 @@ class ClassGeneratorDart {
   }) {
     var library = LibraryBuilder();
 
-    library.body.add(const Code('// ignore_for_file: equal_keys_in_map\n'));
-
     library.name = 'protocol';
 
     var entities = protocolDefinition.entities

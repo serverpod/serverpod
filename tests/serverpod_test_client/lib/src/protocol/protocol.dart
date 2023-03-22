@@ -54,7 +54,7 @@ export 'simple_data.dart';
 export 'simple_data_list.dart';
 export 'test_enum.dart';
 export 'types.dart';
-export 'client.dart'; // ignore_for_file: equal_keys_in_map
+export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
   Protocol._();

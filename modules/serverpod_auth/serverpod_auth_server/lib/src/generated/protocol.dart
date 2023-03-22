@@ -34,7 +34,7 @@ export 'google_refresh_token.dart';
 export 'user_image.dart';
 export 'user_info.dart';
 export 'user_info_public.dart';
-export 'user_settings_config.dart'; // ignore_for_file: equal_keys_in_map
+export 'user_settings_config.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
