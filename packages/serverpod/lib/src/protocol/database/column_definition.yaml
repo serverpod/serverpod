@@ -1,0 +1,19 @@
+### The definition of a (desired) column in the database.
+class: ColumnDefinition
+fields:
+  ### The column name
+  name: String
+
+  ### The actual column type
+  columnType: ColumnType
+
+  ### Whether this column is nullable.
+  isNullable: bool
+
+  ### The default for the column.
+  columnDefault: String?
+
+  ### The (dart) type specified in the yaml file.
+  ### Is nullable, since this is not available when
+  ### analyzing the database.
+  dartType: String?

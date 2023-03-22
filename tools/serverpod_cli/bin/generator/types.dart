@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
@@ -168,6 +169,10 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'uuid';
 
     return 'json';
+  }
+
+  String get databaseTypeEnum {
+    return databaseTypeToLowerCamelCase(databaseType);
   }
 
   String get columnType {

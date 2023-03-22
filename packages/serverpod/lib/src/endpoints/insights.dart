@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
@@ -176,5 +177,30 @@ class InsightsEndpoint extends Endpoint {
       return false;
     }
     return await HotReloader.hotReload();
+  }
+
+  /// Returns the target structure of the database defined in the
+  /// yaml files of the protocol folder.
+  /// This includes the developers project, all used modules
+  /// and the main serverpod package.
+  ///
+  /// This information can be used for database migration.
+  ///
+  /// See also:
+  /// - [getLiveDatabaseDefinition]
+  Future<DatabaseDefinition> getTargetDatabaseDefinition(
+      Session session) async {
+    return session.serverpod.serializationManager.getTargetDatabaseDefinition();
+  }
+
+  /// Returns the structure of the live database by
+  /// extracting it using SQL.
+  ///
+  /// This information can be used for database migration.
+  ///
+  /// See also:
+  /// - [getTargetDatabaseDefinition]
+  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
+    return DatabaseAnalyzer.analyze(session.db);
   }
 }

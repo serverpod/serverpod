@@ -1,0 +1,19 @@
+### The definition of a (desired) table in the database.
+class: TableDefinition
+fields:
+  ### The table name.
+  name: String
+  ### The schema this table is in.
+  schema: String
+  ### The tablespace this table is stored in.
+  ### If null, the table is in the databases default tablespace.
+  tableSpace: String?
+  ### All the columns of this table.
+  columns: List<ColumnDefinition>
+  ### All the foreign keys.
+  foreignKeys: List<ForeignKeyDefinition>
+  ### All the indexes of this table.
+  indexes: List<IndexDefinition>
+  ### Indicates if the table should be managed by Serverpod.
+  ### Null, if this is unknown.
+  managed: bool?

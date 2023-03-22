@@ -8,8 +8,8 @@
 library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'module_class.dart' as _i2;
-import 'package:serverpod/protocol.dart' as _i3;
+import 'package:serverpod/protocol.dart' as _i2;
+import 'module_class.dart' as _i3;
 export 'module_class.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -21,6 +21,8 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
+  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: []);
+
   @override
   T deserialize<T>(
     dynamic data, [
@@ -30,21 +32,21 @@ class Protocol extends _i1.SerializationManagerServer {
     if (customConstructors.containsKey(t)) {
       return customConstructors[t]!(data, this) as T;
     }
-    if (t == _i2.ModuleClass) {
-      return _i2.ModuleClass.fromJson(data, this) as T;
+    if (t == _i3.ModuleClass) {
+      return _i3.ModuleClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i2.ModuleClass?>()) {
-      return (data != null ? _i2.ModuleClass.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i3.ModuleClass?>()) {
+      return (data != null ? _i3.ModuleClass.fromJson(data, this) : null) as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i2.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   @override
   String? getClassNameForObject(Object data) {
-    if (data is _i2.ModuleClass) {
+    if (data is _i3.ModuleClass) {
       return 'ModuleClass';
     }
     return super.getClassNameForObject(data);
@@ -53,7 +55,7 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == 'ModuleClass') {
-      return deserialize<_i2.ModuleClass>(data['data']);
+      return deserialize<_i3.ModuleClass>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -61,11 +63,15 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   _i1.Table? getTableForType(Type t) {
     {
-      var table = _i3.Protocol().getTableForType(t);
+      var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     return null;
   }
+
+  @override
+  _i2.DatabaseDefinition getTargetDatabaseDefinition() =>
+      targetDatabaseDefinition;
 }

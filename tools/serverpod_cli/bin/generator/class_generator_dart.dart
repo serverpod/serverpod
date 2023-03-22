@@ -12,6 +12,12 @@ String serverpodUrl(bool serverCode) {
       : 'package:serverpod_client/serverpod_client.dart';
 }
 
+String serverpodProtocolUrl(bool serverCode) {
+  return serverCode
+      ? 'package:serverpod/protocol.dart'
+      : 'package:serverpod_client/serverpod_client.dart';
+}
+
 class ClassGeneratorDart extends ClassGenerator {
   @override
   String get outputExtension => '.dart';
@@ -837,6 +843,133 @@ class ClassGeneratorDart extends ClassGenerator {
         ..type = refer('Protocol')
         ..modifier = FieldModifier.final$
         ..assignment = const Code('Protocol._()')),
+      if (serverCode)
+        Field(
+          (f) => f
+            ..name = 'targetDatabaseDefinition'
+            ..static = true
+            ..modifier = FieldModifier.final$
+            ..assignment =
+                refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
+                    .call([], {
+              'tables': literalList([
+                for (var classDefinition in classDefinitions)
+                  if (classDefinition is ClassDefinition &&
+                      classDefinition.tableName != null)
+                    refer('TableDefinition', serverpodProtocolUrl(serverCode))
+                        .call([], {
+                      'name': literalString(classDefinition.tableName!),
+                      'schema': literalString('public'),
+                      'columns': literalList([
+                        for (var column in classDefinition.fields)
+                          if (column
+                              .shouldSerializeFieldForDatabase(serverCode))
+                            refer('ColumnDefinition',
+                                    serverpodProtocolUrl(serverCode))
+                                .call([], {
+                              'name': literalString(column.name),
+                              'columnType': refer(
+                                  'ColumnType.${column.type.databaseTypeEnum}',
+                                  serverpodProtocolUrl(serverCode)),
+                              // The id column is not null, since it is auto incrementing.
+                              'isNullable': literalBool(
+                                  column.name != 'id' && column.type.nullable),
+                              'dartType': literalString(column.type.toString()),
+                              if (column.name == 'id')
+                                'columnDefault': literalString(
+                                    "nextval('${classDefinition.tableName!}_id_seq'::regclass)"),
+                            }),
+                      ]),
+                      'foreignKeys': literalList([
+                        for (var i = 0;
+                            i <
+                                classDefinition.fields
+                                    .where((field) => field.parentTable != null)
+                                    .length;
+                            i++)
+                          () {
+                            var column = classDefinition.fields
+                                .where((field) => field.parentTable != null)
+                                .toList()[i];
+                            return refer('ForeignKeyDefinition',
+                                    serverpodProtocolUrl(serverCode))
+                                .call([], {
+                              'constraintName': literalString(
+                                  '${classDefinition.tableName!}_fk_$i'),
+                              'columns': literalList([
+                                literalString(column.name),
+                              ]),
+                              'referenceTable':
+                                  literalString(column.parentTable!),
+                              'referenceTableSchema': literalString('public'),
+                              'referenceColumns': literalList([
+                                literalString('id'),
+                              ]),
+                              'onUpdate': literalNull,
+                              'onDelete': refer('ForeignKeyAction.cascade',
+                                  serverpodProtocolUrl(serverCode)),
+                              'matchType': literalNull,
+                            });
+                          }(),
+                      ]),
+                      'indexes': literalList([
+                        refer('IndexDefinition',
+                                serverpodProtocolUrl(serverCode))
+                            .call([], {
+                          'indexName': literalString(
+                              '${classDefinition.tableName!}_pkey'),
+                          'tableSpace': literalNull,
+                          'elements': literalList([
+                            refer('IndexElementDefinition',
+                                    serverpodProtocolUrl(serverCode))
+                                .call([], {
+                              'type': refer('IndexElementDefinitionType.column',
+                                  serverpodProtocolUrl(serverCode)),
+                              'definition': literalString('id'),
+                            }),
+                          ]),
+                          'type': literalString('btree'),
+                          'isUnique': literalTrue,
+                          'isPrimary': literalTrue,
+                        }),
+                        for (var index
+                            in classDefinition.indexes ?? <IndexDefinition>[])
+                          refer('IndexDefinition',
+                                  serverpodProtocolUrl(serverCode))
+                              .call([], {
+                            'indexName': literalString(index.name),
+                            'tableSpace': literalNull,
+                            'elements': literalList([
+                              for (var field in index.fields)
+                                refer('IndexElementDefinition',
+                                        serverpodProtocolUrl(serverCode))
+                                    .call([], {
+                                  'type': refer(
+                                      'IndexElementDefinitionType.column',
+                                      serverpodProtocolUrl(serverCode)),
+                                  'definition': literalString(field),
+                                })
+                            ]),
+                            'type': literalString(index.type),
+                            'isUnique': literalBool(index.unique),
+                            'isPrimary': literalFalse,
+                          }),
+                      ]),
+                      'managed':
+                          literalTrue, //TODO: Add an option in the yaml-protocol specification for this.
+                    }),
+                for (var module in config.modules)
+                  refer('Protocol.targetDatabaseDefinition.tables',
+                          module.url(serverCode))
+                      .spread,
+                if (config.name != 'serverpod' &&
+                    config.type == PackageType.server)
+                  refer('Protocol.targetDatabaseDefinition.tables',
+                          serverpodProtocolUrl(serverCode))
+                      .spread,
+              ]),
+            }).code,
+        ),
     ]);
     protocol.methods.addAll([
       Method((m) => m
@@ -998,6 +1131,16 @@ class ClassGeneratorDart extends ClassGenerator {
                 ]),
               const Code('return null;'),
             ]),
+        ),
+      if (serverCode)
+        Method(
+          (m) => m
+            ..name = 'getTargetDatabaseDefinition'
+            ..annotations.add(refer('override'))
+            ..returns = TypeReference((t) => t
+              ..symbol = 'DatabaseDefinition'
+              ..url = serverpodProtocolUrl(serverCode))
+            ..body = refer('targetDatabaseDefinition').code,
         ),
     ]);
 
