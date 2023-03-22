@@ -440,13 +440,12 @@ void main() {
       });
     });
 
-    group('current definition', () {
+    group('live definition', () {
       test('matches target', () async {
         var target = await serviceClient.insights.getTargetDatabaseDefinition();
-        var current =
-            await serviceClient.insights.getCurrentDatabaseDefinition();
+        var live = await serviceClient.insights.getLiveDatabaseDefinition();
 
-        current.matchesDefinition(target);
+        live.matchesDefinition(target);
       });
     });
   });

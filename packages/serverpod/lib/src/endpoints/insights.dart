@@ -181,7 +181,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Returns the desired structure of the database.
   /// See also:
-  /// - [getCurrentDatabaseDefinition]
+  /// - [getLiveDatabaseDefinition]
   Future<DatabaseDefinition> getTargetDatabaseDefinition(
       Session session) async {
     return session.serverpod.serializationManager.getTargetDatabaseDefinition();
@@ -190,7 +190,7 @@ class InsightsEndpoint extends Endpoint {
   /// Returns the current structure of the database.
   /// See also:
   /// - [getTargetDatabaseDefinition]
-  Future<DatabaseDefinition> getCurrentDatabaseDefinition(Session session) {
+  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
     return DatabaseAnalyzer.analyze(session.db);
   }
 }
