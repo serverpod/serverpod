@@ -8,7 +8,7 @@ import 'package:path/path.dart' as p;
 
 import 'class_generator_dart.dart';
 import 'config.dart';
-import '../analyzer/protocol_definition.dart';
+import '../analyzer/dart/definitions.dart';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {

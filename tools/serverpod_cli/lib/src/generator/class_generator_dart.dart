@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
 
 import 'class_generator.dart';
 import 'config.dart';
-import '../analyzer/protocol_definition.dart';
+import '../analyzer/dart/definitions.dart';
 
 String serverpodUrl(bool serverCode) {
   return serverCode

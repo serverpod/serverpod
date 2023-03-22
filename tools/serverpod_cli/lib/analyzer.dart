@@ -6,7 +6,7 @@ export 'src/analyzer/yaml/file_analyzer.dart' show ProtocolYamlFileAnalyzer;
 export 'src/generator/code_analysis_collector.dart' show CodeAnalysisCollector;
 export 'package:source_span/source_span.dart'
     show SourceSpanException; // The collector uses them.
-export 'src/analyzer/protocol_definition.dart'
+export 'src/analyzer/dart/definitions.dart'
     show
         ProtocolFileDefinition,
         ClassDefinition,

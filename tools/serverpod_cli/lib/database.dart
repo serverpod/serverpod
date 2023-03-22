@@ -1,7 +1,7 @@
 
 library database;
 
-export 'src/analyzer/protocol_definition.dart'
+export 'src/analyzer/dart/definitions.dart'
     show
         ProtocolFileDefinition,
         ClassDefinition,

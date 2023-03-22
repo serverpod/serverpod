@@ -11,7 +11,7 @@ import 'package:source_span/source_span.dart';
 
 import '../util/subdirectory_extraction.dart';
 import 'config.dart';
-import '../analyzer/protocol_definition.dart';
+import '../analyzer/dart/definitions.dart';
 import 'code_analysis_collector.dart';
 import 'types.dart';
 

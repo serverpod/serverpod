@@ -9,7 +9,7 @@ import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'generator.dart';
 import 'pgsql_generator.dart';
-import '../analyzer/protocol_definition.dart';
+import '../analyzer/dart/definitions.dart';
 
 void performGenerateClasses({
   required bool verbose,

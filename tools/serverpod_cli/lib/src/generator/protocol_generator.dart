@@ -7,7 +7,7 @@ import 'class_generator_dart.dart';
 import 'code_analysis_collector.dart';
 import 'config.dart';
 import 'generator.dart';
-import '../analyzer/protocol_definition.dart';
+import '../analyzer/dart/definitions.dart';
 import 'protocol_generator_dart.dart';
 
 Future<void> performGenerateProtocol({
