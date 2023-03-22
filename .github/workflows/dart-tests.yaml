@@ -7,7 +7,7 @@ on:
       - dev
       - tests
       - stable-1.0
-      - fix-770 
+      - fix-770
   pull_request:
     branches:
       - main
@@ -32,6 +32,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.7.0"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       # - name: Setup Firebase dummy file
       #   run: mv packages/serverpod/example/example_flutter/lib/firebase_options_dummy.dart packages/serverpod/example/example_flutter/lib/firebase_options.dart
       - name: Install dependencies
@@ -47,6 +50,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.7.0"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - name: Run serverpod generate
         run: util/run_tests_serverpod_generate
 
@@ -58,6 +64,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.7.0"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - name: Run serverpod generate
         run: util/run_tests_update_pubspecs
 
@@ -69,7 +78,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.7.0"
-
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - name: Run single server tests
         run: util/run_tests_single_server
 
@@ -81,5 +92,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.7.0"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - name: Run CLI tests
         run: util/run_tests_cli
