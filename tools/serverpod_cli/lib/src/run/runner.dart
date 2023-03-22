@@ -5,7 +5,7 @@ import '../config_info/config_info.dart';
 import '../create/port_checker.dart';
 import '../generator/config.dart';
 import '../generator/generator.dart';
-import '../generator/protocol_analyzer.dart';
+import '../analyzer/dart/protocol_analyzer.dart';
 import '../generator/protocol_generator.dart';
 import '../generator/code_analysis_collector.dart';
 import '../port_scanner/port_scanner.dart';
@@ -75,11 +75,12 @@ void performRun(bool verbose) async {
   // TODO: Fix!
   // performGenerateClasses(verbose);
   var collector = CodeAnalysisCollector();
-  var protocolDefinition = await performAnalyzeServerCode(
+
+  var analyzer = ProtocolDartFileAnalyzer(config.endpointsSourcePath);
+
+  var protocolDefinition = await analyzer.analyze(
     verbose: verbose,
     collector: collector,
-    changedFiles: {},
-    config: config,
   );
   collector.printErrors();
   await performGenerateProtocol(
@@ -91,7 +92,7 @@ void performRun(bool verbose) async {
   );
 
   // Analyze the code
-  var errors = await performAnalysisGetSevereErrors(config);
+  var errors = await analyzer.getErrors();
   if (errors.isNotEmpty) {
     for (var error in errors) {
       print(error);
@@ -130,6 +131,7 @@ void performRun(bool verbose) async {
               configInfo,
               serverRunner,
               config: config,
+              analyzer: analyzer,
             );
 
             generatingAndReloading = false;
@@ -188,6 +190,7 @@ Future<void> _generateAndReload(
   ConfigInfo configInfo,
   _ServerRunner runner, {
   required GeneratorConfig config,
+  required ProtocolDartFileAnalyzer analyzer,
 }) async {
   print('');
   print('Attempting to generate code and restart server. Hang tight.');
@@ -203,12 +206,12 @@ Future<void> _generateAndReload(
 
     try {
       var collector = CodeAnalysisCollector();
-      var protocolDefinition = await performAnalyzeServerCode(
+      var protocolDefinition = await analyzer.analyze(
         verbose: verbose,
         collector: collector,
         changedFiles: {},
-        config: config,
       );
+
       collector.printErrors();
       await performGenerateProtocol(
         verbose: verbose,
@@ -226,7 +229,7 @@ Future<void> _generateAndReload(
   try {
     // TODO: Implement real hot reload
     // Check if server code is valid before restarting.
-    var errors = await performAnalysisGetSevereErrors(config);
+    var errors = await analyzer.getErrors();
 
     if (errors.isNotEmpty) {
       print('Server restart failed.');

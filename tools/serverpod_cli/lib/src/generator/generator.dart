@@ -5,16 +5,16 @@ import '../analyzer/yaml/file_analyzer.dart';
 import 'class_generator.dart';
 import 'code_cleaner.dart';
 import 'config.dart';
-import 'protocol_analyzer.dart';
+import '../analyzer/dart/protocol_analyzer.dart';
 import 'protocol_generator.dart';
 import 'code_analysis_collector.dart';
 
 Future<void> performGenerate({
   required bool verbose,
   bool dartFormat = true,
-  bool requestNewAnalyzer = true,
   String? changedFile,
   required GeneratorConfig config,
+  required ProtocolDartFileAnalyzer analyzer,
 }) async {
   String generator(spec) => generateCode(spec, dartFormat);
 
@@ -43,12 +43,10 @@ Future<void> performGenerate({
   if (verbose) {
     print('Analyzing server code.');
   }
-  var protocolDefinition = await performAnalyzeServerCode(
+  var protocolDefinition = await analyzer.analyze(
     verbose: verbose,
     collector: collector,
-    requestNewAnalyzer: requestNewAnalyzer,
     changedFiles: changedFiles,
-    config: config,
   );
 
   if (verbose) {
