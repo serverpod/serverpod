@@ -37,7 +37,7 @@ class ProtocolFileAnalyzer {
     required this.collector,
   });
 
-  /// Used to analyze all yaml files int the protocol directory.
+  /// Analyze all yaml files int the protocol directory.
   static List<ProtocolFileDefinition> analyzeFiles({
     bool verbose = true,
     required CodeAnalysisCollector collector,
