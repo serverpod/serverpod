@@ -2,7 +2,7 @@ import 'package:async/async.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:watcher/watcher.dart';
 
-import 'config.dart';
+import '../config/config.dart';
 import 'generator.dart';
 
 /// Continuously generate code when files change.

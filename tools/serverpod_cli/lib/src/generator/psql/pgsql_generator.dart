@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:serverpod_cli/src/generator/config.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart' as p;
 
 /// A [CodeGenerator], that generates pgsql code.

@@ -9,7 +9,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/generator/config.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';

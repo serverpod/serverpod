@@ -3,7 +3,7 @@ library analyzer;
 
 export 'src/analyzer/analyzer.dart' show ProtocolAnalyzer;
 export 'src/analyzer/protocol_definition.dart' show ProtocolDefinition;
-export 'src/generator/config.dart' show GeneratorConfig;
+export 'src/config/config.dart' show GeneratorConfig;
 export 'src/analyzer/yaml/entity_analyzer.dart' show ProtocolEntityAnalyzer;
 export 'src/analyzer/code_analysis_collector.dart' show CodeAnalysisCollector;
 export 'package:source_span/source_span.dart'

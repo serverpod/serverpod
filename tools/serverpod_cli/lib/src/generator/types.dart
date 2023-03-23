@@ -8,7 +8,7 @@ import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
 import 'dart/library_generator.dart';
-import 'config.dart';
+import '../config/config.dart';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {

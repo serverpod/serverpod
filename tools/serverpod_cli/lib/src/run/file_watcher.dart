@@ -1,6 +1,6 @@
 import 'package:watcher/watcher.dart';
 
-import '../generator/config.dart';
+import '../config/config.dart';
 
 class SourceFileWatcher {
   final Future<void> Function(String path, bool isProtocol) onChangedSourceFile;

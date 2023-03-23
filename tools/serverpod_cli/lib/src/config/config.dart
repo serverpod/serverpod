@@ -4,7 +4,7 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
-import 'types.dart';
+import '../generator/types.dart';
 
 /// The type of the package.
 enum PackageType {

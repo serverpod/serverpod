@@ -8,7 +8,7 @@ import '../../util/extensions.dart';
 import '../../util/subdirectory_extraction.dart';
 import '../../util/yaml_docs.dart';
 import '../code_analysis_collector.dart';
-import '../../generator/config.dart';
+import '../../config/config.dart';
 import '../../generator/types.dart';
 import 'definitions.dart';
 

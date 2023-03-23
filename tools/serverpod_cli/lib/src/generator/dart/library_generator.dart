@@ -4,7 +4,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:path/path.dart' as p;
 
-import '../config.dart';
+import '../../config/config.dart';
 import '../../analyzer/dart/definitions.dart';
 
 /// The import url of the main serverpod package.
