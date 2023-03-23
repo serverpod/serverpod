@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../create/copier.dart';
 
+/// The internal tool for generating the pubspec.yaml files in the Serverpod repo.
 void performGeneratePubspecs(String version, String mode) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
