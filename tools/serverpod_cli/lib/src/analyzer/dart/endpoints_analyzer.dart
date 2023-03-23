@@ -10,8 +10,6 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
-import '../../util/subdirectory_extraction.dart';
-import '../../config/config.dart';
 import 'definitions.dart';
 import '../code_analysis_collector.dart';
 import '../../generator/types.dart';

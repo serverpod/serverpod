@@ -1,6 +1,5 @@
 import 'package:path/path.dart' as p;
 
-import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 /// An abstract representation of a yaml file in the
@@ -22,7 +21,7 @@ abstract class ProtocolEntityDefinition {
   String fileRef() {
     return p.posix
         // ignore: prefer_interpolation_to_compose_strings
-        .joinAll([...?subDirParts, '$fileName.dart']);
+        .joinAll([...subDirParts, '$fileName.dart']);
   }
 }
 
@@ -105,8 +104,9 @@ class ProtocolFieldDefinition {
   /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     if (serverCode) return true;
-    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.api)
+    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.api) {
       return true;
+    }
     return false;
   }
 
@@ -117,8 +117,9 @@ class ProtocolFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.api)
+    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.api) {
       return true;
+    }
     return false;
   }
 
@@ -131,8 +132,10 @@ class ProtocolFieldDefinition {
   /// - [shouldSerializeField]
   bool shouldSerializeFieldForDatabase(bool serverCode) {
     assert(serverCode);
-    if (scope == ProtocolFieldScope.all || scope == ProtocolFieldScope.database)
+    if (scope == ProtocolFieldScope.all ||
+        scope == ProtocolFieldScope.database) {
       return true;
+    }
     return false;
   }
 }

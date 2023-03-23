@@ -32,7 +32,7 @@ class DartCodeGenerator extends CodeGenerator {
       for (var protocolFile in protocolDefinition.entities)
         p.joinAll([
           ...config.generatedServerProtocolPathParts,
-          ...?protocolFile.subDirParts,
+          ...protocolFile.subDirParts,
           '${protocolFile.fileName}.dart'
         ]): () async => serverClassGenerator
             .generateEntityLibrary(protocolFile)
