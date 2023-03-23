@@ -79,6 +79,9 @@ class DartCodeGenerator extends CodeGenerator {
       config.relativeGeneratedDartClientProtocolPath
     ];
   }
+
+  @override
+  List<String> get outputFileExtensions => ['.dart'];
 }
 
 extension on Library {

@@ -33,6 +33,10 @@ abstract class CodeGenerator {
     required GeneratorConfig config,
   });
 
+  /// The file extensions, this generator uses when generating files.
+  List<String> get outputFileExtensions;
+
+  /// The generators, that run on [generateAll].
   static const generators = [DartCodeGenerator(), PgsqlGenerator()];
 
   /// Run all [CodeGenerator]s and save the files.
@@ -80,16 +84,21 @@ abstract class CodeGenerator {
       if (verbose) {
         printww('Cleaning up old files.');
       }
-      var dirs = (await Future.wait(generators.map((g) =>
-              g.getDirectoriesRequiringCleaning(
-                  verbose: verbose,
-                  protocolDefinition: protocolDefinition,
-                  config: config))))
-          .expand((l) => l);
-
       var keepPaths = allFiles.keys.toSet();
-      for (var dir in dirs) {
-        await _removeOldFilesInPath(dir, keepPaths, verbose);
+      for (var generator in generators) {
+        var dirs = await generator.getDirectoriesRequiringCleaning(
+            verbose: verbose,
+            protocolDefinition: protocolDefinition,
+            config: config);
+
+        for (var dir in dirs) {
+          await _removeOldFilesInPath(
+            dir,
+            keepPaths,
+            verbose,
+            generator.outputFileExtensions,
+          );
+        }
       }
     }
   }
@@ -99,6 +108,7 @@ Future<void> _removeOldFilesInPath(
   String directoryPath,
   Set<String> keepPaths,
   bool verbose,
+  List<String> fileExtensions,
 ) async {
   var directory = Directory(directoryPath);
   if (verbose) {
@@ -108,7 +118,8 @@ Future<void> _removeOldFilesInPath(
 
   for (var entity in fileList) {
     // Only check Dart files.
-    if (entity is! File || !entity.path.endsWith('.dart')) {
+    if (entity is! File ||
+        !fileExtensions.any((extension) => entity.path.endsWith(extension))) {
       continue;
     }
 

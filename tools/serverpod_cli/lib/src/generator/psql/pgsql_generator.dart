@@ -154,4 +154,7 @@ class PgsqlGenerator extends CodeGenerator {
       required GeneratorConfig config}) async {
     return [];
   }
+
+  @override
+  List<String> get outputFileExtensions => ['.pgsql'];
 }
