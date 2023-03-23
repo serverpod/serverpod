@@ -970,7 +970,7 @@ class LibraryGenerator {
                     }),
                 for (var module in config.modules)
                   refer('Protocol.targetDatabaseDefinition.tables',
-                          module.url(serverCode))
+                          module.dartImportUrl(serverCode))
                       .spread,
                 if (config.name != 'serverpod' &&
                     config.type == PackageType.server)
@@ -1054,9 +1054,9 @@ class LibraryGenerator {
                   ])),
           for (var module in config.modules)
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', module.url(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
+                'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
           if (config.name != 'serverpod' &&
-              (serverCode || config.clientDependsOnServiceClient))
+              (serverCode || config.dartClientDependsOnServiceClient))
             Code.scope((a) =>
                 'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}catch(_){}'),
           const Code('return super.deserialize<T>(data,t);'),
@@ -1073,7 +1073,7 @@ class LibraryGenerator {
           for (var module in config.modules)
             Block.of([
               Code.scope((a) =>
-                  'className = ${a(refer('Protocol', module.url(serverCode)))}().getClassNameForObject(data);'),
+                  'className = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getClassNameForObject(data);'),
               Code(
                   'if(className != null){return \'${module.name}.\$className\';}'),
             ]),
@@ -1098,7 +1098,7 @@ class LibraryGenerator {
               Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
                   'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
               Code.scope((a) =>
-                  'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeByClassName(data);'),
+                  'return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserializeByClassName(data);'),
               const Code('}'),
             ]),
           for (var extraClass in config.extraClasses)
@@ -1126,10 +1126,10 @@ class LibraryGenerator {
             ..body = Block.of([
               for (var module in config.modules)
                 Code.scope((a) =>
-                    '{var table = ${a(refer('Protocol', module.url(serverCode)))}().getTableForType(t);'
+                    '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
               if (config.name != 'serverpod' &&
-                  (serverCode || config.clientDependsOnServiceClient))
+                  (serverCode || config.dartClientDependsOnServiceClient))
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
@@ -1424,7 +1424,7 @@ class LibraryGenerator {
                 ..late = true
                 ..modifier = FieldModifier.final$
                 ..name = module.nickname
-                ..type = refer('Caller', module.url(false))),
+                ..type = refer('Caller', module.dartImportUrl(false))),
           ])
           ..constructors.add(
             Constructor((c) => c
@@ -1434,7 +1434,7 @@ class LibraryGenerator {
               ..body = Block.of([
                 for (var module in config.modules)
                   refer(module.nickname)
-                      .assign(refer('Caller', module.url(false))
+                      .assign(refer('Caller', module.dartImportUrl(false))
                           .call([refer('client')]))
                       .statement,
               ])),

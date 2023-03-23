@@ -47,17 +47,19 @@ class DartCodeGenerator extends CodeGenerator {
       for (var protocolFile in protocolDefinition.entities)
         if (!protocolFile.serverOnly)
           p.joinAll([
-            config.relativeGeneratedClientProtocolPath,
+            config.relativeGeneratedDartClientProtocolPath,
             ...?protocolFile.subDir?.split('/'),
             '${protocolFile.fileName}.dart',
           ]): () async => clientClassGenerator
               .generateEntityLibrary(protocolFile)
               .generateCode(true),
-      p.joinAll([config.relativeGeneratedClientProtocolPath, 'protocol.dart']):
-          () async => clientClassGenerator
-              .generateProtocol(verbose: verbose)
-              .generateCode(true),
-      p.join(config.relativeGeneratedClientProtocolPath, 'client.dart'):
+      p.joinAll([
+        config.relativeGeneratedDartClientProtocolPath,
+        'protocol.dart'
+      ]): () async => clientClassGenerator
+          .generateProtocol(verbose: verbose)
+          .generateCode(true),
+      p.join(config.relativeGeneratedDartClientProtocolPath, 'client.dart'):
           () async => clientClassGenerator
               .generateClientEndpointCalls()
               .generateCode(true),

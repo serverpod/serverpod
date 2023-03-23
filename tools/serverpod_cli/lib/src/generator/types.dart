@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
@@ -63,6 +64,7 @@ class TypeDefinition {
     );
   }
 
+  /// Creates an [TypeDefinition] from a given [DartType].
   factory TypeDefinition.fromDartType(DartType type) {
     var generics = (type is ParameterizedType)
         ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
@@ -81,8 +83,10 @@ class TypeDefinition {
     );
   }
 
+  /// A convenience variable for getting a [TypeDefinition] of an non null int quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
 
+  /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
         className: className,
         url: url,
@@ -114,7 +118,7 @@ class TypeDefinition {
                 'Module with nickname $moduleName not found in config!');
           }
           t.url =
-              'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart';
+              'package:${serverCode ? module.serverPackage : module.dartClientPackage}/module.dart';
         } else if (url == 'serverpod' ||
             (url == null && ['UuidValue'].contains(className))) {
           // serverpod: reference
@@ -123,7 +127,7 @@ class TypeDefinition {
           // project:path:reference
           var split = url!.split(':');
           t.url =
-              'package:${serverCode ? config.serverPackage : config.clientPackage}/${split[1]}';
+              'package:${serverCode ? config.serverPackage : config.dartClientPackage}/${split[1]}';
         } else if (url == 'protocol') {
           // protocol: reference
           t.url = p.posix.joinAll([
@@ -135,7 +139,7 @@ class TypeDefinition {
           // import from the server package
           t.url = url
               ?.replaceFirst('package:${config.serverPackage}',
-                  'package:${config.clientPackage}')
+                  'package:${config.dartClientPackage}')
               .replaceFirst('src/generated/', 'src/protocol/');
         } else if (config.modules.any(
             (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
@@ -143,11 +147,11 @@ class TypeDefinition {
           var module = config.modules.firstWhere(
               (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
           t.url = url!.contains('/src/generated/')
-              ? 'package:${serverCode ? module.serverPackage : module.clientPackage}/module.dart'
+              ? 'package:${serverCode ? module.serverPackage : module.dartClientPackage}/module.dart'
               : serverCode
                   ? url
                   : url?.replaceFirst('package:${module.serverPackage}',
-                      'package:${module.clientPackage}');
+                      'package:${module.dartClientPackage}');
         } else {
           t.url = url;
         }
@@ -162,6 +166,7 @@ class TypeDefinition {
     );
   }
 
+  /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     //TODO: add all suported types here
     if (className == 'String') return 'text';
@@ -176,10 +181,13 @@ class TypeDefinition {
     return 'json';
   }
 
+  /// Get the enum name of the [ColumnType], representing this [TypeDefinition]
+  /// in the database.
   String get databaseTypeEnum {
     return databaseTypeToLowerCamelCase(databaseType);
   }
 
+  /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
     //TODO: add all suported types here
     if (className == 'int') return 'ColumnInt';
@@ -195,6 +203,8 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
+  /// Strip the outer most future of this type.
+  /// Throws, if this type is not a future.
   TypeDefinition stripFuture() {
     if (dartType?.isDartAsyncFuture ?? className == 'Future') {
       return generics.first;
@@ -415,9 +425,14 @@ TypeParseResult parseAndAnalyzeType(
           customClass: analyzingExtraClasses));
 }
 
+/// The result when running [parseAndAnalyzeType].
 class TypeParseResult {
+  /// The position of the next unparsed character.
   final int parsedPosition;
+
+  /// The type that was parsed.
   final TypeDefinition type;
 
+  /// Create a new [TypeParseResult].
   const TypeParseResult(this.parsedPosition, this.type);
 }

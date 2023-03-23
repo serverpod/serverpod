@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'code_cleaner.dart';
 import '../analyzer/dart/endpoints_analyzer.dart';
 
+/// Analyze the server package and generate the code.
 Future<void> performGenerate({
   required bool verbose,
   bool dartFormat = true,
@@ -29,7 +30,7 @@ Future<void> performGenerate({
     print('Generating classes.');
   }
 
-  await CodeGenerator.generateAllFiles(
+  await CodeGenerator.generateAll(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
     config: config,
@@ -44,6 +45,6 @@ Future<void> performGenerate({
     verbose: verbose,
     collector: collector,
     generatedServerProtocolPath: config.relativeGeneratedServerProtocolPath,
-    generatedClientProtocolPath: config.relativeGeneratedClientProtocolPath,
+    generatedClientProtocolPath: config.relativeGeneratedDartClientProtocolPath,
   );
 }

@@ -18,7 +18,8 @@ abstract class CodeGenerator {
     required GeneratorConfig config,
   });
 
-  static Future<void> generateAllFiles({
+  /// Run all [CodeGenerator]s and save the files.
+  static Future<void> generateAll({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,

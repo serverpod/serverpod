@@ -5,6 +5,7 @@ import 'package:watcher/watcher.dart';
 import 'config.dart';
 import 'generator.dart';
 
+/// Continuously generate code when files change.
 void performGenerateContinuously(
   bool verbose,
   GeneratorConfig config, {

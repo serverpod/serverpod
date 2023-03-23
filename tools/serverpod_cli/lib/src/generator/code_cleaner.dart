@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 
+/// Removes all old files.
+//TODO: This should be a part of each [CodeGenerator]
 void performRemoveOldFiles({
   required bool verbose,
   required CodeGenerationCollector collector,

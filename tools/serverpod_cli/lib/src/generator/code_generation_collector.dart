@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
 
+/// A [CodeAnalysisCollector] that also keeps track of generated files.
 class CodeGenerationCollector extends CodeAnalysisCollector {
+  /// All the errors reported.
   final List<SourceSpanException> errors = [];
 
+  /// All the generated files reported.
   final Set<File> generatedFiles = {};
 
   @override
@@ -44,10 +47,12 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
     errors.clear();
   }
 
+  /// Report a generated file.
   void addGeneratedFile(File file) {
     generatedFiles.add(file);
   }
 
+  /// Clear the list of generated files.
   void clearGeneratedFiles() {
     generatedFiles.clear();
   }
