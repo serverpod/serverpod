@@ -2,16 +2,12 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 
-import 'code_cleaner.dart';
-import '../analyzer/dart/endpoints_analyzer.dart';
-
 /// Analyze the server package and generate the code.
 Future<void> performGenerate({
   required bool verbose,
   bool dartFormat = true,
   String? changedFile,
   required GeneratorConfig config,
-  required EndpointsAnalyzer analyzer,
 }) async {
   var collector = CodeGenerationCollector();
 
@@ -35,16 +31,6 @@ Future<void> performGenerate({
     protocolDefinition: protocolDefinition,
     config: config,
     collector: collector,
-  );
-
-  if (verbose) {
-    print('Cleaning up old files.');
-  }
-
-  performRemoveOldFiles(
-    verbose: verbose,
-    collector: collector,
-    generatedServerProtocolPath: config.relativeGeneratedServerProtocolPath,
-    generatedClientProtocolPath: config.relativeGeneratedDartClientProtocolPath,
+    cleanDirectories: true,
   );
 }

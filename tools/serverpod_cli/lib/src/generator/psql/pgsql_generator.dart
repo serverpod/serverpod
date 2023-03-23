@@ -6,11 +6,11 @@ import 'package:path/path.dart' as p;
 
 /// A [CodeGenerator], that generates pgsql code.
 class PgsqlGenerator extends CodeGenerator {
-  /// Create a new [PgsqlGenerator].
-  PgsqlGenerator();
+  /// Create a new [PgsqlGenerator]
+  const PgsqlGenerator();
 
   @override
-  Map<String, Future<String> Function()> generateCode(
+  Map<String, Future<String> Function()> getCodeGeneration(
       {required bool verbose,
       required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) {
@@ -145,5 +145,13 @@ class PgsqlGenerator extends CodeGenerator {
 
     out += '\n';
     return out;
+  }
+
+  @override
+  Future<List<String>> getDirectoriesRequiringCleaning(
+      {required bool verbose,
+      required ProtocolDefinition protocolDefinition,
+      required GeneratorConfig config}) async {
+    return [];
   }
 }

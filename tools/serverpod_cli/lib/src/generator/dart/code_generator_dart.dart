@@ -8,8 +8,11 @@ import 'package:serverpod_cli/src/util/print.dart';
 
 /// A [CodeGenerator], that generates dart code.
 class DartCodeGenerator extends CodeGenerator {
+  /// Create a new [DartCodeGenerator]
+  const DartCodeGenerator();
+
   @override
-  Map<String, Future<String> Function()> generateCode({
+  Map<String, Future<String> Function()> getCodeGeneration({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
@@ -64,6 +67,17 @@ class DartCodeGenerator extends CodeGenerator {
               .generateClientEndpointCalls()
               .generateCode(true),
     };
+  }
+
+  @override
+  Future<List<String>> getDirectoriesRequiringCleaning(
+      {required bool verbose,
+      required ProtocolDefinition protocolDefinition,
+      required GeneratorConfig config}) async {
+    return [
+      config.relativeGeneratedServerProtocolPath,
+      config.relativeGeneratedDartClientProtocolPath
+    ];
   }
 }
 

@@ -5,7 +5,6 @@ import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 
 import 'package:serverpod_cli/src/analytics/analytics.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
@@ -205,19 +204,15 @@ Future<void> _main(List<String> args) async {
         return;
       }
 
-      var analyzer =
-          EndpointsAnalyzer(Directory(config.relativeEndpointsSourcePath));
       await performGenerate(
         verbose: verbose,
         config: config,
-        analyzer: analyzer,
       );
       if (watch) {
         print('Initial code generation complete. Listening for changes.');
         performGenerateContinuously(
           verbose,
           config,
-          analyzer: analyzer,
         );
       } else {
         print('Done.');

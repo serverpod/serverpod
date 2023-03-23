@@ -9,25 +9,47 @@ import 'package:serverpod_cli/src/util/print.dart';
 
 /// A code generator is responsible for generating the code for the target language.
 abstract class CodeGenerator {
+  /// Create a new [CodeGenerator].
+  const CodeGenerator();
+
   /// Generate the code.
   /// The key is path of the file, where the code has to be written to,
   /// the value a function that builds the content.
-  Map<String, Future<String> Function()> generateCode({
+  ///
+  /// Relative paths start at the server package directory.
+  Map<String, Future<String> Function()> getCodeGeneration({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   });
 
+  /// List all the directories, that may contain files, that should be cleaned.
+  /// For most [CodeGenerator]s, the output should just depend on [config].
+  ///
+  /// Relative paths start at the server package directory.
+  Future<List<String>> getDirectoriesRequiringCleaning({
+    required bool verbose,
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+  });
+
+  static const generators = [DartCodeGenerator(), PgsqlGenerator()];
+
   /// Run all [CodeGenerator]s and save the files.
+  ///
+  /// Set [cleanDirectories] to true, in order to delete old files in the output directories.
+  /// The output directories, that may required cleaning are defined by [getDirectoriesRequiringCleaning].
   static Future<void> generateAll({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
+    required bool cleanDirectories,
   }) async {
+    collector.generatedFiles.clear();
     var allFiles = {
-      for (var generator in [DartCodeGenerator(), PgsqlGenerator()])
-        ...generator.generateCode(
+      for (var generator in generators)
+        ...generator.getCodeGeneration(
           verbose: verbose,
           protocolDefinition: protocolDefinition,
           config: config,
@@ -52,6 +74,49 @@ abstract class CodeGenerator {
         printww('Failed to ${writing ? 'write' : 'generate'} ${file.key}');
         printInternalError(e, stackTrace);
       }
+    }
+
+    if (cleanDirectories) {
+      if (verbose) {
+        printww('Cleaning up old files.');
+      }
+      var dirs = (await Future.wait(generators.map((g) =>
+              g.getDirectoriesRequiringCleaning(
+                  verbose: verbose,
+                  protocolDefinition: protocolDefinition,
+                  config: config))))
+          .expand((l) => l);
+
+      var keepPaths = allFiles.keys.toSet();
+      for (var dir in dirs) {
+        await _removeOldFilesInPath(dir, keepPaths, verbose);
+      }
+    }
+  }
+}
+
+Future<void> _removeOldFilesInPath(
+  String directoryPath,
+  Set<String> keepPaths,
+  bool verbose,
+) async {
+  var directory = Directory(directoryPath);
+  if (verbose) {
+    print('Remove old files from $directory');
+  }
+  var fileList = await directory.list(recursive: true).toList();
+
+  for (var entity in fileList) {
+    // Only check Dart files.
+    if (entity is! File || !entity.path.endsWith('.dart')) {
+      continue;
+    }
+
+    if (!keepPaths.contains(entity.path)) {
+      if (verbose) {
+        print('Remove: $entity');
+      }
+      await entity.delete();
     }
   }
 }

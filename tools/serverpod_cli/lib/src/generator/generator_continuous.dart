@@ -1,16 +1,11 @@
 import 'package:async/async.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:watcher/watcher.dart';
 
 import '../config/config.dart';
 import 'generator.dart';
 
 /// Continuously generate code when files change.
-void performGenerateContinuously(
-  bool verbose,
-  GeneratorConfig config, {
-  required EndpointsAnalyzer analyzer,
-}) async {
+void performGenerateContinuously(bool verbose, GeneratorConfig config) async {
   if (verbose) print('Starting up continuous generator');
 
   var watcherClasses = DirectoryWatcher(config.relativeProtocolSourcePath);
@@ -23,7 +18,6 @@ void performGenerateContinuously(
       verbose: verbose,
       changedFile: event.path,
       config: config,
-      analyzer: analyzer,
     );
     print('Incremental code generation complete.');
     print('');

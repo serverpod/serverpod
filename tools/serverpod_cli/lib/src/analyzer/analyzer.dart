@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/print.dart';
 
 import 'dart/endpoints_analyzer.dart';
-import 'protocol_definition.dart';
 
 /// Analyzes the protocol of a Serverpod server package.
 /// This includes mainly endpoints and the yaml
