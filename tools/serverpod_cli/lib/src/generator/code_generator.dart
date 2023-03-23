@@ -53,18 +53,11 @@ abstract class CodeGenerator {
     collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in generators)
-        ...generator
-            .getCodeGeneration(
+        ...generator.getCodeGeneration(
           verbose: verbose,
           protocolDefinition: protocolDefinition,
           config: config,
         )
-            .map((key, value) {
-          if (verbose) {
-            printww(key);
-          }
-          return MapEntry(key, value);
-        })
     };
     for (var file in allFiles.entries) {
       bool writing = false;
