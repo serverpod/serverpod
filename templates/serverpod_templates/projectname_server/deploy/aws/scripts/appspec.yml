@@ -7,10 +7,10 @@ files:
     destination: /home/ec2-user/serverpod/upload/projectname_server/
 hooks:
   BeforeInstall:
-    - location: projectname_server/aws/scripts/install_dependencies
+    - location: projectname_server/deploy/aws/scripts/install_dependencies
       timeout: 300
       runas: root
   ApplicationStart:
-    - location: projectname_server/aws/scripts/start_server
+    - location: projectname_server/deploy/aws/scripts/start_server
       timeout: 300
       runas: root
