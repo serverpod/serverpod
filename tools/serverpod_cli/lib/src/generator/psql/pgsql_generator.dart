@@ -4,7 +4,9 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/config.dart';
 import 'package:path/path.dart' as p;
 
+/// A [CodeGenerator], that generates pgsql code.
 class PgsqlGenerator extends CodeGenerator {
+  /// Create a new [PgsqlGenerator].
   PgsqlGenerator();
 
   @override
