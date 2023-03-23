@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
+import 'package:serverpod_cli/analyzer.dart';
 
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/create/create.dart';
@@ -204,15 +205,22 @@ Future<void> _main(List<String> args) async {
         return;
       }
 
+      var analyzer = ProtocolAnalyzer(
+        packageDirectory: '',
+        config: config,
+      );
+
       await performGenerate(
         verbose: verbose,
         config: config,
+        analyzer: analyzer,
       );
       if (watch) {
         print('Initial code generation complete. Listening for changes.');
         performGenerateContinuously(
-          verbose,
-          config,
+          verbose: verbose,
+          config: config,
+          analyzer: analyzer,
         );
       } else {
         print('Done.');

@@ -13,16 +13,26 @@ class ProtocolAnalyzer {
   final String packageDirectory;
   final GeneratorConfig config;
 
+  late final EndpointsAnalyzer _endpointsAnalyzer;
+
   /// Create a new [ProtocolAnalyzer].
-  const ProtocolAnalyzer({
+  ProtocolAnalyzer({
     required this.packageDirectory,
     required this.config,
-  });
+  }) {
+    _endpointsAnalyzer = EndpointsAnalyzer(
+      Directory(p.join(
+        packageDirectory,
+        config.relativeEndpointsSourcePath,
+      )),
+    );
+  }
 
   /// Analyze the protocol of the [packageDirectory] using the [config].
   Future<ProtocolDefinition> analyze({
     bool verbose = false,
     required CodeAnalysisCollector collector,
+    Set<String>? changedFiles,
   }) async {
     if (verbose) {
       printww('Analyzing protocol yaml files.');
@@ -42,14 +52,10 @@ class ProtocolAnalyzer {
       printww('Analyzing server code.');
     }
 
-    var endpoints = await EndpointsAnalyzer(
-      Directory(p.join(
-        packageDirectory,
-        config.relativeEndpointsSourcePath,
-      )),
-    ).analyze(
+    var endpoints = await _endpointsAnalyzer.analyze(
       verbose: verbose,
       collector: collector,
+      changedFiles: changedFiles,
     );
 
     return ProtocolDefinition(

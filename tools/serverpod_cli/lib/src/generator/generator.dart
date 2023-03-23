@@ -8,13 +8,11 @@ Future<void> performGenerate({
   bool dartFormat = true,
   String? changedFile,
   required GeneratorConfig config,
+  required ProtocolAnalyzer analyzer,
 }) async {
   var collector = CodeGenerationCollector();
 
-  var protocolDefinition = await ProtocolAnalyzer(
-    packageDirectory: '',
-    config: config,
-  ).analyze(
+  var protocolDefinition = await analyzer.analyze(
     verbose: verbose,
     collector: collector,
   );
