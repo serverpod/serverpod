@@ -8,7 +8,7 @@ cd /home/ec2-user/serverpod/upload/projectname_server/
 sudo -u ec2-user /usr/lib/dart/bin/dart pub get
 
 # Set correct permissions for start script
-chmod 755 aws/scripts/run_serverpod
+chmod 755 deploy/aws/scripts/run_serverpod
 
 # Stop the server if it's running, copy files, and restart
 systemctl stop serverpod
