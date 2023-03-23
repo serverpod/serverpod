@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import '../../util/string_validators.dart';
 import '../../util/extensions.dart';
-import '../../util/subdirectory_extraction.dart';
 import '../../util/yaml_docs.dart';
 import '../code_analysis_collector.dart';
 import '../../config/config.dart';
@@ -13,10 +13,7 @@ import '../../generator/types.dart';
 import 'definitions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
-  var pathComponents = path.split(Platform.pathSeparator);
-  var fileName = pathComponents.last;
-  fileName = fileName.substring(0, fileName.length - 5);
-  return fileName;
+  return p.basenameWithoutExtension(path);
 }
 
 /// Used to analyze a singe yaml protocol file.
@@ -24,7 +21,7 @@ class ProtocolEntityAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
-  final String? subDirectory;
+  final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
 
   /// Create a new [ProtocolEntityAnalyzer].
@@ -32,7 +29,7 @@ class ProtocolEntityAnalyzer {
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
-    this.subDirectory,
+    this.subDirectoryParts = const [],
     required this.collector,
   });
 
@@ -50,14 +47,15 @@ class ProtocolEntityAnalyzer {
     var sourceFileList = await sourceDir.list(recursive: true).toList();
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
+    var subDirSkip = p.split(protocolDirectory.path).length;
+
     for (var entity in sourceFileList) {
       if (entity is! File || !entity.path.endsWith('.yaml')) {
         if (verbose) print('  - skipping file: ${entity.path}');
         continue;
       }
-      //TODO: maybe do this by using protocolDirectory?
-      String? subDirectory = extractSubdirectoryFromRelativePath(
-          entity.path, config.relativeProtocolSourcePath);
+      var subDirectoryParts =
+          p.split(p.dirname(entity.path)).skip(subDirSkip).toList();
 
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
@@ -67,7 +65,7 @@ class ProtocolEntityAnalyzer {
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
         collector: collector,
-        subDirectory: subDirectory,
+        subDirectoryParts: subDirectoryParts,
       );
       var classDefinition = analyzer._analyze();
       if (classDefinition != null) {
@@ -543,7 +541,7 @@ class ProtocolEntityAnalyzer {
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
-      subDir: subDirectory,
+      subDirParts: subDirectoryParts,
       documentation: classDocumentation,
       isException: type == exceptionKeyword,
       serverOnly: serverOnly,
@@ -650,7 +648,7 @@ class ProtocolEntityAnalyzer {
       className: className,
       values: values,
       documentation: enumDocumentation,
-      subDir: subDirectory,
+      subDirParts: subDirectoryParts,
       serverOnly: serverOnly,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:watcher/watcher.dart';
+import 'package:path/path.dart' as p;
 
 import 'generator.dart';
 
@@ -12,8 +13,10 @@ void performGenerateContinuously({
 }) async {
   if (verbose) print('Starting up continuous generator');
 
-  var watcherClasses = DirectoryWatcher(config.relativeProtocolSourcePath);
-  var watcherEndpoints = DirectoryWatcher(config.relativeEndpointsSourcePath);
+  var watcherClasses =
+      DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
+  var watcherEndpoints =
+      DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
 
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {

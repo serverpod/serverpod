@@ -15,8 +15,11 @@ class PgsqlGenerator extends CodeGenerator {
       required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) {
     return {
-      p.join('generated', 'tables.pgsql'): () async =>
-          _generate(protocolDefinition),
+      p.joinAll([
+        ...config.serverPackageDirectoryPathParts,
+        'generated',
+        'tables.pgsql'
+      ]): () async => _generate(protocolDefinition),
     };
   }
 

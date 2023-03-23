@@ -200,15 +200,13 @@ Future<void> _main(List<String> args) async {
       var verbose = results.command!['verbose'];
       var watch = results.command!['watch'];
 
+      //TODO: set path for load from option
       var config = GeneratorConfig.load();
       if (config == null) {
         return;
       }
 
-      var analyzer = ProtocolAnalyzer(
-        packageDirectory: '',
-        config: config,
-      );
+      var analyzer = ProtocolAnalyzer(config);
 
       await performGenerate(
         verbose: verbose,

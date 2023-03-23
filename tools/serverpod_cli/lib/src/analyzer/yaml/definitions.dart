@@ -8,21 +8,21 @@ import 'package:serverpod_cli/src/generator/types.dart';
 abstract class ProtocolEntityDefinition {
   final String fileName;
   final String className;
-  final String? subDir;
+  final List<String> subDirParts;
   final bool serverOnly;
 
   ProtocolEntityDefinition({
     required this.fileName,
     required this.className,
     required this.serverOnly,
-    this.subDir,
+    this.subDirParts = const [],
   });
 
   /// Generate the file reference [String] to this file.
   String fileRef() {
     return p.posix
         // ignore: prefer_interpolation_to_compose_strings
-        .joinAll(p.split('${(subDir + '/') ?? ''}$fileName.dart'));
+        .joinAll([...?subDirParts, '$fileName.dart']);
   }
 }
 
@@ -59,7 +59,7 @@ class ProtocolClassDefinition extends ProtocolEntityDefinition {
     required this.isException,
     this.tableName,
     this.indexes,
-    super.subDir,
+    super.subDirParts,
     this.documentation,
   });
 }
@@ -187,7 +187,7 @@ class ProtocolEnumDefinition extends ProtocolEntityDefinition {
     required super.className,
     required this.values,
     required super.serverOnly,
-    super.subDir,
+    super.subDirParts,
     this.documentation,
   });
 }

@@ -101,7 +101,7 @@ class TypeDefinition {
   TypeReference reference(
     bool serverCode, {
     bool? nullable,
-    String? subDirectory,
+    List<String> subDirParts = const [],
     required GeneratorConfig config,
   }) {
     return TypeReference(
@@ -130,10 +130,8 @@ class TypeDefinition {
               'package:${serverCode ? config.serverPackage : config.dartClientPackage}/${split[1]}';
         } else if (url == 'protocol') {
           // protocol: reference
-          t.url = p.posix.joinAll([
-            ...p.split(subDirectory ?? '').map((e) => '..'),
-            'protocol.dart'
-          ]);
+          t.url = p.posix
+              .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
@@ -159,7 +157,7 @@ class TypeDefinition {
         t.symbol = className;
         t.types.addAll(generics.map((e) => e.reference(
               serverCode,
-              subDirectory: subDirectory,
+              subDirParts: subDirParts,
               config: config,
             )));
       },

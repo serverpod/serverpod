@@ -95,7 +95,7 @@ class LibraryGenerator {
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
                 f.type = field.type.reference(serverCode,
-                    subDirectory: classDefinition.subDir, config: config);
+                    subDirParts: classDefinition.subDirParts, config: config);
                 f
                   ..name = field.name
                   ..docs.addAll(field.documentation ?? []);
@@ -158,7 +158,7 @@ class LibraryGenerator {
                             .index(literalString(field.name))
                       ], {}, [
                         field.type.reference(serverCode,
-                            subDirectory: classDefinition.subDir,
+                            subDirParts: classDefinition.subDirParts,
                             config: config)
                       ])
                 })
@@ -711,7 +711,7 @@ class LibraryGenerator {
                             field.type.reference(
                               serverCode,
                               nullable: false,
-                              subDirectory: classDefinition.subDir,
+                              subDirParts: classDefinition.subDirParts,
                               config: config,
                             )
                           ]
@@ -1174,11 +1174,10 @@ class LibraryGenerator {
 
     /// Get the path to a endpoint.
     String endpointPath(EndpointDefinition endpoint) {
-      var subDir = endpoint.subDir;
       return p.posix.joinAll([
         '..',
         'endpoints',
-        if (subDir != null) ...p.split(subDir),
+        ...endpoint.subDirParts,
         p.basename(endpoint.filePath),
       ]);
     }

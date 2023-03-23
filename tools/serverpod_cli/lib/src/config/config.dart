@@ -18,76 +18,90 @@ enum PackageType {
 
 /// The configuration of the generation and analyzing process.
 class GeneratorConfig {
+  const GeneratorConfig({
+    required this.name,
+    required this.type,
+    required this.serverPackage,
+    required this.dartClientPackage,
+    required this.dartClientDependsOnServiceClient,
+    required this.serverPackageDirectoryPathParts,
+    required List<String> relativeDartClientPackagePathParts,
+    required this.modules,
+    required this.extraClasses,
+  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+
   /// The name of the serverpod project.
   ///
   /// See also:
   ///  - [serverPackage]
   ///  - [dartClientPackage]
-  late String name;
+  final String name;
 
   /// The [PackageType] of the package this [GeneratorConfig] describes.
-  late PackageType type;
+  final PackageType type;
 
   /// The name of the server package.
   ///
   /// See also:
   ///  - [dartClientPackage]
   ///  - [name]
-  late String serverPackage;
+  final String serverPackage;
 
   /// The name of the client package.
   ///
   /// See also:
   ///  - [serverPackage]
   ///  - [name]
-  late String dartClientPackage;
+  final String dartClientPackage;
 
   /// True, if the dart client depends on the `package:serverpod_service_client`.
-  late bool dartClientDependsOnServiceClient;
+  final bool dartClientDependsOnServiceClient;
 
-  /// The relative path to the lib folder, starting in a package directory.
-  final String relativeLibSourcePath = 'lib';
+  /// The parts of the path where the server package is located at.
+  /// Might be relative.
+  final List<String> serverPackageDirectoryPathParts;
 
-  /// The relative path to the protocol directory,
-  /// starting in the server package.
-  final String relativeProtocolSourcePath = p.join('lib', 'src', 'protocol');
+  /// Path parts to the lib folder of the server package.
+  List<String> get libSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib'];
 
-  /// The relative path to the endpoints directory,
-  /// starting in the server package.
-  final String relativeEndpointsSourcePath = p.join('lib', 'src', 'endpoints');
+  /// Path parts to the protocol directory of the server package.
+  List<String> get protocolSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
 
-  /// The relative path to the dart client package,
-  /// starting in the server package.
-  late String relativeClientPackagePath;
+  /// Path parts to the endpoints directory of the server package.
+  List<String> get endpointsSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
 
-  /// The relative path to the protocol directory in the dart client package,
-  /// starting in the server package.
-  late String relativeGeneratedDartClientProtocolPath;
+  /// The path parts of the directory, where the generated code is stored
+  /// in the server package.
+  List<String> get generatedServerProtocolPathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
 
-  /// The relative path of the directory, where the generated code is stored
-  /// in the server package, starting in the server package.
-  final String relativeGeneratedServerProtocolPath =
-      p.join('lib', 'src', 'generated');
+  /// Path parts from the server package to the dart client package.
+  final List<String> _relativeDartClientPackagePathParts;
+
+  /// Path parts to the client package.
+  List<String> get clientPackagePathParts => [
+        ...serverPackageDirectoryPathParts,
+        ..._relativeDartClientPackagePathParts
+      ];
+
+  /// The path parts to the protocol directory in the dart client package.
+  List<String> get generatedDartClientProtocolPathParts =>
+      [...clientPackagePathParts, 'lib', 'src', 'protocol'];
 
   /// All the modules defined in the config.
-  List<ModuleConfig> modules = [];
+  final List<ModuleConfig> modules;
 
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
-  List<TypeDefinition> extraClasses = [];
+  final List<TypeDefinition> extraClasses;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static GeneratorConfig? load([String dir = '']) {
-    var config = GeneratorConfig();
-    if (config._load(dir)) {
-      return config;
-    } else {
-      return null;
-    }
-  }
+    var serverPackageDirectoryPathParts = p.split(dir);
 
-  //TODO: at some point this should be directly done in load.
-  bool _load([String dir = '']) {
     Map? pubspec;
     try {
       var file = File(p.join(dir, 'pubspec.yaml'));
@@ -96,14 +110,14 @@ class GeneratorConfig {
     } catch (_) {
       print(
           'Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
-      return false;
+      return null;
     }
 
     if (pubspec!['name'] == null) {
       throw const FormatException('Package name is missing in pubspec.yaml');
     }
-    serverPackage = pubspec['name'];
-    name = _stripPackage(serverPackage);
+    var serverPackage = pubspec['name'];
+    var name = _stripPackage(serverPackage);
 
     Map? generatorConfig;
     try {
@@ -113,10 +127,11 @@ class GeneratorConfig {
     } catch (_) {
       print(
           'Failed to load config/generator.yaml. Is this a Serverpod project?');
-      return false;
+      return null;
     }
 
     var typeStr = generatorConfig!['type'];
+    late PackageType type;
     if (typeStr == 'module') {
       type = PackageType.module;
     } else {
@@ -127,10 +142,18 @@ class GeneratorConfig {
       throw const FormatException(
           'Option "client_package_path" is required in config/generator.yaml');
     }
-    relativeClientPackagePath =
-        p.joinAll(p.split(generatorConfig['client_package_path']));
+    var relativeDartClientPackagePathParts =
+        p.split(generatorConfig['client_package_path']);
+
+    late String dartClientPackage;
+    late bool dartClientDependsOnServiceClient;
+
     try {
-      var file = File(p.join(relativeClientPackagePath, 'pubspec.yaml'));
+      var file = File(p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...relativeDartClientPackagePathParts,
+        'pubspec.yaml'
+      ]));
       var yamlStr = file.readAsStringSync();
       var yaml = loadYaml(yamlStr);
       dartClientPackage = yaml['name'];
@@ -139,13 +162,11 @@ class GeneratorConfig {
     } catch (_) {
       print(
           'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
-      return false;
+      return null;
     }
-    relativeGeneratedDartClientProtocolPath =
-        p.join(relativeClientPackagePath, 'lib', 'src', 'protocol');
 
     // Load module settings
-    modules = [];
+    var modules = <ModuleConfig>[];
     try {
       if (generatorConfig['modules'] != null) {
         Map modulesData = generatorConfig['modules'];
@@ -158,7 +179,7 @@ class GeneratorConfig {
     }
 
     // Load extraClasses
-    extraClasses = [];
+    var extraClasses = <TypeDefinition>[];
     if (generatorConfig['extraClasses'] != null) {
       try {
         for (var extraClassConfig in generatorConfig['extraClasses']) {
@@ -179,16 +200,25 @@ class GeneratorConfig {
       }
     }
 
-    return true;
+    return GeneratorConfig(
+        name: name,
+        type: type,
+        serverPackage: serverPackage,
+        dartClientPackage: dartClientPackage,
+        dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
+        serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+        relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+        modules: modules,
+        extraClasses: extraClasses);
   }
 
   @override
   String toString() {
     var str = '''type: $type
-sourceProtocol: $relativeProtocolSourcePath
-sourceEndpoints: $relativeEndpointsSourcePath
-generatedClientDart: $relativeGeneratedDartClientProtocolPath
-generatedServerProtocol: $relativeGeneratedServerProtocolPath
+sourceProtocol: ${p.joinAll(protocolSourcePathParts)}
+sourceEndpoints: ${p.joinAll(endpointsSourcePathParts)}
+generatedClientDart: ${p.joinAll(generatedDartClientProtocolPathParts)}
+generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
 ''';
     if (modules.isNotEmpty) {
       str += '\nmodules:\n\n';

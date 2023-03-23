@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:source_span/source_span.dart';
+import 'package:path/path.dart' as p;
 
 import '../../util/subdirectory_extraction.dart';
 import '../../config/config.dart';
@@ -90,8 +91,17 @@ class EndpointsAnalyzer {
           continue;
         }
 
-        var subdirectory = extractSubdirectoryFromRelativePath(
-            filePath, context.contextRoot.root.path);
+        var rootPathParts = p.split(context.contextRoot.root.path);
+        var fileDirPathParts = p.split(p.dirname(filePath));
+        while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {
+          if (rootPathParts.first == fileDirPathParts.first) {
+            rootPathParts.removeAt(0);
+            fileDirPathParts.removeAt(0);
+          } else {
+            break;
+          }
+        }
+        var subdirectory = fileDirPathParts;
 
         var library = await context.currentSession.getResolvedLibrary(filePath);
         library as ResolvedLibraryResult;
@@ -167,7 +177,7 @@ class EndpointsAnalyzer {
                 className: className,
                 methods: methodDefs,
                 filePath: filePath,
-                subDir: subdirectory,
+                subDirParts: subdirectory,
               );
               endpointDefs.add(endpointDef);
             }
