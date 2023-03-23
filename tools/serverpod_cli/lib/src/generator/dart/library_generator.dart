@@ -2,49 +2,53 @@ import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
 import 'package:path/path.dart' as p;
 
 import '../config.dart';
 import '../../analyzer/dart/definitions.dart';
 
+/// The import url of the main serverpod package.
 String serverpodUrl(bool serverCode) {
   return serverCode
       ? 'package:serverpod/serverpod.dart'
       : 'package:serverpod_client/serverpod_client.dart';
 }
 
+/// The import url of the serverpod protocol.
 String serverpodProtocolUrl(bool serverCode) {
   return serverCode
       ? 'package:serverpod/protocol.dart'
       : 'package:serverpod_client/serverpod_client.dart';
 }
 
-class ClassGeneratorDart {
+/// Generates all dart libraries (basically the content of a standalone dart file).
+class LibraryGenerator {
   final bool serverCode;
 
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
 
-  ClassGeneratorDart({
+  LibraryGenerator({
     required this.serverCode,
     required this.protocolDefinition,
     required this.config,
   });
 
-  Library generateEntityFile(ProtocolEntityDefinition protocolFileDefinition) {
+  /// Generate the file for a protocol entity.
+  Library generateEntityLibrary(
+      ProtocolEntityDefinition protocolFileDefinition) {
     if (protocolFileDefinition is ProtocolClassDefinition) {
-      return _generateClassFile(protocolFileDefinition);
+      return _generateClassLibrary(protocolFileDefinition);
     }
     if (protocolFileDefinition is ProtocolEnumDefinition) {
-      return _generateEnumFile(protocolFileDefinition);
+      return _generateEnumLibrary(protocolFileDefinition);
     }
 
     throw Exception('Unsupported protocol file type.');
   }
 
-  // Handle ordinary classes
-  Library _generateClassFile(ProtocolClassDefinition classDefinition) {
+  /// Handle ordinary classes for [generateEntityLibrary].
+  Library _generateClassLibrary(ProtocolClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
@@ -748,8 +752,8 @@ class ClassGeneratorDart {
     return library;
   }
 
-  // Handle enums.
-  Library _generateEnumFile(ProtocolEnumDefinition enumDefinition) {
+  /// Handle enums for [generateEntityLibrary]
+  Library _generateEnumLibrary(ProtocolEnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
 
     var library = Library((library) {
@@ -798,6 +802,7 @@ class ClassGeneratorDart {
     return library;
   }
 
+  /// Generate the protocol library.
   Library generateProtocol({
     bool verbose = false,
   }) {
@@ -1161,17 +1166,13 @@ class ClassGeneratorDart {
     return library.build();
   }
 
-  String get classPrefix {
-    if (config.type == PackageType.server) {
-      return '';
-    } else {
-      return '${config.serverPackage}.';
-    }
-  }
-
+  /// Generates the EndpointDispatch for the server side.
+  /// Executing this only makes sens for the server code
+  /// (if [serverCode] is `true`).
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
+    /// Get the path to a endpoint.
     String endpointPath(EndpointDefinition endpoint) {
       var subDir = endpoint.subDir;
       return p.posix.joinAll([
@@ -1314,7 +1315,14 @@ class ClassGeneratorDart {
     return library.build();
   }
 
+  /// Generates endpoint calls for the client side.
+  /// Executing this only makes sens for the client code
+  /// (if [serverCode] is `false`).
   Library generateClientEndpointCalls() {
+    String getEndpointClassName(String endpointName) {
+      return '_Endpoint${ReCase(endpointName).pascalCase}';
+    }
+
     var library = LibraryBuilder();
 
     var hasModules =
@@ -1324,7 +1332,7 @@ class ClassGeneratorDart {
         config.type == PackageType.server ? '' : '${config.name}.';
 
     for (var endpointDef in protocolDefinition.endpoints) {
-      var endpointClassName = _endpointClassName(endpointDef.name);
+      var endpointClassName = getEndpointClassName(endpointDef.name);
 
       library.body.add(
         Class((endpoint) {
@@ -1447,7 +1455,7 @@ class ClassGeneratorDart {
                 ..late = true
                 ..modifier = FieldModifier.final$
                 ..name = endpointDef.name
-                ..type = refer(_endpointClassName(endpointDef.name))),
+                ..type = refer(getEndpointClassName(endpointDef.name))),
             if (hasModules)
               Field((f) => f
                 ..late = true
@@ -1497,7 +1505,7 @@ class ClassGeneratorDart {
               c.body = Block.of([
                 for (var endpointDef in protocolDefinition.endpoints)
                   refer(endpointDef.name)
-                      .assign(refer(_endpointClassName(endpointDef.name))
+                      .assign(refer(getEndpointClassName(endpointDef.name))
                           .call([refer('this')]))
                       .statement,
                 if (hasModules)
@@ -1550,9 +1558,5 @@ class ClassGeneratorDart {
     );
 
     return library.build();
-  }
-
-  String _endpointClassName(String endpointName) {
-    return '_Endpoint${ReCase(endpointName).pascalCase}';
   }
 }

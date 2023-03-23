@@ -3,7 +3,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/generator/dart/class_generator_dart.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generator.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 
 /// A [CodeGenerator], that generates dart code.
@@ -14,12 +14,12 @@ class DartCodeGenerator extends CodeGenerator {
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   }) {
-    var serverClassGenerator = ClassGeneratorDart(
+    var serverClassGenerator = LibraryGenerator(
       serverCode: true,
       protocolDefinition: protocolDefinition,
       config: config,
     );
-    var clientClassGenerator = ClassGeneratorDart(
+    var clientClassGenerator = LibraryGenerator(
       serverCode: false,
       protocolDefinition: protocolDefinition,
       config: config,
@@ -32,7 +32,7 @@ class DartCodeGenerator extends CodeGenerator {
           ...?protocolFile.subDir?.split('/'),
           '${protocolFile.fileName}.dart',
         ]): () async => serverClassGenerator
-            .generateEntityFile(protocolFile)
+            .generateEntityLibrary(protocolFile)
             .generateCode(true),
       p.joinAll([config.relativeGeneratedServerProtocolPath, 'protocol.dart']):
           () async => serverClassGenerator
@@ -51,7 +51,7 @@ class DartCodeGenerator extends CodeGenerator {
             ...?protocolFile.subDir?.split('/'),
             '${protocolFile.fileName}.dart',
           ]): () async => clientClassGenerator
-              .generateEntityFile(protocolFile)
+              .generateEntityLibrary(protocolFile)
               .generateCode(true),
       p.joinAll([config.relativeGeneratedClientProtocolPath, 'protocol.dart']):
           () async => clientClassGenerator
