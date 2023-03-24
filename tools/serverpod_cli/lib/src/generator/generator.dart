@@ -14,7 +14,7 @@ Future<void> performGenerate({
   var collector = CodeGenerationCollector();
 
   if (verbose) {
-    printww('Analyzing entities in the protocol directory...');
+    printww('Analyzing serializable entities in the protocol directory.');
   }
   var entities = await SerializableEntityAnalyzer.analyzeAllFiles(
     verbose: verbose,
