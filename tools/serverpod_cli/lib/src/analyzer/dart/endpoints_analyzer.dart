@@ -75,6 +75,7 @@ class ProtocolEndpointsAnalyzer {
           var file = File(changedFile);
           context.changeFile(file.absolute.path);
         }
+        await context.applyPendingFileChanges();
       }
     }
 
