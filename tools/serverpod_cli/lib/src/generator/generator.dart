@@ -16,7 +16,7 @@ Future<void> performGenerate({
   if (verbose) {
     printww('Analyzing entities in the protocol directory...');
   }
-  var entities = await SerializableEntityAnalyzer.analyzeAll(
+  var entities = await SerializableEntityAnalyzer.analyzeAllFiles(
     verbose: verbose,
     collector: collector,
     config: config,

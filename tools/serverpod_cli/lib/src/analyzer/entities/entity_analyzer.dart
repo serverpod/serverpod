@@ -34,7 +34,7 @@ class SerializableEntityAnalyzer {
   });
 
   /// Analyze all yaml files int the protocol directory.
-  static Future<List<SerializableEntityDefinition>> analyzeAll({
+  static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
     bool verbose = true,
     required CodeAnalysisCollector collector,
     required GeneratorConfig config,
