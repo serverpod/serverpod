@@ -28,13 +28,12 @@ class PgsqlCodeGenerator extends CodeGenerator {
 
     var tableInfoList = entities.toList();
     tableInfoList.removeWhere(
-      (element) =>
-          (element is! ProtocolClassDefinition) || element.tableName == null,
+      (element) => (element is! ClassDefinition) || element.tableName == null,
     );
     _sortClassInfos(tableInfoList.cast());
 
     for (var tableInfo in tableInfoList) {
-      if (tableInfo is ProtocolClassDefinition && tableInfo.tableName != null) {
+      if (tableInfo is ClassDefinition && tableInfo.tableName != null) {
         out += _generatePgsql(tableInfo);
       }
     }
@@ -42,7 +41,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
     return out;
   }
 
-  void _sortClassInfos(List<ProtocolClassDefinition> tableInfos) {
+  void _sortClassInfos(List<ClassDefinition> tableInfos) {
     // First sort by name to make sure that we get consistant output
     tableInfos.sort((a, b) => a.tableName!.compareTo(b.tableName!));
 
@@ -89,7 +88,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
     }
   }
 
-  String _generatePgsql(ProtocolClassDefinition classInfo) {
+  String _generatePgsql(ClassDefinition classInfo) {
     var out = '';
 
     // Header
@@ -107,7 +106,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
       if (field.name == 'id') continue;
 
       // Skip fields that are API only
-      if (field.scope == ProtocolFieldScope.api) continue;
+      if (field.scope == SerializableEntityFieldScope.api) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';

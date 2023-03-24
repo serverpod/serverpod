@@ -16,10 +16,10 @@ class EntityLibraryGenerator {
   /// Generate the file for a protocol entity.
   Library generateEntityLibrary(
       SerializableEntityDefinition protocolEntityDefinition) {
-    if (protocolEntityDefinition is ProtocolClassDefinition) {
+    if (protocolEntityDefinition is ClassDefinition) {
       return _generateClassLibrary(protocolEntityDefinition);
     }
-    if (protocolEntityDefinition is ProtocolEnumDefinition) {
+    if (protocolEntityDefinition is EnumDefinition) {
       return _generateEnumLibrary(protocolEntityDefinition);
     }
 
@@ -27,7 +27,7 @@ class EntityLibraryGenerator {
   }
 
   /// Handle ordinary classes for [generateEntityLibrary].
-  Library _generateClassLibrary(ProtocolClassDefinition classDefinition) {
+  Library _generateClassLibrary(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
@@ -732,7 +732,7 @@ class EntityLibraryGenerator {
   }
 
   /// Handle enums for [generateEntityLibrary]
-  Library _generateEnumLibrary(ProtocolEnumDefinition enumDefinition) {
+  Library _generateEnumLibrary(EnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
 
     var library = Library((library) {

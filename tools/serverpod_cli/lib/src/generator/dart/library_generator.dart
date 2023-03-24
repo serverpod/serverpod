@@ -82,7 +82,7 @@ class LibraryGenerator {
                     .call([], {
               'tables': literalList([
                 for (var classDefinition in entities)
-                  if (classDefinition is ProtocolClassDefinition &&
+                  if (classDefinition is ClassDefinition &&
                       classDefinition.tableName != null)
                     refer('TableDefinition', serverpodProtocolUrl(serverCode))
                         .call([], {
@@ -161,7 +161,7 @@ class LibraryGenerator {
                           'isPrimary': literalTrue,
                         }),
                         for (var index in classDefinition.indexes ??
-                            <ProtocolIndexDefinition>[])
+                            <SerializableEntityIndexDefinition>[])
                           refer('IndexDefinition',
                                   serverpodProtocolUrl(serverCode))
                               .call([], {
@@ -217,10 +217,10 @@ class LibraryGenerator {
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
             for (var classInfo in entities)
-              refer(classInfo.className, classInfo.fileRef()): Code.scope((a) =>
-                  '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                  '.fromJson(data'
-                  '${classInfo is ProtocolClassDefinition ? ',this' : ''}) as T'),
+              refer(classInfo.className, classInfo.fileRef()): Code.scope(
+                  (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
+                      '.fromJson(data'
+                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
             for (var classInfo in entities)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
@@ -232,11 +232,11 @@ class LibraryGenerator {
               ]): Code.scope((a) => '(data!=null?'
                   '${a(refer(classInfo.className, classInfo.fileRef()))}'
                   '.fromJson(data'
-                  '${classInfo is ProtocolClassDefinition ? ',this' : ''})'
+                  '${classInfo is ClassDefinition ? ',this' : ''})'
                   ':null)as T'),
           }..addEntries([
                   for (var classInfo in entities)
-                    if (classInfo is ProtocolClassDefinition)
+                    if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields)
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
@@ -352,12 +352,11 @@ class LibraryGenerator {
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
               if (entities.any((classInfo) =>
-                  classInfo is ProtocolClassDefinition &&
-                  classInfo.tableName != null))
+                  classInfo is ClassDefinition && classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
                   for (var classInfo in entities)
-                    if (classInfo is ProtocolClassDefinition &&
+                    if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'

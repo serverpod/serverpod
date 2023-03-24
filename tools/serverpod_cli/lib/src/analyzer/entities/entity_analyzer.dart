@@ -74,7 +74,7 @@ class SerializableEntityAnalyzer {
 
     // Detect protocol references
     for (var classDefinition in classDefinitions) {
-      if (classDefinition is ProtocolClassDefinition) {
+      if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           fieldDefinition.type =
               fieldDefinition.type.applyProtocolReferences(classDefinitions);
@@ -84,11 +84,11 @@ class SerializableEntityAnalyzer {
 
     // Detect enum fields
     for (var classDefinition in classDefinitions) {
-      if (classDefinition is ProtocolClassDefinition) {
+      if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           if (fieldDefinition.type.url == 'protocol' &&
               classDefinitions
-                  .whereType<ProtocolEnumDefinition>()
+                  .whereType<EnumDefinition>()
                   .any((e) => e.className == fieldDefinition.type.className)) {
             fieldDefinition.type.isEnum = true;
           }
@@ -246,14 +246,14 @@ class SerializableEntityAnalyzer {
     }
 
     // Validate and add fields.
-    var fields = <ProtocolFieldDefinition>[];
+    var fields = <SerializableEntityFieldDefinition>[];
 
     // Add default id field, if object has database table.
     if (tableName != null) {
-      fields.add(ProtocolFieldDefinition(
+      fields.add(SerializableEntityFieldDefinition(
         name: 'id',
         type: TypeDefinition.int.asNullable,
-        scope: ProtocolFieldScope.all,
+        scope: SerializableEntityFieldScope.all,
         documentation: [
           '/// The database id, set if the object has been inserted into the',
           '/// database or if it has been fetched from the database. Otherwise,',
@@ -330,10 +330,10 @@ class SerializableEntityAnalyzer {
         }
 
         var scope = fieldOptions.any((option) => option == 'database')
-            ? ProtocolFieldScope.database
+            ? SerializableEntityFieldScope.database
             : fieldOptions.any((option) => option == 'api')
-                ? ProtocolFieldScope.api
-                : ProtocolFieldScope.all;
+                ? SerializableEntityFieldScope.api
+                : SerializableEntityFieldScope.all;
 
         if (fieldOptions.where((option) => option.startsWith('parent')).length >
             1) {
@@ -364,7 +364,7 @@ class SerializableEntityAnalyzer {
         var isEnum =
             fieldOptions.whereType<String?>().any((option) => option == 'enum');
 
-        var fieldDefinition = ProtocolFieldDefinition(
+        var fieldDefinition = SerializableEntityFieldDefinition(
           name: fieldName,
           scope: scope,
           type: typeResult.type..isEnum = isEnum,
@@ -386,13 +386,13 @@ class SerializableEntityAnalyzer {
 
     var validDatabaseFieldNames = <String>{};
     for (var field in fields) {
-      if (field.scope != ProtocolFieldScope.api) {
+      if (field.scope != SerializableEntityFieldScope.api) {
         validDatabaseFieldNames.add(field.name);
       }
     }
 
     // Validate indexes.
-    List<ProtocolIndexDefinition>? indexes;
+    List<SerializableEntityIndexDefinition>? indexes;
 
     var indexesNode = documentContents.nodes['indexes'];
     if (indexesNode != null) {
@@ -524,7 +524,7 @@ class SerializableEntityAnalyzer {
           unique = uniqueVal;
         }
 
-        var indexDefinition = ProtocolIndexDefinition(
+        var indexDefinition = SerializableEntityIndexDefinition(
           name: indexName,
           type: type,
           unique: unique,
@@ -534,7 +534,7 @@ class SerializableEntityAnalyzer {
       }
     }
 
-    return ProtocolClassDefinition(
+    return ClassDefinition(
       className: className,
       tableName: tableName,
       fileName: outFileName,
@@ -642,7 +642,7 @@ class SerializableEntityAnalyzer {
       values.add(ProtocolEnumValueDefinition(value, valueDocumentation));
     }
 
-    return ProtocolEnumDefinition(
+    return EnumDefinition(
       fileName: outFileName,
       className: className,
       values: values,

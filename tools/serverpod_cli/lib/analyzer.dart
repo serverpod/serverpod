@@ -12,9 +12,9 @@ export 'package:source_span/source_span.dart'
 export 'src/analyzer/entities/definitions.dart'
     show
         SerializableEntityDefinition,
-        ProtocolClassDefinition,
-        ProtocolFieldDefinition,
-        ProtocolFieldScope,
-        ProtocolIndexDefinition,
-        ProtocolEnumDefinition;
+        ClassDefinition,
+        SerializableEntityFieldDefinition,
+        SerializableEntityFieldScope,
+        SerializableEntityIndexDefinition,
+        EnumDefinition;
 export 'src/generator/types.dart' show TypeDefinition;
