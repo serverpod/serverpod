@@ -75,7 +75,7 @@ Future<void> performGenerate({
     printww('Deleting old files.');
   }
 
-  await CodeGenerator.cleanFiles(
+  await CodeGenerator.cleanPreviouslyGeneratedFiles(
     generatedFiles: <String>{
       ...generatedEntityFiles,
       ...generatedProtocolFiles

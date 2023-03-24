@@ -150,9 +150,11 @@ abstract class CodeGenerator {
     return allFiles.keys.toList();
   }
 
-  /// Remove old files that are not part of the [generatedFiles]
-  /// in the [CodeGenerator.getDirectoriesRequiringCleaning] for each [CodeGenerator].
-  static Future<void> cleanFiles({
+  /// Removes files from previous generation runs.
+  /// By removing old files that are not part of the [generatedFiles]
+  /// in the [CodeGenerator.getDirectoriesRequiringCleaning] for each
+  /// [CodeGenerator].
+  static Future<void> cleanPreviouslyGeneratedFiles({
     required Set<String> generatedFiles,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
