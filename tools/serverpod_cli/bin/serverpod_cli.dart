@@ -205,7 +205,7 @@ Future<void> _main(List<String> args) async {
         return;
       }
 
-      var endpointsAnalyzer = ProtocolEndpointsAnalyzer(config);
+      var endpointsAnalyzer = EndpointsAnalyzer(config);
 
       await performGenerate(
         verbose: verbose,

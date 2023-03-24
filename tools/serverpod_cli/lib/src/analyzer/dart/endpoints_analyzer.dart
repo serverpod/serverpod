@@ -23,14 +23,14 @@ const _excludedMethodNameSet = {
 };
 
 /// Analyzes dart files for the protocol specification.
-class ProtocolEndpointsAnalyzer {
+class EndpointsAnalyzer {
   late final Directory endpointDirectory;
   late final AnalysisContextCollection collection;
 
-  /// Create a new [ProtocolEndpointsAnalyzer], analyzing
+  /// Create a new [EndpointsAnalyzer], analyzing
   /// all dart files in the [endpointDirectory].
   //TODO: Make ProtocolDartFileAnalyzer testable
-  ProtocolEndpointsAnalyzer(GeneratorConfig config) {
+  EndpointsAnalyzer(GeneratorConfig config) {
     endpointDirectory = Directory(p.joinAll(config.endpointsSourcePathParts));
     collection = AnalysisContextCollection(
       includedPaths: [endpointDirectory.absolute.path],

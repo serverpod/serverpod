@@ -9,7 +9,7 @@ Future<void> performGenerate({
   bool dartFormat = true,
   String? changedFile,
   required GeneratorConfig config,
-  required ProtocolEndpointsAnalyzer endpointsAnalyzer,
+  required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
   var collector = CodeGenerationCollector();
 
