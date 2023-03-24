@@ -166,7 +166,7 @@ class TypeDefinition {
 
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    //TODO: add all suported types here
+    // TODO: add all suported types here
     if (className == 'String') return 'text';
     if (className == 'bool') return 'boolean';
     if (className == 'int' || isEnum) return 'integer';
@@ -187,7 +187,7 @@ class TypeDefinition {
 
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
-    //TODO: add all suported types here
+    // TODO: add all suported types here
     if (className == 'int') return 'ColumnInt';
     if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';

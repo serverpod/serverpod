@@ -184,7 +184,7 @@ class LibraryGenerator {
                           }),
                       ]),
                       'managed':
-                          literalTrue, //TODO: Add an option in the yaml-protocol specification for this.
+                          literalTrue, // TODO: Add an option in the yaml-protocol specification for this.
                     }),
                 for (var module in config.modules)
                   refer('Protocol.targetDatabaseDefinition.tables',

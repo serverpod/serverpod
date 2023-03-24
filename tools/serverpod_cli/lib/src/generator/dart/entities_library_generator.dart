@@ -168,7 +168,7 @@ class EntityLibraryGenerator {
               classBuilder.methods.add(Method(
                 (m) {
                   m.returns = refer('Map<String,dynamic>');
-                  //TODO: better name
+                  // TODO: better name
                   m.name = 'toJsonForDatabase';
                   m.annotations.add(refer('override'));
 

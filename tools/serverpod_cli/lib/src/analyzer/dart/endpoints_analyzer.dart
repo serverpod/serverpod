@@ -29,7 +29,7 @@ class EndpointsAnalyzer {
 
   /// Create a new [EndpointsAnalyzer], analyzing
   /// all dart files in the [endpointDirectory].
-  //TODO: Make ProtocolDartFileAnalyzer testable
+  // TODO: Make ProtocolDartFileAnalyzer testable
   EndpointsAnalyzer(GeneratorConfig config) {
     endpointDirectory = Directory(p.joinAll(config.endpointsSourcePathParts));
     collection = AnalysisContextCollection(

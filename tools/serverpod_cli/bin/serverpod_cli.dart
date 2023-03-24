@@ -199,7 +199,7 @@ Future<void> _main(List<String> args) async {
       var verbose = results.command!['verbose'];
       var watch = results.command!['watch'];
 
-      //TODO: add a -d option to select the directory
+      // TODO: add a -d option to select the directory
       var config = GeneratorConfig.load();
       if (config == null) {
         return;
