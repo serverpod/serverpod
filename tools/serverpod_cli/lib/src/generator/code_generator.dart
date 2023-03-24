@@ -7,12 +7,13 @@ import 'package:serverpod_cli/src/generator/psql/pgsql_generator.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 
-/// A code generator is responsible for generating the code for the target language.
+/// A code generator is responsible for generating the code for the target
+/// language.
 abstract class CodeGenerator {
   /// Create a new [CodeGenerator].
   const CodeGenerator();
 
-  /// Generate code for the entities.
+  /// Generates the content of files that only depend the SerializableEntities.
   /// The key is path of the file, where the code has to be written to,
   /// the value a function that builds the content.
   ///
