@@ -17,15 +17,15 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 }
 
 /// Used to analyze a singe yaml protocol file.
-class SerializableEntitiesAnalyzer {
+class SerializableEntityAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
   final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
 
-  /// Create a new [SerializableEntitiesAnalyzer].
-  SerializableEntitiesAnalyzer._({
+  /// Create a new [SerializableEntityAnalyzer].
+  SerializableEntityAnalyzer._({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -59,7 +59,7 @@ class SerializableEntitiesAnalyzer {
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
       var yaml = await entity.readAsString();
-      var analyzer = SerializableEntitiesAnalyzer._(
+      var analyzer = SerializableEntityAnalyzer._(
         yaml: yaml,
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
