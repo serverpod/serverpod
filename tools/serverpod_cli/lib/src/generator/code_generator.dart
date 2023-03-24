@@ -53,7 +53,7 @@ abstract class CodeGenerator {
   List<String> get outputFileExtensions;
 
   /// The generators, that run on [generateAll].
-  static const generators = [DartCodeGenerator(), PgsqlGenerator()];
+  static const generators = [DartCodeGenerator(), PgsqlCodeGenerator()];
 
   /// Generate from [CodeGenerator.getEntitiesCodeGeneration] for all [CodeGenerator]s
   /// and save the files.

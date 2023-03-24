@@ -5,9 +5,9 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart' as p;
 
 /// A [CodeGenerator], that generates pgsql code.
-class PgsqlGenerator extends CodeGenerator {
-  /// Create a new [PgsqlGenerator]
-  const PgsqlGenerator();
+class PgsqlCodeGenerator extends CodeGenerator {
+  /// Create a new [PgsqlCodeGenerator]
+  const PgsqlCodeGenerator();
 
   @override
   Map<String, Future<String> Function()> getEntitiesCodeGeneration(
