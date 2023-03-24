@@ -14,8 +14,9 @@ abstract class CodeGenerator {
   const CodeGenerator();
 
   /// Generates the content of files that only depend the SerializableEntities.
-  /// The key is path of the file, where the code has to be written to,
-  /// the value a function that builds the content.
+  ///
+  /// Returns a map where they key is the path of the file and the the value is
+  /// the files content.
   ///
   /// Relative paths start at the server package directory.
   ///
@@ -26,9 +27,11 @@ abstract class CodeGenerator {
     required GeneratorConfig config,
   });
 
-  /// Generate the code.
-  /// The key is path of the file, where the code has to be written to,
-  /// the value a function that builds the content.
+  /// Generate the content of files that depend on the entire
+  /// [ProtocolDefinition].
+  ///
+  /// Returns a map where they key is the path of the file and the the value is
+  /// the files content.
   ///
   /// Relative paths start at the server package directory.
   ///
