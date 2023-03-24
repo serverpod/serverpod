@@ -7,13 +7,11 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:source_span/source_span.dart';
+import 'package:path/path.dart' as p;
 
-import '../util/subdirectory_extraction.dart';
-import 'config.dart';
-import 'protocol_definition.dart';
-import 'code_analysis_collector.dart';
-import 'types.dart';
+import 'definitions.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -24,57 +22,23 @@ const _excludedMethodNameSet = {
   'getUserObject',
 };
 
-ProtocolAnalyzer? _analyzer;
+/// Analyzes dart files for the protocol specification.
+class EndpointsAnalyzer {
+  late final Directory endpointDirectory;
+  late final AnalysisContextCollection collection;
 
-Future<ProtocolDefinition> performAnalyzeServerCode({
-  required bool verbose,
-  required CodeAnalysisCollector collector,
-  bool requestNewAnalyzer = true,
-  required Set<String> changedFiles,
-}) async {
-  // Invalidate the old analyzer if requested to do so.
-  if (requestNewAnalyzer) {
-    _analyzer = null;
-  }
-
-  // Attempt to use old analyzer or create a new one if no one exists.
-  if (_analyzer == null) {
-    _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
-  } else if (changedFiles.isNotEmpty) {
-    // Make sure that the analyzer is up-to-date with recent changes.
-    var contexts = _analyzer!.collection.contexts;
-    for (var context in contexts) {
-      for (var changedFile in changedFiles) {
-        var file = File(changedFile);
-        context.changeFile(file.absolute.path);
-      }
-      await context.applyPendingFileChanges();
-    }
-  }
-
-  // Perform the code analysis.
-  return await _analyzer!.analyze(
-    verbose: verbose,
-    collector: collector,
-  );
-}
-
-Future<List<String>> performAnalysisGetSevereErrors() async {
-  _analyzer = ProtocolAnalyzer(config.endpointsSourcePath);
-  return await _analyzer!.getErrors();
-}
-
-class ProtocolAnalyzer {
-  final Directory endpointDirectory;
-  late AnalysisContextCollection collection;
-
-  ProtocolAnalyzer(String filePath) : endpointDirectory = Directory(filePath) {
+  /// Create a new [EndpointsAnalyzer], analyzing all dart files in the
+  /// [endpointDirectory].
+  // TODO: Make ProtocolDartFileAnalyzer testable
+  EndpointsAnalyzer(GeneratorConfig config) {
+    endpointDirectory = Directory(p.joinAll(config.endpointsSourcePathParts));
     collection = AnalysisContextCollection(
       includedPaths: [endpointDirectory.absolute.path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
   }
 
+  /// Get all errors in the analyzed files.
   Future<List<String>> getErrors() async {
     var errorMessages = <String>[];
 
@@ -97,12 +61,25 @@ class ProtocolAnalyzer {
     return errorMessages;
   }
 
-  Future<ProtocolDefinition> analyze({
+  /// Analyze all files in the [endpointDirectory].
+  /// Use [changedFiles] to mark files, that need reloading.
+  Future<List<EndpointDefinition>> analyze({
     required bool verbose,
     required CodeAnalysisCollector collector,
+    Set<String>? changedFiles,
   }) async {
+    if (changedFiles != null) {
+      // Make sure that the analyzer is up-to-date with recent changes.
+      for (var context in collection.contexts) {
+        for (var changedFile in changedFiles) {
+          var file = File(changedFile);
+          context.changeFile(file.absolute.path);
+        }
+        await context.applyPendingFileChanges();
+      }
+    }
+
     var endpointDefs = <EndpointDefinition>[];
-    var filePaths = <String>[];
 
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
@@ -111,10 +88,20 @@ class ProtocolAnalyzer {
         if (!filePath.endsWith('.dart')) {
           continue;
         }
-        filePaths.add(filePath);
 
-        var subdirectory = extractSubdirectoryFromRelativePath(
-            filePath, context.contextRoot.root.path);
+        // Get the subdirectory of the filePath by removing the first elements
+        // of the root path and the file path as long as they match.
+        var rootPathParts = p.split(context.contextRoot.root.path);
+        var fileDirPathParts = p.split(p.dirname(filePath));
+        while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {
+          if (rootPathParts.first == fileDirPathParts.first) {
+            rootPathParts.removeAt(0);
+            fileDirPathParts.removeAt(0);
+          } else {
+            break;
+          }
+        }
+        var subdirectory = fileDirPathParts;
 
         var library = await context.currentSession.getResolvedLibrary(filePath);
         library as ResolvedLibraryResult;
@@ -189,8 +176,8 @@ class ProtocolAnalyzer {
                 documentationComment: classDocumentationComment,
                 className: className,
                 methods: methodDefs,
-                fileName: filePath,
-                subDir: subdirectory,
+                filePath: filePath,
+                subDirParts: subdirectory,
               );
               endpointDefs.add(endpointDef);
             }
@@ -199,12 +186,7 @@ class ProtocolAnalyzer {
       }
     }
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpointDefs,
-      filePaths: filePaths,
-    );
-
-    return protocolDefinition;
+    return endpointDefs;
   }
 
   String _formatEndpointName(String className) {

@@ -13,26 +13,9 @@ class ConfigInfo {
     print('serviceSecret: ${config.serviceSecret}');
     var keyManager = ServiceKeyManager('CLI', config);
     return Client(
-      '${config.insightsServer.publicScheme}://${config.insightsServer.publicHost}:${config.insightsServer.port}/',
+      '${config.insightsServer.publicScheme}://'
+      '${config.insightsServer.publicHost}:${config.insightsServer.port}/',
       authenticationKeyManager: keyManager,
     );
-  }
-
-  void printAddress() {
-    // TODO: Fix
-    // if (serverId != null) {
-    //   print(config.cluster[serverId]!.address);
-    // } else {
-    //   for (var id in config.cluster.keys) {
-    //     print(config.cluster[id]!.address);
-    //   }
-    // }
-  }
-
-  void printIds() {
-    // TODO: Fix
-    // for (var id in config.cluster.keys) {
-    //   print('$id');
-    // }
   }
 }

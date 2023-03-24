@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
+import 'package:serverpod_cli/analyzer.dart';
 
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/create/create.dart';
@@ -198,12 +199,26 @@ Future<void> _main(List<String> args) async {
       var verbose = results.command!['verbose'];
       var watch = results.command!['watch'];
 
+      // TODO: add a -d option to select the directory
+      var config = GeneratorConfig.load();
+      if (config == null) {
+        return;
+      }
+
+      var endpointsAnalyzer = EndpointsAnalyzer(config);
+
       await performGenerate(
         verbose: verbose,
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
       );
       if (watch) {
         print('Initial code generation complete. Listening for changes.');
-        performGenerateContinuously(verbose);
+        performGenerateContinuously(
+          verbose: verbose,
+          config: config,
+          endpointsAnalyzer: endpointsAnalyzer,
+        );
       } else {
         print('Done.');
       }

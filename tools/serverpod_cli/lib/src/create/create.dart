@@ -43,11 +43,20 @@ Future<void> performCreate(
 
   if ((!portsAvailable || !dockerConfigured) && template == 'server') {
     var strIssue =
-        'There are some issues with your setup that will prevent your Serverpod project from running out of the box and without further configuration. You can still create this project by passing -f to "serverpod create" and manually configure your Serverpod.';
+        'There are some issues with your setup that will prevent your Serverpod'
+        ' project from running out of the box and without further '
+        'configuration. You can still create this project by passing -f to '
+        '"serverpod create" and manually configure your Serverpod.';
     var strIssuePorts =
-        'One or more network ports Serverpod want to use are not available. The most likely reason is that you have another Serverpod project running, but it can also be another service.';
+        'One or more network ports Serverpod want to use are not available. The'
+        ' most likely reason is that you have another Serverpod project'
+        ' running, but it can also be another service.';
     var strIssueDocker =
-        'You do not have Docker installed or it is not running. Serverpod uses Docker to run Postgres and Redis. It\'s recommended that you install Docker Desktop from https://www.docker.com/get-started but you can also install and configure Postgres and Redis manually and run this command with the -f flag added.';
+        'You do not have Docker installed or it is not running. Serverpod uses '
+        'Docker to run Postgres and Redis. It\'s recommended that you install '
+        'Docker Desktop from https://www.docker.com/get-started but you can '
+        'also install and configure Postgres and Redis manually and run this '
+        'command with the -f flag added.';
 
     printww(strIssue);
 
@@ -82,7 +91,7 @@ Future<void> performCreate(
     return;
   }
 
-  print('Creating project $name...');
+  print('Creating project $name.');
 
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();

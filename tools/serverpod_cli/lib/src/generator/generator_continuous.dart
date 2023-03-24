@@ -1,39 +1,31 @@
+import 'package:async/async.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:watcher/watcher.dart';
+import 'package:path/path.dart' as p;
 
-import 'config.dart';
 import 'generator.dart';
 
-void performGenerateContinuously(bool verbose) {
-  if (!config.load()) return;
-
+/// Continuously generate code when files change.
+void performGenerateContinuously({
+  required bool verbose,
+  required GeneratorConfig config,
+  required EndpointsAnalyzer endpointsAnalyzer,
+}) async {
   if (verbose) print('Starting up continuous generator');
 
-  _performGenerateClassesContinuously(verbose);
-  _performGenereateProtocolContinuously(verbose);
-}
+  var watcherClasses =
+      DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
+  var watcherEndpoints =
+      DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
 
-Future<void> _performGenerateClassesContinuously(bool verbose) async {
-  var watcherClasses = DirectoryWatcher(config.protocolSourcePath);
-  await for (WatchEvent event in watcherClasses.events) {
+  await for (WatchEvent event
+      in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
     print('File changed: $event');
     await performGenerate(
       verbose: verbose,
       changedFile: event.path,
-      requestNewAnalyzer: false,
-    );
-    print('Incremental code generation complete.');
-    print('');
-  }
-}
-
-Future<void> _performGenereateProtocolContinuously(bool verbose) async {
-  var watcherEndpoints = DirectoryWatcher(config.endpointsSourcePath);
-  await for (WatchEvent event in watcherEndpoints.events) {
-    print('File changed: $event');
-    await performGenerate(
-      verbose: verbose,
-      changedFile: event.path,
-      requestNewAnalyzer: false,
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
     );
     print('Incremental code generation complete.');
     print('');

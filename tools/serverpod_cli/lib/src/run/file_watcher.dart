@@ -1,20 +1,24 @@
 import 'package:watcher/watcher.dart';
+import 'package:path/path.dart' as p;
 
-import '../generator/config.dart';
+import '../config/config.dart';
 
 class SourceFileWatcher {
   final Future<void> Function(String path, bool isProtocol) onChangedSourceFile;
   final Future<void> Function(String path) onRemovedProtocolFile;
+  final GeneratorConfig config;
 
   SourceFileWatcher({
     required this.onChangedSourceFile,
     required this.onRemovedProtocolFile,
+    required this.config,
   });
 
   Future<void> watch(bool verbose) async {
-    var watcherClasses = DirectoryWatcher(config.libSourcePath);
+    var watcherClasses = DirectoryWatcher(p.joinAll(config.libSourcePathParts));
     await for (WatchEvent event in watcherClasses.events) {
-      if (event.path.startsWith(config.generatedServerProtocolPath)) {
+      if (event.path
+          .startsWith(p.joinAll(config.generatedServerProtocolPathParts))) {
         continue;
       }
       switch (event.type) {
@@ -30,7 +34,7 @@ class SourceFileWatcher {
   }
 
   bool _isPathInProtocol(String path) =>
-      (path.startsWith('${config.protocolSourcePath}/') ||
-          path.startsWith('${config.endpointsSourcePath}/')) &&
+      (path.startsWith('${p.joinAll(config.protocolSourcePathParts)}/') ||
+          path.startsWith('${p.joinAll(config.endpointsSourcePathParts)}/')) &&
       (path.endsWith('.dart') || path.endsWith('.yaml'));
 }
