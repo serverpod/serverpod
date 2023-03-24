@@ -99,7 +99,7 @@ class GeneratorConfig {
   final List<TypeDefinition> extraClasses;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static GeneratorConfig? load([String dir = '']) {
+  static GeneratorConfig load([String dir = '']) {
     var serverPackageDirectoryPathParts = p.split(dir);
 
     Map? pubspec;
@@ -108,9 +108,10 @@ class GeneratorConfig {
       var yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
     } catch (_) {
-      print(
-          'Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
-      return null;
+      //TODO: This message doesn't make sens for a package.
+      throw Exception(
+          'Failed to load pubspec.yaml. Are you running serverpod from your '
+          'projects root directory?');
     }
 
     if (pubspec!['name'] == null) {
@@ -125,9 +126,8 @@ class GeneratorConfig {
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {
-      print(
+      throw Exception(
           'Failed to load config/generator.yaml. Is this a Serverpod project?');
-      return null;
     }
 
     var typeStr = generatorConfig!['type'];
@@ -160,9 +160,9 @@ class GeneratorConfig {
       dartClientDependsOnServiceClient =
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
-      print(
-          'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
-      return null;
+      throw Exception(
+          'Failed to load client pubspec.yaml. Is your client_package_path set '
+          'correctly?');
     }
 
     // Load module settings

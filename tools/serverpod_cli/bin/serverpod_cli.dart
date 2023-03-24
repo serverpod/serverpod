@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/version.dart';
 
 const cmdCreate = 'create';
@@ -199,9 +200,12 @@ Future<void> _main(List<String> args) async {
       var verbose = results.command!['verbose'];
       var watch = results.command!['watch'];
 
-      // TODO: add a -d option to select the directory
-      var config = GeneratorConfig.load();
-      if (config == null) {
+      late GeneratorConfig config;
+      try {
+        // TODO: add a -d option to select the directory
+        config = GeneratorConfig.load();
+      } on Exception catch (e) {
+        printww(e.toString());
         return;
       }
 
