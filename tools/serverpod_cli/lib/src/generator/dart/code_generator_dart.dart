@@ -29,7 +29,8 @@ class DartCodeGenerator extends CodeGenerator {
 
     return {
       // Server
-      // Generate a temporary protocol.dart file. Since this is required to analyze the endpoints.
+      // Generate a temporary protocol.dart file. Since this is required to
+      // analyze the endpoints.
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
           serverSideGenerator
               .generateTemporaryProtocol(entities: entities)

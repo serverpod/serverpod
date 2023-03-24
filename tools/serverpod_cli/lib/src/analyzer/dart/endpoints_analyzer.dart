@@ -27,8 +27,8 @@ class EndpointsAnalyzer {
   late final Directory endpointDirectory;
   late final AnalysisContextCollection collection;
 
-  /// Create a new [EndpointsAnalyzer], analyzing
-  /// all dart files in the [endpointDirectory].
+  /// Create a new [EndpointsAnalyzer], analyzing all dart files in the
+  /// [endpointDirectory].
   // TODO: Make ProtocolDartFileAnalyzer testable
   EndpointsAnalyzer(GeneratorConfig config) {
     endpointDirectory = Directory(p.joinAll(config.endpointsSourcePathParts));
@@ -89,9 +89,8 @@ class EndpointsAnalyzer {
           continue;
         }
 
-        // Get the subdirectory of the filePath by removing the
-        // first elements of the root path and the file path as
-        // long as they match.
+        // Get the subdirectory of the filePath by removing the first elements
+        // of the root path and the file path as long as they match.
         var rootPathParts = p.split(context.contextRoot.root.path);
         var fileDirPathParts = p.split(p.dirname(filePath));
         while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {

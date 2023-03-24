@@ -64,8 +64,8 @@ abstract class CodeGenerator {
   /// The generators, that run on [generateAll].
   static const generators = [DartCodeGenerator(), PgsqlCodeGenerator()];
 
-  /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all [CodeGenerator]s
-  /// and save the files.
+  /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all
+  /// [CodeGenerator]s and save the files.
   ///
   /// Returns a list of generated files.
   static Future<List<String>> generateSerializableEntities({
@@ -107,8 +107,8 @@ abstract class CodeGenerator {
     return allFiles.keys.toList();
   }
 
-  /// Generate from [CodeGenerator.generateProtocolCode] for all [CodeGenerator]s
-  /// and save the files.
+  /// Generate from [CodeGenerator.generateProtocolCode] for all
+  /// [CodeGenerator]s and save the files.
   ///
   /// Returns a list of generated files.
   static Future<List<String>> generateProtocolDefinition({
@@ -151,9 +151,8 @@ abstract class CodeGenerator {
   }
 
   /// Removes files from previous generation runs.
-  /// By removing old files that are not part of the [generatedFiles]
-  /// in the [CodeGenerator.getDirectoriesRequiringCleaning] for each
-  /// [CodeGenerator].
+  /// By removing old files that are not part of the [generatedFiles] in the
+  /// [CodeGenerator.getDirectoriesRequiringCleaning] for each [CodeGenerator].
   static Future<void> cleanPreviouslyGeneratedFiles({
     required Set<String> generatedFiles,
     required ProtocolDefinition protocolDefinition,

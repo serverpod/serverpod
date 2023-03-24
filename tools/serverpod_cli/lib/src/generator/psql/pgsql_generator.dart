@@ -76,8 +76,9 @@ class PgsqlCodeGenerator extends CodeGenerator {
 
             if (!movedEntry) {
               // We failed to move a table because the dependency is missing
-              throw FormatException(
-                  'The table "${tableInfo.tableName}" (class "${tableInfo.className}" is referencing a table that doesn\'t exist (${field.parentTable}).)');
+              throw FormatException('The table "${tableInfo.tableName}" '
+                  '(class "${tableInfo.className}" is referencing a table '
+                  'that doesn\'t exist (${field.parentTable}).)');
             }
 
             break classInfoLoop;
@@ -124,7 +125,8 @@ class PgsqlCodeGenerator extends CodeGenerator {
       for (var index in classInfo.indexes!) {
         var uniqueStr = index.unique ? ' UNIQUE' : '';
         out +=
-            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}" USING ${index.type} (';
+            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}"'
+            'USING ${index.type} (';
         out += index.fields.map((String str) => '"$str"').join(', ');
         out += ');\n';
       }

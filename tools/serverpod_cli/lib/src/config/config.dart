@@ -8,8 +8,8 @@ import '../generator/types.dart';
 
 /// The type of the package.
 enum PackageType {
-  /// Indicating a package of an end developer, creating an Serverpod
-  /// base application. Or the main serverpod package.
+  /// Indicating a package of an end developer, creating an Serverpod base
+  /// application. Or the main serverpod package.
   server,
 
   /// Indicating a module, that is used in other Serverpod based projects.
@@ -54,7 +54,7 @@ class GeneratorConfig {
   ///  - [name]
   final String dartClientPackage;
 
-  /// True, if the dart client depends on the `package:serverpod_service_client`.
+  /// True, if dart client depends on the `package:serverpod_service_client`.
   final bool dartClientDependsOnServiceClient;
 
   /// The parts of the path where the server package is located at.
@@ -73,8 +73,8 @@ class GeneratorConfig {
   List<String> get endpointsSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
 
-  /// The path parts of the directory, where the generated code is stored
-  /// in the server package.
+  /// The path parts of the directory, where the generated code is stored in the
+  /// server package.
   List<String> get generatedServerProtocolPathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
 

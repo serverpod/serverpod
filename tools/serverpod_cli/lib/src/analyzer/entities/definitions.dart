@@ -25,21 +25,22 @@ abstract class SerializableEntityDefinition {
   }
 }
 
-/// A representation of a yaml file in the
-/// protocol directory defining a class or exception.
+/// A representation of a yaml file in the protocol directory defining a class
+/// or exception.
 ///
 /// See also:
 /// - [EnumDefinition]
 class ClassDefinition extends SerializableEntityDefinition {
-  /// If set, the name of the table, this class should be stored in,
-  /// in the database.
+  /// If set, the name of the table, this class should be stored in, in the
+  /// database.
   final String? tableName;
 
   /// The fields of this class / exception.
   final List<SerializableEntityFieldDefinition> fields;
 
-  /// The indexes that should be created for the table [tableName]
-  /// representing this class.
+  /// The indexes that should be created for the table [tableName] representing
+  /// this class.
+  ///
   /// The index over the primary key `id` is not part of this list.
   final List<SerializableEntityIndexDefinition>? indexes;
 
@@ -81,7 +82,8 @@ class SerializableEntityFieldDefinition {
 
   /// If this column should have a foreign key,
   /// then [parentTable] contains the referenced table.
-  /// For now, the foreign key only references the id column of the [parentTable].
+  /// For now, the foreign key only references the id column of the
+  /// [parentTable].
   final String? parentTable;
 
   /// The documentation of this field, line by line.
@@ -125,7 +127,8 @@ class SerializableEntityFieldDefinition {
     return false;
   }
 
-  /// Returns true, if this field should be added to the serialization for the database.
+  /// Returns true, if this field should be added to the serialization for the
+  /// database.
   /// [serverCode] specifies if it's code on the server or client side.
   /// This method should only be called for server side code.
   ///
@@ -154,8 +157,7 @@ enum SerializableEntityFieldScope {
   all,
 }
 
-/// The definition of an index for a file,
-/// that is also stored in the database.
+/// The definition of an index for a file, that is also stored in the database.
 class SerializableEntityIndexDefinition {
   /// The name of the index.
   final String name;
@@ -180,8 +182,7 @@ class SerializableEntityIndexDefinition {
   });
 }
 
-/// A representation of a yaml file in the
-/// protocol directory defining an enum.
+/// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableEntityDefinition {
   /// All the values of the enum.
   /// This also contains possible documentation for them.

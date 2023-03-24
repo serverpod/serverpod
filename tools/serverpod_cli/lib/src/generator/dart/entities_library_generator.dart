@@ -781,8 +781,7 @@ class SerializableEntityLibraryGenerator {
     return library;
   }
 
-  /// Generate a temporary protocol library,
-  /// that just exports the entities.
+  /// Generate a temporary protocol library, that just exports the entities.
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
   Library generateTemporaryProtocol({

@@ -83,7 +83,8 @@ class TypeDefinition {
     );
   }
 
-  /// A convenience variable for getting a [TypeDefinition] of an non null int quickly.
+  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
 
   /// Get this [TypeDefinition], but nullable.
@@ -117,8 +118,9 @@ class TypeDefinition {
             throw FormatException(
                 'Module with nickname $moduleName not found in config!');
           }
-          t.url =
-              'package:${serverCode ? module.serverPackage : module.dartClientPackage}/module.dart';
+          t.url = 'package:'
+              '${serverCode ? module.serverPackage : module.dartClientPackage}'
+              '/module.dart';
         } else if (url == 'serverpod' ||
             (url == null && ['UuidValue'].contains(className))) {
           // serverpod: reference
@@ -126,8 +128,9 @@ class TypeDefinition {
         } else if (url?.startsWith('project:') ?? false) {
           // project:path:reference
           var split = url!.split(':');
-          t.url =
-              'package:${serverCode ? config.serverPackage : config.dartClientPackage}/${split[1]}';
+          t.url = 'package:'
+              '${serverCode ? config.serverPackage : config.dartClientPackage}'
+              '/${split[1]}';
         } else if (url == 'protocol') {
           // protocol: reference
           t.url = p.posix
@@ -145,7 +148,9 @@ class TypeDefinition {
           var module = config.modules.firstWhere(
               (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
           t.url = url!.contains('/src/generated/')
-              ? 'package:${serverCode ? module.serverPackage : module.dartClientPackage}/module.dart'
+              ? 'package:'
+                  '${serverCode ? module.serverPackage : module.dartClientPackage}'
+                  '/module.dart'
               : serverCode
                   ? url
                   : url?.replaceFirst('package:${module.serverPackage}',
@@ -318,9 +323,10 @@ class TypeDefinition {
                 : reference(serverCode, config: config),
             Code.scope((a) => nullable
                 ? '(data!=null?'
-                    '${a(reference(serverCode, config: config))}.fromJson(data,this)'
-                    ':null)as T'
-                : '${a(reference(serverCode, config: config))}.fromJson(data,this) as T'))
+                    '${a(reference(serverCode, config: config))}'
+                    '.fromJson(data,this):null)as T'
+                : '${a(reference(serverCode, config: config))}'
+                    '.fromJson(data,this) as T'))
       ];
     } else {
       return [];
@@ -363,7 +369,8 @@ class TypeDefinition {
 /// as well as the position of the last parsed character.
 /// So when calling with "List<List<String?>?>,database",
 /// the position will point at the ','.
-/// If [analyzingExtraClasses] is true, the root element might be marked as [TypeDefinition.customClass].
+/// If [analyzingExtraClasses] is true, the root element might be marked as
+/// [TypeDefinition.customClass].
 TypeParseResult parseAndAnalyzeType(
   String input, {
   bool analyzingExtraClasses = false,

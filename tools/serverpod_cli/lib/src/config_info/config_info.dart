@@ -13,7 +13,8 @@ class ConfigInfo {
     print('serviceSecret: ${config.serviceSecret}');
     var keyManager = ServiceKeyManager('CLI', config);
     return Client(
-      '${config.insightsServer.publicScheme}://${config.insightsServer.publicHost}:${config.insightsServer.port}/',
+      '${config.insightsServer.publicScheme}://'
+      '${config.insightsServer.publicHost}:${config.insightsServer.port}/',
       authenticationKeyManager: keyManager,
     );
   }
