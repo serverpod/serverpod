@@ -6,7 +6,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
     List<SerializableEntityDefinition> serializableEntities) {
   return DatabaseDefinition(tables: [
     for (var classDefinition in serializableEntities)
-      if (classDefinition is ProtocolClassDefinition &&
+      if (classDefinition is ClassDefinition &&
           classDefinition.tableName != null)
         TableDefinition(
           name: classDefinition.tableName!,
@@ -58,8 +58,8 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
               isUnique: true,
               isPrimary: true,
             ),
-            for (var index
-                in classDefinition.indexes ?? <ProtocolIndexDefinition>[])
+            for (var index in classDefinition.indexes ??
+                <SerializableEntityIndexDefinition>[])
               IndexDefinition(
                 indexName: index.name,
                 elements: [
