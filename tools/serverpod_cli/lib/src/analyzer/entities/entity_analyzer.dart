@@ -46,7 +46,7 @@ class SerializableEntityAnalyzer {
     var sourceFileList = await sourceDir.list(recursive: true).toList();
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
-    var subDirSkip = p.split(sourceDir.path).length;
+    var sourceDirPartsLength = p.split(sourceDir.path).length;
 
     for (var entity in sourceFileList) {
       if (entity is! File || !entity.path.endsWith('.yaml')) {
@@ -54,7 +54,7 @@ class SerializableEntityAnalyzer {
         continue;
       }
       var subDirectoryParts =
-          p.split(p.dirname(entity.path)).skip(subDirSkip).toList();
+          p.split(p.dirname(entity.path)).skip(sourceDirPartsLength).toList();
 
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
