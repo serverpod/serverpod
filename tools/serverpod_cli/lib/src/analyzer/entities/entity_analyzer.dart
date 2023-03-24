@@ -72,7 +72,7 @@ class SerializableEntityAnalyzer {
       }
     }
 
-    //Detect protocol references
+    // Detect protocol references
     for (var classDefinition in classDefinitions) {
       if (classDefinition is ProtocolClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {

@@ -593,7 +593,7 @@ class EntityLibraryGenerator {
                     .returned
                     .statement));
 
-              //count
+              // count
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'count'
