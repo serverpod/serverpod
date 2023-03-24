@@ -10,7 +10,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
   const PgsqlCodeGenerator();
 
   @override
-  Map<String, Future<String> Function()> getEntitiesCodeGeneration(
+  Map<String, String> generateSerializableEntitiesCode(
       {required bool verbose,
       required List<SerializableEntityDefinition> entities,
       required GeneratorConfig config}) {
@@ -19,7 +19,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
         ...config.serverPackageDirectoryPathParts,
         'generated',
         'tables.pgsql'
-      ]): () async => _generate(entities),
+      ]): _generate(entities),
     };
   }
 
@@ -162,7 +162,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
   List<String> get outputFileExtensions => ['.pgsql'];
 
   @override
-  Map<String, Future<String> Function()> getCodeGeneration(
+  Map<String, String> generateProtocolCode(
       {required bool verbose,
       required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) {

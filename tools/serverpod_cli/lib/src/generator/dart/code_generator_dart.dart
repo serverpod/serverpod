@@ -13,7 +13,7 @@ class DartCodeGenerator extends CodeGenerator {
   const DartCodeGenerator();
 
   @override
-  Map<String, Future<String> Function()> getEntitiesCodeGeneration({
+  Map<String, String> generateSerializableEntitiesCode({
     required bool verbose,
     required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
@@ -31,7 +31,7 @@ class DartCodeGenerator extends CodeGenerator {
       // Server
       // Generate a temporary protocol.dart file. Since this is required to analyze the endpoints.
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
-          () async => serverSideGenerator
+          serverSideGenerator
               .generateTemporaryProtocol(entities: entities)
               .generateCode(true),
       for (var protocolFile in entities)
@@ -39,7 +39,7 @@ class DartCodeGenerator extends CodeGenerator {
           ...config.generatedServerProtocolPathParts,
           ...protocolFile.subDirParts,
           '${protocolFile.fileName}.dart'
-        ]): () async => serverSideGenerator
+        ]): serverSideGenerator
             .generateEntityLibrary(protocolFile)
             .generateCode(true),
 
@@ -50,14 +50,14 @@ class DartCodeGenerator extends CodeGenerator {
             ...config.generatedDartClientProtocolPathParts,
             ...protocolFile.subDirParts,
             '${protocolFile.fileName}.dart',
-          ]): () async => clientSideGenerator
+          ]): clientSideGenerator
               .generateEntityLibrary(protocolFile)
               .generateCode(true),
     };
   }
 
   @override
-  Map<String, Future<String> Function()> getCodeGeneration({
+  Map<String, String> generateProtocolCode({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
@@ -75,11 +75,11 @@ class DartCodeGenerator extends CodeGenerator {
     return {
       // Server
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
-          () async => serverClassGenerator
+          serverClassGenerator
               .generateProtocol(verbose: verbose)
               .generateCode(true),
       p.joinAll([...config.generatedServerProtocolPathParts, 'endpoints.dart']):
-          () async => serverClassGenerator
+          serverClassGenerator
               .generateServerEndpointDispatch()
               .generateCode(true),
 
@@ -87,13 +87,11 @@ class DartCodeGenerator extends CodeGenerator {
       p.joinAll([
         ...config.generatedDartClientProtocolPathParts,
         'protocol.dart'
-      ]): () async => clientClassGenerator
+      ]): clientClassGenerator
           .generateProtocol(verbose: verbose)
           .generateCode(true),
-      p.joinAll([
-        ...config.generatedDartClientProtocolPathParts,
-        'client.dart'
-      ]): () async =>
+      p.joinAll(
+              [...config.generatedDartClientProtocolPathParts, 'client.dart']):
           clientClassGenerator.generateClientEndpointCalls().generateCode(true),
     };
   }

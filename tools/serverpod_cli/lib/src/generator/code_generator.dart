@@ -18,8 +18,8 @@ abstract class CodeGenerator {
   ///
   /// Relative paths start at the server package directory.
   ///
-  /// Called and generated before [getCodeGeneration].
-  Map<String, Future<String> Function()> getEntitiesCodeGeneration({
+  /// Called and generated before [generateProtocolCode].
+  Map<String, String> generateSerializableEntitiesCode({
     required bool verbose,
     required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
@@ -31,9 +31,9 @@ abstract class CodeGenerator {
   ///
   /// Relative paths start at the server package directory.
   ///
-  /// At the time this is called, [getEntitiesCodeGeneration] should
+  /// At the time this is called, [generateSerializableEntitiesCode] should
   /// already be called and generated.
-  Map<String, Future<String> Function()> getCodeGeneration({
+  Map<String, String> generateProtocolCode({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
@@ -55,7 +55,7 @@ abstract class CodeGenerator {
   /// The generators, that run on [generateAll].
   static const generators = [DartCodeGenerator(), PgsqlCodeGenerator()];
 
-  /// Generate from [CodeGenerator.getEntitiesCodeGeneration] for all [CodeGenerator]s
+  /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all [CodeGenerator]s
   /// and save the files.
   ///
   /// Returns a list of generated files.
@@ -68,7 +68,7 @@ abstract class CodeGenerator {
     collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in generators)
-        ...generator.getEntitiesCodeGeneration(
+        ...generator.generateSerializableEntitiesCode(
           verbose: verbose,
           entities: entities,
           config: config,
@@ -86,7 +86,7 @@ abstract class CodeGenerator {
           printww('Writing ${file.key}...');
         }
         await out.create(recursive: true);
-        await out.writeAsString(await file.value(), flush: true);
+        await out.writeAsString(file.value, flush: true);
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
@@ -98,7 +98,7 @@ abstract class CodeGenerator {
     return allFiles.keys.toList();
   }
 
-  /// Generate from [CodeGenerator.getCodeGeneration] for all [CodeGenerator]s
+  /// Generate from [CodeGenerator.generateProtocolCode] for all [CodeGenerator]s
   /// and save the files.
   ///
   /// Returns a list of generated files.
@@ -111,7 +111,7 @@ abstract class CodeGenerator {
     collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in generators)
-        ...generator.getCodeGeneration(
+        ...generator.generateProtocolCode(
           verbose: verbose,
           protocolDefinition: protocolDefinition,
           config: config,
@@ -129,7 +129,7 @@ abstract class CodeGenerator {
           printww('Writing ${file.key}...');
         }
         await out.create(recursive: true);
-        await out.writeAsString(await file.value(), flush: true);
+        await out.writeAsString(file.value, flush: true);
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
