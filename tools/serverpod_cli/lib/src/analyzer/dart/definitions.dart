@@ -58,13 +58,14 @@ class MethodDefinition {
   final List<ParameterDefinition> parametersNamed;
 
   /// Creates a new [MethodDefinition].
-  const MethodDefinition(
-      {required this.name,
-      required this.documentationComment,
-      required this.parameters,
-      required this.parametersPositional,
-      required this.parametersNamed,
-      required this.returnType});
+  const MethodDefinition({
+    required this.name,
+    required this.documentationComment,
+    required this.parameters,
+    required this.parametersPositional,
+    required this.parametersNamed,
+    required this.returnType,
+  });
 }
 
 /// Describes a single parameter of a [MethodDefinition].
