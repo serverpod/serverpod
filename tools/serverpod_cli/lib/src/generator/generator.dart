@@ -1,104 +1,87 @@
-import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:serverpod_cli/src/util/print.dart';
 
-import 'class_analyzer.dart';
-import 'class_generator.dart';
-import 'code_cleaner.dart';
-import 'config.dart';
-import 'protocol_analyzer.dart';
-import 'protocol_generator.dart';
-import 'code_analysis_collector.dart';
-
+/// Analyze the server package and generate the code.
 Future<void> performGenerate({
   required bool verbose,
   bool dartFormat = true,
-  bool requestNewAnalyzer = true,
   String? changedFile,
+  required GeneratorConfig config,
+  required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
-  if (!config.load()) return;
-
-  String generator(spec) => generateCode(spec, dartFormat);
-
-  print('Running serverpod generate.');
-
-  var collector = CodeAnalysisCollector();
+  var collector = CodeGenerationCollector();
 
   if (verbose) {
-    print('Analyzing protocol yaml files.');
+    printww('Analyzing serializable entities in the protocol directory.');
   }
-  var classDefinitions = performAnalyzeClasses(
+  var entities = await SerializableEntityAnalyzer.analyzeAllFiles(
     verbose: verbose,
     collector: collector,
-  );
-
-  collector.printErrors();
-  collector.clearErrors();
-
-  var changedFiles =
-      Set<String>.from(collector.generatedFiles.map((e) => e.path));
-  if (changedFile != null) {
-    changedFiles.add(changedFile);
-  }
-
-  if (verbose) {
-    print('Analyzing server code.');
-  }
-  var protocolDefinition = await performAnalyzeServerCode(
-    verbose: verbose,
-    collector: collector,
-    requestNewAnalyzer: requestNewAnalyzer,
-    changedFiles: changedFiles,
-  );
-
-  if (verbose) {
-    print('Generating classes.');
-  }
-  performGenerateClasses(
-    verbose: verbose,
-    classDefinitions: classDefinitions,
-    collector: collector,
-    protocolDefinition: protocolDefinition,
-    codeGenerator: generator,
+    config: config,
   );
 
   collector.printErrors();
   collector.clearErrors();
 
   if (verbose) {
-    print('Generating protocol.');
+    printww('Generating files for serializable entities.');
   }
-  await performGenerateProtocol(
+
+  var generatedEntityFiles = await CodeGenerator.generateSerializableEntities(
     verbose: verbose,
-    protocolDefinition: protocolDefinition,
+    entities: entities,
+    config: config,
     collector: collector,
-    codeGenerator: generator,
   );
+
+  collector.printErrors();
+  collector.clearErrors();
 
   if (verbose) {
-    print('Cleaning up old files.');
+    printww('Analyzing the endpoints.');
   }
-  performRemoveOldFiles(
+
+  var endpoints = await endpointsAnalyzer.analyze(
     verbose: verbose,
     collector: collector,
+    changedFiles: generatedEntityFiles.toSet(),
   );
-}
 
-typedef CodeGenerator = String Function(Spec spec);
+  collector.printErrors();
+  collector.clearErrors();
 
-String generateCode(Spec spec, bool dartFormat) {
-  String code = '''/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
-/*   To generate run: "serverpod generate"    */
-
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
-
-${spec.accept(DartEmitter.scoped(useNullSafetySyntax: true))}
-''';
-  try {
-    return dartFormat ? DartFormatter().format(code) : code;
-  } on FormatterException catch (e) {
-    print(e);
+  if (verbose) {
+    printww('Generating the protocol.');
   }
-  return code;
+
+  var protocolDefinition = ProtocolDefinition(
+    endpoints: endpoints,
+    entities: entities,
+  );
+
+  var generatedProtocolFiles = await CodeGenerator.generateProtocolDefinition(
+    verbose: verbose,
+    protocolDefinition: protocolDefinition,
+    config: config,
+    collector: collector,
+  );
+
+  collector.printErrors();
+  collector.clearErrors();
+
+  if (verbose) {
+    printww('Cleaning old files.');
+  }
+
+  await CodeGenerator.cleanPreviouslyGeneratedFiles(
+    generatedFiles: <String>{
+      ...generatedEntityFiles,
+      ...generatedProtocolFiles
+    },
+    protocolDefinition: protocolDefinition,
+    config: config,
+    verbose: verbose,
+  );
 }

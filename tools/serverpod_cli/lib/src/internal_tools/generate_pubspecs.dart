@@ -2,6 +2,8 @@ import 'dart:io';
 
 import '../create/copier.dart';
 
+/// The internal tool for generating the pubspec.yaml files in the Serverpod
+/// repo.
 void performGeneratePubspecs(String version, String mode) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
@@ -34,7 +36,8 @@ void performGeneratePubspecs(String version, String mode) {
         Replacement(
           slotName: '# TEMPLATE',
           replacement:
-              '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
+              '# This file is generated. Do not modify, instead edit the files '
+              'in the templates/pubspecs directory.\n# Mode: $mode',
         ),
         Replacement(
           slotName: 'PRODUCTION_MODE',

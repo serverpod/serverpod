@@ -10,7 +10,7 @@ library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixe
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'module_class.dart' as _i3;
-export 'module_class.dart'; // ignore_for_file: equal_keys_in_map
+export 'module_class.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();

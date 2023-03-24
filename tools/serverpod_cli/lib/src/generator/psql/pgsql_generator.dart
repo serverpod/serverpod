@@ -1,21 +1,32 @@
-import 'dart:io';
+import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:path/path.dart' as p;
 
-import 'class_generator_dart.dart';
-import 'protocol_definition.dart';
+/// A [CodeGenerator], that generates pgsql code.
+class PgsqlCodeGenerator extends CodeGenerator {
+  /// Create a new [PgsqlCodeGenerator]
+  const PgsqlCodeGenerator();
 
-class PgsqlGenerator {
-  final List<ProtocolFileDefinition> classInfos;
-  final String outPath;
+  @override
+  Map<String, String> generateSerializableEntitiesCode(
+      {required bool verbose,
+      required List<SerializableEntityDefinition> entities,
+      required GeneratorConfig config}) {
+    return {
+      p.joinAll([
+        ...config.serverPackageDirectoryPathParts,
+        'generated',
+        'tables.pgsql'
+      ]): _generate(entities),
+    };
+  }
 
-  PgsqlGenerator({
-    required this.classInfos,
-    required this.outPath,
-  });
-
-  void generate() {
+  String _generate(List<SerializableEntityDefinition> entities) {
     var out = '';
 
-    var tableInfoList = classInfos.toList();
+    var tableInfoList = entities.toList();
     tableInfoList.removeWhere(
       (element) => (element is! ClassDefinition) || element.tableName == null,
     );
@@ -27,8 +38,7 @@ class PgsqlGenerator {
       }
     }
 
-    var outFile = File(outPath);
-    outFile.writeAsStringSync(out);
+    return out;
   }
 
   void _sortClassInfos(List<ClassDefinition> tableInfos) {
@@ -66,8 +76,9 @@ class PgsqlGenerator {
 
             if (!movedEntry) {
               // We failed to move a table because the dependency is missing
-              throw FormatException(
-                  'The table "${tableInfo.tableName}" (class "${tableInfo.className}" is referencing a table that doesn\'t exist (${field.parentTable}).)');
+              throw FormatException('The table "${tableInfo.tableName}" '
+                  '(class "${tableInfo.className}" is referencing a table '
+                  'that doesn\'t exist (${field.parentTable}).)');
             }
 
             break classInfoLoop;
@@ -96,7 +107,7 @@ class PgsqlGenerator {
       if (field.name == 'id') continue;
 
       // Skip fields that are API only
-      if (field.scope == FieldScope.api) continue;
+      if (field.scope == SerializableEntityFieldScope.api) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';
@@ -114,7 +125,8 @@ class PgsqlGenerator {
       for (var index in classInfo.indexes!) {
         var uniqueStr = index.unique ? ' UNIQUE' : '';
         out +=
-            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}" USING ${index.type} (';
+            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}" '
+            'USING ${index.type} (';
         out += index.fields.map((String str) => '"$str"').join(', ');
         out += ');\n';
       }
@@ -137,5 +149,24 @@ class PgsqlGenerator {
 
     out += '\n';
     return out;
+  }
+
+  @override
+  Future<List<String>> getDirectoriesRequiringCleaning(
+      {required bool verbose,
+      required ProtocolDefinition protocolDefinition,
+      required GeneratorConfig config}) async {
+    return [];
+  }
+
+  @override
+  List<String> get outputFileExtensions => ['.pgsql'];
+
+  @override
+  Map<String, String> generateProtocolCode(
+      {required bool verbose,
+      required ProtocolDefinition protocolDefinition,
+      required GeneratorConfig config}) {
+    return {};
   }
 }

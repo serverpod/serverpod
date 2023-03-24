@@ -60,7 +60,8 @@ class CommandLineTools {
     }
 
     var process = await Process.start(
-      /// Windows has an issue with running batch file directly without the complete path.
+      /// Windows has an issue with running batch file directly without the
+      /// complete path.
       /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
       Platform.isWindows
           ? p.join(serverPath, 'setup-tables.cmd')

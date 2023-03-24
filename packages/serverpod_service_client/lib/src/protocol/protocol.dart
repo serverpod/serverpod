@@ -81,7 +81,7 @@ export 'session_log_entry.dart';
 export 'session_log_filter.dart';
 export 'session_log_info.dart';
 export 'session_log_result.dart';
-export 'client.dart'; // ignore_for_file: equal_keys_in_map
+export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
   Protocol._();

@@ -2,103 +2,104 @@ import 'dart:io';
 
 import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
-import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
-import '../util/string_validators.dart';
-import '../util/extensions.dart';
-import '../util/subdirectory_extraction.dart';
-import '../util/yaml_docs.dart';
-import 'class_generator_dart.dart';
-import 'code_analysis_collector.dart';
-import 'config.dart';
-import 'protocol_definition.dart';
-import 'types.dart';
-
-List<ProtocolFileDefinition> performAnalyzeClasses({
-  bool verbose = true,
-  required CodeAnalysisCollector collector,
-}) {
-  var classDefinitions = <ProtocolFileDefinition>[];
-
-  // Get list of all files in protocol source directory.
-  var sourceDir = Directory(config.protocolSourcePath);
-  var sourceFileList = sourceDir.listSync(recursive: true);
-  sourceFileList.sort((a, b) => a.path.compareTo(b.path));
-
-  for (var entity in sourceFileList) {
-    if (entity is! File || !entity.path.endsWith('.yaml')) {
-      if (verbose) print('  - skipping file: ${entity.path}');
-      continue;
-    }
-    String? subDirectory = extractSubdirectoryFromRelativePath(
-        entity.path, config.protocolSourcePath);
-
-    // Process a file.
-    if (verbose) print('  - processing file: ${entity.path}');
-    var yaml = entity.readAsStringSync();
-    var analyzer = ClassAnalyzer(
-      yaml: yaml,
-      sourceFileName: entity.path,
-      outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
-      collector: collector,
-      subDirectory: subDirectory,
-    );
-    var classDefinition = analyzer.analyze();
-    if (classDefinition != null) {
-      classDefinitions.add(classDefinition);
-    }
-  }
-
-  //Detect protocol references
-  for (var classDefinition in classDefinitions) {
-    if (classDefinition is ClassDefinition) {
-      for (var fieldDefinition in classDefinition.fields) {
-        fieldDefinition.type =
-            fieldDefinition.type.applyProtocolReferences(classDefinitions);
-      }
-    }
-  }
-
-  // Detect enum fields
-  for (var classDefinition in classDefinitions) {
-    if (classDefinition is ClassDefinition) {
-      for (var fieldDefinition in classDefinition.fields) {
-        if (fieldDefinition.type.url == 'protocol' &&
-            classDefinitions
-                .whereType<EnumDefinition>()
-                .any((e) => e.className == fieldDefinition.type.className)) {
-          fieldDefinition.type.isEnum = true;
-        }
-      }
-    }
-  }
-
-  return classDefinitions;
-}
+import 'package:yaml/yaml.dart';
+import '../../util/string_validators.dart';
+import '../../util/extensions.dart';
+import '../../util/yaml_docs.dart';
+import '../code_analysis_collector.dart';
+import '../../config/config.dart';
+import '../../generator/types.dart';
+import 'definitions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
-  var pathComponents = path.split(Platform.pathSeparator);
-  var fileName = pathComponents.last;
-  fileName = fileName.substring(0, fileName.length - 5);
-  return fileName;
+  return p.basenameWithoutExtension(path);
 }
 
-class ClassAnalyzer {
+/// Used to analyze a singe yaml protocol file.
+class SerializableEntityAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
-  final String? subDirectory;
+  final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
 
-  ClassAnalyzer({
+  /// Create a new [SerializableEntityAnalyzer].
+  SerializableEntityAnalyzer._({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
-    this.subDirectory,
+    this.subDirectoryParts = const [],
     required this.collector,
   });
 
-  ProtocolFileDefinition? analyze() {
+  /// Analyze all yaml files int the protocol directory.
+  static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
+    bool verbose = true,
+    required CodeAnalysisCollector collector,
+    required GeneratorConfig config,
+  }) async {
+    var classDefinitions = <SerializableEntityDefinition>[];
+
+    // Get list of all files in protocol source directory.
+    var sourceDir = Directory(p.joinAll(config.protocolSourcePathParts));
+    var sourceFileList = await sourceDir.list(recursive: true).toList();
+    sourceFileList.sort((a, b) => a.path.compareTo(b.path));
+
+    var sourceDirPartsLength = p.split(sourceDir.path).length;
+
+    for (var entity in sourceFileList) {
+      if (entity is! File || !entity.path.endsWith('.yaml')) {
+        if (verbose) print('  - skipping file: ${entity.path}');
+        continue;
+      }
+      var subDirectoryParts =
+          p.split(p.dirname(entity.path)).skip(sourceDirPartsLength).toList();
+
+      // Process a file.
+      if (verbose) print('  - processing file: ${entity.path}');
+      var yaml = await entity.readAsString();
+      var analyzer = SerializableEntityAnalyzer._(
+        yaml: yaml,
+        sourceFileName: entity.path,
+        outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
+        collector: collector,
+        subDirectoryParts: subDirectoryParts,
+      );
+      var classDefinition = analyzer._analyze();
+      if (classDefinition != null) {
+        classDefinitions.add(classDefinition);
+      }
+    }
+
+    // Detect protocol references
+    for (var classDefinition in classDefinitions) {
+      if (classDefinition is ClassDefinition) {
+        for (var fieldDefinition in classDefinition.fields) {
+          fieldDefinition.type =
+              fieldDefinition.type.applyProtocolReferences(classDefinitions);
+        }
+      }
+    }
+
+    // Detect enum fields
+    for (var classDefinition in classDefinitions) {
+      if (classDefinition is ClassDefinition) {
+        for (var fieldDefinition in classDefinition.fields) {
+          if (fieldDefinition.type.url == 'protocol' &&
+              classDefinitions
+                  .whereType<EnumDefinition>()
+                  .any((e) => e.className == fieldDefinition.type.className)) {
+            fieldDefinition.type.isEnum = true;
+          }
+        }
+      }
+    }
+
+    return classDefinitions;
+  }
+
+  SerializableEntityDefinition? _analyze() {
     var yamlErrorCollector = ErrorCollector();
 
     YamlDocument document;
@@ -149,7 +150,7 @@ class ClassAnalyzer {
     return null;
   }
 
-  ProtocolFileDefinition? _analyzeClassFile(
+  SerializableEntityDefinition? _analyzeClassFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
@@ -245,14 +246,14 @@ class ClassAnalyzer {
     }
 
     // Validate and add fields.
-    var fields = <FieldDefinition>[];
+    var fields = <SerializableEntityFieldDefinition>[];
 
     // Add default id field, if object has database table.
     if (tableName != null) {
-      fields.add(FieldDefinition(
+      fields.add(SerializableEntityFieldDefinition(
         name: 'id',
         type: TypeDefinition.int.asNullable,
-        scope: FieldScope.all,
+        scope: SerializableEntityFieldScope.all,
         documentation: [
           '/// The database id, set if the object has been inserted into the',
           '/// database or if it has been fetched from the database. Otherwise,',
@@ -329,10 +330,10 @@ class ClassAnalyzer {
         }
 
         var scope = fieldOptions.any((option) => option == 'database')
-            ? FieldScope.database
+            ? SerializableEntityFieldScope.database
             : fieldOptions.any((option) => option == 'api')
-                ? FieldScope.api
-                : FieldScope.all;
+                ? SerializableEntityFieldScope.api
+                : SerializableEntityFieldScope.all;
 
         if (fieldOptions.where((option) => option.startsWith('parent')).length >
             1) {
@@ -363,7 +364,7 @@ class ClassAnalyzer {
         var isEnum =
             fieldOptions.whereType<String?>().any((option) => option == 'enum');
 
-        var fieldDefinition = FieldDefinition(
+        var fieldDefinition = SerializableEntityFieldDefinition(
           name: fieldName,
           scope: scope,
           type: typeResult.type..isEnum = isEnum,
@@ -385,13 +386,13 @@ class ClassAnalyzer {
 
     var validDatabaseFieldNames = <String>{};
     for (var field in fields) {
-      if (field.scope != FieldScope.api) {
+      if (field.scope != SerializableEntityFieldScope.api) {
         validDatabaseFieldNames.add(field.name);
       }
     }
 
     // Validate indexes.
-    List<IndexDefinition>? indexes;
+    List<SerializableEntityIndexDefinition>? indexes;
 
     var indexesNode = documentContents.nodes['indexes'];
     if (indexesNode != null) {
@@ -523,7 +524,7 @@ class ClassAnalyzer {
           unique = uniqueVal;
         }
 
-        var indexDefinition = IndexDefinition.parsed(
+        var indexDefinition = SerializableEntityIndexDefinition(
           name: indexName,
           type: type,
           unique: unique,
@@ -539,14 +540,14 @@ class ClassAnalyzer {
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
-      subDir: subDirectory,
+      subDirParts: subDirectoryParts,
       documentation: classDocumentation,
       isException: type == exceptionKeyword,
       serverOnly: serverOnly,
     );
   }
 
-  ProtocolFileDefinition? _analyzeEnumFile(
+  SerializableEntityDefinition? _analyzeEnumFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
@@ -604,7 +605,7 @@ class ClassAnalyzer {
       ));
       return null;
     }
-    var values = <EnumValueDefinition>[];
+    var values = <ProtocolEnumValueDefinition>[];
     for (var valueNode in valuesNode.nodes) {
       if (valueNode is! YamlScalar) {
         collector.addError(SourceSpanException(
@@ -638,7 +639,7 @@ class ClassAnalyzer {
           line: start.line,
           sourceUrl: start.sourceUrl));
 
-      values.add(EnumValueDefinition(value, valueDocumentation));
+      values.add(ProtocolEnumValueDefinition(value, valueDocumentation));
     }
 
     return EnumDefinition(
@@ -646,7 +647,7 @@ class ClassAnalyzer {
       className: className,
       values: values,
       documentation: enumDocumentation,
-      subDir: subDirectory,
+      subDirParts: subDirectoryParts,
       serverOnly: serverOnly,
     );
   }

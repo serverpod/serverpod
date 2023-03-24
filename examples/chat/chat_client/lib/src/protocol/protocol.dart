@@ -13,7 +13,7 @@ import 'package:chat_client/src/protocol/channel.dart' as _i3;
 import 'package:serverpod_auth_client/module.dart' as _i4;
 import 'package:serverpod_chat_client/module.dart' as _i5;
 export 'channel.dart';
-export 'client.dart'; // ignore_for_file: equal_keys_in_map
+export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
   Protocol._();

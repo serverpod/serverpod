@@ -1,49 +1,33 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:serverpod_cli/analyzer.dart';
+import '../shared.dart';
 
-import 'class_generator.dart';
-import 'config.dart';
-import 'protocol_definition.dart';
-import 'types.dart';
+/// Generates the dart libraries for [SerializableEntityDefinition]s.
+class SerializableEntityLibraryGenerator {
+  final bool serverCode;
+  final GeneratorConfig config;
 
-String serverpodUrl(bool serverCode) {
-  return serverCode
-      ? 'package:serverpod/serverpod.dart'
-      : 'package:serverpod_client/serverpod_client.dart';
-}
-
-String serverpodProtocolUrl(bool serverCode) {
-  return serverCode
-      ? 'package:serverpod/protocol.dart'
-      : 'package:serverpod_client/serverpod_client.dart';
-}
-
-class ClassGeneratorDart extends ClassGenerator {
-  @override
-  String get outputExtension => '.dart';
-
-  ClassGeneratorDart({
-    required super.outputDirectoryPath,
-    required super.verbose,
-    required super.serverCode,
-    required super.classDefinitions,
-    required super.protocolDefinition,
+  SerializableEntityLibraryGenerator({
+    required this.serverCode,
+    required this.config,
   });
 
-  @override
-  Library generateFile(ProtocolFileDefinition protocolFileDefinition) {
-    if (protocolFileDefinition is ClassDefinition) {
-      return _generateClassFile(protocolFileDefinition);
+  /// Generate the file for a protocol entity.
+  Library generateEntityLibrary(
+      SerializableEntityDefinition protocolEntityDefinition) {
+    if (protocolEntityDefinition is ClassDefinition) {
+      return _generateClassLibrary(protocolEntityDefinition);
     }
-    if (protocolFileDefinition is EnumDefinition) {
-      return _generateEnumFile(protocolFileDefinition);
+    if (protocolEntityDefinition is EnumDefinition) {
+      return _generateEnumLibrary(protocolEntityDefinition);
     }
 
-    throw Exception('Unsupported protocol file type.');
+    throw Exception('Unsupported protocol entity type.');
   }
 
-  // Handle ordinary classes
-  Library _generateClassFile(ClassDefinition classDefinition) {
+  /// Handle ordinary classes for [generateEntityLibrary].
+  Library _generateClassLibrary(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
@@ -90,7 +74,7 @@ class ClassGeneratorDart extends ClassGenerator {
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
                 f.type = field.type.reference(serverCode,
-                    subDirectory: classDefinition.subDir);
+                    subDirParts: classDefinition.subDirParts, config: config);
                 f
                   ..name = field.name
                   ..docs.addAll(field.documentation ?? []);
@@ -153,7 +137,8 @@ class ClassGeneratorDart extends ClassGenerator {
                             .index(literalString(field.name))
                       ], {}, [
                         field.type.reference(serverCode,
-                            subDirectory: classDefinition.subDir)
+                            subDirParts: classDefinition.subDirParts,
+                            config: config)
                       ])
                 })
                 .returned
@@ -183,7 +168,7 @@ class ClassGeneratorDart extends ClassGenerator {
               classBuilder.methods.add(Method(
                 (m) {
                   m.returns = refer('Map<String,dynamic>');
-                  //TODO: better name
+                  // TODO: better name
                   m.name = 'toJsonForDatabase';
                   m.annotations.add(refer('override'));
 
@@ -608,7 +593,7 @@ class ClassGeneratorDart extends ClassGenerator {
                     .returned
                     .statement));
 
-              //count
+              // count
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'count'
@@ -705,7 +690,8 @@ class ClassGeneratorDart extends ClassGenerator {
                             field.type.reference(
                               serverCode,
                               nullable: false,
-                              subDirectory: classDefinition.subDir,
+                              subDirParts: classDefinition.subDirParts,
+                              config: config,
                             )
                           ]
                         : [])).call([literalString(field.name)]).code));
@@ -745,8 +731,8 @@ class ClassGeneratorDart extends ClassGenerator {
     return library;
   }
 
-  // Handle enums.
-  Library _generateEnumFile(EnumDefinition enumDefinition) {
+  /// Handle enums for [generateEntityLibrary]
+  Library _generateEnumLibrary(EnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
 
     var library = Library((library) {
@@ -795,405 +781,23 @@ class ClassGeneratorDart extends ClassGenerator {
     return library;
   }
 
-  @override
-  Library generateFactory(List<ProtocolFileDefinition> classInfos,
-      ProtocolDefinition protocolDefinition) {
+  /// Generate a temporary protocol library, that just exports the entities.
+  /// This is needed, since analyzing the endpoints requires a valid
+  /// protocol.dart file.
+  Library generateTemporaryProtocol({
+    bool verbose = false,
+    required List<SerializableEntityDefinition> entities,
+  }) {
     var library = LibraryBuilder();
-
-    library.body.add(const Code('// ignore_for_file: equal_keys_in_map\n'));
 
     library.name = 'protocol';
 
     // exports
     library.directives.addAll([
-      for (var classInfo in classInfos) Directive.export(classInfo.fileRef()),
+      for (var classInfo in entities) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
-    var protocol = ClassBuilder();
-
-    protocol
-      ..name = 'Protocol'
-      ..extend = serverCode
-          ? refer('SerializationManagerServer', serverpodUrl(true))
-          : refer('SerializationManager', serverpodUrl(false));
-
-    protocol.constructors.addAll([
-      Constructor((c) => c..name = '_'),
-      Constructor((c) => c
-        ..factory = true
-        ..body = refer('_instance').code),
-    ]);
-
-    protocol.fields.addAll([
-      Field((f) => f
-        ..name = 'customConstructors'
-        ..static = true
-        ..type = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('Type'),
-            refer('constructor', serverpodUrl(serverCode)),
-          ]))
-        ..modifier = FieldModifier.final$
-        ..assignment = literalMap({}).code),
-      Field((f) => f
-        ..name = '_instance'
-        ..static = true
-        ..type = refer('Protocol')
-        ..modifier = FieldModifier.final$
-        ..assignment = const Code('Protocol._()')),
-      if (serverCode)
-        Field(
-          (f) => f
-            ..name = 'targetDatabaseDefinition'
-            ..static = true
-            ..modifier = FieldModifier.final$
-            ..assignment =
-                refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
-                    .call([], {
-              'tables': literalList([
-                for (var classDefinition in classDefinitions)
-                  if (classDefinition is ClassDefinition &&
-                      classDefinition.tableName != null)
-                    refer('TableDefinition', serverpodProtocolUrl(serverCode))
-                        .call([], {
-                      'name': literalString(classDefinition.tableName!),
-                      'schema': literalString('public'),
-                      'columns': literalList([
-                        for (var column in classDefinition.fields)
-                          if (column
-                              .shouldSerializeFieldForDatabase(serverCode))
-                            refer('ColumnDefinition',
-                                    serverpodProtocolUrl(serverCode))
-                                .call([], {
-                              'name': literalString(column.name),
-                              'columnType': refer(
-                                  'ColumnType.${column.type.databaseTypeEnum}',
-                                  serverpodProtocolUrl(serverCode)),
-                              // The id column is not null, since it is auto incrementing.
-                              'isNullable': literalBool(
-                                  column.name != 'id' && column.type.nullable),
-                              'dartType': literalString(column.type.toString()),
-                              if (column.name == 'id')
-                                'columnDefault': literalString(
-                                    "nextval('${classDefinition.tableName!}_id_seq'::regclass)"),
-                            }),
-                      ]),
-                      'foreignKeys': literalList([
-                        for (var i = 0;
-                            i <
-                                classDefinition.fields
-                                    .where((field) => field.parentTable != null)
-                                    .length;
-                            i++)
-                          () {
-                            var column = classDefinition.fields
-                                .where((field) => field.parentTable != null)
-                                .toList()[i];
-                            return refer('ForeignKeyDefinition',
-                                    serverpodProtocolUrl(serverCode))
-                                .call([], {
-                              'constraintName': literalString(
-                                  '${classDefinition.tableName!}_fk_$i'),
-                              'columns': literalList([
-                                literalString(column.name),
-                              ]),
-                              'referenceTable':
-                                  literalString(column.parentTable!),
-                              'referenceTableSchema': literalString('public'),
-                              'referenceColumns': literalList([
-                                literalString('id'),
-                              ]),
-                              'onUpdate': literalNull,
-                              'onDelete': refer('ForeignKeyAction.cascade',
-                                  serverpodProtocolUrl(serverCode)),
-                              'matchType': literalNull,
-                            });
-                          }(),
-                      ]),
-                      'indexes': literalList([
-                        refer('IndexDefinition',
-                                serverpodProtocolUrl(serverCode))
-                            .call([], {
-                          'indexName': literalString(
-                              '${classDefinition.tableName!}_pkey'),
-                          'tableSpace': literalNull,
-                          'elements': literalList([
-                            refer('IndexElementDefinition',
-                                    serverpodProtocolUrl(serverCode))
-                                .call([], {
-                              'type': refer('IndexElementDefinitionType.column',
-                                  serverpodProtocolUrl(serverCode)),
-                              'definition': literalString('id'),
-                            }),
-                          ]),
-                          'type': literalString('btree'),
-                          'isUnique': literalTrue,
-                          'isPrimary': literalTrue,
-                        }),
-                        for (var index
-                            in classDefinition.indexes ?? <IndexDefinition>[])
-                          refer('IndexDefinition',
-                                  serverpodProtocolUrl(serverCode))
-                              .call([], {
-                            'indexName': literalString(index.name),
-                            'tableSpace': literalNull,
-                            'elements': literalList([
-                              for (var field in index.fields)
-                                refer('IndexElementDefinition',
-                                        serverpodProtocolUrl(serverCode))
-                                    .call([], {
-                                  'type': refer(
-                                      'IndexElementDefinitionType.column',
-                                      serverpodProtocolUrl(serverCode)),
-                                  'definition': literalString(field),
-                                })
-                            ]),
-                            'type': literalString(index.type),
-                            'isUnique': literalBool(index.unique),
-                            'isPrimary': literalFalse,
-                          }),
-                      ]),
-                      'managed':
-                          literalTrue, //TODO: Add an option in the yaml-protocol specification for this.
-                    }),
-                for (var module in config.modules)
-                  refer('Protocol.targetDatabaseDefinition.tables',
-                          module.url(serverCode))
-                      .spread,
-                if (config.name != 'serverpod' &&
-                    config.type == PackageType.server)
-                  refer('Protocol.targetDatabaseDefinition.tables',
-                          serverpodProtocolUrl(serverCode))
-                      .spread,
-              ]),
-            }).code,
-        ),
-    ]);
-    protocol.methods.addAll([
-      Method((m) => m
-        ..annotations.add(refer('override'))
-        ..name = 'deserialize'
-        ..returns = refer('T')
-        ..types.add(refer('T'))
-        ..requiredParameters.add(Parameter((p) => p
-          ..name = 'data'
-          ..type = refer('dynamic')))
-        ..optionalParameters.add(Parameter((p) => p
-          ..name = 't'
-          ..type = refer('Type?')))
-        ..body = Block.of([
-          const Code('t ??= T;'),
-          const Code(
-              'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
-          ...(<Expression, Code>{
-            for (var classInfo in classInfos)
-              refer(classInfo.className, classInfo.fileRef()): Code.scope(
-                  (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                      '.fromJson(data'
-                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
-            for (var classInfo in classInfos)
-              refer('getType', serverpodUrl(serverCode)).call([], {}, [
-                TypeReference(
-                  (b) => b
-                    ..symbol = classInfo.className
-                    ..url = classInfo.fileRef()
-                    ..isNullable = true,
-                )
-              ]): Code.scope((a) => '(data!=null?'
-                  '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                  '.fromJson(data'
-                  '${classInfo is ClassDefinition ? ',this' : ''})'
-                  ':null)as T'),
-          }..addEntries([
-                  for (var classInfo in classInfos)
-                    if (classInfo is ClassDefinition)
-                      for (var field in classInfo.fields)
-                        ...field.type.generateDeserialization(serverCode),
-                  for (var endPoint in protocolDefinition.endpoints)
-                    for (var method in endPoint.methods) ...[
-                      ...method.returnType
-                          .stripFuture()
-                          .generateDeserialization(serverCode),
-                      for (var parameter in method.parameters)
-                        ...parameter.type.generateDeserialization(serverCode),
-                      for (var parameter in method.parametersPositional)
-                        ...parameter.type.generateDeserialization(serverCode),
-                      for (var parameter in method.parametersNamed)
-                        ...parameter.type.generateDeserialization(serverCode),
-                    ],
-                  for (var extraClass in config.extraClasses)
-                    ...extraClass.generateDeserialization(serverCode),
-                  for (var extraClass in config.extraClasses)
-                    ...extraClass.asNullable.generateDeserialization(serverCode)
-                ]))
-              .entries
-              .map((e) => Block.of([
-                    const Code('if(t=='),
-                    e.key.code,
-                    const Code('){return '),
-                    e.value,
-                    const Code(';}'),
-                  ])),
-          for (var module in config.modules)
-            Code.scope((a) =>
-                'try{return ${a(refer('Protocol', module.url(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
-          if (config.name != 'serverpod' &&
-              (serverCode || config.clientDependsOnServiceClient))
-            Code.scope((a) =>
-                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}catch(_){}'),
-          const Code('return super.deserialize<T>(data,t);'),
-        ])),
-      Method((m) => m
-        ..annotations.add(refer('override'))
-        ..name = 'getClassNameForObject'
-        ..returns = refer('String?')
-        ..requiredParameters.add(Parameter((p) => p
-          ..name = 'data'
-          ..type = refer('Object')))
-        ..body = Block.of([
-          if (config.modules.isNotEmpty) const Code('String? className;'),
-          for (var module in config.modules)
-            Block.of([
-              Code.scope((a) =>
-                  'className = ${a(refer('Protocol', module.url(serverCode)))}().getClassNameForObject(data);'),
-              Code(
-                  'if(className != null){return \'${module.name}.\$className\';}'),
-            ]),
-          for (var extraClass in config.extraClasses)
-            Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in classInfos)
-            Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
-          const Code('return super.getClassNameForObject(data);'),
-        ])),
-      Method((m) => m
-        ..annotations.add(refer('override'))
-        ..name = 'deserializeByClassName'
-        ..returns = refer('dynamic')
-        ..requiredParameters.add(Parameter((p) => p
-          ..name = 'data'
-          ..type = refer('Map<String,dynamic>')))
-        ..body = Block.of([
-          for (var module in config.modules)
-            Block.of([
-              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
-                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
-              Code.scope((a) =>
-                  'return ${a(refer('Protocol', module.url(serverCode)))}().deserializeByClassName(data);'),
-              const Code('}'),
-            ]),
-          for (var extraClass in config.extraClasses)
-            Code.scope((a) =>
-                'if(data[\'className\'] == \'${extraClass.className}\'){'
-                'return deserialize<${a(extraClass.reference(serverCode))}>(data[\'data\']);}'),
-          for (var classInfo in classInfos)
-            Code.scope((a) =>
-                'if(data[\'className\'] == \'${classInfo.className}\'){'
-                'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
-          const Code('return super.deserializeByClassName(data);'),
-        ])),
-      if (serverCode)
-        Method(
-          (m) => m
-            ..name = 'getTableForType'
-            ..annotations.add(refer('override'))
-            ..returns = TypeReference((t) => t
-              ..symbol = 'Table'
-              ..url = serverpodUrl(serverCode)
-              ..isNullable = true)
-            ..requiredParameters.add(Parameter((p) => p
-              ..name = 't'
-              ..type = refer('Type')))
-            ..body = Block.of([
-              for (var module in config.modules)
-                Code.scope((a) =>
-                    '{var table = ${a(refer('Protocol', module.url(serverCode)))}().getTableForType(t);'
-                    'if(table!=null) {return table;}}'),
-              if (config.name != 'serverpod' &&
-                  (serverCode || config.clientDependsOnServiceClient))
-                Code.scope((a) =>
-                    '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
-                    'if(table!=null) {return table;}}'),
-              if (classInfos.any((classInfo) =>
-                  classInfo is ClassDefinition && classInfo.tableName != null))
-                Block.of([
-                  const Code('switch(t){'),
-                  for (var classInfo in classInfos)
-                    if (classInfo is ClassDefinition &&
-                        classInfo.tableName != null)
-                      Code.scope((a) =>
-                          'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'
-                          'return ${a(refer(classInfo.className, classInfo.fileRef()))}.t;'),
-                  const Code('}'),
-                ]),
-              const Code('return null;'),
-            ]),
-        ),
-      if (serverCode)
-        Method(
-          (m) => m
-            ..name = 'getTargetDatabaseDefinition'
-            ..annotations.add(refer('override'))
-            ..returns = TypeReference((t) => t
-              ..symbol = 'DatabaseDefinition'
-              ..url = serverpodProtocolUrl(serverCode))
-            ..body = refer('targetDatabaseDefinition').code,
-        ),
-    ]);
-
-    library.body.add(protocol.build());
-
     return library.build();
-  }
-
-  String get classPrefix {
-    if (config.type == PackageType.server) {
-      return '';
-    } else {
-      return '${config.serverPackage}.';
-    }
-  }
-}
-
-enum FieldScope {
-  database,
-  api,
-  all,
-}
-
-class FieldDefinition {
-  final String name;
-  TypeDefinition type;
-
-  final FieldScope scope;
-  final String? parentTable;
-  final List<String>? documentation;
-
-  FieldDefinition({
-    required this.name,
-    required this.type,
-    required this.scope,
-    this.parentTable,
-    this.documentation,
-  });
-
-  bool shouldIncludeField(bool serverCode) {
-    if (serverCode) return true;
-    if (scope == FieldScope.all || scope == FieldScope.api) return true;
-    return false;
-  }
-
-  bool shouldSerializeField(bool serverCode) {
-    if (scope == FieldScope.all || scope == FieldScope.api) return true;
-    return false;
-  }
-
-  bool shouldSerializeFieldForDatabase(bool serverCode) {
-    assert(serverCode);
-    if (scope == FieldScope.all || scope == FieldScope.database) return true;
-    return false;
   }
 }

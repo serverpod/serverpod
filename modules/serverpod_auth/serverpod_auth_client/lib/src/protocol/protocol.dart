@@ -34,7 +34,7 @@ export 'user_image.dart';
 export 'user_info.dart';
 export 'user_info_public.dart';
 export 'user_settings_config.dart';
-export 'client.dart'; // ignore_for_file: equal_keys_in_map
+export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
   Protocol._();
