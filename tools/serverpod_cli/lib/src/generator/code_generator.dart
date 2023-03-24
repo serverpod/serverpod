@@ -86,7 +86,7 @@ abstract class CodeGenerator {
           printww('Writing ${file.key}...');
         }
         await out.create(recursive: true);
-        await out.writeAsString(await file.value());
+        await out.writeAsString(await file.value(), flush: true);
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
@@ -129,7 +129,7 @@ abstract class CodeGenerator {
           printww('Writing ${file.key}...');
         }
         await out.create(recursive: true);
-        await out.writeAsString(await file.value());
+        await out.writeAsString(await file.value(), flush: true);
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
