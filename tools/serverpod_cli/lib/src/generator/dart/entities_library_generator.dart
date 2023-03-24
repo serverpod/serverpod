@@ -4,11 +4,11 @@ import 'package:serverpod_cli/analyzer.dart';
 import '../shared.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
-class EntityLibraryGenerator {
+class SerializableEntityLibraryGenerator {
   final bool serverCode;
   final GeneratorConfig config;
 
-  EntityLibraryGenerator({
+  SerializableEntityLibraryGenerator({
     required this.serverCode,
     required this.config,
   });

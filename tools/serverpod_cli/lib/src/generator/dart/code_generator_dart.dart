@@ -18,11 +18,11 @@ class DartCodeGenerator extends CodeGenerator {
     required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
   }) {
-    var serverSideGenerator = EntityLibraryGenerator(
+    var serverSideGenerator = SerializableEntityLibraryGenerator(
       serverCode: true,
       config: config,
     );
-    var clientSideGenerator = EntityLibraryGenerator(
+    var clientSideGenerator = SerializableEntityLibraryGenerator(
       serverCode: false,
       config: config,
     );
