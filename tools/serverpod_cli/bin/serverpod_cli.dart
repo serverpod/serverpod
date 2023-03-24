@@ -205,19 +205,19 @@ Future<void> _main(List<String> args) async {
         return;
       }
 
-      var analyzer = ProtocolAnalyzer(config);
+      var endpointsAnalyzer = ProtocolEndpointsAnalyzer(config);
 
       await performGenerate(
         verbose: verbose,
         config: config,
-        analyzer: analyzer,
+        endpointsAnalyzer: endpointsAnalyzer,
       );
       if (watch) {
         print('Initial code generation complete. Listening for changes.');
         performGenerateContinuously(
           verbose: verbose,
           config: config,
-          analyzer: analyzer,
+          endpointsAnalyzer: endpointsAnalyzer,
         );
       } else {
         print('Done.');

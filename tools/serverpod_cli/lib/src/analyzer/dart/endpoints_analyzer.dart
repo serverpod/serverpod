@@ -7,12 +7,11 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
 import 'definitions.dart';
-import '../code_analysis_collector.dart';
-import '../../generator/types.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -24,14 +23,15 @@ const _excludedMethodNameSet = {
 };
 
 /// Analyzes dart files for the protocol specification.
-class EndpointsAnalyzer {
-  final Directory endpointDirectory;
-  late AnalysisContextCollection collection;
+class ProtocolEndpointsAnalyzer {
+  late final Directory endpointDirectory;
+  late final AnalysisContextCollection collection;
 
-  /// Create a new [EndpointsAnalyzer], analyzing
+  /// Create a new [ProtocolEndpointsAnalyzer], analyzing
   /// all dart files in the [endpointDirectory].
   //TODO: Make ProtocolDartFileAnalyzer testable
-  EndpointsAnalyzer(this.endpointDirectory) {
+  ProtocolEndpointsAnalyzer(GeneratorConfig config) {
+    endpointDirectory = Directory(p.joinAll(config.endpointsSourcePathParts));
     collection = AnalysisContextCollection(
       includedPaths: [endpointDirectory.absolute.path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
@@ -75,7 +75,6 @@ class EndpointsAnalyzer {
           var file = File(changedFile);
           context.changeFile(file.absolute.path);
         }
-        await context.applyPendingFileChanges();
       }
     }
 

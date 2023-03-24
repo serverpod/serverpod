@@ -12,11 +12,27 @@ abstract class CodeGenerator {
   /// Create a new [CodeGenerator].
   const CodeGenerator();
 
+  /// Generate code for the entities.
+  /// The key is path of the file, where the code has to be written to,
+  /// the value a function that builds the content.
+  ///
+  /// Relative paths start at the server package directory.
+  ///
+  /// Called and generated before [getCodeGeneration].
+  Map<String, Future<String> Function()> getEntitiesCodeGeneration({
+    required bool verbose,
+    required List<ProtocolEntityDefinition> entities,
+    required GeneratorConfig config,
+  });
+
   /// Generate the code.
   /// The key is path of the file, where the code has to be written to,
   /// the value a function that builds the content.
   ///
   /// Relative paths start at the server package directory.
+  ///
+  /// At the time this is called, [getEntitiesCodeGeneration] should
+  /// already be called and generated.
   Map<String, Future<String> Function()> getCodeGeneration({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
@@ -39,16 +55,58 @@ abstract class CodeGenerator {
   /// The generators, that run on [generateAll].
   static const generators = [DartCodeGenerator(), PgsqlGenerator()];
 
-  /// Run all [CodeGenerator]s and save the files.
+  /// Generate from [CodeGenerator.getEntitiesCodeGeneration] for all [CodeGenerator]s
+  /// and save the files.
   ///
-  /// Set [cleanDirectories] to true, in order to delete old files in the output directories.
-  /// The output directories, that may required cleaning are defined by [getDirectoriesRequiringCleaning].
-  static Future<void> generateAll({
+  /// Returns a list of generated files.
+  static Future<List<String>> generateForEntities({
+    required bool verbose,
+    required List<ProtocolEntityDefinition> entities,
+    required GeneratorConfig config,
+    required CodeGenerationCollector collector,
+  }) async {
+    collector.generatedFiles.clear();
+    var allFiles = {
+      for (var generator in generators)
+        ...generator.getEntitiesCodeGeneration(
+          verbose: verbose,
+          entities: entities,
+          config: config,
+        )
+    };
+    for (var file in allFiles.entries) {
+      bool writing = false;
+      try {
+        if (verbose) {
+          printww('Generating ${file.key}...');
+        }
+        var out = File(file.key);
+        writing = true;
+        if (verbose) {
+          printww('Writing ${file.key}...');
+        }
+        await out.create(recursive: true);
+        await out.writeAsString(await file.value());
+
+        collector.addGeneratedFile(out);
+      } catch (e, stackTrace) {
+        printww('Failed to ${writing ? 'write' : 'generate'} ${file.key}');
+        printInternalError(e, stackTrace);
+      }
+    }
+
+    return allFiles.keys.toList();
+  }
+
+  /// Generate from [CodeGenerator.getCodeGeneration] for all [CodeGenerator]s
+  /// and save the files.
+  ///
+  /// Returns a list of generated files.
+  static Future<List<String>> generateForProtocolDefinition({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
-    required bool cleanDirectories,
   }) async {
     collector.generatedFiles.clear();
     var allFiles = {
@@ -80,25 +138,33 @@ abstract class CodeGenerator {
       }
     }
 
-    if (cleanDirectories) {
-      if (verbose) {
-        printww('Cleaning up old files.');
-      }
-      var keepPaths = allFiles.keys.toSet();
-      for (var generator in generators) {
-        var dirs = await generator.getDirectoriesRequiringCleaning(
-            verbose: verbose,
-            protocolDefinition: protocolDefinition,
-            config: config);
+    return allFiles.keys.toList();
+  }
 
-        for (var dir in dirs) {
-          await _removeOldFilesInPath(
-            dir,
-            keepPaths,
-            verbose,
-            generator.outputFileExtensions,
-          );
-        }
+  /// Remove old files that are not part of the [generatedFiles]
+  /// in the [CodeGenerator.getDirectoriesRequiringCleaning] for each [CodeGenerator].
+  static Future<void> cleanFiles({
+    required Set<String> generatedFiles,
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+    required bool verbose,
+  }) async {
+    if (verbose) {
+      printww('Cleaning up old files.');
+    }
+    for (var generator in generators) {
+      var dirs = await generator.getDirectoriesRequiringCleaning(
+          verbose: verbose,
+          protocolDefinition: protocolDefinition,
+          config: config);
+
+      for (var dir in dirs) {
+        await _removeOldFilesInPath(
+          dir,
+          generatedFiles,
+          verbose,
+          generator.outputFileExtensions,
+        );
       }
     }
   }

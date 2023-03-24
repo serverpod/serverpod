@@ -9,7 +9,7 @@ import 'generator.dart';
 void performGenerateContinuously({
   required bool verbose,
   required GeneratorConfig config,
-  required ProtocolAnalyzer analyzer,
+  required ProtocolEndpointsAnalyzer endpointsAnalyzer,
 }) async {
   if (verbose) print('Starting up continuous generator');
 
@@ -25,7 +25,7 @@ void performGenerateContinuously({
       verbose: verbose,
       changedFile: event.path,
       config: config,
-      analyzer: analyzer,
+      endpointsAnalyzer: endpointsAnalyzer,
     );
     print('Incremental code generation complete.');
     print('');

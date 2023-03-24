@@ -25,7 +25,7 @@ class ProtocolEntityAnalyzer {
   final CodeAnalysisCollector collector;
 
   /// Create a new [ProtocolEntityAnalyzer].
-  ProtocolEntityAnalyzer({
+  ProtocolEntityAnalyzer._({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -34,20 +34,19 @@ class ProtocolEntityAnalyzer {
   });
 
   /// Analyze all yaml files int the protocol directory.
-  static Future<List<ProtocolEntityDefinition>> analyzeFiles({
+  static Future<List<ProtocolEntityDefinition>> analyzeAll({
     bool verbose = true,
     required CodeAnalysisCollector collector,
     required GeneratorConfig config,
-    required Directory protocolDirectory,
   }) async {
     var classDefinitions = <ProtocolEntityDefinition>[];
 
     // Get list of all files in protocol source directory.
-    var sourceDir = protocolDirectory;
+    var sourceDir = Directory(p.joinAll(config.protocolSourcePathParts));
     var sourceFileList = await sourceDir.list(recursive: true).toList();
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
-    var subDirSkip = p.split(protocolDirectory.path).length;
+    var subDirSkip = p.split(sourceDir.path).length;
 
     for (var entity in sourceFileList) {
       if (entity is! File || !entity.path.endsWith('.yaml')) {
@@ -60,7 +59,7 @@ class ProtocolEntityAnalyzer {
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
       var yaml = await entity.readAsString();
-      var analyzer = ProtocolEntityAnalyzer(
+      var analyzer = ProtocolEntityAnalyzer._(
         yaml: yaml,
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),

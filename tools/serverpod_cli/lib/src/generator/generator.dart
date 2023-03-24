@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:serverpod_cli/src/util/print.dart';
 
 /// Analyze the server package and generate the code.
 Future<void> performGenerate({
@@ -8,12 +9,30 @@ Future<void> performGenerate({
   bool dartFormat = true,
   String? changedFile,
   required GeneratorConfig config,
-  required ProtocolAnalyzer analyzer,
+  required ProtocolEndpointsAnalyzer endpointsAnalyzer,
 }) async {
   var collector = CodeGenerationCollector();
 
-  var protocolDefinition = await analyzer.analyze(
+  if (verbose) {
+    printww('Analyzing entities in the protocol directory...');
+  }
+  var entities = await ProtocolEntityAnalyzer.analyzeAll(
     verbose: verbose,
+    collector: collector,
+    config: config,
+  );
+
+  collector.printErrors();
+  collector.clearErrors();
+
+  if (verbose) {
+    printww('Generating only based on the entity files...');
+  }
+
+  var generatedEntityFiles = await CodeGenerator.generateForEntities(
+    verbose: verbose,
+    entities: entities,
+    config: config,
     collector: collector,
   );
 
@@ -21,14 +40,49 @@ Future<void> performGenerate({
   collector.clearErrors();
 
   if (verbose) {
-    print('Generating classes.');
+    printww('Analyzing endpoints...');
   }
 
-  await CodeGenerator.generateAll(
+  var endpoints = await endpointsAnalyzer.analyze(
+    verbose: verbose,
+    collector: collector,
+    changedFiles: generatedEntityFiles.toSet(),
+  );
+
+  collector.printErrors();
+  collector.clearErrors();
+
+  if (verbose) {
+    printww('Generating only based on the entire protocol definition...');
+  }
+
+  var protocolDefinition = ProtocolDefinition(
+    endpoints: endpoints,
+    entities: entities,
+  );
+
+  var generatedProtocolFiles =
+      await CodeGenerator.generateForProtocolDefinition(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
     config: config,
     collector: collector,
-    cleanDirectories: true,
+  );
+
+  collector.printErrors();
+  collector.clearErrors();
+
+  if (verbose) {
+    printww('Deleting old files.');
+  }
+
+  await CodeGenerator.cleanFiles(
+    generatedFiles: <String>{
+      ...generatedEntityFiles,
+      ...generatedProtocolFiles
+    },
+    protocolDefinition: protocolDefinition,
+    config: config,
+    verbose: verbose,
   );
 }

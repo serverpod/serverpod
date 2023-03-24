@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
-import 'package:serverpod_cli/src/analyzer/yaml/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart' as p;
@@ -10,23 +10,23 @@ class PgsqlGenerator extends CodeGenerator {
   const PgsqlGenerator();
 
   @override
-  Map<String, Future<String> Function()> getCodeGeneration(
+  Map<String, Future<String> Function()> getEntitiesCodeGeneration(
       {required bool verbose,
-      required ProtocolDefinition protocolDefinition,
+      required List<ProtocolEntityDefinition> entities,
       required GeneratorConfig config}) {
     return {
       p.joinAll([
         ...config.serverPackageDirectoryPathParts,
         'generated',
         'tables.pgsql'
-      ]): () async => _generate(protocolDefinition),
+      ]): () async => _generate(entities),
     };
   }
 
-  String _generate(ProtocolDefinition protocolDefinition) {
+  String _generate(List<ProtocolEntityDefinition> entities) {
     var out = '';
 
-    var tableInfoList = protocolDefinition.entities.toList();
+    var tableInfoList = entities.toList();
     tableInfoList.removeWhere(
       (element) =>
           (element is! ProtocolClassDefinition) || element.tableName == null,
@@ -160,4 +160,12 @@ class PgsqlGenerator extends CodeGenerator {
 
   @override
   List<String> get outputFileExtensions => ['.pgsql'];
+
+  @override
+  Map<String, Future<String> Function()> getCodeGeneration(
+      {required bool verbose,
+      required ProtocolDefinition protocolDefinition,
+      required GeneratorConfig config}) {
+    return {};
+  }
 }

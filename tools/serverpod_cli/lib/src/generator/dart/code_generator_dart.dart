@@ -3,6 +3,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generator/dart/entities_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generator.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 
@@ -10,6 +11,50 @@ import 'package:serverpod_cli/src/util/print.dart';
 class DartCodeGenerator extends CodeGenerator {
   /// Create a new [DartCodeGenerator]
   const DartCodeGenerator();
+
+  @override
+  Map<String, Future<String> Function()> getEntitiesCodeGeneration({
+    required bool verbose,
+    required List<ProtocolEntityDefinition> entities,
+    required GeneratorConfig config,
+  }) {
+    var serverSideGenerator = EntityLibraryGenerator(
+      serverCode: true,
+      config: config,
+    );
+    var clientSideGenerator = EntityLibraryGenerator(
+      serverCode: false,
+      config: config,
+    );
+
+    return {
+      // Server
+      // Generate a temporary protocol.dart file. Since this is required to analyze the endpoints.
+      p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
+          () async => serverSideGenerator
+              .generateTemporaryProtocol(entities: entities)
+              .generateCode(true),
+      for (var protocolFile in entities)
+        p.joinAll([
+          ...config.generatedServerProtocolPathParts,
+          ...protocolFile.subDirParts,
+          '${protocolFile.fileName}.dart'
+        ]): () async => serverSideGenerator
+            .generateEntityLibrary(protocolFile)
+            .generateCode(true),
+
+      // Client
+      for (var protocolFile in entities)
+        if (!protocolFile.serverOnly)
+          p.joinAll([
+            ...config.generatedDartClientProtocolPathParts,
+            ...protocolFile.subDirParts,
+            '${protocolFile.fileName}.dart',
+          ]): () async => clientSideGenerator
+              .generateEntityLibrary(protocolFile)
+              .generateCode(true),
+    };
+  }
 
   @override
   Map<String, Future<String> Function()> getCodeGeneration({
@@ -29,15 +74,6 @@ class DartCodeGenerator extends CodeGenerator {
     );
     return {
       // Server
-      for (var protocolFile in protocolDefinition.entities)
-        p.joinAll([
-          ...config.generatedServerProtocolPathParts,
-          ...protocolFile.subDirParts,
-          '${protocolFile.fileName}.dart'
-        ]): () async => serverClassGenerator
-            .generateEntityLibrary(protocolFile)
-            .generateCode(true),
-
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
           () async => serverClassGenerator
               .generateProtocol(verbose: verbose)
@@ -48,15 +84,6 @@ class DartCodeGenerator extends CodeGenerator {
               .generateCode(true),
 
       // Client
-      for (var protocolFile in protocolDefinition.entities)
-        if (!protocolFile.serverOnly)
-          p.joinAll([
-            ...config.generatedDartClientProtocolPathParts,
-            ...protocolFile.subDirParts,
-            '${protocolFile.fileName}.dart',
-          ]): () async => clientClassGenerator
-              .generateEntityLibrary(protocolFile)
-              .generateCode(true),
       p.joinAll([
         ...config.generatedDartClientProtocolPathParts,
         'protocol.dart'

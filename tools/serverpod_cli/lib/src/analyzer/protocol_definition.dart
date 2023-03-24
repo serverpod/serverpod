@@ -1,5 +1,5 @@
 import 'dart/definitions.dart';
-import 'yaml/definitions.dart';
+import 'entities/definitions.dart';
 
 /// Defines a projects protocol.
 /// This does not include stuff the [ProtocolYamlFileAnalyzer] analyzed.
