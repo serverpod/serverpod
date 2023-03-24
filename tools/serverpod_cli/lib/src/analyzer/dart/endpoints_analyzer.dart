@@ -89,6 +89,9 @@ class EndpointsAnalyzer {
           continue;
         }
 
+        // Get the subdirectory of the filePath by removing the
+        // first elements of the root path and the file path as
+        // long as they match.
         var rootPathParts = p.split(context.contextRoot.root.path);
         var fileDirPathParts = p.split(p.dirname(filePath));
         while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {
