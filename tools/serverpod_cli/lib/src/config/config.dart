@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:package_config/package_config.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
@@ -227,6 +228,31 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
       }
     }
     return str;
+  }
+
+  /// Load the [GeneratorConfig] for a the dependency [packageName].
+  ///
+  /// Usually [packageName] should either be `serverpod` or a package name from
+  /// [modules].
+  Future<GeneratorConfig> loadDependency({
+    required String packageName,
+    required GeneratorConfig config,
+  }) async {
+    var path = p.joinAll(config.serverPackageDirectoryPathParts);
+    var packageConfig = await findPackageConfig(Directory(path));
+
+    if (packageConfig == null) {
+      throw Exception('Failed to find a package config in $path.');
+    }
+
+    var package = packageConfig[packageName];
+
+    if (package == null) {
+      throw Exception('${config.serverPackage} does not seem to depend on '
+          '$packageName.');
+    }
+
+    return GeneratorConfig.load(Directory.fromUri(package.root).path);
   }
 }
 
