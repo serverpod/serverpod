@@ -159,7 +159,7 @@ class ProtocolIndexDefinition {
   final String name;
 
   /// The fields this index includes.
-  /// ORDER MATTERS!
+  /// The order of the fields matters.
   final List<String> fields;
 
   /// The type of this index.
