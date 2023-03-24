@@ -91,7 +91,7 @@ Future<void> performCreate(
     return;
   }
 
-  print('Creating project $name...');
+  print('Creating project $name.');
 
   if (verbose) print('Creating directory: ${projectDir.path}');
   projectDir.createSync();

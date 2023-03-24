@@ -84,22 +84,17 @@ abstract class CodeGenerator {
         )
     };
     for (var file in allFiles.entries) {
-      bool writing = false;
       try {
         if (verbose) {
-          printww('Generating ${file.key}...');
+          printww('Generating ${file.key}.');
         }
         var out = File(file.key);
-        writing = true;
-        if (verbose) {
-          printww('Writing ${file.key}...');
-        }
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
-        printww('Failed to ${writing ? 'write' : 'generate'} ${file.key}');
+        printww('Failed to generate ${file.key}!');
         printInternalError(e, stackTrace);
       }
     }
@@ -127,22 +122,17 @@ abstract class CodeGenerator {
         )
     };
     for (var file in allFiles.entries) {
-      bool writing = false;
       try {
         if (verbose) {
-          printww('Generating ${file.key}...');
+          printww('Generating ${file.key}.');
         }
         var out = File(file.key);
-        writing = true;
-        if (verbose) {
-          printww('Writing ${file.key}...');
-        }
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
-        printww('Failed to ${writing ? 'write' : 'generate'} ${file.key}');
+        printww('Failed to generate ${file.key}');
         printInternalError(e, stackTrace);
       }
     }

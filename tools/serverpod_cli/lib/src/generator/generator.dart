@@ -26,7 +26,7 @@ Future<void> performGenerate({
   collector.clearErrors();
 
   if (verbose) {
-    printww('Generating only based on the entity files...');
+    printww('Generating only based on the entity files.');
   }
 
   var generatedEntityFiles = await CodeGenerator.generateSerializableEntities(
@@ -40,7 +40,7 @@ Future<void> performGenerate({
   collector.clearErrors();
 
   if (verbose) {
-    printww('Analyzing endpoints...');
+    printww('Analyzing endpoints.');
   }
 
   var endpoints = await endpointsAnalyzer.analyze(
@@ -53,7 +53,7 @@ Future<void> performGenerate({
   collector.clearErrors();
 
   if (verbose) {
-    printww('Generating only based on the entire protocol definition...');
+    printww('Generating only based on the entire protocol definition.');
   }
 
   var protocolDefinition = ProtocolDefinition(
