@@ -1,0 +1,95 @@
+name: Deploy to GCP
+on:
+  push:
+    branches: [ deployment-gcp-production, deployment-gcp-staging ]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - 'staging'
+          - 'production'
+
+env:
+  # TODO: Update with your Google Cloud project id. If you have changed the
+  # region and zone in your Terraform configuration, you will need to change
+  # it here too.
+  PROJECT: "<PROJECT ID>"
+  REGION: us-central1
+  ZONE: us-central1-c
+
+jobs:
+  deploy:
+    name: Deploy to Google Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setting Target Mode from Input
+        if: ${{ github.event.inputs.target != '' }}
+        run: echo "TARGET=${{ github.event.inputs.target }}" >> $GITHUB_ENV
+
+      - name: Setting Target mode based on branch
+        if: ${{ github.event.inputs.target == '' }}
+        run: echo "TARGET=${GITHUB_REF##*-}" >> $GITHUB_ENV
+
+      - name: Set repository
+        run: echo "REPOSITORY=serverpod-${{ env.TARGET }}-container" >> $GITHUB_ENV
+
+      - name: Set Image Name
+        run: echo "IMAGE_NAME=serverpod" >> $GITHUB_ENV
+
+      - name: Set Service Name
+        run: echo "SERVICE_NAME=$(echo $IMAGE_NAME | sed 's/[^a-zA-Z0-9]/-/g')" >> $GITHUB_ENV
+
+      - name: Test
+        run: echo $SERVICE_NAME
+
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
+      - name: Create passwords file
+        working-directory: gcp_demo_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          pwd
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          ls config/
+
+      - name: Configure Docker
+        working-directory: gcp_demo_server
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build the Docker image
+        working-directory: gcp_demo_server
+        run: "docker build -t $IMAGE_NAME ."
+
+      - name: Tag the Docker image
+        working-directory: gcp_demo_server
+        run: docker tag $IMAGE_NAME ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/$IMAGE_NAME
+
+      - name: Push Docker image
+        working-directory: gcp_demo_server
+        run: docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/$IMAGE_NAME
+
+      # - name: Restart servers in instance group
+      #   run: |
+      #     gcloud compute instance-groups managed rolling-action replace serverpod-${{ env.TARGET }}-group \
+      #      --project=${{ env.PROJECT }} \
+      #      --replacement-method='substitute' \
+      #      --max-surge=1 \
+      #      --max-unavailable=1 \
+      #      --zone=${{ env.ZONE }}
