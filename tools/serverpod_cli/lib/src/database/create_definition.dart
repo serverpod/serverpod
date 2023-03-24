@@ -73,7 +73,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
                 isPrimary: false,
               ),
           ],
-          //TODO: Add an option in the yaml-protocol specification for this.
+          //TODO: Add an option in the class specification for this.
           managed: true,
         ),
   ]);
