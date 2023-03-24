@@ -142,9 +142,13 @@ class ProtocolFieldDefinition {
 
 /// The scope where a field should be present.
 enum ProtocolFieldScope {
-  /// Only include the associated field
+  /// Only include the associated field in the database.
   database,
+
+  /// Only include the associated field in the api.
   api,
+
+  /// Include the associated field everywhere.
   all,
 }
 
