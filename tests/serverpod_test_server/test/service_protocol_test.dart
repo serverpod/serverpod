@@ -279,7 +279,10 @@ void main() {
         await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
       }
 
-      await Future.delayed(const Duration(seconds: 1));
+      // This test failed some times due to some kind of race condition.
+      // Idealy we would not use a hard coded delay here.
+      // Ticket: https://github.com/serverpod/serverpod/issues/773
+      await Future.delayed(const Duration(seconds: 5));
 
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
