@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
@@ -21,6 +22,7 @@ abstract class CodeGenerator {
   /// Relative paths start at the server package directory.
   ///
   /// Called and generated before [generateProtocolCode].
+  @protected
   Map<String, String> generateSerializableEntitiesCode({
     required bool verbose,
     required List<SerializableEntityDefinition> entities,
@@ -37,6 +39,7 @@ abstract class CodeGenerator {
   ///
   /// At the time this is called, [generateSerializableEntitiesCode] should
   /// already be called and generated.
+  @protected
   Map<String, String> generateProtocolCode({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
@@ -47,6 +50,7 @@ abstract class CodeGenerator {
   /// For most [CodeGenerator]s, the output should just depend on [config].
   ///
   /// Relative paths start at the server package directory.
+  @protected
   Future<List<String>> getDirectoriesRequiringCleaning({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
@@ -54,6 +58,7 @@ abstract class CodeGenerator {
   });
 
   /// The file extensions, this generator uses when generating files.
+  @protected
   List<String> get outputFileExtensions;
 
   /// The generators, that run on [generateAll].
