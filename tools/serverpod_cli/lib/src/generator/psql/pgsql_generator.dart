@@ -125,7 +125,7 @@ class PgsqlCodeGenerator extends CodeGenerator {
       for (var index in classInfo.indexes!) {
         var uniqueStr = index.unique ? ' UNIQUE' : '';
         out +=
-            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}"'
+            'CREATE$uniqueStr INDEX ${index.name} ON "${classInfo.tableName}" '
             'USING ${index.type} (';
         out += index.fields.map((String str) => '"$str"').join(', ');
         out += ');\n';
