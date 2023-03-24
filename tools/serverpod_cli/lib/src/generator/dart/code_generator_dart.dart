@@ -15,7 +15,7 @@ class DartCodeGenerator extends CodeGenerator {
   @override
   Map<String, Future<String> Function()> getEntitiesCodeGeneration({
     required bool verbose,
-    required List<ProtocolEntityDefinition> entities,
+    required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
   }) {
     var serverSideGenerator = EntityLibraryGenerator(

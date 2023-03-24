@@ -3,7 +3,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import '../shared.dart';
 
-/// Generates the dart libraries for [ProtocolEntityDefinition]s.
+/// Generates the dart libraries for [SerializableEntityDefinition]s.
 class EntityLibraryGenerator {
   final bool serverCode;
   final GeneratorConfig config;
@@ -15,7 +15,7 @@ class EntityLibraryGenerator {
 
   /// Generate the file for a protocol entity.
   Library generateEntityLibrary(
-      ProtocolEntityDefinition protocolEntityDefinition) {
+      SerializableEntityDefinition protocolEntityDefinition) {
     if (protocolEntityDefinition is ProtocolClassDefinition) {
       return _generateClassLibrary(protocolEntityDefinition);
     }
@@ -787,7 +787,7 @@ class EntityLibraryGenerator {
   /// protocol.dart file.
   Library generateTemporaryProtocol({
     bool verbose = false,
-    required List<ProtocolEntityDefinition> entities,
+    required List<SerializableEntityDefinition> entities,
   }) {
     var library = LibraryBuilder();
 

@@ -17,15 +17,15 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 }
 
 /// Used to analyze a singe yaml protocol file.
-class ProtocolEntityAnalyzer {
+class SerializableEntitiesAnalyzer {
   final String yaml;
   final String sourceFileName;
   final String outFileName;
   final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
 
-  /// Create a new [ProtocolEntityAnalyzer].
-  ProtocolEntityAnalyzer._({
+  /// Create a new [SerializableEntitiesAnalyzer].
+  SerializableEntitiesAnalyzer._({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -34,12 +34,12 @@ class ProtocolEntityAnalyzer {
   });
 
   /// Analyze all yaml files int the protocol directory.
-  static Future<List<ProtocolEntityDefinition>> analyzeAll({
+  static Future<List<SerializableEntityDefinition>> analyzeAll({
     bool verbose = true,
     required CodeAnalysisCollector collector,
     required GeneratorConfig config,
   }) async {
-    var classDefinitions = <ProtocolEntityDefinition>[];
+    var classDefinitions = <SerializableEntityDefinition>[];
 
     // Get list of all files in protocol source directory.
     var sourceDir = Directory(p.joinAll(config.protocolSourcePathParts));
@@ -59,7 +59,7 @@ class ProtocolEntityAnalyzer {
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
       var yaml = await entity.readAsString();
-      var analyzer = ProtocolEntityAnalyzer._(
+      var analyzer = SerializableEntitiesAnalyzer._(
         yaml: yaml,
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
@@ -99,7 +99,7 @@ class ProtocolEntityAnalyzer {
     return classDefinitions;
   }
 
-  ProtocolEntityDefinition? _analyze() {
+  SerializableEntityDefinition? _analyze() {
     var yamlErrorCollector = ErrorCollector();
 
     YamlDocument document;
@@ -150,7 +150,7 @@ class ProtocolEntityAnalyzer {
     return null;
   }
 
-  ProtocolEntityDefinition? _analyzeClassFile(
+  SerializableEntityDefinition? _analyzeClassFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
@@ -547,7 +547,7 @@ class ProtocolEntityAnalyzer {
     );
   }
 
-  ProtocolEntityDefinition? _analyzeEnumFile(
+  SerializableEntityDefinition? _analyzeEnumFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,

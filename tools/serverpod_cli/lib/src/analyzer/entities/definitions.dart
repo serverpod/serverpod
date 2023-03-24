@@ -4,13 +4,13 @@ import 'package:serverpod_cli/src/generator/types.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
-abstract class ProtocolEntityDefinition {
+abstract class SerializableEntityDefinition {
   final String fileName;
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
 
-  ProtocolEntityDefinition({
+  SerializableEntityDefinition({
     required this.fileName,
     required this.className,
     required this.serverOnly,
@@ -30,7 +30,7 @@ abstract class ProtocolEntityDefinition {
 ///
 /// See also:
 /// - [ProtocolEnumDefinition]
-class ProtocolClassDefinition extends ProtocolEntityDefinition {
+class ProtocolClassDefinition extends SerializableEntityDefinition {
   /// If set, the name of the table, this class should be stored in,
   /// in the database.
   final String? tableName;
@@ -176,7 +176,7 @@ class ProtocolIndexDefinition {
 
 /// A representation of a yaml file in the
 /// protocol directory defining an enum.
-class ProtocolEnumDefinition extends ProtocolEntityDefinition {
+class ProtocolEnumDefinition extends SerializableEntityDefinition {
   /// All the values of the enum.
   /// This also contains possible documentation for them.
   List<ProtocolEnumValueDefinition> values;

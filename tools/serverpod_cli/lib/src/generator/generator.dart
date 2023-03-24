@@ -16,7 +16,7 @@ Future<void> performGenerate({
   if (verbose) {
     printww('Analyzing entities in the protocol directory...');
   }
-  var entities = await ProtocolEntityAnalyzer.analyzeAll(
+  var entities = await SerializableEntitiesAnalyzer.analyzeAll(
     verbose: verbose,
     collector: collector,
     config: config,
@@ -29,7 +29,7 @@ Future<void> performGenerate({
     printww('Generating only based on the entity files...');
   }
 
-  var generatedEntityFiles = await CodeGenerator.generateForEntities(
+  var generatedEntityFiles = await CodeGenerator.generateSerializableEntities(
     verbose: verbose,
     entities: entities,
     config: config,
@@ -61,8 +61,7 @@ Future<void> performGenerate({
     entities: entities,
   );
 
-  var generatedProtocolFiles =
-      await CodeGenerator.generateForProtocolDefinition(
+  var generatedProtocolFiles = await CodeGenerator.generateProtocolDefinition(
     verbose: verbose,
     protocolDefinition: protocolDefinition,
     config: config,

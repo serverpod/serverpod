@@ -21,7 +21,7 @@ abstract class CodeGenerator {
   /// Called and generated before [getCodeGeneration].
   Map<String, Future<String> Function()> getEntitiesCodeGeneration({
     required bool verbose,
-    required List<ProtocolEntityDefinition> entities,
+    required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
   });
 
@@ -59,9 +59,9 @@ abstract class CodeGenerator {
   /// and save the files.
   ///
   /// Returns a list of generated files.
-  static Future<List<String>> generateForEntities({
+  static Future<List<String>> generateSerializableEntities({
     required bool verbose,
-    required List<ProtocolEntityDefinition> entities,
+    required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
   }) async {
@@ -102,7 +102,7 @@ abstract class CodeGenerator {
   /// and save the files.
   ///
   /// Returns a list of generated files.
-  static Future<List<String>> generateForProtocolDefinition({
+  static Future<List<String>> generateProtocolDefinition({
     required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
