@@ -55,6 +55,4 @@ class Analytics {
       return 'Unknown';
     }
   }
-
-  void cleanUp() {}
 }
