@@ -11,8 +11,8 @@ jobs:
       - name: Checkout fork
         uses: actions/checkout@v2
         with:
-          ref: tgrushka/workflow-sync-upstream
           repository: dra11y/serverpod
+          ref: main
       - name: Fetch upstream
         run: git fetch upstream
       - name: Merge upstream/main
