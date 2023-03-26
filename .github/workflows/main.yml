@@ -1,0 +1,19 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v2
+        with:
+          ref: tgrushka/workflow-sync-upstream
+          repository: dra11y/serverpod
+      - name: Fetch upstream
+        run: git fetch upstream
+      - name: Merge upstream/main
+        run: git merge upstream/main
