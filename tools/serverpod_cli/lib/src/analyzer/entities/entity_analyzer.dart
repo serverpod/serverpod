@@ -108,6 +108,7 @@ class SerializableEntityAnalyzer {
         yaml,
         sourceUrl: Uri.file(sourceFileName),
         errorListener: yamlErrorCollector,
+        recover: true,
       );
     } catch (e) {
       if (e is SourceSpanException) {
