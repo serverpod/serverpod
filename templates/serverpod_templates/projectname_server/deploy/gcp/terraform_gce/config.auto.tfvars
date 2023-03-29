@@ -10,7 +10,7 @@
 project = "<GOOGLE CLOUD PROJECT ID>"
 
 # The service account email address authorized by your Google Cloud Console.
-service_account_email = "serverpod-demo@serverpod-deployment-demo.iam.gserviceaccount.com"
+service_account_email = "<SERVICE ACCOUNT EMAIL>"
 
 # The name of your DNS zone.
 dns_managed_zone = "<MANAGED ZONE>"
