@@ -85,6 +85,10 @@ jobs:
         working-directory: gcp_demo_server
         run: docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/$IMAGE_NAME
 
+      # Uncomment the following code to automatically restart the servers in the
+      # instance group when you push a new version of your code. Before doing
+      # this, make sure that you have successfully deployed a first version.
+      #
       # - name: Restart servers in instance group
       #   run: |
       #     gcloud compute instance-groups managed rolling-action replace serverpod-${{ env.TARGET }}-group \
