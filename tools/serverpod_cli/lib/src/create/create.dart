@@ -81,6 +81,7 @@ Future<void> performCreate(
 
   var dbPassword = generateRandomString();
   var dbProductionPassword = generateRandomString();
+  var dbStagingPassword = generateRandomString();
 
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = Random.secure().nextInt(10000000).toString();
@@ -157,6 +158,10 @@ Future<void> performCreate(
         Replacement(
           slotName: 'DB_PRODUCTION_PASSWORD',
           replacement: dbProductionPassword,
+        ),
+        Replacement(
+          slotName: 'DB_STAGING_PASSWORD',
+          replacement: dbStagingPassword,
         ),
         Replacement(
           slotName: 'REDIS_PASSWORD',
