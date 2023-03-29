@@ -22,7 +22,7 @@ provider "google" {
 
 module "serverpod_production" {
   # References the Serverpod module from GitHub.
-  source = "github.com/serverpod/terraform-google-serverpod-cloud-engine"
+  source = "github.com/serverpod/terraform-google-serverpod-cloud-engine?ref=stable-1.1"
 
   # Required parameters.
   project               = var.project
@@ -60,7 +60,7 @@ module "serverpod_production" {
 
 # module "serverpod_staging" {
 #   # References the Serverpod module from GitHub.
-#   source = "github.com/serverpod/terraform-google-serverpod-cloud-engine"
+#   source = "github.com/serverpod/terraform-google-serverpod-cloud-engine?ref=stable-1.1"
 
 #   # Required parameters.
 #   project               = var.project
