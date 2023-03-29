@@ -2,6 +2,8 @@ import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import '../../analyzer/dart/definitions.dart';
 import '../shared.dart';
@@ -77,126 +79,18 @@ class LibraryGenerator {
             ..name = 'targetDatabaseDefinition'
             ..static = true
             ..modifier = FieldModifier.final$
-            ..assignment =
-                refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
-                    .call([], {
-              'tables': literalList([
-                for (var classDefinition in entities)
-                  if (classDefinition is ClassDefinition &&
-                      classDefinition.tableName != null)
-                    refer('TableDefinition', serverpodProtocolUrl(serverCode))
-                        .call([], {
-                      'name': literalString(classDefinition.tableName!),
-                      'schema': literalString('public'),
-                      'columns': literalList([
-                        for (var column in classDefinition.fields)
-                          if (column
-                              .shouldSerializeFieldForDatabase(serverCode))
-                            refer('ColumnDefinition',
-                                    serverpodProtocolUrl(serverCode))
-                                .call([], {
-                              'name': literalString(column.name),
-                              'columnType': refer(
-                                  'ColumnType.${column.type.databaseTypeEnum}',
-                                  serverpodProtocolUrl(serverCode)),
-                              // The id column is not null, since it is auto incrementing.
-                              'isNullable': literalBool(
-                                  column.name != 'id' && column.type.nullable),
-                              'dartType': literalString(column.type.toString()),
-                              if (column.name == 'id')
-                                'columnDefault': literalString(
-                                    "nextval('${classDefinition.tableName!}_id_seq'::regclass)"),
-                            }),
-                      ]),
-                      'foreignKeys': literalList([
-                        for (var i = 0;
-                            i <
-                                classDefinition.fields
-                                    .where((field) => field.parentTable != null)
-                                    .length;
-                            i++)
-                          () {
-                            var column = classDefinition.fields
-                                .where((field) => field.parentTable != null)
-                                .toList()[i];
-                            return refer('ForeignKeyDefinition',
-                                    serverpodProtocolUrl(serverCode))
-                                .call([], {
-                              'constraintName': literalString(
-                                  '${classDefinition.tableName!}_fk_$i'),
-                              'columns': literalList([
-                                literalString(column.name),
-                              ]),
-                              'referenceTable':
-                                  literalString(column.parentTable!),
-                              'referenceTableSchema': literalString('public'),
-                              'referenceColumns': literalList([
-                                literalString('id'),
-                              ]),
-                              'onUpdate': literalNull,
-                              'onDelete': refer('ForeignKeyAction.cascade',
-                                  serverpodProtocolUrl(serverCode)),
-                              'matchType': literalNull,
-                            });
-                          }(),
-                      ]),
-                      'indexes': literalList([
-                        refer('IndexDefinition',
-                                serverpodProtocolUrl(serverCode))
-                            .call([], {
-                          'indexName': literalString(
-                              '${classDefinition.tableName!}_pkey'),
-                          'tableSpace': literalNull,
-                          'elements': literalList([
-                            refer('IndexElementDefinition',
-                                    serverpodProtocolUrl(serverCode))
-                                .call([], {
-                              'type': refer('IndexElementDefinitionType.column',
-                                  serverpodProtocolUrl(serverCode)),
-                              'definition': literalString('id'),
-                            }),
-                          ]),
-                          'type': literalString('btree'),
-                          'isUnique': literalTrue,
-                          'isPrimary': literalTrue,
-                        }),
-                        for (var index in classDefinition.indexes ??
-                            <SerializableEntityIndexDefinition>[])
-                          refer('IndexDefinition',
-                                  serverpodProtocolUrl(serverCode))
-                              .call([], {
-                            'indexName': literalString(index.name),
-                            'tableSpace': literalNull,
-                            'elements': literalList([
-                              for (var field in index.fields)
-                                refer('IndexElementDefinition',
-                                        serverpodProtocolUrl(serverCode))
-                                    .call([], {
-                                  'type': refer(
-                                      'IndexElementDefinitionType.column',
-                                      serverpodProtocolUrl(serverCode)),
-                                  'definition': literalString(field),
-                                })
-                            ]),
-                            'type': literalString(index.type),
-                            'isUnique': literalBool(index.unique),
-                            'isPrimary': literalFalse,
-                          }),
-                      ]),
-                      'managed':
-                          literalTrue, // TODO: Add an option in the yaml-protocol specification for this.
-                    }),
-                for (var module in config.modules)
-                  refer('Protocol.targetDatabaseDefinition.tables',
-                          module.dartImportUrl(serverCode))
-                      .spread,
-                if (config.name != 'serverpod' &&
-                    config.type == PackageType.server)
-                  refer('Protocol.targetDatabaseDefinition.tables',
-                          serverpodProtocolUrl(serverCode))
-                      .spread,
-              ]),
-            }).code,
+            ..assignment = createDatabaseDefinitionFromEntities(entities)
+                .toCode(serverCode: serverCode, additionalTables: [
+              for (var module in config.modules)
+                refer('Protocol.targetDatabaseDefinition.tables',
+                        module.dartImportUrl(serverCode))
+                    .spread,
+              if (config.name != 'serverpod' &&
+                  config.type == PackageType.server)
+                refer('Protocol.targetDatabaseDefinition.tables',
+                        serverpodProtocolUrl(serverCode))
+                    .spread,
+            ]),
         ),
     ]);
     protocol.methods.addAll([
@@ -774,5 +668,94 @@ class LibraryGenerator {
     );
 
     return library.build();
+  }
+}
+
+extension on DatabaseDefinition {
+  Code toCode({
+    required List<Expression> additionalTables,
+    required bool serverCode,
+  }) {
+    return refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
+        .call([], {
+      if (name != null) 'name': literalString(name!),
+      'tables': literalList([
+        for (var table in tables)
+          refer('TableDefinition', serverpodProtocolUrl(serverCode)).call([], {
+            'name': literalString(table.name),
+            'schema': literalString(table.schema),
+            'columns': literalList([
+              for (var column in table.columns)
+                refer('ColumnDefinition', serverpodProtocolUrl(serverCode))
+                    .call([], {
+                  'name': literalString(column.name),
+                  'columnType': refer('ColumnType.${column.columnType.name}',
+                      serverpodProtocolUrl(serverCode)),
+                  // The id column is not null, since it is auto incrementing.
+                  'isNullable': literalBool(column.isNullable),
+                  if (column.dartType != null)
+                    'dartType': literalString(column.dartType!),
+                  if (column.columnDefault != null)
+                    'columnDefault': literalString(column.columnDefault!),
+                }),
+            ]),
+            'foreignKeys': literalList([
+              for (var foreignKey in table.foreignKeys)
+                refer('ForeignKeyDefinition', serverpodProtocolUrl(serverCode))
+                    .call([], {
+                  'constraintName': literalString(foreignKey.constraintName),
+                  'columns': literalList([
+                    for (var column in foreignKey.columns)
+                      literalString(column),
+                  ]),
+                  'referenceTable': literalString(foreignKey.referenceTable),
+                  'referenceTableSchema':
+                      literalString(foreignKey.referenceTableSchema),
+                  'referenceColumns': literalList([
+                    for (var column in foreignKey.referenceColumns)
+                      literalString(column),
+                  ]),
+                  'onUpdate': foreignKey.onUpdate != null
+                      ? refer('ForeignKeyAction.${foreignKey.onUpdate!.name}',
+                          serverpodProtocolUrl(serverCode))
+                      : literalNull,
+                  'onDelete': foreignKey.onDelete != null
+                      ? refer('ForeignKeyAction.${foreignKey.onDelete!.name}',
+                          serverpodProtocolUrl(serverCode))
+                      : literalNull,
+                  'matchType': foreignKey.matchType != null
+                      ? refer(
+                          'ForeignKeyMatchType.${foreignKey.matchType!.name}',
+                          serverpodProtocolUrl(serverCode))
+                      : literalNull,
+                }),
+            ]),
+            'indexes': literalList([
+              for (var index in table.indexes)
+                refer('IndexDefinition', serverpodProtocolUrl(serverCode))
+                    .call([], {
+                  'indexName': literalString(index.indexName),
+                  'tableSpace': literalNull,
+                  'elements': literalList([
+                    for (var element in index.elements)
+                      refer('IndexElementDefinition',
+                              serverpodProtocolUrl(serverCode))
+                          .call([], {
+                        'type': refer(
+                            'IndexElementDefinitionType.${element.type.name}',
+                            serverpodProtocolUrl(serverCode)),
+                        'definition': literalString(element.definition),
+                      })
+                  ]),
+                  'type': literalString(index.type),
+                  'isUnique': literalBool(index.isUnique),
+                  'isPrimary': literalBool(index.isPrimary),
+                }),
+            ]),
+            if (table.managed != null) 'managed': literalBool(table.managed!),
+          }),
+        ...additionalTables,
+      ])
+    }).code;
   }
 }
