@@ -222,6 +222,11 @@ class Serverpod {
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
+    if (_passwords.isEmpty) {
+      stderr.writeln('Failed to load passwords. Serverpod cannot not start.');
+      exit(1);
+    }
+
     // Load config
     config = ServerpodConfig(_runMode, serverId, _passwords);
 
