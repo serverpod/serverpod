@@ -177,6 +177,10 @@ Future<void> performCreate(
           slotName: 'gitignore',
           replacement: '.gitignore',
         ),
+        Replacement(
+          slotName: 'gcloudignore',
+          replacement: '.gcloudignore',
+        ),
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
