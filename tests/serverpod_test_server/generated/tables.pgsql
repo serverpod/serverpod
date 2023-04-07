@@ -113,7 +113,7 @@ ALTER TABLE ONLY "object_with_parent"
 
 CREATE TABLE "object_with_self_parent" (
   "id" serial,
-  "other" integer NOT NULL
+  "other" integer
 );
 
 ALTER TABLE ONLY "object_with_self_parent"

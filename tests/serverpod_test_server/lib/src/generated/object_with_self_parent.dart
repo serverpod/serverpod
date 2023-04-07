@@ -11,7 +11,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 class ObjectWithSelfParent extends _i1.TableRow {
   ObjectWithSelfParent({
     int? id,
-    required this.other,
+    this.other,
   }) : super(id);
 
   factory ObjectWithSelfParent.fromJson(
@@ -20,13 +20,13 @@ class ObjectWithSelfParent extends _i1.TableRow {
   ) {
     return ObjectWithSelfParent(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      other: serializationManager.deserialize<int>(jsonSerialization['other']),
+      other: serializationManager.deserialize<int?>(jsonSerialization['other']),
     );
   }
 
   static final t = ObjectWithSelfParentTable();
 
-  int other;
+  int? other;
 
   @override
   String get tableName => 'object_with_self_parent';

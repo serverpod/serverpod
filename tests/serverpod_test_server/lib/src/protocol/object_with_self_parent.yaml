@@ -1,4 +1,4 @@
 class: ObjectWithSelfParent
 table: object_with_self_parent
 fields:
-  other: int, parent=object_with_self_parent
+  other: int?, parent=object_with_self_parent

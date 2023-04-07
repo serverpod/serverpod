@@ -11,7 +11,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 class ObjectWithSelfParent extends _i1.SerializableEntity {
   ObjectWithSelfParent({
     this.id,
-    required this.other,
+    this.other,
   });
 
   factory ObjectWithSelfParent.fromJson(
@@ -20,7 +20,7 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
   ) {
     return ObjectWithSelfParent(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      other: serializationManager.deserialize<int>(jsonSerialization['other']),
+      other: serializationManager.deserialize<int?>(jsonSerialization['other']),
     );
   }
 
@@ -29,7 +29,7 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
-  int other;
+  int? other;
 
   @override
   Map<String, dynamic> toJson() {
