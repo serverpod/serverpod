@@ -108,6 +108,24 @@ ALTER TABLE ONLY "object_with_parent"
         ON DELETE CASCADE;
 
 --
+-- Class ObjectWithSelfParent as table object_with_self_parent
+--
+
+CREATE TABLE "object_with_self_parent" (
+  "id" serial,
+  "other" integer NOT NULL
+);
+
+ALTER TABLE ONLY "object_with_self_parent"
+  ADD CONSTRAINT object_with_self_parent_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY "object_with_self_parent"
+  ADD CONSTRAINT object_with_self_parent_fk_0
+    FOREIGN KEY("other")
+      REFERENCES object_with_self_parent(id)
+        ON DELETE CASCADE;
+
+--
 -- Class ObjectWithUuid as table object_with_uuid
 --
 
