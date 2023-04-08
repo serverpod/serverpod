@@ -67,7 +67,7 @@ Future<void> performCreate(
       printww('Ports in use:');
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
-        print(' • $port: $serverDescription');
+        stdout.writeln(' • $port: $serverDescription');
       }
     }
     if (!dockerConfigured) {
@@ -88,29 +88,29 @@ Future<void> performCreate(
 
   var projectDir = Directory(p.join(Directory.current.path, name));
   if (projectDir.existsSync()) {
-    print('Project $name already exists.');
+    stderr.writeln('Project $name already exists.');
     return;
   }
 
-  print('Creating project $name.');
+  stdout.writeln('Creating project $name.');
 
-  if (verbose) print('Creating directory: ${projectDir.path}');
+  if (verbose) stdout.writeln('Creating directory: ${projectDir.path}');
   projectDir.createSync();
 
   var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
-  if (verbose) print('Creating directory: ${serverDir.path}');
+  if (verbose) stdout.writeln('Creating directory: ${serverDir.path}');
   serverDir.createSync();
 
   var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
-  if (verbose) print('Creating directory: ${clientDir.path}');
+  if (verbose) stdout.writeln('Creating directory: ${clientDir.path}');
 
   if (template == 'server') {
     var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
-    if (verbose) print('Creating directory: ${flutterDir.path}');
+    if (verbose) stdout.writeln('Creating directory: ${flutterDir.path}');
     flutterDir.createSync();
 
     var githubDir = Directory(p.join(projectDir.path, '.github'));
-    if (verbose) print('Creating directory: ${githubDir.path}');
+    if (verbose) stdout.writeln('Creating directory: ${githubDir.path}');
     githubDir.createSync();
 
     // Copy server files
@@ -290,7 +290,7 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
-    print('');
+    stdout.writeln('');
 
     CommandLineTools.dartPubGet(serverDir);
     CommandLineTools.dartPubGet(clientDir);
@@ -366,7 +366,7 @@ Future<void> performCreate(
     );
     copier.copyFiles();
   } else {
-    print(
+    stderr.writeln(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 

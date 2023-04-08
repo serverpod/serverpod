@@ -108,7 +108,7 @@ class GeneratorConfig {
       var yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
     } catch (_) {
-      print(
+      stderr.writeln(
           'Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
       return null;
     }
@@ -125,7 +125,7 @@ class GeneratorConfig {
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {
-      print(
+      stderr.writeln(
           'Failed to load config/generator.yaml. Is this a Serverpod project?');
       return null;
     }
@@ -160,7 +160,7 @@ class GeneratorConfig {
       dartClientDependsOnServiceClient =
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
-      print(
+      stderr.writeln(
           'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
       return null;
     }

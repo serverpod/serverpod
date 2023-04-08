@@ -178,7 +178,7 @@ Future<void> _removeOldFilesInPath(
 ) async {
   var directory = Directory(directoryPath);
   if (verbose) {
-    print('Remove old files from $directory');
+    stdout.writeln('Remove old files from $directory');
   }
   var fileList = await directory.list(recursive: true).toList();
 
@@ -191,7 +191,7 @@ Future<void> _removeOldFilesInPath(
 
     if (!keepPaths.contains(entity.path)) {
       if (verbose) {
-        print('Remove: $entity');
+        stdout.writeln('Remove: $entity');
       }
       await entity.delete();
     }

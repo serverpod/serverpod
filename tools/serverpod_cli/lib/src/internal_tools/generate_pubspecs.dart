@@ -13,11 +13,11 @@ void performGeneratePubspecs(String version, String mode) {
   if (!dirPackages.existsSync() ||
       !dirTemplates.existsSync() ||
       !dirRoot.existsSync()) {
-    print('Must be run from the serverpod repository root');
+    stderr.writeln('Must be run from the serverpod repository root');
     return;
   }
 
-  print('Doing some fancy generation');
+  stdout.writeln('Doing some fancy generation');
 
   if (mode == 'development') {
     // Development mode

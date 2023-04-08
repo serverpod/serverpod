@@ -8,25 +8,25 @@ import 'windows.dart';
 
 class CommandLineTools {
   static void dartPubGet(Directory dir) {
-    print('Running `dart pub get` in ${dir.path}');
+    stdout.writeln('Running `dart pub get` in ${dir.path}');
     var cf = _CommandFormatter('dart', ['pub', 'get']);
     var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+    stdout.writeln(result.stdout);
   }
 
   static void flutterCreate(Directory dir) {
-    print('Running `flutter create .` in ${dir.path}');
+    stdout.writeln('Running `flutter create .` in ${dir.path}');
     var cf = _CommandFormatter('flutter', ['create', '.']);
     var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+    stdout.writeln(result.stdout);
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -56,7 +56,7 @@ class CommandLineTools {
         ['u+x', 'setup-tables'],
         workingDirectory: serverPath,
       );
-      print(result.stdout);
+      stdout.writeln(result.stdout);
     }
 
     var process = await Process.start(
@@ -74,33 +74,33 @@ class CommandLineTools {
     unawaited(stderr.addStream(process.stderr));
 
     var exitCode = await process.exitCode;
-    print('Completed table setup exit code: $exitCode');
+    stdout.writeln('Completed table setup exit code: $exitCode');
 
-    print('Cleaning up');
+    stdout.writeln('Cleaning up');
     result = await Process.run(
       'rm',
       ['setup-tables'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+    stdout.writeln(result.stdout);
 
     result = await Process.run(
       'rm',
       ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+    stdout.writeln(result.stdout);
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
-    print('Cleaning up');
+    stdout.writeln('Cleaning up');
     var file = File(p.join(serverPath, 'setup-tables'));
     try {
       await file.delete();
     } catch (e) {
-      print('Failed cleanup: $e');
-      print('file: $file');
+      stderr.writeln('Failed cleanup: $e');
+      stderr.writeln('file: $file');
     }
   }
 }

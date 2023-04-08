@@ -66,7 +66,7 @@ class ResourceManager {
   }
 
   Future<void> installTemplates() async {
-    print('Downloading templates for version $templateVersion');
+    stdout.writeln('Downloading templates for version $templateVersion');
     if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
     var response = await http.get(Uri.parse(packageDownloadUrl));
@@ -88,6 +88,6 @@ class ResourceManager {
         await Directory(outFileName).create(recursive: true);
       }
     }
-    print('Download complete.\n');
+    stdout.writeln('Download complete.\n');
   }
 }

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 import 'package:serverpod_cli/analyzer.dart';
-
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -45,19 +44,18 @@ void main(List<String> args) async {
 
 Future<void> _main(List<String> args) async {
   if (Platform.isWindows) {
-    print(
+    stdout.writeln(
         'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
-    print('');
   }
 
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart')) {
-    print(
+    stderr.writeln(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
     return;
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
-    print(
+    stderr.writeln(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
     return;
   }
@@ -68,12 +66,12 @@ Future<void> _main(List<String> args) async {
 
   // Make sure all necessary downloads are installed
   if (!productionMode) {
-    print(
+    stdout.writeln(
       'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
     );
-    print('SERVERPOD_HOME is set to $serverpodHome');
+    stdout.writeln('SERVERPOD_HOME is set to $serverpodHome');
     if (!resourceManager.isTemplatesInstalled) {
-      print('WARNING! Could not find templates.');
+      stdout.writeln('WARNING! Could not find templates.');
     }
   }
 
@@ -81,11 +79,11 @@ Future<void> _main(List<String> args) async {
     try {
       await resourceManager.installTemplates();
     } catch (e) {
-      print('Failed to download templates.');
+      stderr.writeln('Failed to download templates.');
     }
 
     if (!resourceManager.isTemplatesInstalled) {
-      print(
+      stderr.writeln(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
       return;
     }
@@ -213,14 +211,15 @@ Future<void> _main(List<String> args) async {
         endpointsAnalyzer: endpointsAnalyzer,
       );
       if (watch) {
-        print('Initial code generation complete. Listening for changes.');
+        stdout.writeln(
+            'Initial code generation complete. Listening for changes.');
         performGenerateContinuously(
           verbose: verbose,
           config: config,
           endpointsAnalyzer: endpointsAnalyzer,
         );
       } else {
-        print('Done.');
+        stdout.writeln('Done.');
       }
       _analytics.cleanUp();
       return;
@@ -248,7 +247,7 @@ Future<void> _main(List<String> args) async {
     // Generate pubspecs command.
     if (results.command!.name == cmdGeneratePubspecs) {
       if (results.command!['version'] == 'X') {
-        print('--version is not specified');
+        stderr.writeln('--version is not specified');
         _analytics.cleanUp();
         return;
       }
@@ -265,10 +264,10 @@ Future<void> _main(List<String> args) async {
 }
 
 void _printUsage(ArgParser parser) {
-  print('${Colorize('Usage:')..bold()} serverpod <command> [arguments]\n');
-  print('');
-  print('${Colorize('COMMANDS')..bold()}');
-  print('');
+  stdout.writeln(
+      '${Colorize('Usage:')..bold()} serverpod <command> [arguments]\n');
+  stdout.writeln('${Colorize('COMMANDS')..bold()}');
+  stdout.writeln('');
   _printCommandUsage(
     cmdVersion,
     'Prints the active version of the Serverpod CLI.',
@@ -292,14 +291,14 @@ void _printUsage(ArgParser parser) {
 
 void _printCommandUsage(String name, String descr,
     [ArgParser? parser, bool last = false]) {
-  print('${Colorize('$name:')..bold()} $descr');
+  stdout.writeln('${Colorize('$name:')..bold()} $descr');
   if (parser != null) {
-    print('');
-    print(parser.usage);
-    print('');
+    stdout.writeln('');
+    stdout.writeln(parser.usage);
+    stdout.writeln('');
   }
 
   if (!last) {
-    print('');
+    stdout.writeln('');
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -10,7 +12,7 @@ class ConfigInfo {
   }
 
   Client createServiceClient() {
-    print('serviceSecret: ${config.serviceSecret}');
+    stdout.writeln('serviceSecret: ${config.serviceSecret}');
     var keyManager = ServiceKeyManager('CLI', config);
     return Client(
       '${config.insightsServer.publicScheme}://'

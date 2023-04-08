@@ -50,14 +50,14 @@ class SerializableEntityAnalyzer {
 
     for (var entity in sourceFileList) {
       if (entity is! File || !entity.path.endsWith('.yaml')) {
-        if (verbose) print('  - skipping file: ${entity.path}');
+        if (verbose) stdout.writeln('  - skipping file: ${entity.path}');
         continue;
       }
       var subDirectoryParts =
           p.split(p.dirname(entity.path)).skip(sourceDirPartsLength).toList();
 
       // Process a file.
-      if (verbose) print('  - processing file: ${entity.path}');
+      if (verbose) stdout.writeln('  - processing file: ${entity.path}');
       var yaml = await entity.readAsString();
       var analyzer = SerializableEntityAnalyzer._(
         yaml: yaml,
