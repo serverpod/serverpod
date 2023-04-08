@@ -16,4 +16,7 @@ class StringValidators {
 
   static bool isValidTableIndexName(String name) =>
       _mixedSnakeCaseTester.hasMatch(name);
+
+  static bool isValidProjectName(String name) =>
+      RegExp(r'^[a-z]+(?:[0-9a-z]+|_[0-9a-z]+)*$').hasMatch(name);
 }
