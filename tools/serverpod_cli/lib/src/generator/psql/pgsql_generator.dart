@@ -60,8 +60,9 @@ class PgsqlCodeGenerator extends CodeGenerator {
         var tableInfo = tableInfos[i];
 
         for (var field in tableInfo.fields) {
-          // Check if a parent is not above the current table
+          // Check if a parent is not above the current table and not self-referencing
           if (field.parentTable != null &&
+              field.parentTable != tableInfo.tableName &&
               !visitedTableNames.contains(field.parentTable!)) {
             var tableToMove = tableInfo;
             for (int j = i; j < tableInfos.length; j++) {
