@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
@@ -202,5 +203,22 @@ class InsightsEndpoint extends Endpoint {
   /// - [getTargetDatabaseDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
     return DatabaseAnalyzer.analyze(session.db);
+  }
+
+  /// Exports raw data serialized in JSON from the database.
+  Future<String> fetchDatabaseBulkData(
+    Session session, {
+    required String table,
+    required int startingId,
+    required int limit,
+  }) async {
+    print('fetchDatabaseBulkData');
+
+    return DatabaseBulkData.exportTableData(
+      database: session.db,
+      table: table,
+      startingId: startingId,
+      limit: limit,
+    );
   }
 }
