@@ -212,8 +212,6 @@ class InsightsEndpoint extends Endpoint {
     required int startingId,
     required int limit,
   }) async {
-    print('fetchDatabaseBulkData');
-
     return DatabaseBulkData.exportTableData(
       database: session.db,
       table: table,

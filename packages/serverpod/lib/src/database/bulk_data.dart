@@ -11,15 +11,9 @@ class DatabaseBulkData {
     int startingId = 0,
     int limit = 100,
   }) async {
-    // Make sure that the table name is properly escaped.
-    // table = DatabasePoolManager.encoder.convert(table);
-
     var query = 'SELECT * FROM "$table" WHERE id >= $startingId LIMIT $limit';
-    print('query: $query');
-
     var data = await database.query(query);
 
-    print('got data');
     return SerializationManager.encode(data);
   }
 }
