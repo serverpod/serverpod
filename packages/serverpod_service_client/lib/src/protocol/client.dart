@@ -154,6 +154,22 @@ class _EndpointInsights extends _i1.EndpointRef {
         'getLiveDatabaseDefinition',
         {},
       );
+
+  /// Exports raw data serialized in JSON from the database.
+  _i2.Future<String> fetchDatabaseBulkData({
+    required String table,
+    required int startingId,
+    required int limit,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'insights',
+        'fetchDatabaseBulkData',
+        {
+          'table': table,
+          'startingId': startingId,
+          'limit': limit,
+        },
+      );
 }
 
 class Client extends _i1.ServerpodClient {
