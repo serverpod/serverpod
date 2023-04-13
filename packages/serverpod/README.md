@@ -38,7 +38,7 @@ Serverpod's future calls replace complicated cron jobs. Call a method anytime in
 Monitor the database and external services that you are using. Write custom health checks and get notified when something goes wrong.
 
 ### Easy deployment
-Serverpod comes with Terraform scripts for AWS which makes it very quick to deploy your server. We are still working on scripts for Google Cloud and other platforms. Please get in touch with us if you want to [contribute](https://docs.serverpod.dev/contribute).
+Serverpod comes with Terraform scripts for GCP and AWS which makes it very quick to deploy your server. We are still working on scripts for other platforms. Please get in touch with us if you want to [contribute](https://docs.serverpod.dev/contribute).
 
 ### Built in web server
 Serverpod comes with a built-in web server. This makes it very easy to share data for applications that need both an app and traditional web pages. You can also use the web server to create webhooks or generate custom REST APIs to communicate with 3rd party services. _The web server is still experimental and we are actively working on it_.
