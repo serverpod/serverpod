@@ -133,6 +133,9 @@ class DatabaseConfig {
   /// Database name.
   late final String name;
 
+  /// True if the database requires an SSL connection.
+  late final bool requireSsl;
+
   /// True if the database is running on a unix socket.
   late final bool isUnixSocket;
 
@@ -141,6 +144,7 @@ class DatabaseConfig {
     port = dbSetup['port']!;
     name = dbSetup['name']!;
     user = dbSetup['user']!;
+    requireSsl = dbSetup['requireSsl'] ?? true;
     isUnixSocket = dbSetup['isUnixSocket'] ?? false;
     assert(passwords['database'] != null, 'Database password is missing');
     password = passwords['database']!;
@@ -153,6 +157,7 @@ class DatabaseConfig {
     str += 'database port: $port\n';
     str += 'database name: $name\n';
     str += 'database user: $user\n';
+    str += 'database require SSL: $requireSsl\n';
     str += 'database unix socket: $isUnixSocket\n';
     str += 'database pass: ********\n';
     return str;
