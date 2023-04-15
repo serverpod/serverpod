@@ -144,7 +144,7 @@ class DatabaseConfig {
     port = dbSetup['port']!;
     name = dbSetup['name']!;
     user = dbSetup['user']!;
-    requireSsl = dbSetup['requireSsl'] ?? true;
+    requireSsl = dbSetup['requireSsl'] ?? false;
     isUnixSocket = dbSetup['isUnixSocket'] ?? false;
     assert(passwords['database'] != null, 'Database password is missing');
     password = passwords['database']!;
