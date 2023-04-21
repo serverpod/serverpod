@@ -18,7 +18,7 @@ dependencies:
   firebase_ui_auth: ^1.1.14
   flutter:
     sdk: flutter
-  material_design_icons_flutter: ">=5.0.6996 <6.0.7096"
+  material_design_icons_flutter: ">=6.0.0 <7.0.0"
   serverpod_auth_client: #^VERSION
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^VERSION

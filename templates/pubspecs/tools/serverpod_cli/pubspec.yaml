@@ -11,28 +11,29 @@ environment:
 
 dependencies:
   archive: ^3.1.2
-  args: ^2.0.0
+  args: ^2.3.1
   ci: ^0.1.0
   code_builder: ^4.3.0
   colorize: ^3.0.0
   dart_style: ^2.2.4
-  http: ^0.13.3
+  http: ^0.13.5
   intl: ^0.17.0
   recase: ^4.0.0
   built_collection: ^5.1.1
+  pubspec_parse: ^1.2.2
   source_span: ^1.9.1
   super_string: ^1.0.3
   watcher: ^1.0.0
   analyzer: ^4.7.0
-  path: ^1.8.0
-  uuid: ^3.0.5
-  yaml: ^3.1.0
+  path: ^1.8.2
+  uuid: ^3.0.7
+  yaml: ^3.1.1
   serverpod_shared: #^VERSION
     path: ../../packages/serverpod_shared
   serverpod_service_client: #^VERSION
     path: ../../packages/serverpod_service_client
   async: ^2.11.0
-  meta: ^1.9.1
+  meta: ^1.8.0
 
 dev_dependencies:
   lints: ^2.0.0
