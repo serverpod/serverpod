@@ -18,7 +18,7 @@ dependencies:
   file_picker: ^5.2.3
   intl: ^0.18.1
   url_launcher: ^6.0.17
-  path: ^1.8.3
+  path: ^1.8.2
   serverpod_auth_client: #^VERSION
     path: ../../serverpod_auth/serverpod_auth_client
   serverpod_chat_client: #^VERSION

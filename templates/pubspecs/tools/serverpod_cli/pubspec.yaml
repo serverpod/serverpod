@@ -25,7 +25,7 @@ dependencies:
   super_string: ^1.0.3
   watcher: ^1.0.2
   analyzer: ^5.10.0
-  path: ^1.8.3
+  path: ^1.8.2
   pub_api_client: ^2.4.0
   uuid: ^3.0.7
   yaml: ^3.1.1
