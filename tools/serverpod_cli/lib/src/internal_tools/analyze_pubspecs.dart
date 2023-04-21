@@ -106,10 +106,6 @@ List<File> _findPubspecsFiles(List<String> ignorePaths) {
     }
   }
 
-  for (var file in pubspecFiles) {
-    print('path: ${file.path}');
-  }
-
   return pubspecFiles;
 }
 
