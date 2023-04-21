@@ -14,9 +14,9 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
-  firebase_auth: ^4.2.9
-  firebase_core: ^2.7.0
-  firebase_ui_auth: ^1.1.14
+  firebase_auth: ^4.4.2
+  firebase_core: ^2.10.0
+  firebase_ui_auth: ^1.2.2
   flutter:
     sdk: flutter
   material_design_icons_flutter: ">=6.0.0 <7.0.0"

@@ -16,9 +16,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^5.2.3
+  file_picker: ^5.2.10
   intl: ^0.18.1
-  url_launcher: ^6.0.17
+  url_launcher: ^6.1.10
   path: ^1.8.2
   serverpod_auth_client: #^1.1.0
     path: ../../serverpod_auth/serverpod_auth_client

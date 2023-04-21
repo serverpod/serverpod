@@ -19,16 +19,16 @@ dependencies:
     path: ../../../packages/serverpod_client
   serverpod_auth_client: #^VERSION
     path: ../serverpod_auth_client
-  shared_preferences: ^2.0.15
-  cached_network_image: ^3.2.2
+  shared_preferences: ^2.1.0
+  cached_network_image: ^3.2.3
   image: ^4.0.15
-  file_picker: ^5.2.3
+  file_picker: ^5.2.10
 
   # See https://pub.dev/packages/image_cropper for installation instructions.
-  image_cropper: ^3.0.1
+  image_cropper: ^3.0.2
 
   # See https://pub.dev/packages/image_picker for installation instructions.
-  image_picker: ^0.8.6
+  image_picker: ^0.8.7
 
 
 dev_dependencies:

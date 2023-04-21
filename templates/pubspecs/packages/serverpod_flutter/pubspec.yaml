@@ -13,7 +13,7 @@ environment:
   flutter: ">=3.3.0"
 
 dependencies:
-  connectivity_plus: ^2.3.7
+  connectivity_plus: ^3.0.4
   serverpod_client: #^VERSION
     path: ../serverpod_client
   flutter:

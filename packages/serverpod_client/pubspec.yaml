@@ -17,7 +17,7 @@ dependencies:
     path: ../serverpod_serialization
   http: ^0.13.5
   meta: ^1.8.0
-  web_socket_channel: ^2.2.0
+  web_socket_channel: ^2.4.0
 
 dev_dependencies:
   lints: ^2.0.0
