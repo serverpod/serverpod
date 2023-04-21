@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
-void performAnalyzePubspecs() {
+Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
   var dirTemplates = Directory('templates/pubspecs');
@@ -65,6 +66,44 @@ void performAnalyzePubspecs() {
   }
 
   print('Dependencies match.');
+
+  // Check versions.
+  if (checkLatestVersion) {
+    print('Checking latest pub versions.');
+    try {
+      var pub = PubClient();
+      for (var depName in dependencies.keys) {
+        var deps = dependencies[depName]!;
+        var depVersion = deps.first.version;
+        var latestPubVersion = _latestStableVersion(
+          await pub.packageVersions(depName),
+        );
+
+        if (depVersion != '^$latestPubVersion') {
+          print(depName);
+          print('  local: $depVersion');
+          print('  pub:   ^$latestPubVersion');
+          print('  found in:');
+          for (var dep in deps) {
+            print('   - ${dep.serverpodPackage}');
+          }
+        }
+      }
+      pub.close();
+    } catch (e) {
+      print('Version check failed.');
+      print(e);
+    }
+  }
+}
+
+String _latestStableVersion(List<String> packageVersions) {
+  for (var version in packageVersions) {
+    if (!version.contains('-') && !version.contains('+')) {
+      return version;
+    }
+  }
+  return packageVersions.first;
 }
 
 List<Pubspec> _getPubspecs() {

@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   freezed_annotation: ^2.2.0
-  json_annotation: ^4.7.0
+  json_annotation: ^4.8.0
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
 
