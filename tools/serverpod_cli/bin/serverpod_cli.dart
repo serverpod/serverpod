@@ -150,11 +150,17 @@ Future<void> _main(List<String> args) async {
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
-  generatePubspecs.addOption('mode',
-      defaultsTo: 'development', allowed: ['development', 'production']);
+  generatePubspecs.addOption(
+    'mode',
+    defaultsTo: 'development',
+    allowed: ['development', 'production'],
+  );
   parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
 
   var analyzePubspecs = ArgParser();
+  analyzePubspecs.addFlag(
+    'check-latest-version',
+  );
   parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
 
   ArgResults results;
@@ -265,7 +271,8 @@ Future<void> _main(List<String> args) async {
 
     // Analyze pubspecs command.
     if (results.command!.name == cmdAnalyzePubspecs) {
-      performAnalyzePubspecs();
+      bool checkLatestVersion = results.command!['check-latest-version'];
+      await performAnalyzePubspecs(checkLatestVersion);
       return;
     }
   }
