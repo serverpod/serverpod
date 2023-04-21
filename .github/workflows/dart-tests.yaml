@@ -58,7 +58,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.7.0"
-      - name: Run serverpod generate
+      - name: Run serverpod update pubspecs
         run: util/run_tests_update_pubspecs
 
   single_server_tests:
