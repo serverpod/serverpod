@@ -10,22 +10,23 @@ environment:
   sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
-  archive: ^3.1.2
-  args: ^2.3.1
+  archive: ^3.3.7
+  args: ^2.4.0
   ci: ^0.1.0
-  code_builder: ^4.3.0
+  code_builder: ^4.4.0
   colorize: ^3.0.0
-  dart_style: ^2.2.4
+  dart_style: ^2.3.0
   http: ^0.13.5
-  intl: ^0.17.0
-  recase: ^4.0.0
+  intl: ^0.18.1
+  recase: ^4.1.0
   built_collection: ^5.1.1
   pubspec_parse: ^1.2.2
-  source_span: ^1.9.1
+  source_span: ^1.10.0
   super_string: ^1.0.3
-  watcher: ^1.0.0
-  analyzer: ^4.7.0
-  path: ^1.8.2
+  watcher: ^1.0.2
+  analyzer: ^5.10.0
+  path: ^1.8.3
+  pub_api_client: ^2.4.0
   uuid: ^3.0.7
   yaml: ^3.1.1
   serverpod_shared: #^VERSION

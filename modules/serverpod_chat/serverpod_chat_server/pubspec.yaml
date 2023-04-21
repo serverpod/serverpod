@@ -19,7 +19,7 @@ dependencies:
     path: ../../../packages/serverpod_serialization/
   http: ^0.13.5
   image: ^4.0.15
-  path: ^1.8.2
+  path: ^1.8.3
 
 dev_dependencies:
   lints: ^2.0.0

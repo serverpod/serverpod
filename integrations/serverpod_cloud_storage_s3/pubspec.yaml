@@ -20,7 +20,7 @@ dependencies:
   http: ^0.13.5
   built_collection: ^5.1.1
   built_value: ^8.4.1
-  path: ^1.8.2
+  path: ^1.8.3
   xml2json: ^5.3.1
 
 dev_dependencies:
