@@ -14,8 +14,8 @@ environment:
 dependencies:
   serverpod_serialization: #^VERSION
     path: ../serverpod_serialization
-  http: ^0.13.0
-  meta: ^1.8.0
+  http: ^0.13.5
+  meta: ^1.9.1
   web_socket_channel: ^2.2.0
 
 dev_dependencies:

@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
+import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
@@ -21,6 +22,7 @@ const cmdCreate = 'create';
 const cmdGenerate = 'generate';
 // const cmdRun = 'run';
 const cmdGeneratePubspecs = 'generate-pubspecs';
+const cmdAnalyzePubspecs = 'analyze-pubspecs';
 const cmdVersion = 'version';
 
 final runModes = <String>['development', 'staging', 'production'];
@@ -152,6 +154,9 @@ Future<void> _main(List<String> args) async {
       defaultsTo: 'development', allowed: ['development', 'production']);
   parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
 
+  var analyzePubspecs = ArgParser();
+  parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
+
   ArgResults results;
   try {
     results = parser.parse(args);
@@ -255,6 +260,12 @@ Future<void> _main(List<String> args) async {
       performGeneratePubspecs(
           results.command!['version'], results.command!['mode']);
       _analytics.cleanUp();
+      return;
+    }
+
+    // Analyze pubspecs command.
+    if (results.command!.name == cmdAnalyzePubspecs) {
+      performAnalyzePubspecs();
       return;
     }
   }

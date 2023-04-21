@@ -18,7 +18,7 @@ dependencies:
   collection: ^1.15.0
   crypto: ^3.0.2
   http: ^0.13.5
-  meta: ^1.8.0
+  meta: ^1.9.1
   mustache_template: ^2.0.0
   path: ^1.8.2
   postgres: ^2.6.0
