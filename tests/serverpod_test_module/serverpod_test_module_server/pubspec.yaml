@@ -13,4 +13,4 @@ dependencies:
     path: ../../../packages/serverpod
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1
