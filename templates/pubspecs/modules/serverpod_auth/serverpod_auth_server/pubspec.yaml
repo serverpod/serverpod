@@ -24,4 +24,4 @@ dependencies:
   jose: ^0.3.3
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1

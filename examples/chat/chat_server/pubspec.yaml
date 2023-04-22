@@ -13,4 +13,4 @@ dependencies:
     path: ../../../modules/serverpod_chat/serverpod_chat_server
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1

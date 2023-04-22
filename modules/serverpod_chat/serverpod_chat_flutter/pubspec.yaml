@@ -16,7 +16,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^5.2.10
+  file_picker: ^5.2.11
   intl: ^0.18.1
   url_launcher: ^6.1.10
   path: ^1.8.2
@@ -31,6 +31,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
-  mocktail: ^0.2.0
+  mocktail: ^0.3.0
 
 flutter:

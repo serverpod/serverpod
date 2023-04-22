@@ -22,8 +22,26 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   var dependencies = <String, List<_ServerpodDependency>>{};
 
   for (var pubspec in pubspecs) {
+    // Dependencies
     for (var depName in pubspec.dependencies.keys) {
       var dep = pubspec.dependencies[depName]!;
+
+      if (dep is HostedDependency) {
+        var depList = dependencies[depName] ?? [];
+        depList.add(
+          _ServerpodDependency(
+            serverpodPackage: pubspec.name,
+            dependencyName: depName,
+            version: dep.version.toString(),
+          ),
+        );
+        dependencies[depName] = depList;
+      }
+    }
+
+    // Dev dependencies
+    for (var depName in pubspec.devDependencies.keys) {
+      var dep = pubspec.devDependencies[depName]!;
 
       if (dep is HostedDependency) {
         var depList = dependencies[depName] ?? [];
