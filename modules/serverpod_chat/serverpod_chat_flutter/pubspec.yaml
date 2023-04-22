@@ -16,7 +16,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^5.2.11
+  file_picker: ^5.2.10
   intl: ^0.18.1
   url_launcher: ^6.1.10
   path: ^1.8.2

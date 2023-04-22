@@ -22,7 +22,7 @@ dependencies:
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3
   image: ^4.0.15
-  file_picker: ^5.2.11
+  file_picker: ^5.2.10
 
   # See https://pub.dev/packages/image_cropper for installation instructions.
   image_cropper: ^3.0.2
