@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:source_span/source_span.dart';
+// ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
