@@ -111,7 +111,7 @@ class EndpointsAnalyzer {
         for (var element in topElements) {
           if (element is ClassElement) {
             var className = element.name;
-            var superclassName = element.supertype!.element2.name;
+            var superclassName = element.supertype!.element.name;
             var endpointName = _formatEndpointName(className);
 
             if (superclassName == 'Endpoint') {
@@ -232,7 +232,7 @@ class EndpointsAnalyzer {
     }
     var innerType = typeArguments[0];
 
-    if (innerType.isVoid) {
+    if (innerType is VoidType) {
       return;
     }
 

@@ -141,3 +141,8 @@ dart pub get
 echo "\nserverpod_cloud_storage_gcp"
 cd $BASE/integrations/serverpod_cloud_storage_gcp
 dart pub get
+
+# Tooling
+echo "\nserverpod_cli"
+cd $BASE/tools/serverpod_cli
+dart pub get

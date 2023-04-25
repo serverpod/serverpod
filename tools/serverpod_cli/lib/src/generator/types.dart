@@ -69,10 +69,10 @@ class TypeDefinition {
     var generics = (type is ParameterizedType)
         ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
         : <TypeDefinition>[];
-    var url = type.element2?.librarySource?.uri.toString();
+    var url = type.element?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
-    var className = !type.isVoid ? type.element2!.displayName : 'void';
+    var className = type is! VoidType ? type.element!.displayName : 'void';
 
     return TypeDefinition(
       className: className,
