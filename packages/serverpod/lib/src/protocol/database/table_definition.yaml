@@ -3,6 +3,10 @@ class: TableDefinition
 fields:
   ### The table name.
   name: String
+  ### The name of the serializable class in Dart.
+  dartName: String?
+  ### The name of the module this table belongs to, if available.
+  module: String?
   ### The schema this table is in.
   schema: String
   ### The tablespace this table is stored in.

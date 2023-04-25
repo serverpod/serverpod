@@ -10,6 +10,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
           classDefinition.tableName != null)
         TableDefinition(
           name: classDefinition.tableName!,
+          dartName: classDefinition.className,
           schema: 'public',
           columns: [
             for (var column in classDefinition.fields)

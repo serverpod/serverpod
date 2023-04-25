@@ -13,6 +13,8 @@ import '../protocol.dart' as _i2;
 class TableDefinition extends _i1.SerializableEntity {
   TableDefinition({
     required this.name,
+    this.dartName,
+    this.module,
     required this.schema,
     this.tableSpace,
     required this.columns,
@@ -27,6 +29,10 @@ class TableDefinition extends _i1.SerializableEntity {
   ) {
     return TableDefinition(
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      dartName: serializationManager
+          .deserialize<String?>(jsonSerialization['dartName']),
+      module: serializationManager
+          .deserialize<String?>(jsonSerialization['module']),
       schema:
           serializationManager.deserialize<String>(jsonSerialization['schema']),
       tableSpace: serializationManager
@@ -45,6 +51,12 @@ class TableDefinition extends _i1.SerializableEntity {
 
   /// The table name.
   String name;
+
+  /// The name of the serializable class in Dart.
+  String? dartName;
+
+  /// The name of the module this table belongs to, if available.
+  String? module;
 
   /// The schema this table is in.
   String schema;
@@ -70,6 +82,8 @@ class TableDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'dartName': dartName,
+      'module': module,
       'schema': schema,
       'tableSpace': tableSpace,
       'columns': columns,
@@ -83,6 +97,8 @@ class TableDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'name': name,
+      'dartName': dartName,
+      'module': module,
       'schema': schema,
       'tableSpace': tableSpace,
       'columns': columns,
