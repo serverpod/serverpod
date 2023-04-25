@@ -79,18 +79,22 @@ class LibraryGenerator {
             ..name = 'targetDatabaseDefinition'
             ..static = true
             ..modifier = FieldModifier.final$
-            ..assignment = createDatabaseDefinitionFromEntities(entities)
-                .toCode(serverCode: serverCode, additionalTables: [
-              for (var module in config.modules)
-                refer('Protocol.targetDatabaseDefinition.tables',
-                        module.dartImportUrl(serverCode))
-                    .spread,
-              if (config.name != 'serverpod' &&
-                  config.type == PackageType.server)
-                refer('Protocol.targetDatabaseDefinition.tables',
-                        serverpodProtocolUrl(serverCode))
-                    .spread,
-            ]),
+            ..assignment =
+                createDatabaseDefinitionFromEntities(entities).toCode(
+              config: config,
+              serverCode: serverCode,
+              additionalTables: [
+                for (var module in config.modules)
+                  refer('Protocol.targetDatabaseDefinition.tables',
+                          module.dartImportUrl(serverCode))
+                      .spread,
+                if (config.name != 'serverpod' &&
+                    config.type == PackageType.server)
+                  refer('Protocol.targetDatabaseDefinition.tables',
+                          serverpodProtocolUrl(serverCode))
+                      .spread,
+              ],
+            ),
         ),
     ]);
     protocol.methods.addAll([
@@ -675,6 +679,7 @@ extension on DatabaseDefinition {
   Code toCode({
     required List<Expression> additionalTables,
     required bool serverCode,
+    required GeneratorConfig config,
   }) {
     return refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
         .call([], {
@@ -683,7 +688,10 @@ extension on DatabaseDefinition {
         for (var table in tables)
           refer('TableDefinition', serverpodProtocolUrl(serverCode)).call([], {
             'name': literalString(table.name),
+            if (table.dartName != null)
+              'dartName': literalString(table.dartName!),
             'schema': literalString(table.schema),
+            'module': literalString(config.name),
             'columns': literalList([
               for (var column in table.columns)
                 refer('ColumnDefinition', serverpodProtocolUrl(serverCode))

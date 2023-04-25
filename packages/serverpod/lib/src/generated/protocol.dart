@@ -96,6 +96,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_auth_key',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -163,6 +164,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_cloud_storage',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -260,6 +262,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_cloud_storage_direct_upload',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -332,6 +335,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_future_call',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -431,6 +435,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_log',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -545,6 +550,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_message_log',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -646,6 +652,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_method',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -705,6 +712,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_query_log',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -819,6 +827,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_readwrite_test',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -856,6 +865,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_runtime_settings',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -911,6 +921,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_health_connection_info',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -999,6 +1010,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_health_metric',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -1091,6 +1103,7 @@ class Protocol extends _i1.SerializationManagerServer {
     _i2.TableDefinition(
       name: 'serverpod_session_log',
       schema: 'public',
+      module: 'serverpod',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
