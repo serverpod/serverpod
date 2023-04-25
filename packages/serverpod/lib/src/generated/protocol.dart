@@ -95,6 +95,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_auth_key',
+      dartName: 'AuthKey',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -163,6 +164,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_cloud_storage',
+      dartName: 'CloudStorageEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -261,6 +263,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_cloud_storage_direct_upload',
+      dartName: 'CloudStorageDirectUploadEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -334,6 +337,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_future_call',
+      dartName: 'FutureCallEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -434,6 +438,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_log',
+      dartName: 'LogEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -549,6 +554,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_message_log',
+      dartName: 'MessageLogEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -651,6 +657,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_method',
+      dartName: 'MethodInfo',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -711,6 +718,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_query_log',
+      dartName: 'QueryLogEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -826,6 +834,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_readwrite_test',
+      dartName: 'ReadWriteTestEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -864,6 +873,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_runtime_settings',
+      dartName: 'RuntimeSettings',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -920,6 +930,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_health_connection_info',
+      dartName: 'ServerHealthConnectionInfo',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -1009,6 +1020,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_health_metric',
+      dartName: 'ServerHealthMetric',
       schema: 'public',
       module: 'serverpod',
       columns: [
@@ -1102,6 +1114,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_session_log',
+      dartName: 'SessionLogEntry',
       schema: 'public',
       module: 'serverpod',
       columns: [
