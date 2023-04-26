@@ -74,6 +74,22 @@ void main() {
     expect(last!.num, equals(numEntries - 1));
   });
 
+  test('Fetch an object from cache and write it to cache if it is missing', () async {
+    var entry = SimpleData(num: 0);
+
+    var retrieved = await cache.fetch('entry', () async {
+      return entry;
+    });
+    expect(retrieved!.num, equals(0));
+    expect(cache.localSize, equals(1));
+
+    retrieved = await cache.fetch('entry', () async {
+      return SimpleData(num: 1);
+    });
+    expect(retrieved!.num, equals(0));
+    expect(cache.localSize, equals(1));
+  });
+
   test('Invalidate keys', () async {
     for (var i = 0; i < cacheMaxSize; i++) {
       var entry = SimpleData(num: i);

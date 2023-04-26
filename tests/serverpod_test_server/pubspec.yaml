@@ -25,6 +25,7 @@ dependencies:
 dev_dependencies:
   lints: ^2.0.1
   test: ^1.24.2
+  mocktail: ^0.3.0
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:

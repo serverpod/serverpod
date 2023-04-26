@@ -93,6 +93,20 @@ class LocalCache extends Cache {
   }
 
   @override
+  Future<T?> fetch<T extends SerializableEntity>(
+      String key, Future<T> Function() cacheMissHandler,
+      {Duration? lifetime, String? group}) async {
+    T? value = await get<T>(key);
+
+    if (value == null) {
+      value = await cacheMissHandler();
+      await put(key, value, lifetime: lifetime, group: group);
+    }
+
+    return value;
+  }
+
+  @override
   Future<void> invalidateKey(String key) async {
     // Remove from entries
     var entry = _entries.remove(key);

@@ -27,6 +27,13 @@ abstract class Cache {
   /// matching object can be found, null is returned.
   Future<T?> get<T extends SerializableEntity>(String key, [Type? t]);
 
+  /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
+  /// matching object can be found, the [cacheMissHandler] function is called to
+  /// write a new object to the cache before it is returned.
+  Future<T?> fetch<T extends SerializableEntity>(
+      String key, Future<T> Function() cacheMissHandler,
+      {Duration? lifetime, String? group});
+
   /// Removes a single object from the cache if it matches the [key].
   Future<void> invalidateKey(String key);
 
