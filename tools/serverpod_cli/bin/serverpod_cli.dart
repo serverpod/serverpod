@@ -211,7 +211,7 @@ Future<void> _main(List<String> args) async {
       var watch = results.command!['watch'];
 
       // TODO: add a -d option to select the directory
-      var config = GeneratorConfig.load();
+      var config = await GeneratorConfig.load();
       if (config == null) {
         return;
       }
