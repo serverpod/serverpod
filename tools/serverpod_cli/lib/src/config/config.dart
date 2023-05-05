@@ -180,7 +180,10 @@ class GeneratorConfig {
     }
 
     // Autodetect modules.
-    var automagicModules = await locateModules(Directory(dir));
+    var automagicModules = await locateModules(
+      directory: Directory(dir),
+      exludePackages: [serverPackage],
+    );
     for (var autoModule in automagicModules) {
       bool hasOverride = false;
       for (var module in modules) {

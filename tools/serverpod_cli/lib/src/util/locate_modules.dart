@@ -7,14 +7,21 @@ import 'package:yaml/yaml.dart';
 
 const _serverSuffix = '_server';
 
-Future<List<ModuleConfig>> locateModules(Directory dir) async {
+Future<List<ModuleConfig>> locateModules({
+  required Directory directory,
+  List<String> exludePackages = const [],
+}) async {
   var modules = <ModuleConfig>[];
 
-  var packageConfig = await findPackageConfig(dir);
+  var packageConfig = await findPackageConfig(directory);
   if (packageConfig != null) {
     for (var packageInfo in packageConfig.packages) {
       try {
         var packageName = packageInfo.name;
+        if (exludePackages.contains(packageName)) {
+          continue;
+        }
+
         if (!packageName.endsWith(_serverSuffix)) {
           continue;
         }
