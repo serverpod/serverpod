@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
@@ -99,7 +100,7 @@ class GeneratorConfig {
   final List<TypeDefinition> extraClasses;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static GeneratorConfig? load([String dir = '']) {
+  static Future<GeneratorConfig?> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
     Map? pubspec;
@@ -178,6 +179,25 @@ class GeneratorConfig {
       throw const FormatException('Failed to load module config');
     }
 
+    // Autodetect modules.
+    var automagicModules = await locateModules(
+      directory: Directory(dir),
+      exludePackages: [serverPackage],
+    );
+    for (var autoModule in automagicModules) {
+      bool hasOverride = false;
+      for (var module in modules) {
+        if (module.name == autoModule.name) {
+          hasOverride = true;
+          break;
+        }
+      }
+
+      if (!hasOverride) {
+        modules.add(autoModule);
+      }
+    }
+
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
     if (generatorConfig['extraClasses'] != null) {
@@ -244,10 +264,17 @@ class ModuleConfig {
   /// The name of the server package.
   String serverPackage;
 
-  ModuleConfig._withMap(this.name, Map map)
-      : dartClientPackage = '${name}_client',
-        serverPackage = '${name}_server',
-        nickname = map['nickname']!;
+  ModuleConfig._withMap(String name, Map map)
+      : this(
+          name: name,
+          nickname: map['nickname']!,
+        );
+
+  ModuleConfig({
+    required this.name,
+    required this.nickname,
+  })  : dartClientPackage = '${name}_client',
+        serverPackage = '${name}_server';
 
   /// The url when importing this module in dart code.
   String dartImportUrl(bool serverCode) =>

@@ -20,6 +20,7 @@ dependencies:
   intl: ^0.18.1
   recase: ^4.1.0
   built_collection: ^5.1.1
+  package_config: ^2.1.0
   pubspec_parse: ^1.2.2
   source_span: ^1.10.0
   super_string: ^1.0.3
