@@ -19,33 +19,35 @@ import 'cluster_server_info.dart' as _i9;
 import 'database/column_definition.dart' as _i10;
 import 'database/column_type.dart' as _i11;
 import 'database/database_definition.dart' as _i12;
-import 'database/foreign_key_action.dart' as _i13;
-import 'database/foreign_key_definition.dart' as _i14;
-import 'database/foreign_key_match_type.dart' as _i15;
-import 'database/index_definition.dart' as _i16;
-import 'database/index_element_definition.dart' as _i17;
-import 'database/index_element_definition_type.dart' as _i18;
-import 'database/table_definition.dart' as _i19;
-import 'distributed_cache_entry.dart' as _i20;
-import 'future_call_entry.dart' as _i21;
-import 'log_entry.dart' as _i22;
-import 'log_level.dart' as _i23;
-import 'log_result.dart' as _i24;
-import 'log_settings.dart' as _i25;
-import 'log_settings_override.dart' as _i26;
-import 'message_log_entry.dart' as _i27;
-import 'method_info.dart' as _i28;
-import 'query_log_entry.dart' as _i29;
-import 'readwrite_test.dart' as _i30;
-import 'runtime_settings.dart' as _i31;
-import 'server_health_connection_info.dart' as _i32;
-import 'server_health_metric.dart' as _i33;
-import 'server_health_result.dart' as _i34;
-import 'session_log_entry.dart' as _i35;
-import 'session_log_filter.dart' as _i36;
-import 'session_log_info.dart' as _i37;
-import 'session_log_result.dart' as _i38;
-import 'protocol.dart' as _i39;
+import 'database/database_diff.dart' as _i13;
+import 'database/foreign_key_action.dart' as _i14;
+import 'database/foreign_key_definition.dart' as _i15;
+import 'database/foreign_key_match_type.dart' as _i16;
+import 'database/index_definition.dart' as _i17;
+import 'database/index_element_definition.dart' as _i18;
+import 'database/index_element_definition_type.dart' as _i19;
+import 'database/table_definition.dart' as _i20;
+import 'database/table_diff.dart' as _i21;
+import 'distributed_cache_entry.dart' as _i22;
+import 'future_call_entry.dart' as _i23;
+import 'log_entry.dart' as _i24;
+import 'log_level.dart' as _i25;
+import 'log_result.dart' as _i26;
+import 'log_settings.dart' as _i27;
+import 'log_settings_override.dart' as _i28;
+import 'message_log_entry.dart' as _i29;
+import 'method_info.dart' as _i30;
+import 'query_log_entry.dart' as _i31;
+import 'readwrite_test.dart' as _i32;
+import 'runtime_settings.dart' as _i33;
+import 'server_health_connection_info.dart' as _i34;
+import 'server_health_metric.dart' as _i35;
+import 'server_health_result.dart' as _i36;
+import 'session_log_entry.dart' as _i37;
+import 'session_log_filter.dart' as _i38;
+import 'session_log_info.dart' as _i39;
+import 'session_log_result.dart' as _i40;
+import 'protocol.dart' as _i41;
 export 'auth_key.dart';
 export 'cache_info.dart';
 export 'caches_info.dart';
@@ -56,6 +58,7 @@ export 'cluster_server_info.dart';
 export 'database/column_definition.dart';
 export 'database/column_type.dart';
 export 'database/database_definition.dart';
+export 'database/database_diff.dart';
 export 'database/foreign_key_action.dart';
 export 'database/foreign_key_definition.dart';
 export 'database/foreign_key_match_type.dart';
@@ -63,6 +66,7 @@ export 'database/index_definition.dart';
 export 'database/index_element_definition.dart';
 export 'database/index_element_definition_type.dart';
 export 'database/table_definition.dart';
+export 'database/table_diff.dart';
 export 'distributed_cache_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
@@ -1302,83 +1306,89 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i12.DatabaseDefinition) {
       return _i12.DatabaseDefinition.fromJson(data, this) as T;
     }
-    if (t == _i13.ForeignKeyAction) {
-      return _i13.ForeignKeyAction.fromJson(data) as T;
+    if (t == _i13.DatabaseDiff) {
+      return _i13.DatabaseDiff.fromJson(data, this) as T;
     }
-    if (t == _i14.ForeignKeyDefinition) {
-      return _i14.ForeignKeyDefinition.fromJson(data, this) as T;
+    if (t == _i14.ForeignKeyAction) {
+      return _i14.ForeignKeyAction.fromJson(data) as T;
     }
-    if (t == _i15.ForeignKeyMatchType) {
-      return _i15.ForeignKeyMatchType.fromJson(data) as T;
+    if (t == _i15.ForeignKeyDefinition) {
+      return _i15.ForeignKeyDefinition.fromJson(data, this) as T;
     }
-    if (t == _i16.IndexDefinition) {
-      return _i16.IndexDefinition.fromJson(data, this) as T;
+    if (t == _i16.ForeignKeyMatchType) {
+      return _i16.ForeignKeyMatchType.fromJson(data) as T;
     }
-    if (t == _i17.IndexElementDefinition) {
-      return _i17.IndexElementDefinition.fromJson(data, this) as T;
+    if (t == _i17.IndexDefinition) {
+      return _i17.IndexDefinition.fromJson(data, this) as T;
     }
-    if (t == _i18.IndexElementDefinitionType) {
-      return _i18.IndexElementDefinitionType.fromJson(data) as T;
+    if (t == _i18.IndexElementDefinition) {
+      return _i18.IndexElementDefinition.fromJson(data, this) as T;
     }
-    if (t == _i19.TableDefinition) {
-      return _i19.TableDefinition.fromJson(data, this) as T;
+    if (t == _i19.IndexElementDefinitionType) {
+      return _i19.IndexElementDefinitionType.fromJson(data) as T;
     }
-    if (t == _i20.DistributedCacheEntry) {
-      return _i20.DistributedCacheEntry.fromJson(data, this) as T;
+    if (t == _i20.TableDefinition) {
+      return _i20.TableDefinition.fromJson(data, this) as T;
     }
-    if (t == _i21.FutureCallEntry) {
-      return _i21.FutureCallEntry.fromJson(data, this) as T;
+    if (t == _i21.TableDiff) {
+      return _i21.TableDiff.fromJson(data, this) as T;
     }
-    if (t == _i22.LogEntry) {
-      return _i22.LogEntry.fromJson(data, this) as T;
+    if (t == _i22.DistributedCacheEntry) {
+      return _i22.DistributedCacheEntry.fromJson(data, this) as T;
     }
-    if (t == _i23.LogLevel) {
-      return _i23.LogLevel.fromJson(data) as T;
+    if (t == _i23.FutureCallEntry) {
+      return _i23.FutureCallEntry.fromJson(data, this) as T;
     }
-    if (t == _i24.LogResult) {
-      return _i24.LogResult.fromJson(data, this) as T;
+    if (t == _i24.LogEntry) {
+      return _i24.LogEntry.fromJson(data, this) as T;
     }
-    if (t == _i25.LogSettings) {
-      return _i25.LogSettings.fromJson(data, this) as T;
+    if (t == _i25.LogLevel) {
+      return _i25.LogLevel.fromJson(data) as T;
     }
-    if (t == _i26.LogSettingsOverride) {
-      return _i26.LogSettingsOverride.fromJson(data, this) as T;
+    if (t == _i26.LogResult) {
+      return _i26.LogResult.fromJson(data, this) as T;
     }
-    if (t == _i27.MessageLogEntry) {
-      return _i27.MessageLogEntry.fromJson(data, this) as T;
+    if (t == _i27.LogSettings) {
+      return _i27.LogSettings.fromJson(data, this) as T;
     }
-    if (t == _i28.MethodInfo) {
-      return _i28.MethodInfo.fromJson(data, this) as T;
+    if (t == _i28.LogSettingsOverride) {
+      return _i28.LogSettingsOverride.fromJson(data, this) as T;
     }
-    if (t == _i29.QueryLogEntry) {
-      return _i29.QueryLogEntry.fromJson(data, this) as T;
+    if (t == _i29.MessageLogEntry) {
+      return _i29.MessageLogEntry.fromJson(data, this) as T;
     }
-    if (t == _i30.ReadWriteTestEntry) {
-      return _i30.ReadWriteTestEntry.fromJson(data, this) as T;
+    if (t == _i30.MethodInfo) {
+      return _i30.MethodInfo.fromJson(data, this) as T;
     }
-    if (t == _i31.RuntimeSettings) {
-      return _i31.RuntimeSettings.fromJson(data, this) as T;
+    if (t == _i31.QueryLogEntry) {
+      return _i31.QueryLogEntry.fromJson(data, this) as T;
     }
-    if (t == _i32.ServerHealthConnectionInfo) {
-      return _i32.ServerHealthConnectionInfo.fromJson(data, this) as T;
+    if (t == _i32.ReadWriteTestEntry) {
+      return _i32.ReadWriteTestEntry.fromJson(data, this) as T;
     }
-    if (t == _i33.ServerHealthMetric) {
-      return _i33.ServerHealthMetric.fromJson(data, this) as T;
+    if (t == _i33.RuntimeSettings) {
+      return _i33.RuntimeSettings.fromJson(data, this) as T;
     }
-    if (t == _i34.ServerHealthResult) {
-      return _i34.ServerHealthResult.fromJson(data, this) as T;
+    if (t == _i34.ServerHealthConnectionInfo) {
+      return _i34.ServerHealthConnectionInfo.fromJson(data, this) as T;
     }
-    if (t == _i35.SessionLogEntry) {
-      return _i35.SessionLogEntry.fromJson(data, this) as T;
+    if (t == _i35.ServerHealthMetric) {
+      return _i35.ServerHealthMetric.fromJson(data, this) as T;
     }
-    if (t == _i36.SessionLogFilter) {
-      return _i36.SessionLogFilter.fromJson(data, this) as T;
+    if (t == _i36.ServerHealthResult) {
+      return _i36.ServerHealthResult.fromJson(data, this) as T;
     }
-    if (t == _i37.SessionLogInfo) {
-      return _i37.SessionLogInfo.fromJson(data, this) as T;
+    if (t == _i37.SessionLogEntry) {
+      return _i37.SessionLogEntry.fromJson(data, this) as T;
     }
-    if (t == _i38.SessionLogResult) {
-      return _i38.SessionLogResult.fromJson(data, this) as T;
+    if (t == _i38.SessionLogFilter) {
+      return _i38.SessionLogFilter.fromJson(data, this) as T;
+    }
+    if (t == _i39.SessionLogInfo) {
+      return _i39.SessionLogInfo.fromJson(data, this) as T;
+    }
+    if (t == _i40.SessionLogResult) {
+      return _i40.SessionLogResult.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i3.AuthKey?>()) {
       return (data != null ? _i3.AuthKey.fromJson(data, this) : null) as T;
@@ -1417,111 +1427,118 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i12.DatabaseDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i13.ForeignKeyAction?>()) {
-      return (data != null ? _i13.ForeignKeyAction.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.DatabaseDiff?>()) {
+      return (data != null ? _i13.DatabaseDiff.fromJson(data, this) : null)
+          as T;
     }
-    if (t == _i1.getType<_i14.ForeignKeyDefinition?>()) {
+    if (t == _i1.getType<_i14.ForeignKeyAction?>()) {
+      return (data != null ? _i14.ForeignKeyAction.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.ForeignKeyDefinition?>()) {
       return (data != null
-          ? _i14.ForeignKeyDefinition.fromJson(data, this)
+          ? _i15.ForeignKeyDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i15.ForeignKeyMatchType?>()) {
-      return (data != null ? _i15.ForeignKeyMatchType.fromJson(data) : null)
+    if (t == _i1.getType<_i16.ForeignKeyMatchType?>()) {
+      return (data != null ? _i16.ForeignKeyMatchType.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.IndexDefinition?>()) {
-      return (data != null ? _i16.IndexDefinition.fromJson(data, this) : null)
+    if (t == _i1.getType<_i17.IndexDefinition?>()) {
+      return (data != null ? _i17.IndexDefinition.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.IndexElementDefinition?>()) {
+    if (t == _i1.getType<_i18.IndexElementDefinition?>()) {
       return (data != null
-          ? _i17.IndexElementDefinition.fromJson(data, this)
+          ? _i18.IndexElementDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i18.IndexElementDefinitionType?>()) {
+    if (t == _i1.getType<_i19.IndexElementDefinitionType?>()) {
       return (data != null
-          ? _i18.IndexElementDefinitionType.fromJson(data)
+          ? _i19.IndexElementDefinitionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i19.TableDefinition?>()) {
-      return (data != null ? _i19.TableDefinition.fromJson(data, this) : null)
+    if (t == _i1.getType<_i20.TableDefinition?>()) {
+      return (data != null ? _i20.TableDefinition.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i20.DistributedCacheEntry?>()) {
+    if (t == _i1.getType<_i21.TableDiff?>()) {
+      return (data != null ? _i21.TableDiff.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i22.DistributedCacheEntry?>()) {
       return (data != null
-          ? _i20.DistributedCacheEntry.fromJson(data, this)
+          ? _i22.DistributedCacheEntry.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i21.FutureCallEntry?>()) {
-      return (data != null ? _i21.FutureCallEntry.fromJson(data, this) : null)
+    if (t == _i1.getType<_i23.FutureCallEntry?>()) {
+      return (data != null ? _i23.FutureCallEntry.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i22.LogEntry?>()) {
-      return (data != null ? _i22.LogEntry.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i24.LogEntry?>()) {
+      return (data != null ? _i24.LogEntry.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i23.LogLevel?>()) {
-      return (data != null ? _i23.LogLevel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i25.LogLevel?>()) {
+      return (data != null ? _i25.LogLevel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.LogResult?>()) {
-      return (data != null ? _i24.LogResult.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i26.LogResult?>()) {
+      return (data != null ? _i26.LogResult.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i25.LogSettings?>()) {
-      return (data != null ? _i25.LogSettings.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i27.LogSettings?>()) {
+      return (data != null ? _i27.LogSettings.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i26.LogSettingsOverride?>()) {
+    if (t == _i1.getType<_i28.LogSettingsOverride?>()) {
       return (data != null
-          ? _i26.LogSettingsOverride.fromJson(data, this)
+          ? _i28.LogSettingsOverride.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i27.MessageLogEntry?>()) {
-      return (data != null ? _i27.MessageLogEntry.fromJson(data, this) : null)
+    if (t == _i1.getType<_i29.MessageLogEntry?>()) {
+      return (data != null ? _i29.MessageLogEntry.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i28.MethodInfo?>()) {
-      return (data != null ? _i28.MethodInfo.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i30.MethodInfo?>()) {
+      return (data != null ? _i30.MethodInfo.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i29.QueryLogEntry?>()) {
-      return (data != null ? _i29.QueryLogEntry.fromJson(data, this) : null)
+    if (t == _i1.getType<_i31.QueryLogEntry?>()) {
+      return (data != null ? _i31.QueryLogEntry.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i30.ReadWriteTestEntry?>()) {
+    if (t == _i1.getType<_i32.ReadWriteTestEntry?>()) {
       return (data != null
-          ? _i30.ReadWriteTestEntry.fromJson(data, this)
+          ? _i32.ReadWriteTestEntry.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i31.RuntimeSettings?>()) {
-      return (data != null ? _i31.RuntimeSettings.fromJson(data, this) : null)
+    if (t == _i1.getType<_i33.RuntimeSettings?>()) {
+      return (data != null ? _i33.RuntimeSettings.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i32.ServerHealthConnectionInfo?>()) {
+    if (t == _i1.getType<_i34.ServerHealthConnectionInfo?>()) {
       return (data != null
-          ? _i32.ServerHealthConnectionInfo.fromJson(data, this)
+          ? _i34.ServerHealthConnectionInfo.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i33.ServerHealthMetric?>()) {
+    if (t == _i1.getType<_i35.ServerHealthMetric?>()) {
       return (data != null
-          ? _i33.ServerHealthMetric.fromJson(data, this)
+          ? _i35.ServerHealthMetric.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i34.ServerHealthResult?>()) {
+    if (t == _i1.getType<_i36.ServerHealthResult?>()) {
       return (data != null
-          ? _i34.ServerHealthResult.fromJson(data, this)
+          ? _i36.ServerHealthResult.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i35.SessionLogEntry?>()) {
-      return (data != null ? _i35.SessionLogEntry.fromJson(data, this) : null)
+    if (t == _i1.getType<_i37.SessionLogEntry?>()) {
+      return (data != null ? _i37.SessionLogEntry.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i36.SessionLogFilter?>()) {
-      return (data != null ? _i36.SessionLogFilter.fromJson(data, this) : null)
+    if (t == _i1.getType<_i38.SessionLogFilter?>()) {
+      return (data != null ? _i38.SessionLogFilter.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i37.SessionLogInfo?>()) {
-      return (data != null ? _i37.SessionLogInfo.fromJson(data, this) : null)
+    if (t == _i1.getType<_i39.SessionLogInfo?>()) {
+      return (data != null ? _i39.SessionLogInfo.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i38.SessionLogResult?>()) {
-      return (data != null ? _i38.SessionLogResult.fromJson(data, this) : null)
+    if (t == _i1.getType<_i40.SessionLogResult?>()) {
+      return (data != null ? _i40.SessionLogResult.fromJson(data, this) : null)
           as T;
     }
     if (t == List<String>) {
@@ -1533,68 +1550,72 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i39.ClusterServerInfo>) {
+    if (t == List<_i41.ClusterServerInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ClusterServerInfo>(e))
+          .map((e) => deserialize<_i41.ClusterServerInfo>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.TableDefinition>) {
+    if (t == List<_i41.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.TableDefinition>(e))
+          .map((e) => deserialize<_i41.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.IndexElementDefinition>) {
-      return (data as List)
-          .map((e) => deserialize<_i39.IndexElementDefinition>(e))
-          .toList() as dynamic;
-    }
-    if (t == List<_i39.ColumnDefinition>) {
-      return (data as List)
-          .map((e) => deserialize<_i39.ColumnDefinition>(e))
-          .toList() as dynamic;
-    }
-    if (t == List<_i39.ForeignKeyDefinition>) {
-      return (data as List)
-          .map((e) => deserialize<_i39.ForeignKeyDefinition>(e))
-          .toList() as dynamic;
-    }
-    if (t == List<_i39.IndexDefinition>) {
-      return (data as List)
-          .map((e) => deserialize<_i39.IndexDefinition>(e))
-          .toList() as dynamic;
-    }
-    if (t == List<_i39.LogEntry>) {
-      return (data as List).map((e) => deserialize<_i39.LogEntry>(e)).toList()
+    if (t == List<_i41.TableDiff>) {
+      return (data as List).map((e) => deserialize<_i41.TableDiff>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i39.LogSettingsOverride>) {
+    if (t == List<_i41.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.LogSettingsOverride>(e))
+          .map((e) => deserialize<_i41.IndexElementDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.ServerHealthMetric>) {
+    if (t == List<_i41.ColumnDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ServerHealthMetric>(e))
+          .map((e) => deserialize<_i41.ColumnDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.ServerHealthConnectionInfo>) {
+    if (t == List<_i41.ForeignKeyDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ServerHealthConnectionInfo>(e))
+          .map((e) => deserialize<_i41.ForeignKeyDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.QueryLogEntry>) {
+    if (t == List<_i41.IndexDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.QueryLogEntry>(e))
+          .map((e) => deserialize<_i41.IndexDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.MessageLogEntry>) {
+    if (t == List<_i41.LogEntry>) {
+      return (data as List).map((e) => deserialize<_i41.LogEntry>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i41.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserialize<_i39.MessageLogEntry>(e))
+          .map((e) => deserialize<_i41.LogSettingsOverride>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.SessionLogInfo>) {
+    if (t == List<_i41.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserialize<_i39.SessionLogInfo>(e))
+          .map((e) => deserialize<_i41.ServerHealthMetric>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i41.ServerHealthConnectionInfo>) {
+      return (data as List)
+          .map((e) => deserialize<_i41.ServerHealthConnectionInfo>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i41.QueryLogEntry>) {
+      return (data as List)
+          .map((e) => deserialize<_i41.QueryLogEntry>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i41.MessageLogEntry>) {
+      return (data as List)
+          .map((e) => deserialize<_i41.MessageLogEntry>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i41.SessionLogInfo>) {
+      return (data as List)
+          .map((e) => deserialize<_i41.SessionLogInfo>(e))
           .toList() as dynamic;
     }
     return super.deserialize<T>(data, t);
@@ -1632,82 +1653,88 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i12.DatabaseDefinition) {
       return 'DatabaseDefinition';
     }
-    if (data is _i13.ForeignKeyAction) {
+    if (data is _i13.DatabaseDiff) {
+      return 'DatabaseDiff';
+    }
+    if (data is _i14.ForeignKeyAction) {
       return 'ForeignKeyAction';
     }
-    if (data is _i14.ForeignKeyDefinition) {
+    if (data is _i15.ForeignKeyDefinition) {
       return 'ForeignKeyDefinition';
     }
-    if (data is _i15.ForeignKeyMatchType) {
+    if (data is _i16.ForeignKeyMatchType) {
       return 'ForeignKeyMatchType';
     }
-    if (data is _i16.IndexDefinition) {
+    if (data is _i17.IndexDefinition) {
       return 'IndexDefinition';
     }
-    if (data is _i17.IndexElementDefinition) {
+    if (data is _i18.IndexElementDefinition) {
       return 'IndexElementDefinition';
     }
-    if (data is _i18.IndexElementDefinitionType) {
+    if (data is _i19.IndexElementDefinitionType) {
       return 'IndexElementDefinitionType';
     }
-    if (data is _i19.TableDefinition) {
+    if (data is _i20.TableDefinition) {
       return 'TableDefinition';
     }
-    if (data is _i20.DistributedCacheEntry) {
+    if (data is _i21.TableDiff) {
+      return 'TableDiff';
+    }
+    if (data is _i22.DistributedCacheEntry) {
       return 'DistributedCacheEntry';
     }
-    if (data is _i21.FutureCallEntry) {
+    if (data is _i23.FutureCallEntry) {
       return 'FutureCallEntry';
     }
-    if (data is _i22.LogEntry) {
+    if (data is _i24.LogEntry) {
       return 'LogEntry';
     }
-    if (data is _i23.LogLevel) {
+    if (data is _i25.LogLevel) {
       return 'LogLevel';
     }
-    if (data is _i24.LogResult) {
+    if (data is _i26.LogResult) {
       return 'LogResult';
     }
-    if (data is _i25.LogSettings) {
+    if (data is _i27.LogSettings) {
       return 'LogSettings';
     }
-    if (data is _i26.LogSettingsOverride) {
+    if (data is _i28.LogSettingsOverride) {
       return 'LogSettingsOverride';
     }
-    if (data is _i27.MessageLogEntry) {
+    if (data is _i29.MessageLogEntry) {
       return 'MessageLogEntry';
     }
-    if (data is _i28.MethodInfo) {
+    if (data is _i30.MethodInfo) {
       return 'MethodInfo';
     }
-    if (data is _i29.QueryLogEntry) {
+    if (data is _i31.QueryLogEntry) {
       return 'QueryLogEntry';
     }
-    if (data is _i30.ReadWriteTestEntry) {
+    if (data is _i32.ReadWriteTestEntry) {
       return 'ReadWriteTestEntry';
     }
-    if (data is _i31.RuntimeSettings) {
+    if (data is _i33.RuntimeSettings) {
       return 'RuntimeSettings';
     }
-    if (data is _i32.ServerHealthConnectionInfo) {
+    if (data is _i34.ServerHealthConnectionInfo) {
       return 'ServerHealthConnectionInfo';
     }
-    if (data is _i33.ServerHealthMetric) {
+    if (data is _i35.ServerHealthMetric) {
       return 'ServerHealthMetric';
     }
-    if (data is _i34.ServerHealthResult) {
+    if (data is _i36.ServerHealthResult) {
       return 'ServerHealthResult';
     }
-    if (data is _i35.SessionLogEntry) {
+    if (data is _i37.SessionLogEntry) {
       return 'SessionLogEntry';
     }
-    if (data is _i36.SessionLogFilter) {
+    if (data is _i38.SessionLogFilter) {
       return 'SessionLogFilter';
     }
-    if (data is _i37.SessionLogInfo) {
+    if (data is _i39.SessionLogInfo) {
       return 'SessionLogInfo';
     }
-    if (data is _i38.SessionLogResult) {
+    if (data is _i40.SessionLogResult) {
       return 'SessionLogResult';
     }
     return super.getClassNameForObject(data);
@@ -1745,83 +1772,89 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'DatabaseDefinition') {
       return deserialize<_i12.DatabaseDefinition>(data['data']);
     }
+    if (data['className'] == 'DatabaseDiff') {
+      return deserialize<_i13.DatabaseDiff>(data['data']);
+    }
     if (data['className'] == 'ForeignKeyAction') {
-      return deserialize<_i13.ForeignKeyAction>(data['data']);
+      return deserialize<_i14.ForeignKeyAction>(data['data']);
     }
     if (data['className'] == 'ForeignKeyDefinition') {
-      return deserialize<_i14.ForeignKeyDefinition>(data['data']);
+      return deserialize<_i15.ForeignKeyDefinition>(data['data']);
     }
     if (data['className'] == 'ForeignKeyMatchType') {
-      return deserialize<_i15.ForeignKeyMatchType>(data['data']);
+      return deserialize<_i16.ForeignKeyMatchType>(data['data']);
     }
     if (data['className'] == 'IndexDefinition') {
-      return deserialize<_i16.IndexDefinition>(data['data']);
+      return deserialize<_i17.IndexDefinition>(data['data']);
     }
     if (data['className'] == 'IndexElementDefinition') {
-      return deserialize<_i17.IndexElementDefinition>(data['data']);
+      return deserialize<_i18.IndexElementDefinition>(data['data']);
     }
     if (data['className'] == 'IndexElementDefinitionType') {
-      return deserialize<_i18.IndexElementDefinitionType>(data['data']);
+      return deserialize<_i19.IndexElementDefinitionType>(data['data']);
     }
     if (data['className'] == 'TableDefinition') {
-      return deserialize<_i19.TableDefinition>(data['data']);
+      return deserialize<_i20.TableDefinition>(data['data']);
+    }
+    if (data['className'] == 'TableDiff') {
+      return deserialize<_i21.TableDiff>(data['data']);
     }
     if (data['className'] == 'DistributedCacheEntry') {
-      return deserialize<_i20.DistributedCacheEntry>(data['data']);
+      return deserialize<_i22.DistributedCacheEntry>(data['data']);
     }
     if (data['className'] == 'FutureCallEntry') {
-      return deserialize<_i21.FutureCallEntry>(data['data']);
+      return deserialize<_i23.FutureCallEntry>(data['data']);
     }
     if (data['className'] == 'LogEntry') {
-      return deserialize<_i22.LogEntry>(data['data']);
+      return deserialize<_i24.LogEntry>(data['data']);
     }
     if (data['className'] == 'LogLevel') {
-      return deserialize<_i23.LogLevel>(data['data']);
+      return deserialize<_i25.LogLevel>(data['data']);
     }
     if (data['className'] == 'LogResult') {
-      return deserialize<_i24.LogResult>(data['data']);
+      return deserialize<_i26.LogResult>(data['data']);
     }
     if (data['className'] == 'LogSettings') {
-      return deserialize<_i25.LogSettings>(data['data']);
+      return deserialize<_i27.LogSettings>(data['data']);
     }
     if (data['className'] == 'LogSettingsOverride') {
-      return deserialize<_i26.LogSettingsOverride>(data['data']);
+      return deserialize<_i28.LogSettingsOverride>(data['data']);
     }
     if (data['className'] == 'MessageLogEntry') {
-      return deserialize<_i27.MessageLogEntry>(data['data']);
+      return deserialize<_i29.MessageLogEntry>(data['data']);
     }
     if (data['className'] == 'MethodInfo') {
-      return deserialize<_i28.MethodInfo>(data['data']);
+      return deserialize<_i30.MethodInfo>(data['data']);
     }
     if (data['className'] == 'QueryLogEntry') {
-      return deserialize<_i29.QueryLogEntry>(data['data']);
+      return deserialize<_i31.QueryLogEntry>(data['data']);
     }
     if (data['className'] == 'ReadWriteTestEntry') {
-      return deserialize<_i30.ReadWriteTestEntry>(data['data']);
+      return deserialize<_i32.ReadWriteTestEntry>(data['data']);
     }
     if (data['className'] == 'RuntimeSettings') {
-      return deserialize<_i31.RuntimeSettings>(data['data']);
+      return deserialize<_i33.RuntimeSettings>(data['data']);
     }
     if (data['className'] == 'ServerHealthConnectionInfo') {
-      return deserialize<_i32.ServerHealthConnectionInfo>(data['data']);
+      return deserialize<_i34.ServerHealthConnectionInfo>(data['data']);
     }
     if (data['className'] == 'ServerHealthMetric') {
-      return deserialize<_i33.ServerHealthMetric>(data['data']);
+      return deserialize<_i35.ServerHealthMetric>(data['data']);
     }
     if (data['className'] == 'ServerHealthResult') {
-      return deserialize<_i34.ServerHealthResult>(data['data']);
+      return deserialize<_i36.ServerHealthResult>(data['data']);
     }
     if (data['className'] == 'SessionLogEntry') {
-      return deserialize<_i35.SessionLogEntry>(data['data']);
+      return deserialize<_i37.SessionLogEntry>(data['data']);
     }
     if (data['className'] == 'SessionLogFilter') {
-      return deserialize<_i36.SessionLogFilter>(data['data']);
+      return deserialize<_i38.SessionLogFilter>(data['data']);
     }
     if (data['className'] == 'SessionLogInfo') {
-      return deserialize<_i37.SessionLogInfo>(data['data']);
+      return deserialize<_i39.SessionLogInfo>(data['data']);
     }
     if (data['className'] == 'SessionLogResult') {
-      return deserialize<_i38.SessionLogResult>(data['data']);
+      return deserialize<_i40.SessionLogResult>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -1835,26 +1868,26 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.CloudStorageEntry.t;
       case _i7.CloudStorageDirectUploadEntry:
         return _i7.CloudStorageDirectUploadEntry.t;
-      case _i21.FutureCallEntry:
-        return _i21.FutureCallEntry.t;
-      case _i22.LogEntry:
-        return _i22.LogEntry.t;
-      case _i27.MessageLogEntry:
-        return _i27.MessageLogEntry.t;
-      case _i28.MethodInfo:
-        return _i28.MethodInfo.t;
-      case _i29.QueryLogEntry:
-        return _i29.QueryLogEntry.t;
-      case _i30.ReadWriteTestEntry:
-        return _i30.ReadWriteTestEntry.t;
-      case _i31.RuntimeSettings:
-        return _i31.RuntimeSettings.t;
-      case _i32.ServerHealthConnectionInfo:
-        return _i32.ServerHealthConnectionInfo.t;
-      case _i33.ServerHealthMetric:
-        return _i33.ServerHealthMetric.t;
-      case _i35.SessionLogEntry:
-        return _i35.SessionLogEntry.t;
+      case _i23.FutureCallEntry:
+        return _i23.FutureCallEntry.t;
+      case _i24.LogEntry:
+        return _i24.LogEntry.t;
+      case _i29.MessageLogEntry:
+        return _i29.MessageLogEntry.t;
+      case _i30.MethodInfo:
+        return _i30.MethodInfo.t;
+      case _i31.QueryLogEntry:
+        return _i31.QueryLogEntry.t;
+      case _i32.ReadWriteTestEntry:
+        return _i32.ReadWriteTestEntry.t;
+      case _i33.RuntimeSettings:
+        return _i33.RuntimeSettings.t;
+      case _i34.ServerHealthConnectionInfo:
+        return _i34.ServerHealthConnectionInfo.t;
+      case _i35.ServerHealthMetric:
+        return _i35.ServerHealthMetric.t;
+      case _i37.SessionLogEntry:
+        return _i37.SessionLogEntry.t;
     }
     return null;
   }

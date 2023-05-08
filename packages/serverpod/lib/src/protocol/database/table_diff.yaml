@@ -1,0 +1,15 @@
+class: TableDiff
+fields:
+  name: String
+  dartName: String?
+  module: String?
+  schema: String
+
+  addColumns: List<ColumnDefinition>
+  deleteColumns: List<String>
+
+  addIndexes: List<IndexDefinition>
+  deleteIndexes: List<String>
+
+  addForeignKeys: List<ForeignKeyDefinition>
+  deleteForeignKeys: List<String> 

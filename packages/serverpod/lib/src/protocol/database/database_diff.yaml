@@ -1,0 +1,5 @@
+class: DatabaseDiff
+fields:
+  addTables: List<TableDefinition>
+  deleteTables: List<String>
+  modifyTables: List<TableDiff>
