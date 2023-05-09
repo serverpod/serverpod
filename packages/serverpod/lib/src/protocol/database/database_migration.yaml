@@ -1,4 +1,4 @@
-class: DatabaseDiff
+class: DatabaseMigration
 fields:
   addTables: List<TableDefinition>
   deleteTables: List<String>

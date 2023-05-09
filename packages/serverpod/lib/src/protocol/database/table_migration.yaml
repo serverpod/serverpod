@@ -1,4 +1,4 @@
-class: TableDiff
+class: TableMigration
 fields:
   name: String
   dartName: String?

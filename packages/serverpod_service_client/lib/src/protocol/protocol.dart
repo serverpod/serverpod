@@ -18,7 +18,7 @@ import 'cluster_server_info.dart' as _i8;
 import 'database/column_definition.dart' as _i9;
 import 'database/column_type.dart' as _i10;
 import 'database/database_definition.dart' as _i11;
-import 'database/database_diff.dart' as _i12;
+import 'database/database_migration.dart' as _i12;
 import 'database/foreign_key_action.dart' as _i13;
 import 'database/foreign_key_definition.dart' as _i14;
 import 'database/foreign_key_match_type.dart' as _i15;
@@ -26,7 +26,7 @@ import 'database/index_definition.dart' as _i16;
 import 'database/index_element_definition.dart' as _i17;
 import 'database/index_element_definition_type.dart' as _i18;
 import 'database/table_definition.dart' as _i19;
-import 'database/table_diff.dart' as _i20;
+import 'database/table_migration.dart' as _i20;
 import 'distributed_cache_entry.dart' as _i21;
 import 'future_call_entry.dart' as _i22;
 import 'log_entry.dart' as _i23;
@@ -57,7 +57,7 @@ export 'cluster_server_info.dart';
 export 'database/column_definition.dart';
 export 'database/column_type.dart';
 export 'database/database_definition.dart';
-export 'database/database_diff.dart';
+export 'database/database_migration.dart';
 export 'database/foreign_key_action.dart';
 export 'database/foreign_key_definition.dart';
 export 'database/foreign_key_match_type.dart';
@@ -65,7 +65,7 @@ export 'database/index_definition.dart';
 export 'database/index_element_definition.dart';
 export 'database/index_element_definition_type.dart';
 export 'database/table_definition.dart';
-export 'database/table_diff.dart';
+export 'database/table_migration.dart';
 export 'distributed_cache_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
@@ -135,8 +135,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i11.DatabaseDefinition) {
       return _i11.DatabaseDefinition.fromJson(data, this) as T;
     }
-    if (t == _i12.DatabaseDiff) {
-      return _i12.DatabaseDiff.fromJson(data, this) as T;
+    if (t == _i12.DatabaseMigration) {
+      return _i12.DatabaseMigration.fromJson(data, this) as T;
     }
     if (t == _i13.ForeignKeyAction) {
       return _i13.ForeignKeyAction.fromJson(data) as T;
@@ -159,8 +159,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i19.TableDefinition) {
       return _i19.TableDefinition.fromJson(data, this) as T;
     }
-    if (t == _i20.TableDiff) {
-      return _i20.TableDiff.fromJson(data, this) as T;
+    if (t == _i20.TableMigration) {
+      return _i20.TableMigration.fromJson(data, this) as T;
     }
     if (t == _i21.DistributedCacheEntry) {
       return _i21.DistributedCacheEntry.fromJson(data, this) as T;
@@ -256,8 +256,8 @@ class Protocol extends _i1.SerializationManager {
           ? _i11.DatabaseDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i12.DatabaseDiff?>()) {
-      return (data != null ? _i12.DatabaseDiff.fromJson(data, this) : null)
+    if (t == _i1.getType<_i12.DatabaseMigration?>()) {
+      return (data != null ? _i12.DatabaseMigration.fromJson(data, this) : null)
           as T;
     }
     if (t == _i1.getType<_i13.ForeignKeyAction?>()) {
@@ -290,8 +290,9 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i19.TableDefinition.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i20.TableDiff?>()) {
-      return (data != null ? _i20.TableDiff.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i20.TableMigration?>()) {
+      return (data != null ? _i20.TableMigration.fromJson(data, this) : null)
+          as T;
     }
     if (t == _i1.getType<_i21.DistributedCacheEntry?>()) {
       return (data != null
@@ -389,8 +390,8 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i40.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i40.TableDiff>) {
-      return (data as List).map((e) => deserialize<_i40.TableDiff>(e)).toList()
+    if (t == List<TableDiff>) {
+      return (data as List).map((e) => deserialize<TableDiff>(e)).toList()
           as dynamic;
     }
     if (t == List<_i40.IndexElementDefinition>) {
@@ -482,8 +483,8 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i11.DatabaseDefinition) {
       return 'DatabaseDefinition';
     }
-    if (data is _i12.DatabaseDiff) {
-      return 'DatabaseDiff';
+    if (data is _i12.DatabaseMigration) {
+      return 'DatabaseMigration';
     }
     if (data is _i13.ForeignKeyAction) {
       return 'ForeignKeyAction';
@@ -506,8 +507,8 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i19.TableDefinition) {
       return 'TableDefinition';
     }
-    if (data is _i20.TableDiff) {
-      return 'TableDiff';
+    if (data is _i20.TableMigration) {
+      return 'TableMigration';
     }
     if (data is _i21.DistributedCacheEntry) {
       return 'DistributedCacheEntry';
@@ -601,8 +602,8 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'DatabaseDefinition') {
       return deserialize<_i11.DatabaseDefinition>(data['data']);
     }
-    if (data['className'] == 'DatabaseDiff') {
-      return deserialize<_i12.DatabaseDiff>(data['data']);
+    if (data['className'] == 'DatabaseMigration') {
+      return deserialize<_i12.DatabaseMigration>(data['data']);
     }
     if (data['className'] == 'ForeignKeyAction') {
       return deserialize<_i13.ForeignKeyAction>(data['data']);
@@ -625,8 +626,8 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'TableDefinition') {
       return deserialize<_i19.TableDefinition>(data['data']);
     }
-    if (data['className'] == 'TableDiff') {
-      return deserialize<_i20.TableDiff>(data['data']);
+    if (data['className'] == 'TableMigration') {
+      return deserialize<_i20.TableMigration>(data['data']);
     }
     if (data['className'] == 'DistributedCacheEntry') {
       return deserialize<_i21.DistributedCacheEntry>(data['data']);

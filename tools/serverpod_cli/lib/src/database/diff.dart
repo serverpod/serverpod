@@ -1,7 +1,7 @@
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'extensions.dart';
 
-DatabaseDiff generateDatabaseDiff(
+DatabaseMigration generateDatabaseMigration(
   DatabaseDefinition srcDatabase,
   DatabaseDefinition dstDatabase,
 ) {
@@ -22,26 +22,26 @@ DatabaseDiff generateDatabaseDiff(
   }
 
   // Find modified tables
-  var modifyTables = <TableDiff>[];
+  var modifyTables = <TableMigration>[];
   for (var srcTable in srcDatabase.tables) {
     var dstTable = dstDatabase.findTableNamed(srcTable.name);
     if (dstTable == null) {
       continue;
     }
-    var diff = generateTableDiff(srcTable, dstTable);
+    var diff = generateTableMigration(srcTable, dstTable);
     if (!diff.isEmpty) {
       modifyTables.add(diff);
     }
   }
 
-  return DatabaseDiff(
+  return DatabaseMigration(
     addTables: addTables,
     deleteTables: deleteTables,
     modifyTables: modifyTables,
   );
 }
 
-TableDiff generateTableDiff(
+TableMigration generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
 ) {
@@ -129,7 +129,7 @@ TableDiff generateTableDiff(
     }
   }
 
-  return TableDiff(
+  return TableMigration(
     name: srcTable.name,
     schema: srcTable.schema,
     deleteColumns: deleteColumns,

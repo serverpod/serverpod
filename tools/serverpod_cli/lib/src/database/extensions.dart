@@ -16,7 +16,7 @@ extension DatabaseComparisons on DatabaseDefinition {
   }
 
   bool like(DatabaseDefinition other) {
-    var diff = generateDatabaseDiff(this, other);
+    var diff = generateDatabaseMigration(this, other);
     return diff.isEmpty;
   }
 }
@@ -62,7 +62,7 @@ extension TableComparisons on TableDefinition {
   }
 
   bool like(TableDefinition other) {
-    var diff = generateTableDiff(this, other);
+    var diff = generateTableMigration(this, other);
     return diff.isEmpty && other.name == name && other.schema == schema;
   }
 }
@@ -125,13 +125,13 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
   }
 }
 
-extension DatabaseDiffComparisons on DatabaseDiff {
+extension DatabaseDiffComparisons on DatabaseMigration {
   bool get isEmpty {
     return addTables.isEmpty && deleteTables.isEmpty && modifyTables.isEmpty;
   }
 }
 
-extension TableDiffComparisons on TableDiff {
+extension TableDiffComparisons on TableMigration {
   bool get isEmpty {
     return addColumns.isEmpty &&
         deleteColumns.isEmpty &&

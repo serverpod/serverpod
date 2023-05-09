@@ -9,8 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class TableDiff extends _i1.SerializableEntity {
-  TableDiff({
+class TableMigration extends _i1.SerializableEntity {
+  TableMigration({
     required this.name,
     this.dartName,
     this.module,
@@ -23,11 +23,11 @@ class TableDiff extends _i1.SerializableEntity {
     required this.deleteForeignKeys,
   });
 
-  factory TableDiff.fromJson(
+  factory TableMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return TableDiff(
+    return TableMigration(
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       dartName: serializationManager
           .deserialize<String?>(jsonSerialization['dartName']),
