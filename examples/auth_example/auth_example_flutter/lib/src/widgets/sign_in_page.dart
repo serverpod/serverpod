@@ -1,4 +1,4 @@
-import 'package:auth_example_flutter/main.dart';
+import 'package:auth_example_flutter/src/serverpod_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
