@@ -333,6 +333,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _createAccount() async {
+    _resetIssues();
     var userName = _usernameController.text.trim();
     if (userName.isEmpty) {
       setState(() {
@@ -375,16 +376,18 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
 
     setState(() {
       _enabled = true;
-    });
 
-    if (success) {
-      setState(() {
+      if (success) {
         _page = _Page.confirmEmail;
-      });
-    }
+      } else {
+        _emailIssue = 'Email already in use';
+      }
+
+    });
   }
 
   Future<void> _validateAccount() async {
+    _resetIssues();
     if (_validationCodeController.text.isEmpty) {
       setState(() {
         _validationCodeIssue = 'Enter your code';
@@ -429,6 +432,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _signIn() async {
+    _resetIssues();
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
@@ -467,6 +471,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _initiatePasswordReset() async {
+    _resetIssues();
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
@@ -488,6 +493,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _resetPassword() async {
+    _resetIssues();
     if (_passwordController.text.length < 8) {
       setState(() {
         _passwordIssue = 'Min 8 characters';
@@ -531,6 +537,15 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
       Navigator.of(context).pop();
     }
     widget.onSignedIn();
+  }
+
+  void _resetIssues() {
+    setState(() {
+      _emailIssue = '';
+      _passwordIssue = '';
+      _validationCodeIssue = '';
+      _userNameIssue = '';
+    });
   }
 
   void _resetTextFields() {
