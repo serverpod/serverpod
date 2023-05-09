@@ -25,8 +25,8 @@ class DatabaseMigration extends _i1.SerializableEntity {
           jsonSerialization['addTables']),
       deleteTables: serializationManager
           .deserialize<List<String>>(jsonSerialization['deleteTables']),
-      modifyTables: serializationManager
-          .deserialize<List<TableDiff>>(jsonSerialization['modifyTables']),
+      modifyTables: serializationManager.deserialize<List<_i2.TableMigration>>(
+          jsonSerialization['modifyTables']),
     );
   }
 
@@ -34,7 +34,7 @@ class DatabaseMigration extends _i1.SerializableEntity {
 
   List<String> deleteTables;
 
-  List<TableDiff> modifyTables;
+  List<_i2.TableMigration> modifyTables;
 
   @override
   Map<String, dynamic> toJson() {

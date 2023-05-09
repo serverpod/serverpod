@@ -1561,9 +1561,10 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i41.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<TableDiff>) {
-      return (data as List).map((e) => deserialize<TableDiff>(e)).toList()
-          as dynamic;
+    if (t == List<_i41.TableMigration>) {
+      return (data as List)
+          .map((e) => deserialize<_i41.TableMigration>(e))
+          .toList() as dynamic;
     }
     if (t == List<_i41.IndexElementDefinition>) {
       return (data as List)

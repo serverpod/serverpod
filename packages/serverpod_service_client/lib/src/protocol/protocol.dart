@@ -390,9 +390,10 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i40.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<TableDiff>) {
-      return (data as List).map((e) => deserialize<TableDiff>(e)).toList()
-          as dynamic;
+    if (t == List<_i40.TableMigration>) {
+      return (data as List)
+          .map((e) => deserialize<_i40.TableMigration>(e))
+          .toList() as dynamic;
     }
     if (t == List<_i40.IndexElementDefinition>) {
       return (data as List)
