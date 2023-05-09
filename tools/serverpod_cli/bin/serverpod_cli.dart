@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
+import 'package:serverpod_cli/src/migrations/manager.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
@@ -24,6 +25,7 @@ const cmdGenerate = 'generate';
 const cmdGeneratePubspecs = 'generate-pubspecs';
 const cmdAnalyzePubspecs = 'analyze-pubspecs';
 const cmdVersion = 'version';
+const cmdMigrate = 'migrate';
 
 final runModes = <String>['development', 'staging', 'production'];
 
@@ -136,6 +138,21 @@ Future<void> _main(List<String> args) async {
   );
   parser.addCommand(cmdGenerate, generateParser);
 
+  // "migrate" commanbd
+  var migrateParser = ArgParser();
+  migrateParser.addFlag(
+    'verbose',
+    abbr: 'v',
+    negatable: false,
+    help: 'Output more detailed information',
+  );
+  migrateParser.addOption(
+    'tag',
+    abbr: 't',
+    help: 'Add a tag to the revision to easier identify it',
+  );
+  parser.addCommand(cmdMigrate, migrateParser);
+
   // "run" command
   // var runParser = ArgParser();
   // runParser.addFlag(
@@ -233,6 +250,21 @@ Future<void> _main(List<String> args) async {
       } else {
         print('Done.');
       }
+      _analytics.cleanUp();
+      return;
+    }
+
+    // Migrate command
+    if (results.command!.name == cmdMigrate) {
+      var verbose = results.command!['verbose'];
+      var tag = results.command!['tag'];
+
+      var manager = MigrationManager(directory: Directory.current);
+      await manager.createMigration(
+        tag: tag,
+        verbose: verbose,
+      );
+
       _analytics.cleanUp();
       return;
     }

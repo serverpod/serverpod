@@ -18,3 +18,4 @@ export 'src/analyzer/entities/definitions.dart'
         SerializableEntityIndexDefinition,
         EnumDefinition;
 export 'src/generator/types.dart' show TypeDefinition;
+export 'src/generator/generator_database_definition.dart';

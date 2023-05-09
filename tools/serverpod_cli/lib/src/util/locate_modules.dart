@@ -81,3 +81,52 @@ class _ModuleGeneratorConfigLite {
     nickname = map['nickname'];
   }
 }
+
+Future<List<Uri>> locateAllPackgagePaths({
+  required Directory directory,
+}) async {
+  var packageConfig = await findPackageConfig(directory);
+  if (packageConfig == null) {
+    throw Exception('Failed to read package configuration.');
+  }
+
+  var paths = <Uri>[];
+  for (var packageInfo in packageConfig.packages) {
+    try {
+      var packageName = packageInfo.name;
+      if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
+        continue;
+      }
+
+      var packageSrcRoot = packageInfo.packageUriRoot;
+
+      // Check for generator file
+      var generatorConfigSegments =
+          List<String>.from(packageSrcRoot.pathSegments)
+            ..removeLast()
+            ..removeLast()
+            ..addAll(['config', 'generator.yaml']);
+      var generatorConfigUri = packageSrcRoot.replace(
+        pathSegments: generatorConfigSegments,
+      );
+
+      var generatorConfigFile = File.fromUri(generatorConfigUri);
+      if (!await generatorConfigFile.exists()) {
+        continue;
+      }
+
+      // Get the root of the package
+      var packageRootSegments = List<String>.from(packageSrcRoot.pathSegments)
+        ..removeLast()
+        ..removeLast();
+      var packageRoot = packageSrcRoot.replace(
+        pathSegments: packageRootSegments,
+      );
+      paths.add(packageRoot);
+    } catch (e) {
+      print(e);
+      continue;
+    }
+  }
+  return paths;
+}

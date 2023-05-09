@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/database/diff.dart';
+import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 extension DatabaseComparisons on DatabaseDefinition {
