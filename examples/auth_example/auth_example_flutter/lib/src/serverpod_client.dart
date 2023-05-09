@@ -22,5 +22,4 @@ Future<void> initializeServerpodClient() async {
   sessionManager = SessionManager(
     caller: client.modules.auth,
   );
-
 }

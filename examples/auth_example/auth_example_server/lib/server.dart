@@ -41,8 +41,8 @@ void run(List<String> args) async {
   // as that may lead to you getting blocked for spam and other issues.
   // Instead use a real email service provider, such as SendGrid, Mailjet or others.
   auth.AuthConfig.set(auth.AuthConfig(
-      sendValidationEmail: (session, email, validationCode) async {
-        // Retrieve the credentials
+    sendValidationEmail: (session, email, validationCode) async {
+      // Retrieve the credentials
       final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
       final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
 
