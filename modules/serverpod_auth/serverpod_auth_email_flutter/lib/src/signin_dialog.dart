@@ -29,7 +29,8 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _validationCodeController = TextEditingController();
+  final TextEditingController _validationCodeController =
+      TextEditingController();
 
   String? _userNameIssue;
   String? _emailIssue;
