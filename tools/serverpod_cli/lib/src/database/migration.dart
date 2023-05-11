@@ -5,13 +5,7 @@ DatabaseMigration generateDatabaseMigration(
   DatabaseDefinition srcDatabase,
   DatabaseDefinition dstDatabase,
 ) {
-  // Find added tables
-  var addTables = <TableDefinition>[];
-  for (var dstTable in dstDatabase.tables) {
-    if (!srcDatabase.containsTableNamed(dstTable.name)) {
-      addTables.add(dstTable);
-    }
-  }
+  var actions = <DatabaseMigrationAction>[];
 
   // Find deleted tables
   var deleteTables = <String>[];
@@ -20,24 +14,44 @@ DatabaseMigration generateDatabaseMigration(
       deleteTables.add(srcTable.name);
     }
   }
+  for (var tableName in deleteTables.reversed) {
+    actions.add(
+      DatabaseMigrationAction(
+        type: DatabaseMigrationActionType.deleteTable,
+        deleteTable: tableName,
+      ),
+    );
+  }
 
-  // Find modified tables
-  var modifyTables = <TableMigration>[];
-  for (var srcTable in srcDatabase.tables) {
-    var dstTable = dstDatabase.findTableNamed(srcTable.name);
-    if (dstTable == null) {
-      continue;
-    }
-    var diff = generateTableMigration(srcTable, dstTable);
-    if (!diff.isEmpty) {
-      modifyTables.add(diff);
+  // Find added or modified tables
+  for (var dstTable in dstDatabase.tables) {
+    var srcTable = srcDatabase.findTableNamed(dstTable.name);
+    if (srcTable == null) {
+      // Added table
+      actions.add(
+        DatabaseMigrationAction(
+          type: DatabaseMigrationActionType.createTable,
+          createTable: dstTable,
+        ),
+      );
+    } else {
+      // Table exists in src and dst
+      var diff = generateTableMigration(srcTable, dstTable);
+      if (!diff.isEmpty) {
+        // Table was modified
+        // TODO: Check if table can be modified
+        actions.add(
+          DatabaseMigrationAction(
+            type: DatabaseMigrationActionType.alterTable,
+            alterTable: diff,
+          ),
+        );
+      }
     }
   }
 
   return DatabaseMigration(
-    addTables: addTables,
-    deleteTables: deleteTables,
-    modifyTables: modifyTables,
+    actions: actions,
   );
 }
 

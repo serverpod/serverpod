@@ -1,5 +1,3 @@
 class: DatabaseMigration
 fields:
-  addTables: List<TableDefinition>
-  deleteTables: List<String>
-  modifyTables: List<TableMigration>
+  actions: List<DatabaseMigrationAction>

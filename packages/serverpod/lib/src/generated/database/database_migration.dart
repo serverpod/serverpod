@@ -10,47 +10,27 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 class DatabaseMigration extends _i1.SerializableEntity {
-  DatabaseMigration({
-    required this.addTables,
-    required this.deleteTables,
-    required this.modifyTables,
-  });
+  DatabaseMigration({required this.actions});
 
   factory DatabaseMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
     return DatabaseMigration(
-      addTables: serializationManager.deserialize<List<_i2.TableDefinition>>(
-          jsonSerialization['addTables']),
-      deleteTables: serializationManager
-          .deserialize<List<String>>(jsonSerialization['deleteTables']),
-      modifyTables: serializationManager.deserialize<List<_i2.TableMigration>>(
-          jsonSerialization['modifyTables']),
-    );
+        actions:
+            serializationManager.deserialize<List<_i2.DatabaseMigrationAction>>(
+                jsonSerialization['actions']));
   }
 
-  List<_i2.TableDefinition> addTables;
-
-  List<String> deleteTables;
-
-  List<_i2.TableMigration> modifyTables;
+  List<_i2.DatabaseMigrationAction> actions;
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'addTables': addTables,
-      'deleteTables': deleteTables,
-      'modifyTables': modifyTables,
-    };
+    return {'actions': actions};
   }
 
   @override
   Map<String, dynamic> allToJson() {
-    return {
-      'addTables': addTables,
-      'deleteTables': deleteTables,
-      'modifyTables': modifyTables,
-    };
+    return {'actions': actions};
   }
 }

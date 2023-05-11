@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/database/migration.dart';
+import 'package:serverpod_cli/src/generator/psql/migration_pgsql_generator.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 extension DatabaseComparisons on DatabaseDefinition {
@@ -127,7 +128,7 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
 
 extension DatabaseDiffComparisons on DatabaseMigration {
   bool get isEmpty {
-    return addTables.isEmpty && deleteTables.isEmpty && modifyTables.isEmpty;
+    return actions.isEmpty;
   }
 }
 
@@ -291,6 +292,28 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
     out += '    FOREIGN KEY("${columns.join(', ')}")\n';
     out += '    REFERENCES "$referenceTable"(${refColumsFmt.join(', ')})\n';
     out += '    ON DELETE CASCADE;\n';
+
+    return out;
+  }
+}
+
+extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
+  String toPgSql() {
+    var out = '';
+
+    switch (type) {
+      case DatabaseMigrationActionType.deleteTable:
+        out += '-- ACTION DELETE TABLE\n';
+        out += 'DELETE TABLE "$deleteTable"\n';
+        out += '\n';
+        break;
+      case DatabaseMigrationActionType.createTable:
+        out += createTable!.toPgSql();
+        break;
+      case DatabaseMigrationActionType.alterTable:
+        out += alterTable!.toPgSql();
+        break;
+    }
 
     return out;
   }
