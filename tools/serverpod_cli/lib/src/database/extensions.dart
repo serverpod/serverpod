@@ -141,3 +141,157 @@ extension TableDiffComparisons on TableMigration {
         deleteForeignKeys.isEmpty;
   }
 }
+
+extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
+  String toPgSql() {
+    String out = '';
+
+    // TODO: Take dependencies into account
+    tables.sort((a, b) => a.name.compareTo(b.name));
+
+    for (var table in tables) {
+      out += '--\n';
+      out += '-- Class ${table.dartName} as table ${table.name}\n';
+      out += '--\n';
+      out += table.toPgSql();
+      out += '\n';
+    }
+
+    return out;
+  }
+}
+
+extension TableDefinitionPgSqlGeneration on TableDefinition {
+  String toPgSql() {
+    String out = '';
+
+    // Table
+    out += 'CREATE TABLE "$name" (\n';
+
+    var columnsPgSql = <String>[];
+    for (var column in columns) {
+      columnsPgSql.add('    ${column.toPgSqlFragment()}');
+    }
+    out += columnsPgSql.join(',\n');
+
+    out += '\n);\n';
+
+    // Indexes
+    var indexesExceptId = <IndexDefinition>[];
+    for (var index in indexes) {
+      if (index.elements.length == 1 &&
+          index.elements.first.definition == 'id') {
+        continue;
+      }
+      indexesExceptId.add(index);
+    }
+
+    if (indexesExceptId.isNotEmpty) {
+      out += '\n';
+      out += '-- Indexes\n';
+      for (var index in indexesExceptId) {
+        out += index.toPgSql(tableName: name);
+      }
+    }
+
+    // Foreign keys
+    if (foreignKeys.isNotEmpty) {
+      out += '\n';
+      out += '-- Foreign keys\n';
+      for (var key in foreignKeys) {
+        out += key.toPgSql(tableName: name);
+      }
+    }
+
+    out += '\n';
+
+    return out;
+  }
+}
+
+extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
+  String toPgSqlFragment() {
+    String out = '';
+
+    if (name == 'id') {
+      // The id column is special.
+      assert(isNullable == false);
+      assert(
+        columnType == ColumnType.integer || columnType == ColumnType.bigint,
+      );
+      // TODO: Migrate to bigserial / bigint
+      return '"id" serial PRIMARY KEY';
+    }
+
+    var nullable = isNullable ? '' : ' NOT NULL';
+    String type;
+    switch (columnType) {
+      case ColumnType.bigint:
+        type = 'bigint';
+        break;
+      case ColumnType.boolean:
+        type = 'boolean';
+        break;
+      case ColumnType.bytea:
+        type = 'bytea';
+        break;
+      case ColumnType.doublePrecision:
+        type = 'double precision';
+        break;
+      case ColumnType.integer:
+        type = 'integer';
+        break;
+      case ColumnType.json:
+        type = 'json';
+        break;
+      case ColumnType.text:
+        type = 'text';
+        break;
+      case ColumnType.timestampWithoutTimeZone:
+        type = 'timestamp without time zone';
+        break;
+      case ColumnType.uuid:
+        type = 'uuid';
+        break;
+      case ColumnType.unknown:
+        throw (const FormatException('Unknown column type'));
+    }
+
+    out += '"$name" $type$nullable';
+    return out;
+  }
+}
+
+extension IndexDefinitionPgSqlGeneration on IndexDefinition {
+  String toPgSql({
+    required String tableName,
+  }) {
+    var out = '';
+
+    var uniqueStr = isUnique ? ' UNIQUE' : '';
+    var elementStrs = elements.map((e) => '"${e.definition}"');
+
+    out += 'CREATE$uniqueStr INDEX "$indexName" ON "$tableName" USING $type'
+        ' (${elementStrs.join(', ')});\n';
+
+    return out;
+  }
+}
+
+extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
+  String toPgSql({
+    required String tableName,
+  }) {
+    var out = '';
+
+    var refColumsFmt = referenceColumns.map((e) => '"$e"');
+
+    out += 'ALTER TABLE ONLY "$tableName"\n';
+    out += '    ADD CONSTRAINT "$constraintName"\n';
+    out += '    FOREIGN KEY("${columns.join(', ')}")\n';
+    out += '    REFERENCES "$referenceTable"(${refColumsFmt.join(', ')})\n';
+    out += '    ON DELETE CASCADE;\n';
+
+    return out;
+  }
+}

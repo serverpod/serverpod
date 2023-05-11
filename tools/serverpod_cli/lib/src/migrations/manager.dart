@@ -3,8 +3,15 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
+import 'package:serverpod_cli/src/generator/psql/migration_pgsql_generator.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+
+const _fileNameMigrationJson = 'migration.json';
+const _fileNameDefinitionJson = 'definition.json';
+const _fileNameMigrationSql = 'migration.sql';
+const _fileNameDefinitionSql = 'definition.sql';
 
 class MigrationManager {
   MigrationManager({
@@ -105,14 +112,20 @@ class MigrationVersion {
     var serializationManager = Protocol();
 
     // Load the database definition
-    var definitionFile = File(path.join(versionDir.path, 'definition.json'));
+    var definitionFile = File(path.join(
+      versionDir.path,
+      _fileNameDefinitionJson,
+    ));
     var definitionData = await definitionFile.readAsString();
     var databaseDefinition = serializationManager.decodeWithType(
       definitionData,
     ) as DatabaseDefinition;
 
     // Load the migraion definition
-    var migrationFile = File(path.join(versionDir.path, 'migration.json'));
+    var migrationFile = File(path.join(
+      versionDir.path,
+      _fileNameMigrationJson,
+    ));
     var migrationData = await migrationFile.readAsString();
     var migrationDefinition = serializationManager.decodeWithType(
       migrationData,
@@ -127,6 +140,10 @@ class MigrationVersion {
   }
 
   Future<void> write() async {
+    // Create sql for definition and migration
+    var definitionSql = databaseDefinition.toPgSql();
+    var migrationSql = migration.toPgSql();
+
     var versionDir = Directory(
       path.join(migrationsDirectory.path, versionName),
     );
@@ -135,16 +152,36 @@ class MigrationVersion {
     // Get the serialization manager
     var serializationManager = Protocol();
 
-    // Write the database definition
-    var definitionFile = File(path.join(versionDir.path, 'definition.json'));
+    // Write the database definition JSON file
+    var definitionFile = File(path.join(
+      versionDir.path,
+      _fileNameDefinitionJson,
+    ));
     var definitionData = serializationManager.encodeWithType(
       databaseDefinition,
     );
     await definitionFile.writeAsString(definitionData);
 
-    // Write the migration definition
-    var migrationFile = File(path.join(versionDir.path, 'migration.json'));
+    // Write the database definition SQL file
+    var definitionSqlFile = File(path.join(
+      versionDir.path,
+      _fileNameDefinitionSql,
+    ));
+    await definitionSqlFile.writeAsString(definitionSql);
+
+    // Write the migration definition JSON file
+    var migrationFile = File(path.join(
+      versionDir.path,
+      _fileNameMigrationJson,
+    ));
     var migrationData = serializationManager.encodeWithType(migration);
     await migrationFile.writeAsString(migrationData);
+
+    // Write the migration definition SQL file
+    var migrationSqlFile = File(path.join(
+      versionDir.path,
+      _fileNameMigrationSql,
+    ));
+    await migrationSqlFile.writeAsString(migrationSql);
   }
 }
