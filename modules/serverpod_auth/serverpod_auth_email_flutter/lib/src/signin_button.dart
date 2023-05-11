@@ -10,9 +10,6 @@ class SignInWithEmailButton extends StatefulWidget {
   /// Called if sign in is successful.
   final VoidCallback? onSignedIn;
 
-  /// Called if sign in is unsuccessful.
-  final VoidCallback? onFailure;
-
   /// The style of the button.
   final ButtonStyle? style;
 
@@ -20,7 +17,6 @@ class SignInWithEmailButton extends StatefulWidget {
   const SignInWithEmailButton({
     required this.caller,
     this.onSignedIn,
-    this.onFailure,
     this.style,
     Key? key,
   }) : super(key: key);

@@ -434,7 +434,7 @@ class LibraryGenerator {
   /// (if [serverCode] is `false`).
   Library generateClientEndpointCalls() {
     String getEndpointClassName(String endpointName) {
-      return '_Endpoint${ReCase(endpointName).pascalCase}';
+      return 'Endpoint${ReCase(endpointName).pascalCase}';
     }
 
     var library = LibraryBuilder();
@@ -452,6 +452,7 @@ class LibraryGenerator {
         Class((endpoint) {
           endpoint
             ..docs.add(endpointDef.documentationComment ?? '')
+            ..docs.add('/// {@category Endpoint}')
             ..name = endpointClassName
             ..extend = refer('EndpointRef', serverpodUrl(false));
 
