@@ -236,7 +236,7 @@ class EndpointsAnalyzer {
       return;
     }
 
-    if (innerType.isDynamic) {
+    if (innerType is DynamicType) {
       collector.addError(SourceSpanException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
