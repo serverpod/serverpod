@@ -35,7 +35,7 @@ void run(List<String> args) async {
 
   // Configuration for sign in with email.
   // You have to setup an App Password with gmail for this to work
-  // see https://support.google.com/accounts/answer/185833?hl=en for how to do that
+  // see https://support.google.com/accounts/answer/185833?hl=en for how to do that.
   // Then add the email and password to the config/passwords.yaml file.
   // This is a test example, do not use this type of integration in production
   // as that may lead to you getting blocked for spam and other issues.
