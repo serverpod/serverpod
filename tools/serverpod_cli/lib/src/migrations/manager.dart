@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
-import 'package:serverpod_cli/src/generator/psql/migration_pgsql_generator.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 const _fileNameMigrationJson = 'migration.json';
