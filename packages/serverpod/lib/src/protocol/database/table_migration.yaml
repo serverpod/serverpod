@@ -12,4 +12,4 @@ fields:
   deleteIndexes: List<String>
 
   addForeignKeys: List<ForeignKeyDefinition>
-  deleteForeignKeys: List<String> 
+  deleteForeignKeys: List<String>
