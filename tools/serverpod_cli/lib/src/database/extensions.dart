@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/database/migration.dart';
-import 'package:serverpod_cli/src/generator/psql/migration_pgsql_generator.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 extension DatabaseComparisons on DatabaseDefinition {
@@ -297,6 +296,18 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
   }
 }
 
+extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
+  String toPgSql() {
+    var out = '';
+
+    for (var action in actions) {
+      out += action.toPgSql();
+    }
+
+    return out;
+  }
+}
+
 extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
   String toPgSql() {
     var out = '';
@@ -316,5 +327,11 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
     }
 
     return out;
+  }
+}
+
+extension TableMigrationPgSqlGenerator on TableMigration {
+  String toPgSql() {
+    return '';
   }
 }
