@@ -322,14 +322,22 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
 
     switch (type) {
       case DatabaseMigrationActionType.deleteTable:
+        out += '--\n';
         out += '-- ACTION DELETE TABLE\n';
+        out += '--\n';
         out += 'DELETE TABLE "$deleteTable"\n';
         out += '\n';
         break;
       case DatabaseMigrationActionType.createTable:
+        out += '--\n';
+        out += '-- ACTION CREATE TABLE\n';
+        out += '--\n';
         out += createTable!.toPgSql();
         break;
       case DatabaseMigrationActionType.alterTable:
+        out += '--\n';
+        out += '-- ACTION ALTER TABLE\n';
+        out += '--\n';
         out += alterTable!.toPgSql();
         break;
     }
