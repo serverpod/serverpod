@@ -1,6 +1,10 @@
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+//
+// Comparisons of database entities
+//
+
 extension DatabaseComparisons on DatabaseDefinition {
   bool containsTableNamed(String tableName) {
     return (findTableNamed(tableName) != null);
@@ -141,6 +145,10 @@ extension TableDiffComparisons on TableMigration {
         deleteForeignKeys.isEmpty;
   }
 }
+
+//
+// SQL generation
+//
 
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
   String toPgSql() {
@@ -332,6 +340,37 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
 
 extension TableMigrationPgSqlGenerator on TableMigration {
   String toPgSql() {
-    return '';
+    var out = '';
+
+    // Drop indexes
+    for (var deleteIndex in deleteIndexes) {
+      out += 'DROP INDEX "$deleteIndex";\n';
+    }
+
+    // Drop foreign keys
+    for (var deleteKey in deleteForeignKeys) {
+      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey"\n';
+    }
+
+    // Drop columns
+    for (var deleteColumn in deleteColumns) {
+      out += 'ALTER TABLE "$name" DROP COLUMN "$deleteColumn";\n';
+    }
+
+    // Add columns
+    for (var addColumn in addColumns) {
+      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
+    }
+
+    // Add indexes
+    for (var addIndex in addIndexes) {
+      out += addIndex.toPgSql(tableName: name);
+    }
+
+    // Add foreign keys
+    for (var addKey in addForeignKeys) {
+      out += addKey.toPgSql(tableName: name);
+    }
+    return out;
   }
 }
