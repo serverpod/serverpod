@@ -13,10 +13,11 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
-import 'package:serverpod_cli/src/migrations/manager.dart';
+import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/version.dart';
 
 const cmdCreate = 'create';
@@ -259,7 +260,12 @@ Future<void> _main(List<String> args) async {
       var verbose = results.command!['verbose'];
       var tag = results.command!['tag'];
 
-      var manager = MigrationManager(directory: Directory.current);
+      var projectName = await getProjectName();
+
+      var manager = MigrationGenerator(
+        directory: Directory.current,
+        projectName: projectName,
+      );
       await manager.createMigration(
         tag: tag,
         verbose: verbose,

@@ -151,11 +151,16 @@ extension TableDiffComparisons on TableMigration {
 //
 
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
-  String toPgSql() {
+  String toPgSql({
+    required String version,
+    required String module,
+    required int priority,
+  }) {
     String out = '';
 
-    // TODO: Take dependencies into account
-    tables.sort((a, b) => a.name.compareTo(b.name));
+    // Start transaction
+    out += 'BEGIN;\n';
+    out += '\n';
 
     for (var table in tables) {
       out += '--\n';
@@ -164,6 +169,15 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
       out += table.toPgSql();
       out += '\n';
     }
+
+    out += _sqlStoreMigrationVersion(
+      module: module,
+      version: version,
+      priority: priority,
+    );
+
+    out += '\n';
+    out += 'COMMIT;\n';
 
     return out;
   }
@@ -305,12 +319,29 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
 }
 
 extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
-  String toPgSql() {
+  String toPgSql({
+    required String version,
+    required String module,
+    required int priority,
+  }) {
     var out = '';
+
+    // Start transaction
+    out += 'BEGIN;\n';
+    out += '\n';
 
     for (var action in actions) {
       out += action.toPgSql();
     }
+
+    out += _sqlStoreMigrationVersion(
+      module: module,
+      version: version,
+      priority: priority,
+    );
+
+    out += '\n';
+    out += 'COMMIT;\n';
 
     return out;
   }
@@ -381,4 +412,24 @@ extension TableMigrationPgSqlGenerator on TableMigration {
     }
     return out;
   }
+}
+
+String _sqlStoreMigrationVersion({
+  required String module,
+  required String version,
+  required int priority,
+}) {
+  String out = '';
+  out += '--\n';
+  out += '-- MIGRATION VERSION\n';
+  out += '--\n';
+  out += 'INSERT INTO "serverpod_migrations" '
+      '("module", "version", "priority", "timestamp")\n';
+  out += '    VALUES (\'$module\', \'$version\', $priority, now())\n';
+  out += '    ON CONFLICT ("module")\n';
+  out += '    DO UPDATE SET "version" = \'$version\', '
+      '"priority" = $priority;\n';
+  out += '\n';
+
+  return out;
 }

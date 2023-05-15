@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
+import 'package:serverpod/src/database/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
@@ -321,6 +322,12 @@ class Serverpod {
           } else {
             logVerbose('Runtime settings loaded.');
           }
+
+          logVerbose('Initializing migration manager.');
+          var migrationManager = MigrationManager();
+          await migrationManager.verifyDatabaseIntegrity(session);
+          await migrationManager.initialize(session);
+          await migrationManager.migrateToLatest(session);
 
           // We successfully connected to the database.
           databaseConnectionIsUp = true;

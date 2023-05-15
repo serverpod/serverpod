@@ -12,11 +12,13 @@ const _fileNameDefinitionJson = 'definition.json';
 const _fileNameMigrationSql = 'migration.sql';
 const _fileNameDefinitionSql = 'definition.sql';
 
-class MigrationManager {
-  MigrationManager({
+class MigrationGenerator {
+  MigrationGenerator({
     required this.directory,
+    required this.projectName,
   });
   final Directory directory;
+  final String projectName;
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
@@ -29,7 +31,7 @@ class MigrationManager {
   }
 
   Directory get migrationsDirectory =>
-      Directory(path.join(directory.path, 'migrations'));
+      Directory(path.join(directory.path, 'migrations', projectName));
 
   List<String> getMigrationVersions() {
     if (!migrationsDirectory.existsSync()) {
@@ -82,7 +84,7 @@ class MigrationManager {
       databaseDefinition: dstDatabase,
     );
 
-    await migrationVersion.write();
+    await migrationVersion.write(module: projectName);
   }
 }
 
@@ -120,7 +122,7 @@ class MigrationVersion {
       definitionData,
     ) as DatabaseDefinition;
 
-    // Load the migraion definition
+    // Load the migration definition
     var migrationFile = File(path.join(
       versionDir.path,
       _fileNameMigrationJson,
@@ -138,10 +140,20 @@ class MigrationVersion {
     );
   }
 
-  Future<void> write() async {
+  Future<void> write({
+    required String module,
+  }) async {
     // Create sql for definition and migration
-    var definitionSql = databaseDefinition.toPgSql();
-    var migrationSql = migration.toPgSql();
+    var definitionSql = databaseDefinition.toPgSql(
+      module: module,
+      version: versionName,
+      priority: 1,
+    );
+    var migrationSql = migration.toPgSql(
+      module: module,
+      version: versionName,
+      priority: 1,
+    );
 
     var versionDir = Directory(
       path.join(migrationsDirectory.path, versionName),

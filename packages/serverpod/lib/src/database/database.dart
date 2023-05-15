@@ -233,6 +233,23 @@ class Database {
     );
   }
 
+  /// Executes a single SQL query. Returns the number of rows that were affected
+  /// by the query.
+  Future<int> execute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    var conn = await databaseConnection;
+
+    return conn.execute(
+      query,
+      session: session,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
   /// Executes a [Transaction].
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
