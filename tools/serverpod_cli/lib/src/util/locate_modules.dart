@@ -128,12 +128,14 @@ Future<List<Uri>> locateAllModulePaths({
   return paths;
 }
 
-String moduleNameFromServerPackageName(String package) {
-  if (package == 'serverpod') {
+String moduleNameFromServerPackageName(String packageDirName) {
+  var packageName = packageDirName.split('-').first;
+
+  if (packageName == 'serverpod') {
     return 'serverpod';
   }
-  if (!package.endsWith(_serverSuffix)) {
-    throw Exception('Not a server package ($package)');
+  if (!packageName.endsWith(_serverSuffix)) {
+    throw Exception('Not a server package ($packageName)');
   }
-  return package.substring(0, package.length - _serverSuffix.length);
+  return packageName.substring(0, packageName.length - _serverSuffix.length);
 }
