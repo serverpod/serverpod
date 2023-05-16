@@ -309,25 +309,18 @@ class Serverpod {
       while (!databaseConnectionIsUp) {
         var session = await createSession(enableLogging: false);
         try {
-          logVerbose('Loading runtime settings.');
-
-          _runtimeSettings =
-              await session.db.findSingleRow<internal.RuntimeSettings>();
-          if (_runtimeSettings == null) {
-            logVerbose('Runtime settings not found, creting default settings.');
-
-            // Store default settings.
-            _runtimeSettings = _defaultRuntimeSettings;
-            await session.db.insert(_runtimeSettings!);
-          } else {
-            logVerbose('Runtime settings loaded.');
-          }
-
+          // Initialize migration manager.
           logVerbose('Initializing migration manager.');
           var migrationManager = MigrationManager();
-          await migrationManager.verifyDatabaseIntegrity(session);
           await migrationManager.initialize(session);
-          await migrationManager.migrateToLatest(session);
+
+          if (commandLineArgs.applyMigrations) {
+            logVerbose('Applying database migrations.');
+            await migrationManager.migrateToLatest(session);
+          }
+
+          logVerbose('Verifying database integrity.');
+          await migrationManager.verifyDatabaseIntegrity(session);
 
           // We successfully connected to the database.
           databaseConnectionIsUp = true;
@@ -343,6 +336,34 @@ class Serverpod {
           }
 
           await Future.delayed(const Duration(seconds: 10));
+        }
+
+        try {
+          logVerbose('Loading runtime settings.');
+
+          _runtimeSettings =
+              await session.db.findSingleRow<internal.RuntimeSettings>();
+        } catch (e) {
+          stderr.writeln(
+            'Failed to load runtime settings. $e',
+          );
+        }
+        try {
+          if (_runtimeSettings == null) {
+            logVerbose(
+              'Runtime settings not found, creating default settings.',
+            );
+
+            // Store default settings.
+            _runtimeSettings = _defaultRuntimeSettings;
+            await session.db.insert(_runtimeSettings!);
+          } else {
+            logVerbose('Runtime settings loaded.');
+          }
+        } catch (e) {
+          stderr.writeln(
+            'Failed to store runtime settings. $e',
+          );
         }
 
         await session.close();
