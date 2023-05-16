@@ -23,7 +23,7 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
   // Find paths to all modules
   var tableDefinitions = <TableDefinition>[];
 
-  var paths = await locateAllPackgagePaths(directory: directory);
+  var paths = await locateAllModulePaths(directory: directory);
   for (var path in paths) {
     var config = await GeneratorConfig.load(path.toFilePath());
 

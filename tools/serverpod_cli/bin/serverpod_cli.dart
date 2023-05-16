@@ -7,6 +7,7 @@ import 'package:serverpod_cli/analyzer.dart';
 
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/database/copy_migrations.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
@@ -233,6 +234,9 @@ Future<void> _main(List<String> args) async {
       if (config == null) {
         return;
       }
+
+      // Copy migrations from modules.
+      await copyMigrations(config);
 
       var endpointsAnalyzer = EndpointsAnalyzer(config);
 

@@ -1,7 +1,6 @@
 import 'dart:io';
+import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:yaml/yaml.dart';
-
-const _serverSuffix = '_server';
 
 Future<String> getProjectName() async {
   var pubspecFile = File('pubspec.yaml');
@@ -25,8 +24,6 @@ Future<String> getProjectName() async {
     );
   }
 
-  name = name.substring(0, name.length - _serverSuffix.length);
-
-  print('project name: $name');
+  name = moduleNameFromServerPackageName(name);
   return name;
 }

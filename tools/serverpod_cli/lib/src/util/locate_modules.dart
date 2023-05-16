@@ -25,10 +25,7 @@ Future<List<ModuleConfig>> locateModules({
         if (!packageName.endsWith(_serverSuffix)) {
           continue;
         }
-        var moduleName = packageName.substring(
-          0,
-          packageName.length - _serverSuffix.length,
-        );
+        var moduleName = moduleNameFromServerPackageName(packageName);
 
         var packageSrcRoot = packageInfo.packageUriRoot;
         var generatorConfigSegments =
@@ -82,7 +79,7 @@ class _ModuleGeneratorConfigLite {
   }
 }
 
-Future<List<Uri>> locateAllPackgagePaths({
+Future<List<Uri>> locateAllModulePaths({
   required Directory directory,
 }) async {
   var packageConfig = await findPackageConfig(directory);
@@ -129,4 +126,14 @@ Future<List<Uri>> locateAllPackgagePaths({
     }
   }
   return paths;
+}
+
+String moduleNameFromServerPackageName(String package) {
+  if (package == 'serverpod') {
+    return 'serverpod';
+  }
+  if (!package.endsWith(_serverSuffix)) {
+    throw Exception('Not a server package ($package)');
+  }
+  return package.substring(0, package.length - _serverSuffix.length);
 }
