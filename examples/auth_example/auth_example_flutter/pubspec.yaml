@@ -35,6 +35,8 @@ dependencies:
     path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_auth_google_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter
+  serverpod_auth_apple_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter
 
 
   # The following adds the Cupertino Icons font to your application.
