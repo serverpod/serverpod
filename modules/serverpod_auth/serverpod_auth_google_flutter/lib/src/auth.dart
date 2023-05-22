@@ -5,19 +5,19 @@ import 'google/sign_in_with_google.dart';
 
 /// Attempts to Sign in with Google. If successful, a [UserInfo] is returned.
 /// If the attempt is not a success, null is returned.
-/// 
+///
 /// If [clientId] and [serverClientId] are not provided, the values are expected to
 /// be supplied via the json credentials file in your android and ios projects.
-/// 
+///
 /// On the web, the [serverClientId] is mandatory and must be provided.
-/// 
+///
 /// The ID's can be created at https://console.developers.google.com/apis/credentials
-/// 
+///
 /// The redirect uri to web page that will handle the authentication. This page
-/// should send an event to the parent window with the server auth code. 
+/// should send an event to the parent window with the server auth code.
 /// The event is expected to be a string with the server auth code.
 /// After the event is sent, the window can be closed safely.
-/// 
+///
 /// Example web implementation:
 /// ```javascript
 ///  function returnToWebClient() {
@@ -26,8 +26,8 @@ import 'google/sign_in_with_google.dart';
 ///    window.close();
 ///  }
 /// ```
-/// 
-/// Consider using the GoogleSignInRedirectPageWidget inside [serverpod_auth_server] 
+///
+/// Consider using the GoogleSignInRedirectPageWidget inside [serverpod_auth_server]
 /// to handle the the logic for you.
 /// ```dart
 /// //main.dart
@@ -37,7 +37,7 @@ import 'google/sign_in_with_google.dart';
 /// https://example.com/redirect
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
-  bool debug = false, //TODO: Remove this parameter on next breaking change. 
+  bool debug = false, //TODO: Remove this parameter on next breaking change.
   String? clientId,
   String? serverClientId,
   List<String> additionalScopes = const [],
@@ -69,7 +69,8 @@ Future<UserInfo?> signInWithGoogle(
       );
     } else {
       // Fall back on idToken
-      serverResponse = await caller.google.authenticateWithIdToken(tokens.idToken!);
+      serverResponse =
+          await caller.google.authenticateWithIdToken(tokens.idToken!);
     }
 
     if (!serverResponse.success) {

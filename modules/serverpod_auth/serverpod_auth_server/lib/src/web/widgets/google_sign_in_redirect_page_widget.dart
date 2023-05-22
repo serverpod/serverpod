@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 
 ///
 class GoogleSignInRedirectPageWidget extends AbstractWidget {
-
   @override
   String toString() {
     return '''<html>

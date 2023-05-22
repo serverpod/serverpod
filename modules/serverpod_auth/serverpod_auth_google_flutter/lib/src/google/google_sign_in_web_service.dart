@@ -7,8 +7,10 @@ import 'dart:html' as html;
 class GoogleSignInWebService {
   /// The clientId from google, should be the same as the serverClientId.
   final String clientId;
+
   /// The scopes to request from google.
   final List<String> scopes;
+
   /// The redirect uri to web page that will handle the authentication after signin.
   final String redirectUri;
 
