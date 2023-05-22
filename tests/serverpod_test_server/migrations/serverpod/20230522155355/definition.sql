@@ -245,9 +245,9 @@ ALTER TABLE ONLY "serverpod_log"
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod', '20230516113555', 1, now())
+    VALUES ('serverpod', '20230522155355', 1, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230516113555', "priority" = 1;
+    DO UPDATE SET "version" = '20230522155355', "priority" = 1;
 
 
 COMMIT;

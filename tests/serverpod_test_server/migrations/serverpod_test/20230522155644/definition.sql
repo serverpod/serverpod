@@ -139,9 +139,9 @@ CREATE TABLE "types" (
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20230516125352', 1, now())
+    VALUES ('serverpod_test', '20230522155644', 1, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230516125352', "priority" = 1;
+    DO UPDATE SET "version" = '20230522155644', "priority" = 1;
 
 
 COMMIT;

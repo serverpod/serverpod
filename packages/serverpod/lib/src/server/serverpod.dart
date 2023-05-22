@@ -324,11 +324,12 @@ class Serverpod {
 
           // We successfully connected to the database.
           databaseConnectionIsUp = true;
-        } catch (e) {
+        } catch (e, stackTrace) {
           // Write connection error to stderr.
           stderr.writeln(
             'Failed to connect to the database. Retrying in 10 seconds. $e',
           );
+          stderr.writeln('$stackTrace');
           if (!printedDatabaseConnectionError) {
             stderr.writeln('Database configuration:');
             stderr.writeln(config.database.toString());
