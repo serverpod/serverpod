@@ -4,6 +4,7 @@ import 'extensions.dart';
 DatabaseMigration generateDatabaseMigration(
   DatabaseDefinition srcDatabase,
   DatabaseDefinition dstDatabase,
+  List<DatabaseMigrationWarning> warnings,
 ) {
   var actions = <DatabaseMigrationAction>[];
 
@@ -21,6 +22,15 @@ DatabaseMigration generateDatabaseMigration(
         deleteTable: tableName,
       ),
     );
+    warnings.add(
+      DatabaseMigrationWarning(
+        type: DatabaseMigrationWarningType.tableDropped,
+        message: 'Table $tableName was dropped.',
+        table: tableName,
+        destrucive: true,
+        columns: [],
+      ),
+    );
   }
 
   // Find added or modified tables
@@ -36,10 +46,26 @@ DatabaseMigration generateDatabaseMigration(
       );
     } else {
       // Table exists in src and dst
-      var diff = generateTableMigration(srcTable, dstTable);
-      if (!diff.isEmpty) {
+      var diff = generateTableMigration(srcTable, dstTable, warnings);
+      if (diff == null) {
+        // Table was modified, but cannot be migrated. Recreate the table.
+        actions.add(
+          DatabaseMigrationAction(
+            type: DatabaseMigrationActionType.deleteTable,
+            deleteTable: dstTable.name,
+          ),
+        );
+        actions.add(
+          DatabaseMigrationAction(
+            type: DatabaseMigrationActionType.createTable,
+            createTable: dstTable,
+          ),
+        );
+        continue;
+      } else if (!diff.isEmpty) {
         // Table was modified
         // TODO: Check if table can be modified
+
         actions.add(
           DatabaseMigrationAction(
             type: DatabaseMigrationActionType.alterTable,
@@ -52,12 +78,14 @@ DatabaseMigration generateDatabaseMigration(
 
   return DatabaseMigration(
     actions: actions,
+    warnings: [],
   );
 }
 
-TableMigration generateTableMigration(
+TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
+  List<DatabaseMigrationWarning> warnings,
 ) {
   // Find added columns
   var addColumns = <ColumnDefinition>[];
@@ -72,8 +100,20 @@ TableMigration generateTableMigration(
   for (var srcColumn in srcTable.columns) {
     if (!dstTable.containsColumnNamed(srcColumn.name)) {
       deleteColumns.add(srcColumn.name);
+      warnings.add(
+        DatabaseMigrationWarning(
+          type: DatabaseMigrationWarningType.columnDropped,
+          table: srcTable.name,
+          columns: [srcColumn.name],
+          message: 'Column ${srcColumn.name} of table ${srcTable.name} was '
+              'dropped.',
+          destrucive: true,
+        ),
+      );
     }
   }
+
+  var modifyColumns = <ColumnMigration>[];
 
   // Find modified columns
   for (var srcColumn in srcTable.columns) {
@@ -82,8 +122,51 @@ TableMigration generateTableMigration(
       continue;
     }
     if (!srcColumn.like(dstColumn)) {
-      deleteColumns.add(srcColumn.name);
-      addColumns.add(dstColumn);
+      if (srcColumn.canMigrateTo(dstColumn)) {
+        // Column can be modified
+        var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
+        var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
+        var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
+
+        modifyColumns.add(
+          ColumnMigration(
+            columnName: srcColumn.name,
+            addNullable: addNullable,
+            removeNullable: removeNullable,
+            changeDefault: changeDefault,
+            newDefault: dstColumn.columnDefault,
+          ),
+        );
+
+        if (removeNullable) {
+          warnings.add(
+            DatabaseMigrationWarning(
+              type: DatabaseMigrationWarningType.notNullAdded,
+              table: srcTable.name,
+              columns: [srcColumn.name],
+              message: 'Column ${srcColumn.name} of table ${srcTable.name} was '
+                  'modified to be not null. If there are existing rows with '
+                  'null values, this migration will fail.',
+              destrucive: false,
+            ),
+          );
+        }
+      } else {
+        // Column must be deleted and recreated
+        deleteColumns.add(srcColumn.name);
+        addColumns.add(dstColumn);
+        warnings.add(
+          DatabaseMigrationWarning(
+            type: DatabaseMigrationWarningType.columnDropped,
+            table: srcTable.name,
+            columns: [srcColumn.name],
+            message:
+                'Column ${srcColumn.name} of table ${srcTable.name} was modified '
+                'in a way that it must be deleted and recreated.',
+            destrucive: true,
+          ),
+        );
+      }
     }
   }
 
@@ -115,6 +198,22 @@ TableMigration generateTableMigration(
     }
   }
 
+  for (var index in addIndexes) {
+    if (index.isUnique) {
+      warnings.add(
+        DatabaseMigrationWarning(
+          type: DatabaseMigrationWarningType.uniqueIndexCreated,
+          table: srcTable.name,
+          columns: index.elements.map((e) => e.definition).toList(),
+          message: 'Unique index ${index.indexName} was added to table '
+              '${srcTable.name}. If there are existing rows with duplicate '
+              'values, this migration will fail.',
+          destrucive: false,
+        ),
+      );
+    }
+  }
+
   // Find added foreign keys
   var addForeignKeys = <ForeignKeyDefinition>[];
   for (var dstKey in dstTable.foreignKeys) {
@@ -143,14 +242,35 @@ TableMigration generateTableMigration(
     }
   }
 
+  // Check that all added columns can be created in a modfication of the table
+  for (var column in addColumns) {
+    if (!column.canBeCreatedInTableMigration) {
+      warnings.add(
+        DatabaseMigrationWarning(
+          type: DatabaseMigrationWarningType.tableDropped,
+          table: srcTable.name,
+          columns: [column.name],
+          message:
+              'One or more columns were added to table ${srcTable.name} that '
+              'cannot be added in a table migration. The complete table will be '
+              'deleted and recreated.',
+          destrucive: true,
+        ),
+      );
+      return null;
+    }
+  }
+
   return TableMigration(
     name: srcTable.name,
     schema: srcTable.schema,
     deleteColumns: deleteColumns,
     addColumns: addColumns,
+    modifyColumns: modifyColumns,
     deleteIndexes: deleteIndexes,
     addIndexes: addIndexes,
     deleteForeignKeys: deleteForeignKeys,
     addForeignKeys: addForeignKeys,
+    warnings: warnings,
   );
 }

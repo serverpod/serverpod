@@ -20,7 +20,7 @@ extension DatabaseComparisons on DatabaseDefinition {
   }
 
   bool like(DatabaseDefinition other) {
-    var diff = generateDatabaseMigration(this, other);
+    var diff = generateDatabaseMigration(this, other, []);
     return diff.isEmpty;
   }
 }
@@ -66,8 +66,11 @@ extension TableComparisons on TableDefinition {
   }
 
   bool like(TableDefinition other) {
-    var diff = generateTableMigration(this, other);
-    return diff.isEmpty && other.name == name && other.schema == schema;
+    var diff = generateTableMigration(this, other, []);
+    return diff != null &&
+        diff.isEmpty &&
+        other.name == name &&
+        other.schema == schema;
   }
 }
 
@@ -84,6 +87,35 @@ extension ColumnComparisons on ColumnDefinition {
         other.name == name &&
         other.columnDefault == columnDefault);
   }
+
+  bool canMigrateTo(ColumnDefinition other) {
+    // It's ok to change column default or nullability.
+    if (other.dartType != null &&
+        dartType != null &&
+        !_canMigrateType(dartType!, other.dartType!)) {
+      return false;
+    }
+
+    return other.columnType == columnType && other.name == name;
+  }
+
+  bool get canBeCreatedInTableMigration {
+    return isNullable || columnDefault != null;
+  }
+}
+
+bool _canMigrateType(String src, String dst) {
+  src = removeNullability(src);
+  dst = removeNullability(dst);
+
+  return src == dst;
+}
+
+String removeNullability(String type) {
+  if (type.endsWith('?')) {
+    return type.substring(0, type.length - 1);
+  }
+  return type;
 }
 
 extension IndexComparisons on IndexDefinition {
@@ -139,6 +171,7 @@ extension TableDiffComparisons on TableMigration {
   bool get isEmpty {
     return addColumns.isEmpty &&
         deleteColumns.isEmpty &&
+        modifyColumns.isEmpty &&
         addIndexes.isEmpty &&
         deleteIndexes.isEmpty &&
         addForeignKeys.isEmpty &&
@@ -401,6 +434,11 @@ extension TableMigrationPgSqlGenerator on TableMigration {
       out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
     }
 
+    // Modify columns
+    for (var alterColumn in modifyColumns) {
+      out += alterColumn.toPgSql(tableName: name);
+    }
+
     // Add indexes
     for (var addIndex in addIndexes) {
       out += addIndex.toPgSql(tableName: name);
@@ -410,6 +448,33 @@ extension TableMigrationPgSqlGenerator on TableMigration {
     for (var addKey in addForeignKeys) {
       out += addKey.toPgSql(tableName: name);
     }
+    return out;
+  }
+}
+
+extension ColumnMigrationPgSqlGenerator on ColumnMigration {
+  String toPgSql({
+    required String tableName,
+  }) {
+    var out = '';
+    if (addNullable) {
+      out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          ' DROP NOT NULL;\n';
+    } else if (removeNullable) {
+      out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          ' SET NOT NULL;\n';
+    }
+    if (changeDefault) {
+      if (newDefault == null) {
+        out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            ' DROP DEFAULT;\n';
+        return out;
+      } else {
+        out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            ' SET DEFAULT $newDefault;\n';
+      }
+    }
+
     return out;
   }
 }

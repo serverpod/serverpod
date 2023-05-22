@@ -65,6 +65,7 @@ class MigrationGenerator {
 
   Future<void> createMigration({
     String? tag,
+    required bool force,
     bool verbose = false,
   }) async {
     var versionName = createVersionName(tag);
@@ -75,7 +76,29 @@ class MigrationGenerator {
         latest?.databaseDefinition ?? DatabaseDefinition(tables: []);
     var dstDatabase = await generateDatabaseDefinition(directory: directory);
 
-    var migration = generateDatabaseMigration(srcDatabase, dstDatabase);
+    var warnings = <DatabaseMigrationWarning>[];
+    var migration = generateDatabaseMigration(
+      srcDatabase,
+      dstDatabase,
+      warnings,
+    );
+
+    if (warnings.isNotEmpty) {
+      print('Migration Warnings:');
+      for (var warning in warnings) {
+        print(' - ${warning.message}');
+      }
+
+      if (!force) {
+        print('Migration aborted. Use --force to ignore warnings.');
+        return;
+      }
+    }
+
+    if (migration.isEmpty) {
+      print('No changes detected.');
+      return;
+    }
 
     var migrationVersion = MigrationVersion(
       migrationsDirectory: migrationsDirectory,

@@ -148,6 +148,12 @@ Future<void> _main(List<String> args) async {
     negatable: false,
     help: 'Output more detailed information',
   );
+  migrateParser.addFlag(
+    'force',
+    abbr: 'f',
+    negatable: false,
+    help: 'Output more detailed information',
+  );
   migrateParser.addOption(
     'tag',
     abbr: 't',
@@ -226,8 +232,8 @@ Future<void> _main(List<String> args) async {
     // Generate command.
     if (results.command!.name == cmdGenerate) {
       // Always do a full generate.
-      var verbose = results.command!['verbose'];
-      var watch = results.command!['watch'];
+      bool verbose = results.command!['verbose'];
+      bool watch = results.command!['watch'];
 
       // TODO: add a -d option to select the directory
       var config = await GeneratorConfig.load();
@@ -261,8 +267,9 @@ Future<void> _main(List<String> args) async {
 
     // Migrate command
     if (results.command!.name == cmdMigrate) {
-      var verbose = results.command!['verbose'];
-      var tag = results.command!['tag'];
+      bool verbose = results.command!['verbose'];
+      bool force = results.command!['force'];
+      String? tag = results.command!['tag'];
 
       var projectName = await getProjectName();
 
@@ -273,7 +280,9 @@ Future<void> _main(List<String> args) async {
       await manager.createMigration(
         tag: tag,
         verbose: verbose,
+        force: force,
       );
+      print('Done.');
 
       _analytics.cleanUp();
       return;

@@ -7,9 +7,12 @@ fields:
 
   addColumns: List<ColumnDefinition>
   deleteColumns: List<String>
+  modifyColumns: List<ColumnMigration>
 
   addIndexes: List<IndexDefinition>
   deleteIndexes: List<String>
 
   addForeignKeys: List<ForeignKeyDefinition>
   deleteForeignKeys: List<String>
+
+  warnings: List<DatabaseMigrationWarning>

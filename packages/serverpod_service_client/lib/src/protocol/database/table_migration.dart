@@ -17,10 +17,12 @@ class TableMigration extends _i1.SerializableEntity {
     required this.schema,
     required this.addColumns,
     required this.deleteColumns,
+    required this.modifyColumns,
     required this.addIndexes,
     required this.deleteIndexes,
     required this.addForeignKeys,
     required this.deleteForeignKeys,
+    required this.warnings,
   });
 
   factory TableMigration.fromJson(
@@ -39,6 +41,9 @@ class TableMigration extends _i1.SerializableEntity {
           jsonSerialization['addColumns']),
       deleteColumns: serializationManager
           .deserialize<List<String>>(jsonSerialization['deleteColumns']),
+      modifyColumns:
+          serializationManager.deserialize<List<_i2.ColumnMigration>>(
+              jsonSerialization['modifyColumns']),
       addIndexes: serializationManager.deserialize<List<_i2.IndexDefinition>>(
           jsonSerialization['addIndexes']),
       deleteIndexes: serializationManager
@@ -48,6 +53,9 @@ class TableMigration extends _i1.SerializableEntity {
               jsonSerialization['addForeignKeys']),
       deleteForeignKeys: serializationManager
           .deserialize<List<String>>(jsonSerialization['deleteForeignKeys']),
+      warnings:
+          serializationManager.deserialize<List<_i2.DatabaseMigrationWarning>>(
+              jsonSerialization['warnings']),
     );
   }
 
@@ -63,6 +71,8 @@ class TableMigration extends _i1.SerializableEntity {
 
   List<String> deleteColumns;
 
+  List<_i2.ColumnMigration> modifyColumns;
+
   List<_i2.IndexDefinition> addIndexes;
 
   List<String> deleteIndexes;
@@ -70,6 +80,8 @@ class TableMigration extends _i1.SerializableEntity {
   List<_i2.ForeignKeyDefinition> addForeignKeys;
 
   List<String> deleteForeignKeys;
+
+  List<_i2.DatabaseMigrationWarning> warnings;
 
   @override
   Map<String, dynamic> toJson() {
@@ -80,10 +92,12 @@ class TableMigration extends _i1.SerializableEntity {
       'schema': schema,
       'addColumns': addColumns,
       'deleteColumns': deleteColumns,
+      'modifyColumns': modifyColumns,
       'addIndexes': addIndexes,
       'deleteIndexes': deleteIndexes,
       'addForeignKeys': addForeignKeys,
       'deleteForeignKeys': deleteForeignKeys,
+      'warnings': warnings,
     };
   }
 }
