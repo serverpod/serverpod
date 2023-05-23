@@ -219,4 +219,9 @@ class InsightsEndpoint extends Endpoint {
       limit: limit,
     );
   }
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  Future<int> executeSql(Session session, String sql) async {
+    return await session.db.execute(sql);
+  }
 }

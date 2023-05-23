@@ -235,6 +235,24 @@ class Endpoints extends _i1.EndpointDispatch {
             limit: params['limit'],
           ),
         ),
+        'executeSql': _i1.MethodConnector(
+          name: 'executeSql',
+          params: {
+            'sql': _i1.ParameterDescription(
+              name: 'sql',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
+            session,
+            params['sql'],
+          ),
+        ),
       },
     );
   }

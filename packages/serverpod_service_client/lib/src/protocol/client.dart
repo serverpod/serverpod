@@ -171,6 +171,13 @@ class EndpointInsights extends _i1.EndpointRef {
           'limit': limit,
         },
       );
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  _i2.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
+        'insights',
+        'executeSql',
+        {'sql': sql},
+      );
 }
 
 class Client extends _i1.ServerpodClient {
