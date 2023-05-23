@@ -1,5 +1,6 @@
 import 'package:auth_example_flutter/src/serverpod_client.dart';
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
@@ -33,6 +34,9 @@ class SignInPage extends StatelessWidget {
                 serverClientId: _googleServerClientId,
                 redirectUri: Uri.parse('http://localhost:8080'),
               ),
+              SignInWithAppleButton(
+                caller: client.modules.auth,
+              )
             ],
           ),
         ),
