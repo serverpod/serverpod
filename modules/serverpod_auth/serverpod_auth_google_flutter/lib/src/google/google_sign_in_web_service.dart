@@ -70,7 +70,7 @@ class _SignInSession {
 
   _SignInSession(String authorizationUri) {
     // Opens the Google authentication url in a new window. When the
-    // authentication is complete on the client side the window is redirected to
+    // authentication is complete on the client side the window is redirected to.
     // This page will then make a callback into Flutter with the retrieved
     // server authentication code.
     _window = html.window.open(

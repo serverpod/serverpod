@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_google_flutter/src/google/sign_in_with_google_platform.dart';
 
-/// Atempts to signin with google on mobile platforms and returns the auth tokens.
+/// Attempts to signin with google on mobile platforms and returns the auth tokens.
 SignInWithGooglePlatform signInWithGooglePlatform = ({
   clientId,
   serverClientId,
@@ -22,7 +22,7 @@ SignInWithGooglePlatform signInWithGooglePlatform = ({
         'serverpod_auth_google: GoogleSignIn.signIn() returned null. Aborting.',
       );
     }
-    throw Exception('signin was aborted.');
+    throw Exception('Signin was aborted.');
   }
 
   var serverAuthCode = result.serverAuthCode;

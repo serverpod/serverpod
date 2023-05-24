@@ -25,9 +25,13 @@ void run(List<String> args) async {
   // pod.registerFutureCall(ExampleFutureCall(), 'exampleFutureCall');
 
   // Setup a default page at the web root.
-  pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');
+
+  // Setup a redirect route for Google sign in. Responsible for sending back
+  // the serverAuthCode to the client and closing the signin window, after a
+  // successful sign in.
+  pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');
 
   // Serve all files in the /static directory.
   pod.webServer.addRoute(
