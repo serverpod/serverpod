@@ -399,7 +399,7 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += '-- ACTION DROP TABLE\n';
         out += '--\n';
-        out += 'DROP TABLE "$deleteTable";\n';
+        out += 'DROP TABLE "$deleteTable" CASCADE;\n';
         out += '\n';
         break;
       case DatabaseMigrationActionType.createTable:
