@@ -274,11 +274,11 @@ Future<void> _main(List<String> args) async {
 
       var projectName = await getProjectName();
 
-      var manager = MigrationGenerator(
+      var generator = MigrationGenerator(
         directory: Directory.current,
         projectName: projectName,
       );
-      await manager.createMigration(
+      await generator.createMigration(
         tag: tag,
         verbose: verbose,
         force: force,
