@@ -31,7 +31,7 @@ class SignInPage extends StatelessWidget {
                 caller: client.modules.auth,
                 clientId: _googleClientId,
                 serverClientId: _googleServerClientId,
-                redirectUri: Uri.parse('http://localhost:8080'),
+                redirectUri: Uri.parse('http://localhost:8082/googlesignin'),
               ),
             ],
           ),
