@@ -150,14 +150,24 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
         return false;
       }
     }
+    // Default match type and action
+    var dMT = ForeignKeyMatchType.simple;
+    var dKA = ForeignKeyAction.noAction;
 
     // Other fields
-    return other.constraintName == constraintName &&
-        other.matchType == matchType &&
-        other.onDelete == onDelete &&
-        other.onUpdate == onUpdate &&
-        other.referenceTable == referenceTable &&
-        other.referenceTableSchema == referenceTableSchema;
+    var cName = other.constraintName == constraintName;
+    var cMatchType = (other.matchType ?? dMT) == (matchType ?? dMT);
+    var cOnDelete = other.onDelete == onDelete;
+    var cOnUpdate = (other.onUpdate ?? dKA) == (onUpdate ?? dKA);
+    var cReferenceTable = other.referenceTable == referenceTable;
+    var cReferenceSchema = other.referenceTableSchema == referenceTableSchema;
+
+    return cName &&
+        cMatchType &&
+        cOnDelete &&
+        cOnUpdate &&
+        cReferenceTable &&
+        cReferenceSchema;
   }
 }
 
@@ -387,9 +397,9 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
     switch (type) {
       case DatabaseMigrationActionType.deleteTable:
         out += '--\n';
-        out += '-- ACTION DELETE TABLE\n';
+        out += '-- ACTION DROP TABLE\n';
         out += '--\n';
-        out += 'DELETE TABLE "$deleteTable"\n';
+        out += 'DROP TABLE "$deleteTable";\n';
         out += '\n';
         break;
       case DatabaseMigrationActionType.createTable:

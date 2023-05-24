@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -63,7 +62,7 @@ class MigrationGenerator {
     return await getMigrationVersion(versions.last);
   }
 
-  Future<void> createMigration({
+  Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
     bool verbose = false,
@@ -91,13 +90,13 @@ class MigrationGenerator {
 
       if (!force) {
         print('Migration aborted. Use --force to ignore warnings.');
-        return;
+        return null;
       }
     }
 
     if (migration.isEmpty) {
       print('No changes detected.');
-      return;
+      return null;
     }
 
     var migrationVersion = MigrationVersion(
@@ -108,6 +107,8 @@ class MigrationGenerator {
     );
 
     await migrationVersion.write(module: projectName);
+
+    return migrationVersion;
   }
 }
 
