@@ -14,7 +14,6 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
-import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
