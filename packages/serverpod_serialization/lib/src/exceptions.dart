@@ -1,6 +1,6 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-/// This is `SerializableException` that can be used to pass Domain exceptions 
+/// This is `SerializableException` that can be used to pass Domain exceptions
 /// from the Server to the Client
 ///
 /// You can `throw SerializableException()`
