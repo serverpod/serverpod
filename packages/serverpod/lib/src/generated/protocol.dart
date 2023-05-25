@@ -17,35 +17,42 @@ import 'cloud_storage_direct_upload.dart' as _i7;
 import 'cluster_info.dart' as _i8;
 import 'cluster_server_info.dart' as _i9;
 import 'database/column_definition.dart' as _i10;
-import 'database/column_type.dart' as _i11;
-import 'database/database_definition.dart' as _i12;
-import 'database/foreign_key_action.dart' as _i13;
-import 'database/foreign_key_definition.dart' as _i14;
-import 'database/foreign_key_match_type.dart' as _i15;
-import 'database/index_definition.dart' as _i16;
-import 'database/index_element_definition.dart' as _i17;
-import 'database/index_element_definition_type.dart' as _i18;
-import 'database/table_definition.dart' as _i19;
-import 'distributed_cache_entry.dart' as _i20;
-import 'future_call_entry.dart' as _i21;
-import 'log_entry.dart' as _i22;
-import 'log_level.dart' as _i23;
-import 'log_result.dart' as _i24;
-import 'log_settings.dart' as _i25;
-import 'log_settings_override.dart' as _i26;
-import 'message_log_entry.dart' as _i27;
-import 'method_info.dart' as _i28;
-import 'query_log_entry.dart' as _i29;
-import 'readwrite_test.dart' as _i30;
-import 'runtime_settings.dart' as _i31;
-import 'server_health_connection_info.dart' as _i32;
-import 'server_health_metric.dart' as _i33;
-import 'server_health_result.dart' as _i34;
-import 'session_log_entry.dart' as _i35;
-import 'session_log_filter.dart' as _i36;
-import 'session_log_info.dart' as _i37;
-import 'session_log_result.dart' as _i38;
-import 'protocol.dart' as _i39;
+import 'database/column_migration.dart' as _i11;
+import 'database/column_type.dart' as _i12;
+import 'database/database_definition.dart' as _i13;
+import 'database/database_migration.dart' as _i14;
+import 'database/database_migration_action.dart' as _i15;
+import 'database/database_migration_action_type.dart' as _i16;
+import 'database/database_migration_warning.dart' as _i17;
+import 'database/database_migration_warning_type.dart' as _i18;
+import 'database/foreign_key_action.dart' as _i19;
+import 'database/foreign_key_definition.dart' as _i20;
+import 'database/foreign_key_match_type.dart' as _i21;
+import 'database/index_definition.dart' as _i22;
+import 'database/index_element_definition.dart' as _i23;
+import 'database/index_element_definition_type.dart' as _i24;
+import 'database/table_definition.dart' as _i25;
+import 'database/table_migration.dart' as _i26;
+import 'distributed_cache_entry.dart' as _i27;
+import 'future_call_entry.dart' as _i28;
+import 'log_entry.dart' as _i29;
+import 'log_level.dart' as _i30;
+import 'log_result.dart' as _i31;
+import 'log_settings.dart' as _i32;
+import 'log_settings_override.dart' as _i33;
+import 'message_log_entry.dart' as _i34;
+import 'method_info.dart' as _i35;
+import 'query_log_entry.dart' as _i36;
+import 'readwrite_test.dart' as _i37;
+import 'runtime_settings.dart' as _i38;
+import 'server_health_connection_info.dart' as _i39;
+import 'server_health_metric.dart' as _i40;
+import 'server_health_result.dart' as _i41;
+import 'session_log_entry.dart' as _i42;
+import 'session_log_filter.dart' as _i43;
+import 'session_log_info.dart' as _i44;
+import 'session_log_result.dart' as _i45;
+import 'protocol.dart' as _i46;
 export 'auth_key.dart';
 export 'cache_info.dart';
 export 'caches_info.dart';
@@ -54,8 +61,14 @@ export 'cloud_storage_direct_upload.dart';
 export 'cluster_info.dart';
 export 'cluster_server_info.dart';
 export 'database/column_definition.dart';
+export 'database/column_migration.dart';
 export 'database/column_type.dart';
 export 'database/database_definition.dart';
+export 'database/database_migration.dart';
+export 'database/database_migration_action.dart';
+export 'database/database_migration_action_type.dart';
+export 'database/database_migration_warning.dart';
+export 'database/database_migration_warning_type.dart';
 export 'database/foreign_key_action.dart';
 export 'database/foreign_key_definition.dart';
 export 'database/foreign_key_match_type.dart';
@@ -63,6 +76,7 @@ export 'database/index_definition.dart';
 export 'database/index_element_definition.dart';
 export 'database/index_element_definition_type.dart';
 export 'database/table_definition.dart';
+export 'database/table_migration.dart';
 export 'distributed_cache_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
@@ -437,498 +451,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'serverpod_log',
-      dartName: 'LogEntry',
-      schema: 'public',
-      module: 'serverpod',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_log_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sessionLogId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'messageId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'reference',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'serverId',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'time',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-        ),
-        _i2.ColumnDefinition(
-          name: 'logLevel',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'protocol:LogLevel',
-        ),
-        _i2.ColumnDefinition(
-          name: 'message',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'error',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'stackTrace',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'order',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'serverpod_log_fk_0',
-          columns: ['sessionLogId'],
-          referenceTable: 'serverpod_session_log',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: null,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_log_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_log_sessionLogId_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'sessionLogId',
-            )
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'serverpod_message_log',
-      dartName: 'MessageLogEntry',
-      schema: 'public',
-      module: 'serverpod',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_message_log_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sessionLogId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'serverId',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'messageId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'endpoint',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'messageName',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'duration',
-          columnType: _i2.ColumnType.doublePrecision,
-          isNullable: false,
-          dartType: 'double',
-        ),
-        _i2.ColumnDefinition(
-          name: 'error',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'stackTrace',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'slow',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-        _i2.ColumnDefinition(
-          name: 'order',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'serverpod_message_log_fk_0',
-          columns: ['sessionLogId'],
-          referenceTable: 'serverpod_session_log',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: null,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_message_log_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'serverpod_method',
-      dartName: 'MethodInfo',
-      schema: 'public',
-      module: 'serverpod',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_method_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'endpoint',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'method',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_method_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_method_endpoint_method_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'endpoint',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'method',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'serverpod_query_log',
-      dartName: 'QueryLogEntry',
-      schema: 'public',
-      module: 'serverpod',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_query_log_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'serverId',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sessionLogId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'messageId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'query',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'duration',
-          columnType: _i2.ColumnType.doublePrecision,
-          isNullable: false,
-          dartType: 'double',
-        ),
-        _i2.ColumnDefinition(
-          name: 'numRows',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'error',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'stackTrace',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'slow',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-        _i2.ColumnDefinition(
-          name: 'order',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'serverpod_query_log_fk_0',
-          columns: ['sessionLogId'],
-          referenceTable: 'serverpod_session_log',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: null,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_query_log_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_query_log_sessionLogId_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'sessionLogId',
-            )
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'serverpod_readwrite_test',
-      dartName: 'ReadWriteTestEntry',
-      schema: 'public',
-      module: 'serverpod',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_readwrite_test_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'number',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_readwrite_test_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'serverpod_runtime_settings',
-      dartName: 'RuntimeSettings',
-      schema: 'public',
-      module: 'serverpod',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_runtime_settings_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'logSettings',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'protocol:LogSettings',
-        ),
-        _i2.ColumnDefinition(
-          name: 'logSettingsOverrides',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<protocol:LogSettingsOverride>',
-        ),
-        _i2.ColumnDefinition(
-          name: 'logServiceCalls',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-        _i2.ColumnDefinition(
-          name: 'logMalformedCalls',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_runtime_settings_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'serverpod_health_connection_info',
       dartName: 'ServerHealthConnectionInfo',
       schema: 'public',
@@ -1113,6 +635,163 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'serverpod_method',
+      dartName: 'MethodInfo',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_method_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'endpoint',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'method',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_method_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_method_endpoint_method_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'endpoint',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'method',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_readwrite_test',
+      dartName: 'ReadWriteTestEntry',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_readwrite_test_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'number',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_readwrite_test_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_runtime_settings',
+      dartName: 'RuntimeSettings',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_runtime_settings_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'logSettings',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'protocol:LogSettings',
+        ),
+        _i2.ColumnDefinition(
+          name: 'logSettingsOverrides',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<protocol:LogSettingsOverride>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'logServiceCalls',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'logMalformedCalls',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_runtime_settings_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'serverpod_session_log',
       dartName: 'SessionLogEntry',
       schema: 'public',
@@ -1261,6 +940,341 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
+    _i2.TableDefinition(
+      name: 'serverpod_query_log',
+      dartName: 'QueryLogEntry',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_query_log_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serverId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'sessionLogId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'messageId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'query',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'duration',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'numRows',
+          columnType: _i2.ColumnType.integer,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'error',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'stackTrace',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'slow',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'order',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_query_log_fk_0',
+          columns: ['sessionLogId'],
+          referenceTable: 'serverpod_session_log',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: null,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_query_log_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_query_log_sessionLogId_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'sessionLogId',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_message_log',
+      dartName: 'MessageLogEntry',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_message_log_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'sessionLogId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serverId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'messageId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'endpoint',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'messageName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'duration',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'error',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'stackTrace',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'slow',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'order',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_message_log_fk_0',
+          columns: ['sessionLogId'],
+          referenceTable: 'serverpod_session_log',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: null,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_message_log_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_log',
+      dartName: 'LogEntry',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_log_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'sessionLogId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'messageId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'reference',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serverId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'time',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'logLevel',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'protocol:LogLevel',
+        ),
+        _i2.ColumnDefinition(
+          name: 'message',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'error',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'stackTrace',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'order',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_log_fk_0',
+          columns: ['sessionLogId'],
+          referenceTable: 'serverpod_session_log',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: null,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_log_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_log_sessionLogId_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'sessionLogId',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
   ]);
 
   @override
@@ -1296,89 +1310,110 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i10.ColumnDefinition) {
       return _i10.ColumnDefinition.fromJson(data, this) as T;
     }
-    if (t == _i11.ColumnType) {
-      return _i11.ColumnType.fromJson(data) as T;
+    if (t == _i11.ColumnMigration) {
+      return _i11.ColumnMigration.fromJson(data, this) as T;
     }
-    if (t == _i12.DatabaseDefinition) {
-      return _i12.DatabaseDefinition.fromJson(data, this) as T;
+    if (t == _i12.ColumnType) {
+      return _i12.ColumnType.fromJson(data) as T;
     }
-    if (t == _i13.ForeignKeyAction) {
-      return _i13.ForeignKeyAction.fromJson(data) as T;
+    if (t == _i13.DatabaseDefinition) {
+      return _i13.DatabaseDefinition.fromJson(data, this) as T;
     }
-    if (t == _i14.ForeignKeyDefinition) {
-      return _i14.ForeignKeyDefinition.fromJson(data, this) as T;
+    if (t == _i14.DatabaseMigration) {
+      return _i14.DatabaseMigration.fromJson(data, this) as T;
     }
-    if (t == _i15.ForeignKeyMatchType) {
-      return _i15.ForeignKeyMatchType.fromJson(data) as T;
+    if (t == _i15.DatabaseMigrationAction) {
+      return _i15.DatabaseMigrationAction.fromJson(data, this) as T;
     }
-    if (t == _i16.IndexDefinition) {
-      return _i16.IndexDefinition.fromJson(data, this) as T;
+    if (t == _i16.DatabaseMigrationActionType) {
+      return _i16.DatabaseMigrationActionType.fromJson(data) as T;
     }
-    if (t == _i17.IndexElementDefinition) {
-      return _i17.IndexElementDefinition.fromJson(data, this) as T;
+    if (t == _i17.DatabaseMigrationWarning) {
+      return _i17.DatabaseMigrationWarning.fromJson(data, this) as T;
     }
-    if (t == _i18.IndexElementDefinitionType) {
-      return _i18.IndexElementDefinitionType.fromJson(data) as T;
+    if (t == _i18.DatabaseMigrationWarningType) {
+      return _i18.DatabaseMigrationWarningType.fromJson(data) as T;
     }
-    if (t == _i19.TableDefinition) {
-      return _i19.TableDefinition.fromJson(data, this) as T;
+    if (t == _i19.ForeignKeyAction) {
+      return _i19.ForeignKeyAction.fromJson(data) as T;
     }
-    if (t == _i20.DistributedCacheEntry) {
-      return _i20.DistributedCacheEntry.fromJson(data, this) as T;
+    if (t == _i20.ForeignKeyDefinition) {
+      return _i20.ForeignKeyDefinition.fromJson(data, this) as T;
     }
-    if (t == _i21.FutureCallEntry) {
-      return _i21.FutureCallEntry.fromJson(data, this) as T;
+    if (t == _i21.ForeignKeyMatchType) {
+      return _i21.ForeignKeyMatchType.fromJson(data) as T;
     }
-    if (t == _i22.LogEntry) {
-      return _i22.LogEntry.fromJson(data, this) as T;
+    if (t == _i22.IndexDefinition) {
+      return _i22.IndexDefinition.fromJson(data, this) as T;
     }
-    if (t == _i23.LogLevel) {
-      return _i23.LogLevel.fromJson(data) as T;
+    if (t == _i23.IndexElementDefinition) {
+      return _i23.IndexElementDefinition.fromJson(data, this) as T;
     }
-    if (t == _i24.LogResult) {
-      return _i24.LogResult.fromJson(data, this) as T;
+    if (t == _i24.IndexElementDefinitionType) {
+      return _i24.IndexElementDefinitionType.fromJson(data) as T;
     }
-    if (t == _i25.LogSettings) {
-      return _i25.LogSettings.fromJson(data, this) as T;
+    if (t == _i25.TableDefinition) {
+      return _i25.TableDefinition.fromJson(data, this) as T;
     }
-    if (t == _i26.LogSettingsOverride) {
-      return _i26.LogSettingsOverride.fromJson(data, this) as T;
+    if (t == _i26.TableMigration) {
+      return _i26.TableMigration.fromJson(data, this) as T;
     }
-    if (t == _i27.MessageLogEntry) {
-      return _i27.MessageLogEntry.fromJson(data, this) as T;
+    if (t == _i27.DistributedCacheEntry) {
+      return _i27.DistributedCacheEntry.fromJson(data, this) as T;
     }
-    if (t == _i28.MethodInfo) {
-      return _i28.MethodInfo.fromJson(data, this) as T;
+    if (t == _i28.FutureCallEntry) {
+      return _i28.FutureCallEntry.fromJson(data, this) as T;
     }
-    if (t == _i29.QueryLogEntry) {
-      return _i29.QueryLogEntry.fromJson(data, this) as T;
+    if (t == _i29.LogEntry) {
+      return _i29.LogEntry.fromJson(data, this) as T;
     }
-    if (t == _i30.ReadWriteTestEntry) {
-      return _i30.ReadWriteTestEntry.fromJson(data, this) as T;
+    if (t == _i30.LogLevel) {
+      return _i30.LogLevel.fromJson(data) as T;
     }
-    if (t == _i31.RuntimeSettings) {
-      return _i31.RuntimeSettings.fromJson(data, this) as T;
+    if (t == _i31.LogResult) {
+      return _i31.LogResult.fromJson(data, this) as T;
     }
-    if (t == _i32.ServerHealthConnectionInfo) {
-      return _i32.ServerHealthConnectionInfo.fromJson(data, this) as T;
+    if (t == _i32.LogSettings) {
+      return _i32.LogSettings.fromJson(data, this) as T;
     }
-    if (t == _i33.ServerHealthMetric) {
-      return _i33.ServerHealthMetric.fromJson(data, this) as T;
+    if (t == _i33.LogSettingsOverride) {
+      return _i33.LogSettingsOverride.fromJson(data, this) as T;
     }
-    if (t == _i34.ServerHealthResult) {
-      return _i34.ServerHealthResult.fromJson(data, this) as T;
+    if (t == _i34.MessageLogEntry) {
+      return _i34.MessageLogEntry.fromJson(data, this) as T;
     }
-    if (t == _i35.SessionLogEntry) {
-      return _i35.SessionLogEntry.fromJson(data, this) as T;
+    if (t == _i35.MethodInfo) {
+      return _i35.MethodInfo.fromJson(data, this) as T;
     }
-    if (t == _i36.SessionLogFilter) {
-      return _i36.SessionLogFilter.fromJson(data, this) as T;
+    if (t == _i36.QueryLogEntry) {
+      return _i36.QueryLogEntry.fromJson(data, this) as T;
     }
-    if (t == _i37.SessionLogInfo) {
-      return _i37.SessionLogInfo.fromJson(data, this) as T;
+    if (t == _i37.ReadWriteTestEntry) {
+      return _i37.ReadWriteTestEntry.fromJson(data, this) as T;
     }
-    if (t == _i38.SessionLogResult) {
-      return _i38.SessionLogResult.fromJson(data, this) as T;
+    if (t == _i38.RuntimeSettings) {
+      return _i38.RuntimeSettings.fromJson(data, this) as T;
+    }
+    if (t == _i39.ServerHealthConnectionInfo) {
+      return _i39.ServerHealthConnectionInfo.fromJson(data, this) as T;
+    }
+    if (t == _i40.ServerHealthMetric) {
+      return _i40.ServerHealthMetric.fromJson(data, this) as T;
+    }
+    if (t == _i41.ServerHealthResult) {
+      return _i41.ServerHealthResult.fromJson(data, this) as T;
+    }
+    if (t == _i42.SessionLogEntry) {
+      return _i42.SessionLogEntry.fromJson(data, this) as T;
+    }
+    if (t == _i43.SessionLogFilter) {
+      return _i43.SessionLogFilter.fromJson(data, this) as T;
+    }
+    if (t == _i44.SessionLogInfo) {
+      return _i44.SessionLogInfo.fromJson(data, this) as T;
+    }
+    if (t == _i45.SessionLogResult) {
+      return _i45.SessionLogResult.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i3.AuthKey?>()) {
       return (data != null ? _i3.AuthKey.fromJson(data, this) : null) as T;
@@ -1409,119 +1444,151 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i10.ColumnDefinition.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.ColumnType?>()) {
-      return (data != null ? _i11.ColumnType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.DatabaseDefinition?>()) {
-      return (data != null
-          ? _i12.DatabaseDefinition.fromJson(data, this)
-          : null) as T;
-    }
-    if (t == _i1.getType<_i13.ForeignKeyAction?>()) {
-      return (data != null ? _i13.ForeignKeyAction.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.ForeignKeyDefinition?>()) {
-      return (data != null
-          ? _i14.ForeignKeyDefinition.fromJson(data, this)
-          : null) as T;
-    }
-    if (t == _i1.getType<_i15.ForeignKeyMatchType?>()) {
-      return (data != null ? _i15.ForeignKeyMatchType.fromJson(data) : null)
+    if (t == _i1.getType<_i11.ColumnMigration?>()) {
+      return (data != null ? _i11.ColumnMigration.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.IndexDefinition?>()) {
-      return (data != null ? _i16.IndexDefinition.fromJson(data, this) : null)
-          as T;
+    if (t == _i1.getType<_i12.ColumnType?>()) {
+      return (data != null ? _i12.ColumnType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.IndexElementDefinition?>()) {
+    if (t == _i1.getType<_i13.DatabaseDefinition?>()) {
       return (data != null
-          ? _i17.IndexElementDefinition.fromJson(data, this)
+          ? _i13.DatabaseDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i18.IndexElementDefinitionType?>()) {
+    if (t == _i1.getType<_i14.DatabaseMigration?>()) {
+      return (data != null ? _i14.DatabaseMigration.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i15.DatabaseMigrationAction?>()) {
       return (data != null
-          ? _i18.IndexElementDefinitionType.fromJson(data)
+          ? _i15.DatabaseMigrationAction.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i19.TableDefinition?>()) {
-      return (data != null ? _i19.TableDefinition.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i20.DistributedCacheEntry?>()) {
+    if (t == _i1.getType<_i16.DatabaseMigrationActionType?>()) {
       return (data != null
-          ? _i20.DistributedCacheEntry.fromJson(data, this)
+          ? _i16.DatabaseMigrationActionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i21.FutureCallEntry?>()) {
-      return (data != null ? _i21.FutureCallEntry.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i22.LogEntry?>()) {
-      return (data != null ? _i22.LogEntry.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i23.LogLevel?>()) {
-      return (data != null ? _i23.LogLevel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i24.LogResult?>()) {
-      return (data != null ? _i24.LogResult.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i25.LogSettings?>()) {
-      return (data != null ? _i25.LogSettings.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i26.LogSettingsOverride?>()) {
+    if (t == _i1.getType<_i17.DatabaseMigrationWarning?>()) {
       return (data != null
-          ? _i26.LogSettingsOverride.fromJson(data, this)
+          ? _i17.DatabaseMigrationWarning.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i27.MessageLogEntry?>()) {
-      return (data != null ? _i27.MessageLogEntry.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i28.MethodInfo?>()) {
-      return (data != null ? _i28.MethodInfo.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i29.QueryLogEntry?>()) {
-      return (data != null ? _i29.QueryLogEntry.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i30.ReadWriteTestEntry?>()) {
+    if (t == _i1.getType<_i18.DatabaseMigrationWarningType?>()) {
       return (data != null
-          ? _i30.ReadWriteTestEntry.fromJson(data, this)
+          ? _i18.DatabaseMigrationWarningType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i31.RuntimeSettings?>()) {
-      return (data != null ? _i31.RuntimeSettings.fromJson(data, this) : null)
-          as T;
+    if (t == _i1.getType<_i19.ForeignKeyAction?>()) {
+      return (data != null ? _i19.ForeignKeyAction.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i32.ServerHealthConnectionInfo?>()) {
+    if (t == _i1.getType<_i20.ForeignKeyDefinition?>()) {
       return (data != null
-          ? _i32.ServerHealthConnectionInfo.fromJson(data, this)
+          ? _i20.ForeignKeyDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i33.ServerHealthMetric?>()) {
+    if (t == _i1.getType<_i21.ForeignKeyMatchType?>()) {
+      return (data != null ? _i21.ForeignKeyMatchType.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i22.IndexDefinition?>()) {
+      return (data != null ? _i22.IndexDefinition.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i23.IndexElementDefinition?>()) {
       return (data != null
-          ? _i33.ServerHealthMetric.fromJson(data, this)
+          ? _i23.IndexElementDefinition.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i34.ServerHealthResult?>()) {
+    if (t == _i1.getType<_i24.IndexElementDefinitionType?>()) {
       return (data != null
-          ? _i34.ServerHealthResult.fromJson(data, this)
+          ? _i24.IndexElementDefinitionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i35.SessionLogEntry?>()) {
-      return (data != null ? _i35.SessionLogEntry.fromJson(data, this) : null)
+    if (t == _i1.getType<_i25.TableDefinition?>()) {
+      return (data != null ? _i25.TableDefinition.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i36.SessionLogFilter?>()) {
-      return (data != null ? _i36.SessionLogFilter.fromJson(data, this) : null)
+    if (t == _i1.getType<_i26.TableMigration?>()) {
+      return (data != null ? _i26.TableMigration.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i37.SessionLogInfo?>()) {
-      return (data != null ? _i37.SessionLogInfo.fromJson(data, this) : null)
+    if (t == _i1.getType<_i27.DistributedCacheEntry?>()) {
+      return (data != null
+          ? _i27.DistributedCacheEntry.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i28.FutureCallEntry?>()) {
+      return (data != null ? _i28.FutureCallEntry.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i38.SessionLogResult?>()) {
-      return (data != null ? _i38.SessionLogResult.fromJson(data, this) : null)
+    if (t == _i1.getType<_i29.LogEntry?>()) {
+      return (data != null ? _i29.LogEntry.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i30.LogLevel?>()) {
+      return (data != null ? _i30.LogLevel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.LogResult?>()) {
+      return (data != null ? _i31.LogResult.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i32.LogSettings?>()) {
+      return (data != null ? _i32.LogSettings.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i33.LogSettingsOverride?>()) {
+      return (data != null
+          ? _i33.LogSettingsOverride.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i34.MessageLogEntry?>()) {
+      return (data != null ? _i34.MessageLogEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i35.MethodInfo?>()) {
+      return (data != null ? _i35.MethodInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i36.QueryLogEntry?>()) {
+      return (data != null ? _i36.QueryLogEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i37.ReadWriteTestEntry?>()) {
+      return (data != null
+          ? _i37.ReadWriteTestEntry.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i38.RuntimeSettings?>()) {
+      return (data != null ? _i38.RuntimeSettings.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i39.ServerHealthConnectionInfo?>()) {
+      return (data != null
+          ? _i39.ServerHealthConnectionInfo.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i40.ServerHealthMetric?>()) {
+      return (data != null
+          ? _i40.ServerHealthMetric.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i41.ServerHealthResult?>()) {
+      return (data != null
+          ? _i41.ServerHealthResult.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i42.SessionLogEntry?>()) {
+      return (data != null ? _i42.SessionLogEntry.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i43.SessionLogFilter?>()) {
+      return (data != null ? _i43.SessionLogFilter.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i44.SessionLogInfo?>()) {
+      return (data != null ? _i44.SessionLogInfo.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i45.SessionLogResult?>()) {
+      return (data != null ? _i45.SessionLogResult.fromJson(data, this) : null)
           as T;
     }
     if (t == List<String>) {
@@ -1533,68 +1600,83 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i39.ClusterServerInfo>) {
+    if (t == List<_i46.ClusterServerInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ClusterServerInfo>(e))
+          .map((e) => deserialize<_i46.ClusterServerInfo>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.TableDefinition>) {
+    if (t == List<_i46.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.TableDefinition>(e))
+          .map((e) => deserialize<_i46.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.IndexElementDefinition>) {
+    if (t == List<_i46.DatabaseMigrationAction>) {
       return (data as List)
-          .map((e) => deserialize<_i39.IndexElementDefinition>(e))
+          .map((e) => deserialize<_i46.DatabaseMigrationAction>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.ColumnDefinition>) {
+    if (t == List<_i46.DatabaseMigrationWarning>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ColumnDefinition>(e))
+          .map((e) => deserialize<_i46.DatabaseMigrationWarning>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.ForeignKeyDefinition>) {
+    if (t == List<_i46.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ForeignKeyDefinition>(e))
+          .map((e) => deserialize<_i46.IndexElementDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.IndexDefinition>) {
+    if (t == List<_i46.ColumnDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i39.IndexDefinition>(e))
+          .map((e) => deserialize<_i46.ColumnDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.LogEntry>) {
-      return (data as List).map((e) => deserialize<_i39.LogEntry>(e)).toList()
+    if (t == List<_i46.ForeignKeyDefinition>) {
+      return (data as List)
+          .map((e) => deserialize<_i46.ForeignKeyDefinition>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i46.IndexDefinition>) {
+      return (data as List)
+          .map((e) => deserialize<_i46.IndexDefinition>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i46.ColumnMigration>) {
+      return (data as List)
+          .map((e) => deserialize<_i46.ColumnMigration>(e))
+          .toList() as dynamic;
+    }
+    if (t == List<_i46.LogEntry>) {
+      return (data as List).map((e) => deserialize<_i46.LogEntry>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i39.LogSettingsOverride>) {
+    if (t == List<_i46.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserialize<_i39.LogSettingsOverride>(e))
+          .map((e) => deserialize<_i46.LogSettingsOverride>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.ServerHealthMetric>) {
+    if (t == List<_i46.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ServerHealthMetric>(e))
+          .map((e) => deserialize<_i46.ServerHealthMetric>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.ServerHealthConnectionInfo>) {
+    if (t == List<_i46.ServerHealthConnectionInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i39.ServerHealthConnectionInfo>(e))
+          .map((e) => deserialize<_i46.ServerHealthConnectionInfo>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.QueryLogEntry>) {
+    if (t == List<_i46.QueryLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i39.QueryLogEntry>(e))
+          .map((e) => deserialize<_i46.QueryLogEntry>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.MessageLogEntry>) {
+    if (t == List<_i46.MessageLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i39.MessageLogEntry>(e))
+          .map((e) => deserialize<_i46.MessageLogEntry>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i39.SessionLogInfo>) {
+    if (t == List<_i46.SessionLogInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i39.SessionLogInfo>(e))
+          .map((e) => deserialize<_i46.SessionLogInfo>(e))
           .toList() as dynamic;
     }
     return super.deserialize<T>(data, t);
@@ -1626,88 +1708,109 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i10.ColumnDefinition) {
       return 'ColumnDefinition';
     }
-    if (data is _i11.ColumnType) {
+    if (data is _i11.ColumnMigration) {
+      return 'ColumnMigration';
+    }
+    if (data is _i12.ColumnType) {
       return 'ColumnType';
     }
-    if (data is _i12.DatabaseDefinition) {
+    if (data is _i13.DatabaseDefinition) {
       return 'DatabaseDefinition';
     }
-    if (data is _i13.ForeignKeyAction) {
+    if (data is _i14.DatabaseMigration) {
+      return 'DatabaseMigration';
+    }
+    if (data is _i15.DatabaseMigrationAction) {
+      return 'DatabaseMigrationAction';
+    }
+    if (data is _i16.DatabaseMigrationActionType) {
+      return 'DatabaseMigrationActionType';
+    }
+    if (data is _i17.DatabaseMigrationWarning) {
+      return 'DatabaseMigrationWarning';
+    }
+    if (data is _i18.DatabaseMigrationWarningType) {
+      return 'DatabaseMigrationWarningType';
+    }
+    if (data is _i19.ForeignKeyAction) {
       return 'ForeignKeyAction';
     }
-    if (data is _i14.ForeignKeyDefinition) {
+    if (data is _i20.ForeignKeyDefinition) {
       return 'ForeignKeyDefinition';
     }
-    if (data is _i15.ForeignKeyMatchType) {
+    if (data is _i21.ForeignKeyMatchType) {
       return 'ForeignKeyMatchType';
     }
-    if (data is _i16.IndexDefinition) {
+    if (data is _i22.IndexDefinition) {
       return 'IndexDefinition';
     }
-    if (data is _i17.IndexElementDefinition) {
+    if (data is _i23.IndexElementDefinition) {
       return 'IndexElementDefinition';
     }
-    if (data is _i18.IndexElementDefinitionType) {
+    if (data is _i24.IndexElementDefinitionType) {
       return 'IndexElementDefinitionType';
     }
-    if (data is _i19.TableDefinition) {
+    if (data is _i25.TableDefinition) {
       return 'TableDefinition';
     }
-    if (data is _i20.DistributedCacheEntry) {
+    if (data is _i26.TableMigration) {
+      return 'TableMigration';
+    }
+    if (data is _i27.DistributedCacheEntry) {
       return 'DistributedCacheEntry';
     }
-    if (data is _i21.FutureCallEntry) {
+    if (data is _i28.FutureCallEntry) {
       return 'FutureCallEntry';
     }
-    if (data is _i22.LogEntry) {
+    if (data is _i29.LogEntry) {
       return 'LogEntry';
     }
-    if (data is _i23.LogLevel) {
+    if (data is _i30.LogLevel) {
       return 'LogLevel';
     }
-    if (data is _i24.LogResult) {
+    if (data is _i31.LogResult) {
       return 'LogResult';
     }
-    if (data is _i25.LogSettings) {
+    if (data is _i32.LogSettings) {
       return 'LogSettings';
     }
-    if (data is _i26.LogSettingsOverride) {
+    if (data is _i33.LogSettingsOverride) {
       return 'LogSettingsOverride';
     }
-    if (data is _i27.MessageLogEntry) {
+    if (data is _i34.MessageLogEntry) {
       return 'MessageLogEntry';
     }
-    if (data is _i28.MethodInfo) {
+    if (data is _i35.MethodInfo) {
       return 'MethodInfo';
     }
-    if (data is _i29.QueryLogEntry) {
+    if (data is _i36.QueryLogEntry) {
       return 'QueryLogEntry';
     }
-    if (data is _i30.ReadWriteTestEntry) {
+    if (data is _i37.ReadWriteTestEntry) {
       return 'ReadWriteTestEntry';
     }
-    if (data is _i31.RuntimeSettings) {
+    if (data is _i38.RuntimeSettings) {
       return 'RuntimeSettings';
     }
-    if (data is _i32.ServerHealthConnectionInfo) {
+    if (data is _i39.ServerHealthConnectionInfo) {
       return 'ServerHealthConnectionInfo';
     }
-    if (data is _i33.ServerHealthMetric) {
+    if (data is _i40.ServerHealthMetric) {
       return 'ServerHealthMetric';
     }
-    if (data is _i34.ServerHealthResult) {
+    if (data is _i41.ServerHealthResult) {
       return 'ServerHealthResult';
     }
-    if (data is _i35.SessionLogEntry) {
+    if (data is _i42.SessionLogEntry) {
       return 'SessionLogEntry';
     }
-    if (data is _i36.SessionLogFilter) {
+    if (data is _i43.SessionLogFilter) {
       return 'SessionLogFilter';
     }
-    if (data is _i37.SessionLogInfo) {
+    if (data is _i44.SessionLogInfo) {
       return 'SessionLogInfo';
     }
-    if (data is _i38.SessionLogResult) {
+    if (data is _i45.SessionLogResult) {
       return 'SessionLogResult';
     }
     return super.getClassNameForObject(data);
@@ -1739,89 +1842,110 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'ColumnDefinition') {
       return deserialize<_i10.ColumnDefinition>(data['data']);
     }
+    if (data['className'] == 'ColumnMigration') {
+      return deserialize<_i11.ColumnMigration>(data['data']);
+    }
     if (data['className'] == 'ColumnType') {
-      return deserialize<_i11.ColumnType>(data['data']);
+      return deserialize<_i12.ColumnType>(data['data']);
     }
     if (data['className'] == 'DatabaseDefinition') {
-      return deserialize<_i12.DatabaseDefinition>(data['data']);
+      return deserialize<_i13.DatabaseDefinition>(data['data']);
+    }
+    if (data['className'] == 'DatabaseMigration') {
+      return deserialize<_i14.DatabaseMigration>(data['data']);
+    }
+    if (data['className'] == 'DatabaseMigrationAction') {
+      return deserialize<_i15.DatabaseMigrationAction>(data['data']);
+    }
+    if (data['className'] == 'DatabaseMigrationActionType') {
+      return deserialize<_i16.DatabaseMigrationActionType>(data['data']);
+    }
+    if (data['className'] == 'DatabaseMigrationWarning') {
+      return deserialize<_i17.DatabaseMigrationWarning>(data['data']);
+    }
+    if (data['className'] == 'DatabaseMigrationWarningType') {
+      return deserialize<_i18.DatabaseMigrationWarningType>(data['data']);
     }
     if (data['className'] == 'ForeignKeyAction') {
-      return deserialize<_i13.ForeignKeyAction>(data['data']);
+      return deserialize<_i19.ForeignKeyAction>(data['data']);
     }
     if (data['className'] == 'ForeignKeyDefinition') {
-      return deserialize<_i14.ForeignKeyDefinition>(data['data']);
+      return deserialize<_i20.ForeignKeyDefinition>(data['data']);
     }
     if (data['className'] == 'ForeignKeyMatchType') {
-      return deserialize<_i15.ForeignKeyMatchType>(data['data']);
+      return deserialize<_i21.ForeignKeyMatchType>(data['data']);
     }
     if (data['className'] == 'IndexDefinition') {
-      return deserialize<_i16.IndexDefinition>(data['data']);
+      return deserialize<_i22.IndexDefinition>(data['data']);
     }
     if (data['className'] == 'IndexElementDefinition') {
-      return deserialize<_i17.IndexElementDefinition>(data['data']);
+      return deserialize<_i23.IndexElementDefinition>(data['data']);
     }
     if (data['className'] == 'IndexElementDefinitionType') {
-      return deserialize<_i18.IndexElementDefinitionType>(data['data']);
+      return deserialize<_i24.IndexElementDefinitionType>(data['data']);
     }
     if (data['className'] == 'TableDefinition') {
-      return deserialize<_i19.TableDefinition>(data['data']);
+      return deserialize<_i25.TableDefinition>(data['data']);
+    }
+    if (data['className'] == 'TableMigration') {
+      return deserialize<_i26.TableMigration>(data['data']);
     }
     if (data['className'] == 'DistributedCacheEntry') {
-      return deserialize<_i20.DistributedCacheEntry>(data['data']);
+      return deserialize<_i27.DistributedCacheEntry>(data['data']);
     }
     if (data['className'] == 'FutureCallEntry') {
-      return deserialize<_i21.FutureCallEntry>(data['data']);
+      return deserialize<_i28.FutureCallEntry>(data['data']);
     }
     if (data['className'] == 'LogEntry') {
-      return deserialize<_i22.LogEntry>(data['data']);
+      return deserialize<_i29.LogEntry>(data['data']);
     }
     if (data['className'] == 'LogLevel') {
-      return deserialize<_i23.LogLevel>(data['data']);
+      return deserialize<_i30.LogLevel>(data['data']);
     }
     if (data['className'] == 'LogResult') {
-      return deserialize<_i24.LogResult>(data['data']);
+      return deserialize<_i31.LogResult>(data['data']);
     }
     if (data['className'] == 'LogSettings') {
-      return deserialize<_i25.LogSettings>(data['data']);
+      return deserialize<_i32.LogSettings>(data['data']);
     }
     if (data['className'] == 'LogSettingsOverride') {
-      return deserialize<_i26.LogSettingsOverride>(data['data']);
+      return deserialize<_i33.LogSettingsOverride>(data['data']);
     }
     if (data['className'] == 'MessageLogEntry') {
-      return deserialize<_i27.MessageLogEntry>(data['data']);
+      return deserialize<_i34.MessageLogEntry>(data['data']);
     }
     if (data['className'] == 'MethodInfo') {
-      return deserialize<_i28.MethodInfo>(data['data']);
+      return deserialize<_i35.MethodInfo>(data['data']);
     }
     if (data['className'] == 'QueryLogEntry') {
-      return deserialize<_i29.QueryLogEntry>(data['data']);
+      return deserialize<_i36.QueryLogEntry>(data['data']);
     }
     if (data['className'] == 'ReadWriteTestEntry') {
-      return deserialize<_i30.ReadWriteTestEntry>(data['data']);
+      return deserialize<_i37.ReadWriteTestEntry>(data['data']);
     }
     if (data['className'] == 'RuntimeSettings') {
-      return deserialize<_i31.RuntimeSettings>(data['data']);
+      return deserialize<_i38.RuntimeSettings>(data['data']);
     }
     if (data['className'] == 'ServerHealthConnectionInfo') {
-      return deserialize<_i32.ServerHealthConnectionInfo>(data['data']);
+      return deserialize<_i39.ServerHealthConnectionInfo>(data['data']);
     }
     if (data['className'] == 'ServerHealthMetric') {
-      return deserialize<_i33.ServerHealthMetric>(data['data']);
+      return deserialize<_i40.ServerHealthMetric>(data['data']);
     }
     if (data['className'] == 'ServerHealthResult') {
-      return deserialize<_i34.ServerHealthResult>(data['data']);
+      return deserialize<_i41.ServerHealthResult>(data['data']);
     }
     if (data['className'] == 'SessionLogEntry') {
-      return deserialize<_i35.SessionLogEntry>(data['data']);
+      return deserialize<_i42.SessionLogEntry>(data['data']);
     }
     if (data['className'] == 'SessionLogFilter') {
-      return deserialize<_i36.SessionLogFilter>(data['data']);
+      return deserialize<_i43.SessionLogFilter>(data['data']);
     }
     if (data['className'] == 'SessionLogInfo') {
-      return deserialize<_i37.SessionLogInfo>(data['data']);
+      return deserialize<_i44.SessionLogInfo>(data['data']);
     }
     if (data['className'] == 'SessionLogResult') {
-      return deserialize<_i38.SessionLogResult>(data['data']);
+      return deserialize<_i45.SessionLogResult>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -1835,26 +1959,26 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.CloudStorageEntry.t;
       case _i7.CloudStorageDirectUploadEntry:
         return _i7.CloudStorageDirectUploadEntry.t;
-      case _i21.FutureCallEntry:
-        return _i21.FutureCallEntry.t;
-      case _i22.LogEntry:
-        return _i22.LogEntry.t;
-      case _i27.MessageLogEntry:
-        return _i27.MessageLogEntry.t;
-      case _i28.MethodInfo:
-        return _i28.MethodInfo.t;
-      case _i29.QueryLogEntry:
-        return _i29.QueryLogEntry.t;
-      case _i30.ReadWriteTestEntry:
-        return _i30.ReadWriteTestEntry.t;
-      case _i31.RuntimeSettings:
-        return _i31.RuntimeSettings.t;
-      case _i32.ServerHealthConnectionInfo:
-        return _i32.ServerHealthConnectionInfo.t;
-      case _i33.ServerHealthMetric:
-        return _i33.ServerHealthMetric.t;
-      case _i35.SessionLogEntry:
-        return _i35.SessionLogEntry.t;
+      case _i28.FutureCallEntry:
+        return _i28.FutureCallEntry.t;
+      case _i29.LogEntry:
+        return _i29.LogEntry.t;
+      case _i34.MessageLogEntry:
+        return _i34.MessageLogEntry.t;
+      case _i35.MethodInfo:
+        return _i35.MethodInfo.t;
+      case _i36.QueryLogEntry:
+        return _i36.QueryLogEntry.t;
+      case _i37.ReadWriteTestEntry:
+        return _i37.ReadWriteTestEntry.t;
+      case _i38.RuntimeSettings:
+        return _i38.RuntimeSettings.t;
+      case _i39.ServerHealthConnectionInfo:
+        return _i39.ServerHealthConnectionInfo.t;
+      case _i40.ServerHealthMetric:
+        return _i40.ServerHealthMetric.t;
+      case _i42.SessionLogEntry:
+        return _i42.SessionLogEntry.t;
     }
     return null;
   }

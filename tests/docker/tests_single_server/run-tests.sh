@@ -24,6 +24,7 @@ dart test test/serialization_test.dart
 dart test test/service_protocol_test.dart
 dart test test/websocket_test.dart
 dart test test/types_test.dart
+dart test test/migrations_test.dart
 dart test test/exception_test.dart
 
 #echo "### Running unit tests"

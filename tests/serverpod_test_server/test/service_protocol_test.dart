@@ -448,21 +448,26 @@ void main() {
         var target = await serviceClient.insights.getTargetDatabaseDefinition();
         var live = await serviceClient.insights.getLiveDatabaseDefinition();
 
-        live.matchesDefinition(target);
+        live.matchesTarget(target);
       });
     });
   });
 }
 
 extension on service.DatabaseDefinition {
-  void matchesDefinition(service.DatabaseDefinition definition) {
-    expect(tables, hasLength(definition.tables.length));
+  void matchesTarget(service.DatabaseDefinition target) {
+    // The length should be one more as the live definition contains the
+    // migrations table.
+    expect(tables, hasLength(target.tables.length + 1));
     expect(tables.map((e) => e.name),
-        containsAll(definition.tables.map((e) => e.name)));
+        containsAll(target.tables.map((e) => e.name)));
 
     for (var table in tables) {
+      if (table.name == 'serverpod_migrations') {
+        continue;
+      }
       table.matchesDefinition(
-          definition.tables.firstWhere((e) => e.name == table.name));
+          target.tables.firstWhere((e) => e.name == table.name));
     }
   }
 }
