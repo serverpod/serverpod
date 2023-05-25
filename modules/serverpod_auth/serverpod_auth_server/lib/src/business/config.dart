@@ -120,7 +120,7 @@ class AuthConfig {
   /// Firebase console.
   final String firebaseServiceAccountKeyJson;
 
-  /// The maximum length of passwords when signing up with email. 
+  /// The maximum length of passwords when signing up with email.
   /// Default is 128 characters.
   final int maxPasswordLength;
 

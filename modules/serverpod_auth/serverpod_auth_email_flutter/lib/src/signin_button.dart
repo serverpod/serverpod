@@ -23,7 +23,6 @@ class SignInWithEmailButton extends StatefulWidget {
   /// If this value is modified, the server must be updated to match.
   final int? minPasswordLength;
 
-
   /// Creates a new Sign in with Email button.
   const SignInWithEmailButton({
     required this.caller,

@@ -212,7 +212,8 @@ class Emails {
         return false;
       }
 
-      if (password.length < AuthConfig.current.minPasswordLength || password.length > AuthConfig.current.maxPasswordLength) {
+      if (password.length < AuthConfig.current.minPasswordLength ||
+          password.length > AuthConfig.current.maxPasswordLength) {
         return false;
       }
 
