@@ -13,10 +13,10 @@ void main() {
   setUp(() {});
 
   group('Exception tests', () {
-    test('Working without exception', () async {
+    test('Sending normal primitive data', () async {
       expect(await client.exceptionTest.workingWithoutException(), 'Success');
     });
-    test('Working with ExceptionWithData exception', () async {
+    test('Serialize and deserialize custom server exception type', () async {
       dynamic exception;
       try {
         await client.exceptionTest.throwExceptionWithData();
@@ -27,7 +27,7 @@ void main() {
       expect(exception.runtimeType, test_client.ExceptionWithData);
     });
 
-    test('Catch specific type', () async {
+    test('Serialize and deserialize custom server exception with data', () async {
       ExceptionWithData? exceptionWithData;
       try {
         await client.exceptionTest.throwExceptionWithData();
