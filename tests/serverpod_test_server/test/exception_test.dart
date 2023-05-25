@@ -27,7 +27,8 @@ void main() {
       expect(exception.runtimeType, test_client.ExceptionWithData);
     });
 
-    test('Serialize and deserialize custom server exception with data', () async {
+    test('Serialize and deserialize custom server exception with data',
+        () async {
       ExceptionWithData? exceptionWithData;
       try {
         await client.exceptionTest.throwExceptionWithData();
