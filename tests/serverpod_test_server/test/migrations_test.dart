@@ -83,7 +83,6 @@ Future<void> testMigration({
       priority: 1,
     );
 
-    print(sql);
     await serviceClient.insights.executeSql(sql);
 
     // Validate the migration.
