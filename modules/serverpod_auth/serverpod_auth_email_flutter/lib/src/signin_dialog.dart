@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_email_flutter/src/auth.dart';
 
+const _defaultMaxPasswordLength = 128;
+const _defaultMinPasswordLength = 8;
+
 enum _Page {
   createAccount,
   confirmEmail,
@@ -14,11 +17,15 @@ enum _Page {
 class SignInWithEmailDialog extends StatefulWidget {
   final Caller caller;
   final VoidCallback onSignedIn;
+  final int maxPasswordLength;
+  final int minPasswordLength;
 
   const SignInWithEmailDialog({
     Key? key,
     required this.caller,
     required this.onSignedIn,
+    this.maxPasswordLength = _defaultMaxPasswordLength,
+    this.minPasswordLength = _defaultMinPasswordLength,
   }) : super(key: key);
 
   @override
@@ -283,7 +290,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         TextField(
           enabled: _enabled,
-          maxLength: 32,
+          maxLength: widget.maxPasswordLength,
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
@@ -350,15 +357,15 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     var password = _passwordController.text;
-    if (password.length < 8) {
+    if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Minimum 8 characters';
+        _passwordIssue = 'Minimum ${widget.minPasswordLength} characters';
       });
       return;
     }
-    if (password.length > 32) {
+    if (password.length > widget.maxPasswordLength) {
       setState(() {
-        _passwordIssue = 'Maximum 32 characters';
+        _passwordIssue = 'Maximum ${widget.maxPasswordLength} characters';
       });
       return;
     }
@@ -438,9 +445,9 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     var password = _passwordController.text;
-    if (password.length < 8) {
+    if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Minimum 8 characters';
+        _passwordIssue = 'Minimum ${widget.minPasswordLength} characters';
       });
       return;
     }
@@ -547,6 +554,8 @@ void showSignInWithEmailDialog({
   required BuildContext context,
   required Caller caller,
   required VoidCallback onSignedIn,
+  int? maxPasswordLength,
+  int? minPasswordLength,
 }) {
   showDialog(
     context: context,
@@ -554,6 +563,8 @@ void showSignInWithEmailDialog({
       return SignInWithEmailDialog(
         caller: caller,
         onSignedIn: onSignedIn,
+        maxPasswordLength: maxPasswordLength ?? _defaultMaxPasswordLength,
+        minPasswordLength: minPasswordLength ?? _defaultMinPasswordLength,
       );
     },
   );
