@@ -16,17 +16,6 @@ void main() {
     test('Working without exception', () async {
       expect(await client.exceptionTest.workingWithoutException(), 'Success');
     });
-    test('Working with SerializableException', () async {
-      dynamic exception;
-      try {
-        await client.exceptionTest.throwSerializableException();
-      } catch (e) {
-        exception = e;
-      }
-
-      expect(exception is test_client.SerializableException, true);
-    });
-
     test('Working with ExceptionWithData exception', () async {
       dynamic exception;
       try {
@@ -35,7 +24,7 @@ void main() {
         exception = e;
       }
 
-      expect(exception is test_client.ExceptionWithData, true);
+      expect(exception.runtimeType, test_client.ExceptionWithData);
     });
 
     test('Catch specific type', () async {

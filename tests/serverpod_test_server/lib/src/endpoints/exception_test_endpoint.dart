@@ -2,9 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/exception_with_data.dart';
 
 class ExceptionTestEndpoint extends Endpoint {
-  Future<String> throwSerializableException(Session session) async {
-    throw SerializableException();
-  }
 
   Future<String> throwNormalException(Session session) async {
     throw Exception('Something went wrong');
