@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ['2.17.0', '3.0.0']
+        dart-version: ['2.19.0', '3.0.0']
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1.3
