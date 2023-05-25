@@ -4,7 +4,7 @@ description: Starting point for a Serverpod server.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
   serverpod:
