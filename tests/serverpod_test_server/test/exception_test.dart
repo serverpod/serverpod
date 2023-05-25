@@ -1,5 +1,4 @@
-import 'package:serverpod_test_client/serverpod_test_client.dart'
-    as test_client;
+import 'package:serverpod_test_client/serverpod_test_client.dart' as test_client;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
