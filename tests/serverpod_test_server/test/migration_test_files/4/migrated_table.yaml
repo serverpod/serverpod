@@ -1,0 +1,10 @@
+class: MigratedTable
+table: migrated_table
+fields:
+  anInt: int, parent=migrated_table
+  aString: String?
+  aStringWithoutDefault: String
+indexes:
+  migrated_table_index:
+    fields: anInt
+    unique: false

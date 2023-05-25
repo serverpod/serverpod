@@ -83,6 +83,7 @@ Future<void> testMigration({
       priority: 1,
     );
 
+    print(sql);
     await serviceClient.insights.executeSql(sql);
 
     // Validate the migration.
@@ -183,10 +184,37 @@ void main() {
       );
     });
 
-    test('Apply migrations 2 - modify table', () async {
+    test('Apply migrations 2 - add optional column', () async {
       await testMigration(
         serviceClient: serviceClient,
         version: '2',
+        force: false,
+        expectSuccess: true,
+      );
+    });
+
+    test('Apply migrations 3 - add not null column', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '3',
+        force: false,
+        expectSuccess: false,
+      );
+    });
+
+    test('Apply migrations 3 - add not null column (force)', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '3',
+        force: true,
+        expectSuccess: true,
+      );
+    });
+
+    test('Apply migrations 4 - add index and parent', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '4',
         force: false,
         expectSuccess: true,
       );
