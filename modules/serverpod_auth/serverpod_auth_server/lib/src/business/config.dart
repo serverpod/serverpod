@@ -120,6 +120,14 @@ class AuthConfig {
   /// Firebase console.
   final String firebaseServiceAccountKeyJson;
 
+  /// The maximum length of passwords when signing up with email.
+  /// Default is 128 characters.
+  final int maxPasswordLength;
+
+  /// The minimum length of passwords when signing up with email.
+  /// Default is 8 characters.
+  final int minPasswordLength;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
@@ -146,5 +154,7 @@ class AuthConfig {
     this.extraSaltyHash = true,
     this.firebaseServiceAccountKeyJson =
         'config/firebase_service_account_key.json',
+    this.maxPasswordLength = 128,
+    this.minPasswordLength = 8,
   });
 }
