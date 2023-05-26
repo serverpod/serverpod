@@ -203,7 +203,7 @@ class Server {
       return;
     } 
     
-    if (request.headers.contentType == ContentType.binary) {
+    if (request.headers.contentType?.mimeType == ContentType.binary.mimeType) {
       readBody = false;
     }
 
