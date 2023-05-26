@@ -543,13 +543,6 @@ class _EndpointExceptionTest extends _i1.EndpointRef {
   @override
   String get name => 'exceptionTest';
 
-  _i2.Future<String> throwSerializableException() =>
-      caller.callServerEndpoint<String>(
-        'exceptionTest',
-        'throwSerializableException',
-        {},
-      );
-
   _i2.Future<String> throwNormalException() =>
       caller.callServerEndpoint<String>(
         'exceptionTest',

@@ -95,8 +95,6 @@ abstract class SerializationManager {
       return 'ByteData';
     } else if (data is Duration) {
       return 'Duration';
-    } else if (data is SerializableException) {
-      return 'SerializableException';
     } else if (data is UuidValue) {
       return 'UuidValue';
     }
@@ -121,8 +119,6 @@ abstract class SerializationManager {
         return deserialize<ByteData>(data['data']);
       case 'Duration':
         return deserialize<Duration>(data['data']);
-      case 'SerializableException':
-        return SerializableException();
       case 'UuidValue':
         return deserialize<UuidValue>(data['data']);
     }
