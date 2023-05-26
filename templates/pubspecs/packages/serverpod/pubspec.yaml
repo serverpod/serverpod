@@ -9,10 +9,6 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 documentation: https://docs.serverpod.dev
 
-screenshots:
-  - description: 'Serverpod - the missing server for Flutter'
-    path: screenshots/serverpod.webp
-
 topics:
   - backend
   - server
