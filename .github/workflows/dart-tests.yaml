@@ -12,6 +12,8 @@ on:
     branches:
       - main
       - dev
+      - stable-1.0
+      - stable-1.1
 jobs:
   dart_format:
     name: dart format

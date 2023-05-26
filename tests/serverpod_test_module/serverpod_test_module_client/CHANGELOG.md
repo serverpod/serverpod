@@ -1,3 +1,9 @@
+## 1.1.1
+- feat: Allows min and max password lengths to be configured in auth module.
+- fix: Improved support for Dart 3 and Flutter 3.10.
+- fix: Serializable exceptions now working with modules.
+- fix: Improved support for Google sign-in on web.
+
 ## 1.1.0
 - feat: Lightweight run mode and support for serverless platforms.
 - feat: Support for Google Cloud Platform deployments, including Terraform module.
