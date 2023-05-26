@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -229,7 +228,14 @@ abstract class Route {
   /// Returns the body of the request, assuming it is standard URL encoded form
   /// post request.
   static Future<Map<String, String>> getBody(HttpRequest request) async {
-    var body = await _readBody(request);
+    String? body;
+
+    try {
+      body = await request.readStringBody(maxRequestSize: 10240);
+    } catch (e, stackTrace) {
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+    }
 
     var params = <String, String>{};
 
@@ -249,20 +255,6 @@ abstract class Route {
     }
 
     return params;
-  }
-
-  static Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > 10240) {
-        return null;
-      }
-      data += segment;
-    }
-    return const Utf8Decoder().convert(data);
   }
 }
 
