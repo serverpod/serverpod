@@ -1,5 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+
+/// Exception thrown when an input stream exceeds the maximum allowed size.
+class MaximumSizeExceeded implements Exception {
+  /// The maximum allowed size of the input stream.
+  final int maxSize;
+
+  /// Creates a new [MaximumSizeExceeded] exception with the specified maximum
+  /// size.
+  const MaximumSizeExceeded(this.maxSize);
+
+  /// Returns a string representation of the exception.
+  @override
+  String toString() => 'Input stream exceeded the maxSize: $maxSize';
+}
 
 /// Extends [HttpRequest] with useful methods.
 extension HttpRequestExtensions on HttpRequest {
@@ -22,12 +37,12 @@ extension HttpRequestExtensions on HttpRequest {
   }
 
   /// Reads the body of an HTTP request and returns it as a String.
-  /// If the request's content length exceeds the [maxRequestSize], an exception
+  /// If the request's content length exceeds the [maxSize], an exception
   /// is thrown.
-  Future<String?> readStringBody({required int maxRequestSize}) async {
+  Future<String> readString({required int maxSize}) async {
     if (contentLength != -1) {
-      if (contentLength > maxRequestSize) {
-        throw Exception('The request size exceeds the maximum limit allowed.');
+      if (contentLength > maxSize) {
+        throw MaximumSizeExceeded(maxSize);
       }
 
       return utf8.decodeStream(this);
@@ -35,8 +50,8 @@ extension HttpRequestExtensions on HttpRequest {
 
     var data = <int>[];
     await for (var chunk in this) {
-      if (data.length + chunk.length > maxRequestSize) {
-        throw Exception('The request size exceeds the maximum limit allowed.');
+      if (data.length + chunk.length > maxSize) {
+        throw MaximumSizeExceeded(maxSize);
       }
 
       data.addAll(chunk);
@@ -44,5 +59,24 @@ extension HttpRequestExtensions on HttpRequest {
 
     return utf8.decode(data);
   }
-}
 
+  /// Reads the body of an HTTP request and returns it as a Uint8List.
+  /// If the request's content length exceeds the [maxSize], an exception
+  /// is thrown.
+  Future<Uint8List> readBytes({required int maxSize}) async {
+    if (contentLength != -1 && contentLength > maxSize) {
+      throw MaximumSizeExceeded(maxSize);
+    }
+
+    var result = BytesBuilder();
+    await for (var chunk in this) {
+      if (result.length + chunk.length > maxSize) {
+        throw MaximumSizeExceeded(maxSize);
+      }
+
+      result.add(chunk);
+    }
+
+    return result.takeBytes();
+  }
+}

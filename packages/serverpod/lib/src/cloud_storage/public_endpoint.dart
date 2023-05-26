@@ -66,10 +66,17 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     if (uploadInfo.authKey != key) return false;
 
-    var body = await _readBinaryBody(session.httpRequest);
-    if (body == null) return false;
+    Uint8List? body;
+    try {
+      body = await session.httpRequest.readBytes(
+        maxSize: server.serverpod.config.maxRequestSize,
+      );
+    } catch (e) {
+      stderr.writeln('$e');
+      return false;
+    }
 
-    var byteData = ByteData.view(Uint8List.fromList(body).buffer);
+    var byteData = ByteData.view(body.buffer);
 
     var storage = server.serverpod.storage[storageId];
     if (storage == null) return false;
@@ -82,19 +89,6 @@ class CloudStoragePublicEndpoint extends Endpoint {
     );
 
     return true;
-  }
-
-  Future<List<int>?> _readBinaryBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > server.serverpod.config.maxRequestSize) return null;
-      data += segment;
-    }
-    return data;
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an

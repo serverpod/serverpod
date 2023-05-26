@@ -37,7 +37,7 @@ class FileUploader {
       try {
         var result = await http.post(
           _uploadDescription.url,
-          body: await stream.toList(),
+          body: await _readStreamData(stream),
           headers: {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
@@ -87,6 +87,15 @@ class FileUploader {
   //   return Utf8Decoder().convert(data);
   // }
 
+  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
+    var result = BytesBuilder();
+
+    await for (var chunk in stream) {
+      result.add(chunk);
+    }
+    
+    return result.takeBytes();
+  }
 }
 
 enum _UploadType {

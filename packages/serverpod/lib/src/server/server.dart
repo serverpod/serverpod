@@ -226,8 +226,8 @@ class Server {
     String? body;
     if (readBody) {
       try {
-        body = await request.readStringBody(
-          maxRequestSize: serverpod.config.maxRequestSize,
+        body = await request.readString(
+          maxSize: serverpod.config.maxRequestSize,
         );
       } catch (e, stackTrace) {
         stderr.writeln(
@@ -242,7 +242,7 @@ class Server {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body!, request);
+    var result = await _handleUriCall(uri, body, request);
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {

@@ -231,7 +231,7 @@ abstract class Route {
     String? body;
 
     try {
-      body = await request.readStringBody(maxRequestSize: 10240);
+      body = await request.readString(maxSize: 10240);
     } catch (e, stackTrace) {
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
