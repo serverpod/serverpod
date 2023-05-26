@@ -87,13 +87,13 @@ class FileUploader {
   //   return Utf8Decoder().convert(data);
   // }
 
-  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
+  Future<Uint8List> _readStreamData(Stream<List<int>> stream) async {
     var result = BytesBuilder();
 
     await for (var chunk in stream) {
       result.add(chunk);
     }
-    
+
     return result.takeBytes();
   }
 }
