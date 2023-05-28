@@ -5,7 +5,9 @@ import 'package:redis/redis.dart';
 
 /// Callback when messages are received on a specific channel from Redis.
 typedef RedisSubscriptionCallback = void Function(
-    String channel, String message);
+  String channel,
+  String message,
+);
 
 /// The [RedisController] maintains an active connection to the Redis server. It
 /// handles caching, publishing, and subscriptions of strings. If the connection
@@ -70,12 +72,12 @@ class RedisController {
     _connecting = true;
 
     try {
-      var connection = RedisConnection();
+      final connection = RedisConnection();
 
       _command = await connection.connect(host, port);
       if (password != null) {
         // TODO: Username
-        var result = await _command!.send_object(['AUTH', password]);
+        final dynamic result = await _command!.send_object(['AUTH', password]);
         _connecting = false;
         return (result == 'OK');
       } else {
@@ -84,10 +86,13 @@ class RedisController {
       }
     } catch (e, stackTrace) {
       _connecting = false;
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      stderr
+        ..writeln(
+          '${DateTime.now().toUtc()} Internal server error. '
+          'Failed to connect to Redis.',
+        )
+        ..writeln('$e')
+        ..writeln('$stackTrace');
       return false;
     }
   }
@@ -97,7 +102,7 @@ class RedisController {
       if (_pubSubCommand == null) {
         await _connectPubSub();
       }
-      await Future.delayed(const Duration(seconds: 5));
+      await Future<void>.delayed(const Duration(seconds: 5));
     }
   }
 
@@ -111,10 +116,11 @@ class RedisController {
     _connectingPubSub = true;
 
     try {
-      var connection = RedisConnection();
+      final connection = RedisConnection();
       _pubSubCommand = await connection.connect(host, port);
       if (password != null) {
-        var result = await _pubSubCommand!.send_object(['AUTH', password]);
+        final dynamic result =
+            await _pubSubCommand!.send_object(['AUTH', password]);
         _connecting = false;
         if (result != 'OK') return false;
       }
@@ -124,15 +130,18 @@ class RedisController {
       }, (e, stackTrace) {
         _invalidatePubSub();
 
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-        stderr.writeln('Local stacktrace:');
-        stderr.writeln('${StackTrace.current}');
+        stderr
+          ..writeln(
+            '${DateTime.now().toUtc()} Internal server error. '
+            'Failed to connect to Redis when creating PubSub.',
+          )
+          ..writeln('$e')
+          ..writeln('$stackTrace')
+          ..writeln('Local stacktrace:')
+          ..writeln('${StackTrace.current}');
       });
 
-      var stream = _pubSub!.getStream();
+      final stream = _pubSub!.getStream();
       unawaited(_listenToSubscriptions(stream));
 
       if (_subscriptions.keys.isNotEmpty) {
@@ -145,10 +154,13 @@ class RedisController {
       _connectingPubSub = false;
       _invalidatePubSub();
 
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      stderr
+        ..writeln(
+          '${DateTime.now().toUtc()} Internal server error. '
+          'Failed to connect to Redis when creating PubSub.',
+        )
+        ..writeln('$e')
+        ..writeln('$stackTrace');
 
       return false;
     }
@@ -156,14 +168,14 @@ class RedisController {
 
   Future<void> _listenToSubscriptions(Stream stream) async {
     try {
-      await for (var message in stream) {
+      await for (final message in stream) {
         if (message is List && message.length == 3) {
           if (message[0] == 'message') {
             // We got a message (can also be confirmation on publish)
-            String channel = message[1];
-            String data = message[2];
+            final channel = message[1] as String;
+            final data = message[2] as String;
 
-            var callback = _subscriptions[channel];
+            final callback = _subscriptions[channel];
             if (callback != null) {
               callback(channel, data);
             }
@@ -200,11 +212,11 @@ class RedisController {
   Future<bool> set(String key, String message, {Duration? lifetime}) async {
     await _connect();
     try {
-      var object = ['SET', key, message];
+      final object = ['SET', key, message];
       if (lifetime != null) {
         object.addAll(['PX', '${lifetime.inMilliseconds}']);
       }
-      var result = await _command?.send_object(object);
+      final dynamic result = await _command?.send_object(object);
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();
@@ -217,7 +229,7 @@ class RedisController {
   Future<String?> get(String key) async {
     await _connect();
     try {
-      var result = await _command?.get(key);
+      final dynamic result = await _command?.get(key);
       if (result is String) {
         return result;
       }
@@ -232,7 +244,7 @@ class RedisController {
   Future<bool> del(String key) async {
     await _connect();
     try {
-      var result = await _command?.send_object(['DEL', key]);
+      final dynamic result = await _command?.send_object(['DEL', key]);
       return result == 'OK';
     } catch (e) {
       _invalidateCommand();
@@ -247,7 +259,7 @@ class RedisController {
       return false;
     }
     try {
-      var result = await _command?.send_object(['FLUSHALL']);
+      final dynamic result = await _command?.send_object(['FLUSHALL']);
       return (result == 'OK');
     } catch (e) {
       _invalidateCommand();
@@ -295,7 +307,7 @@ class RedisController {
       if (!await _connect()) {
         return false;
       }
-      var result = await _command!.send_object(
+      final dynamic result = await _command!.send_object(
         ['PUBLISH', channel, message],
       );
       //TODO: fix: result seems to be a counter. (https://redis.io/commands/publish/#return)

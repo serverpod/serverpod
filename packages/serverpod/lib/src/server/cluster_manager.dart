@@ -1,5 +1,5 @@
-import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
+import '../../protocol.dart';
+import '../../serverpod.dart';
 
 /// The cluster manager keeps track of other servers within the same cluster.
 class ClusterManager {
@@ -14,34 +14,35 @@ class ClusterManager {
   /// Gets information about the server cluster this server is running within.
   /// The information can be up to two minutes old.
   Future<ClusterInfo> get getClusterInfo async {
-    var info =
+    final info =
         await _server.caches.localPrio.get<ClusterInfo>(_clusterInfoCacheKey);
     if (info != null) {
       return info;
     }
 
-    var session = await _server.serverpod.createSession(enableLogging: false);
+    final session = await _server.serverpod.createSession(enableLogging: false);
 
     /// Select connection infos form the last two minutes
-    var connectionInfos = await ServerHealthConnectionInfo.find(
+    final connectionInfos = await ServerHealthConnectionInfo.find(
       session,
-      where: (t) => (t.timestamp >
+      where: (t) =>
+          t.timestamp >
           DateTime.now().subtract(
             const Duration(minutes: 2),
-          )),
+          ),
     );
 
-    var serverIds = <String>{};
-    for (var connectionInfo in connectionInfos) {
+    final serverIds = <String>{};
+    for (final connectionInfo in connectionInfos) {
       serverIds.add(connectionInfo.serverId);
     }
 
-    var serverInfos = <ClusterServerInfo>[];
-    for (var serverId in serverIds) {
+    final serverInfos = <ClusterServerInfo>[];
+    for (final serverId in serverIds) {
       serverInfos.add(ClusterServerInfo(serverId: serverId));
     }
 
-    var clusterInfo = ClusterInfo(servers: serverInfos);
+    final clusterInfo = ClusterInfo(servers: serverInfos);
     await _server.caches.localPrio.put(
       _clusterInfoCacheKey,
       clusterInfo,

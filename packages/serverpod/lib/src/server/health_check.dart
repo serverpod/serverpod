@@ -1,16 +1,16 @@
 import 'dart:math';
 
+import 'package:system_resources/system_resources.dart';
+
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
-
-import 'package:system_resources/system_resources.dart';
 
 /// Performs all health checks on the [Serverpod].
 Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
   var now = DateTime.now().toUtc();
   now = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute);
 
-  var result = await defaultHealthCheckMetrics(pod, now);
+  final result = await defaultHealthCheckMetrics(pod, now);
 
   if (pod.healthCheckHandler != null) {
     result.metrics.addAll(await pod.healthCheckHandler!(pod, now));
@@ -40,22 +40,24 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
   var dbHealthy = false;
 
   try {
-    var startTime = DateTime.now();
-    var rnd = Random().nextInt(1000000);
+    final startTime = DateTime.now();
+    final rnd = Random().nextInt(1000000);
 
-    var databaseConnection = pod.databaseConfig.createConnection();
+    final databaseConnection = pod.databaseConfig.newConnection;
 
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(
       number: rnd,
     );
 
-    var session = await pod.createSession(enableLogging: false);
+    final session = await pod.createSession(enableLogging: false);
     await databaseConnection.insert(entry, session: session);
 
     // Read entry
-    entry = await databaseConnection.findById<ReadWriteTestEntry>(entry.id!,
-        session: session);
+    entry = await databaseConnection.findById<ReadWriteTestEntry>(
+      entry.id!,
+      session: session,
+    );
     await session.close();
 
     // Verify random number
@@ -67,7 +69,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
   // ignore: empty_catches
   catch (e) {}
 
-  var connectionsInfo = pod.server.httpServer.connectionsInfo();
+  final connectionsInfo = pod.server.httpServer.connectionsInfo();
 
   return ServerHealthResult(
     metrics: [

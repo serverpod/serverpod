@@ -1,4 +1,4 @@
-import 'package:serverpod/protocol.dart';
+import '../../protocol.dart';
 
 /// Comparison methods for [DatabaseDefinition].
 extension DatabaseComparisons on DatabaseDefinition {
@@ -10,7 +10,7 @@ extension DatabaseComparisons on DatabaseDefinition {
   /// Finds a table by its name, or returns null if no table with the given
   /// name.
   TableDefinition? findTableNamed(String tableName) {
-    for (var table in tables) {
+    for (final table in tables) {
       if (table.name == tableName) {
         return table;
       }
@@ -25,8 +25,8 @@ extension DatabaseComparisons on DatabaseDefinition {
       return false;
     }
 
-    for (var table in tables) {
-      var otherTable = other.findTableNamed(table.name);
+    for (final table in tables) {
+      final otherTable = other.findTableNamed(table.name);
       if (otherTable == null || !table.like(otherTable)) {
         return false;
       }
@@ -55,7 +55,7 @@ extension TableComparisons on TableDefinition {
   /// Finds a column by its name, or returns null if no column with the given
   /// name is found.
   ColumnDefinition? findColumnNamed(String columnName) {
-    for (var column in columns) {
+    for (final column in columns) {
       if (column.name == columnName) {
         return column;
       }
@@ -66,7 +66,7 @@ extension TableComparisons on TableDefinition {
   /// Finds an index by its name, or returns null if no index with the given
   /// name is found.
   IndexDefinition? findIndexNamed(String indexName, {bool ignoreCase = false}) {
-    for (var index in indexes) {
+    for (final index in indexes) {
       if (ignoreCase) {
         if (index.indexName.toLowerCase() == indexName.toLowerCase()) {
           return index;
@@ -86,7 +86,7 @@ extension TableComparisons on TableDefinition {
     String keyName, {
     bool ignoreCase = false,
   }) {
-    for (var key in foreignKeys) {
+    for (final key in foreignKeys) {
       if (ignoreCase) {
         if (key.constraintName.toLowerCase() == keyName.toLowerCase()) {
           return key;
@@ -107,8 +107,8 @@ extension TableComparisons on TableDefinition {
     if (other.columns.length != columns.length) {
       return false;
     }
-    for (var column in columns) {
-      var otherColumn = other.findColumnNamed(column.name);
+    for (final column in columns) {
+      final otherColumn = other.findColumnNamed(column.name);
       if (otherColumn == null || !column.like(otherColumn)) {
         return false;
       }
@@ -118,8 +118,8 @@ extension TableComparisons on TableDefinition {
     if (other.indexes.length != indexes.length) {
       return false;
     }
-    for (var index in indexes) {
-      var otherIndex = other.findIndexNamed(
+    for (final index in indexes) {
+      final otherIndex = other.findIndexNamed(
         index.indexName,
         ignoreCase: true,
       );
@@ -136,8 +136,8 @@ extension TableComparisons on TableDefinition {
     if (other.foreignKeys.length != foreignKeys.length) {
       return false;
     }
-    for (var key in foreignKeys) {
-      var otherKey = other.findForeignKeyDefinitionNamed(
+    for (final key in foreignKeys) {
+      final otherKey = other.findForeignKeyDefinitionNamed(
         key.constraintName,
         ignoreCase: true,
       );
@@ -164,10 +164,10 @@ extension ColumnComparisons on ColumnDefinition {
       return false;
     }
 
-    return (other.isNullable == isNullable &&
+    return other.isNullable == isNullable &&
         other.columnType == columnType &&
         other.name == name &&
-        other.columnDefault == columnDefault);
+        other.columnDefault == columnDefault;
   }
 }
 
@@ -219,7 +219,7 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
     if (other.columns.length != columns.length) {
       return false;
     }
-    for (int i = 0; i < columns.length; i += 1) {
+    for (var i = 0; i < columns.length; i += 1) {
       if (other.columns[i] != columns[i]) {
         return false;
       }
@@ -229,7 +229,7 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
     if (other.referenceColumns.length != referenceColumns.length) {
       return false;
     }
-    for (int i = 0; i < referenceColumns.length; i += 1) {
+    for (var i = 0; i < referenceColumns.length; i += 1) {
       if (other.referenceColumns[i] != referenceColumns[i]) {
         return false;
       }

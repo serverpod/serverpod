@@ -1,5 +1,5 @@
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/cache/cache.dart';
+import '../../serverpod.dart';
+import 'cache.dart';
 
 /// The [GlobalCache] provides a mean to cache [SerializableEntity]s across
 /// multiple clustered servers. When accessing an entity it will either be in a
@@ -10,10 +10,7 @@ import 'package:serverpod/src/cache/cache.dart';
 abstract class GlobalCache extends Cache {
   /// Creates a new global cache.
   GlobalCache(
-    int maxLocalEntries,
-    SerializationManager serializationManager,
-  ) : super(
-          maxLocalEntries,
-          serializationManager,
-        );
+    super.maxLocalEntries,
+    super.serializationManager,
+  );
 }

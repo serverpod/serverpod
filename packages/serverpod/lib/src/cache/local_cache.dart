@@ -11,18 +11,21 @@ class LocalCache extends Cache {
   final Map<String, Set<String>> _groups = <String, Set<String>>{};
 
   /// Creates a new [LocalCache].
-  LocalCache(int maxEntries, SerializationManager serializationManager)
-      : super(maxEntries, serializationManager);
+  LocalCache(super.maxEntries, super.serializationManager);
 
   @override
-  Future<void> put(String key, SerializableEntity object,
-      {Duration? lifetime, String? group}) async {
+  Future<void> put(
+    String key,
+    SerializableEntity object, {
+    Duration? lifetime,
+    String? group,
+  }) async {
     if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
     }
 
     // Create entry
-    var entry = _CacheEntry(
+    final entry = _CacheEntry(
       key: key,
       group: group,
       serializedObject: SerializationManager.encode(object),
@@ -37,7 +40,7 @@ class LocalCache extends Cache {
     _entries[key] = entry;
 
     if (group != null) {
-      var groupKeys = _groups[group];
+      final groupKeys = _groups[group];
       if (groupKeys == null) {
         _groups[group] = <String>{key};
       } else {
@@ -45,28 +48,31 @@ class LocalCache extends Cache {
       }
     }
 
-    assert(_entries.length == _keyList.length,
-        'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
+    assert(
+      _entries.length == _keyList.length,
+      'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}',
+    );
   }
 
   void _removeOldestEntry() {
     // Remove oldest key
-    var oldKey = _keyList.removeLast();
-    var entry = _entries.remove(oldKey.key)!;
+    final oldKey = _keyList.removeLast();
+    final entry = _entries.remove(oldKey.key)!;
 
     // Remove from group
     if (entry.group != null) _removeKeyFromGroup(oldKey.key, entry.group!);
   }
 
   void _removeKeyFromGroup(String key, String group) {
-    var groupKeys = _groups[group]!;
-    groupKeys.remove(key);
+    final groupKeys = _groups[group]! //
+      ..remove(key);
+
     if (groupKeys.isEmpty) _groups.remove(group);
   }
 
   @override
   Future<bool> containsKey(String key) async {
-    var entry = _entries[key];
+    final entry = _entries[key];
 
     if (entry == null) return false;
 
@@ -80,7 +86,7 @@ class LocalCache extends Cache {
 
   @override
   Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
-    var entry = _entries[key];
+    final entry = _entries[key];
 
     if (entry == null) return null;
 
@@ -95,7 +101,7 @@ class LocalCache extends Cache {
   @override
   Future<void> invalidateKey(String key) async {
     // Remove from entries
-    var entry = _entries.remove(key);
+    final entry = _entries.remove(key);
     if (entry == null) return;
 
     // Remove from group
@@ -106,12 +112,15 @@ class LocalCache extends Cache {
   }
 
   void _removeKeyFromKeyList(String key, DateTime time) {
-    var idx = binarySearch<_KeyListKey>(_keyList, _KeyListKey(key, time),
-        compare: (_KeyListKey a, _KeyListKey b) {
-      return b.creationTime.compareTo(a.creationTime);
-    });
+    var idx = binarySearch<_KeyListKey>(
+      _keyList,
+      _KeyListKey(key, time),
+      compare: (a, b) {
+        return b.creationTime.compareTo(a.creationTime);
+      },
+    );
 
-    assert(idx != -1);
+    assert(idx != -1, 'idx == -1');
 
     // Step backwards in case entries have the exact same time
     while (idx > 0 && _keyList[idx - 1].creationTime == time) {
@@ -129,12 +138,12 @@ class LocalCache extends Cache {
 
   @override
   Future<void> invalidateGroup(String group) async {
-    var keys = _groups[group];
+    final keys = _groups[group];
     if (keys == null) return;
 
     // Make a copy of the set before starting to delete keys
-    var keyList = keys.toList();
-    for (var key in keyList) {
+    final keyList = keys.toList();
+    for (final key in keyList) {
       await invalidateKey(key);
     }
   }
@@ -148,9 +157,15 @@ class LocalCache extends Cache {
 
   @override
   int get localSize {
-    assert(_entries.length == _keyList.length,
-        'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}');
-    assert(_groups.length <= _entries.length);
+    assert(
+      _entries.length == _keyList.length,
+      'Entry length and key list length mismatch ${_entries.length} / ${_keyList.length}',
+    );
+    assert(
+      _groups.length <= _entries.length,
+      '_groups.length <= _entries.length',
+    );
+    
     return _entries.length;
   }
 
@@ -169,8 +184,8 @@ class _CacheEntry {
 
   _CacheEntry({
     required this.key,
-    this.group,
     required this.serializedObject,
+    this.group,
     this.lifetime,
   }) : creationTime = DateTime.now();
 }

@@ -33,8 +33,8 @@ class Database {
     int id, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
-    return await conn.findById<T>(
+    final conn = await databaseConnection;
+    return conn.findById<T>(
       id,
       session: session,
       transaction: transaction,
@@ -55,9 +55,9 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.find<T>(
+    return conn.find<T>(
       where: where,
       limit: limit,
       offset: offset,
@@ -71,8 +71,7 @@ class Database {
   }
 
   /// Find a single [TableRow] from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, user [orderByList].
+  /// expression, optionally using  [offset], and [orderBy]
   Future<T?> findSingleRow<T extends TableRow>({
     Expression? where,
     int? offset,
@@ -81,9 +80,9 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.findSingleRow<T>(
+    return conn.findSingleRow<T>(
       where: where,
       offset: offset,
       orderBy: orderBy,
@@ -102,9 +101,9 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.count<T>(
+    return conn.count<T>(
       where: where,
       limit: limit,
       useCache: useCache,
@@ -118,9 +117,9 @@ class Database {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.update(
+    return conn.update(
       row,
       session: session,
       transaction: transaction,
@@ -132,7 +131,7 @@ class Database {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
     await conn.insert(
       row,
@@ -146,9 +145,9 @@ class Database {
     required Expression where,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.delete<T>(
+    return conn.delete<T>(
       where: where,
       session: session,
       transaction: transaction,
@@ -161,9 +160,9 @@ class Database {
     required Expression where,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.deleteAndReturn<T>(
+    return conn.deleteAndReturn<T>(
       where: where,
       session: session,
       transaction: transaction,
@@ -175,9 +174,9 @@ class Database {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.deleteRow(
+    return conn.deleteRow(
       row,
       session: session,
       transaction: transaction,
@@ -186,12 +185,23 @@ class Database {
 
   /// Stores a file in the database, specifically using the
   /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(String storageId, String path, ByteData byteData,
-      DateTime? expiration, bool verified) async {
-    var conn = await databaseConnection;
+  Future<void> storeFile(
+    String storageId,
+    String path,
+    ByteData byteData,
+    DateTime? expiration,
+    bool verified,
+  ) async {
+    final conn = await databaseConnection;
 
-    return await conn.storeFile(storageId, path, byteData, expiration, verified,
-        session: session);
+    return conn.storeFile(
+      storageId,
+      path,
+      byteData,
+      expiration,
+      verified,
+      session: session,
+    );
   }
 
   /// Retrieves a file stored in the database or null if it doesn't exist,
@@ -201,9 +211,9 @@ class Database {
     String storageId,
     String path,
   ) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.retrieveFile(storageId, path, session: session);
+    return conn.retrieveFile(storageId, path, session: session);
   }
 
   /// Verifies that a file has been successfully uploaded.
@@ -211,9 +221,9 @@ class Database {
     String storageId,
     String path,
   ) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
-    return await conn.verifyFile(storageId, path, session: session);
+    return conn.verifyFile(storageId, path, session: session);
   }
 
   /// Executes a single SQL query. A [List] of rows represented of another
@@ -223,7 +233,7 @@ class Database {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
     return conn.query(
       query,
@@ -240,7 +250,7 @@ class Database {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var conn = await databaseConnection;
+    final conn = await databaseConnection;
 
     return conn.execute(
       query,
@@ -257,8 +267,8 @@ class Database {
     FutureOr<R> Function()? orElse,
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) async {
-    var conn = await databaseConnection;
-    return await conn.transaction(
+    final conn = await databaseConnection;
+    return conn.transaction(
       transactionFunction,
       retryOptions: retryOptions,
       orElse: orElse,

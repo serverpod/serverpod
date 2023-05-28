@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/analyze.dart';
-import 'package:serverpod/src/database/bulk_data.dart';
-import 'package:serverpod/src/hot_reload/hot_reload.dart';
-import 'package:serverpod/src/server/health_check.dart';
-
 import '../../serverpod.dart';
 import '../cache/cache.dart';
+import '../database/analyze.dart';
+import '../database/bulk_data.dart';
 import '../generated/protocol.dart';
+import '../hot_reload/hot_reload.dart';
+import '../server/health_check.dart';
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -41,7 +40,10 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(
-      Session session, int? numEntries, SessionLogFilter? filter) async {
+    Session session,
+    int? numEntries,
+    SessionLogFilter? filter,
+  ) async {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
@@ -74,7 +76,7 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.db.find<SessionLogEntry>(
+    final rows = (await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
@@ -82,17 +84,17 @@ class InsightsEndpoint extends Endpoint {
     ))
         .cast<SessionLogEntry>();
 
-    var sessionLogInfo = <SessionLogInfo>[];
-    for (var logEntry in rows) {
-      var logRows = await session.db.find<LogEntry>(
+    final sessionLogInfo = <SessionLogInfo>[];
+    for (final logEntry in rows) {
+      final logRows = await session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
-      var queryRows = await session.db.find<QueryLogEntry>(
+      final queryRows = await session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
-      var messageRows = await session.db.find<MessageLogEntry>(
+      final messageRows = await session.db.find<MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
@@ -111,8 +113,11 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
-      Session session, int? numEntries, SessionLogFilter? filter) async {
-    var logs = session.serverpod.logManager
+    Session session,
+    int? numEntries,
+    SessionLogFilter? filter,
+  ) async {
+    final logs = session.serverpod.logManager
         .getOpenSessionLogs(numEntries ?? 100, filter);
     return SessionLogResult(sessionLog: logs);
   }
@@ -141,7 +146,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth(Session session) async {
-    return await performHealthChecks(pod);
+    return performHealthChecks(pod);
   }
 
   /// Gets historical health check data. Returns data for the whole cluster.
@@ -151,13 +156,13 @@ class InsightsEndpoint extends Endpoint {
     DateTime end,
   ) async {
     // Load metrics and connection information.
-    var metrics = await ServerHealthMetric.find(
+    final metrics = await ServerHealthMetric.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
       orderBy: ServerHealthMetric.t.timestamp,
     );
 
-    var connectionInfos = await ServerHealthConnectionInfo.find(
+    final connectionInfos = await ServerHealthConnectionInfo.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
       orderBy: ServerHealthMetric.t.timestamp,
@@ -177,7 +182,7 @@ class InsightsEndpoint extends Endpoint {
       );
       return false;
     }
-    return await HotReloader.hotReload();
+    return HotReloader.hotReload();
   }
 
   /// Returns the target structure of the database defined in the
@@ -190,7 +195,8 @@ class InsightsEndpoint extends Endpoint {
   /// See also:
   /// - [getLiveDatabaseDefinition]
   Future<DatabaseDefinition> getTargetDatabaseDefinition(
-      Session session) async {
+    Session session,
+  ) async {
     return session.serverpod.serializationManager.getTargetDatabaseDefinition();
   }
 
@@ -222,6 +228,6 @@ class InsightsEndpoint extends Endpoint {
 
   /// Executes SQL commands. Returns the number of rows affected.
   Future<int> executeSql(Session session, String sql) async {
-    return await session.db.execute(sql);
+    return session.db.execute(sql);
   }
 }

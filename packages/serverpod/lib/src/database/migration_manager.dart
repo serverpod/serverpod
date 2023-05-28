@@ -1,12 +1,12 @@
 import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod/protocol.dart';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/analyze.dart';
-
+import '../../protocol.dart';
+import '../../serverpod.dart';
 import '../generated/protocol.dart' as internal;
+import 'analyze.dart';
 import 'extensions.dart';
 
 final SerializationManager _serializationManager = internal.Protocol();
@@ -39,14 +39,15 @@ class MigrationManager {
     await session.db.query(_queryCreateMigrations);
 
     // Get installed versions
-    var versions = <MigrationVersion>[];
-    var result = await session.db.query(_queryGetMigrations);
-    for (var row in result) {
-      assert(row.length == 4);
-      String module = row[0];
-      String version = row[1];
-      int priority = row[2];
-      DateTime timestamp = row[3];
+    final versions = <MigrationVersion>[];
+    final result = await session.db.query(_queryGetMigrations);
+    for (final row in result) {
+      assert(row.length == 4, 'Invalid ros count');
+
+      final module = row[0] as String;
+      final version = row[1] as String;
+      final priority = row[2] as int;
+      final timestamp = row[3] as DateTime;
 
       versions.add(
         MigrationVersion(
@@ -60,14 +61,14 @@ class MigrationManager {
     installedVersions.addAll(versions);
 
     // Get available migrations
-    var migrationDirectory = Directory(
+    final migrationDirectory = Directory(
       path.join(Directory.current.path, 'migrations'),
     );
-    var migrationModules = await _listAvailableModules(
+    final migrationModules = await _listAvailableModules(
       directory: migrationDirectory,
     );
 
-    for (var module in migrationModules) {
+    for (final module in migrationModules) {
       availableVersions[module] = await _listMigrationVersions(
         directory: migrationDirectory,
         module: module,
@@ -78,14 +79,14 @@ class MigrationManager {
   /// Returns true if the database structure is up to date. If not, it will
   /// print a warning to stderr.
   Future<bool> verifyDatabaseIntegrity(Session session) async {
-    var warnings = <String>[];
+    final warnings = <String>[];
 
-    var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
-    var targetDatabase =
+    final liveDatabase = await DatabaseAnalyzer.analyze(session.db);
+    final targetDatabase =
         session.serverpod.serializationManager.getTargetDatabaseDefinition();
 
-    for (var table in targetDatabase.tables) {
-      var liveTable = liveDatabase.findTableNamed(table.name);
+    for (final table in targetDatabase.tables) {
+      final liveTable = liveDatabase.findTableNamed(table.name);
       if (liveTable == null) {
         warnings.add('Table "${table.name}" is missing.');
         continue;
@@ -99,7 +100,7 @@ class MigrationManager {
       stderr.writeln(
         'WARNING: The database does not match the target database:',
       );
-      for (var warning in warnings) {
+      for (final warning in warnings) {
         stderr.writeln(' - $warning');
       }
     }
@@ -112,7 +113,7 @@ class MigrationManager {
 
   /// Returns the latest version of the given module from aviailable migrations.
   String getLatestVersion(String module) {
-    var versions = availableVersions[module];
+    final versions = availableVersions[module];
     if (versions == null || versions.isEmpty) {
       throw Exception('No migrations found for module $module.');
     }
@@ -121,8 +122,8 @@ class MigrationManager {
 
   /// Returns true if the latest version of a module is installed.
   bool isLatestInstalled(String module) {
-    var latest = getLatestVersion(module);
-    var installed = installedVersions.firstWhereOrNull(
+    final latest = getLatestVersion(module);
+    final installed = installedVersions.firstWhereOrNull(
       (element) => element.module == module,
     );
     if (installed == null) {
@@ -139,7 +140,7 @@ class MigrationManager {
   /// Returns the installed version of the given module, or null if no version
   /// is installed.
   String? getInstalledVersion(String module) {
-    var installed = installedVersions.firstWhereOrNull(
+    final installed = installedVersions.firstWhereOrNull(
       (element) => element.module == module,
     );
     if (installed == null) {
@@ -150,11 +151,11 @@ class MigrationManager {
 
   /// Lists all versions newer than the given version for the given module.
   List<String> getVersionsNewerThan(String module, String version) {
-    var versions = availableVersions[module];
+    final versions = availableVersions[module];
     if (versions == null || versions.isEmpty) {
       return [];
     }
-    var index = versions.indexOf(version);
+    final index = versions.indexOf(version);
     if (index == -1) {
       throw Exception('Version $version not found for module $module.');
     }
@@ -163,7 +164,7 @@ class MigrationManager {
 
   /// Migrates all modules to the latest version.
   Future<void> migrateToLatest(Session session) async {
-    for (var module in availableModules) {
+    for (final module in availableModules) {
       if (!isLatestInstalled(module)) {
         await migrateToLatestModule(session, module);
       }
@@ -177,27 +178,29 @@ class MigrationManager {
     }
     if (isAnyInstalled(module)) {
       // Apply all migrations up to this point
-      var version = getInstalledVersion(module);
-      var newerVersions = getVersionsNewerThan(module, version!);
-      for (var newerVersion in newerVersions) {
-        var migration = await Migration.load(module, newerVersion);
+      final version = getInstalledVersion(module);
+      final newerVersions = getVersionsNewerThan(module, version!);
+      for (final newerVersion in newerVersions) {
+        final migration = await Migration.load(module, newerVersion);
         try {
           await session.db.execute(migration.sqlMigration);
         } catch (e) {
-          stderr.writeln('Failed to apply migration $newerVersion on $module');
-          stderr.writeln('$e');
+          stderr
+            ..writeln('Failed to apply migration $newerVersion on $module')
+            ..writeln('$e');
         }
       }
     } else {
       // Apply definition from last migration
-      var latest = getLatestVersion(module);
-      var migration = await Migration.load(module, latest);
+      final latest = getLatestVersion(module);
+      final migration = await Migration.load(module, latest);
 
       try {
         await session.db.execute(migration.sqlDefinition);
       } catch (e) {
-        stderr.writeln('Failed to apply definition $latest on $module');
-        stderr.writeln('$e');
+        stderr
+          ..writeln('Failed to apply definition $latest on $module')
+          ..writeln('$e');
       }
     }
   }
@@ -206,9 +209,9 @@ class MigrationManager {
     required Directory directory,
   }) async {
     try {
-      var modules = <String>[];
-      var entities = directory.listSync();
-      for (var entity in entities) {
+      final modules = <String>[];
+      final entities = directory.listSync();
+      for (final entity in entities) {
         if (entity is Directory) {
           modules.add(path.basename(entity.path));
         }
@@ -225,11 +228,11 @@ class MigrationManager {
     required String module,
   }) async {
     try {
-      var versionDir = Directory(path.join(directory.path, module));
+      final versionDir = Directory(path.join(directory.path, module));
 
-      var versions = <String>[];
-      var entities = versionDir.listSync();
-      for (var entity in entities) {
+      final versions = <String>[];
+      final entities = versionDir.listSync();
+      for (final entity in entities) {
         if (entity is Directory) {
           versions.add(path.basename(entity.path));
         }
@@ -245,11 +248,12 @@ class MigrationManager {
 /// A migration to a version of the database that has been applied.
 class MigrationVersion {
   /// Creates a new version.
-  MigrationVersion(
-      {required this.module,
-      required this.version,
-      required this.priority,
-      required this.timestamp});
+  MigrationVersion({
+    required this.module,
+    required this.version,
+    required this.priority,
+    required this.timestamp,
+  });
 
   /// The name of the module associated with the migration.
   final String module;
@@ -285,45 +289,45 @@ class Migration {
 
   /// Loads the specified migration version from the migrations directory.
   static Future<Migration> load(String module, String version) async {
-    var migrationDirectory = Directory(
+    final migrationDirectory = Directory(
       path.join(Directory.current.path, 'migrations', module, version),
     );
 
     // Load definition and migration SQL
-    var definitionSqlFile = File(
+    final definitionSqlFile = File(
       path.join(migrationDirectory.path, 'definition.sql'),
     );
-    var sqlDefinition = await definitionSqlFile.readAsString();
+    final sqlDefinition = await definitionSqlFile.readAsString();
 
-    var migrationSqlFile = File(
+    final migrationSqlFile = File(
       path.join(migrationDirectory.path, 'migration.sql'),
     );
-    var sqlMigration = await migrationSqlFile.readAsString();
+    final sqlMigration = await migrationSqlFile.readAsString();
 
     // Load definition file
-    var definitionJsonFile = File(
+    final definitionJsonFile = File(
       path.join(migrationDirectory.path, 'definition.json'),
     );
-    var definitionJson = await definitionJsonFile.readAsString();
-    var definition = _serializationManager.decodeWithType(
+    final definitionJson = await definitionJsonFile.readAsString();
+    final definition = _serializationManager.decodeWithType(
       definitionJson,
-    ) as DatabaseDefinition;
+    ) as DatabaseDefinition?;
 
     // Load migration file
-    var migrationJsonFile = File(
+    final migrationJsonFile = File(
       path.join(migrationDirectory.path, 'migration.json'),
     );
-    var migrationJson = await migrationJsonFile.readAsString();
-    var migration = _serializationManager.decodeWithType(
+    final migrationJson = await migrationJsonFile.readAsString();
+    final migration = _serializationManager.decodeWithType(
       migrationJson,
-    ) as DatabaseMigration;
+    ) as DatabaseMigration?;
 
     return Migration(
       version: version,
       sqlDefinition: sqlDefinition,
       sqlMigration: sqlMigration,
-      definition: definition,
-      migration: migration,
+      definition: definition!,
+      migration: migration!,
     );
   }
 

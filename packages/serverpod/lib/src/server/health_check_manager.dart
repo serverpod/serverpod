@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
-import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:system_resources/system_resources.dart';
-import 'package:serverpod/src/util/date_time_extension.dart';
+
+import '../../protocol.dart';
+import '../../serverpod.dart';
+import '../util/date_time_extension.dart';
+import 'command_line_args.dart';
+import 'health_check.dart';
 
 /// Performs health checks on the server once a minute, typically this class
 /// is managed internally by Serverpod. Writes results to the database.
-/// The [HealthCheckManager] is also responsible for periodically read and update
-/// the server configuration.
+/// The [HealthCheckManager] is also responsible for periodically read and 
+/// update the server configuration.
 class HealthCheckManager {
   final Serverpod _pod;
 
@@ -45,23 +46,23 @@ class HealthCheckManager {
     _timer?.cancel();
   }
 
-  void _performHealthCheck() async {
+  Future<void> _performHealthCheck() async {
     if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
     }
 
-    var session = await _pod.createSession(enableLogging: false);
+    final session = await _pod.createSession(enableLogging: false);
     var numHealthChecks = 0;
 
     try {
-      var result = await performHealthChecks(_pod);
+      final result = await performHealthChecks(_pod);
       numHealthChecks = result.metrics.length;
 
-      for (var metric in result.metrics) {
+      for (final metric in result.metrics) {
         await ServerHealthMetric.insert(session, metric);
       }
 
-      for (var connectionInfo in result.connectionInfos) {
+      for (final connectionInfo in result.connectionInfos) {
         await ServerHealthConnectionInfo.insert(session, connectionInfo);
       }
     } catch (e) {
@@ -95,45 +96,51 @@ class HealthCheckManager {
   }
 
   Future<void> _cleanUpClosedSessions() async {
-    var session = await _pod.createSession(enableLogging: false);
+    final session = await _pod.createSession(enableLogging: false);
 
     try {
-      var encoder = DatabasePoolManager.encoder;
+      final encoder = DatabasePoolManager.encoder;
 
-      var now = encoder.convert(DateTime.now().toUtc());
-      var threeMinutesAgo = encoder.convert(
+      final now = encoder.convert(DateTime.now().toUtc());
+      final threeMinutesAgo = encoder.convert(
         DateTime.now().subtract(const Duration(minutes: 3)).toUtc(),
       );
-      var serverStartTime = encoder.convert(_pod.startedTime);
-      var serverId = encoder.convert(_pod.serverId);
+      final serverStartTime = encoder.convert(_pod.startedTime);
+      final serverId = encoder.convert(_pod.serverId);
 
       // Touch all sessions that have been opened by this server.
-      var touchQuery =
-          'UPDATE serverpod_session_log SET touched = $now WHERE "serverId" = $serverId AND "isOpen" = TRUE AND "time" > $serverStartTime';
+      final touchQuery =
+          'UPDATE serverpod_session_log SET touched = $now '
+          'WHERE "serverId" = $serverId '
+          'AND "isOpen" = TRUE AND "time" > $serverStartTime';
       await session.db.query(touchQuery);
 
       // Close sessions that haven't been touched in 3 minutes.
-      var closeQuery =
-          'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
+      final closeQuery =
+          'UPDATE serverpod_session_log '
+          'SET "isOpen" = FALSE '
+          'WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
       await session.db.query(closeQuery);
     } catch (e, stackTrace) {
-      stderr.writeln('Failed to cleanup closed sessions: $e');
-      stderr.write('$stackTrace');
+      stderr
+        ..writeln('Failed to cleanup closed sessions: $e')
+        ..write('$stackTrace');
     }
     await session.close();
   }
 
   Future<void> _optimizeHealthCheckData(int numHealthChecks) async {
-    var session = await _pod.createSession(enableLogging: false);
+    final session = await _pod.createSession(enableLogging: false);
     try {
-      // Optimize connection info entreis.
+      // Optimize connection info entries.
       var didOptimizeMinutes = await _optimizeConnectionInfoEntries(
         session,
         1,
         const Duration(hours: 48),
       );
       if (!didOptimizeMinutes) {
-        // All minutes are packed into hours, we can safely pack hours into days.
+        // All minutes are packed into hours, we can safely pack hours into
+        // days.
         await _optimizeConnectionInfoEntries(
           session,
           60,
@@ -149,7 +156,8 @@ class HealthCheckManager {
         numHealthChecks,
       );
       if (!didOptimizeMinutes) {
-        // All minutes are packed into hours, we can safely pack hours into days.
+        // All minutes are packed into hours, we can safely pack
+        // hours into days.
         await _optimizeHealthCheckEntries(
           session,
           60,
@@ -169,8 +177,8 @@ class HealthCheckManager {
     int srcGranularity,
     Duration preserveDelay,
   ) async {
-    var now = DateTime.now().toUtc();
-    var startTime = DateTime.utc(
+    final now = DateTime.now().toUtc();
+    final startTime = DateTime.utc(
       now.year,
       now.month,
       now.day,
@@ -178,7 +186,7 @@ class HealthCheckManager {
     ).subtract(preserveDelay);
 
     // Select entries from a past hour or day.
-    var entries = await ServerHealthConnectionInfo.find(
+    final entries = await ServerHealthConnectionInfo.find(
       session,
       where: (t) =>
           (t.timestamp < startTime) &
@@ -193,16 +201,16 @@ class HealthCheckManager {
       // There is nothing here to optimize.
       return false;
     }
-    var firstEntryTime = srcGranularity == 1
+    final firstEntryTime = srcGranularity == 1
         ? entries.first.timestamp.asHour
         : entries.first.timestamp.asDay;
 
     // There is stuff to optimize.
-    int maxActive = 0;
-    int maxIdle = 0;
-    int maxClosing = 0;
+    var maxActive = 0;
+    var maxIdle = 0;
+    var maxClosing = 0;
 
-    for (var entry in entries) {
+    for (final entry in entries) {
       if ((srcGranularity == 1 && firstEntryTime.isSameHour(entry.timestamp)) ||
           (srcGranularity == 60 && firstEntryTime.isSameDay(entry.timestamp))) {
         if (entry.active > maxActive) maxActive = entry.active;
@@ -212,7 +220,7 @@ class HealthCheckManager {
     }
 
     // Write new, compressed entry.
-    var hourlyInfo = ServerHealthConnectionInfo(
+    final hourlyInfo = ServerHealthConnectionInfo(
       serverId: _pod.serverId,
       timestamp: firstEntryTime,
       active: maxActive,
@@ -255,8 +263,8 @@ class HealthCheckManager {
       return false;
     }
 
-    var now = DateTime.now().toUtc();
-    var startTime = DateTime.utc(
+    final now = DateTime.now().toUtc();
+    final startTime = DateTime.utc(
       now.year,
       now.month,
       now.day,
@@ -264,7 +272,7 @@ class HealthCheckManager {
     ).subtract(preserveDelay);
 
     // Select entries from a past hour or day.
-    var entries = await ServerHealthMetric.find(
+    final entries = await ServerHealthMetric.find(
       session,
       where: (t) =>
           (t.timestamp < startTime) &
@@ -281,13 +289,13 @@ class HealthCheckManager {
     }
 
     // There is stuff to optimize.
-    var firstEntryTime = srcGranularity == 1
+    final firstEntryTime = srcGranularity == 1
         ? entries.first.timestamp.asHour
         : entries.first.timestamp.asDay;
 
     // Sort entries by their name/type.
-    var entryMap = <String, List<ServerHealthMetric>>{};
-    for (var entry in entries) {
+    final entryMap = <String, List<ServerHealthMetric>>{};
+    for (final entry in entries) {
       if (entryMap.containsKey(entry.name)) {
         entryMap[entry.name]!.add(entry);
       } else {
@@ -295,12 +303,12 @@ class HealthCheckManager {
       }
     }
 
-    for (var entryName in entryMap.keys) {
+    for (final entryName in entryMap.keys) {
       var numEntries = 0;
       var totalValue = 0.0;
       var hasFail = false;
 
-      for (var entry in entryMap[entryName]!) {
+      for (final entry in entryMap[entryName]!) {
         if ((srcGranularity == 1 &&
                 firstEntryTime.isSameHour(entry.timestamp)) ||
             (srcGranularity == 60 &&
@@ -312,7 +320,7 @@ class HealthCheckManager {
       }
 
       // Write new, compressed entry.
-      var compressedEntry = ServerHealthMetric(
+      final compressedEntry = ServerHealthMetric(
         serverId: _pod.serverId,
         name: entryName,
         timestamp: firstEntryTime,
@@ -348,8 +356,8 @@ class HealthCheckManager {
 
 Duration _timeUntilNextMinute() {
   // Add a second to make sure we don't end up on the same minute.
-  var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-  var next =
+  final now = DateTime.now().toUtc().add(const Duration(seconds: 2));
+  final next =
       DateTime.utc(now.year, now.month, now.day, now.hour, now.minute).add(
     const Duration(minutes: 1),
   );

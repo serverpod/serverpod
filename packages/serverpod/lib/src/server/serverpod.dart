@@ -1,23 +1,23 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
-import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/migration_manager.dart';
-import 'package:serverpod/src/redis/controller.dart';
-import 'package:serverpod/src/server/cluster_manager.dart';
-import 'package:serverpod/src/server/future_call_manager.dart';
-import 'package:serverpod/src/server/health_check_manager.dart';
-import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../serverpod.dart';
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
+import '../cloud_storage/public_endpoint.dart';
+import '../config/version.dart';
+import '../database/migration_manager.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
+import '../redis/controller.dart';
+import 'cluster_manager.dart';
+import 'command_line_args.dart';
+import 'future_call_manager.dart';
+import 'health_check_manager.dart';
+import 'log_manager.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -147,8 +147,8 @@ class Serverpod {
         logFailedQueries: true,
         logStreamingSessionsContinuously: true,
         logLevel: internal.LogLevel.info,
-        slowSessionDuration: 1.0,
-        slowQueryDuration: 1.0,
+        slowSessionDuration: 1,
+        slowQueryDuration: 1,
       ),
       logMalformedCalls: false,
       logServiceCalls: false,
@@ -157,9 +157,9 @@ class Serverpod {
   }
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    var session = await createSession(enableLogging: false);
+    final session = await createSession(enableLogging: false);
     try {
-      var oldRuntimeSettings =
+      final oldRuntimeSettings =
           await session.db.findSingleRow<internal.RuntimeSettings>();
       if (oldRuntimeSettings == null) {
         settings.id = null;
@@ -177,9 +177,10 @@ class Serverpod {
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
-    var session = await createSession(enableLogging: false);
+    final session = await createSession(enableLogging: false);
     try {
-      var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
+      final settings =
+          await session.db.findSingleRow<internal.RuntimeSettings>();
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -247,7 +248,7 @@ class Serverpod {
       );
     }
 
-    _caches = Caches(serializationManager, config, serverId, redisController);
+    _caches = Caches(serializationManager, redisController);
 
     server = Server(
       serverpod: this,
@@ -284,10 +285,12 @@ class Serverpod {
     webServer = WebServer(serverpod: this);
 
     // Print version and runtime arguments.
-    stdout.writeln(
-      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
-    );
-    stdout.writeln(commandLineArgs.toString());
+    stdout
+      ..writeln(
+        'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, '
+        'time: ${DateTime.now().toUtc()}',
+      )
+      ..writeln(commandLineArgs.toString());
     logVerbose(config.toString());
   }
 
@@ -303,15 +306,15 @@ class Serverpod {
       }
 
       // Load runtime settings and check connection to the database.
-      bool databaseConnectionIsUp = false;
-      bool printedDatabaseConnectionError = false;
+      var databaseConnectionIsUp = false;
+      var printedDatabaseConnectionError = false;
 
       while (!databaseConnectionIsUp) {
-        var session = await createSession(enableLogging: false);
+        final session = await createSession(enableLogging: false);
         try {
           // Initialize migration manager.
           logVerbose('Initializing migration manager.');
-          var migrationManager = MigrationManager();
+          final migrationManager = MigrationManager();
           await migrationManager.initialize(session);
 
           if (commandLineArgs.applyMigrations) {
@@ -326,17 +329,19 @@ class Serverpod {
           databaseConnectionIsUp = true;
         } catch (e, stackTrace) {
           // Write connection error to stderr.
-          stderr.writeln(
-            'Failed to connect to the database. Retrying in 10 seconds. $e',
-          );
-          stderr.writeln('$stackTrace');
+          stderr
+            ..writeln(
+              'Failed to connect to the database. Retrying in 10 seconds. $e',
+            )
+            ..writeln('$stackTrace');
           if (!printedDatabaseConnectionError) {
-            stderr.writeln('Database configuration:');
-            stderr.writeln(config.database.toString());
+            stderr
+              ..writeln('Database configuration:')
+              ..writeln(config.database.toString());
             printedDatabaseConnectionError = true;
           }
 
-          await Future.delayed(const Duration(seconds: 10));
+          await Future<void>.delayed(const Duration(seconds: 10));
         }
 
         try {
@@ -420,11 +425,13 @@ class Serverpod {
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
-      stderr.writeln(
-        '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
-      );
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      stderr
+        ..writeln(
+          '${DateTime.now().toUtc()} Internal server error. '
+          'Zoned exception.',
+        )
+        ..writeln('$e')
+        ..writeln('$stackTrace');
     });
   }
 
@@ -455,7 +462,7 @@ class Serverpod {
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
 
-    var endpoints = internal.Endpoints();
+    final endpoints = internal.Endpoints();
 
     _serviceServer = Server(
       serverpod: this,
@@ -492,8 +499,10 @@ class Serverpod {
     Duration delay, {
     String? identifier,
   }) async {
-    assert(server.running,
-        'Server is not running, call start() before using future calls');
+    assert(
+      server.running,
+      'Server is not running, call start() before using future calls',
+    );
     await _futureCallManager.scheduleFutureCall(
       callName,
       object,
@@ -511,8 +520,10 @@ class Serverpod {
     DateTime time, {
     String? identifier,
   }) async {
-    assert(server.running,
-        'Server is not running, call start() before using future calls');
+    assert(
+      server.running,
+      'Server is not running, call start() before using future calls',
+    );
     await _futureCallManager.scheduleFutureCall(
       callName,
       object,
@@ -539,7 +550,7 @@ class Serverpod {
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
   Future<InternalSession> createSession({bool enableLogging = true}) async {
-    var session = InternalSession(
+    final session = InternalSession(
       server: server,
       enableLogging: enableLogging,
     );
@@ -551,10 +562,10 @@ class Serverpod {
     if (redisController != null) {
       await redisController!.stop();
     }
-    server.shutdown();
-    _serviceServer?.shutdown();
+    await server.shutdown();
+    await _serviceServer?.shutdown();
     _futureCallManager.stop();
-    _healthCheckManager.stop;
+    _healthCheckManager.stop();
     exit(0);
   }
 

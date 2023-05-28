@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -21,14 +22,14 @@ class LogManager {
   /// Returns a new unique temporary session id. The id will be negative, and
   /// ids are only unique to this running instance.
   int nextTemporarySessionId() {
-    var id = _nextTemporarySessionId;
+    final id = _nextTemporarySessionId;
     _nextTemporarySessionId -= 1;
     return id;
   }
 
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(this.runtimeSettings) {
-    for (var override in runtimeSettings.logSettingsOverrides) {
+    for (final override in runtimeSettings.logSettingsOverrides) {
       if (override.method != null && override.endpoint != null) {
         _methodOverrides['${override.endpoint}.${override.method}'] =
             override.logSettings;
@@ -59,7 +60,7 @@ class LogManager {
 
   /// Gets the log settings for a [StreamingSession].
   LogSettings getLogSettingsForStreamingSession({required String endpoint}) {
-    var settings = _endpointOverrides[endpoint];
+    final settings = _endpointOverrides[endpoint];
     if (settings != null) return settings;
 
     return runtimeSettings.logSettings;
@@ -74,7 +75,9 @@ class LogManager {
   LogSettings getLogSettingsForSession(Session session) {
     if (session is MethodCallSession) {
       return _getLogSettingsForMethodCallSession(
-          session.endpointName, session.methodName);
+        session.endpointName,
+        session.methodName,
+      );
     } else if (session is StreamingSession) {
       assert(
         session.sessionLogs.currentEndpoint != null,
@@ -95,7 +98,7 @@ class LogManager {
   /// is created. Each call to this method should have a corresponding
   /// [finalizeSessionLog] call.
   SessionLogEntryCache initializeSessionLog(Session session) {
-    var logEntry = SessionLogEntryCache(session);
+    final logEntry = SessionLogEntryCache(session);
     _openSessionLogs.add(logEntry);
     return logEntry;
   }
@@ -108,7 +111,7 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = getLogSettingsForSession(session);
+    final logSettings = getLogSettingsForSession(session);
     if (logSettings.logAllQueries) {
       return true;
     }
@@ -127,8 +130,8 @@ class LogManager {
     required Session session,
     required LogEntry entry,
   }) {
-    var logSettings = getLogSettingsForSession(session);
-    var serverLogLevel = (logSettings.logLevel);
+    final logSettings = getLogSettingsForSession(session);
+    final serverLogLevel = logSettings.logLevel;
 
     return entry.logLevel.index >= serverLogLevel.index;
   }
@@ -141,7 +144,7 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = getLogSettingsForStreamingSession(endpoint: endpoint);
+    final logSettings = getLogSettingsForStreamingSession(endpoint: endpoint);
     if (logSettings.logAllSessions) {
       return true;
     }
@@ -171,17 +174,17 @@ class LogManager {
       // We are continuously writing to this sessions log.
       session as StreamingSession;
       entry.sessionLogId = session.sessionLogId!;
-      var tempSession = await session.serverpod.createSession(
+      final tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
       try {
         await LogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
-            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING ENTRY');
-        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$stackTrace');
+          ..writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING ENTRY')
+          ..write('ENDPOINT: ${_endpointForSession(session)}')
+          ..writeln('CALL error: $exception')
+          ..writeln('$stackTrace');
       }
 
       await tempSession.close();
@@ -193,7 +196,7 @@ class LogManager {
   /// Logs a query, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
   /// closed. Call [shouldLogQuery] to check if the entry should be logged
-  /// before calling this method. This method can be called asyncronously.
+  /// before calling this method. This method can be called asynchronously.
   @internal
   Future<void> logQuery(Session session, QueryLogEntry entry) async {
     await _attemptOpenStreamingLog(session: session);
@@ -202,17 +205,17 @@ class LogManager {
       // We are continuously writing to this sessions log.
       session as StreamingSession;
       entry.sessionLogId = session.sessionLogId!;
-      var tempSession = await session.serverpod.createSession(
+      final tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
       try {
         await QueryLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
-            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY');
-        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$stackTrace');
+          ..writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY')
+          ..write('ENDPOINT: ${_endpointForSession(session)}')
+          ..writeln('CALL error: $exception')
+          ..writeln('$stackTrace');
       }
 
       await tempSession.close();
@@ -225,7 +228,7 @@ class LogManager {
   /// logged directly to the database or stored in the temporary cache until the
   /// session is closed. Call [shouldLogMessage] to check if the entry should be
   /// logged before calling this method. This method can be called
-  /// asyncronously.
+  /// asynchronously.
   @internal
   Future<void> logMessage(Session session, MessageLogEntry entry) async {
     await _attemptOpenStreamingLog(session: session);
@@ -233,18 +236,20 @@ class LogManager {
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
       session as StreamingSession;
-      var tempSession = await session.serverpod.createSession(
+      final tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
       try {
         entry.sessionLogId = session.sessionLogId!;
         await MessageLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} FAILED TO LOG STREAMING MESSAGE');
-        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$stackTrace');
+        stderr
+          ..writeln(
+            '${DateTime.now().toUtc()} FAILED TO LOG STREAMING MESSAGE',
+          )
+          ..write('ENDPOINT: ${_endpointForSession(session)}')
+          ..writeln('CALL error: $exception')
+          ..writeln('$stackTrace');
       }
 
       await tempSession.close();
@@ -271,9 +276,12 @@ class LogManager {
         return;
       }
 
-      assert(session.sessionLogs.currentEndpoint != null);
+      assert(
+        session.sessionLogs.currentEndpoint != null,
+        'currentEndpoint is null',
+      );
 
-      var logSettings = getLogSettingsForStreamingSession(
+      final logSettings = getLogSettingsForStreamingSession(
         endpoint: session.sessionLogs.currentEndpoint!,
       );
       if (!logSettings.logStreamingSessionsContinuously) {
@@ -281,13 +289,13 @@ class LogManager {
         return;
       }
 
-      var tempSession = await session.serverpod.createSession(
+      final tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
 
-      var now = DateTime.now();
+      final now = DateTime.now();
 
-      var sessionLogEntry = SessionLogEntry(
+      final sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
         time: now,
         touched: now,
@@ -318,8 +326,8 @@ class LogManager {
     if (!session.enableLogging) return null;
 
     // Log session to database
-    var duration = session.duration;
-    var cachedEntry = session.sessionLogs;
+    final duration = session.duration;
+    final cachedEntry = session.sessionLogs;
     LogSettings? logSettings;
     if (session is! StreamingSession) {
       logSettings = getLogSettingsForSession(session);
@@ -329,21 +337,29 @@ class LogManager {
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
-            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+          'METHOD CALL: ${session.endpointName}.${session.methodName} '
+          'duration: ${duration.inMilliseconds}ms '
+          'numQueries: ${cachedEntry.queries.length} '
+          'authenticatedUser: $authenticatedUserId',
+        );
       } else if (session is FutureCallSession) {
         stdout.writeln(
-            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+          'FUTURE CALL: ${session.futureCallName} '
+          'duration: ${duration.inMilliseconds}ms '
+          'numQueries: ${cachedEntry.queries.length}',
+        );
       }
       if (exception != null) {
-        stdout.writeln(exception);
-        stdout.writeln('$stackTrace');
+        stdout
+          ..writeln(exception)
+          ..writeln('$stackTrace');
       }
     }
 
     var isSlow = false;
 
     if (logSettings != null) {
-      var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+      final slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
       isSlow = duration > Duration(microseconds: slowMicros) &&
           session is! StreamingSession;
     }
@@ -355,11 +371,9 @@ class LogManager {
         cachedEntry.logEntries.isNotEmpty ||
         cachedEntry.messages.isNotEmpty ||
         _continuouslyLogging(session)) {
-      int? sessionLogId;
+      final now = DateTime.now();
 
-      var now = DateTime.now();
-
-      var sessionLogEntry = SessionLogEntry(
+      final sessionLogEntry = SessionLogEntry(
         serverId: session.server.serverId,
         time: now,
         touched: now,
@@ -373,52 +387,61 @@ class LogManager {
         authenticatedUserId: authenticatedUserId,
       );
 
-      var tempSession = await session.serverpod.createSession(
+      final tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
+      int? sessionLogId;
+
       try {
         if (_continuouslyLogging(session)) {
           // Close open session.
+
           session as StreamingSession;
-          sessionLogId = session.sessionLogId!;
-          sessionLogEntry.id = sessionLogId;
-          sessionLogEntry.isOpen = false;
+          sessionLogId = session.sessionLogId;
+          sessionLogEntry
+            ..id = sessionLogId
+            ..isOpen = false;
           await SessionLogEntry.update(tempSession, sessionLogEntry);
         } else {
           // Create new session row.
           await tempSession.db.insert(sessionLogEntry);
-          sessionLogId = sessionLogEntry.id!;
+          sessionLogId = sessionLogEntry.id;
         }
 
         // Write log entries
-        for (var logInfo in cachedEntry.logEntries) {
-          logInfo.sessionLogId = sessionLogId;
+        for (final logInfo in cachedEntry.logEntries) {
+          logInfo.sessionLogId = sessionLogId!;
           await tempSession.db.insert(logInfo);
         }
         // Write queries
-        for (var queryInfo in cachedEntry.queries) {
-          queryInfo.sessionLogId = sessionLogId;
+        for (final queryInfo in cachedEntry.queries) {
+          queryInfo.sessionLogId = sessionLogId!;
           await tempSession.db.insert(queryInfo);
         }
         // Write streaming messages
-        for (var messageInfo in cachedEntry.messages) {
-          messageInfo.sessionLogId = sessionLogId;
+        for (final messageInfo in cachedEntry.messages) {
+          messageInfo.sessionLogId = sessionLogId!;
           await tempSession.db.insert(messageInfo);
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         if (_methodForSession(session) != null) {
           stderr.writeln(
-              'CALL: ${_endpointForSession(session)}.${_methodForSession(session)} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+            'CALL: ${_endpointForSession(session)}.'
+            '${_methodForSession(session)} '
+            'duration: ${duration.inMilliseconds}ms '
+            'numQueries: ${cachedEntry.queries.length} '
+            'authenticatedUser: $authenticatedUserId',
+          );
         }
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$logStackTrace');
-
-        stderr.writeln('LOG ERRORS');
-        stderr.writeln('$e');
-        stderr.writeln('$logStackTrace');
-        stderr.writeln('Current stacktrace:');
-        stderr.writeln('${StackTrace.current}');
+        stderr
+          ..writeln('CALL error: $exception')
+          ..writeln('$logStackTrace')
+          ..writeln('LOG ERRORS')
+          ..writeln('$e')
+          ..writeln('$logStackTrace')
+          ..writeln('Current stacktrace:')
+          ..writeln('${StackTrace.current}');
       }
       await tempSession.close();
 
@@ -442,7 +465,7 @@ class LogManager {
       return 'InternalSession';
     }
 
-    throw (UnimplementedError('Unknown Session type'));
+    throw UnimplementedError('Unknown Session type');
   }
 
   String? _methodForSession(Session session) {
@@ -458,18 +481,20 @@ class LogManager {
 
   /// Returns a list of logs for all open sessions.
   List<SessionLogInfo> getOpenSessionLogs(
-      int numEntries, SessionLogFilter? filter) {
-    var sessionLog = <SessionLogInfo>[];
+    int numEntries,
+    SessionLogFilter? filter,
+  ) {
+    final sessionLog = <SessionLogInfo>[];
 
-    var numFoundEntries = 0;
+    const numFoundEntries = 0;
     var i = 0;
     while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
-      var entry = _openSessionLogs[i];
+      final entry = _openSessionLogs[i];
       i += 1;
 
       // Check filter (ignore slow and errors as session is still open)
       if (filter != null) {
-        var session = entry.session;
+        final session = entry.session;
         if (session is MethodCallSession) {
           if (filter.endpoint != null &&
               filter.endpoint != '' &&
@@ -509,8 +534,8 @@ class LogManager {
   }
 }
 
-/// The [SessionLogEntryCache] holds all logging information for a session before
-/// it's written to the database.
+/// The [SessionLogEntryCache] holds all logging information for a session
+/// before it's written to the database.
 class SessionLogEntryCache {
   /// A reference to the [Session].
   final Session session;

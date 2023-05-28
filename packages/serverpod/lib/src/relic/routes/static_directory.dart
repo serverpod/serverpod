@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod/serverpod.dart';
+
+import '../../../serverpod.dart';
 
 // TODO: Add more content type mappings.
 final _contentTypeMapping = <String, ContentType>{
@@ -38,19 +39,19 @@ class RouteStaticDirectory extends Route {
 
     try {
       // Remove version control string
-      var dir = serverDirectory;
+      final dir = serverDirectory;
       var base = p.basenameWithoutExtension(path);
       var extension = p.extension(path);
 
-      var baseParts = base.split('@');
+      final baseParts = base.split('@');
       if (baseParts.last.startsWith('v')) {
         baseParts.removeLast();
       }
       base = baseParts.join('@');
 
       if (basePath != null && path.startsWith(basePath!)) {
-        var requestDir = p.dirname(path);
-        var middlePath = requestDir.substring(basePath!.length);
+        final requestDir = p.dirname(path);
+        final middlePath = requestDir.substring(basePath!.length);
 
         if (middlePath.isNotEmpty) {
           path = p.join(dir, middlePath, base + extension);
@@ -63,7 +64,7 @@ class RouteStaticDirectory extends Route {
 
       // Set content type.
       extension = extension.toLowerCase();
-      var contentType = _contentTypeMapping[extension];
+      final contentType = _contentTypeMapping[extension];
       if (contentType != null) {
         request.response.headers.contentType = contentType;
       }
@@ -74,7 +75,7 @@ class RouteStaticDirectory extends Route {
       var filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
 
-      var fileContents = await File(filePath).readAsBytes();
+      final fileContents = await File(filePath).readAsBytes();
       request.response.add(fileContents);
       return true;
     } catch (e) {

@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../serverpod.dart';
 import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
@@ -56,7 +57,7 @@ abstract class Session {
   Map<String, String> get passwords => server.passwords;
 
   /// Methods related to user authentication.
-  late final UserAuthetication auth;
+  late final UserAuthentication auth;
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
@@ -74,16 +75,12 @@ abstract class Session {
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     required this.server,
-    String? authenticationKey,
-    this.maxLifeTime = const Duration(minutes: 1),
-    HttpRequest? httpRequest,
-    WebSocket? webSocket,
-    String? futureCallName,
     required this.enableLogging,
+    this.maxLifeTime = const Duration(minutes: 1),
   }) {
     _startTime = DateTime.now();
 
-    auth = UserAuthetication._(this);
+    auth = UserAuthentication._(this);
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
@@ -98,7 +95,7 @@ abstract class Session {
 
   Future<void> _initialize() async {
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
+      final authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
@@ -129,7 +126,7 @@ abstract class Session {
   /// to the logs. Returns the session id, if the session has been logged to the
   /// database.
   Future<int?> close({
-    dynamic error,
+    Object? error,
     StackTrace? stackTrace,
   }) async {
     if (_closed) return null;
@@ -144,8 +141,9 @@ abstract class Session {
         authenticatedUserId: _authenticatedUser,
       );
     } catch (e, stackTrace) {
-      stderr.writeln('Failed to close session: $e');
-      stderr.writeln('$stackTrace');
+      stderr
+        ..writeln('Failed to close session: $e')
+        ..writeln('$stackTrace');
     }
     return null;
   }
@@ -155,7 +153,7 @@ abstract class Session {
   void log(
     String message, {
     LogLevel? level,
-    dynamic exception,
+    Object? exception,
     StackTrace? stackTrace,
   }) {
     assert(
@@ -168,7 +166,7 @@ abstract class Session {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    var entry = LogEntry(
+    final entry = LogEntry(
       sessionLogId: sessionLogs.temporarySessionId,
       serverId: server.serverId,
       messageId: messageId,
@@ -193,7 +191,7 @@ abstract class Session {
     }
 
     // Called asynchronously.
-    serverpod.logManager.logEntry(this, entry);
+    unawaited(serverpod.logManager.logEntry(this, entry));
   }
 }
 
@@ -204,12 +202,9 @@ class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
   InternalSession({
-    required Server server,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        );
+    required super.server,
+    super.enableLogging = true,
+  });
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -236,33 +231,31 @@ class MethodCallSession extends Session {
 
   /// Creates a new [Session] for a method call to an endpoint.
   MethodCallSession({
-    required Server server,
+    required super.server,
     required this.uri,
     required this.body,
     required this.endpointName,
     required this.httpRequest,
     String? authenticationKey,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        ) {
+    super.enableLogging = true,
+  }) {
     // Read query parameters
     var queryParameters = <String, dynamic>{};
     if (body != '' && body != 'null') {
-      queryParameters = jsonDecode(body).cast<String, dynamic>();
+      queryParameters = jsonDecode(body) as Map<String, dynamic>;
     }
 
     // Add query parameters from uri
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    var methodName = queryParameters['method'];
+    var methodName = queryParameters['method'] as String?;
     if (methodName == null && endpointName == 'webserver') methodName = '';
     this.methodName = methodName!;
 
     // Get the the authentication key, if any
-    _authenticationKey = authenticationKey ?? queryParameters['auth'];
+    _authenticationKey =
+        authenticationKey ?? queryParameters['auth'] as String?;
   }
 }
 
@@ -291,19 +284,15 @@ class StreamingSession extends Session {
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
-    required Server server,
+    required super.server,
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        ) {
+    super.enableLogging = true,
+  }) {
     // Read query parameters
-    var queryParameters = <String, String>{};
-    queryParameters.addAll(uri.queryParameters);
-    this.queryParameters = queryParameters;
+
+    queryParameters = Map<String, String>.from(uri.queryParameters);
 
     // Get the the authentication key, if any
     _authenticationKey = queryParameters['auth'];
@@ -324,20 +313,17 @@ class FutureCallSession extends Session {
 
   /// Creates a new [Session] for a [FutureCall].
   FutureCallSession({
-    required Server server,
+    required super.server,
     required this.futureCallName,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        );
+    super.enableLogging = true,
+  });
 }
 
 /// Collects methods for authenticating users.
-class UserAuthetication {
+class UserAuthentication {
   final Session _session;
 
-  UserAuthetication._(this._session);
+  UserAuthentication._(this._session);
 
   /// Returns the id of an authenticated user or null if the user isn't signed
   /// in.
@@ -350,19 +336,22 @@ class UserAuthetication {
   /// before signing them in. Send the AuthKey.id and key to the client and
   /// use that to authenticate in future calls. In most cases, it's more
   /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+  Future<AuthKey> signInUser(
+    int userId,
+    String method, {
+    Set<Scope> scopes = const {},
+  }) async {
+    final signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
-    var key = generateRandomString();
-    var hash = hashString(signInSalt, key);
+    final key = generateRandomString();
+    final hash = hashString(signInSalt, key);
 
-    var scopeNames = <String>[];
-    for (var scope in scopes) {
+    final scopeNames = <String>[];
+    for (final scope in scopes) {
       if (scope.name != null) scopeNames.add(scope.name!);
     }
 
-    var authKey = AuthKey(
+    final authKey = AuthKey(
       userId: userId,
       hash: hash,
       key: key,
@@ -404,7 +393,7 @@ class StorageAccess {
     required ByteData byteData,
     DateTime? expiration,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -417,12 +406,12 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.retrieveFile(session: _session, path: path);
+    return storage.retrieveFile(session: _session, path: path);
   }
 
   /// Checks if a file exists in cloud storage.
@@ -430,12 +419,12 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.fileExists(session: _session, path: path);
+    return storage.fileExists(session: _session, path: path);
   }
 
   /// Deletes a file from cloud storage.
@@ -443,7 +432,7 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
@@ -456,12 +445,12 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.getPublicUrl(session: _session, path: path);
+    return storage.getPublicUrl(session: _session, path: path);
   }
 
   /// Creates a new file upload description, that can be passed to the client's
@@ -472,13 +461,15 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.createDirectFileUploadDescription(
-        session: _session, path: path);
+    return storage.createDirectFileUploadDescription(
+      session: _session,
+      path: path,
+    );
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -487,12 +478,12 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    final storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.verifyDirectFileUpload(session: _session, path: path);
+    return storage.verifyDirectFileUpload(session: _session, path: path);
   }
 }
 
@@ -517,7 +508,9 @@ class MessageCentralAccess {
 
   /// Removes a listener from a named channel.
   void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
+    String channelName,
+    MessageCentralListenerCallback listener,
+  ) {
     _session.server.messageCentral
         .removeListener(_session, channelName, listener);
   }

@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
+
+import '../../serverpod.dart';
+import '../generated/cloud_storage_direct_upload.dart';
 
 const _endpointName = 'serverpod_cloud_storage';
 
@@ -14,47 +15,49 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
   /// Retrieves a file from the public database cloud storage.
   Future<ByteData?> file(MethodCallSession session, String path) async {
-    var response = session.httpRequest.response;
-
     // Fetch the file from storage.
-    var file =
+    final file =
         await session.storage.retrieveFile(storageId: 'public', path: path);
 
     // Set the response code
     if (file == null) {
-      response.statusCode = HttpStatus.notFound;
+      session.httpRequest.response.statusCode = HttpStatus.notFound;
       return null;
     }
 
     // TODO: Support more extension types.
-
+    ContentType? contentType;
     var extension = p.extension(path);
     extension = extension.toLowerCase();
     if (extension == '.js') {
-      response.headers.contentType = ContentType('text', 'javascript');
+      contentType = ContentType('text', 'javascript');
     } else if (extension == '.css') {
-      response.headers.contentType = ContentType('text', 'css');
+      contentType = ContentType('text', 'css');
     } else if (extension == '.png') {
-      response.headers.contentType = ContentType('image', 'png');
+      contentType = ContentType('image', 'png');
     } else if (extension == '.jpg') {
-      response.headers.contentType = ContentType('image', 'jpeg');
+      contentType = ContentType('image', 'jpeg');
     } else if (extension == '.svg') {
-      response.headers.contentType = ContentType('image', 'svg+xml');
+      contentType = ContentType('image', 'svg+xml');
     } else if (extension == '.ttf') {
-      response.headers.contentType = ContentType('application', 'x-font-ttf');
+      contentType = ContentType('application', 'x-font-ttf');
     } else if (extension == '.woff') {
-      response.headers.contentType = ContentType('application', 'x-font-woff');
+      contentType = ContentType('application', 'x-font-woff');
     }
-
+    session.httpRequest.response.headers.contentType = contentType;
     // Retrieve the file from storage and return it.
     return file;
   }
 
   /// Uploads a file to the the public database cloud storage.
-  Future<bool> upload(MethodCallSession session, String storageId, String path,
-      String key) async {
+  Future<bool> upload(
+    MethodCallSession session,
+    String storageId,
+    String path,
+    String key,
+  ) async {
     // Confirm that we are allowed to do the upload
-    var uploadInfo =
+    final uploadInfo =
         await session.db.findSingleRow<CloudStorageDirectUploadEntry>(
       where: CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
           CloudStorageDirectUploadEntry.t.path.equals(path),
@@ -66,12 +69,12 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     if (uploadInfo.authKey != key) return false;
 
-    var body = await _readBinaryBody(session.httpRequest);
+    final body = await _readBinaryBody(session.httpRequest);
     if (body == null) return false;
 
-    var byteData = ByteData.view(Uint8List.fromList(body).buffer);
+    final byteData = ByteData.view(Uint8List.fromList(body).buffer);
 
-    var storage = server.serverpod.storage[storageId];
+    final storage = server.serverpod.storage[storageId];
     if (storage == null) return false;
 
     await storage.storeFile(
@@ -89,7 +92,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
     var len = 0;
     var data = <int>[];
 
-    await for (var segment in request) {
+    await for (final segment in request) {
       len += segment.length;
       if (len > server.serverpod.config.maxRequestSize) return null;
       data += segment;
@@ -115,8 +118,8 @@ class CloudStoragePublicEndpoint extends Endpoint {
               nullable: false,
             ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return file(session as MethodCallSession, params['path']);
+          call: (session, params) async {
+            return file(session as MethodCallSession, params['path'] as String);
           },
         ),
         'upload': MethodConnector(
@@ -138,9 +141,13 @@ class CloudStoragePublicEndpoint extends Endpoint {
               nullable: false,
             ),
           },
-          call: (Session session, Map<String, dynamic> params) async {
-            return upload(session as MethodCallSession, params['storage'],
-                params['path'], params['key']);
+          call: (session, params) async {
+            return upload(
+              session as MethodCallSession,
+              params['storage'] as String,
+              params['path'] as String,
+              params['key'] as String,
+            );
           },
         ),
       },

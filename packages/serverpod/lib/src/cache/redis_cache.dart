@@ -1,6 +1,7 @@
-import 'package:serverpod/src/cache/global_cache.dart';
-import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../redis/controller.dart';
+import 'global_cache.dart';
 
 /// A [GlobalCache] managed by Redis. The cache is shared by the servers in
 /// a cluster.
@@ -33,7 +34,7 @@ class RedisCache extends GlobalCache {
       redisController != null,
       'Redis needs to be enabled to use this method',
     );
-    var data = await redisController!.get(key);
+    final data = await redisController!.get(key);
 
     return data != null;
   }
@@ -44,7 +45,7 @@ class RedisCache extends GlobalCache {
       redisController != null,
       'Redis needs to be enabled to use this method',
     );
-    var data = await redisController!.get(key);
+    final data = await redisController!.get(key);
     if (data == null) {
       return null;
     }
@@ -77,8 +78,12 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('No local keys are used in RedisCache');
 
   @override
-  Future<void> put(String key, SerializableEntity object,
-      {Duration? lifetime, String? group}) async {
+  Future<void> put(
+    String key,
+    SerializableEntity object, {
+    Duration? lifetime,
+    String? group,
+  }) async {
     if (group != null) {
       throw UnimplementedError('Groups are not yet supported in RedisCache');
     }
@@ -88,7 +93,7 @@ class RedisCache extends GlobalCache {
       'Redis needs to be enabled to use this method',
     );
 
-    var data = SerializationManager.encode(object);
+    final data = SerializationManager.encode(object);
     await redisController!.set(key, data, lifetime: lifetime);
   }
 }

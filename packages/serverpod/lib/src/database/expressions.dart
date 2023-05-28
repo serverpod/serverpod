@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
+import '../../serverpod.dart';
 
 /// A database [Expression].
 class Expression {
@@ -18,47 +18,51 @@ class Expression {
   }
 
   /// Database AND operator.
-  Expression operator &(dynamic other) {
-    assert(other is Expression);
+  Expression operator &(Object? other) {
+    assert(other is Expression, 'Invalid type');
     return Expression('($this AND $other)');
   }
 
   /// Database OR operator.
-  Expression operator |(dynamic other) {
-    assert(other is Expression);
+  Expression operator |(Object? other) {
+    assert(other is Expression, 'Invalid type');
     return Expression('($this OR $other)');
   }
 
   /// Database greater than operator.
-  Expression operator >(dynamic other) {
-    if (other is! Expression) {
-      other = DatabasePoolManager.encoder.convert(other);
+  Expression operator >(Object? other) {
+    var result = other;
+    if (result is! Expression) {
+      result = DatabasePoolManager.encoder.convert(other);
     }
-    return Expression('($this > $other)');
+    return Expression('($this > $result)');
   }
 
   /// Database greater or equal than operator.
-  Expression operator >=(dynamic other) {
-    if (other is! Expression) {
-      other = DatabasePoolManager.encoder.convert(other);
+  Expression operator >=(Object? other) {
+    var result = other;
+    if (result is! Expression) {
+      result = DatabasePoolManager.encoder.convert(other);
     }
-    return Expression('($this >= $other)');
+    return Expression('($this >= $result)');
   }
 
   /// Database less than operator.
-  Expression operator <(dynamic other) {
-    if (other is! Expression) {
-      other = DatabasePoolManager.encoder.convert(other);
+  Expression operator <(Object? other) {
+    var result = other;
+    if (result is! Expression) {
+      result = DatabasePoolManager.encoder.convert(other);
     }
-    return Expression('($this < $other)');
+    return Expression('($this < $result)');
   }
 
   /// Database less or equal than operator.
-  Expression operator <=(dynamic other) {
-    if (other is! Expression) {
-      other = DatabasePoolManager.encoder.convert(other);
+  Expression operator <=(Object? other) {
+    var result = other;
+    if (result is! Expression) {
+      result = DatabasePoolManager.encoder.convert(other);
     }
-    return Expression('($this <= $other)');
+    return Expression('($this <= $result)');
   }
 }
 
@@ -172,7 +176,8 @@ class ColumnString extends Column {
       return Expression('"$columnName" IS NULL');
     } else {
       return Expression(
-          '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}');
+        '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}',
+      );
     }
   }
 
@@ -183,7 +188,8 @@ class ColumnString extends Column {
       return Expression('"$columnName" IS NOT NULL');
     } else {
       return Expression(
-          '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}');
+        '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}',
+      );
     }
   }
 
@@ -191,7 +197,8 @@ class ColumnString extends Column {
   /// specified value. See Postgresql docs for more info on the LIKE operator.
   Expression like(String value) {
     return Expression(
-        '"$columnName" LIKE ${DatabasePoolManager.encoder.convert(value)}');
+      '"$columnName" LIKE ${DatabasePoolManager.encoder.convert(value)}',
+    );
   }
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -199,7 +206,8 @@ class ColumnString extends Column {
   /// the ILIKE operator.
   Expression ilike(String value) {
     return Expression(
-        '"$columnName" ILIKE ${DatabasePoolManager.encoder.convert(value)}');
+      '"$columnName" ILIKE ${DatabasePoolManager.encoder.convert(value)}',
+    );
   }
 }
 
@@ -248,7 +256,8 @@ class ColumnDateTime extends Column {
       return Expression('"$columnName" IS NULL');
     } else {
       return Expression(
-          '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}');
+        '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}',
+      );
     }
   }
 
@@ -259,7 +268,8 @@ class ColumnDateTime extends Column {
       return Expression('"$columnName" IS NOT NULL');
     } else {
       return Expression(
-          '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}');
+        '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}',
+      );
     }
   }
 }
@@ -344,14 +354,14 @@ class Constant extends Expression {
   // TODO: Handle more types
 
   /// Creates a constant [Expression]. Currently supports [bool] and [String].
-  Constant(dynamic value) : super(_formatValue(value));
+  Constant(Object? value) : super(_formatValue(value));
 
-  static String _formatValue(dynamic value) {
+  static String _formatValue(Object? value) {
     if (value == null) return 'NULL';
     if (value is bool) {
       return '$value'.toUpperCase();
     } else if (value is String) {
-      return '\'$value\'';
+      return "'$value'";
     } else {
       throw const FormatException();
     }
@@ -374,10 +384,10 @@ class Table {
 
   @override
   String toString() {
-    var str = '$tableName\n';
-    for (var col in columns) {
-      str += '  ${col.columnName} (${col.type})\n';
+    final buffer = StringBuffer('$tableName\n');
+    for (final col in columns) {
+      buffer.writeln('${col.columnName} (${col.type})');
     }
-    return str;
+    return buffer.toString();
   }
 }

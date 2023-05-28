@@ -1,6 +1,8 @@
-import 'package:mustache_template/mustache.dart';
-import 'package:serverpod/serverpod.dart';
 import 'dart:convert';
+
+import 'package:mustache_template/mustache.dart';
+
+import '../../serverpod.dart';
 
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
@@ -23,14 +25,16 @@ class Widget extends AbstractWidget {
 
   /// Key/value pairs passed to the template. The values will be converted to
   /// strings using the toString method of the values.
-  Map<String, dynamic> values = {};
+  Map<String, dynamic> values = <String, dynamic>{};
 
   /// Creates a new [Widget].
   Widget({
     required this.name,
   }) {
-    assert(templates[name] != null,
-        'Template $name.html missing for $runtimeType');
+    assert(
+      templates[name] != null,
+      'Template $name.html missing for $runtimeType',
+    );
     template = templates[name]!;
   }
 
@@ -50,8 +54,8 @@ class WidgetList extends AbstractWidget {
 
   @override
   String toString() {
-    var rendered = <String>[];
-    for (var widget in widgets) {
+    final rendered = <String>[];
+    for (final widget in widgets) {
       rendered.add(widget.toString());
     }
     return rendered.join('\n');

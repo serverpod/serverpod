@@ -22,7 +22,7 @@ enum ServerpodRole {
   maintenance,
 }
 
-/// The overaching logging mode of the server. This can be set to either
+/// The overarching logging mode of the server. This can be set to either
 /// [normal] or [verbose]. In [normal] mode, only important messages are logged,
 /// which is the default.
 enum ServerpodLoggingMode {
@@ -60,7 +60,7 @@ class CommandLineArgs {
   /// [CommandLineArgs] object.
   CommandLineArgs(List<String> args) {
     try {
-      var argParser = ArgParser()
+      final argParser = ArgParser()
         ..addOption(
           'mode',
           abbr: 'm',
@@ -91,12 +91,11 @@ class CommandLineArgs {
         ..addFlag(
           'apply-migrations',
           abbr: 'a',
-          defaultsTo: false,
         );
-      var results = argParser.parse(args);
+      final results = argParser.parse(args);
 
-      runMode = results['mode'];
-      serverId = results['server-id'];
+      runMode = results['mode'] as String;
+      serverId = results['server-id'] as String;
 
       switch (results['logging']) {
         case 'normal':
@@ -119,7 +118,7 @@ class CommandLineArgs {
           break;
       }
 
-      applyMigrations = results['apply-migrations'] ?? false;
+      applyMigrations = results['apply-migrations'] as bool? ?? false;
     } catch (e) {
       stdout.writeln(
         'Failed to parse command line arguments. Using default values. $e',
@@ -156,6 +155,7 @@ class CommandLineArgs {
         break;
     }
 
-    return 'mode: $runMode, role: $formattedRole, logging: $formattedLoggingMode, serverId: $serverId';
+    return 'mode: $runMode, role: $formattedRole, '
+        'logging: $formattedLoggingMode, serverId: $serverId';
   }
 }

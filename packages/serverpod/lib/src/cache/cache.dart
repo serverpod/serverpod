@@ -1,5 +1,6 @@
-import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import 'local_cache.dart';
 
 /// Abstract super class for the [LocalCache] and [DistributedCache] classes.
 abstract class Cache {
@@ -17,8 +18,12 @@ abstract class Cache {
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
   /// [object]. If a [group] is specified, all entities of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
-  Future<void> put(String key, SerializableEntity object,
-      {Duration? lifetime, String? group});
+  Future<void> put(
+    String key,
+    SerializableEntity object, {
+    Duration? lifetime,
+    String? group,
+  });
 
   /// Check if a valid cache for the specified key exists.
   Future<bool> containsKey(String key);

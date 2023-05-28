@@ -12,12 +12,12 @@ class Templates {
 
   /// Loads all templates from web/templates
   Future<void> loadAll() async {
-    var dir = Directory('web/templates');
-    for (var entity in await dir.list().toList()) {
+    final dir = Directory('web/templates');
+    for (final entity in await dir.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
-        var file = entity;
-        var name = basenameWithoutExtension(file.path);
-        var data = await file.readAsString();
+        final file = entity;
+        final name = basenameWithoutExtension(file.path);
+        final data = await file.readAsString();
 
         _templates[name] = Template(
           data,

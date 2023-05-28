@@ -23,7 +23,7 @@ abstract class EndpointDispatch {
   /// Finds an [EndpointConnector] by its name. If the connector is in a module,
   /// a period should separate the module name from the endpoint name.
   EndpointConnector? getConnectorByName(String endpointName) {
-    var endpointComponents = endpointName.split('.');
+    final endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return null;
     }
@@ -37,12 +37,13 @@ abstract class EndpointDispatch {
       if (connector == null) return null;
     } else {
       // Connector is in a module
-      var modulePackage = endpointComponents[0];
-      endpointName = endpointComponents[1];
-      var module = modules[modulePackage];
+      final moduleName = endpointComponents[0];
+      final connectorName = endpointComponents[1];
+      final module = modules[moduleName];
+
       if (module == null) return null;
 
-      connector = module.connectors[endpointName];
+      connector = module.connectors[connectorName];
       if (connector == null) return null;
     }
 
@@ -52,16 +53,22 @@ abstract class EndpointDispatch {
   /// Dispatches a call to the [Server] to the correct [Endpoint] method. If
   /// successful, it returns the object from the method. If unsuccessful it will
   /// return a [Result] object.
-  Future<Result> handleUriCall(Server server, String endpointName, Uri uri,
-      String body, HttpRequest request) async {
-    var endpointComponents = endpointName.split('.');
+  Future<Result> handleUriCall(
+    Server server,
+    String endpointName,
+    Uri uri,
+    String body,
+    HttpRequest request,
+  ) async {
+    final endpointComponents = endpointName.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return ResultInvalidParams(
-          'Endpoint $endpointName is not a valid endpoint name');
+        'Endpoint $endpointName is not a valid endpoint name',
+      );
     }
 
     // Find correct connector
-    var connector = getConnectorByName(endpointName);
+    final connector = getConnectorByName(endpointName);
     if (connector == null) {
       return ResultInvalidParams('Endpoint $endpointName does not exist');
     }
@@ -81,37 +88,41 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Malformed call: $uri');
     }
 
-    var methodName = session.methodName;
-    var inputParams = session.queryParameters;
+    final methodName = session.methodName;
+    final inputParams = session.queryParameters;
 
     try {
-      var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
+      final authFailed =
+          await canUserAccessEndpoint(session, connector.endpoint);
       if (authFailed != null) {
         return authFailed;
       }
 
-      var method = connector.methodConnectors[methodName];
+      final method = connector.methodConnectors[methodName];
       if (method == null) {
         await session.close();
         return ResultInvalidParams(
-            'Method $methodName not found in call: $uri');
+          'Method $methodName not found in call: $uri',
+        );
       }
 
       // TODO: Check parameters and check null safety
 
-      var paramMap = <String, dynamic>{};
-      for (var paramName in inputParams.keys) {
-        var type = method.params[paramName]?.type;
+      final paramMap = <String, dynamic>{};
+      for (final paramName in inputParams.keys) {
+        final type = method.params[paramName]?.type;
+
         if (type == null) continue;
-        var formatted = _formatArg(
-            inputParams[paramName], type, server.serializationManager);
+
+        final formatted = _formatArg(
+          inputParams[paramName],
+          type,
+          server.serializationManager,
+        );
         paramMap[paramName] = formatted;
       }
 
-      var result = await method.call(session, paramMap);
-
-      // Print session info
-      // var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
+      final dynamic result = await method.call(session, paramMap);
 
       await session.close();
 
@@ -122,14 +133,22 @@ abstract class EndpointDispatch {
     } on SerializableException catch (exception) {
       return ExceptionResult(entity: exception);
     } on Exception catch (e, stackTrace) {
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      final sessionLogId =
+          await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+        e.toString(),
+        stackTrace,
+        sessionLogId ?? 0,
+      );
     } catch (e, stackTrace) {
       // Something did not work out
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      final sessionLogId =
+          await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+        e.toString(),
+        stackTrace,
+        sessionLogId ?? 0,
+      );
     }
   }
 
@@ -137,8 +156,10 @@ abstract class EndpointDispatch {
   /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
   /// returned.
   Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
-      Session session, Endpoint endpoint) async {
-    var auth = session.authenticationKey;
+    Session session,
+    Endpoint endpoint,
+  ) async {
+    final auth = session.authenticationKey;
     if (endpoint.requireLogin) {
       if (auth == null) {
         return ResultAuthenticationFailed('No authentication provided');
@@ -151,21 +172,26 @@ abstract class EndpointDispatch {
     if (endpoint.requiredScopes.isNotEmpty) {
       if (!await session.isUserSignedIn) {
         return ResultAuthenticationFailed(
-            'Sign in required to access this endpoint');
+          'Sign in required to access this endpoint',
+        );
       }
 
-      for (var requiredScope in endpoint.requiredScopes) {
+      for (final requiredScope in endpoint.requiredScopes) {
         if (!(await session.scopes)!.contains(requiredScope)) {
           return ResultAuthenticationFailed(
-              'User does not have access to scope ${requiredScope.name}');
+            'User does not have access to scope ${requiredScope.name}',
+          );
         }
       }
     }
     return null;
   }
 
-  dynamic _formatArg(
-      dynamic input, Type type, SerializationManager serializationManager) {
+  Object _formatArg(
+    Object? input,
+    Type type,
+    SerializationManager serializationManager,
+  ) {
     return serializationManager.deserialize(input, type);
   }
 }
@@ -183,15 +209,18 @@ class EndpointConnector {
   final Map<String, MethodConnector> methodConnectors;
 
   /// Creates a new [EndpointConnector].
-  EndpointConnector(
-      {required this.name,
-      required this.endpoint,
-      required this.methodConnectors});
+  EndpointConnector({
+    required this.name,
+    required this.endpoint,
+    required this.methodConnectors,
+  });
 }
 
 /// Calls a named method referenced in a [MethodConnector].
-typedef MethodCall = Future Function(
-    Session session, Map<String, dynamic> params);
+typedef MethodCall = Future<dynamic> Function(
+  Session session,
+  Map<String, dynamic> params,
+);
 
 /// The [MethodConnector] hooks up a method with its name and the actual call
 /// to the method.
@@ -206,8 +235,11 @@ class MethodConnector {
   final MethodCall call;
 
   /// Creates a new [MethodConnector].
-  MethodConnector(
-      {required this.name, required this.params, required this.call});
+  MethodConnector({
+    required this.name,
+    required this.params,
+    required this.call,
+  });
 }
 
 /// Defines a parameter in a [MethodConnector].
@@ -222,8 +254,11 @@ class ParameterDescription {
   final bool nullable;
 
   /// Creates a new [ParameterDescription].
-  ParameterDescription(
-      {required this.name, required this.type, required this.nullable});
+  ParameterDescription({
+    required this.name,
+    required this.type,
+    required this.nullable,
+  });
 }
 
 /// The [Result] of an [Endpoint] method call.

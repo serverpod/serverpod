@@ -1,9 +1,9 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import '../authentication/scope.dart';
 import 'server.dart';
 import 'serverpod.dart';
 import 'session.dart';
-import '../authentication/scope.dart';
 
 /// The [Endpoint] is an entrypoint to the [Server]. To add a custom [Endpoint]
 /// to a [Server], create a subclass and place it in the `endpoints` directory.
@@ -27,7 +27,7 @@ abstract class Endpoint {
   /// The [Server] this [Endpoint] is running on.
   Server get server => _server;
 
-  /// The [ServerPod] this [Endpoint] is running on.
+  /// The [Serverpod] this [Endpoint] is running on.
   Serverpod get pod => server.serverpod;
 
   /// List of [Scope]s that are required to access this [Endpoint]. Override
@@ -42,22 +42,22 @@ abstract class Endpoint {
   /// override to change.
   bool get logSessions => true;
 
-  /// If true, returned [ByteData] from methods will be sent sent to the client
+  /// If true, returned ByteData from methods will be sent sent to the client
   /// as raw data without any formatting. One use case is to return data through
   /// a non-api call. Defaults to false, override to change. If used, the
   /// endpoint method is responsible for correctly setting the contentType of
   /// the http response (defaults to `text/plain`).
   bool get sendByteDataAsRaw => false;
 
-  final Map<Session, dynamic> _userObjects = {};
+  final Map<Session, Object?> _userObjects = <Session, Object?>{};
 
-  /// Retrieves a custom object assiciated with this [Endpoint] and [Session].
+  /// Retrieves a custom object associated with this [Endpoint] and [Session].
   dynamic getUserObject(Session session) {
     return _userObjects[session];
   }
 
   /// Associate a custom object with this [Endpoint] and [Session].
-  void setUserObject(Session session, dynamic userObject) {
+  void setUserObject(Session session, Object? userObject) {
     _userObjects[session] = userObject;
   }
 
@@ -77,21 +77,25 @@ abstract class Endpoint {
   Future<void> streamClosed(StreamingSession session) async {}
 
   /// Invoked when a message is sent to this endpoint from the client.
-  /// Override this method to create your own custom [StreamingEndpoint].
+  /// Override this method to create your own custom StreamingEndpoint.
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableEntity message) async {}
+    StreamingSession session,
+    SerializableEntity message,
+  ) async {}
 
   /// Sends an event to the client represented by the [Session] object.
   Future<void> sendStreamMessage(
-      StreamingSession session, SerializableEntity message) async {
-    var prefix = moduleName == null ? '' : '$moduleName.';
+    StreamingSession session,
+    SerializableEntity message,
+  ) async {
+    final prefix = moduleName == null ? '' : '$moduleName.';
 
-    var data = {
+    final data = {
       'endpoint': '$prefix$name',
       'object': server.serializationManager.wrapWithClassName(message),
     };
 
-    var payload = SerializationManager.encode(data);
+    final payload = SerializationManager.encode(data);
     session.webSocket.add(payload);
   }
 }

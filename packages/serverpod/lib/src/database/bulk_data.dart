@@ -1,5 +1,5 @@
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database.dart';
+import '../../serverpod.dart';
+import 'database.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
 /// using JSON. Primarily used for Serverpod Insights.
@@ -11,8 +11,8 @@ class DatabaseBulkData {
     int startingId = 0,
     int limit = 100,
   }) async {
-    var query = 'SELECT * FROM "$table" WHERE id >= $startingId LIMIT $limit';
-    var data = await database.query(query);
+    final query = 'SELECT * FROM "$table" WHERE id >= $startingId LIMIT $limit';
+    final data = await database.query(query);
 
     return SerializationManager.encode(data);
   }

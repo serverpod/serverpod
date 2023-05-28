@@ -1,11 +1,10 @@
-import 'package:serverpod/server.dart';
-import 'package:serverpod/src/cache/global_cache.dart';
-import 'package:serverpod/src/cache/redis_cache.dart';
-import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../server.dart';
+import '../redis/controller.dart';
+import 'global_cache.dart';
 import 'local_cache.dart';
+import 'redis_cache.dart';
 
 /// Collection of [Cache] objects used by the [Server].
 class Caches {
@@ -15,8 +14,6 @@ class Caches {
   /// by the [Server].
   Caches(
     this._serializationManager,
-    ServerpodConfig config,
-    String serverId,
     RedisController? redisController,
   ) {
     _local = LocalCache(10000, _serializationManager);

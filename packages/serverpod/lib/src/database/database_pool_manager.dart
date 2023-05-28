@@ -1,8 +1,8 @@
-import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../serialization/serialization_manager.dart';
 import 'database_connection.dart';
 import 'value_encoder.dart';
 
@@ -32,9 +32,9 @@ class DatabasePoolManager {
   ) {
     _serializationManager = serializationManager;
 
-    var poolSettings = PgPoolSettings();
-    poolSettings.concurrency = 10;
-    poolSettings.queryTimeout = const Duration(minutes: 1);
+    final poolSettings = PgPoolSettings()
+      ..concurrency = 10
+      ..queryTimeout = const Duration(minutes: 1);
 
     // Setup database connection pool
     _pgPool = PgPool(
@@ -54,5 +54,5 @@ class DatabasePoolManager {
   /// Used internally by the [Server]. Creates a new connection to the database.
   /// Typically, the [Database] provided by the [Session] object should be used
   /// to connect with the database.
-  DatabaseConnection createConnection() => DatabaseConnection(this);
+  DatabaseConnection get newConnection => DatabaseConnection(this);
 }

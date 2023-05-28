@@ -1,9 +1,9 @@
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/cloud_storage.dart';
-import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
+import '../../serverpod.dart';
+import '../generated/cloud_storage.dart';
+import '../generated/cloud_storage_direct_upload.dart';
+import '../util/random.dart';
 
 /// The [DatabaseCloudStorage] uses the standard Serverpod database to store
 /// binary files. It's the default [CloudStorage] interface of Serverpod, but
@@ -11,11 +11,13 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 /// needs, especially in your production environment.
 class DatabaseCloudStorage extends CloudStorage {
   /// Creates a new [DatabaseCloudStorage].
-  DatabaseCloudStorage(String storageId) : super(storageId);
+  DatabaseCloudStorage(super.storageId);
 
   @override
-  Future<void> deleteFile(
-      {required Session session, required String path}) async {
+  Future<void> deleteFile({
+    required Session session,
+    required String path,
+  }) async {
     try {
       await session.db.delete<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
@@ -27,35 +29,39 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<bool> fileExists(
-      {required Session session, required String path}) async {
+  Future<bool> fileExists({
+    required Session session,
+    required String path,
+  }) async {
     try {
-      var numRows = await session.db.count<CloudStorageEntry>(
+      final numRows = await session.db.count<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
-      return (numRows > 0);
+      return numRows > 0;
     } catch (e) {
       throw CloudStorageException('Failed to check if file exists. ($e)');
     }
   }
 
   @override
-  Future<Uri?> getPublicUrl(
-      {required Session session, required String path}) async {
+  Future<Uri?> getPublicUrl({
+    required Session session,
+    required String path,
+  }) async {
     if (storageId != 'public') return null;
 
-    var exists = await fileExists(session: session, path: path);
+    final exists = await fileExists(session: session, path: path);
     if (!exists) return null;
 
-    var config = session.server.serverpod.config;
+    final config = session.server.serverpod.config;
 
     return Uri(
       scheme: config.apiServer.publicScheme,
       host: config.apiServer.publicHost,
       port: config.apiServer.publicPort,
       path: '/serverpod_cloud_storage',
-      queryParameters: {
+      queryParameters: <String, dynamic>{
         'method': 'file',
         'path': path,
       },
@@ -63,8 +69,10 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<ByteData?> retrieveFile(
-      {required Session session, required String path}) async {
+  Future<ByteData?> retrieveFile({
+    required Session session,
+    required String path,
+  }) async {
     try {
       return await session.db.retrieveFile(storageId, path);
     } catch (e) {
@@ -94,25 +102,27 @@ class DatabaseCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
   }) async {
-    var config = session.server.serverpod.config;
+    final config = session.server.serverpod.config;
 
-    var expiration = DateTime.now().add(expirationDuration);
+    final expiration = DateTime.now().add(expirationDuration);
 
-    var uploadEntry = CloudStorageDirectUploadEntry(
+    final authKey = generateString();
+
+    final uploadEntry = CloudStorageDirectUploadEntry(
       storageId: storageId,
       path: path,
       expiration: expiration,
-      authKey: _generateAuthKey(),
+      authKey: authKey,
     );
     await session.db.insert(uploadEntry);
     if (uploadEntry.id == null) return null;
 
-    var uri = Uri(
+    final uri = Uri(
       scheme: config.apiServer.publicScheme,
       host: config.apiServer.publicHost,
       port: config.apiServer.publicPort,
       path: '/serverpod_cloud_storage',
-      queryParameters: {
+      queryParameters: <String, dynamic>{
         'method': 'upload',
         'storage': storageId,
         'path': path,
@@ -120,7 +130,7 @@ class DatabaseCloudStorage extends CloudStorage {
       },
     );
 
-    var uploadDescriptionData = {
+    final uploadDescriptionData = {
       'url': uri.toString(),
       'type': 'binary',
     };
@@ -133,15 +143,6 @@ class DatabaseCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    return await session.db.verifyFile(storageId, path);
-  }
-
-  static String _generateAuthKey() {
-    const len = 16;
-    const chars =
-        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    var rnd = Random();
-    return String.fromCharCodes(Iterable.generate(
-        len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    return session.db.verifyFile(storageId, path);
   }
 }

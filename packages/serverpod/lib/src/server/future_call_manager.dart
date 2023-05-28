@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import '../generated/protocol.dart';
+import 'command_line_args.dart';
 import 'future_call.dart';
 import 'server.dart';
 import 'session.dart';
@@ -44,7 +44,7 @@ class FutureCallManager {
       serialization = SerializationManager.encode(object.allToJson());
     }
 
-    var entry = FutureCallEntry(
+    final entry = FutureCallEntry(
       name: name,
       serializedObject: serialization,
       time: time,
@@ -52,7 +52,7 @@ class FutureCallManager {
       identifier: identifier,
     );
 
-    var session = await _server.serverpod.createSession(enableLogging: false);
+    final session = await _server.serverpod.createSession(enableLogging: false);
     await session.db.insert(entry);
     await session.close();
   }
@@ -60,7 +60,7 @@ class FutureCallManager {
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = await _server.serverpod.createSession(enableLogging: false);
+    final session = await _server.serverpod.createSession(enableLogging: false);
 
     await FutureCallEntry.delete(
       session,
@@ -82,7 +82,7 @@ class FutureCallManager {
 
   /// Starts the manager.
   void start() {
-    _run();
+    unawaited(_run());
   }
 
   /// Stops the manager.
@@ -91,7 +91,7 @@ class FutureCallManager {
     _timer = null;
   }
 
-  void _run() async {
+  Future<void> _run() async {
     unawaited(_checkQueue());
   }
 
@@ -102,29 +102,31 @@ class FutureCallManager {
 
     try {
       // Get calls
-      var now = DateTime.now().toUtc();
+      final now = DateTime.now().toUtc();
 
-      var tempSession = await _server.serverpod.createSession(
+      final tempSession = await _server.serverpod.createSession(
         enableLogging: false,
       );
-      var rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
-        where: (FutureCallEntry.t.time <= now),
+      final rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
+        where: FutureCallEntry.t.time <= now,
       );
       await tempSession.close();
 
-      for (var entry in rows.cast<FutureCallEntry>()) {
-        var call = _futureCalls[entry.name];
+      for (final entry in rows.cast<FutureCallEntry>()) {
+        final call = _futureCalls[entry.name];
         if (call == null) {
           continue;
         }
 
-        dynamic object;
+        SerializableEntity? object;
         if (entry.serializedObject != null) {
           object = _serializationManager.decode(
-              entry.serializedObject!, call.dataType);
+            entry.serializedObject!,
+            call.dataType,
+          );
         }
 
-        var futureCallSession = FutureCallSession(
+        final futureCallSession = FutureCallSession(
           server: _server,
           futureCallName: entry.name,
         );
@@ -138,12 +140,15 @@ class FutureCallManager {
       }
     } catch (e, stackTrace) {
       // Most likely we lost connection to the database
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to database in future call manager.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      stderr.writeln('Local stacktrace:');
-      stderr.writeln('${StackTrace.current}');
+      stderr
+        ..writeln(
+          '${DateTime.now().toUtc()} Internal server error. '
+          'Failed to connect to database in future call manager.',
+        )
+        ..writeln('$e')
+        ..writeln('$stackTrace')
+        ..writeln('Local stacktrace:')
+        ..writeln('${StackTrace.current}');
     }
 
     // If we are running as a maintenance task, we shouldn't check the queue
