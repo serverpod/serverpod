@@ -238,3 +238,38 @@ linter:
     - use_to_and_as_if_applicable
     - valid_regexps
     - void_checks
+
+dart_code_metrics:
+  anti-patterns:
+    - long-method
+    - long-parameter-list
+  metrics:
+    cyclomatic-complexity: 20
+    maximum-nesting-level: 5
+    number-of-parameters: 4
+    source-lines-of-code: 180
+  metrics-exclude:
+    - test/**
+  rules:
+    - avoid-unnecessary-setstate
+    - avoid-use-expanded-as-spacer
+    - avoid-wrapping-in-padding
+    - avoid-returning-widgets
+    - avoid-shrink-wrap-in-lists
+    - avoid-use-expanded-as-spacer
+    - always-remove-listener
+    - no-equal-arguments
+    - newline-before-return
+    - no-boolean-literal-compare
+    - no-empty-block
+    - no-equal-then-else
+    - prefer-single-widget-per-file
+    - prefer-extracting-callbacks
+    - prefer-correct-edge-insets-constructor
+    - prefer-const-border-radius
+    - prefer-conditional-expressions
+    - prefer-extracting-callbacks
+    - prefer-first
+    - prefer-last
+    - prefer-trailing-comma
+    - check-unused-files

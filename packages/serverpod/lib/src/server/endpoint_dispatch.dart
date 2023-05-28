@@ -135,6 +135,7 @@ abstract class EndpointDispatch {
     } on Exception catch (e, stackTrace) {
       final sessionLogId =
           await session.close(error: e, stackTrace: stackTrace);
+          
       return ResultInternalServerError(
         e.toString(),
         stackTrace,
@@ -144,6 +145,7 @@ abstract class EndpointDispatch {
       // Something did not work out
       final sessionLogId =
           await session.close(error: e, stackTrace: stackTrace);
+
       return ResultInternalServerError(
         e.toString(),
         stackTrace,
