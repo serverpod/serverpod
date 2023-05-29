@@ -221,7 +221,7 @@ class EndpointsAnalyzer {
         dartElement.span,
       ));
       return false;
-    }  
+    }
 
     var typeArguments = dartType.typeArguments;
     if (typeArguments.length != 1) {
