@@ -225,7 +225,6 @@ class EndpointsAnalyzer {
 
     var typeArguments = dartType.typeArguments;
     if (typeArguments.length != 1) {
-      print('length is not 1');
       collector.addError(SourceSpanException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
@@ -247,7 +246,6 @@ class EndpointsAnalyzer {
     }
 
     if (innerType is DynamicType) {
-      print('is dynamic type');
       collector.addError(SourceSpanException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
