@@ -163,6 +163,74 @@ class SerializableEntityLibraryGenerator {
             },
           ));
 
+          // hashCode
+          if (fields.isNotEmpty && !serverCode) {
+            classBuilder.methods.add(
+              Method(
+                (m) {
+                  m.name = 'hashCode';
+                  m.annotations.add(refer('override'));
+                  m.type = MethodType.getter;
+                  m.returns = refer('int');
+                  m.lambda = true;
+
+                  var fieldsNames =
+                      fields.map((e) => e.name).toList(growable: false);
+
+                  if (fieldsNames.length == 1) {
+                    m.body = Code('${fieldsNames.first}.hashCode');
+                  } else if (fields.length < 19) {
+                    // Maximum 19 args see:
+                    // https://api.dart.dev/stable/3.0.2/dart-core/Object/hash.html
+                    m.body = Code(
+                      'Object.hash(${fieldsNames.join(',')})',
+                    );
+                  } else {
+                    m.body = Code(
+                      'Object.hashAll([${fieldsNames.join(',')}])',
+                    );
+                  }
+                },
+              ),
+            );
+          }
+
+          // copyWith
+          if (!serverCode) {
+            classBuilder.methods.add(Method(
+              (m) {
+                m.returns = refer(className);
+                m.name = 'copyWith';
+                m.docs.add('');
+
+                for (var field in fields) {
+                  m.optionalParameters.add(
+                    Parameter(
+                      (p) {
+                        p.named = true;
+                        p.name = field.name;
+                        p.type = field.type.reference(
+                          serverCode,
+                          subDirParts: classDefinition.subDirParts,
+                          nullable: true,
+                          config: config,
+                        );
+                      },
+                    ),
+                  );
+                }
+
+                m.body = refer(className)
+                    .call([], {
+                      for (var field in fields)
+                        field.name: refer('${field.name} ?? this.${field.name}')
+                    })
+                    .returned
+                    .statement;
+              },
+            ));
+          }
+
           // Serialization for database and everything
           if (serverCode) {
             if (tableName != null) {
@@ -197,34 +265,6 @@ class SerializableEntityLibraryGenerator {
                   },
                   //  refer('String'), refer('dynamic')
                 ).returned.statement;
-              },
-            ));
-
-            // copyWith
-            classBuilder.methods.add(Method(
-              (m) {
-                m.returns = refer(className);
-                m.name = 'copyWith';
-                for (var field in fields) {
-                  m.requiredParameters.add(
-                    Parameter((p) => p
-                      ..name = field.name
-                      ..type = field.type.reference(
-                        serverCode,
-                        subDirParts: classDefinition.subDirParts,
-                        nullable: true,
-                        config: config,
-                      )),
-                  );
-                }
-
-                m.body = refer(className)
-                    .call([], {
-                      for (var field in fields)
-                        field.name: refer('${field.name} ?? this.${field.name}')
-                    })
-                    .returned
-                    .statement;
               },
             ));
 
