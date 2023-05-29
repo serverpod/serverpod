@@ -431,7 +431,7 @@ extension TableMigrationPgSqlGenerator on TableMigration {
 
     // Drop foreign keys
     for (var deleteKey in deleteForeignKeys) {
-      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey"\n';
+      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey";\n';
     }
 
     // Drop columns

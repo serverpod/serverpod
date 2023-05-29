@@ -222,6 +222,13 @@ class InsightsEndpoint extends Endpoint {
 
   /// Executes SQL commands. Returns the number of rows affected.
   Future<int> executeSql(Session session, String sql) async {
-    return await session.db.execute(sql);
+    try {
+      return await session.db.execute(sql);
+    } catch (e) {
+      throw ServerpodSqlException(
+        message: '$e',
+        sql: sql,
+      );
+    }
   }
 }
