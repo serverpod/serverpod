@@ -94,7 +94,7 @@ class FileUploader {
       result.add(chunk);
     }
 
-    return result.takeBytes();
+    return result.toBytes();
   }
 }
 

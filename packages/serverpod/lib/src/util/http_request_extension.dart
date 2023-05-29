@@ -77,6 +77,6 @@ extension HttpRequestExtensions on HttpRequest {
       result.add(chunk);
     }
 
-    return result.takeBytes();
+    return result.toBytes();
   }
 }
