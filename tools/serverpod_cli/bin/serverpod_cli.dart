@@ -273,6 +273,25 @@ Future<void> _main(List<String> args) async {
 
       var projectName = await getProjectName();
 
+      var config = await GeneratorConfig.load();
+      if (config == null) {
+        exit(1);
+      }
+
+      int priority;
+      var packageType = config.type;
+      switch (packageType) {
+        case PackageType.internal:
+          priority = 0;
+          break;
+        case PackageType.module:
+          priority = 1;
+          break;
+        case PackageType.server:
+          priority = 2;
+          break;
+      }
+
       var generator = MigrationGenerator(
         directory: Directory.current,
         projectName: projectName,
@@ -281,6 +300,7 @@ Future<void> _main(List<String> args) async {
         tag: tag,
         verbose: verbose,
         force: force,
+        priority: priority,
       );
       print('Done.');
 

@@ -89,7 +89,7 @@ class LibraryGenerator {
                           module.dartImportUrl(serverCode))
                       .spread,
                 if (config.name != 'serverpod' &&
-                    config.type == PackageType.server)
+                    config.type != PackageType.module)
                   refer('Protocol.targetDatabaseDefinition.tables',
                           serverpodProtocolUrl(serverCode))
                       .spread,
@@ -324,7 +324,7 @@ class LibraryGenerator {
                                   .call([
                                     refer('server'),
                                     literalString(endpoint.name),
-                                    config.type == PackageType.server
+                                    config.type != PackageType.module
                                         ? refer('null')
                                         : literalString(config.name)
                                   ])
@@ -440,10 +440,10 @@ class LibraryGenerator {
     var library = LibraryBuilder();
 
     var hasModules =
-        config.modules.isNotEmpty && config.type == PackageType.server;
+        config.modules.isNotEmpty && config.type != PackageType.module;
 
     var modulePrefix =
-        config.type == PackageType.server ? '' : '${config.name}.';
+        config.type != PackageType.module ? '' : '${config.name}.';
 
     for (var endpointDef in protocolDefinition.endpoints) {
       var endpointClassName = getEndpointClassName(endpointDef.name);
@@ -560,8 +560,8 @@ class LibraryGenerator {
     library.body.add(
       Class(
         (c) => c
-          ..name = config.type == PackageType.server ? 'Client' : 'Caller'
-          ..extend = config.type == PackageType.server
+          ..name = config.type != PackageType.module ? 'Client' : 'Caller'
+          ..extend = config.type != PackageType.module
               ? refer('ServerpodClient', serverpodUrl(false))
               : refer('ModuleEndpointCaller', serverpodUrl(false))
           ..fields.addAll([
@@ -580,7 +580,7 @@ class LibraryGenerator {
           ])
           ..constructors.add(
             Constructor((c) {
-              if (config.type == PackageType.server) {
+              if (config.type != PackageType.module) {
                 c
                   ..requiredParameters.add(Parameter((p) => p
                     ..type = refer('String')
@@ -649,7 +649,7 @@ class LibraryGenerator {
                           refer(endpointDef.name)
                   }).code,
               ),
-              if (config.type == PackageType.server)
+              if (config.type != PackageType.module)
                 Method(
                   (m) => m
                     ..name = 'moduleLookup'

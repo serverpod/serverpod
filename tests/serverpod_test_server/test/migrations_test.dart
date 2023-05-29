@@ -73,6 +73,7 @@ Future<void> testMigration({
     force: force,
     tag: version,
     verbose: true,
+    priority: 2,
   );
   if (expectSuccess) {
     expect(migration, isNotNull);
@@ -80,7 +81,6 @@ Future<void> testMigration({
     var sql = migration!.migration.toPgSql(
       version: migration.versionName,
       module: 'serverdpod_test',
-      priority: 1,
     );
 
     await serviceClient.insights.executeSql(sql);

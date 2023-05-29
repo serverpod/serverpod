@@ -3,6 +3,10 @@ class: DatabaseDefinition
 fields:
   ### The name of the database.
   ### Null if the name is not available.
+
   name: String?
+
   ### The tables of the database.
   tables: List<TableDefinition>
+
+  priority: int?

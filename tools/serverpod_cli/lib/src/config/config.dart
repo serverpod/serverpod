@@ -15,6 +15,10 @@ enum PackageType {
 
   /// Indicating a module, that is used in other Serverpod based projects.
   module,
+
+  /// Indicating a package that is used internally by Serverpod (e.g. the
+  /// serverpod package).
+  internal,
 }
 
 /// The configuration of the generation and analyzing process.
@@ -135,6 +139,8 @@ class GeneratorConfig {
     late PackageType type;
     if (typeStr == 'module') {
       type = PackageType.module;
+    } else if (typeStr == 'internal') {
+      type = PackageType.internal;
     } else {
       type = PackageType.server;
     }

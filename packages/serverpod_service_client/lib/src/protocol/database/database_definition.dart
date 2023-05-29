@@ -14,6 +14,7 @@ class DatabaseDefinition extends _i1.SerializableEntity {
   DatabaseDefinition({
     this.name,
     required this.tables,
+    this.priority,
   });
 
   factory DatabaseDefinition.fromJson(
@@ -25,6 +26,8 @@ class DatabaseDefinition extends _i1.SerializableEntity {
           serializationManager.deserialize<String?>(jsonSerialization['name']),
       tables: serializationManager
           .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
+      priority:
+          serializationManager.deserialize<int?>(jsonSerialization['priority']),
     );
   }
 
@@ -35,11 +38,14 @@ class DatabaseDefinition extends _i1.SerializableEntity {
   /// The tables of the database.
   List<_i2.TableDefinition> tables;
 
+  int? priority;
+
   @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'tables': tables,
+      'priority': priority,
     };
   }
 }
