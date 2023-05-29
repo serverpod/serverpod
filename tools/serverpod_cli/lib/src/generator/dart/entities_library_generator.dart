@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
+
 import '../shared.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
@@ -196,6 +197,34 @@ class SerializableEntityLibraryGenerator {
                   },
                   //  refer('String'), refer('dynamic')
                 ).returned.statement;
+              },
+            ));
+
+            // copyWith
+            classBuilder.methods.add(Method(
+              (m) {
+                m.returns = refer(className);
+                m.name = 'copyWith';
+                for (var field in fields) {
+                  m.requiredParameters.add(
+                    Parameter((p) => p
+                      ..name = field.name
+                      ..type = field.type.reference(
+                        serverCode,
+                        subDirParts: classDefinition.subDirParts,
+                        nullable: true,
+                        config: config,
+                      )),
+                  );
+                }
+
+                m.body = refer(className)
+                    .call([], {
+                      for (var field in fields)
+                        field.name: refer('${field.name} ?? this.${field.name}')
+                    })
+                    .returned
+                    .statement;
               },
             ));
 
