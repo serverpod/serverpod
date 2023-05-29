@@ -8,12 +8,16 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 Future<DatabaseDefinition> generateDatabaseDefinition({
   required Directory directory,
+  required int priority,
   bool full = false,
 }) {
   if (full) {
     return _generateFullDatabaseDefinition(directory: directory);
   } else {
-    return _generateSinglePackageDatabaseDefinion(directory: directory);
+    return _generateSinglePackageDatabaseDefinion(
+      directory: directory,
+      priority: priority,
+    );
   }
 }
 
@@ -54,6 +58,7 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
 
 Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
   required Directory directory,
+  required int priority,
 }) async {
   var config = await GeneratorConfig.load(directory.path);
   if (config == null) {
@@ -70,6 +75,7 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
   var databaseDefinition = createDatabaseDefinitionFromEntities(
     entityDefinitions,
   );
+  databaseDefinition.priority = priority;
   for (var table in databaseDefinition.tables) {
     table.module = config.name;
   }

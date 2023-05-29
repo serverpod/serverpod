@@ -20,7 +20,12 @@ extension DatabaseComparisons on DatabaseDefinition {
   }
 
   bool like(DatabaseDefinition other) {
-    var diff = generateDatabaseMigration(this, other, []);
+    var diff = generateDatabaseMigration(
+      srcDatabase: this,
+      dstDatabase: other,
+      warnings: [],
+      priority: -1,
+    );
     return diff.isEmpty;
   }
 }
@@ -197,7 +202,6 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
   String toPgSql({
     required String version,
     required String module,
-    required int priority,
   }) {
     String out = '';
 
@@ -216,7 +220,7 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     out += _sqlStoreMigrationVersion(
       module: module,
       version: version,
-      priority: priority,
+      priority: priority!,
     );
 
     out += '\n';
@@ -365,7 +369,6 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
     required String version,
     required String module,
-    required int priority,
   }) {
     var out = '';
 

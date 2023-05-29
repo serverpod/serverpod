@@ -1,7 +1,7 @@
 BEGIN;
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectFieldScopes as table object_field_scopes
 --
 CREATE TABLE "object_field_scopes" (
     "id" serial PRIMARY KEY,
@@ -9,24 +9,27 @@ CREATE TABLE "object_field_scopes" (
     "database" text
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithByteData as table object_with_bytedata
 --
 CREATE TABLE "object_with_bytedata" (
     "id" serial PRIMARY KEY,
     "byteData" bytea NOT NULL
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithDuration as table object_with_duration
 --
 CREATE TABLE "object_with_duration" (
     "id" serial PRIMARY KEY,
     "duration" bigint NOT NULL
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithEnum as table object_with_enum
 --
 CREATE TABLE "object_with_enum" (
     "id" serial PRIMARY KEY,
@@ -37,8 +40,9 @@ CREATE TABLE "object_with_enum" (
     "enumListList" json NOT NULL
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithIndex as table object_with_index
 --
 CREATE TABLE "object_with_index" (
     "id" serial PRIMARY KEY,
@@ -49,8 +53,9 @@ CREATE TABLE "object_with_index" (
 -- Indexes
 CREATE INDEX "object_with_index_test_index" ON "object_with_index" USING brin ("indexed", "indexed2");
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithObject as table object_with_object
 --
 CREATE TABLE "object_with_object" (
     "id" serial PRIMARY KEY,
@@ -62,8 +67,9 @@ CREATE TABLE "object_with_object" (
     "nullableListWithNullableData" json
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithParent as table object_with_parent
 --
 CREATE TABLE "object_with_parent" (
     "id" serial PRIMARY KEY,
@@ -77,8 +83,9 @@ ALTER TABLE ONLY "object_with_parent"
     REFERENCES "object_field_scopes"("id")
     ON DELETE CASCADE;
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithSelfParent as table object_with_self_parent
 --
 CREATE TABLE "object_with_self_parent" (
     "id" serial PRIMARY KEY,
@@ -92,8 +99,9 @@ ALTER TABLE ONLY "object_with_self_parent"
     REFERENCES "object_with_self_parent"("id")
     ON DELETE CASCADE;
 
+
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithUuid as table object_with_uuid
 --
 CREATE TABLE "object_with_uuid" (
     "id" serial PRIMARY KEY,
@@ -101,16 +109,18 @@ CREATE TABLE "object_with_uuid" (
     "uuidNullable" uuid
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class SimpleData as table simple_data
 --
 CREATE TABLE "simple_data" (
     "id" serial PRIMARY KEY,
     "num" integer NOT NULL
 );
 
+
 --
--- ACTION CREATE TABLE
+-- Class Types as table types
 --
 CREATE TABLE "types" (
     "id" serial PRIMARY KEY,
@@ -124,13 +134,14 @@ CREATE TABLE "types" (
     "aUuid" uuid
 );
 
+
 --
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20230522155644', 1, now())
+    VALUES ('serverpod_test', '20230529141146', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230522155644', "priority" = 1;
+    DO UPDATE SET "version" = '20230529141146', "priority" = 2;
 
 
 COMMIT;

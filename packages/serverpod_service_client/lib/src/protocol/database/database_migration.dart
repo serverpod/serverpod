@@ -13,6 +13,7 @@ class DatabaseMigration extends _i1.SerializableEntity {
   DatabaseMigration({
     required this.actions,
     required this.warnings,
+    required this.priority,
   });
 
   factory DatabaseMigration.fromJson(
@@ -26,6 +27,8 @@ class DatabaseMigration extends _i1.SerializableEntity {
       warnings:
           serializationManager.deserialize<List<_i2.DatabaseMigrationWarning>>(
               jsonSerialization['warnings']),
+      priority:
+          serializationManager.deserialize<int>(jsonSerialization['priority']),
     );
   }
 
@@ -33,11 +36,14 @@ class DatabaseMigration extends _i1.SerializableEntity {
 
   List<_i2.DatabaseMigrationWarning> warnings;
 
+  int priority;
+
   @override
   Map<String, dynamic> toJson() {
     return {
       'actions': actions,
       'warnings': warnings,
+      'priority': priority,
     };
   }
 }

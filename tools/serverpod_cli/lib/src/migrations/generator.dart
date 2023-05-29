@@ -66,20 +66,28 @@ class MigrationGenerator {
     String? tag,
     required bool force,
     bool verbose = false,
+    required int priority,
   }) async {
     var versionName = createVersionName(tag);
 
     var latest = await getLatestMigrationVersion();
 
-    var srcDatabase =
-        latest?.databaseDefinition ?? DatabaseDefinition(tables: []);
-    var dstDatabase = await generateDatabaseDefinition(directory: directory);
+    var srcDatabase = latest?.databaseDefinition ??
+        DatabaseDefinition(
+          tables: [],
+          priority: priority,
+        );
+    var dstDatabase = await generateDatabaseDefinition(
+      directory: directory,
+      priority: priority,
+    );
 
     var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
-      srcDatabase,
-      dstDatabase,
-      warnings,
+      srcDatabase: srcDatabase,
+      dstDatabase: dstDatabase,
+      warnings: warnings,
+      priority: priority,
     );
 
     if (warnings.isNotEmpty) {
@@ -124,6 +132,7 @@ class MigrationVersion {
   final String versionName;
   final DatabaseMigration migration;
   final DatabaseDefinition databaseDefinition;
+  int get priority => migration.priority;
 
   static Future<MigrationVersion> load({
     required String versionName,
@@ -171,12 +180,10 @@ class MigrationVersion {
     var definitionSql = databaseDefinition.toPgSql(
       module: module,
       version: versionName,
-      priority: 1,
     );
     var migrationSql = migration.toPgSql(
       module: module,
       version: versionName,
-      priority: 1,
     );
 
     var versionDir = Directory(
