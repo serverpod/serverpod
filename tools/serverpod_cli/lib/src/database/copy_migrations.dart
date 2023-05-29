@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/util/copy_directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 
 Future<void> copyMigrations(GeneratorConfig config) async {
-  // Only copy migrations for server packages (not modules).
   if (config.type == PackageType.module) {
     return;
   }
