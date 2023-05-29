@@ -201,8 +201,8 @@ class Server {
       webSocket.pingInterval = const Duration(seconds: 30);
       unawaited(_handleWebsocket(webSocket, request));
       return;
-    } 
-    
+    }
+
     if (request.headers.contentType?.mimeType == ContentType.binary.mimeType) {
       readBody = false;
     }
