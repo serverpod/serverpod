@@ -219,6 +219,24 @@ void main() {
       );
     });
 
+    test('Apply migrations 5 - drop index and parent', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '5',
+        force: false,
+        expectSuccess: true,
+      );
+    });
+
+    test('Apply migrations 6 - add multiple tables', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '6',
+        force: false,
+        expectSuccess: true,
+      );
+    });
+
     test('Clean up', () async {
       await cleanUp(
         serviceClient: serviceClient,
