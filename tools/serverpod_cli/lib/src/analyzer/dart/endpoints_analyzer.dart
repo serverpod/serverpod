@@ -234,7 +234,7 @@ class EndpointsAnalyzer {
     var innerType = typeArguments[0];
 
     if (innerType is VoidType) {
-      return false;
+      return true;
     }
 
     if (innerType is InvalidType) {
