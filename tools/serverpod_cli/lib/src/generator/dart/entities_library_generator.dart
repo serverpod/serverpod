@@ -163,32 +163,120 @@ class SerializableEntityLibraryGenerator {
             },
           ));
 
+          // operator==
+          if (!serverCode) {
+            var primaryFields = fields
+                .where((e) => e.type.className != 'List')
+                .map((e) => e.name)
+                .toList(growable: false);
+
+            var collectionsFields = fields
+                .where(
+                  (e) =>
+                      e.type.className == 'List' || e.type.className == 'Map',
+                )
+                .map((e) => e.name)
+                .toList(growable: false);
+
+            classBuilder.methods.add(Method(
+              (m) {
+                m.name = 'operator==';
+                m.returns = const Reference('bool');
+                m.annotations.add(const CodeExpression(Code('override')));
+                m.requiredParameters
+                    .add(Parameter((paramBuilder) => paramBuilder
+                      ..name = 'other'
+                      ..type = refer('dynamic')));
+
+                m.body = Block.of(
+                  [
+                    const Code('return'),
+                    refer('identical').call([refer('this, other')]).code,
+                    const Code('||'),
+                    const Code('('),
+                    for (var e in primaryFields) ...[
+                      const Code('('),
+                      refer('identical')
+                          .call([refer('other.$e, $e')])
+                          .or(refer('other.$e == $e'))
+                          .code,
+                      const Code(')'),
+                      if (e != primaryFields.last ||
+                          collectionsFields.isNotEmpty)
+                        const Code('&&'),
+                    ],
+                    for (var e in collectionsFields) ...[
+                      refer(
+                        'DeepCollectionEquality',
+                        'package:collection/collection.dart',
+                      )
+                          .constInstance([])
+                          .property('equals')
+                          .call([refer(e), refer('other.$e')])
+                          .code,
+                      if (e != collectionsFields.last) const Code('&&'),
+                    ],
+                    const Code(')'),
+                    const Code(';'),
+                  ],
+                );
+              },
+            ));
+          }
           // hashCode
-          if (fields.isNotEmpty && !serverCode) {
+          if (!serverCode) {
             classBuilder.methods.add(
               Method(
                 (m) {
-                  m.name = 'hashCode';
                   m.annotations.add(refer('override'));
+                  m.name = 'hashCode';
                   m.type = MethodType.getter;
                   m.returns = refer('int');
                   m.lambda = true;
 
-                  var fieldsNames =
-                      fields.map((e) => e.name).toList(growable: false);
+                  var primaryFields = fields
+                      .where((e) => e.type.className != 'List')
+                      .map((e) => e.name)
+                      .toList(growable: false);
 
-                  if (fieldsNames.length == 1) {
-                    m.body = Code('${fieldsNames.first}.hashCode');
-                  } else if (fields.length < 19) {
-                    // Maximum 19 args see:
-                    // https://api.dart.dev/stable/3.0.2/dart-core/Object/hash.html
-                    m.body = Code(
-                      'Object.hash(${fieldsNames.join(',')})',
-                    );
+                  var collectionsFields = fields
+                      .where(
+                        (e) =>
+                            e.type.className == 'List' ||
+                            e.type.className == 'Map',
+                      )
+                      .map((e) => e.name)
+                      .toList(growable: false);
+
+                  Expression deep(String name) {
+                    return refer(
+                      'DeepCollectionEquality',
+                      'package:collection/collection.dart',
+                    ).constInstance([]).property('hash').call([
+                          refer(name),
+                        ]);
+                  }
+
+                  if (fields.length == 1) {
+                    m.body = collectionsFields.isNotEmpty
+                        ? deep(collectionsFields.first).code
+                        : refer(fields.first.name).property('hashCode').code;
+                  } else if (fields.length <= 19) {
+                    m.body = refer('Object').property('hash').call(
+                      [
+                        ...primaryFields.map((e) => refer(e)),
+                        ...collectionsFields.map(deep)
+                      ],
+                    ).code;
                   } else {
-                    m.body = Code(
-                      'Object.hashAll([${fieldsNames.join(',')}])',
-                    );
+                    m.body = refer('Object').property('hashAll').call(
+                      [
+                        literalList([
+                          ...primaryFields.map((e) => refer(e)),
+                          ...collectionsFields.map(deep)
+                        ])
+                      ],
+                    ).code;
                   }
                 },
               ),
