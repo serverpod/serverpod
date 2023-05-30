@@ -165,63 +165,67 @@ class SerializableEntityLibraryGenerator {
 
           // operator==
           if (!serverCode) {
-            var primaryFields = fields
-                .where((e) => e.type.className != 'List')
-                .map((e) => e.name)
-                .toList(growable: false);
+            classBuilder.methods.add(
+              Method(
+                (m) {
+                  m.name = 'operator==';
+                  m.returns = refer('bool');
+                  m.annotations.add(refer('override'));
+                  m.requiredParameters.add(
+                    Parameter(
+                      (paramBuilder) => paramBuilder
+                        ..name = 'other'
+                        ..type = refer('dynamic'),
+                    ),
+                  );
 
-            var collectionsFields = fields
-                .where(
-                  (e) =>
-                      e.type.className == 'List' || e.type.className == 'Map',
-                )
-                .map((e) => e.name)
-                .toList(growable: false);
+                  var primaryFields = fields
+                      .where((e) => e.type.className != 'List')
+                      .map((e) => e.name);
 
-            classBuilder.methods.add(Method(
-              (m) {
-                m.name = 'operator==';
-                m.returns = const Reference('bool');
-                m.annotations.add(const CodeExpression(Code('override')));
-                m.requiredParameters
-                    .add(Parameter((paramBuilder) => paramBuilder
-                      ..name = 'other'
-                      ..type = refer('dynamic')));
+                  var collectionsFields = fields
+                      .where((e) => e.type.className == 'List')
+                      .map((e) => e.name);
 
-                m.body = Block.of(
-                  [
-                    const Code('return'),
-                    refer('identical').call([refer('this, other')]).code,
-                    const Code('||'),
-                    const Code('('),
-                    for (var e in primaryFields) ...[
-                      const Code('('),
+                  m.body = Block.of(
+                    [
                       refer('identical')
-                          .call([refer('other.$e, $e')])
-                          .or(refer('other.$e == $e'))
+                          .call([refer('this, other')])
+                          .returned
                           .code,
+                      const Code('||'),
+                      const Code('('),
+                      refer('other').isA(refer(className)).code,
+                      const Code('&&'),
+                      for (var e in primaryFields) ...[
+                        const Code('('),
+                        refer('identical')
+                            .call([refer('other.$e, $e')])
+                            .or(refer('other.$e == $e'))
+                            .code,
+                        const Code(')'),
+                        if (e != primaryFields.last ||
+                            collectionsFields.isNotEmpty)
+                          const Code('&&'),
+                      ],
+                      for (var e in collectionsFields) ...[
+                        refer(
+                          'DeepCollectionEquality',
+                          'package:collection/collection.dart',
+                        )
+                            .constInstance([])
+                            .property('equals')
+                            .call([refer(e), refer('other.$e')])
+                            .code,
+                        if (e != collectionsFields.last) const Code('&&'),
+                      ],
                       const Code(')'),
-                      if (e != primaryFields.last ||
-                          collectionsFields.isNotEmpty)
-                        const Code('&&'),
+                      const Code(';'),
                     ],
-                    for (var e in collectionsFields) ...[
-                      refer(
-                        'DeepCollectionEquality',
-                        'package:collection/collection.dart',
-                      )
-                          .constInstance([])
-                          .property('equals')
-                          .call([refer(e), refer('other.$e')])
-                          .code,
-                      if (e != collectionsFields.last) const Code('&&'),
-                    ],
-                    const Code(')'),
-                    const Code(';'),
-                  ],
-                );
-              },
-            ));
+                  );
+                },
+              ),
+            );
           }
           // hashCode
           if (!serverCode) {
@@ -236,17 +240,11 @@ class SerializableEntityLibraryGenerator {
 
                   var primaryFields = fields
                       .where((e) => e.type.className != 'List')
-                      .map((e) => e.name)
-                      .toList(growable: false);
+                      .map((e) => e.name);
 
                   var collectionsFields = fields
-                      .where(
-                        (e) =>
-                            e.type.className == 'List' ||
-                            e.type.className == 'Map',
-                      )
-                      .map((e) => e.name)
-                      .toList(growable: false);
+                      .where((e) => e.type.className == 'List')
+                      .map((e) => e.name);
 
                   Expression deep(String name) {
                     return refer(
