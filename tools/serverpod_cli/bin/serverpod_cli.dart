@@ -17,7 +17,9 @@ import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_cli/src/util/version.dart';
 
 const cmdCreate = 'create';
@@ -270,6 +272,17 @@ Future<void> _main(List<String> args) async {
       bool verbose = results.command!['verbose'];
       bool force = results.command!['force'];
       String? tag = results.command!['tag'];
+
+      if (tag != null) {
+        if (!StringValidators.isValidTagName(tag)) {
+          printwwln(
+            'Invalid tag name. Tag names can only contain lowercase letters, '
+            'number, and dashes.',
+          );
+          _analytics.cleanUp();
+          return;
+        }
+      }
 
       var projectName = await getProjectName();
 
