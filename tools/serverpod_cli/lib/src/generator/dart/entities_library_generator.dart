@@ -200,8 +200,8 @@ class SerializableEntityLibraryGenerator {
                       for (var e in primaryFields) ...[
                         const Code('('),
                         refer('identical')
-                            .call([refer('other.$e, $e')])
-                            .or(refer('other.$e == $e'))
+                            .call([refer('other').property(e), refer(e)])
+                            .or(refer('other').property(e).equalTo(refer(e)))
                             .code,
                         const Code(')'),
                         if (e != primaryFields.last ||
@@ -215,7 +215,10 @@ class SerializableEntityLibraryGenerator {
                         )
                             .constInstance([])
                             .property('equals')
-                            .call([refer(e), refer('other.$e')])
+                            .call([
+                              refer(e),
+                              refer('other').property(e),
+                            ])
                             .code,
                         if (e != collectionsFields.last) const Code('&&'),
                       ],
