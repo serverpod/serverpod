@@ -411,27 +411,6 @@ class Nullability extends _i1.SerializableEntity {
                   aNullableObject,
                 ) ||
                 other.aNullableObject == aNullableObject) &&
-            (identical(
-                  other.anIntMap,
-                  anIntMap,
-                ) ||
-                other.anIntMap == anIntMap) &&
-            (identical(
-                  other.aNullableIntMap,
-                  aNullableIntMap,
-                ) ||
-                other.aNullableIntMap == aNullableIntMap) &&
-            (identical(
-                  other.aMapWithNullableInts,
-                  aMapWithNullableInts,
-                ) ||
-                other.aMapWithNullableInts == aMapWithNullableInts) &&
-            (identical(
-                  other.aNullableMapWithNullableInts,
-                  aNullableMapWithNullableInts,
-                ) ||
-                other.aNullableMapWithNullableInts ==
-                    aNullableMapWithNullableInts) &&
             const _i4.DeepCollectionEquality().equals(
               anIntList,
               other.anIntList,
@@ -527,6 +506,22 @@ class Nullability extends _i1.SerializableEntity {
             const _i4.DeepCollectionEquality().equals(
               aNullableListWithNullableUuids,
               other.aNullableListWithNullableUuids,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              anIntMap,
+              other.anIntMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              aNullableIntMap,
+              other.aNullableIntMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              aMapWithNullableInts,
+              other.aMapWithNullableInts,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              aNullableMapWithNullableInts,
+              other.aNullableMapWithNullableInts,
             ));
   }
 
@@ -550,10 +545,6 @@ class Nullability extends _i1.SerializableEntity {
         aNullableUuid,
         anObject,
         aNullableObject,
-        anIntMap,
-        aNullableIntMap,
-        aMapWithNullableInts,
-        aNullableMapWithNullableInts,
         const _i4.DeepCollectionEquality().hash(anIntList),
         const _i4.DeepCollectionEquality().hash(aNullableIntList),
         const _i4.DeepCollectionEquality().hash(aListWithNullableInts),
@@ -582,6 +573,10 @@ class Nullability extends _i1.SerializableEntity {
         const _i4.DeepCollectionEquality().hash(aNullableUuidList),
         const _i4.DeepCollectionEquality().hash(aListWithNullableUuids),
         const _i4.DeepCollectionEquality().hash(aNullableListWithNullableUuids),
+        const _i4.DeepCollectionEquality().hash(anIntMap),
+        const _i4.DeepCollectionEquality().hash(aNullableIntMap),
+        const _i4.DeepCollectionEquality().hash(aMapWithNullableInts),
+        const _i4.DeepCollectionEquality().hash(aNullableMapWithNullableInts),
       ]);
 
   Nullability copyWith({

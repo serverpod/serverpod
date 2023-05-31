@@ -163,16 +163,25 @@ class SerializableEntityLibraryGenerator {
             },
           ));
 
+          // operator==, hashCode, copyWith
           if (!serverCode) {
             var primaryFields = fields
-                .where((e) =>
-                    e.type.className != 'List' &&
-                    e.shouldIncludeField(serverCode))
+                .where(
+                  (e) =>
+                      e.shouldIncludeField(serverCode) &&
+                      (e.type.className != 'List' && e.type.className != 'Map'),
+                )
                 .map((e) => e.name);
 
             var collectionsFields = fields
-                .where((e) => e.type.className == 'List')
+                .where(
+                  (e) =>
+                      e.shouldIncludeField(serverCode) &&
+                      (e.type.className == 'List' || e.type.className == 'Map'),
+                )
                 .map((e) => e.name);
+
+            var fieldsLength = primaryFields.length + collectionsFields.length;
 
             // operator==
             classBuilder.methods.add(
@@ -231,6 +240,7 @@ class SerializableEntityLibraryGenerator {
                 },
               ),
             );
+
             // hashCode
             classBuilder.methods.add(
               Method(
@@ -250,11 +260,11 @@ class SerializableEntityLibraryGenerator {
                         ]);
                   }
 
-                  if (fields.length == 1) {
+                  if (fieldsLength == 1) {
                     m.body = collectionsFields.isNotEmpty
                         ? deep(collectionsFields.first).code
                         : refer(fields.first.name).property('hashCode').code;
-                  } else if (fields.length <= 19) {
+                  } else if (fieldsLength <= 19) {
                     m.body = refer('Object').property('hash').call(
                       [
                         ...primaryFields.map((e) => refer(e)),

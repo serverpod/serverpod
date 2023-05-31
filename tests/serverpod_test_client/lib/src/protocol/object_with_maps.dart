@@ -9,6 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:collection/collection.dart' as _i4;
 
 class ObjectWithMaps extends _i1.SerializableEntity {
   ObjectWithMaps({
@@ -127,100 +128,85 @@ class ObjectWithMaps extends _i1.SerializableEntity {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other is ObjectWithMaps &&
-            (identical(
-                  other.dataMap,
-                  dataMap,
-                ) ||
-                other.dataMap == dataMap) &&
-            (identical(
-                  other.intMap,
-                  intMap,
-                ) ||
-                other.intMap == intMap) &&
-            (identical(
-                  other.stringMap,
-                  stringMap,
-                ) ||
-                other.stringMap == stringMap) &&
-            (identical(
-                  other.dateTimeMap,
-                  dateTimeMap,
-                ) ||
-                other.dateTimeMap == dateTimeMap) &&
-            (identical(
-                  other.byteDataMap,
-                  byteDataMap,
-                ) ||
-                other.byteDataMap == byteDataMap) &&
-            (identical(
-                  other.durationMap,
-                  durationMap,
-                ) ||
-                other.durationMap == durationMap) &&
-            (identical(
-                  other.uuidMap,
-                  uuidMap,
-                ) ||
-                other.uuidMap == uuidMap) &&
-            (identical(
-                  other.nullableDataMap,
-                  nullableDataMap,
-                ) ||
-                other.nullableDataMap == nullableDataMap) &&
-            (identical(
-                  other.nullableIntMap,
-                  nullableIntMap,
-                ) ||
-                other.nullableIntMap == nullableIntMap) &&
-            (identical(
-                  other.nullableStringMap,
-                  nullableStringMap,
-                ) ||
-                other.nullableStringMap == nullableStringMap) &&
-            (identical(
-                  other.nullableDateTimeMap,
-                  nullableDateTimeMap,
-                ) ||
-                other.nullableDateTimeMap == nullableDateTimeMap) &&
-            (identical(
-                  other.nullableByteDataMap,
-                  nullableByteDataMap,
-                ) ||
-                other.nullableByteDataMap == nullableByteDataMap) &&
-            (identical(
-                  other.nullableDurationMap,
-                  nullableDurationMap,
-                ) ||
-                other.nullableDurationMap == nullableDurationMap) &&
-            (identical(
-                  other.nullableUuidMap,
-                  nullableUuidMap,
-                ) ||
-                other.nullableUuidMap == nullableUuidMap) &&
-            (identical(
-                  other.intIntMap,
-                  intIntMap,
-                ) ||
-                other.intIntMap == intIntMap));
+            const _i4.DeepCollectionEquality().equals(
+              dataMap,
+              other.dataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              intMap,
+              other.intMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              stringMap,
+              other.stringMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              dateTimeMap,
+              other.dateTimeMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              byteDataMap,
+              other.byteDataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              durationMap,
+              other.durationMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              uuidMap,
+              other.uuidMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableDataMap,
+              other.nullableDataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableIntMap,
+              other.nullableIntMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableStringMap,
+              other.nullableStringMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableDateTimeMap,
+              other.nullableDateTimeMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableByteDataMap,
+              other.nullableByteDataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableDurationMap,
+              other.nullableDurationMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableUuidMap,
+              other.nullableUuidMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              intIntMap,
+              other.intIntMap,
+            ));
   }
 
   @override
   int get hashCode => Object.hash(
-        dataMap,
-        intMap,
-        stringMap,
-        dateTimeMap,
-        byteDataMap,
-        durationMap,
-        uuidMap,
-        nullableDataMap,
-        nullableIntMap,
-        nullableStringMap,
-        nullableDateTimeMap,
-        nullableByteDataMap,
-        nullableDurationMap,
-        nullableUuidMap,
-        intIntMap,
+        const _i4.DeepCollectionEquality().hash(dataMap),
+        const _i4.DeepCollectionEquality().hash(intMap),
+        const _i4.DeepCollectionEquality().hash(stringMap),
+        const _i4.DeepCollectionEquality().hash(dateTimeMap),
+        const _i4.DeepCollectionEquality().hash(byteDataMap),
+        const _i4.DeepCollectionEquality().hash(durationMap),
+        const _i4.DeepCollectionEquality().hash(uuidMap),
+        const _i4.DeepCollectionEquality().hash(nullableDataMap),
+        const _i4.DeepCollectionEquality().hash(nullableIntMap),
+        const _i4.DeepCollectionEquality().hash(nullableStringMap),
+        const _i4.DeepCollectionEquality().hash(nullableDateTimeMap),
+        const _i4.DeepCollectionEquality().hash(nullableByteDataMap),
+        const _i4.DeepCollectionEquality().hash(nullableDurationMap),
+        const _i4.DeepCollectionEquality().hash(nullableUuidMap),
+        const _i4.DeepCollectionEquality().hash(intIntMap),
       );
 
   ObjectWithMaps copyWith({
