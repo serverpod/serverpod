@@ -63,12 +63,7 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
                   other.api,
                   api,
                 ) ||
-                other.api == api) &&
-            (identical(
-                  other.database,
-                  database,
-                ) ||
-                other.database == database));
+                other.api == api));
   }
 
   @override
@@ -76,14 +71,12 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
         id,
         normal,
         api,
-        database,
       );
 
   ObjectFieldScopes copyWith({
     int? id,
     String? normal,
     String? api,
-    String? database,
   }) {
     return ObjectFieldScopes(
       id: id ?? this.id,

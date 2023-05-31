@@ -163,8 +163,18 @@ class SerializableEntityLibraryGenerator {
             },
           ));
 
-          // operator==
           if (!serverCode) {
+            var primaryFields = fields
+                .where((e) =>
+                    e.type.className != 'List' &&
+                    e.shouldIncludeField(serverCode))
+                .map((e) => e.name);
+
+            var collectionsFields = fields
+                .where((e) => e.type.className == 'List')
+                .map((e) => e.name);
+
+            // operator==
             classBuilder.methods.add(
               Method(
                 (m) {
@@ -178,14 +188,6 @@ class SerializableEntityLibraryGenerator {
                         ..type = refer('dynamic'),
                     ),
                   );
-
-                  var primaryFields = fields
-                      .where((e) => e.type.className != 'List')
-                      .map((e) => e.name);
-
-                  var collectionsFields = fields
-                      .where((e) => e.type.className == 'List')
-                      .map((e) => e.name);
 
                   m.body = Block.of(
                     [
@@ -229,9 +231,7 @@ class SerializableEntityLibraryGenerator {
                 },
               ),
             );
-          }
-          // hashCode
-          if (!serverCode) {
+            // hashCode
             classBuilder.methods.add(
               Method(
                 (m) {
@@ -240,14 +240,6 @@ class SerializableEntityLibraryGenerator {
                   m.type = MethodType.getter;
                   m.returns = refer('int');
                   m.lambda = true;
-
-                  var primaryFields = fields
-                      .where((e) => e.type.className != 'List')
-                      .map((e) => e.name);
-
-                  var collectionsFields = fields
-                      .where((e) => e.type.className == 'List')
-                      .map((e) => e.name);
 
                   Expression deep(String name) {
                     return refer(
@@ -282,10 +274,8 @@ class SerializableEntityLibraryGenerator {
                 },
               ),
             );
-          }
 
-          // copyWith
-          if (!serverCode) {
+            // copyWith
             classBuilder.methods.add(Method(
               (m) {
                 m.returns = refer(className);
@@ -293,20 +283,22 @@ class SerializableEntityLibraryGenerator {
                 m.docs.add('');
 
                 for (var field in fields) {
-                  m.optionalParameters.add(
-                    Parameter(
-                      (p) {
-                        p.named = true;
-                        p.name = field.name;
-                        p.type = field.type.reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          nullable: true,
-                          config: config,
-                        );
-                      },
-                    ),
-                  );
+                  if (field.shouldIncludeField(serverCode)) {
+                    m.optionalParameters.add(
+                      Parameter(
+                        (p) {
+                          p.named = true;
+                          p.name = field.name;
+                          p.type = field.type.reference(
+                            serverCode,
+                            subDirParts: classDefinition.subDirParts,
+                            nullable: true,
+                            config: config,
+                          );
+                        },
+                      ),
+                    );
+                  }
                 }
 
                 m.body = refer(className)
