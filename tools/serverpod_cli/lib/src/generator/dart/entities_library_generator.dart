@@ -304,7 +304,9 @@ class SerializableEntityLibraryGenerator {
                 m.body = refer(className)
                     .call([], {
                       for (var field in fields)
-                        field.name: refer('${field.name} ?? this.${field.name}')
+                        if (field.shouldIncludeField(serverCode))
+                          field.name:
+                              refer('${field.name} ?? this.${field.name}')
                     })
                     .returned
                     .statement;

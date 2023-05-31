@@ -82,7 +82,6 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
       id: id ?? this.id,
       normal: normal ?? this.normal,
       api: api ?? this.api,
-      database: database ?? this.database,
     );
   }
 }
