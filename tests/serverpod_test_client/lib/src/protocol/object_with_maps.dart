@@ -122,4 +122,140 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'intIntMap': intIntMap,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithMaps &&
+            (identical(
+                  other.dataMap,
+                  dataMap,
+                ) ||
+                other.dataMap == dataMap) &&
+            (identical(
+                  other.intMap,
+                  intMap,
+                ) ||
+                other.intMap == intMap) &&
+            (identical(
+                  other.stringMap,
+                  stringMap,
+                ) ||
+                other.stringMap == stringMap) &&
+            (identical(
+                  other.dateTimeMap,
+                  dateTimeMap,
+                ) ||
+                other.dateTimeMap == dateTimeMap) &&
+            (identical(
+                  other.byteDataMap,
+                  byteDataMap,
+                ) ||
+                other.byteDataMap == byteDataMap) &&
+            (identical(
+                  other.durationMap,
+                  durationMap,
+                ) ||
+                other.durationMap == durationMap) &&
+            (identical(
+                  other.uuidMap,
+                  uuidMap,
+                ) ||
+                other.uuidMap == uuidMap) &&
+            (identical(
+                  other.nullableDataMap,
+                  nullableDataMap,
+                ) ||
+                other.nullableDataMap == nullableDataMap) &&
+            (identical(
+                  other.nullableIntMap,
+                  nullableIntMap,
+                ) ||
+                other.nullableIntMap == nullableIntMap) &&
+            (identical(
+                  other.nullableStringMap,
+                  nullableStringMap,
+                ) ||
+                other.nullableStringMap == nullableStringMap) &&
+            (identical(
+                  other.nullableDateTimeMap,
+                  nullableDateTimeMap,
+                ) ||
+                other.nullableDateTimeMap == nullableDateTimeMap) &&
+            (identical(
+                  other.nullableByteDataMap,
+                  nullableByteDataMap,
+                ) ||
+                other.nullableByteDataMap == nullableByteDataMap) &&
+            (identical(
+                  other.nullableDurationMap,
+                  nullableDurationMap,
+                ) ||
+                other.nullableDurationMap == nullableDurationMap) &&
+            (identical(
+                  other.nullableUuidMap,
+                  nullableUuidMap,
+                ) ||
+                other.nullableUuidMap == nullableUuidMap) &&
+            (identical(
+                  other.intIntMap,
+                  intIntMap,
+                ) ||
+                other.intIntMap == intIntMap));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        dataMap,
+        intMap,
+        stringMap,
+        dateTimeMap,
+        byteDataMap,
+        durationMap,
+        uuidMap,
+        nullableDataMap,
+        nullableIntMap,
+        nullableStringMap,
+        nullableDateTimeMap,
+        nullableByteDataMap,
+        nullableDurationMap,
+        nullableUuidMap,
+        intIntMap,
+      );
+
+  ObjectWithMaps copyWith({
+    Map<String, _i2.SimpleData>? dataMap,
+    Map<String, int>? intMap,
+    Map<String, String>? stringMap,
+    Map<String, DateTime>? dateTimeMap,
+    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, Duration>? durationMap,
+    Map<String, _i1.UuidValue>? uuidMap,
+    Map<String, _i2.SimpleData?>? nullableDataMap,
+    Map<String, int?>? nullableIntMap,
+    Map<String, String?>? nullableStringMap,
+    Map<String, DateTime?>? nullableDateTimeMap,
+    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, Duration?>? nullableDurationMap,
+    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<int, int>? intIntMap,
+  }) {
+    return ObjectWithMaps(
+      dataMap: dataMap ?? this.dataMap,
+      intMap: intMap ?? this.intMap,
+      stringMap: stringMap ?? this.stringMap,
+      dateTimeMap: dateTimeMap ?? this.dateTimeMap,
+      byteDataMap: byteDataMap ?? this.byteDataMap,
+      durationMap: durationMap ?? this.durationMap,
+      uuidMap: uuidMap ?? this.uuidMap,
+      nullableDataMap: nullableDataMap ?? this.nullableDataMap,
+      nullableIntMap: nullableIntMap ?? this.nullableIntMap,
+      nullableStringMap: nullableStringMap ?? this.nullableStringMap,
+      nullableDateTimeMap: nullableDateTimeMap ?? this.nullableDateTimeMap,
+      nullableByteDataMap: nullableByteDataMap ?? this.nullableByteDataMap,
+      nullableDurationMap: nullableDurationMap ?? this.nullableDurationMap,
+      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap,
+      intIntMap: intIntMap ?? this.intIntMap,
+    );
+  }
 }

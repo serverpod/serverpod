@@ -42,4 +42,36 @@ class SimpleData extends _i1.SerializableEntity {
       'num': num,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is SimpleData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.num,
+                  num,
+                ) ||
+                other.num == num));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        num,
+      );
+
+  SimpleData copyWith({
+    int? id,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id ?? this.id,
+      num: num ?? this.num,
+    );
+  }
 }

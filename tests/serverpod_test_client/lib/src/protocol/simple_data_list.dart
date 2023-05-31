@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
 
 class SimpleDataList extends _i1.SerializableEntity {
   SimpleDataList({required this.rows});
@@ -26,5 +27,22 @@ class SimpleDataList extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {'rows': rows};
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is SimpleDataList &&
+            const _i3.DeepCollectionEquality().equals(
+              rows,
+              other.rows,
+            ));
+  }
+
+  @override
+  int get hashCode => const _i3.DeepCollectionEquality().hash(rows);
+
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
+    return SimpleDataList(rows: rows ?? this.rows);
   }
 }

@@ -45,4 +45,44 @@ class ObjectWithIndex extends _i1.SerializableEntity {
       'indexed2': indexed2,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithIndex &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.indexed,
+                  indexed,
+                ) ||
+                other.indexed == indexed) &&
+            (identical(
+                  other.indexed2,
+                  indexed2,
+                ) ||
+                other.indexed2 == indexed2));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        indexed,
+        indexed2,
+      );
+
+  ObjectWithIndex copyWith({
+    int? id,
+    int? indexed,
+    int? indexed2,
+  }) {
+    return ObjectWithIndex(
+      id: id ?? this.id,
+      indexed: indexed ?? this.indexed,
+      indexed2: indexed2 ?? this.indexed2,
+    );
+  }
 }

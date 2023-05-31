@@ -81,4 +81,92 @@ class Types extends _i1.SerializableEntity {
       'aUuid': aUuid,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is Types &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.anInt,
+                  anInt,
+                ) ||
+                other.anInt == anInt) &&
+            (identical(
+                  other.aBool,
+                  aBool,
+                ) ||
+                other.aBool == aBool) &&
+            (identical(
+                  other.aDouble,
+                  aDouble,
+                ) ||
+                other.aDouble == aDouble) &&
+            (identical(
+                  other.aDateTime,
+                  aDateTime,
+                ) ||
+                other.aDateTime == aDateTime) &&
+            (identical(
+                  other.aString,
+                  aString,
+                ) ||
+                other.aString == aString) &&
+            (identical(
+                  other.aByteData,
+                  aByteData,
+                ) ||
+                other.aByteData == aByteData) &&
+            (identical(
+                  other.aDuration,
+                  aDuration,
+                ) ||
+                other.aDuration == aDuration) &&
+            (identical(
+                  other.aUuid,
+                  aUuid,
+                ) ||
+                other.aUuid == aUuid));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        anInt,
+        aBool,
+        aDouble,
+        aDateTime,
+        aString,
+        aByteData,
+        aDuration,
+        aUuid,
+      );
+
+  Types copyWith({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  }) {
+    return Types(
+      id: id ?? this.id,
+      anInt: anInt ?? this.anInt,
+      aBool: aBool ?? this.aBool,
+      aDouble: aDouble ?? this.aDouble,
+      aDateTime: aDateTime ?? this.aDateTime,
+      aString: aString ?? this.aString,
+      aByteData: aByteData ?? this.aByteData,
+      aDuration: aDuration ?? this.aDuration,
+      aUuid: aUuid ?? this.aUuid,
+    );
+  }
 }

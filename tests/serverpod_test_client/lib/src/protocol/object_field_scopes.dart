@@ -44,4 +44,52 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
       'api': api,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectFieldScopes &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.normal,
+                  normal,
+                ) ||
+                other.normal == normal) &&
+            (identical(
+                  other.api,
+                  api,
+                ) ||
+                other.api == api) &&
+            (identical(
+                  other.database,
+                  database,
+                ) ||
+                other.database == database));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        normal,
+        api,
+        database,
+      );
+
+  ObjectFieldScopes copyWith({
+    int? id,
+    String? normal,
+    String? api,
+    String? database,
+  }) {
+    return ObjectFieldScopes(
+      id: id ?? this.id,
+      normal: normal ?? this.normal,
+      api: api ?? this.api,
+      database: database ?? this.database,
+    );
+  }
 }

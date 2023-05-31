@@ -40,4 +40,36 @@ class ObjectWithByteData extends _i1.SerializableEntity {
       'byteData': byteData,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithByteData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.byteData,
+                  byteData,
+                ) ||
+                other.byteData == byteData));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        byteData,
+      );
+
+  ObjectWithByteData copyWith({
+    int? id,
+    _i2.ByteData? byteData,
+  }) {
+    return ObjectWithByteData(
+      id: id ?? this.id,
+      byteData: byteData ?? this.byteData,
+    );
+  }
 }

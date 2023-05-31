@@ -39,4 +39,36 @@ class ObjectWithDuration extends _i1.SerializableEntity {
       'duration': duration,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithDuration &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        duration,
+      );
+
+  ObjectWithDuration copyWith({
+    int? id,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id ?? this.id,
+      duration: duration ?? this.duration,
+    );
+  }
 }

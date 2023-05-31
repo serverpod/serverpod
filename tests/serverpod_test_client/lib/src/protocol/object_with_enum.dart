@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
 
 class ObjectWithEnum extends _i1.SerializableEntity {
   ObjectWithEnum({
@@ -63,5 +64,66 @@ class ObjectWithEnum extends _i1.SerializableEntity {
       'nullableEnumList': nullableEnumList,
       'enumListList': enumListList,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithEnum &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.testEnum,
+                  testEnum,
+                ) ||
+                other.testEnum == testEnum) &&
+            (identical(
+                  other.nullableEnum,
+                  nullableEnum,
+                ) ||
+                other.nullableEnum == nullableEnum) &&
+            const _i3.DeepCollectionEquality().equals(
+              enumList,
+              other.enumList,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              nullableEnumList,
+              other.nullableEnumList,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              enumListList,
+              other.enumListList,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        testEnum,
+        nullableEnum,
+        const _i3.DeepCollectionEquality().hash(enumList),
+        const _i3.DeepCollectionEquality().hash(nullableEnumList),
+        const _i3.DeepCollectionEquality().hash(enumListList),
+      );
+
+  ObjectWithEnum copyWith({
+    int? id,
+    _i2.TestEnum? testEnum,
+    _i2.TestEnum? nullableEnum,
+    List<_i2.TestEnum>? enumList,
+    List<_i2.TestEnum?>? nullableEnumList,
+    List<List<_i2.TestEnum>>? enumListList,
+  }) {
+    return ObjectWithEnum(
+      id: id ?? this.id,
+      testEnum: testEnum ?? this.testEnum,
+      nullableEnum: nullableEnum ?? this.nullableEnum,
+      enumList: enumList ?? this.enumList,
+      nullableEnumList: nullableEnumList ?? this.nullableEnumList,
+      enumListList: enumListList ?? this.enumListList,
+    );
   }
 }

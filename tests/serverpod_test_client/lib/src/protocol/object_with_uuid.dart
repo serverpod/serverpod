@@ -45,4 +45,44 @@ class ObjectWithUuid extends _i1.SerializableEntity {
       'uuidNullable': uuidNullable,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithUuid &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.uuid,
+                  uuid,
+                ) ||
+                other.uuid == uuid) &&
+            (identical(
+                  other.uuidNullable,
+                  uuidNullable,
+                ) ||
+                other.uuidNullable == uuidNullable));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        uuid,
+        uuidNullable,
+      );
+
+  ObjectWithUuid copyWith({
+    int? id,
+    _i1.UuidValue? uuid,
+    _i1.UuidValue? uuidNullable,
+  }) {
+    return ObjectWithUuid(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      uuidNullable: uuidNullable ?? this.uuidNullable,
+    );
+  }
 }

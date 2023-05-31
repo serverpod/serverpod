@@ -26,4 +26,22 @@ class DefaultServerOnlyClass extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {'foo': foo};
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is DefaultServerOnlyClass &&
+            (identical(
+                  other.foo,
+                  foo,
+                ) ||
+                other.foo == foo));
+  }
+
+  @override
+  int get hashCode => foo.hashCode;
+
+  DefaultServerOnlyClass copyWith({String? foo}) {
+    return DefaultServerOnlyClass(foo: foo ?? this.foo);
+  }
 }

@@ -38,4 +38,36 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
       'other': other,
     };
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ObjectWithSelfParent &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.other,
+                  other,
+                ) ||
+                other.other == other));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        other,
+      );
+
+  ObjectWithSelfParent copyWith({
+    int? id,
+    int? other,
+  }) {
+    return ObjectWithSelfParent(
+      id: id ?? this.id,
+      other: other ?? this.other,
+    );
+  }
 }
