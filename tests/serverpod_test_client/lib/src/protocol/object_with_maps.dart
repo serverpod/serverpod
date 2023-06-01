@@ -73,35 +73,35 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     );
   }
 
-  Map<String, _i2.SimpleData> dataMap;
+  final Map<String, _i2.SimpleData> dataMap;
 
-  Map<String, int> intMap;
+  final Map<String, int> intMap;
 
-  Map<String, String> stringMap;
+  final Map<String, String> stringMap;
 
-  Map<String, DateTime> dateTimeMap;
+  final Map<String, DateTime> dateTimeMap;
 
-  Map<String, _i3.ByteData> byteDataMap;
+  final Map<String, _i3.ByteData> byteDataMap;
 
-  Map<String, Duration> durationMap;
+  final Map<String, Duration> durationMap;
 
-  Map<String, _i1.UuidValue> uuidMap;
+  final Map<String, _i1.UuidValue> uuidMap;
 
-  Map<String, _i2.SimpleData?> nullableDataMap;
+  final Map<String, _i2.SimpleData?> nullableDataMap;
 
-  Map<String, int?> nullableIntMap;
+  final Map<String, int?> nullableIntMap;
 
-  Map<String, String?> nullableStringMap;
+  final Map<String, String?> nullableStringMap;
 
-  Map<String, DateTime?> nullableDateTimeMap;
+  final Map<String, DateTime?> nullableDateTimeMap;
 
-  Map<String, _i3.ByteData?> nullableByteDataMap;
+  final Map<String, _i3.ByteData?> nullableByteDataMap;
 
-  Map<String, Duration?> nullableDurationMap;
+  final Map<String, Duration?> nullableDurationMap;
 
-  Map<String, _i1.UuidValue?> nullableUuidMap;
+  final Map<String, _i1.UuidValue?> nullableUuidMap;
 
-  Map<int, int> intIntMap;
+  final Map<int, int> intIntMap;
 
   @override
   Map<String, dynamic> toJson() {

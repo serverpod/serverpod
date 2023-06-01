@@ -42,17 +42,17 @@ class ObjectWithEnum extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
-  _i2.TestEnum testEnum;
+  final _i2.TestEnum testEnum;
 
-  _i2.TestEnum? nullableEnum;
+  final _i2.TestEnum? nullableEnum;
 
-  List<_i2.TestEnum> enumList;
+  final List<_i2.TestEnum> enumList;
 
-  List<_i2.TestEnum?> nullableEnumList;
+  final List<_i2.TestEnum?> nullableEnumList;
 
-  List<List<_i2.TestEnum>> enumListList;
+  final List<List<_i2.TestEnum>> enumListList;
 
   @override
   Map<String, dynamic> toJson() {

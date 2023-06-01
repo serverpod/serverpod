@@ -20,7 +20,7 @@ class NotServerOnlyClass extends _i1.SerializableEntity {
             serializationManager.deserialize<String>(jsonSerialization['foo']));
   }
 
-  String foo;
+  final String foo;
 
   @override
   Map<String, dynamic> toJson() {

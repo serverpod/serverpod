@@ -22,7 +22,7 @@ class SimpleDataList extends _i1.SerializableEntity {
             .deserialize<List<_i2.SimpleData>>(jsonSerialization['rows']));
   }
 
-  List<_i2.SimpleData> rows;
+  final List<_i2.SimpleData> rows;
 
   @override
   Map<String, dynamic> toJson() {

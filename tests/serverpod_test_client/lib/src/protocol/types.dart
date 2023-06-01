@@ -49,23 +49,23 @@ class Types extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
-  int? anInt;
+  final int? anInt;
 
-  bool? aBool;
+  final bool? aBool;
 
-  double? aDouble;
+  final double? aDouble;
 
-  DateTime? aDateTime;
+  final DateTime? aDateTime;
 
-  String? aString;
+  final String? aString;
 
-  _i2.ByteData? aByteData;
+  final _i2.ByteData? aByteData;
 
-  Duration? aDuration;
+  final Duration? aDuration;
 
-  _i1.UuidValue? aUuid;
+  final _i1.UuidValue? aUuid;
 
   @override
   Map<String, dynamic> toJson() {

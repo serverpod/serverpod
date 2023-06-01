@@ -47,19 +47,19 @@ class ObjectWithObject extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
-  _i2.SimpleData data;
+  final _i2.SimpleData data;
 
-  _i2.SimpleData? nullableData;
+  final _i2.SimpleData? nullableData;
 
-  List<_i2.SimpleData> dataList;
+  final List<_i2.SimpleData> dataList;
 
-  List<_i2.SimpleData>? nullableDataList;
+  final List<_i2.SimpleData>? nullableDataList;
 
-  List<_i2.SimpleData?> listWithNullableData;
+  final List<_i2.SimpleData?> listWithNullableData;
 
-  List<_i2.SimpleData?>? nullableListWithNullableData;
+  final List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
   Map<String, dynamic> toJson() {

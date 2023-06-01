@@ -173,97 +173,97 @@ class Nullability extends _i1.SerializableEntity {
     );
   }
 
-  int anInt;
+  final int anInt;
 
-  int? aNullableInt;
+  final int? aNullableInt;
 
-  double aDouble;
+  final double aDouble;
 
-  double? aNullableDouble;
+  final double? aNullableDouble;
 
-  bool aBool;
+  final bool aBool;
 
-  bool? aNullableBool;
+  final bool? aNullableBool;
 
-  String aString;
+  final String aString;
 
-  String? aNullableString;
+  final String? aNullableString;
 
-  DateTime aDateTime;
+  final DateTime aDateTime;
 
-  DateTime? aNullableDateTime;
+  final DateTime? aNullableDateTime;
 
-  _i2.ByteData aByteData;
+  final _i2.ByteData aByteData;
 
-  _i2.ByteData? aNullableByteData;
+  final _i2.ByteData? aNullableByteData;
 
-  Duration aDuration;
+  final Duration aDuration;
 
-  Duration? aNullableDuration;
+  final Duration? aNullableDuration;
 
-  _i1.UuidValue aUuid;
+  final _i1.UuidValue aUuid;
 
-  _i1.UuidValue? aNullableUuid;
+  final _i1.UuidValue? aNullableUuid;
 
-  _i3.SimpleData anObject;
+  final _i3.SimpleData anObject;
 
-  _i3.SimpleData? aNullableObject;
+  final _i3.SimpleData? aNullableObject;
 
-  List<int> anIntList;
+  final List<int> anIntList;
 
-  List<int>? aNullableIntList;
+  final List<int>? aNullableIntList;
 
-  List<int?> aListWithNullableInts;
+  final List<int?> aListWithNullableInts;
 
-  List<int?>? aNullableListWithNullableInts;
+  final List<int?>? aNullableListWithNullableInts;
 
-  List<_i3.SimpleData> anObjectList;
+  final List<_i3.SimpleData> anObjectList;
 
-  List<_i3.SimpleData>? aNullableObjectList;
+  final List<_i3.SimpleData>? aNullableObjectList;
 
-  List<_i3.SimpleData?> aListWithNullableObjects;
+  final List<_i3.SimpleData?> aListWithNullableObjects;
 
-  List<_i3.SimpleData?>? aNullableListWithNullableObjects;
+  final List<_i3.SimpleData?>? aNullableListWithNullableObjects;
 
-  List<DateTime> aDateTimeList;
+  final List<DateTime> aDateTimeList;
 
-  List<DateTime>? aNullableDateTimeList;
+  final List<DateTime>? aNullableDateTimeList;
 
-  List<DateTime?> aListWithNullableDateTimes;
+  final List<DateTime?> aListWithNullableDateTimes;
 
-  List<DateTime?>? aNullableListWithNullableDateTimes;
+  final List<DateTime?>? aNullableListWithNullableDateTimes;
 
-  List<_i2.ByteData> aByteDataList;
+  final List<_i2.ByteData> aByteDataList;
 
-  List<_i2.ByteData>? aNullableByteDataList;
+  final List<_i2.ByteData>? aNullableByteDataList;
 
-  List<_i2.ByteData?> aListWithNullableByteDatas;
+  final List<_i2.ByteData?> aListWithNullableByteDatas;
 
-  List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
+  final List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
 
-  List<Duration> aDurationList;
+  final List<Duration> aDurationList;
 
-  List<Duration>? aNullableDurationList;
+  final List<Duration>? aNullableDurationList;
 
-  List<Duration?> aListWithNullableDurations;
+  final List<Duration?> aListWithNullableDurations;
 
-  List<Duration?>? aNullableListWithNullableDurations;
+  final List<Duration?>? aNullableListWithNullableDurations;
 
-  List<_i1.UuidValue> aUuidList;
+  final List<_i1.UuidValue> aUuidList;
 
-  List<_i1.UuidValue>? aNullableUuidList;
+  final List<_i1.UuidValue>? aNullableUuidList;
 
-  List<_i1.UuidValue?> aListWithNullableUuids;
+  final List<_i1.UuidValue?> aListWithNullableUuids;
 
-  List<_i1.UuidValue?>? aNullableListWithNullableUuids;
+  final List<_i1.UuidValue?>? aNullableListWithNullableUuids;
 
-  Map<String, int> anIntMap;
+  final Map<String, int> anIntMap;
 
-  Map<String, int>? aNullableIntMap;
+  final Map<String, int>? aNullableIntMap;
 
-  Map<String, int?> aMapWithNullableInts;
+  final Map<String, int?> aMapWithNullableInts;
 
-  Map<String, int?>? aNullableMapWithNullableInts;
+  final Map<String, int?>? aNullableMapWithNullableInts;
 
   @override
   Map<String, dynamic> toJson() {

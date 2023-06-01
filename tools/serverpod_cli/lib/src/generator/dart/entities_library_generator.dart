@@ -74,6 +74,8 @@ class SerializableEntityLibraryGenerator {
             if (field.shouldIncludeField(serverCode) &&
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
+                f.modifier =
+                    serverCode ? FieldModifier.var$ : FieldModifier.final$;
                 f.type = field.type.reference(serverCode,
                     subDirParts: classDefinition.subDirParts, config: config);
                 f
@@ -100,6 +102,7 @@ class SerializableEntityLibraryGenerator {
                 } else {
                   c.optionalParameters.add(Parameter((p) {
                     p.named = true;
+
                     p.required = !field.type.nullable;
                     p.toThis = true;
                     p.name = field.name;

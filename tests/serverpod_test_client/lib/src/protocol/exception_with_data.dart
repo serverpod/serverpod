@@ -34,13 +34,13 @@ class ExceptionWithData extends _i1.SerializableEntity
     );
   }
 
-  String message;
+  final String message;
 
-  DateTime creationDate;
+  final DateTime creationDate;
 
-  List<String> errorFields;
+  final List<String> errorFields;
 
-  int? someNullableField;
+  final int? someNullableField;
 
   @override
   Map<String, dynamic> toJson() {
