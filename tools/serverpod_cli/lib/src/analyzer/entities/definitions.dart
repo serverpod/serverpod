@@ -26,14 +26,10 @@ abstract class SerializableEntityDefinition {
 
 enum ExtraFeature {
   none,
-  client,
-  server,
-  both;
+  client;
 
   bool get isNone => this == none;
   bool get isClient => this == client;
-  bool get isServer => this == server;
-  bool get isBoth => this == both;
 }
 
 /// A representation of a yaml file in the protocol directory defining a class

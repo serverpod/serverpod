@@ -1,5 +1,5 @@
 ### Just some simple data.
 class: ExtraDataSimple
-clientExtra: true
+extra: client
 fields:
   num: int?

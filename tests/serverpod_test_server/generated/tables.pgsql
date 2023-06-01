@@ -1,4 +1,42 @@
 --
+-- Class ExtraDataClass as table extra_data_class
+--
+
+CREATE TABLE "extra_data_class" (
+  "id" serial,
+  "duration" bigint NOT NULL,
+  "object" json NOT NULL,
+  "nullableObject" json,
+  "list" json NOT NULL,
+  "nullableList" json,
+  "optionalValueList" json NOT NULL,
+  "testEnum" integer NOT NULL,
+  "nullableEnum" integer,
+  "enumList" json NOT NULL,
+  "nullableEnumList" json NOT NULL,
+  "enumListList" json NOT NULL,
+  "dataMap" json NOT NULL,
+  "intMap" json NOT NULL,
+  "stringMap" json NOT NULL,
+  "dateTimeMap" json NOT NULL,
+  "byteDataMap" json NOT NULL,
+  "durationMap" json NOT NULL,
+  "uuidMap" json NOT NULL,
+  "nullableDataMap" json NOT NULL,
+  "nullableIntMap" json NOT NULL,
+  "nullableStringMap" json NOT NULL,
+  "nullableDateTimeMap" json NOT NULL,
+  "nullableByteDataMap" json NOT NULL,
+  "nullableDurationMap" json NOT NULL,
+  "nullableUuidMap" json NOT NULL,
+  "intIntMap" json NOT NULL
+);
+
+ALTER TABLE ONLY "extra_data_class"
+  ADD CONSTRAINT extra_data_class_pkey PRIMARY KEY (id);
+
+
+--
 -- Class ObjectFieldScopes as table object_field_scopes
 --
 

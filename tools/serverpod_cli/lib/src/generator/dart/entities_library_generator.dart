@@ -32,7 +32,7 @@ class SerializableEntityLibraryGenerator {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
-    var clientExtra = classDefinition.extraFeature;
+    var extraFeature = classDefinition.extraFeature;
 
     var library = Library(
       (library) {
@@ -75,7 +75,7 @@ class SerializableEntityLibraryGenerator {
             if (field.shouldIncludeField(serverCode) &&
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
-                if (!clientExtra.isNone && !serverCode) {
+                if (extraFeature.isClient && !serverCode) {
                   f.modifier = FieldModifier.final$;
                 }
 
@@ -170,7 +170,7 @@ class SerializableEntityLibraryGenerator {
           ));
 
           // operator==, hashCode, copyWith
-          if (!serverCode && clientExtra.isBoth) {
+          if (extraFeature.isClient && !serverCode) {
             var primaryFields = fields
                 .where(
                   (e) =>

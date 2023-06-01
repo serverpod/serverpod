@@ -214,16 +214,20 @@ class SerializableEntityAnalyzer {
 
     if (extraNode != null) {
       var supportedValues = ExtraFeature.values.map((e) => e.name);
-      if (extraNode.value is! String &&
-          supportedValues.contains(extraNode.value)) {
+      var value = extraNode.value;
+
+      if (value is! String && !supportedValues.contains(value)) {
         collector.addError(SourceSpanException(
-          'The "extra" property must be value of '
-          '${ExtraFeature.values.map((e) => e.name).join(',')}',
+          'The "extra" property must be set to one of the following values: '
+          '${ExtraFeature.values.map((e) => '"${e.name}"').join(', ')}',
           extraNode.span,
         ));
+        return null;
       }
 
-      extraFeature = extraNode.value;
+      extraFeature = ExtraFeature.values.firstWhere(
+        (e) => e.name == extraNode.value!,
+      );
     }
 
     // Validate table name.
