@@ -33,13 +33,13 @@ class DatabaseMigrationAction extends _i1.SerializableEntity {
     );
   }
 
-  _i2.DatabaseMigrationActionType type;
+  final _i2.DatabaseMigrationActionType type;
 
-  String? deleteTable;
+  final String? deleteTable;
 
-  _i2.TableMigration? alterTable;
+  final _i2.TableMigration? alterTable;
 
-  _i2.TableDefinition? createTable;
+  final _i2.TableDefinition? createTable;
 
   @override
   Map<String, dynamic> toJson() {
@@ -49,5 +49,53 @@ class DatabaseMigrationAction extends _i1.SerializableEntity {
       'alterTable': alterTable,
       'createTable': createTable,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is DatabaseMigrationAction &&
+            (identical(
+                  other.type,
+                  type,
+                ) ||
+                other.type == type) &&
+            (identical(
+                  other.deleteTable,
+                  deleteTable,
+                ) ||
+                other.deleteTable == deleteTable) &&
+            (identical(
+                  other.alterTable,
+                  alterTable,
+                ) ||
+                other.alterTable == alterTable) &&
+            (identical(
+                  other.createTable,
+                  createTable,
+                ) ||
+                other.createTable == createTable));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        type,
+        deleteTable,
+        alterTable,
+        createTable,
+      );
+
+  DatabaseMigrationAction copyWith({
+    _i2.DatabaseMigrationActionType? type,
+    String? deleteTable,
+    _i2.TableMigration? alterTable,
+    _i2.TableDefinition? createTable,
+  }) {
+    return DatabaseMigrationAction(
+      type: type ?? this.type,
+      deleteTable: deleteTable ?? this.deleteTable,
+      alterTable: alterTable ?? this.alterTable,
+      createTable: createTable ?? this.createTable,
+    );
   }
 }

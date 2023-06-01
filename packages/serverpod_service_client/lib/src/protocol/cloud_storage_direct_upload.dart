@@ -37,19 +37,19 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The storageId, typically `public` or `private`.
-  String storageId;
+  final String storageId;
 
   /// The path where the file is stored.
-  String path;
+  final String path;
 
   /// The expiration time of when the file can be uploaded.
-  DateTime expiration;
+  final DateTime expiration;
 
   /// Access key for retrieving a private file.
-  String authKey;
+  final String authKey;
 
   @override
   Map<String, dynamic> toJson() {
@@ -60,5 +60,61 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
       'expiration': expiration,
       'authKey': authKey,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is CloudStorageDirectUploadEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.storageId,
+                  storageId,
+                ) ||
+                other.storageId == storageId) &&
+            (identical(
+                  other.path,
+                  path,
+                ) ||
+                other.path == path) &&
+            (identical(
+                  other.expiration,
+                  expiration,
+                ) ||
+                other.expiration == expiration) &&
+            (identical(
+                  other.authKey,
+                  authKey,
+                ) ||
+                other.authKey == authKey));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        storageId,
+        path,
+        expiration,
+        authKey,
+      );
+
+  CloudStorageDirectUploadEntry copyWith({
+    int? id,
+    String? storageId,
+    String? path,
+    DateTime? expiration,
+    String? authKey,
+  }) {
+    return CloudStorageDirectUploadEntry(
+      id: id ?? this.id,
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
+      expiration: expiration ?? this.expiration,
+      authKey: authKey ?? this.authKey,
+    );
   }
 }

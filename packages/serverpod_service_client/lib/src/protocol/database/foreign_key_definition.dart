@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
 
 /// Represents a foreign key.
 class ForeignKeyDefinition extends _i1.SerializableEntity {
@@ -47,28 +48,28 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
   }
 
   /// The name of the constraint.
-  String constraintName;
+  final String constraintName;
 
   /// The constraint columns
-  List<String> columns;
+  final List<String> columns;
 
   /// The table of the reference.
-  String referenceTable;
+  final String referenceTable;
 
   /// The schema of the referenced table.
-  String referenceTableSchema;
+  final String referenceTableSchema;
 
   /// The column of the reference in the [referenceTable].
-  List<String> referenceColumns;
+  final List<String> referenceColumns;
 
   /// The action, when the referred row is updated.
-  _i2.ForeignKeyAction? onUpdate;
+  final _i2.ForeignKeyAction? onUpdate;
 
   /// The action, when the referred row is deleted.
-  _i2.ForeignKeyAction? onDelete;
+  final _i2.ForeignKeyAction? onDelete;
 
   /// The match type of the foreign key
-  _i2.ForeignKeyMatchType? matchType;
+  final _i2.ForeignKeyMatchType? matchType;
 
   @override
   Map<String, dynamic> toJson() {
@@ -82,5 +83,83 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
       'onDelete': onDelete,
       'matchType': matchType,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ForeignKeyDefinition &&
+            (identical(
+                  other.constraintName,
+                  constraintName,
+                ) ||
+                other.constraintName == constraintName) &&
+            (identical(
+                  other.referenceTable,
+                  referenceTable,
+                ) ||
+                other.referenceTable == referenceTable) &&
+            (identical(
+                  other.referenceTableSchema,
+                  referenceTableSchema,
+                ) ||
+                other.referenceTableSchema == referenceTableSchema) &&
+            (identical(
+                  other.onUpdate,
+                  onUpdate,
+                ) ||
+                other.onUpdate == onUpdate) &&
+            (identical(
+                  other.onDelete,
+                  onDelete,
+                ) ||
+                other.onDelete == onDelete) &&
+            (identical(
+                  other.matchType,
+                  matchType,
+                ) ||
+                other.matchType == matchType) &&
+            const _i3.DeepCollectionEquality().equals(
+              columns,
+              other.columns,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              referenceColumns,
+              other.referenceColumns,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        constraintName,
+        referenceTable,
+        referenceTableSchema,
+        onUpdate,
+        onDelete,
+        matchType,
+        const _i3.DeepCollectionEquality().hash(columns),
+        const _i3.DeepCollectionEquality().hash(referenceColumns),
+      );
+
+  ForeignKeyDefinition copyWith({
+    String? constraintName,
+    List<String>? columns,
+    String? referenceTable,
+    String? referenceTableSchema,
+    List<String>? referenceColumns,
+    _i2.ForeignKeyAction? onUpdate,
+    _i2.ForeignKeyAction? onDelete,
+    _i2.ForeignKeyMatchType? matchType,
+  }) {
+    return ForeignKeyDefinition(
+      constraintName: constraintName ?? this.constraintName,
+      columns: columns ?? this.columns,
+      referenceTable: referenceTable ?? this.referenceTable,
+      referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
+      referenceColumns: referenceColumns ?? this.referenceColumns,
+      onUpdate: onUpdate ?? this.onUpdate,
+      onDelete: onDelete ?? this.onDelete,
+      matchType: matchType ?? this.matchType,
+    );
   }
 }

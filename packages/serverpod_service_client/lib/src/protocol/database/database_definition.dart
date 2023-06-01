@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
 
 /// Defines the structure of the database used by Serverpod.
 class DatabaseDefinition extends _i1.SerializableEntity {
@@ -30,10 +31,10 @@ class DatabaseDefinition extends _i1.SerializableEntity {
 
   /// The name of the database.
   /// Null if the name is not available.
-  String? name;
+  final String? name;
 
   /// The tables of the database.
-  List<_i2.TableDefinition> tables;
+  final List<_i2.TableDefinition> tables;
 
   @override
   Map<String, dynamic> toJson() {
@@ -41,5 +42,36 @@ class DatabaseDefinition extends _i1.SerializableEntity {
       'name': name,
       'tables': tables,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is DatabaseDefinition &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            const _i3.DeepCollectionEquality().equals(
+              tables,
+              other.tables,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        const _i3.DeepCollectionEquality().hash(tables),
+      );
+
+  DatabaseDefinition copyWith({
+    String? name,
+    List<_i2.TableDefinition>? tables,
+  }) {
+    return DatabaseDefinition(
+      name: name ?? this.name,
+      tables: tables ?? this.tables,
+    );
   }
 }

@@ -36,16 +36,16 @@ class LogSettingsOverride extends _i1.SerializableEntity {
   }
 
   /// Module to override settings for, null for main project.
-  String? module;
+  final String? module;
 
   /// Endpoint to override settings for.
-  String? endpoint;
+  final String? endpoint;
 
   /// Method to override settings for.
-  String? method;
+  final String? method;
 
   /// Log settings override.
-  _i2.LogSettings logSettings;
+  final _i2.LogSettings logSettings;
 
   @override
   Map<String, dynamic> toJson() {
@@ -55,5 +55,53 @@ class LogSettingsOverride extends _i1.SerializableEntity {
       'method': method,
       'logSettings': logSettings,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is LogSettingsOverride &&
+            (identical(
+                  other.module,
+                  module,
+                ) ||
+                other.module == module) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method) &&
+            (identical(
+                  other.logSettings,
+                  logSettings,
+                ) ||
+                other.logSettings == logSettings));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        module,
+        endpoint,
+        method,
+        logSettings,
+      );
+
+  LogSettingsOverride copyWith({
+    String? module,
+    String? endpoint,
+    String? method,
+    _i2.LogSettings? logSettings,
+  }) {
+    return LogSettingsOverride(
+      module: module ?? this.module,
+      endpoint: endpoint ?? this.endpoint,
+      method: method ?? this.method,
+      logSettings: logSettings ?? this.logSettings,
+    );
   }
 }

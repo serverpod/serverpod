@@ -54,39 +54,39 @@ class MessageLogEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// Id of the session this entry is associated with.
-  int sessionLogId;
+  final int sessionLogId;
 
   /// The id of the server that handled the message.
-  String serverId;
+  final String serverId;
 
   /// The id of the message this entry is associcated with.
-  int messageId;
+  final int messageId;
 
   /// The entpoint this message is associated with.
-  String endpoint;
+  final String endpoint;
 
   /// The class name of the message this entry is associated with.
-  String messageName;
+  final String messageName;
 
   /// The duration of handling of this message.
-  double duration;
+  final double duration;
 
   /// Error is set if an error or exception was thrown during the handling of
   /// this message.
-  String? error;
+  final String? error;
 
   /// The stack trace of an error that was thrown during the handling of this
   /// message.
-  String? stackTrace;
+  final String? stackTrace;
 
   /// The handling of this message was slow.
-  bool slow;
+  final bool slow;
 
   /// Used for sorting the message log.
-  int order;
+  final int order;
 
   @override
   Map<String, dynamic> toJson() {
@@ -103,5 +103,109 @@ class MessageLogEntry extends _i1.SerializableEntity {
       'slow': slow,
       'order': order,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is MessageLogEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.sessionLogId,
+                  sessionLogId,
+                ) ||
+                other.sessionLogId == sessionLogId) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.messageId,
+                  messageId,
+                ) ||
+                other.messageId == messageId) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.messageName,
+                  messageName,
+                ) ||
+                other.messageName == messageName) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration) &&
+            (identical(
+                  other.error,
+                  error,
+                ) ||
+                other.error == error) &&
+            (identical(
+                  other.stackTrace,
+                  stackTrace,
+                ) ||
+                other.stackTrace == stackTrace) &&
+            (identical(
+                  other.slow,
+                  slow,
+                ) ||
+                other.slow == slow) &&
+            (identical(
+                  other.order,
+                  order,
+                ) ||
+                other.order == order));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        sessionLogId,
+        serverId,
+        messageId,
+        endpoint,
+        messageName,
+        duration,
+        error,
+        stackTrace,
+        slow,
+        order,
+      );
+
+  MessageLogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    String? serverId,
+    int? messageId,
+    String? endpoint,
+    String? messageName,
+    double? duration,
+    String? error,
+    String? stackTrace,
+    bool? slow,
+    int? order,
+  }) {
+    return MessageLogEntry(
+      id: id ?? this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      serverId: serverId ?? this.serverId,
+      messageId: messageId ?? this.messageId,
+      endpoint: endpoint ?? this.endpoint,
+      messageName: messageName ?? this.messageName,
+      duration: duration ?? this.duration,
+      error: error ?? this.error,
+      stackTrace: stackTrace ?? this.stackTrace,
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
   }
 }

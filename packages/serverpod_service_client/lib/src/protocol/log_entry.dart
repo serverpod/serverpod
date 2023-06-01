@@ -56,37 +56,37 @@ class LogEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The id of the session this log entry is associated with.
-  int sessionLogId;
+  final int sessionLogId;
 
   /// The message id this entry is associated with, if in a streaming session.
-  int? messageId;
+  final int? messageId;
 
   /// Currently unused.
-  String? reference;
+  final String? reference;
 
   /// The id of the server which created this log entry.
-  String serverId;
+  final String serverId;
 
   /// Timpstamp of this log entry.
-  DateTime time;
+  final DateTime time;
 
   /// The log level of this entry.
-  _i2.LogLevel logLevel;
+  final _i2.LogLevel logLevel;
 
   /// The logging message.
-  String message;
+  final String message;
 
   /// Optional error associated with this log entry.
-  String? error;
+  final String? error;
 
   /// Optional stack trace associated with this log entry.
-  String? stackTrace;
+  final String? stackTrace;
 
   /// The order of this log entry, used for sorting.
-  int order;
+  final int order;
 
   @override
   Map<String, dynamic> toJson() {
@@ -103,5 +103,109 @@ class LogEntry extends _i1.SerializableEntity {
       'stackTrace': stackTrace,
       'order': order,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is LogEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.sessionLogId,
+                  sessionLogId,
+                ) ||
+                other.sessionLogId == sessionLogId) &&
+            (identical(
+                  other.messageId,
+                  messageId,
+                ) ||
+                other.messageId == messageId) &&
+            (identical(
+                  other.reference,
+                  reference,
+                ) ||
+                other.reference == reference) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.logLevel,
+                  logLevel,
+                ) ||
+                other.logLevel == logLevel) &&
+            (identical(
+                  other.message,
+                  message,
+                ) ||
+                other.message == message) &&
+            (identical(
+                  other.error,
+                  error,
+                ) ||
+                other.error == error) &&
+            (identical(
+                  other.stackTrace,
+                  stackTrace,
+                ) ||
+                other.stackTrace == stackTrace) &&
+            (identical(
+                  other.order,
+                  order,
+                ) ||
+                other.order == order));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        sessionLogId,
+        messageId,
+        reference,
+        serverId,
+        time,
+        logLevel,
+        message,
+        error,
+        stackTrace,
+        order,
+      );
+
+  LogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    int? messageId,
+    String? reference,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    String? error,
+    String? stackTrace,
+    int? order,
+  }) {
+    return LogEntry(
+      id: id ?? this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId ?? this.messageId,
+      reference: reference ?? this.reference,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      logLevel: logLevel ?? this.logLevel,
+      message: message ?? this.message,
+      error: error ?? this.error,
+      stackTrace: stackTrace ?? this.stackTrace,
+      order: order ?? this.order,
+    );
   }
 }

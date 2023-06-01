@@ -54,39 +54,39 @@ class QueryLogEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The id of the server that handled the query.
-  String serverId;
+  final String serverId;
 
   /// Id of the session this entry is associated with.
-  int sessionLogId;
+  final int sessionLogId;
 
   /// The id of the message this entry is associcated with, if the query was
   /// executed in a streaming session.
-  int? messageId;
+  final int? messageId;
 
   /// The query that was executed.
-  String query;
+  final String query;
 
   /// The time it took to execute the query, in seconds.
-  double duration;
+  final double duration;
 
   /// Number of rows returned by this query. This can be null if the number is
   /// not relevant.
-  int? numRows;
+  final int? numRows;
 
   /// Set if an exception was thrown during the execution of this query.
-  String? error;
+  final String? error;
 
   /// The stack trace of this query.
-  String? stackTrace;
+  final String? stackTrace;
 
   /// True if the execution of this query was considered slow.
-  bool slow;
+  final bool slow;
 
   /// used for sorting the query log.
-  int order;
+  final int order;
 
   @override
   Map<String, dynamic> toJson() {
@@ -103,5 +103,109 @@ class QueryLogEntry extends _i1.SerializableEntity {
       'slow': slow,
       'order': order,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is QueryLogEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.sessionLogId,
+                  sessionLogId,
+                ) ||
+                other.sessionLogId == sessionLogId) &&
+            (identical(
+                  other.messageId,
+                  messageId,
+                ) ||
+                other.messageId == messageId) &&
+            (identical(
+                  other.query,
+                  query,
+                ) ||
+                other.query == query) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration) &&
+            (identical(
+                  other.numRows,
+                  numRows,
+                ) ||
+                other.numRows == numRows) &&
+            (identical(
+                  other.error,
+                  error,
+                ) ||
+                other.error == error) &&
+            (identical(
+                  other.stackTrace,
+                  stackTrace,
+                ) ||
+                other.stackTrace == stackTrace) &&
+            (identical(
+                  other.slow,
+                  slow,
+                ) ||
+                other.slow == slow) &&
+            (identical(
+                  other.order,
+                  order,
+                ) ||
+                other.order == order));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        serverId,
+        sessionLogId,
+        messageId,
+        query,
+        duration,
+        numRows,
+        error,
+        stackTrace,
+        slow,
+        order,
+      );
+
+  QueryLogEntry copyWith({
+    int? id,
+    String? serverId,
+    int? sessionLogId,
+    int? messageId,
+    String? query,
+    double? duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    bool? slow,
+    int? order,
+  }) {
+    return QueryLogEntry(
+      id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId ?? this.messageId,
+      query: query ?? this.query,
+      duration: duration ?? this.duration,
+      numRows: numRows ?? this.numRows,
+      error: error ?? this.error,
+      stackTrace: stackTrace ?? this.stackTrace,
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
   }
 }

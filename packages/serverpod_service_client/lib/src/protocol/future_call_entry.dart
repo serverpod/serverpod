@@ -40,22 +40,22 @@ class FutureCallEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// Name of the future call. Used to find the correct method to call.
-  String name;
+  final String name;
 
   /// Time to execute the call.
-  DateTime time;
+  final DateTime time;
 
   /// The serialized object, used as a parameter to the call.
-  String? serializedObject;
+  final String? serializedObject;
 
   /// The id of the server where the call was created.
-  String serverId;
+  final String serverId;
 
   /// An optional identifier which can be used to cancel the call.
-  String? identifier;
+  final String? identifier;
 
   @override
   Map<String, dynamic> toJson() {
@@ -67,5 +67,69 @@ class FutureCallEntry extends _i1.SerializableEntity {
       'serverId': serverId,
       'identifier': identifier,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is FutureCallEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.serializedObject,
+                  serializedObject,
+                ) ||
+                other.serializedObject == serializedObject) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.identifier,
+                  identifier,
+                ) ||
+                other.identifier == identifier));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        name,
+        time,
+        serializedObject,
+        serverId,
+        identifier,
+      );
+
+  FutureCallEntry copyWith({
+    int? id,
+    String? name,
+    DateTime? time,
+    String? serializedObject,
+    String? serverId,
+    String? identifier,
+  }) {
+    return FutureCallEntry(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      time: time ?? this.time,
+      serializedObject: serializedObject ?? this.serializedObject,
+      serverId: serverId ?? this.serverId,
+      identifier: identifier ?? this.identifier,
+    );
   }
 }

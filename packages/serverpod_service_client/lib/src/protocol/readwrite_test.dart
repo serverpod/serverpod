@@ -30,10 +30,10 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// A random number, to verify that the write/read was performed correctly.
-  int number;
+  final int number;
 
   @override
   Map<String, dynamic> toJson() {
@@ -41,5 +41,37 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
       'id': id,
       'number': number,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ReadWriteTestEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.number,
+                  number,
+                ) ||
+                other.number == number));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        number,
+      );
+
+  ReadWriteTestEntry copyWith({
+    int? id,
+    int? number,
+  }) {
+    return ReadWriteTestEntry(
+      id: id ?? this.id,
+      number: number ?? this.number,
+    );
   }
 }

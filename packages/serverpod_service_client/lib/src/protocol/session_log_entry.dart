@@ -64,50 +64,50 @@ class SessionLogEntry extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The id of the server that handled this session.
-  String serverId;
+  final String serverId;
 
   /// The starting time of this session.
-  DateTime time;
+  final DateTime time;
 
   /// The module this session is associated with, if any.
-  String? module;
+  final String? module;
 
   /// The endpoint this session is associated with, if any.
-  String? endpoint;
+  final String? endpoint;
 
   /// The method this session is associated with, if any.
-  String? method;
+  final String? method;
 
   /// The running time of this session. May be null if the session is still
   /// active.
-  double? duration;
+  final double? duration;
 
   /// The number of queries performed during this session.
-  int? numQueries;
+  final int? numQueries;
 
   /// True if this session was slow to complete.
-  bool? slow;
+  final bool? slow;
 
   /// If the session ends with an exception, the error field will be set.
-  String? error;
+  final String? error;
 
   /// If the session ends with an exception, a stack trace will be set.
-  String? stackTrace;
+  final String? stackTrace;
 
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
   /// user.
-  int? authenticatedUserId;
+  final int? authenticatedUserId;
 
   /// True if the session is still open.
-  bool? isOpen;
+  final bool? isOpen;
 
   /// Timestamp of the last time this record was modified.
-  DateTime touched;
+  final DateTime touched;
 
   @override
   Map<String, dynamic> toJson() {
@@ -127,5 +127,133 @@ class SessionLogEntry extends _i1.SerializableEntity {
       'isOpen': isOpen,
       'touched': touched,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is SessionLogEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.module,
+                  module,
+                ) ||
+                other.module == module) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration) &&
+            (identical(
+                  other.numQueries,
+                  numQueries,
+                ) ||
+                other.numQueries == numQueries) &&
+            (identical(
+                  other.slow,
+                  slow,
+                ) ||
+                other.slow == slow) &&
+            (identical(
+                  other.error,
+                  error,
+                ) ||
+                other.error == error) &&
+            (identical(
+                  other.stackTrace,
+                  stackTrace,
+                ) ||
+                other.stackTrace == stackTrace) &&
+            (identical(
+                  other.authenticatedUserId,
+                  authenticatedUserId,
+                ) ||
+                other.authenticatedUserId == authenticatedUserId) &&
+            (identical(
+                  other.isOpen,
+                  isOpen,
+                ) ||
+                other.isOpen == isOpen) &&
+            (identical(
+                  other.touched,
+                  touched,
+                ) ||
+                other.touched == touched));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        serverId,
+        time,
+        module,
+        endpoint,
+        method,
+        duration,
+        numQueries,
+        slow,
+        error,
+        stackTrace,
+        authenticatedUserId,
+        isOpen,
+        touched,
+      );
+
+  SessionLogEntry copyWith({
+    int? id,
+    String? serverId,
+    DateTime? time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    DateTime? touched,
+  }) {
+    return SessionLogEntry(
+      id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      module: module ?? this.module,
+      endpoint: endpoint ?? this.endpoint,
+      method: method ?? this.method,
+      duration: duration ?? this.duration,
+      numQueries: numQueries ?? this.numQueries,
+      slow: slow ?? this.slow,
+      error: error ?? this.error,
+      stackTrace: stackTrace ?? this.stackTrace,
+      authenticatedUserId: authenticatedUserId ?? this.authenticatedUserId,
+      isOpen: isOpen ?? this.isOpen,
+      touched: touched ?? this.touched,
+    );
   }
 }

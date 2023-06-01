@@ -35,15 +35,15 @@ class ColumnMigration extends _i1.SerializableEntity {
     );
   }
 
-  String columnName;
+  final String columnName;
 
-  bool addNullable;
+  final bool addNullable;
 
-  bool removeNullable;
+  final bool removeNullable;
 
-  bool changeDefault;
+  final bool changeDefault;
 
-  String? newDefault;
+  final String? newDefault;
 
   @override
   Map<String, dynamic> toJson() {
@@ -54,5 +54,61 @@ class ColumnMigration extends _i1.SerializableEntity {
       'changeDefault': changeDefault,
       'newDefault': newDefault,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is ColumnMigration &&
+            (identical(
+                  other.columnName,
+                  columnName,
+                ) ||
+                other.columnName == columnName) &&
+            (identical(
+                  other.addNullable,
+                  addNullable,
+                ) ||
+                other.addNullable == addNullable) &&
+            (identical(
+                  other.removeNullable,
+                  removeNullable,
+                ) ||
+                other.removeNullable == removeNullable) &&
+            (identical(
+                  other.changeDefault,
+                  changeDefault,
+                ) ||
+                other.changeDefault == changeDefault) &&
+            (identical(
+                  other.newDefault,
+                  newDefault,
+                ) ||
+                other.newDefault == newDefault));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        columnName,
+        addNullable,
+        removeNullable,
+        changeDefault,
+        newDefault,
+      );
+
+  ColumnMigration copyWith({
+    String? columnName,
+    bool? addNullable,
+    bool? removeNullable,
+    bool? changeDefault,
+    String? newDefault,
+  }) {
+    return ColumnMigration(
+      columnName: columnName ?? this.columnName,
+      addNullable: addNullable ?? this.addNullable,
+      removeNullable: removeNullable ?? this.removeNullable,
+      changeDefault: changeDefault ?? this.changeDefault,
+      newDefault: newDefault ?? this.newDefault,
+    );
   }
 }
