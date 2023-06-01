@@ -1620,6 +1620,12 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i47.TableDefinition>(e))
           .toList() as dynamic;
     }
+    if (t == _i1.getType<Map<String, String>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) =>
+              MapEntry(deserialize<String>(k), deserialize<String>(v)))
+          : null) as dynamic;
+    }
     if (t == List<_i47.DatabaseMigrationAction>) {
       return (data as List)
           .map((e) => deserialize<_i47.DatabaseMigrationAction>(e))

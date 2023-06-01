@@ -79,8 +79,7 @@ Future<void> testMigration({
     expect(migration, isNotNull);
 
     var sql = migration!.migration.toPgSql(
-      version: migration.versionName,
-      module: 'serverdpod_test',
+      versions: {'serverpod_test': migration.versionName},
     );
 
     await serviceClient.insights.executeSql(sql);

@@ -10,7 +10,6 @@ class ConfigInfo {
   }
 
   Client createServiceClient() {
-    print('serviceSecret: ${config.serviceSecret}');
     var keyManager = ServiceKeyManager('CLI', config);
     return Client(
       '${config.insightsServer.publicScheme}://'

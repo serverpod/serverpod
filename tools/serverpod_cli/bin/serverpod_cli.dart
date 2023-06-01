@@ -154,7 +154,23 @@ Future<void> _main(List<String> args) async {
     abbr: 'f',
     negatable: false,
     help:
-        'Creates the migration even if there are warnings or information that may be destroyed.',
+        'Creates the migration even if there are warnings or information that '
+        'may be destroyed.',
+  );
+  migrateParser.addFlag(
+    'repair',
+    abbr: 'r',
+    negatable: false,
+    help:
+        'Repairs the database by comparing the target state to what is in the '
+        'live database instead of comparing to the latest migration.',
+  );
+  migrateParser.addOption(
+    'mode',
+    abbr: 'm',
+    defaultsTo: 'development',
+    allowed: runModes,
+    help: 'Use together with --repair to specify which database to repair.',
   );
   migrateParser.addOption(
     'tag',
@@ -271,6 +287,8 @@ Future<void> _main(List<String> args) async {
     if (results.command!.name == cmdMigrate) {
       bool verbose = results.command!['verbose'];
       bool force = results.command!['force'];
+      bool repair = results.command!['repair'];
+      String mode = results.command!['mode'];
       String? tag = results.command!['tag'];
 
       if (tag != null) {
@@ -309,13 +327,23 @@ Future<void> _main(List<String> args) async {
         directory: Directory.current,
         projectName: projectName,
       );
-      await generator.createMigration(
-        tag: tag,
-        verbose: verbose,
-        force: force,
-        priority: priority,
-      );
-      print('Done.');
+
+      if (repair) {
+        await generator.repairMigration(
+          tag: tag,
+          force: force,
+          runMode: mode,
+          verbose: verbose,
+        );
+      } else {
+        await generator.createMigration(
+          tag: tag,
+          verbose: verbose,
+          force: force,
+          priority: priority,
+        );
+        print('Done.');
+      }
 
       _analytics.cleanUp();
       return;

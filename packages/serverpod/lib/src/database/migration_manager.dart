@@ -57,6 +57,7 @@ class MigrationManager {
         ),
       );
     }
+    installedVersions.clear();
     installedVersions.addAll(versions);
 
     // Get available migrations
