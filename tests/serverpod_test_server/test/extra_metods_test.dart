@@ -50,7 +50,7 @@ void main() {
     intIntMap: {1: 10, 2: 10},
   );
 
-  group('extra:', () {
+  group('extra methods:', () {
     test('ByteData not equal', () {
       var a = createByteData(10);
       var b = createByteData(10);
