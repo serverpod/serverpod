@@ -216,8 +216,6 @@ class InsightsEndpoint extends Endpoint {
     }
     databaseDefinition.installedModules = installedModules;
 
-    print('Installed modules: $installedModules');
-
     return databaseDefinition;
   }
 
