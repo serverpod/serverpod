@@ -183,6 +183,7 @@ class MigrationGenerator {
     // Get the live database definition from the server.
     var liveDatabase = await client.insights.getLiveDatabaseDefinition();
 
+    // Print warnings, if any exists.
     var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: liveDatabase,
@@ -197,6 +198,7 @@ class MigrationGenerator {
       return null;
     }
 
+    // Check if there are any changes.
     var versionsChanged = false;
     if (liveDatabase.installedModules == null) {
       versionsChanged = true;
