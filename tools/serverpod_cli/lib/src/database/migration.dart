@@ -12,6 +12,10 @@ DatabaseMigration generateDatabaseMigration({
   // Find deleted tables
   var deleteTables = <String>[];
   for (var srcTable in srcDatabase.tables) {
+    if (srcTable.name == 'serverpod_migrations') {
+      continue;
+    }
+
     if (!dstDatabase.containsTableNamed(srcTable.name)) {
       deleteTables.add(srcTable.name);
     }

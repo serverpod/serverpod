@@ -100,6 +100,9 @@ class Serverpod {
   /// The web server managed by this [Serverpod].
   late WebServer webServer;
 
+  /// The migration manager used by this [Serverpod].
+  late MigrationManager migrationManager;
+
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
 
@@ -311,7 +314,7 @@ class Serverpod {
         try {
           // Initialize migration manager.
           logVerbose('Initializing migration manager.');
-          var migrationManager = MigrationManager();
+          migrationManager = MigrationManager();
           await migrationManager.initialize(session);
 
           if (commandLineArgs.applyMigrations) {

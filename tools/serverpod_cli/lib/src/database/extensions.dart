@@ -367,8 +367,7 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
 
 extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
-    required String version,
-    required String module,
+    required Map<String, String> versions,
   }) {
     var out = '';
 
@@ -380,11 +379,14 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
       out += action.toPgSql();
     }
 
-    out += _sqlStoreMigrationVersion(
-      module: module,
-      version: version,
-      priority: priority,
-    );
+    for (var module in versions.keys) {
+      var version = versions[module]!;
+      out += _sqlStoreMigrationVersion(
+        module: module,
+        version: version,
+        priority: priority,
+      );
+    }
 
     out += '\n';
     out += 'COMMIT;\n';
