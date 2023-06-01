@@ -1,5 +1,4 @@
 import 'package:path/path.dart' as p;
-
 import 'package:serverpod_cli/src/generator/types.dart';
 
 /// An abstract representation of a yaml file in the
@@ -23,6 +22,18 @@ abstract class SerializableEntityDefinition {
         // ignore: prefer_interpolation_to_compose_strings
         .joinAll([...subDirParts, '$fileName.dart']);
   }
+}
+
+enum ExtraFeature {
+  none,
+  client,
+  server,
+  both;
+
+  bool get isNone => this == none;
+  bool get isClient => this == client;
+  bool get isServer => this == server;
+  bool get isBoth => this == both;
 }
 
 /// A representation of a yaml file in the protocol directory defining a class
@@ -50,6 +61,12 @@ class ClassDefinition extends SerializableEntityDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
+  /// If `extraFeature` is value of `server, client, both`, the following methods will be generated:
+  /// - `operator==` for equality comparison
+  /// - `hashCode` for generating hash codes
+  /// - `copyWith` for creating a copy of the object with modified properties.
+  final ExtraFeature extraFeature;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -61,6 +78,7 @@ class ClassDefinition extends SerializableEntityDefinition {
     this.indexes,
     super.subDirParts,
     this.documentation,
+    required this.extraFeature,
   });
 }
 

@@ -22,28 +22,10 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   }
 
   /// The cached data.
-  final String data;
+  String data;
 
   @override
   Map<String, dynamic> toJson() {
     return {'data': data};
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is DistributedCacheEntry &&
-            (identical(
-                  other.data,
-                  data,
-                ) ||
-                other.data == data));
-  }
-
-  @override
-  int get hashCode => data.hashCode;
-
-  DistributedCacheEntry copyWith({String? data}) {
-    return DistributedCacheEntry(data: data ?? this.data);
   }
 }

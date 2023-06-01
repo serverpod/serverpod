@@ -37,21 +37,21 @@ class ColumnDefinition extends _i1.SerializableEntity {
   }
 
   /// The column name
-  final String name;
+  String name;
 
   /// The actual column type
-  final _i2.ColumnType columnType;
+  _i2.ColumnType columnType;
 
   /// Whether this column is nullable.
-  final bool isNullable;
+  bool isNullable;
 
   /// The default for the column.
-  final String? columnDefault;
+  String? columnDefault;
 
   /// The (dart) type specified in the yaml file.
   /// Is nullable, since this is not available when
   /// analyzing the database.
-  final String? dartType;
+  String? dartType;
 
   @override
   Map<String, dynamic> toJson() {
@@ -62,61 +62,5 @@ class ColumnDefinition extends _i1.SerializableEntity {
       'columnDefault': columnDefault,
       'dartType': dartType,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ColumnDefinition &&
-            (identical(
-                  other.name,
-                  name,
-                ) ||
-                other.name == name) &&
-            (identical(
-                  other.columnType,
-                  columnType,
-                ) ||
-                other.columnType == columnType) &&
-            (identical(
-                  other.isNullable,
-                  isNullable,
-                ) ||
-                other.isNullable == isNullable) &&
-            (identical(
-                  other.columnDefault,
-                  columnDefault,
-                ) ||
-                other.columnDefault == columnDefault) &&
-            (identical(
-                  other.dartType,
-                  dartType,
-                ) ||
-                other.dartType == dartType));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        name,
-        columnType,
-        isNullable,
-        columnDefault,
-        dartType,
-      );
-
-  ColumnDefinition copyWith({
-    String? name,
-    _i2.ColumnType? columnType,
-    bool? isNullable,
-    String? columnDefault,
-    String? dartType,
-  }) {
-    return ColumnDefinition(
-      name: name ?? this.name,
-      columnType: columnType ?? this.columnType,
-      isNullable: isNullable ?? this.isNullable,
-      columnDefault: columnDefault ?? this.columnDefault,
-      dartType: dartType ?? this.dartType,
-    );
   }
 }

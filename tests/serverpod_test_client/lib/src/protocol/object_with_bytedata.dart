@@ -29,9 +29,9 @@ class ObjectWithByteData extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
-  final _i2.ByteData byteData;
+  _i2.ByteData byteData;
 
   @override
   Map<String, dynamic> toJson() {
@@ -39,37 +39,5 @@ class ObjectWithByteData extends _i1.SerializableEntity {
       'id': id,
       'byteData': byteData,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ObjectWithByteData &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.byteData,
-                  byteData,
-                ) ||
-                other.byteData == byteData));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        byteData,
-      );
-
-  ObjectWithByteData copyWith({
-    int? id,
-    _i2.ByteData? byteData,
-  }) {
-    return ObjectWithByteData(
-      id: id ?? this.id,
-      byteData: byteData ?? this.byteData,
-    );
   }
 }

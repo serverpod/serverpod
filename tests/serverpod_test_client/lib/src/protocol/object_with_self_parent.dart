@@ -27,9 +27,9 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
-  final int? other;
+  int? other;
 
   @override
   Map<String, dynamic> toJson() {
@@ -37,37 +37,5 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
       'id': id,
       'other': other,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ObjectWithSelfParent &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.other,
-                  other,
-                ) ||
-                other.other == other));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        other,
-      );
-
-  ObjectWithSelfParent copyWith({
-    int? id,
-    int? other,
-  }) {
-    return ObjectWithSelfParent(
-      id: id ?? this.id,
-      other: other ?? this.other,
-    );
   }
 }

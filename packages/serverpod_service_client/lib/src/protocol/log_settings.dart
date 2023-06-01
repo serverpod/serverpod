@@ -53,35 +53,35 @@ class LogSettings extends _i1.SerializableEntity {
   }
 
   /// Log level. Everything above this level will be logged.
-  final _i2.LogLevel logLevel;
+  _i2.LogLevel logLevel;
 
   /// True if all sessions should be logged.
-  final bool logAllSessions;
+  bool logAllSessions;
 
   /// True if all queries should be logged.
-  final bool logAllQueries;
+  bool logAllQueries;
 
   /// True if all slow sessions should be logged.
-  final bool logSlowSessions;
+  bool logSlowSessions;
 
   /// True if streaming sessions should be logged continuously. If set to false,
   /// the logging will take place when the session is closed.
-  final bool logStreamingSessionsContinuously;
+  bool logStreamingSessionsContinuously;
 
   /// True if all slow queries should be logged.
-  final bool logSlowQueries;
+  bool logSlowQueries;
 
   /// True if all failed sessions should be logged.
-  final bool logFailedSessions;
+  bool logFailedSessions;
 
   /// True if all failed queries should be logged.
-  final bool logFailedQueries;
+  bool logFailedQueries;
 
   /// The duration in seconds for a session to be considered slow.
-  final double slowSessionDuration;
+  double slowSessionDuration;
 
   /// The duration in seconds for a query to be considered slow.
-  final double slowQueryDuration;
+  double slowQueryDuration;
 
   @override
   Map<String, dynamic> toJson() {
@@ -97,103 +97,5 @@ class LogSettings extends _i1.SerializableEntity {
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is LogSettings &&
-            (identical(
-                  other.logLevel,
-                  logLevel,
-                ) ||
-                other.logLevel == logLevel) &&
-            (identical(
-                  other.logAllSessions,
-                  logAllSessions,
-                ) ||
-                other.logAllSessions == logAllSessions) &&
-            (identical(
-                  other.logAllQueries,
-                  logAllQueries,
-                ) ||
-                other.logAllQueries == logAllQueries) &&
-            (identical(
-                  other.logSlowSessions,
-                  logSlowSessions,
-                ) ||
-                other.logSlowSessions == logSlowSessions) &&
-            (identical(
-                  other.logStreamingSessionsContinuously,
-                  logStreamingSessionsContinuously,
-                ) ||
-                other.logStreamingSessionsContinuously ==
-                    logStreamingSessionsContinuously) &&
-            (identical(
-                  other.logSlowQueries,
-                  logSlowQueries,
-                ) ||
-                other.logSlowQueries == logSlowQueries) &&
-            (identical(
-                  other.logFailedSessions,
-                  logFailedSessions,
-                ) ||
-                other.logFailedSessions == logFailedSessions) &&
-            (identical(
-                  other.logFailedQueries,
-                  logFailedQueries,
-                ) ||
-                other.logFailedQueries == logFailedQueries) &&
-            (identical(
-                  other.slowSessionDuration,
-                  slowSessionDuration,
-                ) ||
-                other.slowSessionDuration == slowSessionDuration) &&
-            (identical(
-                  other.slowQueryDuration,
-                  slowQueryDuration,
-                ) ||
-                other.slowQueryDuration == slowQueryDuration));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        logLevel,
-        logAllSessions,
-        logAllQueries,
-        logSlowSessions,
-        logStreamingSessionsContinuously,
-        logSlowQueries,
-        logFailedSessions,
-        logFailedQueries,
-        slowSessionDuration,
-        slowQueryDuration,
-      );
-
-  LogSettings copyWith({
-    _i2.LogLevel? logLevel,
-    bool? logAllSessions,
-    bool? logAllQueries,
-    bool? logSlowSessions,
-    bool? logStreamingSessionsContinuously,
-    bool? logSlowQueries,
-    bool? logFailedSessions,
-    bool? logFailedQueries,
-    double? slowSessionDuration,
-    double? slowQueryDuration,
-  }) {
-    return LogSettings(
-      logLevel: logLevel ?? this.logLevel,
-      logAllSessions: logAllSessions ?? this.logAllSessions,
-      logAllQueries: logAllQueries ?? this.logAllQueries,
-      logSlowSessions: logSlowSessions ?? this.logSlowSessions,
-      logStreamingSessionsContinuously: logStreamingSessionsContinuously ??
-          this.logStreamingSessionsContinuously,
-      logSlowQueries: logSlowQueries ?? this.logSlowQueries,
-      logFailedSessions: logFailedSessions ?? this.logFailedSessions,
-      logFailedQueries: logFailedQueries ?? this.logFailedQueries,
-      slowSessionDuration: slowSessionDuration ?? this.slowSessionDuration,
-      slowQueryDuration: slowQueryDuration ?? this.slowQueryDuration,
-    );
   }
 }

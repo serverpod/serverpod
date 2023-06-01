@@ -45,26 +45,26 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
   /// The server associated with this connection info.
-  final String serverId;
+  String serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  final DateTime timestamp;
+  DateTime timestamp;
 
   /// Number of active connections currently open.
-  final int active;
+  int active;
 
   /// Number of connections currently closing.
-  final int closing;
+  int closing;
 
   /// Number of connections currently idle.
-  final int idle;
+  int idle;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  final int granularity;
+  int granularity;
 
   @override
   Map<String, dynamic> toJson() {
@@ -77,77 +77,5 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
       'idle': idle,
       'granularity': granularity,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ServerHealthConnectionInfo &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.serverId,
-                  serverId,
-                ) ||
-                other.serverId == serverId) &&
-            (identical(
-                  other.timestamp,
-                  timestamp,
-                ) ||
-                other.timestamp == timestamp) &&
-            (identical(
-                  other.active,
-                  active,
-                ) ||
-                other.active == active) &&
-            (identical(
-                  other.closing,
-                  closing,
-                ) ||
-                other.closing == closing) &&
-            (identical(
-                  other.idle,
-                  idle,
-                ) ||
-                other.idle == idle) &&
-            (identical(
-                  other.granularity,
-                  granularity,
-                ) ||
-                other.granularity == granularity));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        serverId,
-        timestamp,
-        active,
-        closing,
-        idle,
-        granularity,
-      );
-
-  ServerHealthConnectionInfo copyWith({
-    int? id,
-    String? serverId,
-    DateTime? timestamp,
-    int? active,
-    int? closing,
-    int? idle,
-    int? granularity,
-  }) {
-    return ServerHealthConnectionInfo(
-      id: id ?? this.id,
-      serverId: serverId ?? this.serverId,
-      timestamp: timestamp ?? this.timestamp,
-      active: active ?? this.active,
-      closing: closing ?? this.closing,
-      idle: idle ?? this.idle,
-      granularity: granularity ?? this.granularity,
-    );
   }
 }

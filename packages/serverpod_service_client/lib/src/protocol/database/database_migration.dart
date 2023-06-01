@@ -8,7 +8,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
-import 'package:collection/collection.dart' as _i3;
 
 class DatabaseMigration extends _i1.SerializableEntity {
   DatabaseMigration({
@@ -30,9 +29,9 @@ class DatabaseMigration extends _i1.SerializableEntity {
     );
   }
 
-  final List<_i2.DatabaseMigrationAction> actions;
+  List<_i2.DatabaseMigrationAction> actions;
 
-  final List<_i2.DatabaseMigrationWarning> warnings;
+  List<_i2.DatabaseMigrationWarning> warnings;
 
   @override
   Map<String, dynamic> toJson() {
@@ -40,35 +39,5 @@ class DatabaseMigration extends _i1.SerializableEntity {
       'actions': actions,
       'warnings': warnings,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is DatabaseMigration &&
-            const _i3.DeepCollectionEquality().equals(
-              actions,
-              other.actions,
-            ) &&
-            const _i3.DeepCollectionEquality().equals(
-              warnings,
-              other.warnings,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        const _i3.DeepCollectionEquality().hash(actions),
-        const _i3.DeepCollectionEquality().hash(warnings),
-      );
-
-  DatabaseMigration copyWith({
-    List<_i2.DatabaseMigrationAction>? actions,
-    List<_i2.DatabaseMigrationWarning>? warnings,
-  }) {
-    return DatabaseMigration(
-      actions: actions ?? this.actions,
-      warnings: warnings ?? this.warnings,
-    );
   }
 }

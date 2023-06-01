@@ -9,7 +9,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
-import 'package:collection/collection.dart' as _i4;
 
 class ObjectWithMaps extends _i1.SerializableEntity {
   ObjectWithMaps({
@@ -73,35 +72,35 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     );
   }
 
-  final Map<String, _i2.SimpleData> dataMap;
+  Map<String, _i2.SimpleData> dataMap;
 
-  final Map<String, int> intMap;
+  Map<String, int> intMap;
 
-  final Map<String, String> stringMap;
+  Map<String, String> stringMap;
 
-  final Map<String, DateTime> dateTimeMap;
+  Map<String, DateTime> dateTimeMap;
 
-  final Map<String, _i3.ByteData> byteDataMap;
+  Map<String, _i3.ByteData> byteDataMap;
 
-  final Map<String, Duration> durationMap;
+  Map<String, Duration> durationMap;
 
-  final Map<String, _i1.UuidValue> uuidMap;
+  Map<String, _i1.UuidValue> uuidMap;
 
-  final Map<String, _i2.SimpleData?> nullableDataMap;
+  Map<String, _i2.SimpleData?> nullableDataMap;
 
-  final Map<String, int?> nullableIntMap;
+  Map<String, int?> nullableIntMap;
 
-  final Map<String, String?> nullableStringMap;
+  Map<String, String?> nullableStringMap;
 
-  final Map<String, DateTime?> nullableDateTimeMap;
+  Map<String, DateTime?> nullableDateTimeMap;
 
-  final Map<String, _i3.ByteData?> nullableByteDataMap;
+  Map<String, _i3.ByteData?> nullableByteDataMap;
 
-  final Map<String, Duration?> nullableDurationMap;
+  Map<String, Duration?> nullableDurationMap;
 
-  final Map<String, _i1.UuidValue?> nullableUuidMap;
+  Map<String, _i1.UuidValue?> nullableUuidMap;
 
-  final Map<int, int> intIntMap;
+  Map<int, int> intIntMap;
 
   @override
   Map<String, dynamic> toJson() {
@@ -122,126 +121,5 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'nullableUuidMap': nullableUuidMap,
       'intIntMap': intIntMap,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ObjectWithMaps &&
-            const _i4.DeepCollectionEquality().equals(
-              dataMap,
-              other.dataMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              intMap,
-              other.intMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              stringMap,
-              other.stringMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              dateTimeMap,
-              other.dateTimeMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              byteDataMap,
-              other.byteDataMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              durationMap,
-              other.durationMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              uuidMap,
-              other.uuidMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableDataMap,
-              other.nullableDataMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableIntMap,
-              other.nullableIntMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableStringMap,
-              other.nullableStringMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableDateTimeMap,
-              other.nullableDateTimeMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableByteDataMap,
-              other.nullableByteDataMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableDurationMap,
-              other.nullableDurationMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              nullableUuidMap,
-              other.nullableUuidMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              intIntMap,
-              other.intIntMap,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        const _i4.DeepCollectionEquality().hash(dataMap),
-        const _i4.DeepCollectionEquality().hash(intMap),
-        const _i4.DeepCollectionEquality().hash(stringMap),
-        const _i4.DeepCollectionEquality().hash(dateTimeMap),
-        const _i4.DeepCollectionEquality().hash(byteDataMap),
-        const _i4.DeepCollectionEquality().hash(durationMap),
-        const _i4.DeepCollectionEquality().hash(uuidMap),
-        const _i4.DeepCollectionEquality().hash(nullableDataMap),
-        const _i4.DeepCollectionEquality().hash(nullableIntMap),
-        const _i4.DeepCollectionEquality().hash(nullableStringMap),
-        const _i4.DeepCollectionEquality().hash(nullableDateTimeMap),
-        const _i4.DeepCollectionEquality().hash(nullableByteDataMap),
-        const _i4.DeepCollectionEquality().hash(nullableDurationMap),
-        const _i4.DeepCollectionEquality().hash(nullableUuidMap),
-        const _i4.DeepCollectionEquality().hash(intIntMap),
-      );
-
-  ObjectWithMaps copyWith({
-    Map<String, _i2.SimpleData>? dataMap,
-    Map<String, int>? intMap,
-    Map<String, String>? stringMap,
-    Map<String, DateTime>? dateTimeMap,
-    Map<String, _i3.ByteData>? byteDataMap,
-    Map<String, Duration>? durationMap,
-    Map<String, _i1.UuidValue>? uuidMap,
-    Map<String, _i2.SimpleData?>? nullableDataMap,
-    Map<String, int?>? nullableIntMap,
-    Map<String, String?>? nullableStringMap,
-    Map<String, DateTime?>? nullableDateTimeMap,
-    Map<String, _i3.ByteData?>? nullableByteDataMap,
-    Map<String, Duration?>? nullableDurationMap,
-    Map<String, _i1.UuidValue?>? nullableUuidMap,
-    Map<int, int>? intIntMap,
-  }) {
-    return ObjectWithMaps(
-      dataMap: dataMap ?? this.dataMap,
-      intMap: intMap ?? this.intMap,
-      stringMap: stringMap ?? this.stringMap,
-      dateTimeMap: dateTimeMap ?? this.dateTimeMap,
-      byteDataMap: byteDataMap ?? this.byteDataMap,
-      durationMap: durationMap ?? this.durationMap,
-      uuidMap: uuidMap ?? this.uuidMap,
-      nullableDataMap: nullableDataMap ?? this.nullableDataMap,
-      nullableIntMap: nullableIntMap ?? this.nullableIntMap,
-      nullableStringMap: nullableStringMap ?? this.nullableStringMap,
-      nullableDateTimeMap: nullableDateTimeMap ?? this.nullableDateTimeMap,
-      nullableByteDataMap: nullableByteDataMap ?? this.nullableByteDataMap,
-      nullableDurationMap: nullableDurationMap ?? this.nullableDurationMap,
-      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap,
-      intIntMap: intIntMap ?? this.intIntMap,
-    );
   }
 }

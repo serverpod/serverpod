@@ -31,11 +31,11 @@ class ObjectWithUuid extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
-  final _i1.UuidValue uuid;
+  _i1.UuidValue uuid;
 
-  final _i1.UuidValue? uuidNullable;
+  _i1.UuidValue? uuidNullable;
 
   @override
   Map<String, dynamic> toJson() {
@@ -44,45 +44,5 @@ class ObjectWithUuid extends _i1.SerializableEntity {
       'uuid': uuid,
       'uuidNullable': uuidNullable,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ObjectWithUuid &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.uuid,
-                  uuid,
-                ) ||
-                other.uuid == uuid) &&
-            (identical(
-                  other.uuidNullable,
-                  uuidNullable,
-                ) ||
-                other.uuidNullable == uuidNullable));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        uuid,
-        uuidNullable,
-      );
-
-  ObjectWithUuid copyWith({
-    int? id,
-    _i1.UuidValue? uuid,
-    _i1.UuidValue? uuidNullable,
-  }) {
-    return ObjectWithUuid(
-      id: id ?? this.id,
-      uuid: uuid ?? this.uuid,
-      uuidNullable: uuidNullable ?? this.uuidNullable,
-    );
   }
 }

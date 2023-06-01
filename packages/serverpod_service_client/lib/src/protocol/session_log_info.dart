@@ -8,7 +8,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
-import 'package:collection/collection.dart' as _i3;
 
 /// Compounded information about a session log.
 class SessionLogInfo extends _i1.SerializableEntity {
@@ -36,16 +35,16 @@ class SessionLogInfo extends _i1.SerializableEntity {
   }
 
   /// The main session log entry.
-  final _i2.SessionLogEntry sessionLogEntry;
+  _i2.SessionLogEntry sessionLogEntry;
 
   /// List of queries made during the session.
-  final List<_i2.QueryLogEntry> queries;
+  List<_i2.QueryLogEntry> queries;
 
   /// List of log entries made during the session.
-  final List<_i2.LogEntry> logs;
+  List<_i2.LogEntry> logs;
 
   /// List of messages sent during the session.
-  final List<_i2.MessageLogEntry> messages;
+  List<_i2.MessageLogEntry> messages;
 
   @override
   Map<String, dynamic> toJson() {
@@ -55,50 +54,5 @@ class SessionLogInfo extends _i1.SerializableEntity {
       'logs': logs,
       'messages': messages,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is SessionLogInfo &&
-            (identical(
-                  other.sessionLogEntry,
-                  sessionLogEntry,
-                ) ||
-                other.sessionLogEntry == sessionLogEntry) &&
-            const _i3.DeepCollectionEquality().equals(
-              queries,
-              other.queries,
-            ) &&
-            const _i3.DeepCollectionEquality().equals(
-              logs,
-              other.logs,
-            ) &&
-            const _i3.DeepCollectionEquality().equals(
-              messages,
-              other.messages,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        sessionLogEntry,
-        const _i3.DeepCollectionEquality().hash(queries),
-        const _i3.DeepCollectionEquality().hash(logs),
-        const _i3.DeepCollectionEquality().hash(messages),
-      );
-
-  SessionLogInfo copyWith({
-    _i2.SessionLogEntry? sessionLogEntry,
-    List<_i2.QueryLogEntry>? queries,
-    List<_i2.LogEntry>? logs,
-    List<_i2.MessageLogEntry>? messages,
-  }) {
-    return SessionLogInfo(
-      sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry,
-      queries: queries ?? this.queries,
-      logs: logs ?? this.logs,
-      messages: messages ?? this.messages,
-    );
   }
 }

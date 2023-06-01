@@ -45,26 +45,26 @@ class ServerHealthMetric extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
   /// The name of the metric.
-  final String name;
+  String name;
 
   /// The server associated with this metric.
-  final String serverId;
+  String serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  final DateTime timestamp;
+  DateTime timestamp;
 
   /// True if the metric is healthy.
-  final bool isHealthy;
+  bool isHealthy;
 
   /// The value of the metric.
-  final double value;
+  double value;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  final int granularity;
+  int granularity;
 
   @override
   Map<String, dynamic> toJson() {
@@ -77,77 +77,5 @@ class ServerHealthMetric extends _i1.SerializableEntity {
       'value': value,
       'granularity': granularity,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ServerHealthMetric &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.name,
-                  name,
-                ) ||
-                other.name == name) &&
-            (identical(
-                  other.serverId,
-                  serverId,
-                ) ||
-                other.serverId == serverId) &&
-            (identical(
-                  other.timestamp,
-                  timestamp,
-                ) ||
-                other.timestamp == timestamp) &&
-            (identical(
-                  other.isHealthy,
-                  isHealthy,
-                ) ||
-                other.isHealthy == isHealthy) &&
-            (identical(
-                  other.value,
-                  value,
-                ) ||
-                other.value == value) &&
-            (identical(
-                  other.granularity,
-                  granularity,
-                ) ||
-                other.granularity == granularity));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        name,
-        serverId,
-        timestamp,
-        isHealthy,
-        value,
-        granularity,
-      );
-
-  ServerHealthMetric copyWith({
-    int? id,
-    String? name,
-    String? serverId,
-    DateTime? timestamp,
-    bool? isHealthy,
-    double? value,
-    int? granularity,
-  }) {
-    return ServerHealthMetric(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      serverId: serverId ?? this.serverId,
-      timestamp: timestamp ?? this.timestamp,
-      isHealthy: isHealthy ?? this.isHealthy,
-      value: value ?? this.value,
-      granularity: granularity ?? this.granularity,
-    );
   }
 }

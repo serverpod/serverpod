@@ -22,28 +22,10 @@ class ClusterServerInfo extends _i1.SerializableEntity {
   }
 
   /// The id of the server.
-  final String serverId;
+  String serverId;
 
   @override
   Map<String, dynamic> toJson() {
     return {'serverId': serverId};
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ClusterServerInfo &&
-            (identical(
-                  other.serverId,
-                  serverId,
-                ) ||
-                other.serverId == serverId));
-  }
-
-  @override
-  int get hashCode => serverId.hashCode;
-
-  ClusterServerInfo copyWith({String? serverId}) {
-    return ClusterServerInfo(serverId: serverId ?? this.serverId);
   }
 }

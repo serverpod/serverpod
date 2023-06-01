@@ -8,7 +8,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
-import 'package:collection/collection.dart' as _i3;
 
 /// Runtime settings of the server.
 class RuntimeSettings extends _i1.SerializableEntity {
@@ -41,19 +40,19 @@ class RuntimeSettings extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
   /// Log settings.
-  final _i2.LogSettings logSettings;
+  _i2.LogSettings logSettings;
 
   /// List of log setting overrides.
-  final List<_i2.LogSettingsOverride> logSettingsOverrides;
+  List<_i2.LogSettingsOverride> logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
-  final bool logServiceCalls;
+  bool logServiceCalls;
 
   /// True if malformed calls should be logged.
-  final bool logMalformedCalls;
+  bool logMalformedCalls;
 
   @override
   Map<String, dynamic> toJson() {
@@ -64,60 +63,5 @@ class RuntimeSettings extends _i1.SerializableEntity {
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is RuntimeSettings &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.logSettings,
-                  logSettings,
-                ) ||
-                other.logSettings == logSettings) &&
-            (identical(
-                  other.logServiceCalls,
-                  logServiceCalls,
-                ) ||
-                other.logServiceCalls == logServiceCalls) &&
-            (identical(
-                  other.logMalformedCalls,
-                  logMalformedCalls,
-                ) ||
-                other.logMalformedCalls == logMalformedCalls) &&
-            const _i3.DeepCollectionEquality().equals(
-              logSettingsOverrides,
-              other.logSettingsOverrides,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        logSettings,
-        logServiceCalls,
-        logMalformedCalls,
-        const _i3.DeepCollectionEquality().hash(logSettingsOverrides),
-      );
-
-  RuntimeSettings copyWith({
-    int? id,
-    _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
-    bool? logServiceCalls,
-    bool? logMalformedCalls,
-  }) {
-    return RuntimeSettings(
-      id: id ?? this.id,
-      logSettings: logSettings ?? this.logSettings,
-      logSettingsOverrides: logSettingsOverrides ?? this.logSettingsOverrides,
-      logServiceCalls: logServiceCalls ?? this.logServiceCalls,
-      logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
-    );
   }
 }

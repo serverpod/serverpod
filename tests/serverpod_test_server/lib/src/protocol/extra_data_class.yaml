@@ -1,0 +1,31 @@
+### Just some simple data.
+class: ExtraDataClass
+table: extra_data_class
+extra: client
+fields:
+  duration: Duration
+  object: ExtraDataSimple
+  nullableObject: ExtraDataSimple?
+  list: List<ExtraDataSimple>
+  nullableList: List<ExtraDataSimple>?
+  optionalValueList: List<ExtraDataSimple?>
+  testEnum: TestEnum
+  nullableEnum: TestEnum?
+  enumList: List<TestEnum>
+  nullableEnumList: List<TestEnum?>
+  enumListList: List<List<TestEnum>>
+  dataMap: Map<String, ExtraDataSimple>
+  intMap: Map<String, int>
+  stringMap: Map<String, String>
+  dateTimeMap: Map<String, DateTime>
+  byteDataMap: Map<String, ByteData>
+  durationMap: Map<String, Duration>
+  uuidMap: Map<String, UuidValue>
+  nullableDataMap: Map<String, ExtraDataSimple?>
+  nullableIntMap: Map<String, int?>
+  nullableStringMap: Map<String, String?>
+  nullableDateTimeMap: Map<String, DateTime?>
+  nullableByteDataMap: Map<String, ByteData?>
+  nullableDurationMap: Map<String, Duration?>
+  nullableUuidMap: Map<String, UuidValue?>
+  intIntMap: Map<int, int>

@@ -28,12 +28,12 @@ class SimpleData extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
-  final int num;
+  int num;
 
   @override
   Map<String, dynamic> toJson() {
@@ -41,37 +41,5 @@ class SimpleData extends _i1.SerializableEntity {
       'id': id,
       'num': num,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is SimpleData &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.num,
-                  num,
-                ) ||
-                other.num == num));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        num,
-      );
-
-  SimpleData copyWith({
-    int? id,
-    int? num,
-  }) {
-    return SimpleData(
-      id: id ?? this.id,
-      num: num ?? this.num,
-    );
   }
 }

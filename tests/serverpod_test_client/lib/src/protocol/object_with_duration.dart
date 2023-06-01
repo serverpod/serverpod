@@ -28,9 +28,9 @@ class ObjectWithDuration extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
-  final Duration duration;
+  Duration duration;
 
   @override
   Map<String, dynamic> toJson() {
@@ -38,37 +38,5 @@ class ObjectWithDuration extends _i1.SerializableEntity {
       'id': id,
       'duration': duration,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ObjectWithDuration &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.duration,
-                  duration,
-                ) ||
-                other.duration == duration));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        duration,
-      );
-
-  ObjectWithDuration copyWith({
-    int? id,
-    Duration? duration,
-  }) {
-    return ObjectWithDuration(
-      id: id ?? this.id,
-      duration: duration ?? this.duration,
-    );
   }
 }

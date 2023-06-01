@@ -1,0 +1,5 @@
+### Just some simple data.
+class: ExtraDataSimple
+clientExtra: true
+fields:
+  num: int?

@@ -31,11 +31,11 @@ class ObjectWithIndex extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final int? id;
+  int? id;
 
-  final int indexed;
+  int indexed;
 
-  final int indexed2;
+  int indexed2;
 
   @override
   Map<String, dynamic> toJson() {
@@ -44,45 +44,5 @@ class ObjectWithIndex extends _i1.SerializableEntity {
       'indexed': indexed,
       'indexed2': indexed2,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ObjectWithIndex &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.indexed,
-                  indexed,
-                ) ||
-                other.indexed == indexed) &&
-            (identical(
-                  other.indexed2,
-                  indexed2,
-                ) ||
-                other.indexed2 == indexed2));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        indexed,
-        indexed2,
-      );
-
-  ObjectWithIndex copyWith({
-    int? id,
-    int? indexed,
-    int? indexed2,
-  }) {
-    return ObjectWithIndex(
-      id: id ?? this.id,
-      indexed: indexed ?? this.indexed,
-      indexed2: indexed2 ?? this.indexed2,
-    );
   }
 }

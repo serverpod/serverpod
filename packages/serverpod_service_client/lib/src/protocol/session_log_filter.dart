@@ -40,25 +40,25 @@ class SessionLogFilter extends _i1.SerializableEntity {
   }
 
   /// The endpoint to get logs from. Null will return logs from any endpoint.
-  final String? endpoint;
+  String? endpoint;
 
   /// The method to get logs from. Null will return logs from any method.
-  final String? method;
+  String? method;
 
   /// The name of a future call to get logs from.
-  final String? futureCall;
+  String? futureCall;
 
   /// If true, only return slow sessions.
-  final bool slow;
+  bool slow;
 
   /// If true, only return sessions ending with an exception.
-  final bool error;
+  bool error;
 
   /// If true, only return open sessions.
-  final bool open;
+  bool open;
 
   /// Last session id to start the list of logs from. Used for pagination.
-  final int? lastSessionLogId;
+  int? lastSessionLogId;
 
   @override
   Map<String, dynamic> toJson() {
@@ -71,77 +71,5 @@ class SessionLogFilter extends _i1.SerializableEntity {
       'open': open,
       'lastSessionLogId': lastSessionLogId,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is SessionLogFilter &&
-            (identical(
-                  other.endpoint,
-                  endpoint,
-                ) ||
-                other.endpoint == endpoint) &&
-            (identical(
-                  other.method,
-                  method,
-                ) ||
-                other.method == method) &&
-            (identical(
-                  other.futureCall,
-                  futureCall,
-                ) ||
-                other.futureCall == futureCall) &&
-            (identical(
-                  other.slow,
-                  slow,
-                ) ||
-                other.slow == slow) &&
-            (identical(
-                  other.error,
-                  error,
-                ) ||
-                other.error == error) &&
-            (identical(
-                  other.open,
-                  open,
-                ) ||
-                other.open == open) &&
-            (identical(
-                  other.lastSessionLogId,
-                  lastSessionLogId,
-                ) ||
-                other.lastSessionLogId == lastSessionLogId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        endpoint,
-        method,
-        futureCall,
-        slow,
-        error,
-        open,
-        lastSessionLogId,
-      );
-
-  SessionLogFilter copyWith({
-    String? endpoint,
-    String? method,
-    String? futureCall,
-    bool? slow,
-    bool? error,
-    bool? open,
-    int? lastSessionLogId,
-  }) {
-    return SessionLogFilter(
-      endpoint: endpoint ?? this.endpoint,
-      method: method ?? this.method,
-      futureCall: futureCall ?? this.futureCall,
-      slow: slow ?? this.slow,
-      error: error ?? this.error,
-      open: open ?? this.open,
-      lastSessionLogId: lastSessionLogId ?? this.lastSessionLogId,
-    );
   }
 }

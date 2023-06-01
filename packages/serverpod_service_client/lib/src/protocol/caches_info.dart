@@ -32,13 +32,13 @@ class CachesInfo extends _i1.SerializableEntity {
   }
 
   /// Information about the local cache.
-  final _i2.CacheInfo local;
+  _i2.CacheInfo local;
 
   /// Information about the local priority cache.
-  final _i2.CacheInfo localPrio;
+  _i2.CacheInfo localPrio;
 
   /// Information about the global cache.
-  final _i2.CacheInfo global;
+  _i2.CacheInfo global;
 
   @override
   Map<String, dynamic> toJson() {
@@ -47,45 +47,5 @@ class CachesInfo extends _i1.SerializableEntity {
       'localPrio': localPrio,
       'global': global,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is CachesInfo &&
-            (identical(
-                  other.local,
-                  local,
-                ) ||
-                other.local == local) &&
-            (identical(
-                  other.localPrio,
-                  localPrio,
-                ) ||
-                other.localPrio == localPrio) &&
-            (identical(
-                  other.global,
-                  global,
-                ) ||
-                other.global == global));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        local,
-        localPrio,
-        global,
-      );
-
-  CachesInfo copyWith({
-    _i2.CacheInfo? local,
-    _i2.CacheInfo? localPrio,
-    _i2.CacheInfo? global,
-  }) {
-    return CachesInfo(
-      local: local ?? this.local,
-      localPrio: localPrio ?? this.localPrio,
-      global: global ?? this.global,
-    );
   }
 }

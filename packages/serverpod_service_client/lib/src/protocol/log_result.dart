@@ -8,7 +8,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
-import 'package:collection/collection.dart' as _i3;
 
 /// A list of log entries, used to return logging data.
 class LogResult extends _i1.SerializableEntity {
@@ -24,27 +23,10 @@ class LogResult extends _i1.SerializableEntity {
   }
 
   /// The log entries in this result.
-  final List<_i2.LogEntry> entries;
+  List<_i2.LogEntry> entries;
 
   @override
   Map<String, dynamic> toJson() {
     return {'entries': entries};
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is LogResult &&
-            const _i3.DeepCollectionEquality().equals(
-              entries,
-              other.entries,
-            ));
-  }
-
-  @override
-  int get hashCode => const _i3.DeepCollectionEquality().hash(entries);
-
-  LogResult copyWith({List<_i2.LogEntry>? entries}) {
-    return LogResult(entries: entries ?? this.entries);
   }
 }

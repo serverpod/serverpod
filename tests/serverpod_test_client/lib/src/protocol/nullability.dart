@@ -9,7 +9,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:collection/collection.dart' as _i4;
 
 class Nullability extends _i1.SerializableEntity {
   Nullability({
@@ -173,97 +172,97 @@ class Nullability extends _i1.SerializableEntity {
     );
   }
 
-  final int anInt;
+  int anInt;
 
-  final int? aNullableInt;
+  int? aNullableInt;
 
-  final double aDouble;
+  double aDouble;
 
-  final double? aNullableDouble;
+  double? aNullableDouble;
 
-  final bool aBool;
+  bool aBool;
 
-  final bool? aNullableBool;
+  bool? aNullableBool;
 
-  final String aString;
+  String aString;
 
-  final String? aNullableString;
+  String? aNullableString;
 
-  final DateTime aDateTime;
+  DateTime aDateTime;
 
-  final DateTime? aNullableDateTime;
+  DateTime? aNullableDateTime;
 
-  final _i2.ByteData aByteData;
+  _i2.ByteData aByteData;
 
-  final _i2.ByteData? aNullableByteData;
+  _i2.ByteData? aNullableByteData;
 
-  final Duration aDuration;
+  Duration aDuration;
 
-  final Duration? aNullableDuration;
+  Duration? aNullableDuration;
 
-  final _i1.UuidValue aUuid;
+  _i1.UuidValue aUuid;
 
-  final _i1.UuidValue? aNullableUuid;
+  _i1.UuidValue? aNullableUuid;
 
-  final _i3.SimpleData anObject;
+  _i3.SimpleData anObject;
 
-  final _i3.SimpleData? aNullableObject;
+  _i3.SimpleData? aNullableObject;
 
-  final List<int> anIntList;
+  List<int> anIntList;
 
-  final List<int>? aNullableIntList;
+  List<int>? aNullableIntList;
 
-  final List<int?> aListWithNullableInts;
+  List<int?> aListWithNullableInts;
 
-  final List<int?>? aNullableListWithNullableInts;
+  List<int?>? aNullableListWithNullableInts;
 
-  final List<_i3.SimpleData> anObjectList;
+  List<_i3.SimpleData> anObjectList;
 
-  final List<_i3.SimpleData>? aNullableObjectList;
+  List<_i3.SimpleData>? aNullableObjectList;
 
-  final List<_i3.SimpleData?> aListWithNullableObjects;
+  List<_i3.SimpleData?> aListWithNullableObjects;
 
-  final List<_i3.SimpleData?>? aNullableListWithNullableObjects;
+  List<_i3.SimpleData?>? aNullableListWithNullableObjects;
 
-  final List<DateTime> aDateTimeList;
+  List<DateTime> aDateTimeList;
 
-  final List<DateTime>? aNullableDateTimeList;
+  List<DateTime>? aNullableDateTimeList;
 
-  final List<DateTime?> aListWithNullableDateTimes;
+  List<DateTime?> aListWithNullableDateTimes;
 
-  final List<DateTime?>? aNullableListWithNullableDateTimes;
+  List<DateTime?>? aNullableListWithNullableDateTimes;
 
-  final List<_i2.ByteData> aByteDataList;
+  List<_i2.ByteData> aByteDataList;
 
-  final List<_i2.ByteData>? aNullableByteDataList;
+  List<_i2.ByteData>? aNullableByteDataList;
 
-  final List<_i2.ByteData?> aListWithNullableByteDatas;
+  List<_i2.ByteData?> aListWithNullableByteDatas;
 
-  final List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
+  List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
 
-  final List<Duration> aDurationList;
+  List<Duration> aDurationList;
 
-  final List<Duration>? aNullableDurationList;
+  List<Duration>? aNullableDurationList;
 
-  final List<Duration?> aListWithNullableDurations;
+  List<Duration?> aListWithNullableDurations;
 
-  final List<Duration?>? aNullableListWithNullableDurations;
+  List<Duration?>? aNullableListWithNullableDurations;
 
-  final List<_i1.UuidValue> aUuidList;
+  List<_i1.UuidValue> aUuidList;
 
-  final List<_i1.UuidValue>? aNullableUuidList;
+  List<_i1.UuidValue>? aNullableUuidList;
 
-  final List<_i1.UuidValue?> aListWithNullableUuids;
+  List<_i1.UuidValue?> aListWithNullableUuids;
 
-  final List<_i1.UuidValue?>? aNullableListWithNullableUuids;
+  List<_i1.UuidValue?>? aNullableListWithNullableUuids;
 
-  final Map<String, int> anIntMap;
+  Map<String, int> anIntMap;
 
-  final Map<String, int>? aNullableIntMap;
+  Map<String, int>? aNullableIntMap;
 
-  final Map<String, int?> aMapWithNullableInts;
+  Map<String, int?> aMapWithNullableInts;
 
-  final Map<String, int?>? aNullableMapWithNullableInts;
+  Map<String, int?>? aNullableMapWithNullableInts;
 
   @override
   Map<String, dynamic> toJson() {
@@ -315,381 +314,5 @@ class Nullability extends _i1.SerializableEntity {
       'aMapWithNullableInts': aMapWithNullableInts,
       'aNullableMapWithNullableInts': aNullableMapWithNullableInts,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is Nullability &&
-            (identical(
-                  other.anInt,
-                  anInt,
-                ) ||
-                other.anInt == anInt) &&
-            (identical(
-                  other.aNullableInt,
-                  aNullableInt,
-                ) ||
-                other.aNullableInt == aNullableInt) &&
-            (identical(
-                  other.aDouble,
-                  aDouble,
-                ) ||
-                other.aDouble == aDouble) &&
-            (identical(
-                  other.aNullableDouble,
-                  aNullableDouble,
-                ) ||
-                other.aNullableDouble == aNullableDouble) &&
-            (identical(
-                  other.aBool,
-                  aBool,
-                ) ||
-                other.aBool == aBool) &&
-            (identical(
-                  other.aNullableBool,
-                  aNullableBool,
-                ) ||
-                other.aNullableBool == aNullableBool) &&
-            (identical(
-                  other.aString,
-                  aString,
-                ) ||
-                other.aString == aString) &&
-            (identical(
-                  other.aNullableString,
-                  aNullableString,
-                ) ||
-                other.aNullableString == aNullableString) &&
-            (identical(
-                  other.aDateTime,
-                  aDateTime,
-                ) ||
-                other.aDateTime == aDateTime) &&
-            (identical(
-                  other.aNullableDateTime,
-                  aNullableDateTime,
-                ) ||
-                other.aNullableDateTime == aNullableDateTime) &&
-            (identical(
-                  other.aByteData,
-                  aByteData,
-                ) ||
-                other.aByteData == aByteData) &&
-            (identical(
-                  other.aNullableByteData,
-                  aNullableByteData,
-                ) ||
-                other.aNullableByteData == aNullableByteData) &&
-            (identical(
-                  other.aDuration,
-                  aDuration,
-                ) ||
-                other.aDuration == aDuration) &&
-            (identical(
-                  other.aNullableDuration,
-                  aNullableDuration,
-                ) ||
-                other.aNullableDuration == aNullableDuration) &&
-            (identical(
-                  other.aUuid,
-                  aUuid,
-                ) ||
-                other.aUuid == aUuid) &&
-            (identical(
-                  other.aNullableUuid,
-                  aNullableUuid,
-                ) ||
-                other.aNullableUuid == aNullableUuid) &&
-            (identical(
-                  other.anObject,
-                  anObject,
-                ) ||
-                other.anObject == anObject) &&
-            (identical(
-                  other.aNullableObject,
-                  aNullableObject,
-                ) ||
-                other.aNullableObject == aNullableObject) &&
-            const _i4.DeepCollectionEquality().equals(
-              anIntList,
-              other.anIntList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableIntList,
-              other.aNullableIntList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aListWithNullableInts,
-              other.aListWithNullableInts,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableListWithNullableInts,
-              other.aNullableListWithNullableInts,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              anObjectList,
-              other.anObjectList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableObjectList,
-              other.aNullableObjectList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aListWithNullableObjects,
-              other.aListWithNullableObjects,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableListWithNullableObjects,
-              other.aNullableListWithNullableObjects,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aDateTimeList,
-              other.aDateTimeList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableDateTimeList,
-              other.aNullableDateTimeList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aListWithNullableDateTimes,
-              other.aListWithNullableDateTimes,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableListWithNullableDateTimes,
-              other.aNullableListWithNullableDateTimes,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aByteDataList,
-              other.aByteDataList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableByteDataList,
-              other.aNullableByteDataList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aListWithNullableByteDatas,
-              other.aListWithNullableByteDatas,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableListWithNullableByteDatas,
-              other.aNullableListWithNullableByteDatas,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aDurationList,
-              other.aDurationList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableDurationList,
-              other.aNullableDurationList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aListWithNullableDurations,
-              other.aListWithNullableDurations,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableListWithNullableDurations,
-              other.aNullableListWithNullableDurations,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aUuidList,
-              other.aUuidList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableUuidList,
-              other.aNullableUuidList,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aListWithNullableUuids,
-              other.aListWithNullableUuids,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableListWithNullableUuids,
-              other.aNullableListWithNullableUuids,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              anIntMap,
-              other.anIntMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableIntMap,
-              other.aNullableIntMap,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aMapWithNullableInts,
-              other.aMapWithNullableInts,
-            ) &&
-            const _i4.DeepCollectionEquality().equals(
-              aNullableMapWithNullableInts,
-              other.aNullableMapWithNullableInts,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-        anInt,
-        aNullableInt,
-        aDouble,
-        aNullableDouble,
-        aBool,
-        aNullableBool,
-        aString,
-        aNullableString,
-        aDateTime,
-        aNullableDateTime,
-        aByteData,
-        aNullableByteData,
-        aDuration,
-        aNullableDuration,
-        aUuid,
-        aNullableUuid,
-        anObject,
-        aNullableObject,
-        const _i4.DeepCollectionEquality().hash(anIntList),
-        const _i4.DeepCollectionEquality().hash(aNullableIntList),
-        const _i4.DeepCollectionEquality().hash(aListWithNullableInts),
-        const _i4.DeepCollectionEquality().hash(aNullableListWithNullableInts),
-        const _i4.DeepCollectionEquality().hash(anObjectList),
-        const _i4.DeepCollectionEquality().hash(aNullableObjectList),
-        const _i4.DeepCollectionEquality().hash(aListWithNullableObjects),
-        const _i4.DeepCollectionEquality()
-            .hash(aNullableListWithNullableObjects),
-        const _i4.DeepCollectionEquality().hash(aDateTimeList),
-        const _i4.DeepCollectionEquality().hash(aNullableDateTimeList),
-        const _i4.DeepCollectionEquality().hash(aListWithNullableDateTimes),
-        const _i4.DeepCollectionEquality()
-            .hash(aNullableListWithNullableDateTimes),
-        const _i4.DeepCollectionEquality().hash(aByteDataList),
-        const _i4.DeepCollectionEquality().hash(aNullableByteDataList),
-        const _i4.DeepCollectionEquality().hash(aListWithNullableByteDatas),
-        const _i4.DeepCollectionEquality()
-            .hash(aNullableListWithNullableByteDatas),
-        const _i4.DeepCollectionEquality().hash(aDurationList),
-        const _i4.DeepCollectionEquality().hash(aNullableDurationList),
-        const _i4.DeepCollectionEquality().hash(aListWithNullableDurations),
-        const _i4.DeepCollectionEquality()
-            .hash(aNullableListWithNullableDurations),
-        const _i4.DeepCollectionEquality().hash(aUuidList),
-        const _i4.DeepCollectionEquality().hash(aNullableUuidList),
-        const _i4.DeepCollectionEquality().hash(aListWithNullableUuids),
-        const _i4.DeepCollectionEquality().hash(aNullableListWithNullableUuids),
-        const _i4.DeepCollectionEquality().hash(anIntMap),
-        const _i4.DeepCollectionEquality().hash(aNullableIntMap),
-        const _i4.DeepCollectionEquality().hash(aMapWithNullableInts),
-        const _i4.DeepCollectionEquality().hash(aNullableMapWithNullableInts),
-      ]);
-
-  Nullability copyWith({
-    int? anInt,
-    int? aNullableInt,
-    double? aDouble,
-    double? aNullableDouble,
-    bool? aBool,
-    bool? aNullableBool,
-    String? aString,
-    String? aNullableString,
-    DateTime? aDateTime,
-    DateTime? aNullableDateTime,
-    _i2.ByteData? aByteData,
-    _i2.ByteData? aNullableByteData,
-    Duration? aDuration,
-    Duration? aNullableDuration,
-    _i1.UuidValue? aUuid,
-    _i1.UuidValue? aNullableUuid,
-    _i3.SimpleData? anObject,
-    _i3.SimpleData? aNullableObject,
-    List<int>? anIntList,
-    List<int>? aNullableIntList,
-    List<int?>? aListWithNullableInts,
-    List<int?>? aNullableListWithNullableInts,
-    List<_i3.SimpleData>? anObjectList,
-    List<_i3.SimpleData>? aNullableObjectList,
-    List<_i3.SimpleData?>? aListWithNullableObjects,
-    List<_i3.SimpleData?>? aNullableListWithNullableObjects,
-    List<DateTime>? aDateTimeList,
-    List<DateTime>? aNullableDateTimeList,
-    List<DateTime?>? aListWithNullableDateTimes,
-    List<DateTime?>? aNullableListWithNullableDateTimes,
-    List<_i2.ByteData>? aByteDataList,
-    List<_i2.ByteData>? aNullableByteDataList,
-    List<_i2.ByteData?>? aListWithNullableByteDatas,
-    List<_i2.ByteData?>? aNullableListWithNullableByteDatas,
-    List<Duration>? aDurationList,
-    List<Duration>? aNullableDurationList,
-    List<Duration?>? aListWithNullableDurations,
-    List<Duration?>? aNullableListWithNullableDurations,
-    List<_i1.UuidValue>? aUuidList,
-    List<_i1.UuidValue>? aNullableUuidList,
-    List<_i1.UuidValue?>? aListWithNullableUuids,
-    List<_i1.UuidValue?>? aNullableListWithNullableUuids,
-    Map<String, int>? anIntMap,
-    Map<String, int>? aNullableIntMap,
-    Map<String, int?>? aMapWithNullableInts,
-    Map<String, int?>? aNullableMapWithNullableInts,
-  }) {
-    return Nullability(
-      anInt: anInt ?? this.anInt,
-      aNullableInt: aNullableInt ?? this.aNullableInt,
-      aDouble: aDouble ?? this.aDouble,
-      aNullableDouble: aNullableDouble ?? this.aNullableDouble,
-      aBool: aBool ?? this.aBool,
-      aNullableBool: aNullableBool ?? this.aNullableBool,
-      aString: aString ?? this.aString,
-      aNullableString: aNullableString ?? this.aNullableString,
-      aDateTime: aDateTime ?? this.aDateTime,
-      aNullableDateTime: aNullableDateTime ?? this.aNullableDateTime,
-      aByteData: aByteData ?? this.aByteData,
-      aNullableByteData: aNullableByteData ?? this.aNullableByteData,
-      aDuration: aDuration ?? this.aDuration,
-      aNullableDuration: aNullableDuration ?? this.aNullableDuration,
-      aUuid: aUuid ?? this.aUuid,
-      aNullableUuid: aNullableUuid ?? this.aNullableUuid,
-      anObject: anObject ?? this.anObject,
-      aNullableObject: aNullableObject ?? this.aNullableObject,
-      anIntList: anIntList ?? this.anIntList,
-      aNullableIntList: aNullableIntList ?? this.aNullableIntList,
-      aListWithNullableInts:
-          aListWithNullableInts ?? this.aListWithNullableInts,
-      aNullableListWithNullableInts:
-          aNullableListWithNullableInts ?? this.aNullableListWithNullableInts,
-      anObjectList: anObjectList ?? this.anObjectList,
-      aNullableObjectList: aNullableObjectList ?? this.aNullableObjectList,
-      aListWithNullableObjects:
-          aListWithNullableObjects ?? this.aListWithNullableObjects,
-      aNullableListWithNullableObjects: aNullableListWithNullableObjects ??
-          this.aNullableListWithNullableObjects,
-      aDateTimeList: aDateTimeList ?? this.aDateTimeList,
-      aNullableDateTimeList:
-          aNullableDateTimeList ?? this.aNullableDateTimeList,
-      aListWithNullableDateTimes:
-          aListWithNullableDateTimes ?? this.aListWithNullableDateTimes,
-      aNullableListWithNullableDateTimes: aNullableListWithNullableDateTimes ??
-          this.aNullableListWithNullableDateTimes,
-      aByteDataList: aByteDataList ?? this.aByteDataList,
-      aNullableByteDataList:
-          aNullableByteDataList ?? this.aNullableByteDataList,
-      aListWithNullableByteDatas:
-          aListWithNullableByteDatas ?? this.aListWithNullableByteDatas,
-      aNullableListWithNullableByteDatas: aNullableListWithNullableByteDatas ??
-          this.aNullableListWithNullableByteDatas,
-      aDurationList: aDurationList ?? this.aDurationList,
-      aNullableDurationList:
-          aNullableDurationList ?? this.aNullableDurationList,
-      aListWithNullableDurations:
-          aListWithNullableDurations ?? this.aListWithNullableDurations,
-      aNullableListWithNullableDurations: aNullableListWithNullableDurations ??
-          this.aNullableListWithNullableDurations,
-      aUuidList: aUuidList ?? this.aUuidList,
-      aNullableUuidList: aNullableUuidList ?? this.aNullableUuidList,
-      aListWithNullableUuids:
-          aListWithNullableUuids ?? this.aListWithNullableUuids,
-      aNullableListWithNullableUuids:
-          aNullableListWithNullableUuids ?? this.aNullableListWithNullableUuids,
-      anIntMap: anIntMap ?? this.anIntMap,
-      aNullableIntMap: aNullableIntMap ?? this.aNullableIntMap,
-      aMapWithNullableInts: aMapWithNullableInts ?? this.aMapWithNullableInts,
-      aNullableMapWithNullableInts:
-          aNullableMapWithNullableInts ?? this.aNullableMapWithNullableInts,
-    );
   }
 }

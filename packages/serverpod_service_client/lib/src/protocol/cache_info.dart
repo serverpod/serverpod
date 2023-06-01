@@ -7,7 +7,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:collection/collection.dart' as _i2;
 
 /// Provides high level information about a cache.
 class CacheInfo extends _i1.SerializableEntity {
@@ -32,13 +31,13 @@ class CacheInfo extends _i1.SerializableEntity {
   }
 
   /// Number of entries stored in the cache.
-  final int numEntries;
+  int numEntries;
 
   /// Maximum number of entries that can be stored in the cache.
-  final int maxEntries;
+  int maxEntries;
 
   /// Optional list of keys used by the cache.
-  final List<String>? keys;
+  List<String>? keys;
 
   @override
   Map<String, dynamic> toJson() {
@@ -47,44 +46,5 @@ class CacheInfo extends _i1.SerializableEntity {
       'maxEntries': maxEntries,
       'keys': keys,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is CacheInfo &&
-            (identical(
-                  other.numEntries,
-                  numEntries,
-                ) ||
-                other.numEntries == numEntries) &&
-            (identical(
-                  other.maxEntries,
-                  maxEntries,
-                ) ||
-                other.maxEntries == maxEntries) &&
-            const _i2.DeepCollectionEquality().equals(
-              keys,
-              other.keys,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        numEntries,
-        maxEntries,
-        const _i2.DeepCollectionEquality().hash(keys),
-      );
-
-  CacheInfo copyWith({
-    int? numEntries,
-    int? maxEntries,
-    List<String>? keys,
-  }) {
-    return CacheInfo(
-      numEntries: numEntries ?? this.numEntries,
-      maxEntries: maxEntries ?? this.maxEntries,
-      keys: keys ?? this.keys,
-    );
   }
 }

@@ -8,7 +8,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
-import 'package:collection/collection.dart' as _i3;
 
 /// The definition of a (desired) index in the database.
 class IndexDefinition extends _i1.SerializableEntity {
@@ -45,26 +44,26 @@ class IndexDefinition extends _i1.SerializableEntity {
   }
 
   /// The user defined name of the index
-  final String indexName;
+  String indexName;
 
   /// The tablespace this index is stored in.
   /// If null, the index is in the databases default tablespace.
-  final String? tableSpace;
+  String? tableSpace;
 
   /// The elements, that are a part of this index.
-  final List<_i2.IndexElementDefinition> elements;
+  List<_i2.IndexElementDefinition> elements;
 
   /// The type of the index
-  final String type;
+  String type;
 
   /// Whether the index is unique.
-  final bool isUnique;
+  bool isUnique;
 
   /// Whether this index is the one for the primary key.
-  final bool isPrimary;
+  bool isPrimary;
 
   /// The predicate of this partial index, if it is one.
-  final String? predicate;
+  String? predicate;
 
   @override
   Map<String, dynamic> toJson() {
@@ -77,76 +76,5 @@ class IndexDefinition extends _i1.SerializableEntity {
       'isPrimary': isPrimary,
       'predicate': predicate,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is IndexDefinition &&
-            (identical(
-                  other.indexName,
-                  indexName,
-                ) ||
-                other.indexName == indexName) &&
-            (identical(
-                  other.tableSpace,
-                  tableSpace,
-                ) ||
-                other.tableSpace == tableSpace) &&
-            (identical(
-                  other.type,
-                  type,
-                ) ||
-                other.type == type) &&
-            (identical(
-                  other.isUnique,
-                  isUnique,
-                ) ||
-                other.isUnique == isUnique) &&
-            (identical(
-                  other.isPrimary,
-                  isPrimary,
-                ) ||
-                other.isPrimary == isPrimary) &&
-            (identical(
-                  other.predicate,
-                  predicate,
-                ) ||
-                other.predicate == predicate) &&
-            const _i3.DeepCollectionEquality().equals(
-              elements,
-              other.elements,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        indexName,
-        tableSpace,
-        type,
-        isUnique,
-        isPrimary,
-        predicate,
-        const _i3.DeepCollectionEquality().hash(elements),
-      );
-
-  IndexDefinition copyWith({
-    String? indexName,
-    String? tableSpace,
-    List<_i2.IndexElementDefinition>? elements,
-    String? type,
-    bool? isUnique,
-    bool? isPrimary,
-    String? predicate,
-  }) {
-    return IndexDefinition(
-      indexName: indexName ?? this.indexName,
-      tableSpace: tableSpace ?? this.tableSpace,
-      elements: elements ?? this.elements,
-      type: type ?? this.type,
-      isUnique: isUnique ?? this.isUnique,
-      isPrimary: isPrimary ?? this.isPrimary,
-      predicate: predicate ?? this.predicate,
-    );
   }
 }

@@ -8,7 +8,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
-import 'package:collection/collection.dart' as _i3;
 
 class DatabaseMigrationWarning extends _i1.SerializableEntity {
   DatabaseMigrationWarning({
@@ -37,15 +36,15 @@ class DatabaseMigrationWarning extends _i1.SerializableEntity {
     );
   }
 
-  final _i2.DatabaseMigrationWarningType type;
+  _i2.DatabaseMigrationWarningType type;
 
-  final String message;
+  String message;
 
-  final String table;
+  String table;
 
-  final List<String> columns;
+  List<String> columns;
 
-  final bool destrucive;
+  bool destrucive;
 
   @override
   Map<String, dynamic> toJson() {
@@ -56,60 +55,5 @@ class DatabaseMigrationWarning extends _i1.SerializableEntity {
       'columns': columns,
       'destrucive': destrucive,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is DatabaseMigrationWarning &&
-            (identical(
-                  other.type,
-                  type,
-                ) ||
-                other.type == type) &&
-            (identical(
-                  other.message,
-                  message,
-                ) ||
-                other.message == message) &&
-            (identical(
-                  other.table,
-                  table,
-                ) ||
-                other.table == table) &&
-            (identical(
-                  other.destrucive,
-                  destrucive,
-                ) ||
-                other.destrucive == destrucive) &&
-            const _i3.DeepCollectionEquality().equals(
-              columns,
-              other.columns,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        type,
-        message,
-        table,
-        destrucive,
-        const _i3.DeepCollectionEquality().hash(columns),
-      );
-
-  DatabaseMigrationWarning copyWith({
-    _i2.DatabaseMigrationWarningType? type,
-    String? message,
-    String? table,
-    List<String>? columns,
-    bool? destrucive,
-  }) {
-    return DatabaseMigrationWarning(
-      type: type ?? this.type,
-      message: message ?? this.message,
-      table: table ?? this.table,
-      columns: columns ?? this.columns,
-      destrucive: destrucive ?? this.destrucive,
-    );
   }
 }

@@ -1,16 +1,17 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
-import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
-import '../../util/string_validators.dart';
-import '../../util/extensions.dart';
-import '../../util/yaml_docs.dart';
-import '../code_analysis_collector.dart';
+
 import '../../config/config.dart';
 import '../../generator/types.dart';
+import '../../util/extensions.dart';
+import '../../util/string_validators.dart';
+import '../../util/yaml_docs.dart';
+import '../code_analysis_collector.dart';
 import 'definitions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
@@ -156,7 +157,15 @@ class SerializableEntityAnalyzer {
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     if (!_containsOnlyValidKeys(
       documentContents,
-      {'class', 'table', 'serverOnly', 'fields', 'indexes', 'exception'},
+      {
+        'class',
+        'table',
+        'serverOnly',
+        'fields',
+        'indexes',
+        'exception',
+        'extra'
+      },
     )) {
       return null;
     }
@@ -196,6 +205,25 @@ class SerializableEntityAnalyzer {
         workingNode.span,
       ));
       return null;
+    }
+
+    // validate client extra
+    var extraFeature = ExtraFeature.none;
+
+    var extraNode = documentContents.nodes['extra'];
+
+    if (extraNode != null) {
+      var supportedValues = ExtraFeature.values.map((e) => e.name);
+      if (extraNode.value is! String &&
+          supportedValues.contains(extraNode.value)) {
+        collector.addError(SourceSpanException(
+          'The "extra" property must be value of '
+          '${ExtraFeature.values.map((e) => e.name).join(',')}',
+          extraNode.span,
+        ));
+      }
+
+      extraFeature = extraNode.value;
     }
 
     // Validate table name.
@@ -546,6 +574,7 @@ class SerializableEntityAnalyzer {
       documentation: classDocumentation,
       isException: type == exceptionKeyword,
       serverOnly: serverOnly,
+      extraFeature: extraFeature,
     );
   }
 

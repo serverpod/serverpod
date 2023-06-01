@@ -29,10 +29,10 @@ class IndexElementDefinition extends _i1.SerializableEntity {
   }
 
   /// The type of this index element.
-  final _i2.IndexElementDefinitionType type;
+  _i2.IndexElementDefinitionType type;
 
   /// Depending on the [type], this is either a column name or an expression.
-  final String definition;
+  String definition;
 
   @override
   Map<String, dynamic> toJson() {
@@ -40,37 +40,5 @@ class IndexElementDefinition extends _i1.SerializableEntity {
       'type': type,
       'definition': definition,
     };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is IndexElementDefinition &&
-            (identical(
-                  other.type,
-                  type,
-                ) ||
-                other.type == type) &&
-            (identical(
-                  other.definition,
-                  definition,
-                ) ||
-                other.definition == definition));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        type,
-        definition,
-      );
-
-  IndexElementDefinition copyWith({
-    _i2.IndexElementDefinitionType? type,
-    String? definition,
-  }) {
-    return IndexElementDefinition(
-      type: type ?? this.type,
-      definition: definition ?? this.definition,
-    );
   }
 }

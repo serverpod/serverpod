@@ -20,28 +20,10 @@ class NotServerOnlyClass extends _i1.SerializableEntity {
             serializationManager.deserialize<String>(jsonSerialization['foo']));
   }
 
-  final String foo;
+  String foo;
 
   @override
   Map<String, dynamic> toJson() {
     return {'foo': foo};
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is NotServerOnlyClass &&
-            (identical(
-                  other.foo,
-                  foo,
-                ) ||
-                other.foo == foo));
-  }
-
-  @override
-  int get hashCode => foo.hashCode;
-
-  NotServerOnlyClass copyWith({String? foo}) {
-    return NotServerOnlyClass(foo: foo ?? this.foo);
   }
 }

@@ -32,6 +32,7 @@ class SerializableEntityLibraryGenerator {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
+    var clientExtra = classDefinition.extraFeature;
 
     var library = Library(
       (library) {
@@ -74,8 +75,10 @@ class SerializableEntityLibraryGenerator {
             if (field.shouldIncludeField(serverCode) &&
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
-                f.modifier =
-                    serverCode ? FieldModifier.var$ : FieldModifier.final$;
+                if (!clientExtra.isNone && !serverCode) {
+                  f.modifier = FieldModifier.final$;
+                }
+
                 f.type = field.type.reference(serverCode,
                     subDirParts: classDefinition.subDirParts, config: config);
                 f
@@ -167,7 +170,7 @@ class SerializableEntityLibraryGenerator {
           ));
 
           // operator==, hashCode, copyWith
-          if (!serverCode) {
+          if (!serverCode && clientExtra.isBoth) {
             var primaryFields = fields
                 .where(
                   (e) =>
@@ -187,144 +190,178 @@ class SerializableEntityLibraryGenerator {
             var fieldsLength = primaryFields.length + collectionsFields.length;
 
             // operator==
-            classBuilder.methods.add(
-              Method(
-                (m) {
-                  m.name = 'operator==';
-                  m.returns = refer('bool');
-                  m.annotations.add(refer('override'));
-                  m.requiredParameters.add(
-                    Parameter(
-                      (paramBuilder) => paramBuilder
-                        ..name = 'other'
-                        ..type = refer('dynamic'),
-                    ),
-                  );
+            classBuilder.methods.add(Method((m) {
+              m.name = 'operator==';
+              m.returns = refer('bool');
+              m.annotations.add(refer('override'));
+              m.requiredParameters.add(
+                Parameter(
+                  (paramBuilder) => paramBuilder
+                    ..name = 'other'
+                    ..type = refer('dynamic'),
+                ),
+              );
 
-                  m.body = Block.of(
-                    [
-                      refer('identical')
-                          .call([refer('this, other')])
-                          .returned
-                          .code,
-                      const Code('||'),
-                      const Code('('),
-                      refer('other').isA(refer(className)).code,
-                      const Code('&&'),
-                      for (var e in primaryFields) ...[
-                        const Code('('),
-                        refer('identical')
-                            .call([refer('other').property(e), refer(e)])
-                            .or(refer('other').property(e).equalTo(refer(e)))
-                            .code,
-                        const Code(')'),
-                        if (e != primaryFields.last ||
-                            collectionsFields.isNotEmpty)
-                          const Code('&&'),
-                      ],
-                      for (var e in collectionsFields) ...[
-                        refer(
-                          'DeepCollectionEquality',
-                          'package:collection/collection.dart',
-                        )
-                            .constInstance([])
-                            .property('equals')
-                            .call([
-                              refer(e),
-                              refer('other').property(e),
-                            ])
-                            .code,
-                        if (e != collectionsFields.last) const Code('&&'),
-                      ],
-                      const Code(')'),
-                      const Code(';'),
-                    ],
-                  );
-                },
-              ),
-            );
+              m.body = Block.of([
+                refer('identical')
+                    .call([refer('this'), refer('other')])
+                    .returned
+                    .code,
+                const Code('||'),
+                const Code('('),
+                refer('other').isA(refer(className)).code,
+                const Code('&&'),
+                for (var e in primaryFields) ...[
+                  const Code('('),
+                  refer('identical')
+                      .call([refer('other').property(e), refer(e)])
+                      .or(refer('other').property(e).equalTo(refer(e)))
+                      .code,
+                  const Code(')'),
+                  if (e != primaryFields.last || collectionsFields.isNotEmpty)
+                    const Code('&&'),
+                ],
+                for (var e in collectionsFields) ...[
+                  refer(
+                    'DeepCollectionEquality',
+                    'package:collection/collection.dart',
+                  )
+                      .constInstance([])
+                      .property('equals')
+                      .call([
+                        refer(e),
+                        refer('other').property(e),
+                      ])
+                      .code,
+                  if (e != collectionsFields.last) const Code('&&'),
+                ],
+                const Code(')'),
+                const Code(';'),
+              ]);
+            }));
 
             // hashCode
-            classBuilder.methods.add(
-              Method(
-                (m) {
-                  m.annotations.add(refer('override'));
-                  m.name = 'hashCode';
-                  m.type = MethodType.getter;
-                  m.returns = refer('int');
-                  m.lambda = true;
+            classBuilder.methods.add(Method((m) {
+              m.annotations.add(refer('override'));
+              m.name = 'hashCode';
+              m.type = MethodType.getter;
+              m.returns = refer('int');
+              m.lambda = true;
 
-                  Expression deep(String name) {
-                    return refer(
-                      'DeepCollectionEquality',
-                      'package:collection/collection.dart',
-                    ).constInstance([]).property('hash').call([
-                          refer(name),
-                        ]);
-                  }
+              Expression deep(String name) {
+                return refer(
+                  'DeepCollectionEquality',
+                  'package:collection/collection.dart',
+                ).constInstance([]).property('hash').call([
+                      refer(name),
+                    ]);
+              }
 
-                  if (fieldsLength == 1) {
-                    m.body = collectionsFields.isNotEmpty
-                        ? deep(collectionsFields.first).code
-                        : refer(fields.first.name).property('hashCode').code;
-                  } else if (fieldsLength <= 19) {
-                    m.body = refer('Object').property('hash').call(
-                      [
-                        ...primaryFields.map((e) => refer(e)),
-                        ...collectionsFields.map(deep)
-                      ],
-                    ).code;
-                  } else {
-                    m.body = refer('Object').property('hashAll').call(
-                      [
-                        literalList([
-                          ...primaryFields.map((e) => refer(e)),
-                          ...collectionsFields.map(deep)
-                        ])
-                      ],
-                    ).code;
-                  }
-                },
-              ),
-            );
+              if (fieldsLength == 1) {
+                m.body = collectionsFields.isNotEmpty
+                    ? deep(collectionsFields.first).code
+                    : refer(fields.first.name).property('hashCode').code;
+              } else if (fieldsLength <= 19) {
+                m.body = refer('Object').property('hash').call(
+                  [
+                    ...primaryFields.map((e) => refer(e)),
+                    ...collectionsFields.map(deep)
+                  ],
+                ).code;
+              } else {
+                m.body = refer('Object').property('hashAll').call(
+                  [
+                    literalList([
+                      ...primaryFields.map((e) => refer(e)),
+                      ...collectionsFields.map(deep)
+                    ])
+                  ],
+                ).code;
+              }
+            }));
 
             // copyWith
-            classBuilder.methods.add(Method(
-              (m) {
-                m.returns = refer(className);
-                m.name = 'copyWith';
-                m.docs.add('');
+            library.body.add(
+              Class((classBuilder) {
+                classBuilder.name = '_Undefined';
+              }),
+            );
 
-                for (var field in fields) {
-                  if (field.shouldIncludeField(serverCode)) {
-                    m.optionalParameters.add(
-                      Parameter(
-                        (p) {
-                          p.named = true;
-                          p.name = field.name;
+            classBuilder.fields.add(Field((f) {
+              f.name = 'copyWith';
+              f.late = true;
+
+              f.assignment = const Code('_copyWith');
+              f.type = FunctionType((func) {
+                func.namedParameters.addAll({
+                  for (var field in fields)
+                    if (field.shouldIncludeField(serverCode))
+                      field.name: field.type.reference(
+                        serverCode,
+                        subDirParts: classDefinition.subDirParts,
+                        nullable: true,
+                        config: config,
+                      )
+                });
+              });
+            }));
+            // Simply copyWith cannot set null value
+            // see https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
+            classBuilder.methods.add(Method((m) {
+              m.returns = refer(className);
+              m.name = '_copyWith';
+              m.docs.addAll(['']);
+
+              for (var field in fields) {
+                if (field.shouldIncludeField(serverCode)) {
+                  m.optionalParameters.add(
+                    Parameter(
+                      (p) {
+                        p.named = true;
+                        p.name = field.name;
+
+                        if (field.type.nullable) {
+                          p.type = refer('Object?');
+                          p.defaultTo = const Code('_Undefined');
+                        } else {
                           p.type = field.type.reference(
                             serverCode,
                             subDirParts: classDefinition.subDirParts,
                             nullable: true,
                             config: config,
                           );
-                        },
-                      ),
-                    );
-                  }
+                        }
+                      },
+                    ),
+                  );
                 }
+              }
 
-                m.body = refer(className)
-                    .call([], {
-                      for (var field in fields)
-                        if (field.shouldIncludeField(serverCode))
-                          field.name:
-                              refer('${field.name} ?? this.${field.name}')
-                    })
-                    .returned
-                    .statement;
-              },
-            ));
+              m.body = refer(className)
+                  .call([], {
+                    for (var field in fields)
+                      if (field.shouldIncludeField(serverCode))
+                        field.name: field.type.nullable
+                            ? refer(field.name)
+                                .equalTo(refer('_Undefined'))
+                                .conditional(
+                                  refer('this').property(field.name),
+                                  refer(field.name).asA(
+                                    field.type.reference(
+                                      serverCode,
+                                      subDirParts: classDefinition.subDirParts,
+                                      nullable: field.type.nullable,
+                                      config: config,
+                                    ),
+                                  ),
+                                )
+                            : refer(field.name).ifNullThen(
+                                refer('this').property(field.name),
+                              )
+                  })
+                  .returned
+                  .statement;
+            }));
           }
 
           // Serialization for database and everything
