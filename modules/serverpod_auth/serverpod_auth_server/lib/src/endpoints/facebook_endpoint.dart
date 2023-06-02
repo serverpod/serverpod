@@ -163,6 +163,11 @@ class FacebookEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
+    } else if (userInfo.blocked) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.blocked,
+      );
     }
 
     // Store long-lived access token for future use
