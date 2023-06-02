@@ -101,6 +101,11 @@ class AppleEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
+    } else if (userInfo.blocked) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.blocked,
+      );
     }
 
     var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
