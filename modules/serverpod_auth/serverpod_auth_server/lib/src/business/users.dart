@@ -122,9 +122,8 @@ class Users {
     return userInfo;
   }
 
-  /// Marks a user as blocked so that they can't log in, and invalidates their
-  /// auth key so that they can't keep calling endpoints via their current
-  /// session.
+  /// Marks a user as blocked so that they can't log in, and invalidates the
+  /// cache for the user, and signs the user out.
   static Future<void> blockUser(Session session, int userId) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
@@ -132,9 +131,12 @@ class Users {
     } else if (userInfo.blocked) {
       throw 'userId $userId already blocked';
     }
+    // Mark user as blocked in database
     userInfo.blocked = true;
     await session.db.update(userInfo);
     await invalidateCacheForUser(session, userId);
+    // Sign out user
+    await session.auth.signOutUser(userId: userId);
   }
 
   /// Unblocks a user so that they can log in again.
