@@ -5,3 +5,4 @@ values:
   - userCreationDenied
   - internalError
   - tooManyFailedAttempts
+  - blocked
