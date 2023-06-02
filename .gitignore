@@ -26,6 +26,7 @@ pubspec.lock
 .flutter-plugins-dependencies
 .dart_tool
 google_client_secret.json
+facebook_app_secret.json
 firebase_service_account_key.json
 firebase_options.dart
 tests/temp
