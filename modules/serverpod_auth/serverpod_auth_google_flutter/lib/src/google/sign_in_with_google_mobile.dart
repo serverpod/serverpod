@@ -13,6 +13,9 @@ SignInWithGooglePlatform signInWithGooglePlatform = ({
     scopes: scopes,
     clientId: clientId,
     serverClientId: serverClientId,
+    // Required because of bug in googleapis.dart:
+    // https://github.com/google/googleapis.dart/issues/487
+    forceCodeForRefreshToken: true,
   );
 
   var result = await googleSignIn.signIn();
