@@ -1,0 +1,25 @@
+### All the types, that are possible for columns.
+### Contains all the values of [TypeDefinition.databaseType]
+enum: ColumnType
+values:
+  ### Dart type: [String]
+  - text
+  ### Dart type: [bool]
+  - boolean
+  ### Dart type: [int]
+  - integer
+  ### Dart type: [double]
+  - doublePrecision
+  ### Dart type: [DateTime]
+  - timestampWithoutTimeZone
+  ### Dart type: [ByteData]
+  - bytea
+  ### Dart type: [Duration]
+  - bigint
+  ### Dart type: [UuidValue]
+  - uuid
+  ### Esp. for serializable objects.
+  - json
+  ### Used for unknown types, that have never been
+  ### used by Serverpod.
+  - unknown

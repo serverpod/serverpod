@@ -42,7 +42,7 @@ class Types extends _i1.TableRow {
       aDuration: serializationManager
           .deserialize<Duration?>(jsonSerialization['aDuration']),
       aUuid: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
+          .deserialize<UuidValue?>(jsonSerialization['aUuid']),
     );
   }
 
@@ -62,7 +62,7 @@ class Types extends _i1.TableRow {
 
   Duration? aDuration;
 
-  _i1.UuidValue? aUuid;
+  UuidValue? aUuid;
 
   @override
   String get tableName => 'types';
@@ -282,7 +282,7 @@ class TypesTable extends _i1.Table {
 
   final aDuration = _i1.ColumnDuration('aDuration');
 
-  final aUuid = _i1.ColumnUuid('aUuid');
+  final aUuid = _i1.ColumnSerializable('aUuid');
 
   @override
   List<_i1.Column> get columns => [

@@ -1,13 +1,43 @@
 import 'package:flutter/foundation.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
+import 'google/sign_in_with_google.dart';
 
 /// Attempts to Sign in with Google. If successful, a [UserInfo] is returned.
 /// If the attempt is not a success, null is returned.
+///
+/// If [clientId] and [serverClientId] are not provided, the values are expected to
+/// be supplied via the json credentials file in your android and ios projects.
+///
+/// On the web, the [serverClientId] is mandatory and must be provided.
+///
+/// The ID's can be created at https://console.developers.google.com/apis/credentials
+///
+/// The redirect uri to web page that will handle the authentication. This page
+/// should send an event to the parent window with the server auth code.
+/// The event is expected to be a string with the server auth code.
+/// After the event is sent, the window can be closed safely.
+///
+/// Example web implementation:
+/// ```javascript
+///  function returnToWebClient() {
+///    const serverAuthCode = findParam('code');
+///    window.opener.postMessage(serverAuthCode, '*');
+///    window.close();
+///  }
+/// ```
+///
+/// Consider using the GoogleSignInRedirectPageWidget inside [serverpod_auth_server]
+/// to handle the the logic for you.
+/// ```dart
+/// // main.dart
+/// pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');
+/// ```
+/// Assuming the above route is added, the redirect uri would be:
+/// https://example.com/googlesignin
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
-  bool debug = false,
+  bool debug = false, //TODO: Remove this parameter on next breaking change.
   String? clientId,
   String? serverClientId,
   List<String> additionalScopes = const [],
@@ -21,59 +51,26 @@ Future<UserInfo?> signInWithGoogle(
 
   if (kDebugMode) print('serverpod_auth_google: GoogleSignIn');
 
-  var googleSignIn = GoogleSignIn(
-    scopes: scopes,
-    clientId: clientId,
-    serverClientId: serverClientId,
-  );
-
   try {
-    // Sign in with Google.
-    var result = await googleSignIn.signIn();
-    if (result == null) {
-      if (kDebugMode) {
-        print(
-          'serverpod_auth_google: GoogleSignIn.signIn() returned null. Aborting.',
-        );
-      }
-      return null;
-    }
-
-    // Get the server auth code.
-    // var auth = await result.authentication;
-
-    var serverAuthCode = result.serverAuthCode;
-    String? idToken;
-    if (serverAuthCode == null) {
-      if (kDebugMode) {
-        print(
-          'serverpod_auth_google: serverAuthCode is null. Trying auth.idToken.',
-        );
-      }
-      var auth = await result.authentication;
-      idToken = auth.idToken;
-    }
-
-    if (serverAuthCode == null && idToken == null) {
-      if (kDebugMode) {
-        print(
-          'serverpod_auth_google: Failed to get valid serverAuthCode or idToken. Aborting.',
-        );
-      }
-      return null;
-    }
+    var tokens = await signInWithGooglePlatform(
+      scopes: scopes,
+      clientId: clientId,
+      serverClientId: serverClientId,
+      redirectUri: redirectUri,
+    );
 
     // Authenticate with the Serverpod server.
     AuthenticationResponse serverResponse;
-    if (serverAuthCode != null) {
+    if (tokens.serverAuthCode != null) {
       // Prefer to authenticate with serverAuthCode
       serverResponse = await caller.google.authenticateWithServerAuthCode(
-        serverAuthCode,
+        tokens.serverAuthCode!,
         redirectUri.toString(),
       );
     } else {
       // Fall back on idToken
-      serverResponse = await caller.google.authenticateWithIdToken(idToken!);
+      serverResponse =
+          await caller.google.authenticateWithIdToken(tokens.idToken!);
     }
 
     if (!serverResponse.success) {
@@ -94,19 +91,12 @@ Future<UserInfo?> signInWithGoogle(
       serverResponse.key!,
     );
 
-    // Authentication with server is complete, we can sign out from Google locally
-    if (kDebugMode) print('serverpod_auth_google: Signing out from google');
-    await googleSignIn.signOut();
-
-    if (kDebugMode) await googleSignIn.disconnect();
-
     if (kDebugMode) {
       print(
         'serverpod_auth_google: Authentication was successful. Saved credentials to SessionManager',
       );
     }
 
-    // Return the user info.
     return serverResponse.userInfo;
   } catch (e, stackTrace) {
     if (kDebugMode) print('serverpod_auth_google: $e');

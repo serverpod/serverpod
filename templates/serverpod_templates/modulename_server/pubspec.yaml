@@ -2,11 +2,11 @@ name: modulename_server
 description: Starting point for a Serverpod module.
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
   serverpod: #^VERSION
     path: ../../../packages/serverpod
 
 dev_dependencies:
-  lints: ^1.0.1
+  lints: ^2.0.1

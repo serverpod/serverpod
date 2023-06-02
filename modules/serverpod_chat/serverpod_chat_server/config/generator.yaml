@@ -1,4 +1,5 @@
 type: module
+nickname: chat
 
 client_package_path: ../serverpod_chat_client
 

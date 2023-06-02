@@ -22,7 +22,10 @@ test -d $TEMPLATE_DIR
 
 cd tools/serverpod_cli
 dart pub global activate -s path .
-cd ../..
+
+cd $SERVERPOD_HOME
+
+util/pub_get_all
 
 util/generate_all
 

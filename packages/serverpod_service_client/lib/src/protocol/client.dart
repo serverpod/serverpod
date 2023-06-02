@@ -17,8 +17,10 @@ import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
 import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
-import 'dart:io' as _i8;
-import 'protocol.dart' as _i9;
+import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
+    as _i8;
+import 'dart:io' as _i9;
+import 'protocol.dart' as _i10;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -122,16 +124,69 @@ class _EndpointInsights extends _i1.EndpointRef {
         'hotReload',
         {},
       );
+
+  /// Returns the target structure of the database defined in the
+  /// yaml files of the protocol folder.
+  /// This includes the developers project, all used modules
+  /// and the main serverpod package.
+  ///
+  /// This information can be used for database migration.
+  ///
+  /// See also:
+  /// - [getLiveDatabaseDefinition]
+  _i2.Future<_i8.DatabaseDefinition> getTargetDatabaseDefinition() =>
+      caller.callServerEndpoint<_i8.DatabaseDefinition>(
+        'insights',
+        'getTargetDatabaseDefinition',
+        {},
+      );
+
+  /// Returns the structure of the live database by
+  /// extracting it using SQL.
+  ///
+  /// This information can be used for database migration.
+  ///
+  /// See also:
+  /// - [getTargetDatabaseDefinition]
+  _i2.Future<_i8.DatabaseDefinition> getLiveDatabaseDefinition() =>
+      caller.callServerEndpoint<_i8.DatabaseDefinition>(
+        'insights',
+        'getLiveDatabaseDefinition',
+        {},
+      );
+
+  /// Exports raw data serialized in JSON from the database.
+  _i2.Future<String> fetchDatabaseBulkData({
+    required String table,
+    required int startingId,
+    required int limit,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'insights',
+        'fetchDatabaseBulkData',
+        {
+          'table': table,
+          'startingId': startingId,
+          'limit': limit,
+        },
+      );
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  _i2.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
+        'insights',
+        'executeSql',
+        {'sql': sql},
+      );
 }
 
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i8.SecurityContext? context,
+    _i9.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i9.Protocol(),
+          _i10.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {

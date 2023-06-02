@@ -17,8 +17,8 @@ class Database {
 
   /// The [DatabaseConnection] currently used to access the database.
   Future<DatabaseConnection> get databaseConnection async {
-    if (_databaseConnection != null) return _databaseConnection!;
-    return DatabaseConnection(session.server.databaseConfig);
+    _databaseConnection ??= DatabaseConnection(session.server.databaseConfig);
+    return _databaseConnection!;
   }
 
   /// Creates a new [Database] object. Typically, this is done automatically
@@ -226,6 +226,23 @@ class Database {
     var conn = await databaseConnection;
 
     return conn.query(
+      query,
+      session: session,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
+  /// Executes a single SQL query. Returns the number of rows that were affected
+  /// by the query.
+  Future<int> execute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    var conn = await databaseConnection;
+
+    return conn.execute(
       query,
       session: session,
       timeoutInSeconds: timeoutInSeconds,

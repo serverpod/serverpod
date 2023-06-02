@@ -9,7 +9,7 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 
 dependencies:
@@ -18,9 +18,9 @@ dependencies:
   amazon_cognito_identity_dart_2: ^1.0.3
   http: ^0.13.5
   built_collection: ^5.1.1
-  built_value: ^8.4.1
+  built_value: ^8.4.4
   path: ^1.8.2
-  xml2json: ^5.3.1
+  xml2json: ^5.3.6
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1

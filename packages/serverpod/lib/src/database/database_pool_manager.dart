@@ -44,6 +44,8 @@ class DatabasePoolManager {
         database: config.name,
         username: config.user,
         password: config.password,
+        requireSsl: config.requireSsl,
+        isUnixSocket: config.isUnixSocket,
       ),
       settings: poolSettings,
     );
