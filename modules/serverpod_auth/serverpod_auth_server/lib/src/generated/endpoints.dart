@@ -10,13 +10,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/admin_endpoint.dart' as _i2;
 import '../endpoints/apple_endpoint.dart' as _i3;
 import '../endpoints/email_endpoint.dart' as _i4;
-import '../endpoints/firebase_endpoint.dart' as _i5;
-import '../endpoints/google_endpoint.dart' as _i6;
-import '../endpoints/status_endpoint.dart' as _i7;
-import '../endpoints/user_endpoint.dart' as _i8;
+import '../endpoints/facebook_endpoint.dart' as _i5;
+import '../endpoints/firebase_endpoint.dart' as _i6;
+import '../endpoints/google_endpoint.dart' as _i7;
+import '../endpoints/status_endpoint.dart' as _i8;
+import '../endpoints/user_endpoint.dart' as _i9;
 import 'package:serverpod_auth_server/src/generated/apple_auth_info.dart'
-    as _i9;
-import 'dart:typed_data' as _i10;
+    as _i10;
+import 'dart:typed_data' as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -40,25 +41,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'email',
           'serverpod_auth',
         ),
-      'firebase': _i5.FirebaseEndpoint()
+      'facebook': _i5.FacebookEndpoint()
+        ..initialize(
+          server,
+          'facebook',
+          'serverpod_auth',
+        ),
+      'firebase': _i6.FirebaseEndpoint()
         ..initialize(
           server,
           'firebase',
           'serverpod_auth',
         ),
-      'google': _i6.GoogleEndpoint()
+      'google': _i7.GoogleEndpoint()
         ..initialize(
           server,
           'google',
           'serverpod_auth',
         ),
-      'status': _i7.StatusEndpoint()
+      'status': _i8.StatusEndpoint()
         ..initialize(
           server,
           'status',
           'serverpod_auth',
         ),
-      'user': _i8.UserEndpoint()
+      'user': _i9.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -98,7 +105,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'authInfo': _i1.ParameterDescription(
               name: 'authInfo',
-              type: _i1.getType<_i9.AppleAuthInfo>(),
+              type: _i1.getType<_i10.AppleAuthInfo>(),
               nullable: false,
             )
           },
@@ -282,6 +289,37 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['facebook'] = _i1.EndpointConnector(
+      name: 'facebook',
+      endpoint: endpoints['facebook']!,
+      methodConnectors: {
+        'authenticateWithAccessToken': _i1.MethodConnector(
+          name: 'authenticateWithAccessToken',
+          params: {
+            'userAccessToken': _i1.ParameterDescription(
+              name: 'userAccessToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'redirectUri': _i1.ParameterDescription(
+              name: 'redirectUri',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['facebook'] as _i5.FacebookEndpoint)
+                  .authenticateWithAccessToken(
+            session,
+            params['userAccessToken'],
+            params['redirectUri'],
+          ),
+        )
+      },
+    );
     connectors['firebase'] = _i1.EndpointConnector(
       name: 'firebase',
       endpoint: endpoints['firebase']!,
@@ -299,7 +337,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['firebase'] as _i5.FirebaseEndpoint).authenticate(
+              (endpoints['firebase'] as _i6.FirebaseEndpoint).authenticate(
             session,
             params['idToken'],
           ),
@@ -328,7 +366,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['google'] as _i6.GoogleEndpoint)
+              (endpoints['google'] as _i7.GoogleEndpoint)
                   .authenticateWithServerAuthCode(
             session,
             params['authenticationCode'],
@@ -348,7 +386,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['google'] as _i6.GoogleEndpoint)
+              (endpoints['google'] as _i7.GoogleEndpoint)
                   .authenticateWithIdToken(
             session,
             params['idToken'],
@@ -367,7 +405,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).isSignedIn(session),
+              (endpoints['status'] as _i8.StatusEndpoint).isSignedIn(session),
         ),
         'signOut': _i1.MethodConnector(
           name: 'signOut',
@@ -376,7 +414,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).signOut(session),
+              (endpoints['status'] as _i8.StatusEndpoint).signOut(session),
         ),
         'getUserInfo': _i1.MethodConnector(
           name: 'getUserInfo',
@@ -385,7 +423,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).getUserInfo(session),
+              (endpoints['status'] as _i8.StatusEndpoint).getUserInfo(session),
         ),
         'getUserSettingsConfig': _i1.MethodConnector(
           name: 'getUserSettingsConfig',
@@ -394,7 +432,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint)
+              (endpoints['status'] as _i8.StatusEndpoint)
                   .getUserSettingsConfig(session),
         ),
       },
@@ -410,14 +448,14 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).removeUserImage(session),
+              (endpoints['user'] as _i9.UserEndpoint).removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
           name: 'setUserImage',
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i10.ByteData>(),
+              type: _i1.getType<_i11.ByteData>(),
               nullable: false,
             )
           },
@@ -425,7 +463,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).setUserImage(
+              (endpoints['user'] as _i9.UserEndpoint).setUserImage(
             session,
             params['image'],
           ),
@@ -443,7 +481,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).changeUserName(
+              (endpoints['user'] as _i9.UserEndpoint).changeUserName(
             session,
             params['userName'],
           ),

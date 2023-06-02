@@ -69,6 +69,24 @@ CREATE UNIQUE INDEX serverpod_email_reset_verification_idx ON "serverpod_email_r
 
 
 --
+-- Class FacebookLongLivedToken as table serverpod_facebook_long_lived_token
+--
+
+CREATE TABLE "serverpod_facebook_long_lived_token" (
+  "id" serial,
+  "userId" integer NOT NULL,
+  "fbProfileId" text NOT NULL,
+  "token" text NOT NULL,
+  "expiresAt" timestamp without time zone NOT NULL
+);
+
+ALTER TABLE ONLY "serverpod_facebook_long_lived_token"
+  ADD CONSTRAINT serverpod_facebook_long_lived_token_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_facebook_long_lived_token_idx ON "serverpod_facebook_long_lived_token" USING btree ("userId");
+
+
+--
 -- Class GoogleRefreshToken as table serverpod_google_refresh_token
 --
 
