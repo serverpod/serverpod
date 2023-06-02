@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -48,35 +49,55 @@ extension HttpRequestExtensions on HttpRequest {
       return utf8.decodeStream(this);
     }
 
-    var data = <int>[];
-    await for (var chunk in this) {
-      if (data.length + chunk.length > maxSize) {
-        throw MaximumSizeExceeded(maxSize);
-      }
+    var totalRead = 0;
 
-      data.addAll(chunk);
-    }
-
-    return utf8.decode(data);
+    return utf8.decodeStream(
+      transform(
+        StreamTransformer<Uint8List, Uint8List>.fromHandlers(
+          handleData: (data, sink) {
+            totalRead += data.length;
+            totalRead > maxSize
+                ? sink.addError(MaximumSizeExceeded(maxSize))
+                : sink.add(data);
+          },
+        ),
+      ),
+    );
   }
 
   /// Reads the body of an HTTP request and returns it as a Uint8List.
   /// If the request's content length exceeds the [maxSize], an exception
   /// is thrown.
   Future<Uint8List> readBytes({required int maxSize}) async {
-    if (contentLength != -1 && contentLength > maxSize) {
-      throw MaximumSizeExceeded(maxSize);
-    }
+    // Read all data from stream
+    Future<Uint8List> readStream(Stream<Uint8List> stream) async => stream
+        .fold(
+          BytesBuilder(),
+          (BytesBuilder buffer, Uint8List data) => buffer..add(data),
+        )
+        .then((BytesBuilder buffer) => buffer.toBytes());
 
-    var result = BytesBuilder();
-    await for (var chunk in this) {
-      if (result.length + chunk.length > maxSize) {
+    if (contentLength != -1) {
+      if (contentLength > maxSize) {
         throw MaximumSizeExceeded(maxSize);
       }
 
-      result.add(chunk);
+      return readStream(this);
     }
 
-    return result.toBytes();
+    var totalRead = 0;
+
+    return readStream(
+      transform(
+        StreamTransformer<Uint8List, Uint8List>.fromHandlers(
+          handleData: (data, sink) {
+            totalRead += data.length;
+            totalRead > maxSize
+                ? sink.addError(MaximumSizeExceeded(maxSize))
+                : sink.add(data);
+          },
+        ),
+      ),
+    );
   }
 }
