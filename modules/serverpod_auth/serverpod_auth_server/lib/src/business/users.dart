@@ -1,3 +1,4 @@
+import 'package:googleapis/oauth2/v2.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 
@@ -121,6 +122,33 @@ class Users {
 
     await invalidateCacheForUser(session, userId);
     return userInfo;
+  }
+
+  /// Marks a user as blocked so that they can't log in, and invalidates their
+  /// auth key so that they can't keep calling endpoints via their current
+  /// session.
+  static Future<void> blockUser(Session session, int userId) async {
+    var userInfo = await findUserByUserId(session, userId);
+    if (userInfo == null) {
+      throw 'userId $userId not found';
+    } else if (userInfo.blocked) {
+      throw 'userId $userId already blocked';
+    }
+    userInfo.blocked = true;
+    await session.db.update(userInfo);
+    await invalidateCacheForUser(session, userId);
+  }
+
+  /// Unblocks a user so that they can log in again.
+  static Future<void> unblockUser(Session session, int userId) async {
+    var userInfo = await findUserByUserId(session, userId);
+    if (userInfo == null) {
+      throw 'userId $userId not found';
+    } else if (!userInfo.blocked) {
+      throw 'userId $userId already unblocked';
+    }
+    userInfo.blocked = false;
+    await session.db.update(userInfo);
   }
 
   /// Invalidates the cache for a user and makes sure the next time a user info
