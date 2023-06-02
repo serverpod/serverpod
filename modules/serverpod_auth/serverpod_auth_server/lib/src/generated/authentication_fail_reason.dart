@@ -15,7 +15,8 @@ enum AuthenticationFailReason with _i1.SerializableEntity {
   invalidCredentials,
   userCreationDenied,
   internalError,
-  tooManyFailedAttempts;
+  tooManyFailedAttempts,
+  blocked;
 
   static AuthenticationFailReason? fromJson(int index) {
     switch (index) {
@@ -27,6 +28,8 @@ enum AuthenticationFailReason with _i1.SerializableEntity {
         return internalError;
       case 3:
         return tooManyFailedAttempts;
+      case 4:
+        return blocked;
       default:
         return null;
     }
