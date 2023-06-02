@@ -57,7 +57,6 @@ Future<UserInfo?> signInWithGoogle(
       clientId: clientId,
       serverClientId: serverClientId,
       redirectUri: redirectUri,
-      forceCodeForRefreshToken: true,
     );
 
     // Authenticate with the Serverpod server.
