@@ -10,6 +10,8 @@ email:
   - resetPassword:
   - createAccountRequest:
   - createAccount:
+facebook:
+  - authenticateWithAccessToken:
 firebase:
   - authenticate:
 google:

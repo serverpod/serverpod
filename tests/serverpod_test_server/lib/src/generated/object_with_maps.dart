@@ -46,8 +46,8 @@ class ObjectWithMaps extends _i1.SerializableEntity {
           jsonSerialization['byteDataMap']),
       durationMap: serializationManager
           .deserialize<Map<String, Duration>>(jsonSerialization['durationMap']),
-      uuidMap: serializationManager.deserialize<Map<String, _i1.UuidValue>>(
-          jsonSerialization['uuidMap']),
+      uuidMap: serializationManager
+          .deserialize<Map<String, UuidValue>>(jsonSerialization['uuidMap']),
       nullableDataMap:
           serializationManager.deserialize<Map<String, _i2.SimpleData?>>(
               jsonSerialization['nullableDataMap']),
@@ -65,7 +65,7 @@ class ObjectWithMaps extends _i1.SerializableEntity {
           serializationManager.deserialize<Map<String, Duration?>>(
               jsonSerialization['nullableDurationMap']),
       nullableUuidMap:
-          serializationManager.deserialize<Map<String, _i1.UuidValue?>>(
+          serializationManager.deserialize<Map<String, UuidValue?>>(
               jsonSerialization['nullableUuidMap']),
       intIntMap: serializationManager
           .deserialize<Map<int, int>>(jsonSerialization['intIntMap']),
@@ -84,7 +84,7 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<String, Duration> durationMap;
 
-  Map<String, _i1.UuidValue> uuidMap;
+  Map<String, UuidValue> uuidMap;
 
   Map<String, _i2.SimpleData?> nullableDataMap;
 
@@ -98,7 +98,7 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<String, Duration?> nullableDurationMap;
 
-  Map<String, _i1.UuidValue?> nullableUuidMap;
+  Map<String, UuidValue?> nullableUuidMap;
 
   Map<int, int> intIntMap;
 

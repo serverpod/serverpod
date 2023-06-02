@@ -22,17 +22,17 @@ class ObjectWithUuid extends _i1.TableRow {
     return ObjectWithUuid(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       uuid: serializationManager
-          .deserialize<_i1.UuidValue>(jsonSerialization['uuid']),
+          .deserialize<UuidValue>(jsonSerialization['uuid']),
       uuidNullable: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['uuidNullable']),
+          .deserialize<UuidValue?>(jsonSerialization['uuidNullable']),
     );
   }
 
   static final t = ObjectWithUuidTable();
 
-  _i1.UuidValue uuid;
+  UuidValue uuid;
 
-  _i1.UuidValue? uuidNullable;
+  UuidValue? uuidNullable;
 
   @override
   String get tableName => 'object_with_uuid';
@@ -203,9 +203,9 @@ class ObjectWithUuidTable extends _i1.Table {
   /// the id will be null.
   final id = _i1.ColumnInt('id');
 
-  final uuid = _i1.ColumnUuid('uuid');
+  final uuid = _i1.ColumnSerializable('uuid');
 
-  final uuidNullable = _i1.ColumnUuid('uuidNullable');
+  final uuidNullable = _i1.ColumnSerializable('uuidNullable');
 
   @override
   List<_i1.Column> get columns => [

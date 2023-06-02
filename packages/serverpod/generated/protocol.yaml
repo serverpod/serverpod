@@ -11,3 +11,5 @@ insights:
   - hotReload:
   - getTargetDatabaseDefinition:
   - getLiveDatabaseDefinition:
+  - fetchDatabaseBulkData:
+  - executeSql:

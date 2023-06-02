@@ -92,9 +92,9 @@ class Nullability extends _i1.SerializableEntity {
       aNullableDuration: serializationManager
           .deserialize<Duration?>(jsonSerialization['aNullableDuration']),
       aUuid: serializationManager
-          .deserialize<_i1.UuidValue>(jsonSerialization['aUuid']),
+          .deserialize<UuidValue>(jsonSerialization['aUuid']),
       aNullableUuid: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['aNullableUuid']),
+          .deserialize<UuidValue?>(jsonSerialization['aNullableUuid']),
       anObject: serializationManager
           .deserialize<_i3.SimpleData>(jsonSerialization['anObject']),
       aNullableObject: serializationManager
@@ -151,14 +151,14 @@ class Nullability extends _i1.SerializableEntity {
           serializationManager.deserialize<List<Duration?>?>(
               jsonSerialization['aNullableListWithNullableDurations']),
       aUuidList: serializationManager
-          .deserialize<List<_i1.UuidValue>>(jsonSerialization['aUuidList']),
-      aNullableUuidList: serializationManager.deserialize<List<_i1.UuidValue>?>(
+          .deserialize<List<UuidValue>>(jsonSerialization['aUuidList']),
+      aNullableUuidList: serializationManager.deserialize<List<UuidValue>?>(
           jsonSerialization['aNullableUuidList']),
       aListWithNullableUuids:
-          serializationManager.deserialize<List<_i1.UuidValue?>>(
+          serializationManager.deserialize<List<UuidValue?>>(
               jsonSerialization['aListWithNullableUuids']),
       aNullableListWithNullableUuids:
-          serializationManager.deserialize<List<_i1.UuidValue?>?>(
+          serializationManager.deserialize<List<UuidValue?>?>(
               jsonSerialization['aNullableListWithNullableUuids']),
       anIntMap: serializationManager
           .deserialize<Map<String, int>>(jsonSerialization['anIntMap']),
@@ -200,9 +200,9 @@ class Nullability extends _i1.SerializableEntity {
 
   Duration? aNullableDuration;
 
-  _i1.UuidValue aUuid;
+  UuidValue aUuid;
 
-  _i1.UuidValue? aNullableUuid;
+  UuidValue? aNullableUuid;
 
   _i3.SimpleData anObject;
 
@@ -248,13 +248,13 @@ class Nullability extends _i1.SerializableEntity {
 
   List<Duration?>? aNullableListWithNullableDurations;
 
-  List<_i1.UuidValue> aUuidList;
+  List<UuidValue> aUuidList;
 
-  List<_i1.UuidValue>? aNullableUuidList;
+  List<UuidValue>? aNullableUuidList;
 
-  List<_i1.UuidValue?> aListWithNullableUuids;
+  List<UuidValue?> aListWithNullableUuids;
 
-  List<_i1.UuidValue?>? aNullableListWithNullableUuids;
+  List<UuidValue?>? aNullableListWithNullableUuids;
 
   Map<String, int> anIntMap;
 
