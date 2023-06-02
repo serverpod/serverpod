@@ -1,4 +1,3 @@
-import 'package:googleapis/oauth2/v2.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 
@@ -135,7 +134,7 @@ class Users {
     }
     // Mark user as blocked in database
     userInfo.blocked = true;
-    await session.db.update(userInfo);
+    await session.dbNext.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
     await session.auth.signOutUser(userId: userId);
