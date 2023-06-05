@@ -8,15 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
 
 /// Information about a server method.
-class MethodInfo extends _i1.TableRow {
-  MethodInfo({
+abstract class MethodInfo extends _i1.TableRow {
+  const MethodInfo._();
+
+  const factory MethodInfo({
     int? id,
-    required this.endpoint,
-    required this.method,
-  }) : super(id);
+    required String endpoint,
+    required String method,
+  }) = _MethodInfo;
 
   factory MethodInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,74 +33,15 @@ class MethodInfo extends _i1.TableRow {
     );
   }
 
-  static var t = MethodInfoTable();
+  static const t = MethodInfoTable();
 
-  /// The endpoint of this method.
-  final String endpoint;
-
-  /// The name of this method.
-  final String method;
-
-  late Function({
+  MethodInfo copyWith({
     int? id,
     String? endpoint,
     String? method,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_method';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'endpoint': endpoint,
-      'method': method,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is MethodInfo &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.endpoint,
-                  endpoint,
-                ) ||
-                other.endpoint == endpoint) &&
-            (identical(
-                  other.method,
-                  method,
-                ) ||
-                other.method == method));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        endpoint,
-        method,
-      );
-
-  MethodInfo _copyWith({
-    Object? id = _Undefined,
-    String? endpoint,
-    String? method,
-  }) {
-    return MethodInfo(
-      id: id == _Undefined ? this.id : (id as int?),
-      endpoint: endpoint ?? this.endpoint,
-      method: method ?? this.method,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -215,23 +158,101 @@ class MethodInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The endpoint of this method.
+  String get endpoint;
+
+  /// The name of this method.
+  String get method;
 }
 
-typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
+class _Undefined {}
+
+/// Information about a server method.
+class _MethodInfo extends MethodInfo {
+  const _MethodInfo({
+    int? id,
+    required this.endpoint,
+    required this.method,
+  }) : super._();
+
+  /// The endpoint of this method.
+  @override
+  final String endpoint;
+
+  /// The name of this method.
+  @override
+  final String method;
+
+  @override
+  String get tableName => 'serverpod_method';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'endpoint': endpoint,
+      'method': method,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is MethodInfo &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        endpoint,
+        method,
+      );
+
+  @override
+  MethodInfo copyWith({
+    Object? id = _Undefined,
+    String? endpoint,
+    String? method,
+  }) {
+    return MethodInfo(
+      id: id == _Undefined ? this.id : (id as int?),
+      endpoint: endpoint ?? this.endpoint,
+      method: method ?? this.method,
+    );
+  }
+}
 
 class MethodInfoTable extends _i1.Table {
-  MethodInfoTable() : super(tableName: 'serverpod_method');
+  const MethodInfoTable() : super(tableName: 'serverpod_method');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The endpoint of this method.
-  final endpoint = _i1.ColumnString('endpoint');
+  final endpoint = const _i1.ColumnString('endpoint');
 
   /// The name of this method.
-  final method = _i1.ColumnString('method');
+  final method = const _i1.ColumnString('method');
 
   @override
   List<_i1.Column> get columns => [
@@ -242,4 +263,4 @@ class MethodInfoTable extends _i1.Table {
 }
 
 @Deprecated('Use MethodInfoTable.t instead.')
-MethodInfoTable tMethodInfo = MethodInfoTable();
+MethodInfoTable tMethodInfo = const MethodInfoTable();

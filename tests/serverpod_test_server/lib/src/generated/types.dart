@@ -9,20 +9,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class _Undefined {}
+typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
-class Types extends _i1.TableRow {
-  Types({
+abstract class Types extends _i1.TableRow {
+  const Types._();
+
+  const factory Types({
     int? id,
-    this.anInt,
-    this.aBool,
-    this.aDouble,
-    this.aDateTime,
-    this.aString,
-    this.aByteData,
-    this.aDuration,
-    this.aUuid,
-  }) : super(id);
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  }) = _Types;
 
   factory Types.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -48,25 +50,9 @@ class Types extends _i1.TableRow {
     );
   }
 
-  static var t = TypesTable();
+  static const t = TypesTable();
 
-  final int? anInt;
-
-  final bool? aBool;
-
-  final double? aDouble;
-
-  final DateTime? aDateTime;
-
-  final String? aString;
-
-  final _i2.ByteData? aByteData;
-
-  final Duration? aDuration;
-
-  final _i1.UuidValue? aUuid;
-
-  late Function({
+  Types copyWith({
     int? id,
     int? anInt,
     bool? aBool,
@@ -76,120 +62,9 @@ class Types extends _i1.TableRow {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'types';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'anInt': anInt,
-      'aBool': aBool,
-      'aDouble': aDouble,
-      'aDateTime': aDateTime,
-      'aString': aString,
-      'aByteData': aByteData,
-      'aDuration': aDuration,
-      'aUuid': aUuid,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is Types &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.anInt,
-                  anInt,
-                ) ||
-                other.anInt == anInt) &&
-            (identical(
-                  other.aBool,
-                  aBool,
-                ) ||
-                other.aBool == aBool) &&
-            (identical(
-                  other.aDouble,
-                  aDouble,
-                ) ||
-                other.aDouble == aDouble) &&
-            (identical(
-                  other.aDateTime,
-                  aDateTime,
-                ) ||
-                other.aDateTime == aDateTime) &&
-            (identical(
-                  other.aString,
-                  aString,
-                ) ||
-                other.aString == aString) &&
-            (identical(
-                  other.aByteData,
-                  aByteData,
-                ) ||
-                other.aByteData == aByteData) &&
-            (identical(
-                  other.aDuration,
-                  aDuration,
-                ) ||
-                other.aDuration == aDuration) &&
-            (identical(
-                  other.aUuid,
-                  aUuid,
-                ) ||
-                other.aUuid == aUuid));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        anInt,
-        aBool,
-        aDouble,
-        aDateTime,
-        aString,
-        aByteData,
-        aDuration,
-        aUuid,
-      );
-
-  Types _copyWith({
-    Object? id = _Undefined,
-    Object? anInt = _Undefined,
-    Object? aBool = _Undefined,
-    Object? aDouble = _Undefined,
-    Object? aDateTime = _Undefined,
-    Object? aString = _Undefined,
-    Object? aByteData = _Undefined,
-    Object? aDuration = _Undefined,
-    Object? aUuid = _Undefined,
-  }) {
-    return Types(
-      id: id == _Undefined ? this.id : (id as int?),
-      anInt: anInt == _Undefined ? this.anInt : (anInt as int?),
-      aBool: aBool == _Undefined ? this.aBool : (aBool as bool?),
-      aDouble: aDouble == _Undefined ? this.aDouble : (aDouble as double?),
-      aDateTime:
-          aDateTime == _Undefined ? this.aDateTime : (aDateTime as DateTime?),
-      aString: aString == _Undefined ? this.aString : (aString as String?),
-      aByteData: aByteData == _Undefined
-          ? this.aByteData
-          : (aByteData as _i2.ByteData?),
-      aDuration:
-          aDuration == _Undefined ? this.aDuration : (aDuration as Duration?),
-      aUuid: aUuid == _Undefined ? this.aUuid : (aUuid as _i1.UuidValue?),
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -312,33 +187,193 @@ class Types extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  int? get anInt;
+  bool? get aBool;
+  double? get aDouble;
+  DateTime? get aDateTime;
+  String? get aString;
+  _i2.ByteData? get aByteData;
+  Duration? get aDuration;
+  _i1.UuidValue? get aUuid;
 }
 
-typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
+class _Undefined {}
+
+class _Types extends Types {
+  const _Types({
+    int? id,
+    this.anInt,
+    this.aBool,
+    this.aDouble,
+    this.aDateTime,
+    this.aString,
+    this.aByteData,
+    this.aDuration,
+    this.aUuid,
+  }) : super._();
+
+  @override
+  final int? anInt;
+
+  @override
+  final bool? aBool;
+
+  @override
+  final double? aDouble;
+
+  @override
+  final DateTime? aDateTime;
+
+  @override
+  final String? aString;
+
+  @override
+  final _i2.ByteData? aByteData;
+
+  @override
+  final Duration? aDuration;
+
+  @override
+  final _i1.UuidValue? aUuid;
+
+  @override
+  String get tableName => 'types';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'anInt': anInt,
+      'aBool': aBool,
+      'aDouble': aDouble,
+      'aDateTime': aDateTime,
+      'aString': aString,
+      'aByteData': aByteData,
+      'aDuration': aDuration,
+      'aUuid': aUuid,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is Types &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.anInt,
+                  anInt,
+                ) ||
+                other.anInt == anInt) &&
+            (identical(
+                  other.aBool,
+                  aBool,
+                ) ||
+                other.aBool == aBool) &&
+            (identical(
+                  other.aDouble,
+                  aDouble,
+                ) ||
+                other.aDouble == aDouble) &&
+            (identical(
+                  other.aDateTime,
+                  aDateTime,
+                ) ||
+                other.aDateTime == aDateTime) &&
+            (identical(
+                  other.aString,
+                  aString,
+                ) ||
+                other.aString == aString) &&
+            (identical(
+                  other.aByteData,
+                  aByteData,
+                ) ||
+                other.aByteData == aByteData) &&
+            (identical(
+                  other.aDuration,
+                  aDuration,
+                ) ||
+                other.aDuration == aDuration) &&
+            (identical(
+                  other.aUuid,
+                  aUuid,
+                ) ||
+                other.aUuid == aUuid));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        anInt,
+        aBool,
+        aDouble,
+        aDateTime,
+        aString,
+        aByteData,
+        aDuration,
+        aUuid,
+      );
+
+  @override
+  Types copyWith({
+    Object? id = _Undefined,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
+    Object? aDateTime = _Undefined,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
+    Object? aDuration = _Undefined,
+    Object? aUuid = _Undefined,
+  }) {
+    return Types(
+      id: id == _Undefined ? this.id : (id as int?),
+      anInt: anInt == _Undefined ? this.anInt : (anInt as int?),
+      aBool: aBool == _Undefined ? this.aBool : (aBool as bool?),
+      aDouble: aDouble == _Undefined ? this.aDouble : (aDouble as double?),
+      aDateTime:
+          aDateTime == _Undefined ? this.aDateTime : (aDateTime as DateTime?),
+      aString: aString == _Undefined ? this.aString : (aString as String?),
+      aByteData: aByteData == _Undefined
+          ? this.aByteData
+          : (aByteData as _i2.ByteData?),
+      aDuration:
+          aDuration == _Undefined ? this.aDuration : (aDuration as Duration?),
+      aUuid: aUuid == _Undefined ? this.aUuid : (aUuid as _i1.UuidValue?),
+    );
+  }
+}
 
 class TypesTable extends _i1.Table {
-  TypesTable() : super(tableName: 'types');
+  const TypesTable() : super(tableName: 'types');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final anInt = _i1.ColumnInt('anInt');
+  final anInt = const _i1.ColumnInt('anInt');
 
-  final aBool = _i1.ColumnBool('aBool');
+  final aBool = const _i1.ColumnBool('aBool');
 
-  final aDouble = _i1.ColumnDouble('aDouble');
+  final aDouble = const _i1.ColumnDouble('aDouble');
 
-  final aDateTime = _i1.ColumnDateTime('aDateTime');
+  final aDateTime = const _i1.ColumnDateTime('aDateTime');
 
-  final aString = _i1.ColumnString('aString');
+  final aString = const _i1.ColumnString('aString');
 
-  final aByteData = _i1.ColumnByteData('aByteData');
+  final aByteData = const _i1.ColumnByteData('aByteData');
 
-  final aDuration = _i1.ColumnDuration('aDuration');
+  final aDuration = const _i1.ColumnDuration('aDuration');
 
-  final aUuid = _i1.ColumnUuid('aUuid');
+  final aUuid = const _i1.ColumnUuid('aUuid');
 
   @override
   List<_i1.Column> get columns => [
@@ -355,4 +390,4 @@ class TypesTable extends _i1.Table {
 }
 
 @Deprecated('Use TypesTable.t instead.')
-TypesTable tTypes = TypesTable();
+TypesTable tTypes = const TypesTable();

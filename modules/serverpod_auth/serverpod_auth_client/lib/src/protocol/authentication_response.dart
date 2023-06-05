@@ -9,17 +9,17 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// Provides a response to an authentication attempt.
-class AuthenticationResponse extends _i1.SerializableEntity {
-  AuthenticationResponse({
-    required this.success,
-    this.key,
-    this.keyId,
-    this.userInfo,
-    this.failReason,
-  });
+abstract class AuthenticationResponse extends _i1.SerializableEntity {
+  const AuthenticationResponse._();
+
+  const factory AuthenticationResponse({
+    required bool success,
+    String? key,
+    int? keyId,
+    _i2.UserInfo? userInfo,
+    _i2.AuthenticationFailReason? failReason,
+  }) = _AuthenticationResponse;
 
   factory AuthenticationResponse.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,30 +38,65 @@ class AuthenticationResponse extends _i1.SerializableEntity {
     );
   }
 
-  /// True if the authentication was successful.
-  final bool success;
-
-  /// The key associated with a successful authentication.
-  final String? key;
-
-  /// The id of the key associated with a successful authentication.
-  final int? keyId;
-
-  /// The [UserInfo] of the authenticated user, only set if the authentication
-  /// was successful.
-  final _i2.UserInfo? userInfo;
-
-  /// Reason for a failed authentication attempt, only set if the authentication
-  /// failed.
-  final _i2.AuthenticationFailReason? failReason;
-
-  late Function({
+  AuthenticationResponse copyWith({
     bool? success,
     String? key,
     int? keyId,
     _i2.UserInfo? userInfo,
     _i2.AuthenticationFailReason? failReason,
-  }) copyWith = _copyWith;
+  });
+
+  /// True if the authentication was successful.
+  bool get success;
+
+  /// The key associated with a successful authentication.
+  String? get key;
+
+  /// The id of the key associated with a successful authentication.
+  int? get keyId;
+
+  /// The [UserInfo] of the authenticated user, only set if the authentication
+  /// was successful.
+  _i2.UserInfo? get userInfo;
+
+  /// Reason for a failed authentication attempt, only set if the authentication
+  /// failed.
+  _i2.AuthenticationFailReason? get failReason;
+}
+
+class _Undefined {}
+
+/// Provides a response to an authentication attempt.
+class _AuthenticationResponse extends AuthenticationResponse {
+  const _AuthenticationResponse({
+    required this.success,
+    this.key,
+    this.keyId,
+    this.userInfo,
+    this.failReason,
+  }) : super._();
+
+  /// True if the authentication was successful.
+  @override
+  final bool success;
+
+  /// The key associated with a successful authentication.
+  @override
+  final String? key;
+
+  /// The id of the key associated with a successful authentication.
+  @override
+  final int? keyId;
+
+  /// The [UserInfo] of the authenticated user, only set if the authentication
+  /// was successful.
+  @override
+  final _i2.UserInfo? userInfo;
+
+  /// Reason for a failed authentication attempt, only set if the authentication
+  /// failed.
+  @override
+  final _i2.AuthenticationFailReason? failReason;
 
   @override
   Map<String, dynamic> toJson() {
@@ -117,7 +152,8 @@ class AuthenticationResponse extends _i1.SerializableEntity {
         failReason,
       );
 
-  AuthenticationResponse _copyWith({
+  @override
+  AuthenticationResponse copyWith({
     bool? success,
     Object? key = _Undefined,
     Object? keyId = _Undefined,

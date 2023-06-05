@@ -9,17 +9,17 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// The definition of a (desired) column in the database.
-class ColumnDefinition extends _i1.SerializableEntity {
-  ColumnDefinition({
-    required this.name,
-    required this.columnType,
-    required this.isNullable,
-    this.columnDefault,
-    this.dartType,
-  });
+abstract class ColumnDefinition extends _i1.SerializableEntity {
+  const ColumnDefinition._();
+
+  const factory ColumnDefinition({
+    required String name,
+    required _i2.ColumnType columnType,
+    required bool isNullable,
+    String? columnDefault,
+    String? dartType,
+  }) = _ColumnDefinition;
 
   factory ColumnDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,30 +38,65 @@ class ColumnDefinition extends _i1.SerializableEntity {
     );
   }
 
-  /// The column name
-  final String name;
-
-  /// The actual column type
-  final _i2.ColumnType columnType;
-
-  /// Whether this column is nullable.
-  final bool isNullable;
-
-  /// The default for the column.
-  final String? columnDefault;
-
-  /// The (dart) type specified in the yaml file.
-  /// Is nullable, since this is not available when
-  /// analyzing the database.
-  final String? dartType;
-
-  late Function({
+  ColumnDefinition copyWith({
     String? name,
     _i2.ColumnType? columnType,
     bool? isNullable,
     String? columnDefault,
     String? dartType,
-  }) copyWith = _copyWith;
+  });
+
+  /// The column name
+  String get name;
+
+  /// The actual column type
+  _i2.ColumnType get columnType;
+
+  /// Whether this column is nullable.
+  bool get isNullable;
+
+  /// The default for the column.
+  String? get columnDefault;
+
+  /// The (dart) type specified in the yaml file.
+  /// Is nullable, since this is not available when
+  /// analyzing the database.
+  String? get dartType;
+}
+
+class _Undefined {}
+
+/// The definition of a (desired) column in the database.
+class _ColumnDefinition extends ColumnDefinition {
+  const _ColumnDefinition({
+    required this.name,
+    required this.columnType,
+    required this.isNullable,
+    this.columnDefault,
+    this.dartType,
+  }) : super._();
+
+  /// The column name
+  @override
+  final String name;
+
+  /// The actual column type
+  @override
+  final _i2.ColumnType columnType;
+
+  /// Whether this column is nullable.
+  @override
+  final bool isNullable;
+
+  /// The default for the column.
+  @override
+  final String? columnDefault;
+
+  /// The (dart) type specified in the yaml file.
+  /// Is nullable, since this is not available when
+  /// analyzing the database.
+  @override
+  final String? dartType;
 
   @override
   Map<String, dynamic> toJson() {
@@ -117,7 +152,8 @@ class ColumnDefinition extends _i1.SerializableEntity {
         dartType,
       );
 
-  ColumnDefinition _copyWith({
+  @override
+  ColumnDefinition copyWith({
     String? name,
     _i2.ColumnType? columnType,
     bool? isNullable,

@@ -9,22 +9,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// Log settings for the server.
-class LogSettings extends _i1.SerializableEntity {
-  LogSettings({
-    required this.logLevel,
-    required this.logAllSessions,
-    required this.logAllQueries,
-    required this.logSlowSessions,
-    required this.logStreamingSessionsContinuously,
-    required this.logSlowQueries,
-    required this.logFailedSessions,
-    required this.logFailedQueries,
-    required this.slowSessionDuration,
-    required this.slowQueryDuration,
-  });
+abstract class LogSettings extends _i1.SerializableEntity {
+  const LogSettings._();
+
+  const factory LogSettings({
+    required _i2.LogLevel logLevel,
+    required bool logAllSessions,
+    required bool logAllQueries,
+    required bool logSlowSessions,
+    required bool logStreamingSessionsContinuously,
+    required bool logSlowQueries,
+    required bool logFailedSessions,
+    required bool logFailedQueries,
+    required double slowSessionDuration,
+    required double slowQueryDuration,
+  }) = _LogSettings;
 
   factory LogSettings.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -54,38 +54,7 @@ class LogSettings extends _i1.SerializableEntity {
     );
   }
 
-  /// Log level. Everything above this level will be logged.
-  final _i2.LogLevel logLevel;
-
-  /// True if all sessions should be logged.
-  final bool logAllSessions;
-
-  /// True if all queries should be logged.
-  final bool logAllQueries;
-
-  /// True if all slow sessions should be logged.
-  final bool logSlowSessions;
-
-  /// True if streaming sessions should be logged continuously. If set to false,
-  /// the logging will take place when the session is closed.
-  final bool logStreamingSessionsContinuously;
-
-  /// True if all slow queries should be logged.
-  final bool logSlowQueries;
-
-  /// True if all failed sessions should be logged.
-  final bool logFailedSessions;
-
-  /// True if all failed queries should be logged.
-  final bool logFailedQueries;
-
-  /// The duration in seconds for a session to be considered slow.
-  final double slowSessionDuration;
-
-  /// The duration in seconds for a query to be considered slow.
-  final double slowQueryDuration;
-
-  late Function({
+  LogSettings copyWith({
     _i2.LogLevel? logLevel,
     bool? logAllSessions,
     bool? logAllQueries,
@@ -96,7 +65,95 @@ class LogSettings extends _i1.SerializableEntity {
     bool? logFailedQueries,
     double? slowSessionDuration,
     double? slowQueryDuration,
-  }) copyWith = _copyWith;
+  });
+
+  /// Log level. Everything above this level will be logged.
+  _i2.LogLevel get logLevel;
+
+  /// True if all sessions should be logged.
+  bool get logAllSessions;
+
+  /// True if all queries should be logged.
+  bool get logAllQueries;
+
+  /// True if all slow sessions should be logged.
+  bool get logSlowSessions;
+
+  /// True if streaming sessions should be logged continuously. If set to false,
+  /// the logging will take place when the session is closed.
+  bool get logStreamingSessionsContinuously;
+
+  /// True if all slow queries should be logged.
+  bool get logSlowQueries;
+
+  /// True if all failed sessions should be logged.
+  bool get logFailedSessions;
+
+  /// True if all failed queries should be logged.
+  bool get logFailedQueries;
+
+  /// The duration in seconds for a session to be considered slow.
+  double get slowSessionDuration;
+
+  /// The duration in seconds for a query to be considered slow.
+  double get slowQueryDuration;
+}
+
+/// Log settings for the server.
+class _LogSettings extends LogSettings {
+  const _LogSettings({
+    required this.logLevel,
+    required this.logAllSessions,
+    required this.logAllQueries,
+    required this.logSlowSessions,
+    required this.logStreamingSessionsContinuously,
+    required this.logSlowQueries,
+    required this.logFailedSessions,
+    required this.logFailedQueries,
+    required this.slowSessionDuration,
+    required this.slowQueryDuration,
+  }) : super._();
+
+  /// Log level. Everything above this level will be logged.
+  @override
+  final _i2.LogLevel logLevel;
+
+  /// True if all sessions should be logged.
+  @override
+  final bool logAllSessions;
+
+  /// True if all queries should be logged.
+  @override
+  final bool logAllQueries;
+
+  /// True if all slow sessions should be logged.
+  @override
+  final bool logSlowSessions;
+
+  /// True if streaming sessions should be logged continuously. If set to false,
+  /// the logging will take place when the session is closed.
+  @override
+  final bool logStreamingSessionsContinuously;
+
+  /// True if all slow queries should be logged.
+  @override
+  final bool logSlowQueries;
+
+  /// True if all failed sessions should be logged.
+  @override
+  final bool logFailedSessions;
+
+  /// True if all failed queries should be logged.
+  @override
+  final bool logFailedQueries;
+
+  /// The duration in seconds for a session to be considered slow.
+  @override
+  final double slowSessionDuration;
+
+  /// The duration in seconds for a query to be considered slow.
+  @override
+  final double slowQueryDuration;
 
   @override
   Map<String, dynamic> toJson() {
@@ -188,7 +245,8 @@ class LogSettings extends _i1.SerializableEntity {
         slowQueryDuration,
       );
 
-  LogSettings _copyWith({
+  @override
+  LogSettings copyWith({
     _i2.LogLevel? logLevel,
     bool? logAllSessions,
     bool? logAllQueries,

@@ -9,20 +9,20 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class _Undefined {}
+abstract class Types extends _i1.SerializableEntity {
+  const Types._();
 
-class Types extends _i1.SerializableEntity {
-  Types({
-    this.id,
-    this.anInt,
-    this.aBool,
-    this.aDouble,
-    this.aDateTime,
-    this.aString,
-    this.aByteData,
-    this.aDuration,
-    this.aUuid,
-  });
+  const factory Types({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  }) = _Types;
 
   factory Types.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -48,28 +48,7 @@ class Types extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final int? anInt;
-
-  final bool? aBool;
-
-  final double? aDouble;
-
-  final DateTime? aDateTime;
-
-  final String? aString;
-
-  final _i2.ByteData? aByteData;
-
-  final Duration? aDuration;
-
-  final _i1.UuidValue? aUuid;
-
-  late Function({
+  Types copyWith({
     int? id,
     int? anInt,
     bool? aBool,
@@ -79,7 +58,66 @@ class Types extends _i1.SerializableEntity {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  int? get anInt;
+  bool? get aBool;
+  double? get aDouble;
+  DateTime? get aDateTime;
+  String? get aString;
+  _i2.ByteData? get aByteData;
+  Duration? get aDuration;
+  _i1.UuidValue? get aUuid;
+}
+
+class _Undefined {}
+
+class _Types extends Types {
+  const _Types({
+    this.id,
+    this.anInt,
+    this.aBool,
+    this.aDouble,
+    this.aDateTime,
+    this.aString,
+    this.aByteData,
+    this.aDuration,
+    this.aUuid,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final int? anInt;
+
+  @override
+  final bool? aBool;
+
+  @override
+  final double? aDouble;
+
+  @override
+  final DateTime? aDateTime;
+
+  @override
+  final String? aString;
+
+  @override
+  final _i2.ByteData? aByteData;
+
+  @override
+  final Duration? aDuration;
+
+  @override
+  final _i1.UuidValue? aUuid;
 
   @override
   Map<String, dynamic> toJson() {
@@ -163,7 +201,8 @@ class Types extends _i1.SerializableEntity {
         aUuid,
       );
 
-  Types _copyWith({
+  @override
+  Types copyWith({
     Object? id = _Undefined,
     Object? anInt = _Undefined,
     Object? aBool = _Undefined,

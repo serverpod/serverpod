@@ -10,18 +10,18 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+abstract class ObjectWithObject extends _i1.SerializableEntity {
+  const ObjectWithObject._();
 
-class ObjectWithObject extends _i1.SerializableEntity {
-  ObjectWithObject({
-    this.id,
-    required this.data,
-    this.nullableData,
-    required this.dataList,
-    this.nullableDataList,
-    required this.listWithNullableData,
-    this.nullableListWithNullableData,
-  });
+  const factory ObjectWithObject({
+    int? id,
+    required _i2.SimpleData data,
+    _i2.SimpleData? nullableData,
+    required List<_i2.SimpleData> dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    required List<_i2.SimpleData?> listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  }) = _ObjectWithObject;
 
   factory ObjectWithObject.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,24 +46,7 @@ class ObjectWithObject extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final _i2.SimpleData data;
-
-  final _i2.SimpleData? nullableData;
-
-  final List<_i2.SimpleData> dataList;
-
-  final List<_i2.SimpleData>? nullableDataList;
-
-  final List<_i2.SimpleData?> listWithNullableData;
-
-  final List<_i2.SimpleData?>? nullableListWithNullableData;
-
-  late Function({
+  ObjectWithObject copyWith({
     int? id,
     _i2.SimpleData? data,
     _i2.SimpleData? nullableData,
@@ -71,7 +54,56 @@ class ObjectWithObject extends _i1.SerializableEntity {
     List<_i2.SimpleData>? nullableDataList,
     List<_i2.SimpleData?>? listWithNullableData,
     List<_i2.SimpleData?>? nullableListWithNullableData,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  _i2.SimpleData get data;
+  _i2.SimpleData? get nullableData;
+  List<_i2.SimpleData> get dataList;
+  List<_i2.SimpleData>? get nullableDataList;
+  List<_i2.SimpleData?> get listWithNullableData;
+  List<_i2.SimpleData?>? get nullableListWithNullableData;
+}
+
+class _Undefined {}
+
+class _ObjectWithObject extends ObjectWithObject {
+  const _ObjectWithObject({
+    this.id,
+    required this.data,
+    this.nullableData,
+    required this.dataList,
+    this.nullableDataList,
+    required this.listWithNullableData,
+    this.nullableListWithNullableData,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final _i2.SimpleData data;
+
+  @override
+  final _i2.SimpleData? nullableData;
+
+  @override
+  final List<_i2.SimpleData> dataList;
+
+  @override
+  final List<_i2.SimpleData>? nullableDataList;
+
+  @override
+  final List<_i2.SimpleData?> listWithNullableData;
+
+  @override
+  final List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
   Map<String, dynamic> toJson() {
@@ -137,7 +169,8 @@ class ObjectWithObject extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(nullableListWithNullableData),
       );
 
-  ObjectWithObject _copyWith({
+  @override
+  ObjectWithObject copyWith({
     Object? id = _Undefined,
     _i2.SimpleData? data,
     Object? nullableData = _Undefined,

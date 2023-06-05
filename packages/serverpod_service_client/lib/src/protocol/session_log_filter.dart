@@ -8,19 +8,19 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// The log filter is used when searching for specific log entries.
-class SessionLogFilter extends _i1.SerializableEntity {
-  SessionLogFilter({
-    this.endpoint,
-    this.method,
-    this.futureCall,
-    required this.slow,
-    required this.error,
-    required this.open,
-    this.lastSessionLogId,
-  });
+abstract class SessionLogFilter extends _i1.SerializableEntity {
+  const SessionLogFilter._();
+
+  const factory SessionLogFilter({
+    String? endpoint,
+    String? method,
+    String? futureCall,
+    required bool slow,
+    required bool error,
+    required bool open,
+    int? lastSessionLogId,
+  }) = _SessionLogFilter;
 
   factory SessionLogFilter.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,28 +41,7 @@ class SessionLogFilter extends _i1.SerializableEntity {
     );
   }
 
-  /// The endpoint to get logs from. Null will return logs from any endpoint.
-  final String? endpoint;
-
-  /// The method to get logs from. Null will return logs from any method.
-  final String? method;
-
-  /// The name of a future call to get logs from.
-  final String? futureCall;
-
-  /// If true, only return slow sessions.
-  final bool slow;
-
-  /// If true, only return sessions ending with an exception.
-  final bool error;
-
-  /// If true, only return open sessions.
-  final bool open;
-
-  /// Last session id to start the list of logs from. Used for pagination.
-  final int? lastSessionLogId;
-
-  late Function({
+  SessionLogFilter copyWith({
     String? endpoint,
     String? method,
     String? futureCall,
@@ -70,7 +49,71 @@ class SessionLogFilter extends _i1.SerializableEntity {
     bool? error,
     bool? open,
     int? lastSessionLogId,
-  }) copyWith = _copyWith;
+  });
+
+  /// The endpoint to get logs from. Null will return logs from any endpoint.
+  String? get endpoint;
+
+  /// The method to get logs from. Null will return logs from any method.
+  String? get method;
+
+  /// The name of a future call to get logs from.
+  String? get futureCall;
+
+  /// If true, only return slow sessions.
+  bool get slow;
+
+  /// If true, only return sessions ending with an exception.
+  bool get error;
+
+  /// If true, only return open sessions.
+  bool get open;
+
+  /// Last session id to start the list of logs from. Used for pagination.
+  int? get lastSessionLogId;
+}
+
+class _Undefined {}
+
+/// The log filter is used when searching for specific log entries.
+class _SessionLogFilter extends SessionLogFilter {
+  const _SessionLogFilter({
+    this.endpoint,
+    this.method,
+    this.futureCall,
+    required this.slow,
+    required this.error,
+    required this.open,
+    this.lastSessionLogId,
+  }) : super._();
+
+  /// The endpoint to get logs from. Null will return logs from any endpoint.
+  @override
+  final String? endpoint;
+
+  /// The method to get logs from. Null will return logs from any method.
+  @override
+  final String? method;
+
+  /// The name of a future call to get logs from.
+  @override
+  final String? futureCall;
+
+  /// If true, only return slow sessions.
+  @override
+  final bool slow;
+
+  /// If true, only return sessions ending with an exception.
+  @override
+  final bool error;
+
+  /// If true, only return open sessions.
+  @override
+  final bool open;
+
+  /// Last session id to start the list of logs from. Used for pagination.
+  @override
+  final int? lastSessionLogId;
 
   @override
   Map<String, dynamic> toJson() {
@@ -140,7 +183,8 @@ class SessionLogFilter extends _i1.SerializableEntity {
         lastSessionLogId,
       );
 
-  SessionLogFilter _copyWith({
+  @override
+  SessionLogFilter copyWith({
     Object? endpoint = _Undefined,
     Object? method = _Undefined,
     Object? futureCall = _Undefined,

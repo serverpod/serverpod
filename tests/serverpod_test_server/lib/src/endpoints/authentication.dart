@@ -3,7 +3,7 @@ import 'package:serverpod_auth_server/module.dart';
 
 class AuthenticationEndpoint extends Endpoint {
   Future<void> removeAllUsers(Session session) async {
-    await session.db.delete<UserInfo>(where: Expression('true'));
+    await session.db.delete<UserInfo>(where: const Expression('true'));
   }
 
   Future<int> countUsers(Session session) async {
@@ -45,7 +45,7 @@ class AuthenticationEndpoint extends Endpoint {
         userInfo = await Users.createUser(session, userInfo);
       }
 
-      if (userInfo == null) return AuthenticationResponse(success: false);
+      if (userInfo == null) return const AuthenticationResponse(success: false);
 
       var authKey = await session.auth.signInUser(userInfo.id!, 'test');
       return AuthenticationResponse(
@@ -55,7 +55,7 @@ class AuthenticationEndpoint extends Endpoint {
         userInfo: userInfo,
       );
     } else {
-      return AuthenticationResponse(success: false);
+      return const AuthenticationResponse(success: false);
     }
   }
 

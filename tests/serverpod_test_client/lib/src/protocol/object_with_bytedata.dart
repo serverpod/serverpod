@@ -9,13 +9,13 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class _Undefined {}
+abstract class ObjectWithByteData extends _i1.SerializableEntity {
+  const ObjectWithByteData._();
 
-class ObjectWithByteData extends _i1.SerializableEntity {
-  ObjectWithByteData({
-    this.id,
-    required this.byteData,
-  });
+  const factory ObjectWithByteData({
+    int? id,
+    required _i2.ByteData byteData,
+  }) = _ObjectWithByteData;
 
   factory ObjectWithByteData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -28,17 +28,34 @@ class ObjectWithByteData extends _i1.SerializableEntity {
     );
   }
 
+  ObjectWithByteData copyWith({
+    int? id,
+    _i2.ByteData? byteData,
+  });
+
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
+  int? get id;
+  _i2.ByteData get byteData;
+}
+
+class _Undefined {}
+
+class _ObjectWithByteData extends ObjectWithByteData {
+  const _ObjectWithByteData({
+    this.id,
+    required this.byteData,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
   final int? id;
 
+  @override
   final _i2.ByteData byteData;
-
-  late Function({
-    int? id,
-    _i2.ByteData? byteData,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -73,7 +90,8 @@ class ObjectWithByteData extends _i1.SerializableEntity {
         byteData,
       );
 
-  ObjectWithByteData _copyWith({
+  @override
+  ObjectWithByteData copyWith({
     Object? id = _Undefined,
     _i2.ByteData? byteData,
   }) {

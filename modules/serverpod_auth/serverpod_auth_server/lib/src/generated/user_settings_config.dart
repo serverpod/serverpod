@@ -8,17 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
-
 /// User settings.
-class UserSettingsConfig extends _i1.SerializableEntity {
-  UserSettingsConfig({
-    required this.canSeeUserName,
-    required this.canSeeFullName,
-    required this.canEditUserName,
-    required this.canEditFullName,
-    required this.canEditUserImage,
-  });
+abstract class UserSettingsConfig extends _i1.SerializableEntity {
+  const UserSettingsConfig._();
+
+  const factory UserSettingsConfig({
+    required bool canSeeUserName,
+    required bool canSeeFullName,
+    required bool canEditUserName,
+    required bool canEditFullName,
+    required bool canEditUserImage,
+  }) = _UserSettingsConfig;
 
   factory UserSettingsConfig.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,28 +38,59 @@ class UserSettingsConfig extends _i1.SerializableEntity {
     );
   }
 
-  /// True if the user's nickname should be visible.
-  final bool canSeeUserName;
-
-  /// True if the user's full name should be visible.
-  final bool canSeeFullName;
-
-  /// True if the user should be able to edit its user name.
-  final bool canEditUserName;
-
-  /// True if the user should be able to edit its full name.
-  final bool canEditFullName;
-
-  /// True if the user should be able to upload a new user image.
-  final bool canEditUserImage;
-
-  late Function({
+  UserSettingsConfig copyWith({
     bool? canSeeUserName,
     bool? canSeeFullName,
     bool? canEditUserName,
     bool? canEditFullName,
     bool? canEditUserImage,
-  }) copyWith = _copyWith;
+  });
+
+  /// True if the user's nickname should be visible.
+  bool get canSeeUserName;
+
+  /// True if the user's full name should be visible.
+  bool get canSeeFullName;
+
+  /// True if the user should be able to edit its user name.
+  bool get canEditUserName;
+
+  /// True if the user should be able to edit its full name.
+  bool get canEditFullName;
+
+  /// True if the user should be able to upload a new user image.
+  bool get canEditUserImage;
+}
+
+/// User settings.
+class _UserSettingsConfig extends UserSettingsConfig {
+  const _UserSettingsConfig({
+    required this.canSeeUserName,
+    required this.canSeeFullName,
+    required this.canEditUserName,
+    required this.canEditFullName,
+    required this.canEditUserImage,
+  }) : super._();
+
+  /// True if the user's nickname should be visible.
+  @override
+  final bool canSeeUserName;
+
+  /// True if the user's full name should be visible.
+  @override
+  final bool canSeeFullName;
+
+  /// True if the user should be able to edit its user name.
+  @override
+  final bool canEditUserName;
+
+  /// True if the user should be able to edit its full name.
+  @override
+  final bool canEditFullName;
+
+  /// True if the user should be able to upload a new user image.
+  @override
+  final bool canEditUserImage;
 
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +146,8 @@ class UserSettingsConfig extends _i1.SerializableEntity {
         canEditUserImage,
       );
 
-  UserSettingsConfig _copyWith({
+  @override
+  UserSettingsConfig copyWith({
     bool? canSeeUserName,
     bool? canSeeFullName,
     bool? canEditUserName,

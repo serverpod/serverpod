@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Information about an email password reset.
-class EmailPasswordReset extends _i1.SerializableEntity {
-  EmailPasswordReset({
-    required this.userName,
-    required this.email,
-  });
+abstract class EmailPasswordReset extends _i1.SerializableEntity {
+  const EmailPasswordReset._();
+
+  const factory EmailPasswordReset({
+    required String userName,
+    required String email,
+  }) = _EmailPasswordReset;
 
   factory EmailPasswordReset.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,16 +29,32 @@ class EmailPasswordReset extends _i1.SerializableEntity {
     );
   }
 
+  EmailPasswordReset copyWith({
+    String? userName,
+    String? email,
+  });
+
   /// The user name of the user.
+  String get userName;
+
+  /// The email of the user.
+  String get email;
+}
+
+/// Information about an email password reset.
+class _EmailPasswordReset extends EmailPasswordReset {
+  const _EmailPasswordReset({
+    required this.userName,
+    required this.email,
+  }) : super._();
+
+  /// The user name of the user.
+  @override
   final String userName;
 
   /// The email of the user.
+  @override
   final String email;
-
-  late Function({
-    String? userName,
-    String? email,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -73,7 +89,8 @@ class EmailPasswordReset extends _i1.SerializableEntity {
         email,
       );
 
-  EmailPasswordReset _copyWith({
+  @override
+  EmailPasswordReset copyWith({
     String? userName,
     String? email,
   }) {

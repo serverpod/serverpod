@@ -8,16 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
 
 /// Database bindings for a sign in with email.
-class EmailAuth extends _i1.TableRow {
-  EmailAuth({
+abstract class EmailAuth extends _i1.TableRow {
+  const EmailAuth._();
+
+  const factory EmailAuth({
     int? id,
-    required this.userId,
-    required this.email,
-    required this.hash,
-  }) : super(id);
+    required int userId,
+    required String email,
+    required String hash,
+  }) = _EmailAuth;
 
   factory EmailAuth.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,87 +35,16 @@ class EmailAuth extends _i1.TableRow {
     );
   }
 
-  static var t = EmailAuthTable();
+  static const t = EmailAuthTable();
 
-  /// The id of the user, corresponds to the id field in [UserInfo].
-  final int userId;
-
-  /// The email of the user.
-  final String email;
-
-  /// The hashed password of the user.
-  final String hash;
-
-  late Function({
+  EmailAuth copyWith({
     int? id,
     int? userId,
     String? email,
     String? hash,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_email_auth';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'email': email,
-      'hash': hash,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is EmailAuth &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.userId,
-                  userId,
-                ) ||
-                other.userId == userId) &&
-            (identical(
-                  other.email,
-                  email,
-                ) ||
-                other.email == email) &&
-            (identical(
-                  other.hash,
-                  hash,
-                ) ||
-                other.hash == hash));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        userId,
-        email,
-        hash,
-      );
-
-  EmailAuth _copyWith({
-    Object? id = _Undefined,
-    int? userId,
-    String? email,
-    String? hash,
-  }) {
-    return EmailAuth(
-      id: id == _Undefined ? this.id : (id as int?),
-      userId: userId ?? this.userId,
-      email: email ?? this.email,
-      hash: hash ?? this.hash,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -231,26 +162,121 @@ class EmailAuth extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The id of the user, corresponds to the id field in [UserInfo].
+  int get userId;
+
+  /// The email of the user.
+  String get email;
+
+  /// The hashed password of the user.
+  String get hash;
 }
 
-typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
+class _Undefined {}
+
+/// Database bindings for a sign in with email.
+class _EmailAuth extends EmailAuth {
+  const _EmailAuth({
+    int? id,
+    required this.userId,
+    required this.email,
+    required this.hash,
+  }) : super._();
+
+  /// The id of the user, corresponds to the id field in [UserInfo].
+  @override
+  final int userId;
+
+  /// The email of the user.
+  @override
+  final String email;
+
+  /// The hashed password of the user.
+  @override
+  final String hash;
+
+  @override
+  String get tableName => 'serverpod_email_auth';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'email': email,
+      'hash': hash,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailAuth &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email) &&
+            (identical(
+                  other.hash,
+                  hash,
+                ) ||
+                other.hash == hash));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        email,
+        hash,
+      );
+
+  @override
+  EmailAuth copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? email,
+    String? hash,
+  }) {
+    return EmailAuth(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+    );
+  }
+}
 
 class EmailAuthTable extends _i1.Table {
-  EmailAuthTable() : super(tableName: 'serverpod_email_auth');
+  const EmailAuthTable() : super(tableName: 'serverpod_email_auth');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The id of the user, corresponds to the id field in [UserInfo].
-  final userId = _i1.ColumnInt('userId');
+  final userId = const _i1.ColumnInt('userId');
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  final email = const _i1.ColumnString('email');
 
   /// The hashed password of the user.
-  final hash = _i1.ColumnString('hash');
+  final hash = const _i1.ColumnString('hash');
 
   @override
   List<_i1.Column> get columns => [
@@ -262,4 +288,4 @@ class EmailAuthTable extends _i1.Table {
 }
 
 @Deprecated('Use EmailAuthTable.t instead.')
-EmailAuthTable tEmailAuth = EmailAuthTable();
+EmailAuthTable tEmailAuth = const EmailAuthTable();

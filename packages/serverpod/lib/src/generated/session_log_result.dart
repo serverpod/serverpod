@@ -10,11 +10,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// A list of SessionLogInfo.
-class SessionLogResult extends _i1.SerializableEntity {
-  SessionLogResult({required this.sessionLog});
+abstract class SessionLogResult extends _i1.SerializableEntity {
+  const SessionLogResult._();
+
+  const factory SessionLogResult(
+      {required List<_i2.SessionLogInfo> sessionLog}) = _SessionLogResult;
 
   factory SessionLogResult.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -25,10 +26,19 @@ class SessionLogResult extends _i1.SerializableEntity {
             jsonSerialization['sessionLog']));
   }
 
-  /// The list of SessionLogInfo.
-  final List<_i2.SessionLogInfo> sessionLog;
+  SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
 
-  late Function({List<_i2.SessionLogInfo>? sessionLog}) copyWith = _copyWith;
+  /// The list of SessionLogInfo.
+  List<_i2.SessionLogInfo> get sessionLog;
+}
+
+/// A list of SessionLogInfo.
+class _SessionLogResult extends SessionLogResult {
+  const _SessionLogResult({required this.sessionLog}) : super._();
+
+  /// The list of SessionLogInfo.
+  @override
+  final List<_i2.SessionLogInfo> sessionLog;
 
   @override
   Map<String, dynamic> toJson() {
@@ -51,7 +61,8 @@ class SessionLogResult extends _i1.SerializableEntity {
   @override
   int get hashCode => const _i3.DeepCollectionEquality().hash(sessionLog);
 
-  SessionLogResult _copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
+  @override
+  SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
     return SessionLogResult(sessionLog: sessionLog ?? this.sessionLog);
   }
 }

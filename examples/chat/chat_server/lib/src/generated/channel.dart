@@ -8,15 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 
 /// Represents a chat channel.
-class Channel extends _i1.TableRow {
-  Channel({
+abstract class Channel extends _i1.TableRow {
+  const Channel._();
+
+  const factory Channel({
     int? id,
-    required this.name,
-    required this.channel,
-  }) : super(id);
+    required String name,
+    required String channel,
+  }) = _Channel;
 
   factory Channel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,74 +32,15 @@ class Channel extends _i1.TableRow {
     );
   }
 
-  static var t = ChannelTable();
+  static const t = ChannelTable();
 
-  /// The name of the channel.
-  final String name;
-
-  /// The id of the channel.
-  final String channel;
-
-  late Function({
+  Channel copyWith({
     int? id,
     String? name,
     String? channel,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'channel';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'channel': channel,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is Channel &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.name,
-                  name,
-                ) ||
-                other.name == name) &&
-            (identical(
-                  other.channel,
-                  channel,
-                ) ||
-                other.channel == channel));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        name,
-        channel,
-      );
-
-  Channel _copyWith({
-    Object? id = _Undefined,
-    String? name,
-    String? channel,
-  }) {
-    return Channel(
-      id: id == _Undefined ? this.id : (id as int?),
-      name: name ?? this.name,
-      channel: channel ?? this.channel,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -214,23 +157,101 @@ class Channel extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The name of the channel.
+  String get name;
+
+  /// The id of the channel.
+  String get channel;
 }
 
-typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
+class _Undefined {}
+
+/// Represents a chat channel.
+class _Channel extends Channel {
+  const _Channel({
+    int? id,
+    required this.name,
+    required this.channel,
+  }) : super._();
+
+  /// The name of the channel.
+  @override
+  final String name;
+
+  /// The id of the channel.
+  @override
+  final String channel;
+
+  @override
+  String get tableName => 'channel';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'channel': channel,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is Channel &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        name,
+        channel,
+      );
+
+  @override
+  Channel copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? channel,
+  }) {
+    return Channel(
+      id: id == _Undefined ? this.id : (id as int?),
+      name: name ?? this.name,
+      channel: channel ?? this.channel,
+    );
+  }
+}
 
 class ChannelTable extends _i1.Table {
-  ChannelTable() : super(tableName: 'channel');
+  const ChannelTable() : super(tableName: 'channel');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The name of the channel.
-  final name = _i1.ColumnString('name');
+  final name = const _i1.ColumnString('name');
 
   /// The id of the channel.
-  final channel = _i1.ColumnString('channel');
+  final channel = const _i1.ColumnString('channel');
 
   @override
   List<_i1.Column> get columns => [
@@ -241,4 +262,4 @@ class ChannelTable extends _i1.Table {
 }
 
 @Deprecated('Use ChannelTable.t instead.')
-ChannelTable tChannel = ChannelTable();
+ChannelTable tChannel = const ChannelTable();

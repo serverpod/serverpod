@@ -8,15 +8,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Represents a chat channel.
-class Channel extends _i1.SerializableEntity {
-  Channel({
-    this.id,
-    required this.name,
-    required this.channel,
-  });
+abstract class Channel extends _i1.SerializableEntity {
+  const Channel._();
+
+  const factory Channel({
+    int? id,
+    required String name,
+    required String channel,
+  }) = _Channel;
 
   factory Channel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,22 +30,47 @@ class Channel extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The name of the channel.
-  final String name;
-
-  /// The id of the channel.
-  final String channel;
-
-  late Function({
+  Channel copyWith({
     int? id,
     String? name,
     String? channel,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The name of the channel.
+  String get name;
+
+  /// The id of the channel.
+  String get channel;
+}
+
+class _Undefined {}
+
+/// Represents a chat channel.
+class _Channel extends Channel {
+  const _Channel({
+    this.id,
+    required this.name,
+    required this.channel,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The name of the channel.
+  @override
+  final String name;
+
+  /// The id of the channel.
+  @override
+  final String channel;
 
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +112,8 @@ class Channel extends _i1.SerializableEntity {
         channel,
       );
 
-  Channel _copyWith({
+  @override
+  Channel copyWith({
     Object? id = _Undefined,
     String? name,
     String? channel,

@@ -10,17 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
+    ObjectWithEnumTable);
 
-class ObjectWithEnum extends _i1.TableRow {
-  ObjectWithEnum({
+abstract class ObjectWithEnum extends _i1.TableRow {
+  const ObjectWithEnum._();
+
+  const factory ObjectWithEnum({
     int? id,
-    required this.testEnum,
-    this.nullableEnum,
-    required this.enumList,
-    required this.nullableEnumList,
-    required this.enumListList,
-  }) : super(id);
+    required _i2.TestEnum testEnum,
+    _i2.TestEnum? nullableEnum,
+    required List<_i2.TestEnum> enumList,
+    required List<_i2.TestEnum?> nullableEnumList,
+    required List<List<_i2.TestEnum>> enumListList,
+  }) = _ObjectWithEnum;
 
   factory ObjectWithEnum.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,107 +44,18 @@ class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithEnumTable();
+  static const t = ObjectWithEnumTable();
 
-  final _i2.TestEnum testEnum;
-
-  final _i2.TestEnum? nullableEnum;
-
-  final List<_i2.TestEnum> enumList;
-
-  final List<_i2.TestEnum?> nullableEnumList;
-
-  final List<List<_i2.TestEnum>> enumListList;
-
-  late Function({
+  ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
     _i2.TestEnum? nullableEnum,
     List<_i2.TestEnum>? enumList,
     List<_i2.TestEnum?>? nullableEnumList,
     List<List<_i2.TestEnum>>? enumListList,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_enum';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithEnum &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.testEnum,
-                  testEnum,
-                ) ||
-                other.testEnum == testEnum) &&
-            (identical(
-                  other.nullableEnum,
-                  nullableEnum,
-                ) ||
-                other.nullableEnum == nullableEnum) &&
-            const _i3.DeepCollectionEquality().equals(
-              enumList,
-              other.enumList,
-            ) &&
-            const _i3.DeepCollectionEquality().equals(
-              nullableEnumList,
-              other.nullableEnumList,
-            ) &&
-            const _i3.DeepCollectionEquality().equals(
-              enumListList,
-              other.enumListList,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        testEnum,
-        nullableEnum,
-        const _i3.DeepCollectionEquality().hash(enumList),
-        const _i3.DeepCollectionEquality().hash(nullableEnumList),
-        const _i3.DeepCollectionEquality().hash(enumListList),
-      );
-
-  ObjectWithEnum _copyWith({
-    Object? id = _Undefined,
-    _i2.TestEnum? testEnum,
-    Object? nullableEnum = _Undefined,
-    List<_i2.TestEnum>? enumList,
-    List<_i2.TestEnum?>? nullableEnumList,
-    List<List<_i2.TestEnum>>? enumListList,
-  }) {
-    return ObjectWithEnum(
-      id: id == _Undefined ? this.id : (id as int?),
-      testEnum: testEnum ?? this.testEnum,
-      nullableEnum: nullableEnum == _Undefined
-          ? this.nullableEnum
-          : (nullableEnum as _i2.TestEnum?),
-      enumList: enumList ?? this.enumList,
-      nullableEnumList: nullableEnumList ?? this.nullableEnumList,
-      enumListList: enumListList ?? this.enumListList,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -261,28 +175,140 @@ class ObjectWithEnum extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  _i2.TestEnum get testEnum;
+  _i2.TestEnum? get nullableEnum;
+  List<_i2.TestEnum> get enumList;
+  List<_i2.TestEnum?> get nullableEnumList;
+  List<List<_i2.TestEnum>> get enumListList;
 }
 
-typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
-    ObjectWithEnumTable);
+class _Undefined {}
+
+class _ObjectWithEnum extends ObjectWithEnum {
+  const _ObjectWithEnum({
+    int? id,
+    required this.testEnum,
+    this.nullableEnum,
+    required this.enumList,
+    required this.nullableEnumList,
+    required this.enumListList,
+  }) : super._();
+
+  @override
+  final _i2.TestEnum testEnum;
+
+  @override
+  final _i2.TestEnum? nullableEnum;
+
+  @override
+  final List<_i2.TestEnum> enumList;
+
+  @override
+  final List<_i2.TestEnum?> nullableEnumList;
+
+  @override
+  final List<List<_i2.TestEnum>> enumListList;
+
+  @override
+  String get tableName => 'object_with_enum';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'testEnum': testEnum,
+      'nullableEnum': nullableEnum,
+      'enumList': enumList,
+      'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithEnum &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.testEnum,
+                  testEnum,
+                ) ||
+                other.testEnum == testEnum) &&
+            (identical(
+                  other.nullableEnum,
+                  nullableEnum,
+                ) ||
+                other.nullableEnum == nullableEnum) &&
+            const _i3.DeepCollectionEquality().equals(
+              enumList,
+              other.enumList,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              nullableEnumList,
+              other.nullableEnumList,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              enumListList,
+              other.enumListList,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        testEnum,
+        nullableEnum,
+        const _i3.DeepCollectionEquality().hash(enumList),
+        const _i3.DeepCollectionEquality().hash(nullableEnumList),
+        const _i3.DeepCollectionEquality().hash(enumListList),
+      );
+
+  @override
+  ObjectWithEnum copyWith({
+    Object? id = _Undefined,
+    _i2.TestEnum? testEnum,
+    Object? nullableEnum = _Undefined,
+    List<_i2.TestEnum>? enumList,
+    List<_i2.TestEnum?>? nullableEnumList,
+    List<List<_i2.TestEnum>>? enumListList,
+  }) {
+    return ObjectWithEnum(
+      id: id == _Undefined ? this.id : (id as int?),
+      testEnum: testEnum ?? this.testEnum,
+      nullableEnum: nullableEnum == _Undefined
+          ? this.nullableEnum
+          : (nullableEnum as _i2.TestEnum?),
+      enumList: enumList ?? this.enumList,
+      nullableEnumList: nullableEnumList ?? this.nullableEnumList,
+      enumListList: enumListList ?? this.enumListList,
+    );
+  }
+}
 
 class ObjectWithEnumTable extends _i1.Table {
-  ObjectWithEnumTable() : super(tableName: 'object_with_enum');
+  const ObjectWithEnumTable() : super(tableName: 'object_with_enum');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final testEnum = _i1.ColumnEnum('testEnum');
+  final testEnum = const _i1.ColumnEnum('testEnum');
 
-  final nullableEnum = _i1.ColumnEnum('nullableEnum');
+  final nullableEnum = const _i1.ColumnEnum('nullableEnum');
 
-  final enumList = _i1.ColumnSerializable('enumList');
+  final enumList = const _i1.ColumnSerializable('enumList');
 
-  final nullableEnumList = _i1.ColumnSerializable('nullableEnumList');
+  final nullableEnumList = const _i1.ColumnSerializable('nullableEnumList');
 
-  final enumListList = _i1.ColumnSerializable('enumListList');
+  final enumListList = const _i1.ColumnSerializable('enumListList');
 
   @override
   List<_i1.Column> get columns => [
@@ -296,4 +322,4 @@ class ObjectWithEnumTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithEnumTable.t instead.')
-ObjectWithEnumTable tObjectWithEnum = ObjectWithEnumTable();
+ObjectWithEnumTable tObjectWithEnum = const ObjectWithEnumTable();

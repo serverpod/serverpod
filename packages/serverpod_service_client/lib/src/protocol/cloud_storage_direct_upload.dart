@@ -8,17 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Connects a table for handling uploading of files.
-class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
-  CloudStorageDirectUploadEntry({
-    this.id,
-    required this.storageId,
-    required this.path,
-    required this.expiration,
-    required this.authKey,
-  });
+abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
+  const CloudStorageDirectUploadEntry._();
+
+  const factory CloudStorageDirectUploadEntry({
+    int? id,
+    required String storageId,
+    required String path,
+    required DateTime expiration,
+    required String authKey,
+  }) = _CloudStorageDirectUploadEntry;
 
   factory CloudStorageDirectUploadEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -36,30 +36,65 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The storageId, typically `public` or `private`.
-  final String storageId;
-
-  /// The path where the file is stored.
-  final String path;
-
-  /// The expiration time of when the file can be uploaded.
-  final DateTime expiration;
-
-  /// Access key for retrieving a private file.
-  final String authKey;
-
-  late Function({
+  CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
     String? path,
     DateTime? expiration,
     String? authKey,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The storageId, typically `public` or `private`.
+  String get storageId;
+
+  /// The path where the file is stored.
+  String get path;
+
+  /// The expiration time of when the file can be uploaded.
+  DateTime get expiration;
+
+  /// Access key for retrieving a private file.
+  String get authKey;
+}
+
+class _Undefined {}
+
+/// Connects a table for handling uploading of files.
+class _CloudStorageDirectUploadEntry extends CloudStorageDirectUploadEntry {
+  const _CloudStorageDirectUploadEntry({
+    this.id,
+    required this.storageId,
+    required this.path,
+    required this.expiration,
+    required this.authKey,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The storageId, typically `public` or `private`.
+  @override
+  final String storageId;
+
+  /// The path where the file is stored.
+  @override
+  final String path;
+
+  /// The expiration time of when the file can be uploaded.
+  @override
+  final DateTime expiration;
+
+  /// Access key for retrieving a private file.
+  @override
+  final String authKey;
 
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +150,8 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
         authKey,
       );
 
-  CloudStorageDirectUploadEntry _copyWith({
+  @override
+  CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,
     String? storageId,
     String? path,

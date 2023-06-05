@@ -8,16 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Message to notifiy the server that messages have been read.
-class ChatReadMessage extends _i1.SerializableEntity {
-  ChatReadMessage({
-    this.id,
-    required this.channel,
-    required this.userId,
-    required this.lastReadMessageId,
-  });
+abstract class ChatReadMessage extends _i1.SerializableEntity {
+  const ChatReadMessage._();
+
+  const factory ChatReadMessage({
+    int? id,
+    required String channel,
+    required int userId,
+    required int lastReadMessageId,
+  }) = _ChatReadMessage;
 
   factory ChatReadMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,26 +34,56 @@ class ChatReadMessage extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The channel this that has been read.
-  final String channel;
-
-  /// The id of the user that read the messages.
-  final int userId;
-
-  /// The id of the last read message.
-  final int lastReadMessageId;
-
-  late Function({
+  ChatReadMessage copyWith({
     int? id,
     String? channel,
     int? userId,
     int? lastReadMessageId,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The channel this that has been read.
+  String get channel;
+
+  /// The id of the user that read the messages.
+  int get userId;
+
+  /// The id of the last read message.
+  int get lastReadMessageId;
+}
+
+class _Undefined {}
+
+/// Message to notifiy the server that messages have been read.
+class _ChatReadMessage extends ChatReadMessage {
+  const _ChatReadMessage({
+    this.id,
+    required this.channel,
+    required this.userId,
+    required this.lastReadMessageId,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The channel this that has been read.
+  @override
+  final String channel;
+
+  /// The id of the user that read the messages.
+  @override
+  final int userId;
+
+  /// The id of the last read message.
+  @override
+  final int lastReadMessageId;
 
   @override
   Map<String, dynamic> toJson() {
@@ -102,7 +132,8 @@ class ChatReadMessage extends _i1.SerializableEntity {
         lastReadMessageId,
       );
 
-  ChatReadMessage _copyWith({
+  @override
+  ChatReadMessage copyWith({
     Object? id = _Undefined,
     String? channel,
     int? userId,

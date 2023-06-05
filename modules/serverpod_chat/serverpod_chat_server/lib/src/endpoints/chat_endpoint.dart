@@ -201,8 +201,11 @@ class ChatEndpoint extends Endpoint {
       messages.removeLast();
     }
 
-    for (var message in messages) {
-      await _formatChatMessage(session, message);
+    for (var i = 0; i < messages.length; i++) {
+      var message = messages[i];
+      var userInfo = await Users.findUserByUserId(session, message.sender);
+      message = message.copyWith(senderInfo: userInfo?.toPublic());
+      messages[i] = message;
     }
 
     return ChatMessageChunk(
@@ -210,11 +213,6 @@ class ChatEndpoint extends Endpoint {
       messages: messages.reversed.toList(),
       hasOlderMessages: hasOlderMessages,
     );
-  }
-
-  Future<void> _formatChatMessage(Session session, ChatMessage message) async {
-    message.senderInfo =
-        (await Users.findUserByUserId(session, message.sender))?.toPublic();
   }
 
   Future<int> _getLastReadMessage(
@@ -248,7 +246,10 @@ class ChatEndpoint extends Endpoint {
       );
       await session.db.insert(readMessageRow);
     } else {
-      readMessageRow.lastReadMessageId = lastReadMessageId;
+      readMessageRow = readMessageRow.copyWith(
+        lastReadMessageId: lastReadMessageId,
+      );
+
       await session.db.update(readMessageRow);
     }
   }

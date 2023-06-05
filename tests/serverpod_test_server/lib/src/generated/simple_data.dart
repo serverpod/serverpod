@@ -8,14 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
 
 /// Just some simple data.
-class SimpleData extends _i1.TableRow {
-  SimpleData({
+abstract class SimpleData extends _i1.TableRow {
+  const SimpleData._();
+
+  const factory SimpleData({
     int? id,
-    required this.num,
-  }) : super(id);
+    required int num,
+  }) = _SimpleData;
 
   factory SimpleData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -27,63 +29,14 @@ class SimpleData extends _i1.TableRow {
     );
   }
 
-  static var t = SimpleDataTable();
+  static const t = SimpleDataTable();
 
-  /// The only field of [SimpleData]
-  ///
-  /// Second Value Extra Text
-  final int num;
-
-  late Function({
+  SimpleData copyWith({
     int? id,
     int? num,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'simple_data';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'num': num,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is SimpleData &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.num,
-                  num,
-                ) ||
-                other.num == num));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        num,
-      );
-
-  SimpleData _copyWith({
-    Object? id = _Undefined,
-    int? num,
-  }) {
-    return SimpleData(
-      id: id == _Undefined ? this.id : (id as int?),
-      num: num ?? this.num,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -199,22 +152,87 @@ class SimpleData extends _i1.TableRow {
       transaction: transaction,
     );
   }
-}
-
-typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
-
-class SimpleDataTable extends _i1.Table {
-  SimpleDataTable() : super(tableName: 'simple_data');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
 
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
-  final num = _i1.ColumnInt('num');
+  int get num;
+}
+
+class _Undefined {}
+
+/// Just some simple data.
+class _SimpleData extends SimpleData {
+  const _SimpleData({
+    int? id,
+    required this.num,
+  }) : super._();
+
+  /// The only field of [SimpleData]
+  ///
+  /// Second Value Extra Text
+  @override
+  final int num;
+
+  @override
+  String get tableName => 'simple_data';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'num': num,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is SimpleData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.num,
+                  num,
+                ) ||
+                other.num == num));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        num,
+      );
+
+  @override
+  SimpleData copyWith({
+    Object? id = _Undefined,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id == _Undefined ? this.id : (id as int?),
+      num: num ?? this.num,
+    );
+  }
+}
+
+class SimpleDataTable extends _i1.Table {
+  const SimpleDataTable() : super(tableName: 'simple_data');
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  final id = const _i1.ColumnInt('id');
+
+  /// The only field of [SimpleData]
+  ///
+  /// Second Value Extra Text
+  final num = const _i1.ColumnInt('num');
 
   @override
   List<_i1.Column> get columns => [
@@ -224,4 +242,4 @@ class SimpleDataTable extends _i1.Table {
 }
 
 @Deprecated('Use SimpleDataTable.t instead.')
-SimpleDataTable tSimpleData = SimpleDataTable();
+SimpleDataTable tSimpleData = const SimpleDataTable();

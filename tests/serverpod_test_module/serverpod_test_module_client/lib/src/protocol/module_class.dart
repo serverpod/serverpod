@@ -8,13 +8,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class ModuleClass extends _i1.SerializableEntity {
+  const ModuleClass._();
 
-class ModuleClass extends _i1.SerializableEntity {
-  ModuleClass({
-    required this.name,
-    required this.data,
-  });
+  const factory ModuleClass({
+    required String name,
+    required int data,
+  }) = _ModuleClass;
 
   factory ModuleClass.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -26,14 +26,25 @@ class ModuleClass extends _i1.SerializableEntity {
     );
   }
 
-  final String name;
-
-  final int data;
-
-  late Function({
+  ModuleClass copyWith({
     String? name,
     int? data,
-  }) copyWith = _copyWith;
+  });
+  String get name;
+  int get data;
+}
+
+class _ModuleClass extends ModuleClass {
+  const _ModuleClass({
+    required this.name,
+    required this.data,
+  }) : super._();
+
+  @override
+  final String name;
+
+  @override
+  final int data;
 
   @override
   Map<String, dynamic> toJson() {
@@ -68,7 +79,8 @@ class ModuleClass extends _i1.SerializableEntity {
         data,
       );
 
-  ModuleClass _copyWith({
+  @override
+  ModuleClass copyWith({
     String? name,
     int? data,
   }) {

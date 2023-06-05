@@ -14,7 +14,7 @@ void main() {
 
   group('Redis cache set and get', () {
     test('Set and get', () async {
-      var data = SimpleData(num: 42);
+      var data = const SimpleData(num: 42);
       await client.redis.setSimpleData('test', data);
 
       var retrievedData = await client.redis.getSimpleData('test');
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('Expiring object', () async {
-      var data = SimpleData(num: 42);
+      var data = const SimpleData(num: 42);
       await client.redis.setSimpleDataWithLifetime('test', data);
 
       var retrievedData = await client.redis.getSimpleData('test');
@@ -51,7 +51,7 @@ void main() {
 
   group('Redis message central', () {
     test('Post and listen', () async {
-      var data = SimpleData(num: 42);
+      var data = const SimpleData(num: 42);
 
       SimpleData? retrieved;
       unawaited(client.redis.listenToChannel('test').then((value) {

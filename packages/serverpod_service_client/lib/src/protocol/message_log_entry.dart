@@ -8,23 +8,23 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// A log entry for a message sent in a streaming session.
-class MessageLogEntry extends _i1.SerializableEntity {
-  MessageLogEntry({
-    this.id,
-    required this.sessionLogId,
-    required this.serverId,
-    required this.messageId,
-    required this.endpoint,
-    required this.messageName,
-    required this.duration,
-    this.error,
-    this.stackTrace,
-    required this.slow,
-    required this.order,
-  });
+abstract class MessageLogEntry extends _i1.SerializableEntity {
+  const MessageLogEntry._();
+
+  const factory MessageLogEntry({
+    int? id,
+    required int sessionLogId,
+    required String serverId,
+    required int messageId,
+    required String endpoint,
+    required String messageName,
+    required double duration,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _MessageLogEntry;
 
   factory MessageLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -53,44 +53,7 @@ class MessageLogEntry extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// Id of the session this entry is associated with.
-  final int sessionLogId;
-
-  /// The id of the server that handled the message.
-  final String serverId;
-
-  /// The id of the message this entry is associcated with.
-  final int messageId;
-
-  /// The entpoint this message is associated with.
-  final String endpoint;
-
-  /// The class name of the message this entry is associated with.
-  final String messageName;
-
-  /// The duration of handling of this message.
-  final double duration;
-
-  /// Error is set if an error or exception was thrown during the handling of
-  /// this message.
-  final String? error;
-
-  /// The stack trace of an error that was thrown during the handling of this
-  /// message.
-  final String? stackTrace;
-
-  /// The handling of this message was slow.
-  final bool slow;
-
-  /// Used for sorting the message log.
-  final int order;
-
-  late Function({
+  MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
     String? serverId,
@@ -102,7 +65,111 @@ class MessageLogEntry extends _i1.SerializableEntity {
     String? stackTrace,
     bool? slow,
     int? order,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// Id of the session this entry is associated with.
+  int get sessionLogId;
+
+  /// The id of the server that handled the message.
+  String get serverId;
+
+  /// The id of the message this entry is associcated with.
+  int get messageId;
+
+  /// The entpoint this message is associated with.
+  String get endpoint;
+
+  /// The class name of the message this entry is associated with.
+  String get messageName;
+
+  /// The duration of handling of this message.
+  double get duration;
+
+  /// Error is set if an error or exception was thrown during the handling of
+  /// this message.
+  String? get error;
+
+  /// The stack trace of an error that was thrown during the handling of this
+  /// message.
+  String? get stackTrace;
+
+  /// The handling of this message was slow.
+  bool get slow;
+
+  /// Used for sorting the message log.
+  int get order;
+}
+
+class _Undefined {}
+
+/// A log entry for a message sent in a streaming session.
+class _MessageLogEntry extends MessageLogEntry {
+  const _MessageLogEntry({
+    this.id,
+    required this.sessionLogId,
+    required this.serverId,
+    required this.messageId,
+    required this.endpoint,
+    required this.messageName,
+    required this.duration,
+    this.error,
+    this.stackTrace,
+    required this.slow,
+    required this.order,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// Id of the session this entry is associated with.
+  @override
+  final int sessionLogId;
+
+  /// The id of the server that handled the message.
+  @override
+  final String serverId;
+
+  /// The id of the message this entry is associcated with.
+  @override
+  final int messageId;
+
+  /// The entpoint this message is associated with.
+  @override
+  final String endpoint;
+
+  /// The class name of the message this entry is associated with.
+  @override
+  final String messageName;
+
+  /// The duration of handling of this message.
+  @override
+  final double duration;
+
+  /// Error is set if an error or exception was thrown during the handling of
+  /// this message.
+  @override
+  final String? error;
+
+  /// The stack trace of an error that was thrown during the handling of this
+  /// message.
+  @override
+  final String? stackTrace;
+
+  /// The handling of this message was slow.
+  @override
+  final bool slow;
+
+  /// Used for sorting the message log.
+  @override
+  final int order;
 
   @override
   Map<String, dynamic> toJson() {
@@ -200,7 +267,8 @@ class MessageLogEntry extends _i1.SerializableEntity {
         order,
       );
 
-  MessageLogEntry _copyWith({
+  @override
+  MessageLogEntry copyWith({
     Object? id = _Undefined,
     int? sessionLogId,
     String? serverId,

@@ -7,10 +7,10 @@ import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -137,7 +137,7 @@ class Serverpod {
   }
 
   internal.RuntimeSettings get _defaultRuntimeSettings {
-    return internal.RuntimeSettings(
+    return const internal.RuntimeSettings(
       logSettings: internal.LogSettings(
         logAllSessions: false,
         logAllQueries: false,
@@ -162,11 +162,13 @@ class Serverpod {
       var oldRuntimeSettings =
           await session.db.findSingleRow<internal.RuntimeSettings>();
       if (oldRuntimeSettings == null) {
-        settings.id = null;
+        settings = settings.copyWith(id: null);
+        
         await session.db.insert(settings);
       }
 
-      settings.id = oldRuntimeSettings!.id;
+      settings = settings.copyWith(id: oldRuntimeSettings!.id);
+      
       await session.db.update(settings);
     } catch (e, stackTrace) {
       await session.close(error: e, stackTrace: stackTrace);

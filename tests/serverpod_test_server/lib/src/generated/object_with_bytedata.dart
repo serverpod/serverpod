@@ -9,13 +9,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class _Undefined {}
+typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
+    ObjectWithByteDataTable);
 
-class ObjectWithByteData extends _i1.TableRow {
-  ObjectWithByteData({
+abstract class ObjectWithByteData extends _i1.TableRow {
+  const ObjectWithByteData._();
+
+  const factory ObjectWithByteData({
     int? id,
-    required this.byteData,
-  }) : super(id);
+    required _i2.ByteData byteData,
+  }) = _ObjectWithByteData;
 
   factory ObjectWithByteData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -28,60 +31,14 @@ class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithByteDataTable();
+  static const t = ObjectWithByteDataTable();
 
-  final _i2.ByteData byteData;
-
-  late Function({
+  ObjectWithByteData copyWith({
     int? id,
     _i2.ByteData? byteData,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_bytedata';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'byteData': byteData,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithByteData &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.byteData,
-                  byteData,
-                ) ||
-                other.byteData == byteData));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        byteData,
-      );
-
-  ObjectWithByteData _copyWith({
-    Object? id = _Undefined,
-    _i2.ByteData? byteData,
-  }) {
-    return ObjectWithByteData(
-      id: id == _Undefined ? this.id : (id as int?),
-      byteData: byteData ?? this.byteData,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -197,20 +154,77 @@ class ObjectWithByteData extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  _i2.ByteData get byteData;
 }
 
-typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
-    ObjectWithByteDataTable);
+class _Undefined {}
+
+class _ObjectWithByteData extends ObjectWithByteData {
+  const _ObjectWithByteData({
+    int? id,
+    required this.byteData,
+  }) : super._();
+
+  @override
+  final _i2.ByteData byteData;
+
+  @override
+  String get tableName => 'object_with_bytedata';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'byteData': byteData,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithByteData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.byteData,
+                  byteData,
+                ) ||
+                other.byteData == byteData));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        byteData,
+      );
+
+  @override
+  ObjectWithByteData copyWith({
+    Object? id = _Undefined,
+    _i2.ByteData? byteData,
+  }) {
+    return ObjectWithByteData(
+      id: id == _Undefined ? this.id : (id as int?),
+      byteData: byteData ?? this.byteData,
+    );
+  }
+}
 
 class ObjectWithByteDataTable extends _i1.Table {
-  ObjectWithByteDataTable() : super(tableName: 'object_with_bytedata');
+  const ObjectWithByteDataTable() : super(tableName: 'object_with_bytedata');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final byteData = _i1.ColumnByteData('byteData');
+  final byteData = const _i1.ColumnByteData('byteData');
 
   @override
   List<_i1.Column> get columns => [
@@ -220,4 +234,4 @@ class ObjectWithByteDataTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithByteDataTable.t instead.')
-ObjectWithByteDataTable tObjectWithByteData = ObjectWithByteDataTable();
+ObjectWithByteDataTable tObjectWithByteData = const ObjectWithByteDataTable();

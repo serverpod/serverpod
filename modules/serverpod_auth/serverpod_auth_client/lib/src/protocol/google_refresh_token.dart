@@ -8,15 +8,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Database bindings for a Google refresh token.
-class GoogleRefreshToken extends _i1.SerializableEntity {
-  GoogleRefreshToken({
-    this.id,
-    required this.userId,
-    required this.refreshToken,
-  });
+abstract class GoogleRefreshToken extends _i1.SerializableEntity {
+  const GoogleRefreshToken._();
+
+  const factory GoogleRefreshToken({
+    int? id,
+    required int userId,
+    required String refreshToken,
+  }) = _GoogleRefreshToken;
 
   factory GoogleRefreshToken.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,22 +31,47 @@ class GoogleRefreshToken extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The user id associated with the token.
-  final int userId;
-
-  /// The token iteself.
-  final String refreshToken;
-
-  late Function({
+  GoogleRefreshToken copyWith({
     int? id,
     int? userId,
     String? refreshToken,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The user id associated with the token.
+  int get userId;
+
+  /// The token iteself.
+  String get refreshToken;
+}
+
+class _Undefined {}
+
+/// Database bindings for a Google refresh token.
+class _GoogleRefreshToken extends GoogleRefreshToken {
+  const _GoogleRefreshToken({
+    this.id,
+    required this.userId,
+    required this.refreshToken,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The user id associated with the token.
+  @override
+  final int userId;
+
+  /// The token iteself.
+  @override
+  final String refreshToken;
 
   @override
   Map<String, dynamic> toJson() {
@@ -88,7 +113,8 @@ class GoogleRefreshToken extends _i1.SerializableEntity {
         refreshToken,
       );
 
-  GoogleRefreshToken _copyWith({
+  @override
+  GoogleRefreshToken copyWith({
     Object? id = _Undefined,
     int? userId,
     String? refreshToken,

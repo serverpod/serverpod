@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class ObjectWithIndex extends _i1.SerializableEntity {
+  const ObjectWithIndex._();
 
-class ObjectWithIndex extends _i1.SerializableEntity {
-  ObjectWithIndex({
-    this.id,
-    required this.indexed,
-    required this.indexed2,
-  });
+  const factory ObjectWithIndex({
+    int? id,
+    required int indexed,
+    required int indexed2,
+  }) = _ObjectWithIndex;
 
   factory ObjectWithIndex.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,20 +30,40 @@ class ObjectWithIndex extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final int indexed;
-
-  final int indexed2;
-
-  late Function({
+  ObjectWithIndex copyWith({
     int? id,
     int? indexed,
     int? indexed2,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  int get indexed;
+  int get indexed2;
+}
+
+class _Undefined {}
+
+class _ObjectWithIndex extends ObjectWithIndex {
+  const _ObjectWithIndex({
+    this.id,
+    required this.indexed,
+    required this.indexed2,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final int indexed;
+
+  @override
+  final int indexed2;
 
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +105,8 @@ class ObjectWithIndex extends _i1.SerializableEntity {
         indexed2,
       );
 
-  ObjectWithIndex _copyWith({
+  @override
+  ObjectWithIndex copyWith({
     Object? id = _Undefined,
     int? indexed,
     int? indexed2,

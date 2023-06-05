@@ -8,23 +8,26 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
+    QueryLogEntryTable);
 
 /// A log entry for a database query.
-class QueryLogEntry extends _i1.TableRow {
-  QueryLogEntry({
+abstract class QueryLogEntry extends _i1.TableRow {
+  const QueryLogEntry._();
+
+  const factory QueryLogEntry({
     int? id,
-    required this.serverId,
-    required this.sessionLogId,
-    this.messageId,
-    required this.query,
-    required this.duration,
-    this.numRows,
-    this.error,
-    this.stackTrace,
-    required this.slow,
-    required this.order,
-  }) : super(id);
+    required String serverId,
+    required int sessionLogId,
+    int? messageId,
+    required String query,
+    required double duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _QueryLogEntry;
 
   factory QueryLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -53,41 +56,9 @@ class QueryLogEntry extends _i1.TableRow {
     );
   }
 
-  static var t = QueryLogEntryTable();
+  static const t = QueryLogEntryTable();
 
-  /// The id of the server that handled the query.
-  final String serverId;
-
-  /// Id of the session this entry is associated with.
-  final int sessionLogId;
-
-  /// The id of the message this entry is associcated with, if the query was
-  /// executed in a streaming session.
-  final int? messageId;
-
-  /// The query that was executed.
-  final String query;
-
-  /// The time it took to execute the query, in seconds.
-  final double duration;
-
-  /// Number of rows returned by this query. This can be null if the number is
-  /// not relevant.
-  final int? numRows;
-
-  /// Set if an exception was thrown during the execution of this query.
-  final String? error;
-
-  /// The stack trace of this query.
-  final String? stackTrace;
-
-  /// True if the execution of this query was considered slow.
-  final bool slow;
-
-  /// used for sorting the query log.
-  final int order;
-
-  late Function({
+  QueryLogEntry copyWith({
     int? id,
     String? serverId,
     int? sessionLogId,
@@ -99,135 +70,9 @@ class QueryLogEntry extends _i1.TableRow {
     String? stackTrace,
     bool? slow,
     int? order,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_query_log';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'serverId': serverId,
-      'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'query': query,
-      'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
-      'slow': slow,
-      'order': order,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is QueryLogEntry &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.serverId,
-                  serverId,
-                ) ||
-                other.serverId == serverId) &&
-            (identical(
-                  other.sessionLogId,
-                  sessionLogId,
-                ) ||
-                other.sessionLogId == sessionLogId) &&
-            (identical(
-                  other.messageId,
-                  messageId,
-                ) ||
-                other.messageId == messageId) &&
-            (identical(
-                  other.query,
-                  query,
-                ) ||
-                other.query == query) &&
-            (identical(
-                  other.duration,
-                  duration,
-                ) ||
-                other.duration == duration) &&
-            (identical(
-                  other.numRows,
-                  numRows,
-                ) ||
-                other.numRows == numRows) &&
-            (identical(
-                  other.error,
-                  error,
-                ) ||
-                other.error == error) &&
-            (identical(
-                  other.stackTrace,
-                  stackTrace,
-                ) ||
-                other.stackTrace == stackTrace) &&
-            (identical(
-                  other.slow,
-                  slow,
-                ) ||
-                other.slow == slow) &&
-            (identical(
-                  other.order,
-                  order,
-                ) ||
-                other.order == order));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        serverId,
-        sessionLogId,
-        messageId,
-        query,
-        duration,
-        numRows,
-        error,
-        stackTrace,
-        slow,
-        order,
-      );
-
-  QueryLogEntry _copyWith({
-    Object? id = _Undefined,
-    String? serverId,
-    int? sessionLogId,
-    Object? messageId = _Undefined,
-    String? query,
-    double? duration,
-    Object? numRows = _Undefined,
-    Object? error = _Undefined,
-    Object? stackTrace = _Undefined,
-    bool? slow,
-    int? order,
-  }) {
-    return QueryLogEntry(
-      id: id == _Undefined ? this.id : (id as int?),
-      serverId: serverId ?? this.serverId,
-      sessionLogId: sessionLogId ?? this.sessionLogId,
-      messageId: messageId == _Undefined ? this.messageId : (messageId as int?),
-      query: query ?? this.query,
-      duration: duration ?? this.duration,
-      numRows: numRows == _Undefined ? this.numRows : (numRows as int?),
-      error: error == _Undefined ? this.error : (error as String?),
-      stackTrace:
-          stackTrace == _Undefined ? this.stackTrace : (stackTrace as String?),
-      slow: slow ?? this.slow,
-      order: order ?? this.order,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -352,50 +197,268 @@ class QueryLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The id of the server that handled the query.
+  String get serverId;
+
+  /// Id of the session this entry is associated with.
+  int get sessionLogId;
+
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
+  int? get messageId;
+
+  /// The query that was executed.
+  String get query;
+
+  /// The time it took to execute the query, in seconds.
+  double get duration;
+
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
+  int? get numRows;
+
+  /// Set if an exception was thrown during the execution of this query.
+  String? get error;
+
+  /// The stack trace of this query.
+  String? get stackTrace;
+
+  /// True if the execution of this query was considered slow.
+  bool get slow;
+
+  /// used for sorting the query log.
+  int get order;
 }
 
-typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
-    QueryLogEntryTable);
+class _Undefined {}
+
+/// A log entry for a database query.
+class _QueryLogEntry extends QueryLogEntry {
+  const _QueryLogEntry({
+    int? id,
+    required this.serverId,
+    required this.sessionLogId,
+    this.messageId,
+    required this.query,
+    required this.duration,
+    this.numRows,
+    this.error,
+    this.stackTrace,
+    required this.slow,
+    required this.order,
+  }) : super._();
+
+  /// The id of the server that handled the query.
+  @override
+  final String serverId;
+
+  /// Id of the session this entry is associated with.
+  @override
+  final int sessionLogId;
+
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
+  @override
+  final int? messageId;
+
+  /// The query that was executed.
+  @override
+  final String query;
+
+  /// The time it took to execute the query, in seconds.
+  @override
+  final double duration;
+
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
+  @override
+  final int? numRows;
+
+  /// Set if an exception was thrown during the execution of this query.
+  @override
+  final String? error;
+
+  /// The stack trace of this query.
+  @override
+  final String? stackTrace;
+
+  /// True if the execution of this query was considered slow.
+  @override
+  final bool slow;
+
+  /// used for sorting the query log.
+  @override
+  final int order;
+
+  @override
+  String get tableName => 'serverpod_query_log';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'serverId': serverId,
+      'sessionLogId': sessionLogId,
+      'messageId': messageId,
+      'query': query,
+      'duration': duration,
+      'numRows': numRows,
+      'error': error,
+      'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is QueryLogEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.sessionLogId,
+                  sessionLogId,
+                ) ||
+                other.sessionLogId == sessionLogId) &&
+            (identical(
+                  other.messageId,
+                  messageId,
+                ) ||
+                other.messageId == messageId) &&
+            (identical(
+                  other.query,
+                  query,
+                ) ||
+                other.query == query) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration) &&
+            (identical(
+                  other.numRows,
+                  numRows,
+                ) ||
+                other.numRows == numRows) &&
+            (identical(
+                  other.error,
+                  error,
+                ) ||
+                other.error == error) &&
+            (identical(
+                  other.stackTrace,
+                  stackTrace,
+                ) ||
+                other.stackTrace == stackTrace) &&
+            (identical(
+                  other.slow,
+                  slow,
+                ) ||
+                other.slow == slow) &&
+            (identical(
+                  other.order,
+                  order,
+                ) ||
+                other.order == order));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        serverId,
+        sessionLogId,
+        messageId,
+        query,
+        duration,
+        numRows,
+        error,
+        stackTrace,
+        slow,
+        order,
+      );
+
+  @override
+  QueryLogEntry copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    int? sessionLogId,
+    Object? messageId = _Undefined,
+    String? query,
+    double? duration,
+    Object? numRows = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    bool? slow,
+    int? order,
+  }) {
+    return QueryLogEntry(
+      id: id == _Undefined ? this.id : (id as int?),
+      serverId: serverId ?? this.serverId,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId == _Undefined ? this.messageId : (messageId as int?),
+      query: query ?? this.query,
+      duration: duration ?? this.duration,
+      numRows: numRows == _Undefined ? this.numRows : (numRows as int?),
+      error: error == _Undefined ? this.error : (error as String?),
+      stackTrace:
+          stackTrace == _Undefined ? this.stackTrace : (stackTrace as String?),
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
+  }
+}
 
 class QueryLogEntryTable extends _i1.Table {
-  QueryLogEntryTable() : super(tableName: 'serverpod_query_log');
+  const QueryLogEntryTable() : super(tableName: 'serverpod_query_log');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The id of the server that handled the query.
-  final serverId = _i1.ColumnString('serverId');
+  final serverId = const _i1.ColumnString('serverId');
 
   /// Id of the session this entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  final sessionLogId = const _i1.ColumnInt('sessionLogId');
 
   /// The id of the message this entry is associcated with, if the query was
   /// executed in a streaming session.
-  final messageId = _i1.ColumnInt('messageId');
+  final messageId = const _i1.ColumnInt('messageId');
 
   /// The query that was executed.
-  final query = _i1.ColumnString('query');
+  final query = const _i1.ColumnString('query');
 
   /// The time it took to execute the query, in seconds.
-  final duration = _i1.ColumnDouble('duration');
+  final duration = const _i1.ColumnDouble('duration');
 
   /// Number of rows returned by this query. This can be null if the number is
   /// not relevant.
-  final numRows = _i1.ColumnInt('numRows');
+  final numRows = const _i1.ColumnInt('numRows');
 
   /// Set if an exception was thrown during the execution of this query.
-  final error = _i1.ColumnString('error');
+  final error = const _i1.ColumnString('error');
 
   /// The stack trace of this query.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  final stackTrace = const _i1.ColumnString('stackTrace');
 
   /// True if the execution of this query was considered slow.
-  final slow = _i1.ColumnBool('slow');
+  final slow = const _i1.ColumnBool('slow');
 
   /// used for sorting the query log.
-  final order = _i1.ColumnInt('order');
+  final order = const _i1.ColumnInt('order');
 
   @override
   List<_i1.Column> get columns => [
@@ -414,4 +477,4 @@ class QueryLogEntryTable extends _i1.Table {
 }
 
 @Deprecated('Use QueryLogEntryTable.t instead.')
-QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();
+QueryLogEntryTable tQueryLogEntry = const QueryLogEntryTable();

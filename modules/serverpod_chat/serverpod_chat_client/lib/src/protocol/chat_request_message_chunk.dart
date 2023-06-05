@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Message to request a new chunk of messages from the server.
-class ChatRequestMessageChunk extends _i1.SerializableEntity {
-  ChatRequestMessageChunk({
-    required this.channel,
-    required this.lastMessageId,
-  });
+abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
+  const ChatRequestMessageChunk._();
+
+  const factory ChatRequestMessageChunk({
+    required String channel,
+    required int lastMessageId,
+  }) = _ChatRequestMessageChunk;
 
   factory ChatRequestMessageChunk.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,16 +29,32 @@ class ChatRequestMessageChunk extends _i1.SerializableEntity {
     );
   }
 
+  ChatRequestMessageChunk copyWith({
+    String? channel,
+    int? lastMessageId,
+  });
+
   /// The channel to request messages from.
+  String get channel;
+
+  /// The id of the last read message.
+  int get lastMessageId;
+}
+
+/// Message to request a new chunk of messages from the server.
+class _ChatRequestMessageChunk extends ChatRequestMessageChunk {
+  const _ChatRequestMessageChunk({
+    required this.channel,
+    required this.lastMessageId,
+  }) : super._();
+
+  /// The channel to request messages from.
+  @override
   final String channel;
 
   /// The id of the last read message.
+  @override
   final int lastMessageId;
-
-  late Function({
-    String? channel,
-    int? lastMessageId,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -73,7 +89,8 @@ class ChatRequestMessageChunk extends _i1.SerializableEntity {
         lastMessageId,
       );
 
-  ChatRequestMessageChunk _copyWith({
+  @override
+  ChatRequestMessageChunk copyWith({
     String? channel,
     int? lastMessageId,
   }) {

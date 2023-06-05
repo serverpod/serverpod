@@ -115,7 +115,8 @@ class BasicDatabase extends Endpoint {
 
     if (data == null) return false;
 
-    data.num = newNum;
+    data = data.copyWith(num: newNum);
+
     return await SimpleData.update(session, data);
   }
 

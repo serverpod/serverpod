@@ -9,17 +9,17 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
-class LogSettingsOverride extends _i1.SerializableEntity {
-  LogSettingsOverride({
-    this.module,
-    this.endpoint,
-    this.method,
-    required this.logSettings,
-  });
+abstract class LogSettingsOverride extends _i1.SerializableEntity {
+  const LogSettingsOverride._();
+
+  const factory LogSettingsOverride({
+    String? module,
+    String? endpoint,
+    String? method,
+    required _i2.LogSettings logSettings,
+  }) = _LogSettingsOverride;
 
   factory LogSettingsOverride.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,24 +37,53 @@ class LogSettingsOverride extends _i1.SerializableEntity {
     );
   }
 
-  /// Module to override settings for, null for main project.
-  final String? module;
-
-  /// Endpoint to override settings for.
-  final String? endpoint;
-
-  /// Method to override settings for.
-  final String? method;
-
-  /// Log settings override.
-  final _i2.LogSettings logSettings;
-
-  late Function({
+  LogSettingsOverride copyWith({
     String? module,
     String? endpoint,
     String? method,
     _i2.LogSettings? logSettings,
-  }) copyWith = _copyWith;
+  });
+
+  /// Module to override settings for, null for main project.
+  String? get module;
+
+  /// Endpoint to override settings for.
+  String? get endpoint;
+
+  /// Method to override settings for.
+  String? get method;
+
+  /// Log settings override.
+  _i2.LogSettings get logSettings;
+}
+
+class _Undefined {}
+
+/// Information about an override for log settings for either an entire
+/// endpoint or a specific method.
+class _LogSettingsOverride extends LogSettingsOverride {
+  const _LogSettingsOverride({
+    this.module,
+    this.endpoint,
+    this.method,
+    required this.logSettings,
+  }) : super._();
+
+  /// Module to override settings for, null for main project.
+  @override
+  final String? module;
+
+  /// Endpoint to override settings for.
+  @override
+  final String? endpoint;
+
+  /// Method to override settings for.
+  @override
+  final String? method;
+
+  /// Log settings override.
+  @override
+  final _i2.LogSettings logSettings;
 
   @override
   Map<String, dynamic> toJson() {
@@ -103,7 +132,8 @@ class LogSettingsOverride extends _i1.SerializableEntity {
         logSettings,
       );
 
-  LogSettingsOverride _copyWith({
+  @override
+  LogSettingsOverride copyWith({
     Object? module = _Undefined,
     Object? endpoint = _Undefined,
     Object? method = _Undefined,

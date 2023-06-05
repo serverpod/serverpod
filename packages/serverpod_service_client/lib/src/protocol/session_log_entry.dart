@@ -8,26 +8,26 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Log entry for a session.
-class SessionLogEntry extends _i1.SerializableEntity {
-  SessionLogEntry({
-    this.id,
-    required this.serverId,
-    required this.time,
-    this.module,
-    this.endpoint,
-    this.method,
-    this.duration,
-    this.numQueries,
-    this.slow,
-    this.error,
-    this.stackTrace,
-    this.authenticatedUserId,
-    this.isOpen,
-    required this.touched,
-  });
+abstract class SessionLogEntry extends _i1.SerializableEntity {
+  const SessionLogEntry._();
+
+  const factory SessionLogEntry({
+    int? id,
+    required String serverId,
+    required DateTime time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    required DateTime touched,
+  }) = _SessionLogEntry;
 
   factory SessionLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -63,55 +63,7 @@ class SessionLogEntry extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The id of the server that handled this session.
-  final String serverId;
-
-  /// The starting time of this session.
-  final DateTime time;
-
-  /// The module this session is associated with, if any.
-  final String? module;
-
-  /// The endpoint this session is associated with, if any.
-  final String? endpoint;
-
-  /// The method this session is associated with, if any.
-  final String? method;
-
-  /// The running time of this session. May be null if the session is still
-  /// active.
-  final double? duration;
-
-  /// The number of queries performed during this session.
-  final int? numQueries;
-
-  /// True if this session was slow to complete.
-  final bool? slow;
-
-  /// If the session ends with an exception, the error field will be set.
-  final String? error;
-
-  /// If the session ends with an exception, a stack trace will be set.
-  final String? stackTrace;
-
-  /// The id of an authenticated user associated with this session. The user id
-  /// is only set if it has been requested during the session. This means that
-  /// it can be null, even though the session was performed by an authenticated
-  /// user.
-  final int? authenticatedUserId;
-
-  /// True if the session is still open.
-  final bool? isOpen;
-
-  /// Timestamp of the last time this record was modified.
-  final DateTime touched;
-
-  late Function({
+  SessionLogEntry copyWith({
     int? id,
     String? serverId,
     DateTime? time,
@@ -126,7 +78,139 @@ class SessionLogEntry extends _i1.SerializableEntity {
     int? authenticatedUserId,
     bool? isOpen,
     DateTime? touched,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The id of the server that handled this session.
+  String get serverId;
+
+  /// The starting time of this session.
+  DateTime get time;
+
+  /// The module this session is associated with, if any.
+  String? get module;
+
+  /// The endpoint this session is associated with, if any.
+  String? get endpoint;
+
+  /// The method this session is associated with, if any.
+  String? get method;
+
+  /// The running time of this session. May be null if the session is still
+  /// active.
+  double? get duration;
+
+  /// The number of queries performed during this session.
+  int? get numQueries;
+
+  /// True if this session was slow to complete.
+  bool? get slow;
+
+  /// If the session ends with an exception, the error field will be set.
+  String? get error;
+
+  /// If the session ends with an exception, a stack trace will be set.
+  String? get stackTrace;
+
+  /// The id of an authenticated user associated with this session. The user id
+  /// is only set if it has been requested during the session. This means that
+  /// it can be null, even though the session was performed by an authenticated
+  /// user.
+  int? get authenticatedUserId;
+
+  /// True if the session is still open.
+  bool? get isOpen;
+
+  /// Timestamp of the last time this record was modified.
+  DateTime get touched;
+}
+
+class _Undefined {}
+
+/// Log entry for a session.
+class _SessionLogEntry extends SessionLogEntry {
+  const _SessionLogEntry({
+    this.id,
+    required this.serverId,
+    required this.time,
+    this.module,
+    this.endpoint,
+    this.method,
+    this.duration,
+    this.numQueries,
+    this.slow,
+    this.error,
+    this.stackTrace,
+    this.authenticatedUserId,
+    this.isOpen,
+    required this.touched,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The id of the server that handled this session.
+  @override
+  final String serverId;
+
+  /// The starting time of this session.
+  @override
+  final DateTime time;
+
+  /// The module this session is associated with, if any.
+  @override
+  final String? module;
+
+  /// The endpoint this session is associated with, if any.
+  @override
+  final String? endpoint;
+
+  /// The method this session is associated with, if any.
+  @override
+  final String? method;
+
+  /// The running time of this session. May be null if the session is still
+  /// active.
+  @override
+  final double? duration;
+
+  /// The number of queries performed during this session.
+  @override
+  final int? numQueries;
+
+  /// True if this session was slow to complete.
+  @override
+  final bool? slow;
+
+  /// If the session ends with an exception, the error field will be set.
+  @override
+  final String? error;
+
+  /// If the session ends with an exception, a stack trace will be set.
+  @override
+  final String? stackTrace;
+
+  /// The id of an authenticated user associated with this session. The user id
+  /// is only set if it has been requested during the session. This means that
+  /// it can be null, even though the session was performed by an authenticated
+  /// user.
+  @override
+  final int? authenticatedUserId;
+
+  /// True if the session is still open.
+  @override
+  final bool? isOpen;
+
+  /// Timestamp of the last time this record was modified.
+  @override
+  final DateTime touched;
 
   @override
   Map<String, dynamic> toJson() {
@@ -245,7 +329,8 @@ class SessionLogEntry extends _i1.SerializableEntity {
         touched,
       );
 
-  SessionLogEntry _copyWith({
+  @override
+  SessionLogEntry copyWith({
     Object? id = _Undefined,
     String? serverId,
     DateTime? time,

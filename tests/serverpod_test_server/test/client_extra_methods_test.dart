@@ -19,12 +19,12 @@ void main() {
 
   var a = ExtraDataClass(
     duration: const Duration(seconds: 10),
-    object: ExtraDataSimple(),
+    object: const ExtraDataSimple(),
     list: [
-      ExtraDataSimple(num: 10),
+      const ExtraDataSimple(num: 10),
     ],
-    nullableList: [ExtraDataSimple(num: 10)],
-    optionalValueList: [null, ExtraDataSimple(num: 10)],
+    nullableList: [const ExtraDataSimple(num: 10)],
+    optionalValueList: [null, const ExtraDataSimple(num: 10)],
     testEnum: TestEnum.three,
     nullableEnum: TestEnum.two,
     enumList: [TestEnum.two, TestEnum.one],
@@ -33,14 +33,14 @@ void main() {
       [TestEnum.two, TestEnum.one],
       [TestEnum.one, TestEnum.three]
     ],
-    dataMap: {'1': ExtraDataSimple(num: 10)},
+    dataMap: {'1': const ExtraDataSimple(num: 10)},
     intMap: {'1': 10, '2': 10},
     stringMap: {'1': '10', '2': '10'},
     dateTimeMap: {'1': DateTime(10, 10, 10)},
     byteDataMap: {'1': bytes},
     durationMap: {'1': const Duration(hours: 10)},
     uuidMap: {'1': UuidValue(uuid)},
-    nullableDataMap: {'1': null, '2': ExtraDataSimple(num: 10)},
+    nullableDataMap: {'1': null, '2': const ExtraDataSimple(num: 10)},
     nullableIntMap: {'1': null, '2': 2},
     nullableStringMap: {'1': null, '2': '2'},
     nullableDateTimeMap: {'1': null, '2': DateTime(10, 10, 10)},
@@ -59,11 +59,13 @@ void main() {
     });
 
     test('simple class equal', () {
-      expect(ExtraDataSimple(num: 10), equals(ExtraDataSimple(num: 10)));
+      expect(const ExtraDataSimple(num: 10),
+          equals(const ExtraDataSimple(num: 10)));
     });
 
     test('not equal', () {
-      expect(ExtraDataSimple(num: 0), isNot(ExtraDataSimple(num: 10)));
+      expect(
+          const ExtraDataSimple(num: 0), isNot(const ExtraDataSimple(num: 10)));
     });
 
     test('empty withCopy: equals', () {
@@ -82,32 +84,32 @@ void main() {
     });
 
     test('object equals', () {
-      var b = a.copyWith(object: ExtraDataSimple());
+      var b = a.copyWith(object: const ExtraDataSimple());
       expect(a, equals(b));
     });
 
     test('object is not equal', () {
-      var b = a.copyWith(object: ExtraDataSimple(num: 5));
+      var b = a.copyWith(object: const ExtraDataSimple(num: 5));
       expect(a, isNot(b));
     });
 
     test('list equals', () {
-      var b = a.copyWith(list: [ExtraDataSimple(num: 10)]);
+      var b = a.copyWith(list: [const ExtraDataSimple(num: 10)]);
       expect(a, equals(b));
     });
 
     test('list is not equal', () {
-      var b = a.copyWith(list: [ExtraDataSimple()]);
+      var b = a.copyWith(list: [const ExtraDataSimple()]);
       expect(a, isNot(b));
     });
 
     test('nullableList equals', () {
-      var b = a.copyWith(nullableList: [ExtraDataSimple(num: 10)]);
+      var b = a.copyWith(nullableList: [const ExtraDataSimple(num: 10)]);
       expect(a, equals(b));
     });
 
     test('nullableList is not equal', () {
-      var b = a.copyWith(nullableList: [ExtraDataSimple()]);
+      var b = a.copyWith(nullableList: [const ExtraDataSimple()]);
       expect(a, isNot(b));
     });
 
@@ -118,12 +120,13 @@ void main() {
     });
 
     test('optionalValueList equals', () {
-      var b = a.copyWith(optionalValueList: [null, ExtraDataSimple(num: 10)]);
+      var b =
+          a.copyWith(optionalValueList: [null, const ExtraDataSimple(num: 10)]);
       expect(a, equals(b));
     });
 
     test('optionalValueList is not equal', () {
-      var b = a.copyWith(optionalValueList: [ExtraDataSimple()]);
+      var b = a.copyWith(optionalValueList: [const ExtraDataSimple()]);
       expect(a, isNot(b));
     });
 
@@ -194,12 +197,12 @@ void main() {
     });
 
     test('dataMap equals', () {
-      var b = a.copyWith(dataMap: {'1': ExtraDataSimple(num: 10)});
+      var b = a.copyWith(dataMap: {'1': const ExtraDataSimple(num: 10)});
       expect(a, equals(b));
     });
 
     test('dataMap is not equal', () {
-      var b = a.copyWith(dataMap: {'2': ExtraDataSimple(num: 10)});
+      var b = a.copyWith(dataMap: {'2': const ExtraDataSimple(num: 10)});
       expect(a, isNot(b));
     });
 
@@ -265,7 +268,7 @@ void main() {
 
     test('nullableDataMap equals', () {
       var b = a.copyWith(
-        nullableDataMap: {'1': null, '2': ExtraDataSimple(num: 10)},
+        nullableDataMap: {'1': null, '2': const ExtraDataSimple(num: 10)},
       );
       expect(a, equals(b));
     });
@@ -364,12 +367,12 @@ void main() {
     test('all fields together equals', () {
       var b = a.copyWith(
         duration: const Duration(seconds: 10),
-        object: ExtraDataSimple(),
+        object: const ExtraDataSimple(),
         list: [
-          ExtraDataSimple(num: 10),
+          const ExtraDataSimple(num: 10),
         ],
-        nullableList: [ExtraDataSimple(num: 10)],
-        optionalValueList: [null, ExtraDataSimple(num: 10)],
+        nullableList: [const ExtraDataSimple(num: 10)],
+        optionalValueList: [null, const ExtraDataSimple(num: 10)],
         testEnum: TestEnum.three,
         nullableEnum: TestEnum.two,
         enumList: [TestEnum.two, TestEnum.one],
@@ -378,14 +381,14 @@ void main() {
           [TestEnum.two, TestEnum.one],
           [TestEnum.one, TestEnum.three]
         ],
-        dataMap: {'1': ExtraDataSimple(num: 10)},
+        dataMap: {'1': const ExtraDataSimple(num: 10)},
         intMap: {'1': 10, '2': 10},
         stringMap: {'1': '10', '2': '10'},
         dateTimeMap: {'1': DateTime(10, 10, 10)},
         byteDataMap: {'1': bytes},
         durationMap: {'1': const Duration(hours: 10)},
         uuidMap: {'1': UuidValue(uuid)},
-        nullableDataMap: {'1': null, '2': ExtraDataSimple(num: 10)},
+        nullableDataMap: {'1': null, '2': const ExtraDataSimple(num: 10)},
         nullableIntMap: {'1': null, '2': 2},
         nullableStringMap: {'1': null, '2': '2'},
         nullableDateTimeMap: {'1': null, '2': DateTime(10, 10, 10)},

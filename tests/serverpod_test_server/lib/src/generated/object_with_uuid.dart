@@ -8,14 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
+    ObjectWithUuidTable);
 
-class ObjectWithUuid extends _i1.TableRow {
-  ObjectWithUuid({
+abstract class ObjectWithUuid extends _i1.TableRow {
+  const ObjectWithUuid._();
+
+  const factory ObjectWithUuid({
     int? id,
-    required this.uuid,
-    this.uuidNullable,
-  }) : super(id);
+    required _i1.UuidValue uuid,
+    _i1.UuidValue? uuidNullable,
+  }) = _ObjectWithUuid;
 
   factory ObjectWithUuid.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,74 +33,15 @@ class ObjectWithUuid extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithUuidTable();
+  static const t = ObjectWithUuidTable();
 
-  final _i1.UuidValue uuid;
-
-  final _i1.UuidValue? uuidNullable;
-
-  late Function({
+  ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
     _i1.UuidValue? uuidNullable,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_uuid';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'uuidNullable': uuidNullable,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithUuid &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.uuid,
-                  uuid,
-                ) ||
-                other.uuid == uuid) &&
-            (identical(
-                  other.uuidNullable,
-                  uuidNullable,
-                ) ||
-                other.uuidNullable == uuidNullable));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        uuid,
-        uuidNullable,
-      );
-
-  ObjectWithUuid _copyWith({
-    Object? id = _Undefined,
-    _i1.UuidValue? uuid,
-    Object? uuidNullable = _Undefined,
-  }) {
-    return ObjectWithUuid(
-      id: id == _Undefined ? this.id : (id as int?),
-      uuid: uuid ?? this.uuid,
-      uuidNullable: uuidNullable == _Undefined
-          ? this.uuidNullable
-          : (uuidNullable as _i1.UuidValue?),
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -214,22 +158,95 @@ class ObjectWithUuid extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  _i1.UuidValue get uuid;
+  _i1.UuidValue? get uuidNullable;
 }
 
-typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
-    ObjectWithUuidTable);
+class _Undefined {}
+
+class _ObjectWithUuid extends ObjectWithUuid {
+  const _ObjectWithUuid({
+    int? id,
+    required this.uuid,
+    this.uuidNullable,
+  }) : super._();
+
+  @override
+  final _i1.UuidValue uuid;
+
+  @override
+  final _i1.UuidValue? uuidNullable;
+
+  @override
+  String get tableName => 'object_with_uuid';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'uuid': uuid,
+      'uuidNullable': uuidNullable,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithUuid &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.uuid,
+                  uuid,
+                ) ||
+                other.uuid == uuid) &&
+            (identical(
+                  other.uuidNullable,
+                  uuidNullable,
+                ) ||
+                other.uuidNullable == uuidNullable));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        uuid,
+        uuidNullable,
+      );
+
+  @override
+  ObjectWithUuid copyWith({
+    Object? id = _Undefined,
+    _i1.UuidValue? uuid,
+    Object? uuidNullable = _Undefined,
+  }) {
+    return ObjectWithUuid(
+      id: id == _Undefined ? this.id : (id as int?),
+      uuid: uuid ?? this.uuid,
+      uuidNullable: uuidNullable == _Undefined
+          ? this.uuidNullable
+          : (uuidNullable as _i1.UuidValue?),
+    );
+  }
+}
 
 class ObjectWithUuidTable extends _i1.Table {
-  ObjectWithUuidTable() : super(tableName: 'object_with_uuid');
+  const ObjectWithUuidTable() : super(tableName: 'object_with_uuid');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final uuid = _i1.ColumnUuid('uuid');
+  final uuid = const _i1.ColumnUuid('uuid');
 
-  final uuidNullable = _i1.ColumnUuid('uuidNullable');
+  final uuidNullable = const _i1.ColumnUuid('uuidNullable');
 
   @override
   List<_i1.Column> get columns => [
@@ -240,4 +257,4 @@ class ObjectWithUuidTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithUuidTable.t instead.')
-ObjectWithUuidTable tObjectWithUuid = ObjectWithUuidTable();
+ObjectWithUuidTable tObjectWithUuid = const ObjectWithUuidTable();

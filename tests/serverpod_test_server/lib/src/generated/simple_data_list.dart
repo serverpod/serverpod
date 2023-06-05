@@ -10,10 +10,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+abstract class SimpleDataList extends _i1.SerializableEntity {
+  const SimpleDataList._();
 
-class SimpleDataList extends _i1.SerializableEntity {
-  SimpleDataList({required this.rows});
+  const factory SimpleDataList({required List<_i2.SimpleData> rows}) =
+      _SimpleDataList;
 
   factory SimpleDataList.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -24,9 +25,15 @@ class SimpleDataList extends _i1.SerializableEntity {
             .deserialize<List<_i2.SimpleData>>(jsonSerialization['rows']));
   }
 
-  final List<_i2.SimpleData> rows;
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows});
+  List<_i2.SimpleData> get rows;
+}
 
-  late Function({List<_i2.SimpleData>? rows}) copyWith = _copyWith;
+class _SimpleDataList extends SimpleDataList {
+  const _SimpleDataList({required this.rows}) : super._();
+
+  @override
+  final List<_i2.SimpleData> rows;
 
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +56,8 @@ class SimpleDataList extends _i1.SerializableEntity {
   @override
   int get hashCode => const _i3.DeepCollectionEquality().hash(rows);
 
-  SimpleDataList _copyWith({List<_i2.SimpleData>? rows}) {
+  @override
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
     return SimpleDataList(rows: rows ?? this.rows);
   }
 }

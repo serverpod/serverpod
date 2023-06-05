@@ -10,17 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
+    RuntimeSettingsTable);
 
 /// Runtime settings of the server.
-class RuntimeSettings extends _i1.TableRow {
-  RuntimeSettings({
+abstract class RuntimeSettings extends _i1.TableRow {
+  const RuntimeSettings._();
+
+  const factory RuntimeSettings({
     int? id,
-    required this.logSettings,
-    required this.logSettingsOverrides,
-    required this.logServiceCalls,
-    required this.logMalformedCalls,
-  }) : super(id);
+    required _i2.LogSettings logSettings,
+    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required bool logServiceCalls,
+    required bool logMalformedCalls,
+  }) = _RuntimeSettings;
 
   factory RuntimeSettings.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,99 +43,17 @@ class RuntimeSettings extends _i1.TableRow {
     );
   }
 
-  static var t = RuntimeSettingsTable();
+  static const t = RuntimeSettingsTable();
 
-  /// Log settings.
-  final _i2.LogSettings logSettings;
-
-  /// List of log setting overrides.
-  final List<_i2.LogSettingsOverride> logSettingsOverrides;
-
-  /// True if service calls to Serverpod Insights should be logged.
-  final bool logServiceCalls;
-
-  /// True if malformed calls should be logged.
-  final bool logMalformedCalls;
-
-  late Function({
+  RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
     List<_i2.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_runtime_settings';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
-      'logServiceCalls': logServiceCalls,
-      'logMalformedCalls': logMalformedCalls,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is RuntimeSettings &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.logSettings,
-                  logSettings,
-                ) ||
-                other.logSettings == logSettings) &&
-            (identical(
-                  other.logServiceCalls,
-                  logServiceCalls,
-                ) ||
-                other.logServiceCalls == logServiceCalls) &&
-            (identical(
-                  other.logMalformedCalls,
-                  logMalformedCalls,
-                ) ||
-                other.logMalformedCalls == logMalformedCalls) &&
-            const _i3.DeepCollectionEquality().equals(
-              logSettingsOverrides,
-              other.logSettingsOverrides,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        logSettings,
-        logServiceCalls,
-        logMalformedCalls,
-        const _i3.DeepCollectionEquality().hash(logSettingsOverrides),
-      );
-
-  RuntimeSettings _copyWith({
-    Object? id = _Undefined,
-    _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
-    bool? logServiceCalls,
-    bool? logMalformedCalls,
-  }) {
-    return RuntimeSettings(
-      id: id == _Undefined ? this.id : (id as int?),
-      logSettings: logSettings ?? this.logSettings,
-      logSettingsOverrides: logSettingsOverrides ?? this.logSettingsOverrides,
-      logServiceCalls: logServiceCalls ?? this.logServiceCalls,
-      logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -251,30 +172,141 @@ class RuntimeSettings extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// Log settings.
+  _i2.LogSettings get logSettings;
+
+  /// List of log setting overrides.
+  List<_i2.LogSettingsOverride> get logSettingsOverrides;
+
+  /// True if service calls to Serverpod Insights should be logged.
+  bool get logServiceCalls;
+
+  /// True if malformed calls should be logged.
+  bool get logMalformedCalls;
 }
 
-typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
-    RuntimeSettingsTable);
+class _Undefined {}
+
+/// Runtime settings of the server.
+class _RuntimeSettings extends RuntimeSettings {
+  const _RuntimeSettings({
+    int? id,
+    required this.logSettings,
+    required this.logSettingsOverrides,
+    required this.logServiceCalls,
+    required this.logMalformedCalls,
+  }) : super._();
+
+  /// Log settings.
+  @override
+  final _i2.LogSettings logSettings;
+
+  /// List of log setting overrides.
+  @override
+  final List<_i2.LogSettingsOverride> logSettingsOverrides;
+
+  /// True if service calls to Serverpod Insights should be logged.
+  @override
+  final bool logServiceCalls;
+
+  /// True if malformed calls should be logged.
+  @override
+  final bool logMalformedCalls;
+
+  @override
+  String get tableName => 'serverpod_runtime_settings';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'logSettings': logSettings,
+      'logSettingsOverrides': logSettingsOverrides,
+      'logServiceCalls': logServiceCalls,
+      'logMalformedCalls': logMalformedCalls,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is RuntimeSettings &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.logSettings,
+                  logSettings,
+                ) ||
+                other.logSettings == logSettings) &&
+            (identical(
+                  other.logServiceCalls,
+                  logServiceCalls,
+                ) ||
+                other.logServiceCalls == logServiceCalls) &&
+            (identical(
+                  other.logMalformedCalls,
+                  logMalformedCalls,
+                ) ||
+                other.logMalformedCalls == logMalformedCalls) &&
+            const _i3.DeepCollectionEquality().equals(
+              logSettingsOverrides,
+              other.logSettingsOverrides,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        logSettings,
+        logServiceCalls,
+        logMalformedCalls,
+        const _i3.DeepCollectionEquality().hash(logSettingsOverrides),
+      );
+
+  @override
+  RuntimeSettings copyWith({
+    Object? id = _Undefined,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  }) {
+    return RuntimeSettings(
+      id: id == _Undefined ? this.id : (id as int?),
+      logSettings: logSettings ?? this.logSettings,
+      logSettingsOverrides: logSettingsOverrides ?? this.logSettingsOverrides,
+      logServiceCalls: logServiceCalls ?? this.logServiceCalls,
+      logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
+    );
+  }
+}
 
 class RuntimeSettingsTable extends _i1.Table {
-  RuntimeSettingsTable() : super(tableName: 'serverpod_runtime_settings');
+  const RuntimeSettingsTable() : super(tableName: 'serverpod_runtime_settings');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// Log settings.
-  final logSettings = _i1.ColumnSerializable('logSettings');
+  final logSettings = const _i1.ColumnSerializable('logSettings');
 
   /// List of log setting overrides.
-  final logSettingsOverrides = _i1.ColumnSerializable('logSettingsOverrides');
+  final logSettingsOverrides =
+      const _i1.ColumnSerializable('logSettingsOverrides');
 
   /// True if service calls to Serverpod Insights should be logged.
-  final logServiceCalls = _i1.ColumnBool('logServiceCalls');
+  final logServiceCalls = const _i1.ColumnBool('logServiceCalls');
 
   /// True if malformed calls should be logged.
-  final logMalformedCalls = _i1.ColumnBool('logMalformedCalls');
+  final logMalformedCalls = const _i1.ColumnBool('logMalformedCalls');
 
   @override
   List<_i1.Column> get columns => [
@@ -287,4 +319,4 @@ class RuntimeSettingsTable extends _i1.Table {
 }
 
 @Deprecated('Use RuntimeSettingsTable.t instead.')
-RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
+RuntimeSettingsTable tRuntimeSettings = const RuntimeSettingsTable();

@@ -8,17 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Information about a user that can safely be publically accessible.
-class UserInfoPublic extends _i1.SerializableEntity {
-  UserInfoPublic({
-    this.id,
-    required this.userName,
-    this.fullName,
-    required this.created,
-    this.imageUrl,
-  });
+abstract class UserInfoPublic extends _i1.SerializableEntity {
+  const UserInfoPublic._();
+
+  const factory UserInfoPublic({
+    int? id,
+    required String userName,
+    String? fullName,
+    required DateTime created,
+    String? imageUrl,
+  }) = _UserInfoPublic;
 
   factory UserInfoPublic.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,28 +37,61 @@ class UserInfoPublic extends _i1.SerializableEntity {
     );
   }
 
-  /// Id of the user, if known.
-  final int? id;
-
-  /// The first name or nickname of the user.
-  final String userName;
-
-  /// The full name of the user.
-  final String? fullName;
-
-  /// The time when the user was created.
-  final DateTime created;
-
-  /// URL to the user's avatar.
-  final String? imageUrl;
-
-  late Function({
+  UserInfoPublic copyWith({
     int? id,
     String? userName,
     String? fullName,
     DateTime? created,
     String? imageUrl,
-  }) copyWith = _copyWith;
+  });
+
+  /// Id of the user, if known.
+  int? get id;
+
+  /// The first name or nickname of the user.
+  String get userName;
+
+  /// The full name of the user.
+  String? get fullName;
+
+  /// The time when the user was created.
+  DateTime get created;
+
+  /// URL to the user's avatar.
+  String? get imageUrl;
+}
+
+class _Undefined {}
+
+/// Information about a user that can safely be publically accessible.
+class _UserInfoPublic extends UserInfoPublic {
+  const _UserInfoPublic({
+    this.id,
+    required this.userName,
+    this.fullName,
+    required this.created,
+    this.imageUrl,
+  }) : super._();
+
+  /// Id of the user, if known.
+  @override
+  final int? id;
+
+  /// The first name or nickname of the user.
+  @override
+  final String userName;
+
+  /// The full name of the user.
+  @override
+  final String? fullName;
+
+  /// The time when the user was created.
+  @override
+  final DateTime created;
+
+  /// URL to the user's avatar.
+  @override
+  final String? imageUrl;
 
   @override
   Map<String, dynamic> toJson() {
@@ -114,7 +147,8 @@ class UserInfoPublic extends _i1.SerializableEntity {
         imageUrl,
       );
 
-  UserInfoPublic _copyWith({
+  @override
+  UserInfoPublic copyWith({
     Object? id = _Undefined,
     String? userName,
     Object? fullName = _Undefined,

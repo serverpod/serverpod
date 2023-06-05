@@ -8,16 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
 /// Database bindings for a user image.
-class UserImage extends _i1.TableRow {
-  UserImage({
+abstract class UserImage extends _i1.TableRow {
+  const UserImage._();
+
+  const factory UserImage({
     int? id,
-    required this.userId,
-    required this.version,
-    required this.url,
-  }) : super(id);
+    required int userId,
+    required int version,
+    required String url,
+  }) = _UserImage;
 
   factory UserImage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,87 +35,16 @@ class UserImage extends _i1.TableRow {
     );
   }
 
-  static var t = UserImageTable();
+  static const t = UserImageTable();
 
-  /// The id of the user.
-  final int userId;
-
-  /// Version of the image. Increased by one for every uploaded image.
-  final int version;
-
-  /// The URL to the image.
-  final String url;
-
-  late Function({
+  UserImage copyWith({
     int? id,
     int? userId,
     int? version,
     String? url,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_user_image';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'version': version,
-      'url': url,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is UserImage &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.userId,
-                  userId,
-                ) ||
-                other.userId == userId) &&
-            (identical(
-                  other.version,
-                  version,
-                ) ||
-                other.version == version) &&
-            (identical(
-                  other.url,
-                  url,
-                ) ||
-                other.url == url));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        userId,
-        version,
-        url,
-      );
-
-  UserImage _copyWith({
-    Object? id = _Undefined,
-    int? userId,
-    int? version,
-    String? url,
-  }) {
-    return UserImage(
-      id: id == _Undefined ? this.id : (id as int?),
-      userId: userId ?? this.userId,
-      version: version ?? this.version,
-      url: url ?? this.url,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -231,26 +162,121 @@ class UserImage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The id of the user.
+  int get userId;
+
+  /// Version of the image. Increased by one for every uploaded image.
+  int get version;
+
+  /// The URL to the image.
+  String get url;
 }
 
-typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
+class _Undefined {}
+
+/// Database bindings for a user image.
+class _UserImage extends UserImage {
+  const _UserImage({
+    int? id,
+    required this.userId,
+    required this.version,
+    required this.url,
+  }) : super._();
+
+  /// The id of the user.
+  @override
+  final int userId;
+
+  /// Version of the image. Increased by one for every uploaded image.
+  @override
+  final int version;
+
+  /// The URL to the image.
+  @override
+  final String url;
+
+  @override
+  String get tableName => 'serverpod_user_image';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'version': version,
+      'url': url,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is UserImage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.version,
+                  version,
+                ) ||
+                other.version == version) &&
+            (identical(
+                  other.url,
+                  url,
+                ) ||
+                other.url == url));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        version,
+        url,
+      );
+
+  @override
+  UserImage copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    int? version,
+    String? url,
+  }) {
+    return UserImage(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      version: version ?? this.version,
+      url: url ?? this.url,
+    );
+  }
+}
 
 class UserImageTable extends _i1.Table {
-  UserImageTable() : super(tableName: 'serverpod_user_image');
+  const UserImageTable() : super(tableName: 'serverpod_user_image');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The id of the user.
-  final userId = _i1.ColumnInt('userId');
+  final userId = const _i1.ColumnInt('userId');
 
   /// Version of the image. Increased by one for every uploaded image.
-  final version = _i1.ColumnInt('version');
+  final version = const _i1.ColumnInt('version');
 
   /// The URL to the image.
-  final url = _i1.ColumnString('url');
+  final url = const _i1.ColumnString('url');
 
   @override
   List<_i1.Column> get columns => [
@@ -262,4 +288,4 @@ class UserImageTable extends _i1.Table {
 }
 
 @Deprecated('Use UserImageTable.t instead.')
-UserImageTable tUserImage = UserImageTable();
+UserImageTable tUserImage = const UserImageTable();

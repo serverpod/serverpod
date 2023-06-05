@@ -10,13 +10,13 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+abstract class DatabaseMigration extends _i1.SerializableEntity {
+  const DatabaseMigration._();
 
-class DatabaseMigration extends _i1.SerializableEntity {
-  DatabaseMigration({
-    required this.actions,
-    required this.warnings,
-  });
+  const factory DatabaseMigration({
+    required List<_i2.DatabaseMigrationAction> actions,
+    required List<_i2.DatabaseMigrationWarning> warnings,
+  }) = _DatabaseMigration;
 
   factory DatabaseMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -32,14 +32,25 @@ class DatabaseMigration extends _i1.SerializableEntity {
     );
   }
 
-  final List<_i2.DatabaseMigrationAction> actions;
-
-  final List<_i2.DatabaseMigrationWarning> warnings;
-
-  late Function({
+  DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i2.DatabaseMigrationWarning>? warnings,
-  }) copyWith = _copyWith;
+  });
+  List<_i2.DatabaseMigrationAction> get actions;
+  List<_i2.DatabaseMigrationWarning> get warnings;
+}
+
+class _DatabaseMigration extends DatabaseMigration {
+  const _DatabaseMigration({
+    required this.actions,
+    required this.warnings,
+  }) : super._();
+
+  @override
+  final List<_i2.DatabaseMigrationAction> actions;
+
+  @override
+  final List<_i2.DatabaseMigrationWarning> warnings;
 
   @override
   Map<String, dynamic> toJson() {
@@ -72,7 +83,8 @@ class DatabaseMigration extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(warnings),
       );
 
-  DatabaseMigration _copyWith({
+  @override
+  DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i2.DatabaseMigrationWarning>? warnings,
   }) {

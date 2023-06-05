@@ -5,7 +5,7 @@ import 'package:serverpod_test_module_server/module.dart' as module;
 
 class ModuleSerializationEndpoint extends Endpoint {
   Future<bool> serializeModuleObject(Session session) async {
-    var moduleClass = module.ModuleClass(
+    var moduleClass = const module.ModuleClass(
       data: 42,
       name: 'foo',
     );
@@ -25,7 +25,6 @@ class ModuleSerializationEndpoint extends Endpoint {
 
   Future<module.ModuleClass> modifyModuleObject(
       Session session, module.ModuleClass object) async {
-    object.data = 42;
-    return object;
+    return object.copyWith(data: 42);
   }
 }

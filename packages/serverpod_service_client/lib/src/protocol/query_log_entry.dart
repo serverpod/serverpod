@@ -8,23 +8,23 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// A log entry for a database query.
-class QueryLogEntry extends _i1.SerializableEntity {
-  QueryLogEntry({
-    this.id,
-    required this.serverId,
-    required this.sessionLogId,
-    this.messageId,
-    required this.query,
-    required this.duration,
-    this.numRows,
-    this.error,
-    this.stackTrace,
-    required this.slow,
-    required this.order,
-  });
+abstract class QueryLogEntry extends _i1.SerializableEntity {
+  const QueryLogEntry._();
+
+  const factory QueryLogEntry({
+    int? id,
+    required String serverId,
+    required int sessionLogId,
+    int? messageId,
+    required String query,
+    required double duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _QueryLogEntry;
 
   factory QueryLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -53,44 +53,7 @@ class QueryLogEntry extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The id of the server that handled the query.
-  final String serverId;
-
-  /// Id of the session this entry is associated with.
-  final int sessionLogId;
-
-  /// The id of the message this entry is associcated with, if the query was
-  /// executed in a streaming session.
-  final int? messageId;
-
-  /// The query that was executed.
-  final String query;
-
-  /// The time it took to execute the query, in seconds.
-  final double duration;
-
-  /// Number of rows returned by this query. This can be null if the number is
-  /// not relevant.
-  final int? numRows;
-
-  /// Set if an exception was thrown during the execution of this query.
-  final String? error;
-
-  /// The stack trace of this query.
-  final String? stackTrace;
-
-  /// True if the execution of this query was considered slow.
-  final bool slow;
-
-  /// used for sorting the query log.
-  final int order;
-
-  late Function({
+  QueryLogEntry copyWith({
     int? id,
     String? serverId,
     int? sessionLogId,
@@ -102,7 +65,111 @@ class QueryLogEntry extends _i1.SerializableEntity {
     String? stackTrace,
     bool? slow,
     int? order,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The id of the server that handled the query.
+  String get serverId;
+
+  /// Id of the session this entry is associated with.
+  int get sessionLogId;
+
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
+  int? get messageId;
+
+  /// The query that was executed.
+  String get query;
+
+  /// The time it took to execute the query, in seconds.
+  double get duration;
+
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
+  int? get numRows;
+
+  /// Set if an exception was thrown during the execution of this query.
+  String? get error;
+
+  /// The stack trace of this query.
+  String? get stackTrace;
+
+  /// True if the execution of this query was considered slow.
+  bool get slow;
+
+  /// used for sorting the query log.
+  int get order;
+}
+
+class _Undefined {}
+
+/// A log entry for a database query.
+class _QueryLogEntry extends QueryLogEntry {
+  const _QueryLogEntry({
+    this.id,
+    required this.serverId,
+    required this.sessionLogId,
+    this.messageId,
+    required this.query,
+    required this.duration,
+    this.numRows,
+    this.error,
+    this.stackTrace,
+    required this.slow,
+    required this.order,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The id of the server that handled the query.
+  @override
+  final String serverId;
+
+  /// Id of the session this entry is associated with.
+  @override
+  final int sessionLogId;
+
+  /// The id of the message this entry is associcated with, if the query was
+  /// executed in a streaming session.
+  @override
+  final int? messageId;
+
+  /// The query that was executed.
+  @override
+  final String query;
+
+  /// The time it took to execute the query, in seconds.
+  @override
+  final double duration;
+
+  /// Number of rows returned by this query. This can be null if the number is
+  /// not relevant.
+  @override
+  final int? numRows;
+
+  /// Set if an exception was thrown during the execution of this query.
+  @override
+  final String? error;
+
+  /// The stack trace of this query.
+  @override
+  final String? stackTrace;
+
+  /// True if the execution of this query was considered slow.
+  @override
+  final bool slow;
+
+  /// used for sorting the query log.
+  @override
+  final int order;
 
   @override
   Map<String, dynamic> toJson() {
@@ -200,7 +267,8 @@ class QueryLogEntry extends _i1.SerializableEntity {
         order,
       );
 
-  QueryLogEntry _copyWith({
+  @override
+  QueryLogEntry copyWith({
     Object? id = _Undefined,
     String? serverId,
     int? sessionLogId,

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -170,7 +171,10 @@ class LogManager {
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
       session as StreamingSession;
-      entry.sessionLogId = session.sessionLogId!;
+      entry = entry.copyWith(
+        sessionLogId: session.sessionLogId!,
+      );
+
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
@@ -193,7 +197,7 @@ class LogManager {
   /// Logs a query, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
   /// closed. Call [shouldLogQuery] to check if the entry should be logged
-  /// before calling this method. This method can be called asyncronously.
+  /// before calling this method. This method can be called synchronously.
   @internal
   Future<void> logQuery(Session session, QueryLogEntry entry) async {
     await _attemptOpenStreamingLog(session: session);
@@ -201,7 +205,10 @@ class LogManager {
     if (_continuouslyLogging(session)) {
       // We are continuously writing to this sessions log.
       session as StreamingSession;
-      entry.sessionLogId = session.sessionLogId!;
+      entry = entry.copyWith(
+        sessionLogId: session.sessionLogId!,
+      );
+
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
@@ -237,7 +244,10 @@ class LogManager {
         enableLogging: false,
       );
       try {
-        entry.sessionLogId = session.sessionLogId!;
+        entry = entry.copyWith(
+          sessionLogId: session.sessionLogId!,
+        );
+
         await MessageLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr.writeln(
@@ -381,8 +391,11 @@ class LogManager {
           // Close open session.
           session as StreamingSession;
           sessionLogId = session.sessionLogId!;
-          sessionLogEntry.id = sessionLogId;
-          sessionLogEntry.isOpen = false;
+          sessionLogEntry = sessionLogEntry.copyWith(
+            id: sessionLogId,
+            isOpen: false,
+          );
+
           await SessionLogEntry.update(tempSession, sessionLogEntry);
         } else {
           // Create new session row.
@@ -392,17 +405,18 @@ class LogManager {
 
         // Write log entries
         for (var logInfo in cachedEntry.logEntries) {
-          logInfo.sessionLogId = sessionLogId;
+          logInfo = logInfo.copyWith(sessionLogId: sessionLogId);
+
           await tempSession.db.insert(logInfo);
         }
         // Write queries
         for (var queryInfo in cachedEntry.queries) {
-          queryInfo.sessionLogId = sessionLogId;
+          queryInfo = queryInfo.copyWith(sessionLogId: sessionLogId);
           await tempSession.db.insert(queryInfo);
         }
         // Write streaming messages
         for (var messageInfo in cachedEntry.messages) {
-          messageInfo.sessionLogId = sessionLogId;
+          messageInfo = messageInfo.copyWith(sessionLogId: sessionLogId);
           await tempSession.db.insert(messageInfo);
         }
       } catch (e, logStackTrace) {

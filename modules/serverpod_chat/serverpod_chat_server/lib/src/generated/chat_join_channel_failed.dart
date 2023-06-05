@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
-
 /// Message being sent if a user failed to join a channel.
-class ChatJoinChannelFailed extends _i1.SerializableEntity {
-  ChatJoinChannelFailed({
-    required this.channel,
-    required this.reason,
-  });
+abstract class ChatJoinChannelFailed extends _i1.SerializableEntity {
+  const ChatJoinChannelFailed._();
+
+  const factory ChatJoinChannelFailed({
+    required String channel,
+    required String reason,
+  }) = _ChatJoinChannelFailed;
 
   factory ChatJoinChannelFailed.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,16 +29,32 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
     );
   }
 
+  ChatJoinChannelFailed copyWith({
+    String? channel,
+    String? reason,
+  });
+
   /// The name of the channel the user attempted to join.
+  String get channel;
+
+  /// The reason of failure.
+  String get reason;
+}
+
+/// Message being sent if a user failed to join a channel.
+class _ChatJoinChannelFailed extends ChatJoinChannelFailed {
+  const _ChatJoinChannelFailed({
+    required this.channel,
+    required this.reason,
+  }) : super._();
+
+  /// The name of the channel the user attempted to join.
+  @override
   final String channel;
 
   /// The reason of failure.
+  @override
   final String reason;
-
-  late Function({
-    String? channel,
-    String? reason,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -73,7 +89,8 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
         reason,
       );
 
-  ChatJoinChannelFailed _copyWith({
+  @override
+  ChatJoinChannelFailed copyWith({
     String? channel,
     String? reason,
   }) {

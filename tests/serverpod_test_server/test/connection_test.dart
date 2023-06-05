@@ -279,9 +279,9 @@ void main() {
 
     test('List<SimpleData> parameter and return type', () async {
       var result = await client.listParameters.returnSimpleDataList([
-        SimpleData(num: 0),
-        SimpleData(num: 1),
-        SimpleData(num: 2),
+        const SimpleData(num: 0),
+        const SimpleData(num: 1),
+        const SimpleData(num: 2),
       ]);
       expect(result.length, equals(3));
       expect(result[0].num, equals(0));
@@ -292,9 +292,9 @@ void main() {
     test('List<SimpleData?> parameter and return type', () async {
       var result =
           await client.listParameters.returnSimpleDataListNullableSimpleData([
-        SimpleData(num: 0),
+        const SimpleData(num: 0),
         null,
-        SimpleData(num: 2),
+        const SimpleData(num: 2),
       ]);
       expect(result, isNotNull);
       expect(result.length, equals(3));
@@ -305,9 +305,9 @@ void main() {
 
     test('List<SimpleData>? parameter and return type', () async {
       var result = await client.listParameters.returnSimpleDataListNullable([
-        SimpleData(num: 0),
-        SimpleData(num: 1),
-        SimpleData(num: 2),
+        const SimpleData(num: 0),
+        const SimpleData(num: 1),
+        const SimpleData(num: 2),
       ]);
       expect(result, isNotNull);
       expect(result!.length, equals(3));
@@ -322,9 +322,9 @@ void main() {
     test('List<SimpleData?>? parameter and return type', () async {
       var result = await client.listParameters
           .returnNullableSimpleDataListNullableSimpleData([
-        SimpleData(num: 0),
+        const SimpleData(num: 0),
         null,
-        SimpleData(num: 2),
+        const SimpleData(num: 2),
       ]);
       expect(result, isNotNull);
       expect(result!.length, equals(3));
@@ -580,9 +580,9 @@ void main() {
 
     test('Map<String, SimpleData> parameter and return type', () async {
       var result = await client.mapParameters.returnSimpleDataMap({
-        '0': SimpleData(num: 0),
-        '1': SimpleData(num: 1),
-        '2': SimpleData(num: 2),
+        '0': const SimpleData(num: 0),
+        '1': const SimpleData(num: 1),
+        '2': const SimpleData(num: 2),
       });
       expect(result.length, equals(3));
       expect(result['0']!.num, equals(0));
@@ -592,9 +592,9 @@ void main() {
 
     test('Map<String, SimpleData>? parameter and return type', () async {
       var result = await client.mapParameters.returnSimpleDataMapNullable({
-        '0': SimpleData(num: 0),
-        '1': SimpleData(num: 1),
-        '2': SimpleData(num: 2),
+        '0': const SimpleData(num: 0),
+        '1': const SimpleData(num: 1),
+        '2': const SimpleData(num: 2),
       });
       expect(result, isNotNull);
       expect(result!.length, equals(3));
@@ -609,9 +609,9 @@ void main() {
     test('Map<String, SimpleData?> parameter and return type', () async {
       var result =
           await client.mapParameters.returnSimpleDataMapNullableSimpleData({
-        '0': SimpleData(num: 0),
+        '0': const SimpleData(num: 0),
         '1': null,
-        '2': SimpleData(num: 2),
+        '2': const SimpleData(num: 2),
       });
       expect(result, isNotNull);
       expect(result.length, equals(3));
@@ -623,9 +623,9 @@ void main() {
     test('Map<String, SimpleData?>? parameter and return type', () async {
       var result = await client.mapParameters
           .returnNullableSimpleDataMapNullableSimpleData({
-        '0': SimpleData(num: 0),
+        '0': const SimpleData(num: 0),
         '1': null,
-        '2': SimpleData(num: 2),
+        '2': const SimpleData(num: 2),
       });
       expect(result, isNotNull);
       expect(result!.length, equals(3));
@@ -872,7 +872,7 @@ void main() {
     });
 
     test('Write and read null values', () async {
-      var types = Types();
+      var types = const Types();
 
       var count = await client.basicDatabase.countTypesRows();
       expect(count, isNotNull);
@@ -901,19 +901,23 @@ void main() {
     });
 
     test('Write and read enums', () async {
-      var object =
-          ObjectWithEnum(testEnum: TestEnum.two, nullableEnum: null, enumList: [
-        TestEnum.one,
-        TestEnum.two,
-        TestEnum.three
-      ], nullableEnumList: [
-        TestEnum.one,
-        null,
-        TestEnum.three
-      ], enumListList: [
-        [TestEnum.one, TestEnum.two],
-        [TestEnum.two, TestEnum.one]
-      ]);
+      var object = const ObjectWithEnum(
+          testEnum: TestEnum.two,
+          nullableEnum: null,
+          enumList: [
+            TestEnum.one,
+            TestEnum.two,
+            TestEnum.three
+          ],
+          nullableEnumList: [
+            TestEnum.one,
+            null,
+            TestEnum.three
+          ],
+          enumListList: [
+            [TestEnum.one, TestEnum.two],
+            [TestEnum.two, TestEnum.one]
+          ]);
 
       var objectId = await client.basicDatabase.storeObjectWithEnum(object);
       expect(objectId, isNotNull);
@@ -932,7 +936,7 @@ void main() {
     });
 
     test('Raw query', () async {
-      var types = Types();
+      var types = const Types();
 
       var id = await client.basicDatabase.storeTypes(types);
       expect(id, isNotNull);
@@ -1047,7 +1051,7 @@ void main() {
     });
 
     test('Store object with object', () async {
-      var object = ObjectWithObject(
+      var object = const ObjectWithObject(
         data: SimpleData(num: 42),
         dataList: [SimpleData(num: 10), SimpleData(num: 20)],
         listWithNullableData: [SimpleData(num: 10), null],
@@ -1075,7 +1079,7 @@ void main() {
     });
 
     test('Field scopes', () async {
-      var object = ObjectFieldScopes(
+      var object = const ObjectFieldScopes(
         normal: 'test normal',
         api: 'test api',
       );

@@ -8,16 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Database bindings for an email reset.
-class EmailReset extends _i1.SerializableEntity {
-  EmailReset({
-    this.id,
-    required this.userId,
-    required this.verificationCode,
-    required this.expiration,
-  });
+abstract class EmailReset extends _i1.SerializableEntity {
+  const EmailReset._();
+
+  const factory EmailReset({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) = _EmailReset;
 
   factory EmailReset.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,26 +34,56 @@ class EmailReset extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The id of the user that is resetting his/her password.
-  final int userId;
-
-  /// The verification code for the password reset.
-  final String verificationCode;
-
-  /// The expiration time for the password reset.
-  final DateTime expiration;
-
-  late Function({
+  EmailReset copyWith({
     int? id,
     int? userId,
     String? verificationCode,
     DateTime? expiration,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The id of the user that is resetting his/her password.
+  int get userId;
+
+  /// The verification code for the password reset.
+  String get verificationCode;
+
+  /// The expiration time for the password reset.
+  DateTime get expiration;
+}
+
+class _Undefined {}
+
+/// Database bindings for an email reset.
+class _EmailReset extends EmailReset {
+  const _EmailReset({
+    this.id,
+    required this.userId,
+    required this.verificationCode,
+    required this.expiration,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The id of the user that is resetting his/her password.
+  @override
+  final int userId;
+
+  /// The verification code for the password reset.
+  @override
+  final String verificationCode;
+
+  /// The expiration time for the password reset.
+  @override
+  final DateTime expiration;
 
   @override
   Map<String, dynamic> toJson() {
@@ -102,7 +132,8 @@ class EmailReset extends _i1.SerializableEntity {
         expiration,
       );
 
-  EmailReset _copyWith({
+  @override
+  EmailReset copyWith({
     Object? id = _Undefined,
     int? userId,
     String? verificationCode,

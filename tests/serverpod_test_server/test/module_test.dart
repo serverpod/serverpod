@@ -21,7 +21,7 @@ void main() {
     });
 
     test('Passing module object', () async {
-      var moduleClass = module.ModuleClass(
+      var moduleClass = const module.ModuleClass(
         name: 'foo',
         data: 0,
       );
@@ -31,7 +31,7 @@ void main() {
     });
 
     test('Passing module object to module', () async {
-      var moduleClass = module.ModuleClass(
+      var moduleClass = const module.ModuleClass(
         name: 'foo',
         data: 0,
       );

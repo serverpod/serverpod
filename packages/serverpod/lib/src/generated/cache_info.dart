@@ -9,15 +9,15 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:collection/collection.dart' as _i2;
 
-class _Undefined {}
-
 /// Provides high level information about a cache.
-class CacheInfo extends _i1.SerializableEntity {
-  CacheInfo({
-    required this.numEntries,
-    required this.maxEntries,
-    this.keys,
-  });
+abstract class CacheInfo extends _i1.SerializableEntity {
+  const CacheInfo._();
+
+  const factory CacheInfo({
+    required int numEntries,
+    required int maxEntries,
+    List<String>? keys,
+  }) = _CacheInfo;
 
   factory CacheInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,20 +33,43 @@ class CacheInfo extends _i1.SerializableEntity {
     );
   }
 
-  /// Number of entries stored in the cache.
-  final int numEntries;
-
-  /// Maximum number of entries that can be stored in the cache.
-  final int maxEntries;
-
-  /// Optional list of keys used by the cache.
-  final List<String>? keys;
-
-  late Function({
+  CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
     List<String>? keys,
-  }) copyWith = _copyWith;
+  });
+
+  /// Number of entries stored in the cache.
+  int get numEntries;
+
+  /// Maximum number of entries that can be stored in the cache.
+  int get maxEntries;
+
+  /// Optional list of keys used by the cache.
+  List<String>? get keys;
+}
+
+class _Undefined {}
+
+/// Provides high level information about a cache.
+class _CacheInfo extends CacheInfo {
+  const _CacheInfo({
+    required this.numEntries,
+    required this.maxEntries,
+    this.keys,
+  }) : super._();
+
+  /// Number of entries stored in the cache.
+  @override
+  final int numEntries;
+
+  /// Maximum number of entries that can be stored in the cache.
+  @override
+  final int maxEntries;
+
+  /// Optional list of keys used by the cache.
+  @override
+  final List<String>? keys;
 
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +110,8 @@ class CacheInfo extends _i1.SerializableEntity {
         const _i2.DeepCollectionEquality().hash(keys),
       );
 
-  CacheInfo _copyWith({
+  @override
+  CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
     Object? keys = _Undefined,

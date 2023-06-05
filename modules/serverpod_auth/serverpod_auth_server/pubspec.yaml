@@ -23,6 +23,7 @@ dependencies:
   http: ^0.13.5
   image: ^4.0.15
   jose: ^0.3.3
+  collection: ^1.17.2
 
 dev_dependencies:
   lints: ^2.0.1

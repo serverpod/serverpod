@@ -14,7 +14,7 @@ void main() {
   });
 
   test('Put and get object', () async {
-    var entry = SimpleData(num: 0);
+    var entry = const SimpleData(num: 0);
 
     await cache.put('entry', entry);
     var retrieved = await cache.get<SimpleData>('entry');
@@ -30,7 +30,7 @@ void main() {
   });
 
   test('Put and get object with lifetime', () async {
-    var entry = SimpleData(num: 0);
+    var entry = const SimpleData(num: 0);
 
     await cache.put('entry', entry,
         lifetime: const Duration(milliseconds: 100));
@@ -45,8 +45,8 @@ void main() {
   });
 
   test('Put multiple with same key', () async {
-    var entryA = SimpleData(num: 0);
-    var entryB = SimpleData(num: 1);
+    var entryA = const SimpleData(num: 0);
+    var entryB = const SimpleData(num: 1);
 
     await cache.put('entry', entryA);
     await cache.put('entry', entryB);

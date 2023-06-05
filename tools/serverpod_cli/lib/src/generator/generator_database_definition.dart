@@ -41,18 +41,12 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
     var moduleDatabaseDefinition = createDatabaseDefinitionFromEntities(
       moduleDefinitions,
     );
-    var tables = <TableDefinition>[];
-    for (var table in moduleDatabaseDefinition.tables) {
-      // TODO: copyWith
-      var updatedTable = TableDefinition(
-        name: table.name,
-        schema: table.schema,
-        columns: table.columns,
-        foreignKeys: table.foreignKeys,
-        indexes: table.indexes,
-      );
-      tables.add(updatedTable);
-    }
+
+    var tables = moduleDatabaseDefinition.tables
+        .map((e) => e.copyWith(
+              module: config.name,
+            ))
+        .toList();
 
     tableDefinitions.addAll(tables);
   }
@@ -80,19 +74,12 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
   var databaseDefinition = createDatabaseDefinitionFromEntities(
     entityDefinitions,
   );
-  var tables = <TableDefinition>[];
 
-  for (var table in databaseDefinition.tables) {
-    // TODO: copyWith
-    var updatedTable = TableDefinition(
-      name: table.name,
-      schema: table.schema,
-      columns: table.columns,
-      foreignKeys: table.foreignKeys,
-      indexes: table.indexes,
-    );
-    tables.add(updatedTable);
-  }
+  var tables = databaseDefinition.tables
+      .map((e) => e.copyWith(module: config.name))
+      .toList();
 
-  return databaseDefinition;
+      
+  
+  return databaseDefinition.copyWith(tables: tables);
 }

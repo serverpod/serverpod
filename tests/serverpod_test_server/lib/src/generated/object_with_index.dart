@@ -8,14 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
+    ObjectWithIndexTable);
 
-class ObjectWithIndex extends _i1.TableRow {
-  ObjectWithIndex({
+abstract class ObjectWithIndex extends _i1.TableRow {
+  const ObjectWithIndex._();
+
+  const factory ObjectWithIndex({
     int? id,
-    required this.indexed,
-    required this.indexed2,
-  }) : super(id);
+    required int indexed,
+    required int indexed2,
+  }) = _ObjectWithIndex;
 
   factory ObjectWithIndex.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,72 +33,15 @@ class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithIndexTable();
+  static const t = ObjectWithIndexTable();
 
-  final int indexed;
-
-  final int indexed2;
-
-  late Function({
+  ObjectWithIndex copyWith({
     int? id,
     int? indexed,
     int? indexed2,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_index';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithIndex &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.indexed,
-                  indexed,
-                ) ||
-                other.indexed == indexed) &&
-            (identical(
-                  other.indexed2,
-                  indexed2,
-                ) ||
-                other.indexed2 == indexed2));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        indexed,
-        indexed2,
-      );
-
-  ObjectWithIndex _copyWith({
-    Object? id = _Undefined,
-    int? indexed,
-    int? indexed2,
-  }) {
-    return ObjectWithIndex(
-      id: id == _Undefined ? this.id : (id as int?),
-      indexed: indexed ?? this.indexed,
-      indexed2: indexed2 ?? this.indexed2,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -212,22 +158,93 @@ class ObjectWithIndex extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  int get indexed;
+  int get indexed2;
 }
 
-typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
-    ObjectWithIndexTable);
+class _Undefined {}
+
+class _ObjectWithIndex extends ObjectWithIndex {
+  const _ObjectWithIndex({
+    int? id,
+    required this.indexed,
+    required this.indexed2,
+  }) : super._();
+
+  @override
+  final int indexed;
+
+  @override
+  final int indexed2;
+
+  @override
+  String get tableName => 'object_with_index';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'indexed': indexed,
+      'indexed2': indexed2,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithIndex &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.indexed,
+                  indexed,
+                ) ||
+                other.indexed == indexed) &&
+            (identical(
+                  other.indexed2,
+                  indexed2,
+                ) ||
+                other.indexed2 == indexed2));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        indexed,
+        indexed2,
+      );
+
+  @override
+  ObjectWithIndex copyWith({
+    Object? id = _Undefined,
+    int? indexed,
+    int? indexed2,
+  }) {
+    return ObjectWithIndex(
+      id: id == _Undefined ? this.id : (id as int?),
+      indexed: indexed ?? this.indexed,
+      indexed2: indexed2 ?? this.indexed2,
+    );
+  }
+}
 
 class ObjectWithIndexTable extends _i1.Table {
-  ObjectWithIndexTable() : super(tableName: 'object_with_index');
+  const ObjectWithIndexTable() : super(tableName: 'object_with_index');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final indexed = _i1.ColumnInt('indexed');
+  final indexed = const _i1.ColumnInt('indexed');
 
-  final indexed2 = _i1.ColumnInt('indexed2');
+  final indexed2 = const _i1.ColumnInt('indexed2');
 
   @override
   List<_i1.Column> get columns => [
@@ -238,4 +255,4 @@ class ObjectWithIndexTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithIndexTable.t instead.')
-ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
+ObjectWithIndexTable tObjectWithIndex = const ObjectWithIndexTable();

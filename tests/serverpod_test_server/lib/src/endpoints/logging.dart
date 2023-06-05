@@ -14,7 +14,7 @@ class LoggingEndpoint extends Endpoint {
   }
 
   Future<void> twoQueries(Session session) async {
-    var data = SimpleData(num: 42);
+    var data = const SimpleData(num: 42);
     await session.db.insert(data);
     data = (await session.db.findSingleRow<SimpleData>())!;
   }

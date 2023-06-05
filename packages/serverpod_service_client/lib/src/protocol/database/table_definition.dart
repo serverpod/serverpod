@@ -10,21 +10,21 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// The definition of a (desired) table in the database.
-class TableDefinition extends _i1.SerializableEntity {
-  TableDefinition({
-    required this.name,
-    this.dartName,
-    this.module,
-    required this.schema,
-    this.tableSpace,
-    required this.columns,
-    required this.foreignKeys,
-    required this.indexes,
-    this.managed,
-  });
+abstract class TableDefinition extends _i1.SerializableEntity {
+  const TableDefinition._();
+
+  const factory TableDefinition({
+    required String name,
+    String? dartName,
+    String? module,
+    required String schema,
+    String? tableSpace,
+    required List<_i2.ColumnDefinition> columns,
+    required List<_i2.ForeignKeyDefinition> foreignKeys,
+    required List<_i2.IndexDefinition> indexes,
+    bool? managed,
+  }) = _TableDefinition;
 
   factory TableDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -52,36 +52,7 @@ class TableDefinition extends _i1.SerializableEntity {
     );
   }
 
-  /// The table name.
-  final String name;
-
-  /// The name of the serializable class in Dart.
-  final String? dartName;
-
-  /// The name of the module this table belongs to, if available.
-  final String? module;
-
-  /// The schema this table is in.
-  final String schema;
-
-  /// The tablespace this table is stored in.
-  /// If null, the table is in the databases default tablespace.
-  final String? tableSpace;
-
-  /// All the columns of this table.
-  final List<_i2.ColumnDefinition> columns;
-
-  /// All the foreign keys.
-  final List<_i2.ForeignKeyDefinition> foreignKeys;
-
-  /// All the indexes of this table.
-  final List<_i2.IndexDefinition> indexes;
-
-  /// Indicates if the table should be managed by Serverpod.
-  /// Null, if this is unknown.
-  final bool? managed;
-
-  late Function({
+  TableDefinition copyWith({
     String? name,
     String? dartName,
     String? module,
@@ -91,7 +62,91 @@ class TableDefinition extends _i1.SerializableEntity {
     List<_i2.ForeignKeyDefinition>? foreignKeys,
     List<_i2.IndexDefinition>? indexes,
     bool? managed,
-  }) copyWith = _copyWith;
+  });
+
+  /// The table name.
+  String get name;
+
+  /// The name of the serializable class in Dart.
+  String? get dartName;
+
+  /// The name of the module this table belongs to, if available.
+  String? get module;
+
+  /// The schema this table is in.
+  String get schema;
+
+  /// The tablespace this table is stored in.
+  /// If null, the table is in the databases default tablespace.
+  String? get tableSpace;
+
+  /// All the columns of this table.
+  List<_i2.ColumnDefinition> get columns;
+
+  /// All the foreign keys.
+  List<_i2.ForeignKeyDefinition> get foreignKeys;
+
+  /// All the indexes of this table.
+  List<_i2.IndexDefinition> get indexes;
+
+  /// Indicates if the table should be managed by Serverpod.
+  /// Null, if this is unknown.
+  bool? get managed;
+}
+
+class _Undefined {}
+
+/// The definition of a (desired) table in the database.
+class _TableDefinition extends TableDefinition {
+  const _TableDefinition({
+    required this.name,
+    this.dartName,
+    this.module,
+    required this.schema,
+    this.tableSpace,
+    required this.columns,
+    required this.foreignKeys,
+    required this.indexes,
+    this.managed,
+  }) : super._();
+
+  /// The table name.
+  @override
+  final String name;
+
+  /// The name of the serializable class in Dart.
+  @override
+  final String? dartName;
+
+  /// The name of the module this table belongs to, if available.
+  @override
+  final String? module;
+
+  /// The schema this table is in.
+  @override
+  final String schema;
+
+  /// The tablespace this table is stored in.
+  /// If null, the table is in the databases default tablespace.
+  @override
+  final String? tableSpace;
+
+  /// All the columns of this table.
+  @override
+  final List<_i2.ColumnDefinition> columns;
+
+  /// All the foreign keys.
+  @override
+  final List<_i2.ForeignKeyDefinition> foreignKeys;
+
+  /// All the indexes of this table.
+  @override
+  final List<_i2.IndexDefinition> indexes;
+
+  /// Indicates if the table should be managed by Serverpod.
+  /// Null, if this is unknown.
+  @override
+  final bool? managed;
 
   @override
   Map<String, dynamic> toJson() {
@@ -172,7 +227,8 @@ class TableDefinition extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(indexes),
       );
 
-  TableDefinition _copyWith({
+  @override
+  TableDefinition copyWith({
     String? name,
     Object? dartName = _Undefined,
     Object? module = _Undefined,

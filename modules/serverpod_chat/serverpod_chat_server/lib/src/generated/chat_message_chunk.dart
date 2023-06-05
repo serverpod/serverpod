@@ -10,15 +10,15 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// A chunk of chat messages.
-class ChatMessageChunk extends _i1.SerializableEntity {
-  ChatMessageChunk({
-    required this.channel,
-    required this.messages,
-    required this.hasOlderMessages,
-  });
+abstract class ChatMessageChunk extends _i1.SerializableEntity {
+  const ChatMessageChunk._();
+
+  const factory ChatMessageChunk({
+    required String channel,
+    required List<_i2.ChatMessage> messages,
+    required bool hasOlderMessages,
+  }) = _ChatMessageChunk;
 
   factory ChatMessageChunk.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,20 +34,41 @@ class ChatMessageChunk extends _i1.SerializableEntity {
     );
   }
 
-  /// The chat channel.
-  final String channel;
-
-  /// List of chat messages.
-  final List<_i2.ChatMessage> messages;
-
-  /// True if there are more chat messages to fetch from this channel.
-  final bool hasOlderMessages;
-
-  late Function({
+  ChatMessageChunk copyWith({
     String? channel,
     List<_i2.ChatMessage>? messages,
     bool? hasOlderMessages,
-  }) copyWith = _copyWith;
+  });
+
+  /// The chat channel.
+  String get channel;
+
+  /// List of chat messages.
+  List<_i2.ChatMessage> get messages;
+
+  /// True if there are more chat messages to fetch from this channel.
+  bool get hasOlderMessages;
+}
+
+/// A chunk of chat messages.
+class _ChatMessageChunk extends ChatMessageChunk {
+  const _ChatMessageChunk({
+    required this.channel,
+    required this.messages,
+    required this.hasOlderMessages,
+  }) : super._();
+
+  /// The chat channel.
+  @override
+  final String channel;
+
+  /// List of chat messages.
+  @override
+  final List<_i2.ChatMessage> messages;
+
+  /// True if there are more chat messages to fetch from this channel.
+  @override
+  final bool hasOlderMessages;
 
   @override
   Map<String, dynamic> toJson() {
@@ -88,7 +109,8 @@ class ChatMessageChunk extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(messages),
       );
 
-  ChatMessageChunk _copyWith({
+  @override
+  ChatMessageChunk copyWith({
     String? channel,
     List<_i2.ChatMessage>? messages,
     bool? hasOlderMessages,

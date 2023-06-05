@@ -11,22 +11,22 @@ import 'package:serverpod_auth_client/module.dart' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:collection/collection.dart' as _i4;
 
-class _Undefined {}
-
 /// A chat message.
-class ChatMessage extends _i1.SerializableEntity {
-  ChatMessage({
-    this.id,
-    required this.channel,
-    required this.message,
-    required this.time,
-    required this.sender,
-    this.senderInfo,
-    required this.removed,
-    this.clientMessageId,
-    this.sent,
-    this.attachments,
-  });
+abstract class ChatMessage extends _i1.SerializableEntity {
+  const ChatMessage._();
+
+  const factory ChatMessage({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) = _ChatMessage;
 
   factory ChatMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -55,39 +55,7 @@ class ChatMessage extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The channel this message was posted to.
-  final String channel;
-
-  /// The body of the message.
-  final String message;
-
-  /// The time when this message was posted.
-  final DateTime time;
-
-  /// The user id of the sender.
-  final int sender;
-
-  /// Information about the sender.
-  final _i2.UserInfoPublic? senderInfo;
-
-  /// True, if this message has been removed.
-  final bool removed;
-
-  /// The client message id, used to track if a message has been delivered.
-  final int? clientMessageId;
-
-  /// True if the message has been sent.
-  final bool? sent;
-
-  /// List of attachments associated with this message.
-  final List<_i3.ChatMessageAttachment>? attachments;
-
-  late Function({
+  ChatMessage copyWith({
     int? id,
     String? channel,
     String? message,
@@ -98,7 +66,99 @@ class ChatMessage extends _i1.SerializableEntity {
     int? clientMessageId,
     bool? sent,
     List<_i3.ChatMessageAttachment>? attachments,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The channel this message was posted to.
+  String get channel;
+
+  /// The body of the message.
+  String get message;
+
+  /// The time when this message was posted.
+  DateTime get time;
+
+  /// The user id of the sender.
+  int get sender;
+
+  /// Information about the sender.
+  _i2.UserInfoPublic? get senderInfo;
+
+  /// True, if this message has been removed.
+  bool get removed;
+
+  /// The client message id, used to track if a message has been delivered.
+  int? get clientMessageId;
+
+  /// True if the message has been sent.
+  bool? get sent;
+
+  /// List of attachments associated with this message.
+  List<_i3.ChatMessageAttachment>? get attachments;
+}
+
+class _Undefined {}
+
+/// A chat message.
+class _ChatMessage extends ChatMessage {
+  const _ChatMessage({
+    this.id,
+    required this.channel,
+    required this.message,
+    required this.time,
+    required this.sender,
+    this.senderInfo,
+    required this.removed,
+    this.clientMessageId,
+    this.sent,
+    this.attachments,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The channel this message was posted to.
+  @override
+  final String channel;
+
+  /// The body of the message.
+  @override
+  final String message;
+
+  /// The time when this message was posted.
+  @override
+  final DateTime time;
+
+  /// The user id of the sender.
+  @override
+  final int sender;
+
+  /// Information about the sender.
+  @override
+  final _i2.UserInfoPublic? senderInfo;
+
+  /// True, if this message has been removed.
+  @override
+  final bool removed;
+
+  /// The client message id, used to track if a message has been delivered.
+  @override
+  final int? clientMessageId;
+
+  /// True if the message has been sent.
+  @override
+  final bool? sent;
+
+  /// List of attachments associated with this message.
+  @override
+  final List<_i3.ChatMessageAttachment>? attachments;
 
   @override
   Map<String, dynamic> toJson() {
@@ -188,7 +248,8 @@ class ChatMessage extends _i1.SerializableEntity {
         const _i4.DeepCollectionEquality().hash(attachments),
       );
 
-  ChatMessage _copyWith({
+  @override
+  ChatMessage copyWith({
     Object? id = _Undefined,
     String? channel,
     String? message,

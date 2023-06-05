@@ -8,18 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-class EmailCreateAccountRequest extends _i1.SerializableEntity {
-  EmailCreateAccountRequest({
-    this.id,
-    required this.userName,
-    required this.email,
-    required this.hash,
-    required this.verificationCode,
-  });
+abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
+  const EmailCreateAccountRequest._();
+
+  const factory EmailCreateAccountRequest({
+    int? id,
+    required String userName,
+    required String email,
+    required String hash,
+    required String verificationCode,
+  }) = _EmailCreateAccountRequest;
 
   factory EmailCreateAccountRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,30 +37,66 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The name of the user.
-  final String userName;
-
-  /// The email of the user.
-  final String email;
-
-  /// Hash of the user's requested password.
-  final String hash;
-
-  /// The verification code sent to the user.
-  final String verificationCode;
-
-  late Function({
+  EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
     String? email,
     String? hash,
     String? verificationCode,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The name of the user.
+  String get userName;
+
+  /// The email of the user.
+  String get email;
+
+  /// Hash of the user's requested password.
+  String get hash;
+
+  /// The verification code sent to the user.
+  String get verificationCode;
+}
+
+class _Undefined {}
+
+/// A request for creating an email signin. Created during the sign up process
+/// to keep track of the user's details and verification code.
+class _EmailCreateAccountRequest extends EmailCreateAccountRequest {
+  const _EmailCreateAccountRequest({
+    this.id,
+    required this.userName,
+    required this.email,
+    required this.hash,
+    required this.verificationCode,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The name of the user.
+  @override
+  final String userName;
+
+  /// The email of the user.
+  @override
+  final String email;
+
+  /// Hash of the user's requested password.
+  @override
+  final String hash;
+
+  /// The verification code sent to the user.
+  @override
+  final String verificationCode;
 
   @override
   Map<String, dynamic> toJson() {
@@ -116,7 +152,8 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
         verificationCode,
       );
 
-  EmailCreateAccountRequest _copyWith({
+  @override
+  EmailCreateAccountRequest copyWith({
     Object? id = _Undefined,
     String? userName,
     String? email,

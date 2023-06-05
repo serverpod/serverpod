@@ -8,18 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// An attachement to a chat message. Typically an image or a file.
-class ChatMessageAttachment extends _i1.SerializableEntity {
-  ChatMessageAttachment({
-    required this.fileName,
-    required this.url,
-    required this.contentType,
-    this.previewImage,
-    this.previewWidth,
-    this.previewHeight,
-  });
+abstract class ChatMessageAttachment extends _i1.SerializableEntity {
+  const ChatMessageAttachment._();
+
+  const factory ChatMessageAttachment({
+    required String fileName,
+    required String url,
+    required String contentType,
+    String? previewImage,
+    int? previewWidth,
+    int? previewHeight,
+  }) = _ChatMessageAttachment;
 
   factory ChatMessageAttachment.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,32 +40,70 @@ class ChatMessageAttachment extends _i1.SerializableEntity {
     );
   }
 
-  /// The name of the file.
-  final String fileName;
-
-  /// The URL to the file.
-  final String url;
-
-  /// The content type of the file.
-  final String contentType;
-
-  /// URL to an image preview of the file, if available.
-  final String? previewImage;
-
-  /// The width of the image preview, if available.
-  final int? previewWidth;
-
-  /// The height of the image preview, if available.
-  final int? previewHeight;
-
-  late Function({
+  ChatMessageAttachment copyWith({
     String? fileName,
     String? url,
     String? contentType,
     String? previewImage,
     int? previewWidth,
     int? previewHeight,
-  }) copyWith = _copyWith;
+  });
+
+  /// The name of the file.
+  String get fileName;
+
+  /// The URL to the file.
+  String get url;
+
+  /// The content type of the file.
+  String get contentType;
+
+  /// URL to an image preview of the file, if available.
+  String? get previewImage;
+
+  /// The width of the image preview, if available.
+  int? get previewWidth;
+
+  /// The height of the image preview, if available.
+  int? get previewHeight;
+}
+
+class _Undefined {}
+
+/// An attachement to a chat message. Typically an image or a file.
+class _ChatMessageAttachment extends ChatMessageAttachment {
+  const _ChatMessageAttachment({
+    required this.fileName,
+    required this.url,
+    required this.contentType,
+    this.previewImage,
+    this.previewWidth,
+    this.previewHeight,
+  }) : super._();
+
+  /// The name of the file.
+  @override
+  final String fileName;
+
+  /// The URL to the file.
+  @override
+  final String url;
+
+  /// The content type of the file.
+  @override
+  final String contentType;
+
+  /// URL to an image preview of the file, if available.
+  @override
+  final String? previewImage;
+
+  /// The width of the image preview, if available.
+  @override
+  final int? previewWidth;
+
+  /// The height of the image preview, if available.
+  @override
+  final int? previewHeight;
 
   @override
   Map<String, dynamic> toJson() {
@@ -128,7 +166,8 @@ class ChatMessageAttachment extends _i1.SerializableEntity {
         previewHeight,
       );
 
-  ChatMessageAttachment _copyWith({
+  @override
+  ChatMessageAttachment copyWith({
     String? fileName,
     String? url,
     String? contentType,

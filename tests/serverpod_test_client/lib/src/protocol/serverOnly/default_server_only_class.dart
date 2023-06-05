@@ -8,10 +8,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class DefaultServerOnlyClass extends _i1.SerializableEntity {
+  const DefaultServerOnlyClass._();
 
-class DefaultServerOnlyClass extends _i1.SerializableEntity {
-  DefaultServerOnlyClass({required this.foo});
+  const factory DefaultServerOnlyClass({required String foo}) =
+      _DefaultServerOnlyClass;
 
   factory DefaultServerOnlyClass.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -22,9 +23,15 @@ class DefaultServerOnlyClass extends _i1.SerializableEntity {
             serializationManager.deserialize<String>(jsonSerialization['foo']));
   }
 
-  final String foo;
+  DefaultServerOnlyClass copyWith({String? foo});
+  String get foo;
+}
 
-  late Function({String? foo}) copyWith = _copyWith;
+class _DefaultServerOnlyClass extends DefaultServerOnlyClass {
+  const _DefaultServerOnlyClass({required this.foo}) : super._();
+
+  @override
+  final String foo;
 
   @override
   Map<String, dynamic> toJson() {
@@ -48,7 +55,8 @@ class DefaultServerOnlyClass extends _i1.SerializableEntity {
   @override
   int get hashCode => foo.hashCode;
 
-  DefaultServerOnlyClass _copyWith({String? foo}) {
+  @override
+  DefaultServerOnlyClass copyWith({String? foo}) {
     return DefaultServerOnlyClass(foo: foo ?? this.foo);
   }
 }

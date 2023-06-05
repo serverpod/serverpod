@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
-
 /// A message indicating an attempt to join a channel.
-class ChatJoinChannel extends _i1.SerializableEntity {
-  ChatJoinChannel({
-    required this.channel,
-    this.userName,
-  });
+abstract class ChatJoinChannel extends _i1.SerializableEntity {
+  const ChatJoinChannel._();
+
+  const factory ChatJoinChannel({
+    required String channel,
+    String? userName,
+  }) = _ChatJoinChannel;
 
   factory ChatJoinChannel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,16 +29,34 @@ class ChatJoinChannel extends _i1.SerializableEntity {
     );
   }
 
+  ChatJoinChannel copyWith({
+    String? channel,
+    String? userName,
+  });
+
   /// The channel the user wants to join.
+  String get channel;
+
+  /// The name of the user.
+  String? get userName;
+}
+
+class _Undefined {}
+
+/// A message indicating an attempt to join a channel.
+class _ChatJoinChannel extends ChatJoinChannel {
+  const _ChatJoinChannel({
+    required this.channel,
+    this.userName,
+  }) : super._();
+
+  /// The channel the user wants to join.
+  @override
   final String channel;
 
   /// The name of the user.
+  @override
   final String? userName;
-
-  late Function({
-    String? channel,
-    String? userName,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -73,7 +91,8 @@ class ChatJoinChannel extends _i1.SerializableEntity {
         userName,
       );
 
-  ChatJoinChannel _copyWith({
+  @override
+  ChatJoinChannel copyWith({
     String? channel,
     Object? userName = _Undefined,
   }) {

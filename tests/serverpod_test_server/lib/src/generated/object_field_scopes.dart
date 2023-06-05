@@ -8,15 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
+    ObjectFieldScopesTable);
 
-class ObjectFieldScopes extends _i1.TableRow {
-  ObjectFieldScopes({
+abstract class ObjectFieldScopes extends _i1.TableRow {
+  const ObjectFieldScopes._();
+
+  const factory ObjectFieldScopes({
     int? id,
-    required this.normal,
-    this.api,
-    this.database,
-  }) : super(id);
+    required String normal,
+    String? api,
+    String? database,
+  }) = _ObjectFieldScopes;
 
   factory ObjectFieldScopes.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -32,83 +35,16 @@ class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectFieldScopesTable();
+  static const t = ObjectFieldScopesTable();
 
-  final String normal;
-
-  final String? api;
-
-  final String? database;
-
-  late Function({
+  ObjectFieldScopes copyWith({
     int? id,
     String? normal,
     String? api,
     String? database,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_field_scopes';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'normal': normal,
-      'api': api,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectFieldScopes &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.normal,
-                  normal,
-                ) ||
-                other.normal == normal) &&
-            (identical(
-                  other.api,
-                  api,
-                ) ||
-                other.api == api) &&
-            (identical(
-                  other.database,
-                  database,
-                ) ||
-                other.database == database));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        normal,
-        api,
-        database,
-      );
-
-  ObjectFieldScopes _copyWith({
-    Object? id = _Undefined,
-    String? normal,
-    Object? api = _Undefined,
-    Object? database = _Undefined,
-  }) {
-    return ObjectFieldScopes(
-      id: id == _Undefined ? this.id : (id as int?),
-      normal: normal ?? this.normal,
-      api: api == _Undefined ? this.api : (api as String?),
-      database: database == _Undefined ? this.database : (database as String?),
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -225,22 +161,106 @@ class ObjectFieldScopes extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  String get normal;
+  String? get api;
+  String? get database;
 }
 
-typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
-    ObjectFieldScopesTable);
+class _Undefined {}
+
+class _ObjectFieldScopes extends ObjectFieldScopes {
+  const _ObjectFieldScopes({
+    int? id,
+    required this.normal,
+    this.api,
+    this.database,
+  }) : super._();
+
+  @override
+  final String normal;
+
+  @override
+  final String? api;
+
+  @override
+  final String? database;
+
+  @override
+  String get tableName => 'object_field_scopes';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'normal': normal,
+      'api': api,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectFieldScopes &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.normal,
+                  normal,
+                ) ||
+                other.normal == normal) &&
+            (identical(
+                  other.api,
+                  api,
+                ) ||
+                other.api == api) &&
+            (identical(
+                  other.database,
+                  database,
+                ) ||
+                other.database == database));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        normal,
+        api,
+        database,
+      );
+
+  @override
+  ObjectFieldScopes copyWith({
+    Object? id = _Undefined,
+    String? normal,
+    Object? api = _Undefined,
+    Object? database = _Undefined,
+  }) {
+    return ObjectFieldScopes(
+      id: id == _Undefined ? this.id : (id as int?),
+      normal: normal ?? this.normal,
+      api: api == _Undefined ? this.api : (api as String?),
+      database: database == _Undefined ? this.database : (database as String?),
+    );
+  }
+}
 
 class ObjectFieldScopesTable extends _i1.Table {
-  ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
+  const ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final normal = _i1.ColumnString('normal');
+  final normal = const _i1.ColumnString('normal');
 
-  final database = _i1.ColumnString('database');
+  final database = const _i1.ColumnString('database');
 
   @override
   List<_i1.Column> get columns => [
@@ -251,4 +271,4 @@ class ObjectFieldScopesTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectFieldScopesTable.t instead.')
-ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
+ObjectFieldScopesTable tObjectFieldScopes = const ObjectFieldScopesTable();

@@ -10,20 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// Represents a foreign key.
-class ForeignKeyDefinition extends _i1.SerializableEntity {
-  ForeignKeyDefinition({
-    required this.constraintName,
-    required this.columns,
-    required this.referenceTable,
-    required this.referenceTableSchema,
-    required this.referenceColumns,
-    this.onUpdate,
-    this.onDelete,
-    this.matchType,
-  });
+abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
+  const ForeignKeyDefinition._();
+
+  const factory ForeignKeyDefinition({
+    required String constraintName,
+    required List<String> columns,
+    required String referenceTable,
+    required String referenceTableSchema,
+    required List<String> referenceColumns,
+    _i2.ForeignKeyAction? onUpdate,
+    _i2.ForeignKeyAction? onDelete,
+    _i2.ForeignKeyMatchType? matchType,
+  }) = _ForeignKeyDefinition;
 
   factory ForeignKeyDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -49,31 +49,7 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
     );
   }
 
-  /// The name of the constraint.
-  final String constraintName;
-
-  /// The constraint columns
-  final List<String> columns;
-
-  /// The table of the reference.
-  final String referenceTable;
-
-  /// The schema of the referenced table.
-  final String referenceTableSchema;
-
-  /// The column of the reference in the [referenceTable].
-  final List<String> referenceColumns;
-
-  /// The action, when the referred row is updated.
-  final _i2.ForeignKeyAction? onUpdate;
-
-  /// The action, when the referred row is deleted.
-  final _i2.ForeignKeyAction? onDelete;
-
-  /// The match type of the foreign key
-  final _i2.ForeignKeyMatchType? matchType;
-
-  late Function({
+  ForeignKeyDefinition copyWith({
     String? constraintName,
     List<String>? columns,
     String? referenceTable,
@@ -82,7 +58,79 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
     _i2.ForeignKeyMatchType? matchType,
-  }) copyWith = _copyWith;
+  });
+
+  /// The name of the constraint.
+  String get constraintName;
+
+  /// The constraint columns
+  List<String> get columns;
+
+  /// The table of the reference.
+  String get referenceTable;
+
+  /// The schema of the referenced table.
+  String get referenceTableSchema;
+
+  /// The column of the reference in the [referenceTable].
+  List<String> get referenceColumns;
+
+  /// The action, when the referred row is updated.
+  _i2.ForeignKeyAction? get onUpdate;
+
+  /// The action, when the referred row is deleted.
+  _i2.ForeignKeyAction? get onDelete;
+
+  /// The match type of the foreign key
+  _i2.ForeignKeyMatchType? get matchType;
+}
+
+class _Undefined {}
+
+/// Represents a foreign key.
+class _ForeignKeyDefinition extends ForeignKeyDefinition {
+  const _ForeignKeyDefinition({
+    required this.constraintName,
+    required this.columns,
+    required this.referenceTable,
+    required this.referenceTableSchema,
+    required this.referenceColumns,
+    this.onUpdate,
+    this.onDelete,
+    this.matchType,
+  }) : super._();
+
+  /// The name of the constraint.
+  @override
+  final String constraintName;
+
+  /// The constraint columns
+  @override
+  final List<String> columns;
+
+  /// The table of the reference.
+  @override
+  final String referenceTable;
+
+  /// The schema of the referenced table.
+  @override
+  final String referenceTableSchema;
+
+  /// The column of the reference in the [referenceTable].
+  @override
+  final List<String> referenceColumns;
+
+  /// The action, when the referred row is updated.
+  @override
+  final _i2.ForeignKeyAction? onUpdate;
+
+  /// The action, when the referred row is deleted.
+  @override
+  final _i2.ForeignKeyAction? onDelete;
+
+  /// The match type of the foreign key
+  @override
+  final _i2.ForeignKeyMatchType? matchType;
 
   @override
   Map<String, dynamic> toJson() {
@@ -157,7 +205,8 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(referenceColumns),
       );
 
-  ForeignKeyDefinition _copyWith({
+  @override
+  ForeignKeyDefinition copyWith({
     String? constraintName,
     List<String>? columns,
     String? referenceTable,

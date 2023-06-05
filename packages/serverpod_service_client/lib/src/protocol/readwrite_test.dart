@@ -8,15 +8,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-class ReadWriteTestEntry extends _i1.SerializableEntity {
-  ReadWriteTestEntry({
-    this.id,
-    required this.number,
-  });
+abstract class ReadWriteTestEntry extends _i1.SerializableEntity {
+  const ReadWriteTestEntry._();
+
+  const factory ReadWriteTestEntry({
+    int? id,
+    required int number,
+  }) = _ReadWriteTestEntry;
 
   factory ReadWriteTestEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,18 +29,39 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
     );
   }
 
+  ReadWriteTestEntry copyWith({
+    int? id,
+    int? number,
+  });
+
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
+  int? get id;
+
+  /// A random number, to verify that the write/read was performed correctly.
+  int get number;
+}
+
+class _Undefined {}
+
+/// Database mapping for a read/write test that is performed by the default
+/// health checks.
+class _ReadWriteTestEntry extends ReadWriteTestEntry {
+  const _ReadWriteTestEntry({
+    this.id,
+    required this.number,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
   final int? id;
 
   /// A random number, to verify that the write/read was performed correctly.
+  @override
   final int number;
-
-  late Function({
-    int? id,
-    int? number,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -75,7 +96,8 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
         number,
       );
 
-  ReadWriteTestEntry _copyWith({
+  @override
+  ReadWriteTestEntry copyWith({
     Object? id = _Undefined,
     int? number,
   }) {

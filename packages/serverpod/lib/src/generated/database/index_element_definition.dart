@@ -9,14 +9,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// Defines an element of an index.
-class IndexElementDefinition extends _i1.SerializableEntity {
-  IndexElementDefinition({
-    required this.type,
-    required this.definition,
-  });
+abstract class IndexElementDefinition extends _i1.SerializableEntity {
+  const IndexElementDefinition._();
+
+  const factory IndexElementDefinition({
+    required _i2.IndexElementDefinitionType type,
+    required String definition,
+  }) = _IndexElementDefinition;
 
   factory IndexElementDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,16 +30,32 @@ class IndexElementDefinition extends _i1.SerializableEntity {
     );
   }
 
+  IndexElementDefinition copyWith({
+    _i2.IndexElementDefinitionType? type,
+    String? definition,
+  });
+
   /// The type of this index element.
+  _i2.IndexElementDefinitionType get type;
+
+  /// Depending on the [type], this is either a column name or an expression.
+  String get definition;
+}
+
+/// Defines an element of an index.
+class _IndexElementDefinition extends IndexElementDefinition {
+  const _IndexElementDefinition({
+    required this.type,
+    required this.definition,
+  }) : super._();
+
+  /// The type of this index element.
+  @override
   final _i2.IndexElementDefinitionType type;
 
   /// Depending on the [type], this is either a column name or an expression.
+  @override
   final String definition;
-
-  late Function({
-    _i2.IndexElementDefinitionType? type,
-    String? definition,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +90,8 @@ class IndexElementDefinition extends _i1.SerializableEntity {
         definition,
       );
 
-  IndexElementDefinition _copyWith({
+  @override
+  IndexElementDefinition copyWith({
     _i2.IndexElementDefinitionType? type,
     String? definition,
   }) {

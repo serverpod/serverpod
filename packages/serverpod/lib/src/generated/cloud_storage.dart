@@ -9,19 +9,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class _Undefined {}
+typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
+    CloudStorageEntryTable);
 
 /// An entry in the database for an uploaded file.
-class CloudStorageEntry extends _i1.TableRow {
-  CloudStorageEntry({
+abstract class CloudStorageEntry extends _i1.TableRow {
+  const CloudStorageEntry._();
+
+  const factory CloudStorageEntry({
     int? id,
-    required this.storageId,
-    required this.path,
-    required this.addedTime,
-    this.expiration,
-    required this.byteData,
-    required this.verified,
-  }) : super(id);
+    required String storageId,
+    required String path,
+    required DateTime addedTime,
+    DateTime? expiration,
+    required _i2.ByteData byteData,
+    required bool verified,
+  }) = _CloudStorageEntry;
 
   factory CloudStorageEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -43,27 +46,9 @@ class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
-  static var t = CloudStorageEntryTable();
+  static const t = CloudStorageEntryTable();
 
-  /// The storageId, typically `public` or `private`.
-  final String storageId;
-
-  /// The path where the file is stored.
-  final String path;
-
-  /// The time when the file was added.
-  final DateTime addedTime;
-
-  /// The time at which the file expires and can be deleted.
-  final DateTime? expiration;
-
-  /// The actual data of the uploaded file.
-  final _i2.ByteData byteData;
-
-  /// True if the file has been verified as uploaded.
-  final bool verified;
-
-  late Function({
+  CloudStorageEntry copyWith({
     int? id,
     String? storageId,
     String? path,
@@ -71,100 +56,9 @@ class CloudStorageEntry extends _i1.TableRow {
     DateTime? expiration,
     _i2.ByteData? byteData,
     bool? verified,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_cloud_storage';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'storageId': storageId,
-      'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
-      'verified': verified,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is CloudStorageEntry &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.storageId,
-                  storageId,
-                ) ||
-                other.storageId == storageId) &&
-            (identical(
-                  other.path,
-                  path,
-                ) ||
-                other.path == path) &&
-            (identical(
-                  other.addedTime,
-                  addedTime,
-                ) ||
-                other.addedTime == addedTime) &&
-            (identical(
-                  other.expiration,
-                  expiration,
-                ) ||
-                other.expiration == expiration) &&
-            (identical(
-                  other.byteData,
-                  byteData,
-                ) ||
-                other.byteData == byteData) &&
-            (identical(
-                  other.verified,
-                  verified,
-                ) ||
-                other.verified == verified));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        storageId,
-        path,
-        addedTime,
-        expiration,
-        byteData,
-        verified,
-      );
-
-  CloudStorageEntry _copyWith({
-    Object? id = _Undefined,
-    String? storageId,
-    String? path,
-    DateTime? addedTime,
-    Object? expiration = _Undefined,
-    _i2.ByteData? byteData,
-    bool? verified,
-  }) {
-    return CloudStorageEntry(
-      id: id == _Undefined ? this.id : (id as int?),
-      storageId: storageId ?? this.storageId,
-      path: path ?? this.path,
-      addedTime: addedTime ?? this.addedTime,
-      expiration: expiration == _Undefined
-          ? this.expiration
-          : (expiration as DateTime?),
-      byteData: byteData ?? this.byteData,
-      verified: verified ?? this.verified,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -285,36 +179,183 @@ class CloudStorageEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The storageId, typically `public` or `private`.
+  String get storageId;
+
+  /// The path where the file is stored.
+  String get path;
+
+  /// The time when the file was added.
+  DateTime get addedTime;
+
+  /// The time at which the file expires and can be deleted.
+  DateTime? get expiration;
+
+  /// The actual data of the uploaded file.
+  _i2.ByteData get byteData;
+
+  /// True if the file has been verified as uploaded.
+  bool get verified;
 }
 
-typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
-    CloudStorageEntryTable);
+class _Undefined {}
+
+/// An entry in the database for an uploaded file.
+class _CloudStorageEntry extends CloudStorageEntry {
+  const _CloudStorageEntry({
+    int? id,
+    required this.storageId,
+    required this.path,
+    required this.addedTime,
+    this.expiration,
+    required this.byteData,
+    required this.verified,
+  }) : super._();
+
+  /// The storageId, typically `public` or `private`.
+  @override
+  final String storageId;
+
+  /// The path where the file is stored.
+  @override
+  final String path;
+
+  /// The time when the file was added.
+  @override
+  final DateTime addedTime;
+
+  /// The time at which the file expires and can be deleted.
+  @override
+  final DateTime? expiration;
+
+  /// The actual data of the uploaded file.
+  @override
+  final _i2.ByteData byteData;
+
+  /// True if the file has been verified as uploaded.
+  @override
+  final bool verified;
+
+  @override
+  String get tableName => 'serverpod_cloud_storage';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'storageId': storageId,
+      'path': path,
+      'addedTime': addedTime,
+      'expiration': expiration,
+      'byteData': byteData,
+      'verified': verified,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is CloudStorageEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.storageId,
+                  storageId,
+                ) ||
+                other.storageId == storageId) &&
+            (identical(
+                  other.path,
+                  path,
+                ) ||
+                other.path == path) &&
+            (identical(
+                  other.addedTime,
+                  addedTime,
+                ) ||
+                other.addedTime == addedTime) &&
+            (identical(
+                  other.expiration,
+                  expiration,
+                ) ||
+                other.expiration == expiration) &&
+            (identical(
+                  other.byteData,
+                  byteData,
+                ) ||
+                other.byteData == byteData) &&
+            (identical(
+                  other.verified,
+                  verified,
+                ) ||
+                other.verified == verified));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        storageId,
+        path,
+        addedTime,
+        expiration,
+        byteData,
+        verified,
+      );
+
+  @override
+  CloudStorageEntry copyWith({
+    Object? id = _Undefined,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    Object? expiration = _Undefined,
+    _i2.ByteData? byteData,
+    bool? verified,
+  }) {
+    return CloudStorageEntry(
+      id: id == _Undefined ? this.id : (id as int?),
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
+      addedTime: addedTime ?? this.addedTime,
+      expiration: expiration == _Undefined
+          ? this.expiration
+          : (expiration as DateTime?),
+      byteData: byteData ?? this.byteData,
+      verified: verified ?? this.verified,
+    );
+  }
+}
 
 class CloudStorageEntryTable extends _i1.Table {
-  CloudStorageEntryTable() : super(tableName: 'serverpod_cloud_storage');
+  const CloudStorageEntryTable() : super(tableName: 'serverpod_cloud_storage');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The storageId, typically `public` or `private`.
-  final storageId = _i1.ColumnString('storageId');
+  final storageId = const _i1.ColumnString('storageId');
 
   /// The path where the file is stored.
-  final path = _i1.ColumnString('path');
+  final path = const _i1.ColumnString('path');
 
   /// The time when the file was added.
-  final addedTime = _i1.ColumnDateTime('addedTime');
+  final addedTime = const _i1.ColumnDateTime('addedTime');
 
   /// The time at which the file expires and can be deleted.
-  final expiration = _i1.ColumnDateTime('expiration');
+  final expiration = const _i1.ColumnDateTime('expiration');
 
   /// The actual data of the uploaded file.
-  final byteData = _i1.ColumnByteData('byteData');
+  final byteData = const _i1.ColumnByteData('byteData');
 
   /// True if the file has been verified as uploaded.
-  final verified = _i1.ColumnBool('verified');
+  final verified = const _i1.ColumnBool('verified');
 
   @override
   List<_i1.Column> get columns => [
@@ -329,4 +370,4 @@ class CloudStorageEntryTable extends _i1.Table {
 }
 
 @Deprecated('Use CloudStorageEntryTable.t instead.')
-CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
+CloudStorageEntryTable tCloudStorageEntry = const CloudStorageEntryTable();

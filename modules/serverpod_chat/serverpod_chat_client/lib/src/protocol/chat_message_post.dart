@@ -10,16 +10,16 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// A chat message post request.
-class ChatMessagePost extends _i1.SerializableEntity {
-  ChatMessagePost({
-    required this.channel,
-    required this.message,
-    required this.clientMessageId,
-    this.attachments,
-  });
+abstract class ChatMessagePost extends _i1.SerializableEntity {
+  const ChatMessagePost._();
+
+  const factory ChatMessagePost({
+    required String channel,
+    required String message,
+    required int clientMessageId,
+    List<_i2.ChatMessageAttachment>? attachments,
+  }) = _ChatMessagePost;
 
   factory ChatMessagePost.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,24 +38,52 @@ class ChatMessagePost extends _i1.SerializableEntity {
     );
   }
 
-  /// The channel this message is posted to.
-  final String channel;
-
-  /// The body of the message.
-  final String message;
-
-  /// The client id of the message, used to track message deliveries.
-  final int clientMessageId;
-
-  /// List of attachments associated with this message.
-  final List<_i2.ChatMessageAttachment>? attachments;
-
-  late Function({
+  ChatMessagePost copyWith({
     String? channel,
     String? message,
     int? clientMessageId,
     List<_i2.ChatMessageAttachment>? attachments,
-  }) copyWith = _copyWith;
+  });
+
+  /// The channel this message is posted to.
+  String get channel;
+
+  /// The body of the message.
+  String get message;
+
+  /// The client id of the message, used to track message deliveries.
+  int get clientMessageId;
+
+  /// List of attachments associated with this message.
+  List<_i2.ChatMessageAttachment>? get attachments;
+}
+
+class _Undefined {}
+
+/// A chat message post request.
+class _ChatMessagePost extends ChatMessagePost {
+  const _ChatMessagePost({
+    required this.channel,
+    required this.message,
+    required this.clientMessageId,
+    this.attachments,
+  }) : super._();
+
+  /// The channel this message is posted to.
+  @override
+  final String channel;
+
+  /// The body of the message.
+  @override
+  final String message;
+
+  /// The client id of the message, used to track message deliveries.
+  @override
+  final int clientMessageId;
+
+  /// List of attachments associated with this message.
+  @override
+  final List<_i2.ChatMessageAttachment>? attachments;
 
   @override
   Map<String, dynamic> toJson() {
@@ -103,7 +131,8 @@ class ChatMessagePost extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(attachments),
       );
 
-  ChatMessagePost _copyWith({
+  @override
+  ChatMessagePost copyWith({
     String? channel,
     String? message,
     int? clientMessageId,

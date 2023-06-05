@@ -9,15 +9,15 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class _Undefined {}
+abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
+  const DatabaseMigrationAction._();
 
-class DatabaseMigrationAction extends _i1.SerializableEntity {
-  DatabaseMigrationAction({
-    required this.type,
-    this.deleteTable,
-    this.alterTable,
-    this.createTable,
-  });
+  const factory DatabaseMigrationAction({
+    required _i2.DatabaseMigrationActionType type,
+    String? deleteTable,
+    _i2.TableMigration? alterTable,
+    _i2.TableDefinition? createTable,
+  }) = _DatabaseMigrationAction;
 
   factory DatabaseMigrationAction.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -35,20 +35,39 @@ class DatabaseMigrationAction extends _i1.SerializableEntity {
     );
   }
 
-  final _i2.DatabaseMigrationActionType type;
-
-  final String? deleteTable;
-
-  final _i2.TableMigration? alterTable;
-
-  final _i2.TableDefinition? createTable;
-
-  late Function({
+  DatabaseMigrationAction copyWith({
     _i2.DatabaseMigrationActionType? type,
     String? deleteTable,
     _i2.TableMigration? alterTable,
     _i2.TableDefinition? createTable,
-  }) copyWith = _copyWith;
+  });
+  _i2.DatabaseMigrationActionType get type;
+  String? get deleteTable;
+  _i2.TableMigration? get alterTable;
+  _i2.TableDefinition? get createTable;
+}
+
+class _Undefined {}
+
+class _DatabaseMigrationAction extends DatabaseMigrationAction {
+  const _DatabaseMigrationAction({
+    required this.type,
+    this.deleteTable,
+    this.alterTable,
+    this.createTable,
+  }) : super._();
+
+  @override
+  final _i2.DatabaseMigrationActionType type;
+
+  @override
+  final String? deleteTable;
+
+  @override
+  final _i2.TableMigration? alterTable;
+
+  @override
+  final _i2.TableDefinition? createTable;
 
   @override
   Map<String, dynamic> toJson() {
@@ -97,7 +116,8 @@ class DatabaseMigrationAction extends _i1.SerializableEntity {
         createTable,
       );
 
-  DatabaseMigrationAction _copyWith({
+  @override
+  DatabaseMigrationAction copyWith({
     _i2.DatabaseMigrationActionType? type,
     Object? deleteTable = _Undefined,
     Object? alterTable = _Undefined,

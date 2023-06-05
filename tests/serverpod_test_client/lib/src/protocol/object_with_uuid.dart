@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class ObjectWithUuid extends _i1.SerializableEntity {
+  const ObjectWithUuid._();
 
-class ObjectWithUuid extends _i1.SerializableEntity {
-  ObjectWithUuid({
-    this.id,
-    required this.uuid,
-    this.uuidNullable,
-  });
+  const factory ObjectWithUuid({
+    int? id,
+    required _i1.UuidValue uuid,
+    _i1.UuidValue? uuidNullable,
+  }) = _ObjectWithUuid;
 
   factory ObjectWithUuid.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,20 +30,40 @@ class ObjectWithUuid extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final _i1.UuidValue uuid;
-
-  final _i1.UuidValue? uuidNullable;
-
-  late Function({
+  ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
     _i1.UuidValue? uuidNullable,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  _i1.UuidValue get uuid;
+  _i1.UuidValue? get uuidNullable;
+}
+
+class _Undefined {}
+
+class _ObjectWithUuid extends ObjectWithUuid {
+  const _ObjectWithUuid({
+    this.id,
+    required this.uuid,
+    this.uuidNullable,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final _i1.UuidValue uuid;
+
+  @override
+  final _i1.UuidValue? uuidNullable;
 
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +105,8 @@ class ObjectWithUuid extends _i1.SerializableEntity {
         uuidNullable,
       );
 
-  ObjectWithUuid _copyWith({
+  @override
+  ObjectWithUuid copyWith({
     Object? id = _Undefined,
     _i1.UuidValue? uuid,
     Object? uuidNullable = _Undefined,

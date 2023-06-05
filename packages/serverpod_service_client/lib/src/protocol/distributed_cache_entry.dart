@@ -8,11 +8,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// An entry in the distributed cache.
-class DistributedCacheEntry extends _i1.SerializableEntity {
-  DistributedCacheEntry({required this.data});
+abstract class DistributedCacheEntry extends _i1.SerializableEntity {
+  const DistributedCacheEntry._();
+
+  const factory DistributedCacheEntry({required String data}) =
+      _DistributedCacheEntry;
 
   factory DistributedCacheEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -23,10 +24,19 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
             .deserialize<String>(jsonSerialization['data']));
   }
 
-  /// The cached data.
-  final String data;
+  DistributedCacheEntry copyWith({String? data});
 
-  late Function({String? data}) copyWith = _copyWith;
+  /// The cached data.
+  String get data;
+}
+
+/// An entry in the distributed cache.
+class _DistributedCacheEntry extends DistributedCacheEntry {
+  const _DistributedCacheEntry({required this.data}) : super._();
+
+  /// The cached data.
+  @override
+  final String data;
 
   @override
   Map<String, dynamic> toJson() {
@@ -50,7 +60,8 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   @override
   int get hashCode => data.hashCode;
 
-  DistributedCacheEntry _copyWith({String? data}) {
+  @override
+  DistributedCacheEntry copyWith({String? data}) {
     return DistributedCacheEntry(data: data ?? this.data);
   }
 }

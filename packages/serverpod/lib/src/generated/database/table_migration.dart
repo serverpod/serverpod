@@ -10,23 +10,23 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+abstract class TableMigration extends _i1.SerializableEntity {
+  const TableMigration._();
 
-class TableMigration extends _i1.SerializableEntity {
-  TableMigration({
-    required this.name,
-    this.dartName,
-    this.module,
-    required this.schema,
-    required this.addColumns,
-    required this.deleteColumns,
-    required this.modifyColumns,
-    required this.addIndexes,
-    required this.deleteIndexes,
-    required this.addForeignKeys,
-    required this.deleteForeignKeys,
-    required this.warnings,
-  });
+  const factory TableMigration({
+    required String name,
+    String? dartName,
+    String? module,
+    required String schema,
+    required List<_i2.ColumnDefinition> addColumns,
+    required List<String> deleteColumns,
+    required List<_i2.ColumnMigration> modifyColumns,
+    required List<_i2.IndexDefinition> addIndexes,
+    required List<String> deleteIndexes,
+    required List<_i2.ForeignKeyDefinition> addForeignKeys,
+    required List<String> deleteForeignKeys,
+    required List<_i2.DatabaseMigrationWarning> warnings,
+  }) = _TableMigration;
 
   factory TableMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -62,31 +62,7 @@ class TableMigration extends _i1.SerializableEntity {
     );
   }
 
-  final String name;
-
-  final String? dartName;
-
-  final String? module;
-
-  final String schema;
-
-  final List<_i2.ColumnDefinition> addColumns;
-
-  final List<String> deleteColumns;
-
-  final List<_i2.ColumnMigration> modifyColumns;
-
-  final List<_i2.IndexDefinition> addIndexes;
-
-  final List<String> deleteIndexes;
-
-  final List<_i2.ForeignKeyDefinition> addForeignKeys;
-
-  final List<String> deleteForeignKeys;
-
-  final List<_i2.DatabaseMigrationWarning> warnings;
-
-  late Function({
+  TableMigration copyWith({
     String? name,
     String? dartName,
     String? module,
@@ -99,7 +75,74 @@ class TableMigration extends _i1.SerializableEntity {
     List<_i2.ForeignKeyDefinition>? addForeignKeys,
     List<String>? deleteForeignKeys,
     List<_i2.DatabaseMigrationWarning>? warnings,
-  }) copyWith = _copyWith;
+  });
+  String get name;
+  String? get dartName;
+  String? get module;
+  String get schema;
+  List<_i2.ColumnDefinition> get addColumns;
+  List<String> get deleteColumns;
+  List<_i2.ColumnMigration> get modifyColumns;
+  List<_i2.IndexDefinition> get addIndexes;
+  List<String> get deleteIndexes;
+  List<_i2.ForeignKeyDefinition> get addForeignKeys;
+  List<String> get deleteForeignKeys;
+  List<_i2.DatabaseMigrationWarning> get warnings;
+}
+
+class _Undefined {}
+
+class _TableMigration extends TableMigration {
+  const _TableMigration({
+    required this.name,
+    this.dartName,
+    this.module,
+    required this.schema,
+    required this.addColumns,
+    required this.deleteColumns,
+    required this.modifyColumns,
+    required this.addIndexes,
+    required this.deleteIndexes,
+    required this.addForeignKeys,
+    required this.deleteForeignKeys,
+    required this.warnings,
+  }) : super._();
+
+  @override
+  final String name;
+
+  @override
+  final String? dartName;
+
+  @override
+  final String? module;
+
+  @override
+  final String schema;
+
+  @override
+  final List<_i2.ColumnDefinition> addColumns;
+
+  @override
+  final List<String> deleteColumns;
+
+  @override
+  final List<_i2.ColumnMigration> modifyColumns;
+
+  @override
+  final List<_i2.IndexDefinition> addIndexes;
+
+  @override
+  final List<String> deleteIndexes;
+
+  @override
+  final List<_i2.ForeignKeyDefinition> addForeignKeys;
+
+  @override
+  final List<String> deleteForeignKeys;
+
+  @override
+  final List<_i2.DatabaseMigrationWarning> warnings;
 
   @override
   Map<String, dynamic> toJson() {
@@ -196,7 +239,8 @@ class TableMigration extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(warnings),
       );
 
-  TableMigration _copyWith({
+  @override
+  TableMigration copyWith({
     String? name,
     Object? dartName = _Undefined,
     Object? module = _Undefined,

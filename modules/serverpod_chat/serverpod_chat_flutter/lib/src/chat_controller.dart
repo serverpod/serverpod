@@ -1,11 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
+import 'package:serverpod_auth_client/module.dart' as auth;
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_client/module.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:serverpod_auth_client/module.dart' as auth;
 
 /// Callback for when a message is received from the server. If [addedByUser] is
 /// true, the message was added by the current user.
@@ -116,10 +115,12 @@ class ChatController {
     _connectionStatusListeners.clear();
   }
 
-  void _handleServerMessage(SerializableEntity serverMessage) {
+  void _handleServerMessage(SerializableEntity entity) {
+    var serverMessage = entity;
+
     if (serverMessage is ChatMessage) {
       if (ephemeral && serverMessage.id == null) {
-        serverMessage.id = ++_ephemeralMessageId;
+        serverMessage = serverMessage.copyWith(id: ++_ephemeralMessageId);
       }
 
       // Mark as read if a view is attached and scroll is at bottom.
@@ -130,13 +131,20 @@ class ChatController {
       var updated = false;
       if (serverMessage.sender == _joinedAsUserInfo?.id) {
         // This user is the sender of the message, mark message as sent
-        for (var message in messages) {
+
+        for (var i = 0; i < messages.length; i++) {
+          var message = messages[i];
           if (message.clientMessageId == serverMessage.clientMessageId) {
-            message.sent = true;
-            message.id = serverMessage.id;
+            message = message.copyWith(
+              sent: true,
+              id: serverMessage.id,
+            );
+
+            messages[i] = message;
             updated = true;
           }
         }
+
         if (updated) {
           _notifyMessageUpdatedListeners();
         }

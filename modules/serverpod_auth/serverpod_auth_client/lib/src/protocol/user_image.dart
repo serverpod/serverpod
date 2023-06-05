@@ -8,16 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Database bindings for a user image.
-class UserImage extends _i1.SerializableEntity {
-  UserImage({
-    this.id,
-    required this.userId,
-    required this.version,
-    required this.url,
-  });
+abstract class UserImage extends _i1.SerializableEntity {
+  const UserImage._();
+
+  const factory UserImage({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) = _UserImage;
 
   factory UserImage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,26 +33,56 @@ class UserImage extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The id of the user.
-  final int userId;
-
-  /// Version of the image. Increased by one for every uploaded image.
-  final int version;
-
-  /// The URL to the image.
-  final String url;
-
-  late Function({
+  UserImage copyWith({
     int? id,
     int? userId,
     int? version,
     String? url,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The id of the user.
+  int get userId;
+
+  /// Version of the image. Increased by one for every uploaded image.
+  int get version;
+
+  /// The URL to the image.
+  String get url;
+}
+
+class _Undefined {}
+
+/// Database bindings for a user image.
+class _UserImage extends UserImage {
+  const _UserImage({
+    this.id,
+    required this.userId,
+    required this.version,
+    required this.url,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The id of the user.
+  @override
+  final int userId;
+
+  /// Version of the image. Increased by one for every uploaded image.
+  @override
+  final int version;
+
+  /// The URL to the image.
+  @override
+  final String url;
 
   @override
   Map<String, dynamic> toJson() {
@@ -101,7 +131,8 @@ class UserImage extends _i1.SerializableEntity {
         url,
       );
 
-  UserImage _copyWith({
+  @override
+  UserImage copyWith({
     Object? id = _Undefined,
     int? userId,
     int? version,

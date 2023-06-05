@@ -26,14 +26,14 @@ class EmailEndpoint extends Endpoint {
       where: EmailAuth.t.email.equals(email),
     );
     if (entry == null) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
     }
 
     if (await _hasTooManyFailedSignIns(session, email)) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.tooManyFailedAttempts,
       );
@@ -47,7 +47,7 @@ class EmailEndpoint extends Endpoint {
           ' - ${Emails.generatePasswordHash(password, email)} saved: ${entry.hash}',
           level: LogLevel.debug);
       await _logFailedSignIn(session, email);
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
@@ -58,7 +58,7 @@ class EmailEndpoint extends Endpoint {
 
     var userInfo = await Users.findUserByUserId(session, entry.userId);
     if (userInfo == null) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );

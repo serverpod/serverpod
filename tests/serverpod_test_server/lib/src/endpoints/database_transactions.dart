@@ -19,8 +19,11 @@ class TransactionsDatabaseEndpoint extends Endpoint {
     );
 
     return await session.db.transaction((transaction) async {
-      data!.num = 1000;
-      await session.db.update(data, transaction: transaction);
+      data = data!.copyWith(
+        num: 1000,
+      );
+
+      await session.db.update(data!, transaction: transaction);
 
       var newData = SimpleData(
         num: numInsert,

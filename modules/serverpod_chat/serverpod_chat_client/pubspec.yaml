@@ -16,3 +16,4 @@ dependencies:
     path: ../../../packages/serverpod_client
   serverpod_auth_client: #^1.1.0
     path: ../../serverpod_auth/serverpod_auth_client
+  collection: ^1.17.2

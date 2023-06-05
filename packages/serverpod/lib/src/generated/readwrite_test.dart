@@ -8,15 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
+    ReadWriteTestEntryTable);
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-class ReadWriteTestEntry extends _i1.TableRow {
-  ReadWriteTestEntry({
+abstract class ReadWriteTestEntry extends _i1.TableRow {
+  const ReadWriteTestEntry._();
+
+  const factory ReadWriteTestEntry({
     int? id,
-    required this.number,
-  }) : super(id);
+    required int number,
+  }) = _ReadWriteTestEntry;
 
   factory ReadWriteTestEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,61 +32,14 @@ class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
-  static var t = ReadWriteTestEntryTable();
+  static const t = ReadWriteTestEntryTable();
 
-  /// A random number, to verify that the write/read was performed correctly.
-  final int number;
-
-  late Function({
+  ReadWriteTestEntry copyWith({
     int? id,
     int? number,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_readwrite_test';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'number': number,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ReadWriteTestEntry &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.number,
-                  number,
-                ) ||
-                other.number == number));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        number,
-      );
-
-  ReadWriteTestEntry _copyWith({
-    Object? id = _Undefined,
-    int? number,
-  }) {
-    return ReadWriteTestEntry(
-      id: id == _Undefined ? this.id : (id as int?),
-      number: number ?? this.number,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -199,21 +155,83 @@ class ReadWriteTestEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// A random number, to verify that the write/read was performed correctly.
+  int get number;
 }
 
-typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
-    ReadWriteTestEntryTable);
+class _Undefined {}
+
+/// Database mapping for a read/write test that is performed by the default
+/// health checks.
+class _ReadWriteTestEntry extends ReadWriteTestEntry {
+  const _ReadWriteTestEntry({
+    int? id,
+    required this.number,
+  }) : super._();
+
+  /// A random number, to verify that the write/read was performed correctly.
+  @override
+  final int number;
+
+  @override
+  String get tableName => 'serverpod_readwrite_test';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'number': number,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ReadWriteTestEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.number,
+                  number,
+                ) ||
+                other.number == number));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        number,
+      );
+
+  @override
+  ReadWriteTestEntry copyWith({
+    Object? id = _Undefined,
+    int? number,
+  }) {
+    return ReadWriteTestEntry(
+      id: id == _Undefined ? this.id : (id as int?),
+      number: number ?? this.number,
+    );
+  }
+}
 
 class ReadWriteTestEntryTable extends _i1.Table {
-  ReadWriteTestEntryTable() : super(tableName: 'serverpod_readwrite_test');
+  const ReadWriteTestEntryTable()
+      : super(tableName: 'serverpod_readwrite_test');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// A random number, to verify that the write/read was performed correctly.
-  final number = _i1.ColumnInt('number');
+  final number = const _i1.ColumnInt('number');
 
   @override
   List<_i1.Column> get columns => [
@@ -223,4 +241,4 @@ class ReadWriteTestEntryTable extends _i1.Table {
 }
 
 @Deprecated('Use ReadWriteTestEntryTable.t instead.')
-ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
+ReadWriteTestEntryTable tReadWriteTestEntry = const ReadWriteTestEntryTable();

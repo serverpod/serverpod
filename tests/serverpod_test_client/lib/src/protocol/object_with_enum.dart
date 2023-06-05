@@ -10,17 +10,17 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+abstract class ObjectWithEnum extends _i1.SerializableEntity {
+  const ObjectWithEnum._();
 
-class ObjectWithEnum extends _i1.SerializableEntity {
-  ObjectWithEnum({
-    this.id,
-    required this.testEnum,
-    this.nullableEnum,
-    required this.enumList,
-    required this.nullableEnumList,
-    required this.enumListList,
-  });
+  const factory ObjectWithEnum({
+    int? id,
+    required _i2.TestEnum testEnum,
+    _i2.TestEnum? nullableEnum,
+    required List<_i2.TestEnum> enumList,
+    required List<_i2.TestEnum?> nullableEnumList,
+    required List<List<_i2.TestEnum>> enumListList,
+  }) = _ObjectWithEnum;
 
   factory ObjectWithEnum.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,29 +41,58 @@ class ObjectWithEnum extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final _i2.TestEnum testEnum;
-
-  final _i2.TestEnum? nullableEnum;
-
-  final List<_i2.TestEnum> enumList;
-
-  final List<_i2.TestEnum?> nullableEnumList;
-
-  final List<List<_i2.TestEnum>> enumListList;
-
-  late Function({
+  ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
     _i2.TestEnum? nullableEnum,
     List<_i2.TestEnum>? enumList,
     List<_i2.TestEnum?>? nullableEnumList,
     List<List<_i2.TestEnum>>? enumListList,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  _i2.TestEnum get testEnum;
+  _i2.TestEnum? get nullableEnum;
+  List<_i2.TestEnum> get enumList;
+  List<_i2.TestEnum?> get nullableEnumList;
+  List<List<_i2.TestEnum>> get enumListList;
+}
+
+class _Undefined {}
+
+class _ObjectWithEnum extends ObjectWithEnum {
+  const _ObjectWithEnum({
+    this.id,
+    required this.testEnum,
+    this.nullableEnum,
+    required this.enumList,
+    required this.nullableEnumList,
+    required this.enumListList,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final _i2.TestEnum testEnum;
+
+  @override
+  final _i2.TestEnum? nullableEnum;
+
+  @override
+  final List<_i2.TestEnum> enumList;
+
+  @override
+  final List<_i2.TestEnum?> nullableEnumList;
+
+  @override
+  final List<List<_i2.TestEnum>> enumListList;
 
   @override
   Map<String, dynamic> toJson() {
@@ -123,7 +152,8 @@ class ObjectWithEnum extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(enumListList),
       );
 
-  ObjectWithEnum _copyWith({
+  @override
+  ObjectWithEnum copyWith({
     Object? id = _Undefined,
     _i2.TestEnum? testEnum,
     Object? nullableEnum = _Undefined,

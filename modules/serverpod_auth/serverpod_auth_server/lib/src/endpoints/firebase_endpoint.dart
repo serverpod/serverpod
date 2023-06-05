@@ -1,6 +1,6 @@
+import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
 
 const _authMethod = 'firebase';
@@ -24,7 +24,7 @@ class FirebaseEndpoint extends Endpoint {
         exception: e,
       );
 
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.internalError,
       );
@@ -39,7 +39,7 @@ class FirebaseEndpoint extends Endpoint {
 
       // Verify that we at a minimum got the email address.
       if (claims.email == null) {
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
@@ -70,7 +70,7 @@ class FirebaseEndpoint extends Endpoint {
       }
 
       if (userInfo == null) {
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.userCreationDenied,
         );
@@ -85,7 +85,7 @@ class FirebaseEndpoint extends Endpoint {
         userInfo: userInfo,
       );
     } catch (e) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );

@@ -10,16 +10,16 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// Compounded information about a session log.
-class SessionLogInfo extends _i1.SerializableEntity {
-  SessionLogInfo({
-    required this.sessionLogEntry,
-    required this.queries,
-    required this.logs,
-    required this.messages,
-  });
+abstract class SessionLogInfo extends _i1.SerializableEntity {
+  const SessionLogInfo._();
+
+  const factory SessionLogInfo({
+    required _i2.SessionLogEntry sessionLogEntry,
+    required List<_i2.QueryLogEntry> queries,
+    required List<_i2.LogEntry> logs,
+    required List<_i2.MessageLogEntry> messages,
+  }) = _SessionLogInfo;
 
   factory SessionLogInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,24 +37,50 @@ class SessionLogInfo extends _i1.SerializableEntity {
     );
   }
 
-  /// The main session log entry.
-  final _i2.SessionLogEntry sessionLogEntry;
-
-  /// List of queries made during the session.
-  final List<_i2.QueryLogEntry> queries;
-
-  /// List of log entries made during the session.
-  final List<_i2.LogEntry> logs;
-
-  /// List of messages sent during the session.
-  final List<_i2.MessageLogEntry> messages;
-
-  late Function({
+  SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,
     List<_i2.QueryLogEntry>? queries,
     List<_i2.LogEntry>? logs,
     List<_i2.MessageLogEntry>? messages,
-  }) copyWith = _copyWith;
+  });
+
+  /// The main session log entry.
+  _i2.SessionLogEntry get sessionLogEntry;
+
+  /// List of queries made during the session.
+  List<_i2.QueryLogEntry> get queries;
+
+  /// List of log entries made during the session.
+  List<_i2.LogEntry> get logs;
+
+  /// List of messages sent during the session.
+  List<_i2.MessageLogEntry> get messages;
+}
+
+/// Compounded information about a session log.
+class _SessionLogInfo extends SessionLogInfo {
+  const _SessionLogInfo({
+    required this.sessionLogEntry,
+    required this.queries,
+    required this.logs,
+    required this.messages,
+  }) : super._();
+
+  /// The main session log entry.
+  @override
+  final _i2.SessionLogEntry sessionLogEntry;
+
+  /// List of queries made during the session.
+  @override
+  final List<_i2.QueryLogEntry> queries;
+
+  /// List of log entries made during the session.
+  @override
+  final List<_i2.LogEntry> logs;
+
+  /// List of messages sent during the session.
+  @override
+  final List<_i2.MessageLogEntry> messages;
 
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +126,8 @@ class SessionLogInfo extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(messages),
       );
 
-  SessionLogInfo _copyWith({
+  @override
+  SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,
     List<_i2.QueryLogEntry>? queries,
     List<_i2.LogEntry>? logs,

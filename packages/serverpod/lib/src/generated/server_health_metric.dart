@@ -8,21 +8,24 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
+    ServerHealthMetricTable);
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-class ServerHealthMetric extends _i1.TableRow {
-  ServerHealthMetric({
+abstract class ServerHealthMetric extends _i1.TableRow {
+  const ServerHealthMetric._();
+
+  const factory ServerHealthMetric({
     int? id,
-    required this.name,
-    required this.serverId,
-    required this.timestamp,
-    required this.isHealthy,
-    required this.value,
-    required this.granularity,
-  }) : super(id);
+    required String name,
+    required String serverId,
+    required DateTime timestamp,
+    required bool isHealthy,
+    required double value,
+    required int granularity,
+  }) = _ServerHealthMetric;
 
   factory ServerHealthMetric.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -44,28 +47,9 @@ class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
-  static var t = ServerHealthMetricTable();
+  static const t = ServerHealthMetricTable();
 
-  /// The name of the metric.
-  final String name;
-
-  /// The server associated with this metric.
-  final String serverId;
-
-  /// The time when the connections was checked, granularity is one minute.
-  final DateTime timestamp;
-
-  /// True if the metric is healthy.
-  final bool isHealthy;
-
-  /// The value of the metric.
-  final double value;
-
-  /// The granularity of this timestamp, null represents 1 minute, other valid
-  /// values are 60 minutes and 1440 minutes (one day).
-  final int granularity;
-
-  late Function({
+  ServerHealthMetric copyWith({
     int? id,
     String? name,
     String? serverId,
@@ -73,98 +57,9 @@ class ServerHealthMetric extends _i1.TableRow {
     bool? isHealthy,
     double? value,
     int? granularity,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_health_metric';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'serverId': serverId,
-      'timestamp': timestamp,
-      'isHealthy': isHealthy,
-      'value': value,
-      'granularity': granularity,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ServerHealthMetric &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.name,
-                  name,
-                ) ||
-                other.name == name) &&
-            (identical(
-                  other.serverId,
-                  serverId,
-                ) ||
-                other.serverId == serverId) &&
-            (identical(
-                  other.timestamp,
-                  timestamp,
-                ) ||
-                other.timestamp == timestamp) &&
-            (identical(
-                  other.isHealthy,
-                  isHealthy,
-                ) ||
-                other.isHealthy == isHealthy) &&
-            (identical(
-                  other.value,
-                  value,
-                ) ||
-                other.value == value) &&
-            (identical(
-                  other.granularity,
-                  granularity,
-                ) ||
-                other.granularity == granularity));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        name,
-        serverId,
-        timestamp,
-        isHealthy,
-        value,
-        granularity,
-      );
-
-  ServerHealthMetric _copyWith({
-    Object? id = _Undefined,
-    String? name,
-    String? serverId,
-    DateTime? timestamp,
-    bool? isHealthy,
-    double? value,
-    int? granularity,
-  }) {
-    return ServerHealthMetric(
-      id: id == _Undefined ? this.id : (id as int?),
-      name: name ?? this.name,
-      serverId: serverId ?? this.serverId,
-      timestamp: timestamp ?? this.timestamp,
-      isHealthy: isHealthy ?? this.isHealthy,
-      value: value ?? this.value,
-      granularity: granularity ?? this.granularity,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -285,37 +180,186 @@ class ServerHealthMetric extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The name of the metric.
+  String get name;
+
+  /// The server associated with this metric.
+  String get serverId;
+
+  /// The time when the connections was checked, granularity is one minute.
+  DateTime get timestamp;
+
+  /// True if the metric is healthy.
+  bool get isHealthy;
+
+  /// The value of the metric.
+  double get value;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  int get granularity;
 }
 
-typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
-    ServerHealthMetricTable);
+class _Undefined {}
+
+/// Represents a snapshot of a specific health metric. An entry is written every
+/// minute for each server. All health data can be accessed through Serverpod
+/// Insights.
+class _ServerHealthMetric extends ServerHealthMetric {
+  const _ServerHealthMetric({
+    int? id,
+    required this.name,
+    required this.serverId,
+    required this.timestamp,
+    required this.isHealthy,
+    required this.value,
+    required this.granularity,
+  }) : super._();
+
+  /// The name of the metric.
+  @override
+  final String name;
+
+  /// The server associated with this metric.
+  @override
+  final String serverId;
+
+  /// The time when the connections was checked, granularity is one minute.
+  @override
+  final DateTime timestamp;
+
+  /// True if the metric is healthy.
+  @override
+  final bool isHealthy;
+
+  /// The value of the metric.
+  @override
+  final double value;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  @override
+  final int granularity;
+
+  @override
+  String get tableName => 'serverpod_health_metric';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'serverId': serverId,
+      'timestamp': timestamp,
+      'isHealthy': isHealthy,
+      'value': value,
+      'granularity': granularity,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ServerHealthMetric &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.timestamp,
+                  timestamp,
+                ) ||
+                other.timestamp == timestamp) &&
+            (identical(
+                  other.isHealthy,
+                  isHealthy,
+                ) ||
+                other.isHealthy == isHealthy) &&
+            (identical(
+                  other.value,
+                  value,
+                ) ||
+                other.value == value) &&
+            (identical(
+                  other.granularity,
+                  granularity,
+                ) ||
+                other.granularity == granularity));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        name,
+        serverId,
+        timestamp,
+        isHealthy,
+        value,
+        granularity,
+      );
+
+  @override
+  ServerHealthMetric copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? serverId,
+    DateTime? timestamp,
+    bool? isHealthy,
+    double? value,
+    int? granularity,
+  }) {
+    return ServerHealthMetric(
+      id: id == _Undefined ? this.id : (id as int?),
+      name: name ?? this.name,
+      serverId: serverId ?? this.serverId,
+      timestamp: timestamp ?? this.timestamp,
+      isHealthy: isHealthy ?? this.isHealthy,
+      value: value ?? this.value,
+      granularity: granularity ?? this.granularity,
+    );
+  }
+}
 
 class ServerHealthMetricTable extends _i1.Table {
-  ServerHealthMetricTable() : super(tableName: 'serverpod_health_metric');
+  const ServerHealthMetricTable() : super(tableName: 'serverpod_health_metric');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The name of the metric.
-  final name = _i1.ColumnString('name');
+  final name = const _i1.ColumnString('name');
 
   /// The server associated with this metric.
-  final serverId = _i1.ColumnString('serverId');
+  final serverId = const _i1.ColumnString('serverId');
 
   /// The time when the connections was checked, granularity is one minute.
-  final timestamp = _i1.ColumnDateTime('timestamp');
+  final timestamp = const _i1.ColumnDateTime('timestamp');
 
   /// True if the metric is healthy.
-  final isHealthy = _i1.ColumnBool('isHealthy');
+  final isHealthy = const _i1.ColumnBool('isHealthy');
 
   /// The value of the metric.
-  final value = _i1.ColumnDouble('value');
+  final value = const _i1.ColumnDouble('value');
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  final granularity = _i1.ColumnInt('granularity');
+  final granularity = const _i1.ColumnInt('granularity');
 
   @override
   List<_i1.Column> get columns => [
@@ -330,4 +374,4 @@ class ServerHealthMetricTable extends _i1.Table {
 }
 
 @Deprecated('Use ServerHealthMetricTable.t instead.')
-ServerHealthMetricTable tServerHealthMetric = ServerHealthMetricTable();
+ServerHealthMetricTable tServerHealthMetric = const ServerHealthMetricTable();

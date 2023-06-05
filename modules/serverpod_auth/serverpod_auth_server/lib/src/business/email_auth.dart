@@ -93,7 +93,10 @@ class Emails {
     }
 
     // Update password
-    auth.hash = generatePasswordHash(newPassword, auth.email);
+    auth = auth.copyWith(
+      hash: generatePasswordHash(newPassword, auth.email),
+    );
+
     await session.db.update(auth);
 
     return true;
@@ -176,7 +179,10 @@ class Emails {
 
     if (emailAuth == null) return false;
 
-    emailAuth.hash = generatePasswordHash(password, emailAuth.email);
+    emailAuth = emailAuth.copyWith(
+      hash: generatePasswordHash(password, emailAuth.email),
+    );
+
     await session.db.update(emailAuth);
 
     return true;
@@ -227,8 +233,11 @@ class Emails {
         );
         await session.db.insert(accountRequest);
       } else {
-        accountRequest.userName = userName;
-        accountRequest.verificationCode = _generateVerificationCode();
+        accountRequest = accountRequest.copyWith(
+          userName: userName,
+          verificationCode: _generateVerificationCode(),
+        );
+        
         await EmailCreateAccountRequest.update(session, accountRequest);
       }
 

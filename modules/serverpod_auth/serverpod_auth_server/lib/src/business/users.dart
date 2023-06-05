@@ -81,7 +81,8 @@ class Users {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
-    userInfo.userName = newUserName;
+    userInfo = userInfo.copyWith(userName: newUserName);
+
     await session.db.update(userInfo);
 
     if (AuthConfig.current.onUserUpdated != null) {
@@ -105,7 +106,9 @@ class Users {
     for (var scope in newScopes) {
       if (scope.name != null) scopeStrs.add(scope.name!);
     }
-    userInfo.scopeNames = scopeStrs;
+
+    userInfo = userInfo.copyWith(scopeNames: scopeStrs);
+
     await session.db.update(userInfo);
 
     // Update all authentication keys too.
@@ -132,25 +135,6 @@ class Users {
 
 /// Additional methods for [UserInfo].
 extension UserInfoMethods on UserInfo {
-  /// Invalidates the local cache for the user, and forces next lookup to get a
-  /// fresh copy from the database.
-  Future<void> invalidateCache(Session session) async {
-    if (id == null) return;
-
-    await Users.invalidateCacheForUser(session, id!);
-  }
-
-  /// Updates the name of this user, returns true if successful.
-  Future<bool> changeUserName(Session session, String newUserName) async {
-    if (id == null) return false;
-
-    var updatedUser = await Users.changeUserName(session, id!, newUserName);
-    if (updatedUser == null) return false;
-
-    userName = newUserName;
-    return true;
-  }
-
   /// Returns a set containing the scopes this user has access to.
   Set<Scope> get scopes {
     var set = <Scope>{};
@@ -158,16 +142,5 @@ extension UserInfoMethods on UserInfo {
       set.add(Scope(scopeStr));
     }
     return set;
-  }
-
-  /// Updates the scopes for a user, returns true if successful.
-  Future<bool> updateScopes(Session session, Set<Scope> newScopes) async {
-    if (id == null) return false;
-
-    var updatedUser = await Users.updateUserScopes(session, id!, newScopes);
-    if (updatedUser == null) return false;
-
-    scopeNames = updatedUser.scopeNames;
-    return true;
   }
 }

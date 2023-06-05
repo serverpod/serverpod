@@ -11,39 +11,42 @@ import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:collection/collection.dart' as _i4;
 
-class _Undefined {}
+typedef ExtraDataClassExpressionBuilder = _i1.Expression Function(
+    ExtraDataClassTable);
 
 /// Just some simple data.
-class ExtraDataClass extends _i1.TableRow {
-  ExtraDataClass({
+abstract class ExtraDataClass extends _i1.TableRow {
+  const ExtraDataClass._();
+
+  const factory ExtraDataClass({
     int? id,
-    required this.duration,
-    required this.object,
-    this.nullableObject,
-    required this.list,
-    this.nullableList,
-    required this.optionalValueList,
-    required this.testEnum,
-    this.nullableEnum,
-    required this.enumList,
-    required this.nullableEnumList,
-    required this.enumListList,
-    required this.dataMap,
-    required this.intMap,
-    required this.stringMap,
-    required this.dateTimeMap,
-    required this.byteDataMap,
-    required this.durationMap,
-    required this.uuidMap,
-    required this.nullableDataMap,
-    required this.nullableIntMap,
-    required this.nullableStringMap,
-    required this.nullableDateTimeMap,
-    required this.nullableByteDataMap,
-    required this.nullableDurationMap,
-    required this.nullableUuidMap,
-    required this.intIntMap,
-  }) : super(id);
+    required Duration duration,
+    required _i2.ExtraDataSimple object,
+    _i2.ExtraDataSimple? nullableObject,
+    required List<_i2.ExtraDataSimple> list,
+    List<_i2.ExtraDataSimple>? nullableList,
+    required List<_i2.ExtraDataSimple?> optionalValueList,
+    required _i2.TestEnum testEnum,
+    _i2.TestEnum? nullableEnum,
+    required List<_i2.TestEnum> enumList,
+    required List<_i2.TestEnum?> nullableEnumList,
+    required List<List<_i2.TestEnum>> enumListList,
+    required Map<String, _i2.ExtraDataSimple> dataMap,
+    required Map<String, int> intMap,
+    required Map<String, String> stringMap,
+    required Map<String, DateTime> dateTimeMap,
+    required Map<String, _i3.ByteData> byteDataMap,
+    required Map<String, Duration> durationMap,
+    required Map<String, _i1.UuidValue> uuidMap,
+    required Map<String, _i2.ExtraDataSimple?> nullableDataMap,
+    required Map<String, int?> nullableIntMap,
+    required Map<String, String?> nullableStringMap,
+    required Map<String, DateTime?> nullableDateTimeMap,
+    required Map<String, _i3.ByteData?> nullableByteDataMap,
+    required Map<String, Duration?> nullableDurationMap,
+    required Map<String, _i1.UuidValue?> nullableUuidMap,
+    required Map<int, int> intIntMap,
+  }) = _ExtraDataClass;
 
   factory ExtraDataClass.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -114,61 +117,9 @@ class ExtraDataClass extends _i1.TableRow {
     );
   }
 
-  static var t = ExtraDataClassTable();
+  static const t = ExtraDataClassTable();
 
-  final Duration duration;
-
-  final _i2.ExtraDataSimple object;
-
-  final _i2.ExtraDataSimple? nullableObject;
-
-  final List<_i2.ExtraDataSimple> list;
-
-  final List<_i2.ExtraDataSimple>? nullableList;
-
-  final List<_i2.ExtraDataSimple?> optionalValueList;
-
-  final _i2.TestEnum testEnum;
-
-  final _i2.TestEnum? nullableEnum;
-
-  final List<_i2.TestEnum> enumList;
-
-  final List<_i2.TestEnum?> nullableEnumList;
-
-  final List<List<_i2.TestEnum>> enumListList;
-
-  final Map<String, _i2.ExtraDataSimple> dataMap;
-
-  final Map<String, int> intMap;
-
-  final Map<String, String> stringMap;
-
-  final Map<String, DateTime> dateTimeMap;
-
-  final Map<String, _i3.ByteData> byteDataMap;
-
-  final Map<String, Duration> durationMap;
-
-  final Map<String, _i1.UuidValue> uuidMap;
-
-  final Map<String, _i2.ExtraDataSimple?> nullableDataMap;
-
-  final Map<String, int?> nullableIntMap;
-
-  final Map<String, String?> nullableStringMap;
-
-  final Map<String, DateTime?> nullableDateTimeMap;
-
-  final Map<String, _i3.ByteData?> nullableByteDataMap;
-
-  final Map<String, Duration?> nullableDurationMap;
-
-  final Map<String, _i1.UuidValue?> nullableUuidMap;
-
-  final Map<int, int> intIntMap;
-
-  late Function({
+  ExtraDataClass copyWith({
     int? id,
     Duration? duration,
     _i2.ExtraDataSimple? object,
@@ -196,7 +147,289 @@ class ExtraDataClass extends _i1.TableRow {
     Map<String, Duration?>? nullableDurationMap,
     Map<String, _i1.UuidValue?>? nullableUuidMap,
     Map<int, int>? intIntMap,
-  }) copyWith = _copyWith;
+  });
+  @override
+  String get tableName => 'extra_data_class';
+  @override
+  Map<String, dynamic> toJsonForDatabase() {
+    return {
+      'id': id,
+      'duration': duration,
+      'object': object,
+      'nullableObject': nullableObject,
+      'list': list,
+      'nullableList': nullableList,
+      'optionalValueList': optionalValueList,
+      'testEnum': testEnum,
+      'nullableEnum': nullableEnum,
+      'enumList': enumList,
+      'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
+      'dataMap': dataMap,
+      'intMap': intMap,
+      'stringMap': stringMap,
+      'dateTimeMap': dateTimeMap,
+      'byteDataMap': byteDataMap,
+      'durationMap': durationMap,
+      'uuidMap': uuidMap,
+      'nullableDataMap': nullableDataMap,
+      'nullableIntMap': nullableIntMap,
+      'nullableStringMap': nullableStringMap,
+      'nullableDateTimeMap': nullableDateTimeMap,
+      'nullableByteDataMap': nullableByteDataMap,
+      'nullableDurationMap': nullableDurationMap,
+      'nullableUuidMap': nullableUuidMap,
+      'intIntMap': intIntMap,
+    };
+  }
+
+  static Future<List<ExtraDataClass>> find(
+    _i1.Session session, {
+    ExtraDataClassExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    List<_i1.Order>? orderByList,
+    bool orderDescending = false,
+    bool useCache = true,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<ExtraDataClass>(
+      where: where != null ? where(ExtraDataClass.t) : null,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<ExtraDataClass?> findSingleRow(
+    _i1.Session session, {
+    ExtraDataClassExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findSingleRow<ExtraDataClass>(
+      where: where != null ? where(ExtraDataClass.t) : null,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  static Future<ExtraDataClass?> findById(
+    _i1.Session session,
+    int id,
+  ) async {
+    return session.db.findById<ExtraDataClass>(id);
+  }
+
+  static Future<int> delete(
+    _i1.Session session, {
+    required ExtraDataClassExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<ExtraDataClass>(
+      where: where(ExtraDataClass.t),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> deleteRow(
+    _i1.Session session,
+    ExtraDataClass row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> update(
+    _i1.Session session,
+    ExtraDataClass row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<void> insert(
+    _i1.Session session,
+    ExtraDataClass row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  static Future<int> count(
+    _i1.Session session, {
+    ExtraDataClassExpressionBuilder? where,
+    int? limit,
+    bool useCache = true,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<ExtraDataClass>(
+      where: where != null ? where(ExtraDataClass.t) : null,
+      limit: limit,
+      useCache: useCache,
+      transaction: transaction,
+    );
+  }
+
+  Duration get duration;
+  _i2.ExtraDataSimple get object;
+  _i2.ExtraDataSimple? get nullableObject;
+  List<_i2.ExtraDataSimple> get list;
+  List<_i2.ExtraDataSimple>? get nullableList;
+  List<_i2.ExtraDataSimple?> get optionalValueList;
+  _i2.TestEnum get testEnum;
+  _i2.TestEnum? get nullableEnum;
+  List<_i2.TestEnum> get enumList;
+  List<_i2.TestEnum?> get nullableEnumList;
+  List<List<_i2.TestEnum>> get enumListList;
+  Map<String, _i2.ExtraDataSimple> get dataMap;
+  Map<String, int> get intMap;
+  Map<String, String> get stringMap;
+  Map<String, DateTime> get dateTimeMap;
+  Map<String, _i3.ByteData> get byteDataMap;
+  Map<String, Duration> get durationMap;
+  Map<String, _i1.UuidValue> get uuidMap;
+  Map<String, _i2.ExtraDataSimple?> get nullableDataMap;
+  Map<String, int?> get nullableIntMap;
+  Map<String, String?> get nullableStringMap;
+  Map<String, DateTime?> get nullableDateTimeMap;
+  Map<String, _i3.ByteData?> get nullableByteDataMap;
+  Map<String, Duration?> get nullableDurationMap;
+  Map<String, _i1.UuidValue?> get nullableUuidMap;
+  Map<int, int> get intIntMap;
+}
+
+class _Undefined {}
+
+/// Just some simple data.
+class _ExtraDataClass extends ExtraDataClass {
+  const _ExtraDataClass({
+    int? id,
+    required this.duration,
+    required this.object,
+    this.nullableObject,
+    required this.list,
+    this.nullableList,
+    required this.optionalValueList,
+    required this.testEnum,
+    this.nullableEnum,
+    required this.enumList,
+    required this.nullableEnumList,
+    required this.enumListList,
+    required this.dataMap,
+    required this.intMap,
+    required this.stringMap,
+    required this.dateTimeMap,
+    required this.byteDataMap,
+    required this.durationMap,
+    required this.uuidMap,
+    required this.nullableDataMap,
+    required this.nullableIntMap,
+    required this.nullableStringMap,
+    required this.nullableDateTimeMap,
+    required this.nullableByteDataMap,
+    required this.nullableDurationMap,
+    required this.nullableUuidMap,
+    required this.intIntMap,
+  }) : super._();
+
+  @override
+  final Duration duration;
+
+  @override
+  final _i2.ExtraDataSimple object;
+
+  @override
+  final _i2.ExtraDataSimple? nullableObject;
+
+  @override
+  final List<_i2.ExtraDataSimple> list;
+
+  @override
+  final List<_i2.ExtraDataSimple>? nullableList;
+
+  @override
+  final List<_i2.ExtraDataSimple?> optionalValueList;
+
+  @override
+  final _i2.TestEnum testEnum;
+
+  @override
+  final _i2.TestEnum? nullableEnum;
+
+  @override
+  final List<_i2.TestEnum> enumList;
+
+  @override
+  final List<_i2.TestEnum?> nullableEnumList;
+
+  @override
+  final List<List<_i2.TestEnum>> enumListList;
+
+  @override
+  final Map<String, _i2.ExtraDataSimple> dataMap;
+
+  @override
+  final Map<String, int> intMap;
+
+  @override
+  final Map<String, String> stringMap;
+
+  @override
+  final Map<String, DateTime> dateTimeMap;
+
+  @override
+  final Map<String, _i3.ByteData> byteDataMap;
+
+  @override
+  final Map<String, Duration> durationMap;
+
+  @override
+  final Map<String, _i1.UuidValue> uuidMap;
+
+  @override
+  final Map<String, _i2.ExtraDataSimple?> nullableDataMap;
+
+  @override
+  final Map<String, int?> nullableIntMap;
+
+  @override
+  final Map<String, String?> nullableStringMap;
+
+  @override
+  final Map<String, DateTime?> nullableDateTimeMap;
+
+  @override
+  final Map<String, _i3.ByteData?> nullableByteDataMap;
+
+  @override
+  final Map<String, Duration?> nullableDurationMap;
+
+  @override
+  final Map<String, _i1.UuidValue?> nullableUuidMap;
+
+  @override
+  final Map<int, int> intIntMap;
 
   @override
   String get tableName => 'extra_data_class';
@@ -387,7 +620,8 @@ class ExtraDataClass extends _i1.TableRow {
         const _i4.DeepCollectionEquality().hash(intIntMap),
       ]);
 
-  ExtraDataClass _copyWith({
+  @override
+  ExtraDataClass copyWith({
     Object? id = _Undefined,
     Duration? duration,
     _i2.ExtraDataSimple? object,
@@ -452,211 +686,70 @@ class ExtraDataClass extends _i1.TableRow {
       intIntMap: intIntMap ?? this.intIntMap,
     );
   }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'duration': duration,
-      'object': object,
-      'nullableObject': nullableObject,
-      'list': list,
-      'nullableList': nullableList,
-      'optionalValueList': optionalValueList,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
-      'dataMap': dataMap,
-      'intMap': intMap,
-      'stringMap': stringMap,
-      'dateTimeMap': dateTimeMap,
-      'byteDataMap': byteDataMap,
-      'durationMap': durationMap,
-      'uuidMap': uuidMap,
-      'nullableDataMap': nullableDataMap,
-      'nullableIntMap': nullableIntMap,
-      'nullableStringMap': nullableStringMap,
-      'nullableDateTimeMap': nullableDateTimeMap,
-      'nullableByteDataMap': nullableByteDataMap,
-      'nullableDurationMap': nullableDurationMap,
-      'nullableUuidMap': nullableUuidMap,
-      'intIntMap': intIntMap,
-    };
-  }
-
-  static Future<List<ExtraDataClass>> find(
-    _i1.Session session, {
-    ExtraDataClassExpressionBuilder? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ExtraDataClass>(
-      where: where != null ? where(ExtraDataClass.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<ExtraDataClass?> findSingleRow(
-    _i1.Session session, {
-    ExtraDataClassExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ExtraDataClass>(
-      where: where != null ? where(ExtraDataClass.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<ExtraDataClass?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ExtraDataClass>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required ExtraDataClassExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ExtraDataClass>(
-      where: where(ExtraDataClass.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ExtraDataClass row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    ExtraDataClass row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    ExtraDataClass row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    ExtraDataClassExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ExtraDataClass>(
-      where: where != null ? where(ExtraDataClass.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
 }
 
-typedef ExtraDataClassExpressionBuilder = _i1.Expression Function(
-    ExtraDataClassTable);
-
 class ExtraDataClassTable extends _i1.Table {
-  ExtraDataClassTable() : super(tableName: 'extra_data_class');
+  const ExtraDataClassTable() : super(tableName: 'extra_data_class');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final duration = _i1.ColumnDuration('duration');
+  final duration = const _i1.ColumnDuration('duration');
 
-  final object = _i1.ColumnSerializable('object');
+  final object = const _i1.ColumnSerializable('object');
 
-  final nullableObject = _i1.ColumnSerializable('nullableObject');
+  final nullableObject = const _i1.ColumnSerializable('nullableObject');
 
-  final list = _i1.ColumnSerializable('list');
+  final list = const _i1.ColumnSerializable('list');
 
-  final nullableList = _i1.ColumnSerializable('nullableList');
+  final nullableList = const _i1.ColumnSerializable('nullableList');
 
-  final optionalValueList = _i1.ColumnSerializable('optionalValueList');
+  final optionalValueList = const _i1.ColumnSerializable('optionalValueList');
 
-  final testEnum = _i1.ColumnEnum('testEnum');
+  final testEnum = const _i1.ColumnEnum('testEnum');
 
-  final nullableEnum = _i1.ColumnEnum('nullableEnum');
+  final nullableEnum = const _i1.ColumnEnum('nullableEnum');
 
-  final enumList = _i1.ColumnSerializable('enumList');
+  final enumList = const _i1.ColumnSerializable('enumList');
 
-  final nullableEnumList = _i1.ColumnSerializable('nullableEnumList');
+  final nullableEnumList = const _i1.ColumnSerializable('nullableEnumList');
 
-  final enumListList = _i1.ColumnSerializable('enumListList');
+  final enumListList = const _i1.ColumnSerializable('enumListList');
 
-  final dataMap = _i1.ColumnSerializable('dataMap');
+  final dataMap = const _i1.ColumnSerializable('dataMap');
 
-  final intMap = _i1.ColumnSerializable('intMap');
+  final intMap = const _i1.ColumnSerializable('intMap');
 
-  final stringMap = _i1.ColumnSerializable('stringMap');
+  final stringMap = const _i1.ColumnSerializable('stringMap');
 
-  final dateTimeMap = _i1.ColumnSerializable('dateTimeMap');
+  final dateTimeMap = const _i1.ColumnSerializable('dateTimeMap');
 
-  final byteDataMap = _i1.ColumnSerializable('byteDataMap');
+  final byteDataMap = const _i1.ColumnSerializable('byteDataMap');
 
-  final durationMap = _i1.ColumnSerializable('durationMap');
+  final durationMap = const _i1.ColumnSerializable('durationMap');
 
-  final uuidMap = _i1.ColumnSerializable('uuidMap');
+  final uuidMap = const _i1.ColumnSerializable('uuidMap');
 
-  final nullableDataMap = _i1.ColumnSerializable('nullableDataMap');
+  final nullableDataMap = const _i1.ColumnSerializable('nullableDataMap');
 
-  final nullableIntMap = _i1.ColumnSerializable('nullableIntMap');
+  final nullableIntMap = const _i1.ColumnSerializable('nullableIntMap');
 
-  final nullableStringMap = _i1.ColumnSerializable('nullableStringMap');
+  final nullableStringMap = const _i1.ColumnSerializable('nullableStringMap');
 
-  final nullableDateTimeMap = _i1.ColumnSerializable('nullableDateTimeMap');
+  final nullableDateTimeMap =
+      const _i1.ColumnSerializable('nullableDateTimeMap');
 
-  final nullableByteDataMap = _i1.ColumnSerializable('nullableByteDataMap');
+  final nullableByteDataMap =
+      const _i1.ColumnSerializable('nullableByteDataMap');
 
-  final nullableDurationMap = _i1.ColumnSerializable('nullableDurationMap');
+  final nullableDurationMap =
+      const _i1.ColumnSerializable('nullableDurationMap');
 
-  final nullableUuidMap = _i1.ColumnSerializable('nullableUuidMap');
+  final nullableUuidMap = const _i1.ColumnSerializable('nullableUuidMap');
 
-  final intIntMap = _i1.ColumnSerializable('intIntMap');
+  final intIntMap = const _i1.ColumnSerializable('intIntMap');
 
   @override
   List<_i1.Column> get columns => [
@@ -691,4 +784,4 @@ class ExtraDataClassTable extends _i1.Table {
 }
 
 @Deprecated('Use ExtraDataClassTable.t instead.')
-ExtraDataClassTable tExtraDataClass = ExtraDataClassTable();
+ExtraDataClassTable tExtraDataClass = const ExtraDataClassTable();

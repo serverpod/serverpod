@@ -10,19 +10,19 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// The definition of a (desired) index in the database.
-class IndexDefinition extends _i1.SerializableEntity {
-  IndexDefinition({
-    required this.indexName,
-    this.tableSpace,
-    required this.elements,
-    required this.type,
-    required this.isUnique,
-    required this.isPrimary,
-    this.predicate,
-  });
+abstract class IndexDefinition extends _i1.SerializableEntity {
+  const IndexDefinition._();
+
+  const factory IndexDefinition({
+    required String indexName,
+    String? tableSpace,
+    required List<_i2.IndexElementDefinition> elements,
+    required String type,
+    required bool isUnique,
+    required bool isPrimary,
+    String? predicate,
+  }) = _IndexDefinition;
 
   factory IndexDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,29 +46,7 @@ class IndexDefinition extends _i1.SerializableEntity {
     );
   }
 
-  /// The user defined name of the index
-  final String indexName;
-
-  /// The tablespace this index is stored in.
-  /// If null, the index is in the databases default tablespace.
-  final String? tableSpace;
-
-  /// The elements, that are a part of this index.
-  final List<_i2.IndexElementDefinition> elements;
-
-  /// The type of the index
-  final String type;
-
-  /// Whether the index is unique.
-  final bool isUnique;
-
-  /// Whether this index is the one for the primary key.
-  final bool isPrimary;
-
-  /// The predicate of this partial index, if it is one.
-  final String? predicate;
-
-  late Function({
+  IndexDefinition copyWith({
     String? indexName,
     String? tableSpace,
     List<_i2.IndexElementDefinition>? elements,
@@ -76,7 +54,73 @@ class IndexDefinition extends _i1.SerializableEntity {
     bool? isUnique,
     bool? isPrimary,
     String? predicate,
-  }) copyWith = _copyWith;
+  });
+
+  /// The user defined name of the index
+  String get indexName;
+
+  /// The tablespace this index is stored in.
+  /// If null, the index is in the databases default tablespace.
+  String? get tableSpace;
+
+  /// The elements, that are a part of this index.
+  List<_i2.IndexElementDefinition> get elements;
+
+  /// The type of the index
+  String get type;
+
+  /// Whether the index is unique.
+  bool get isUnique;
+
+  /// Whether this index is the one for the primary key.
+  bool get isPrimary;
+
+  /// The predicate of this partial index, if it is one.
+  String? get predicate;
+}
+
+class _Undefined {}
+
+/// The definition of a (desired) index in the database.
+class _IndexDefinition extends IndexDefinition {
+  const _IndexDefinition({
+    required this.indexName,
+    this.tableSpace,
+    required this.elements,
+    required this.type,
+    required this.isUnique,
+    required this.isPrimary,
+    this.predicate,
+  }) : super._();
+
+  /// The user defined name of the index
+  @override
+  final String indexName;
+
+  /// The tablespace this index is stored in.
+  /// If null, the index is in the databases default tablespace.
+  @override
+  final String? tableSpace;
+
+  /// The elements, that are a part of this index.
+  @override
+  final List<_i2.IndexElementDefinition> elements;
+
+  /// The type of the index
+  @override
+  final String type;
+
+  /// Whether the index is unique.
+  @override
+  final bool isUnique;
+
+  /// Whether this index is the one for the primary key.
+  @override
+  final bool isPrimary;
+
+  /// The predicate of this partial index, if it is one.
+  @override
+  final String? predicate;
 
   @override
   Map<String, dynamic> toJson() {
@@ -145,7 +189,8 @@ class IndexDefinition extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(elements),
       );
 
-  IndexDefinition _copyWith({
+  @override
+  IndexDefinition copyWith({
     String? indexName,
     Object? tableSpace = _Undefined,
     List<_i2.IndexElementDefinition>? elements,

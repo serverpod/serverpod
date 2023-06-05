@@ -8,14 +8,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class ObjectFieldScopes extends _i1.SerializableEntity {
+  const ObjectFieldScopes._();
 
-class ObjectFieldScopes extends _i1.SerializableEntity {
-  ObjectFieldScopes({
-    this.id,
-    required this.normal,
-    this.api,
-  });
+  const factory ObjectFieldScopes({
+    int? id,
+    required String normal,
+    String? api,
+  }) = _ObjectFieldScopes;
 
   factory ObjectFieldScopes.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,20 +29,40 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final String normal;
-
-  final String? api;
-
-  late Function({
+  ObjectFieldScopes copyWith({
     int? id,
     String? normal,
     String? api,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  String get normal;
+  String? get api;
+}
+
+class _Undefined {}
+
+class _ObjectFieldScopes extends ObjectFieldScopes {
+  const _ObjectFieldScopes({
+    this.id,
+    required this.normal,
+    this.api,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final String normal;
+
+  @override
+  final String? api;
 
   @override
   Map<String, dynamic> toJson() {
@@ -84,7 +104,8 @@ class ObjectFieldScopes extends _i1.SerializableEntity {
         api,
       );
 
-  ObjectFieldScopes _copyWith({
+  @override
+  ObjectFieldScopes copyWith({
     Object? id = _Undefined,
     String? normal,
     Object? api = _Undefined,

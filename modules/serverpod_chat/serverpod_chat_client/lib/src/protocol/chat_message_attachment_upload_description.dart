@@ -8,14 +8,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// A description for uploading an attachement.
-class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
-  ChatMessageAttachmentUploadDescription({
-    required this.filePath,
-    required this.uploadDescription,
-  });
+abstract class ChatMessageAttachmentUploadDescription
+    extends _i1.SerializableEntity {
+  const ChatMessageAttachmentUploadDescription._();
+
+  const factory ChatMessageAttachmentUploadDescription({
+    required String filePath,
+    required String uploadDescription,
+  }) = _ChatMessageAttachmentUploadDescription;
 
   factory ChatMessageAttachmentUploadDescription.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,17 +30,35 @@ class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
     );
   }
 
+  ChatMessageAttachmentUploadDescription copyWith({
+    String? filePath,
+    String? uploadDescription,
+  });
+
   /// The path where the file should be uploaded.
+  String get filePath;
+
+  /// The upload description, including any authentication keys required to do
+  /// the upload.
+  String get uploadDescription;
+}
+
+/// A description for uploading an attachement.
+class _ChatMessageAttachmentUploadDescription
+    extends ChatMessageAttachmentUploadDescription {
+  const _ChatMessageAttachmentUploadDescription({
+    required this.filePath,
+    required this.uploadDescription,
+  }) : super._();
+
+  /// The path where the file should be uploaded.
+  @override
   final String filePath;
 
   /// The upload description, including any authentication keys required to do
   /// the upload.
+  @override
   final String uploadDescription;
-
-  late Function({
-    String? filePath,
-    String? uploadDescription,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +93,8 @@ class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
         uploadDescription,
       );
 
-  ChatMessageAttachmentUploadDescription _copyWith({
+  @override
+  ChatMessageAttachmentUploadDescription copyWith({
     String? filePath,
     String? uploadDescription,
   }) {

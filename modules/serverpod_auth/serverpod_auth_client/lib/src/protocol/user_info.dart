@@ -9,25 +9,25 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:collection/collection.dart' as _i2;
 
-class _Undefined {}
-
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensative information, such as the users email.
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-class UserInfo extends _i1.SerializableEntity {
-  UserInfo({
-    this.id,
-    required this.userIdentifier,
-    required this.userName,
-    this.fullName,
-    this.email,
-    required this.created,
-    this.imageUrl,
-    required this.scopeNames,
-    required this.blocked,
-  });
+abstract class UserInfo extends _i1.SerializableEntity {
+  const UserInfo._();
+
+  const factory UserInfo({
+    int? id,
+    required String userIdentifier,
+    required String userName,
+    String? fullName,
+    String? email,
+    required DateTime created,
+    String? imageUrl,
+    required List<String> scopeNames,
+    required bool blocked,
+  }) = _UserInfo;
 
   factory UserInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -54,37 +54,7 @@ class UserInfo extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// Unique identifier of the user, may contain different information depending
-  /// on how the user was created.
-  final String userIdentifier;
-
-  /// The first name of the user or the user's nickname.
-  final String userName;
-
-  /// The full name of the user.
-  final String? fullName;
-
-  /// The email of the user.
-  final String? email;
-
-  /// The time when this user was created.
-  final DateTime created;
-
-  /// A URL to the user's avatar.
-  final String? imageUrl;
-
-  /// List of scopes that this user can access.
-  final List<String> scopeNames;
-
-  /// True if the user is blocked from signing in.
-  final bool blocked;
-
-  late Function({
+  UserInfo copyWith({
     int? id,
     String? userIdentifier,
     String? userName,
@@ -94,7 +64,97 @@ class UserInfo extends _i1.SerializableEntity {
     String? imageUrl,
     List<String>? scopeNames,
     bool? blocked,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// Unique identifier of the user, may contain different information depending
+  /// on how the user was created.
+  String get userIdentifier;
+
+  /// The first name of the user or the user's nickname.
+  String get userName;
+
+  /// The full name of the user.
+  String? get fullName;
+
+  /// The email of the user.
+  String? get email;
+
+  /// The time when this user was created.
+  DateTime get created;
+
+  /// A URL to the user's avatar.
+  String? get imageUrl;
+
+  /// List of scopes that this user can access.
+  List<String> get scopeNames;
+
+  /// True if the user is blocked from signing in.
+  bool get blocked;
+}
+
+class _Undefined {}
+
+/// Information about a user. The [UserInfo] should only be shared with the user
+/// itself as it may contain sensative information, such as the users email.
+/// If you need to share a user's info with other users, use the
+/// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
+/// toPublic() method.
+class _UserInfo extends UserInfo {
+  const _UserInfo({
+    this.id,
+    required this.userIdentifier,
+    required this.userName,
+    this.fullName,
+    this.email,
+    required this.created,
+    this.imageUrl,
+    required this.scopeNames,
+    required this.blocked,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// Unique identifier of the user, may contain different information depending
+  /// on how the user was created.
+  @override
+  final String userIdentifier;
+
+  /// The first name of the user or the user's nickname.
+  @override
+  final String userName;
+
+  /// The full name of the user.
+  @override
+  final String? fullName;
+
+  /// The email of the user.
+  @override
+  final String? email;
+
+  /// The time when this user was created.
+  @override
+  final DateTime created;
+
+  /// A URL to the user's avatar.
+  @override
+  final String? imageUrl;
+
+  /// List of scopes that this user can access.
+  @override
+  final List<String> scopeNames;
+
+  /// True if the user is blocked from signing in.
+  @override
+  final bool blocked;
 
   @override
   Map<String, dynamic> toJson() {
@@ -177,7 +237,8 @@ class UserInfo extends _i1.SerializableEntity {
         const _i2.DeepCollectionEquality().hash(scopeNames),
       );
 
-  UserInfo _copyWith({
+  @override
+  UserInfo copyWith({
     Object? id = _Undefined,
     String? userIdentifier,
     String? userName,

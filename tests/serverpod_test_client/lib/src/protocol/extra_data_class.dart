@@ -11,39 +11,39 @@ import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:collection/collection.dart' as _i4;
 
-class _Undefined {}
-
 /// Just some simple data.
-class ExtraDataClass extends _i1.SerializableEntity {
-  ExtraDataClass({
-    this.id,
-    required this.duration,
-    required this.object,
-    this.nullableObject,
-    required this.list,
-    this.nullableList,
-    required this.optionalValueList,
-    required this.testEnum,
-    this.nullableEnum,
-    required this.enumList,
-    required this.nullableEnumList,
-    required this.enumListList,
-    required this.dataMap,
-    required this.intMap,
-    required this.stringMap,
-    required this.dateTimeMap,
-    required this.byteDataMap,
-    required this.durationMap,
-    required this.uuidMap,
-    required this.nullableDataMap,
-    required this.nullableIntMap,
-    required this.nullableStringMap,
-    required this.nullableDateTimeMap,
-    required this.nullableByteDataMap,
-    required this.nullableDurationMap,
-    required this.nullableUuidMap,
-    required this.intIntMap,
-  });
+abstract class ExtraDataClass extends _i1.SerializableEntity {
+  const ExtraDataClass._();
+
+  const factory ExtraDataClass({
+    int? id,
+    required Duration duration,
+    required _i2.ExtraDataSimple object,
+    _i2.ExtraDataSimple? nullableObject,
+    required List<_i2.ExtraDataSimple> list,
+    List<_i2.ExtraDataSimple>? nullableList,
+    required List<_i2.ExtraDataSimple?> optionalValueList,
+    required _i2.TestEnum testEnum,
+    _i2.TestEnum? nullableEnum,
+    required List<_i2.TestEnum> enumList,
+    required List<_i2.TestEnum?> nullableEnumList,
+    required List<List<_i2.TestEnum>> enumListList,
+    required Map<String, _i2.ExtraDataSimple> dataMap,
+    required Map<String, int> intMap,
+    required Map<String, String> stringMap,
+    required Map<String, DateTime> dateTimeMap,
+    required Map<String, _i3.ByteData> byteDataMap,
+    required Map<String, Duration> durationMap,
+    required Map<String, _i1.UuidValue> uuidMap,
+    required Map<String, _i2.ExtraDataSimple?> nullableDataMap,
+    required Map<String, int?> nullableIntMap,
+    required Map<String, String?> nullableStringMap,
+    required Map<String, DateTime?> nullableDateTimeMap,
+    required Map<String, _i3.ByteData?> nullableByteDataMap,
+    required Map<String, Duration?> nullableDurationMap,
+    required Map<String, _i1.UuidValue?> nullableUuidMap,
+    required Map<int, int> intIntMap,
+  }) = _ExtraDataClass;
 
   factory ExtraDataClass.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -114,64 +114,7 @@ class ExtraDataClass extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  final Duration duration;
-
-  final _i2.ExtraDataSimple object;
-
-  final _i2.ExtraDataSimple? nullableObject;
-
-  final List<_i2.ExtraDataSimple> list;
-
-  final List<_i2.ExtraDataSimple>? nullableList;
-
-  final List<_i2.ExtraDataSimple?> optionalValueList;
-
-  final _i2.TestEnum testEnum;
-
-  final _i2.TestEnum? nullableEnum;
-
-  final List<_i2.TestEnum> enumList;
-
-  final List<_i2.TestEnum?> nullableEnumList;
-
-  final List<List<_i2.TestEnum>> enumListList;
-
-  final Map<String, _i2.ExtraDataSimple> dataMap;
-
-  final Map<String, int> intMap;
-
-  final Map<String, String> stringMap;
-
-  final Map<String, DateTime> dateTimeMap;
-
-  final Map<String, _i3.ByteData> byteDataMap;
-
-  final Map<String, Duration> durationMap;
-
-  final Map<String, _i1.UuidValue> uuidMap;
-
-  final Map<String, _i2.ExtraDataSimple?> nullableDataMap;
-
-  final Map<String, int?> nullableIntMap;
-
-  final Map<String, String?> nullableStringMap;
-
-  final Map<String, DateTime?> nullableDateTimeMap;
-
-  final Map<String, _i3.ByteData?> nullableByteDataMap;
-
-  final Map<String, Duration?> nullableDurationMap;
-
-  final Map<String, _i1.UuidValue?> nullableUuidMap;
-
-  final Map<int, int> intIntMap;
-
-  late Function({
+  ExtraDataClass copyWith({
     int? id,
     Duration? duration,
     _i2.ExtraDataSimple? object,
@@ -199,7 +142,157 @@ class ExtraDataClass extends _i1.SerializableEntity {
     Map<String, Duration?>? nullableDurationMap,
     Map<String, _i1.UuidValue?>? nullableUuidMap,
     Map<int, int>? intIntMap,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+  Duration get duration;
+  _i2.ExtraDataSimple get object;
+  _i2.ExtraDataSimple? get nullableObject;
+  List<_i2.ExtraDataSimple> get list;
+  List<_i2.ExtraDataSimple>? get nullableList;
+  List<_i2.ExtraDataSimple?> get optionalValueList;
+  _i2.TestEnum get testEnum;
+  _i2.TestEnum? get nullableEnum;
+  List<_i2.TestEnum> get enumList;
+  List<_i2.TestEnum?> get nullableEnumList;
+  List<List<_i2.TestEnum>> get enumListList;
+  Map<String, _i2.ExtraDataSimple> get dataMap;
+  Map<String, int> get intMap;
+  Map<String, String> get stringMap;
+  Map<String, DateTime> get dateTimeMap;
+  Map<String, _i3.ByteData> get byteDataMap;
+  Map<String, Duration> get durationMap;
+  Map<String, _i1.UuidValue> get uuidMap;
+  Map<String, _i2.ExtraDataSimple?> get nullableDataMap;
+  Map<String, int?> get nullableIntMap;
+  Map<String, String?> get nullableStringMap;
+  Map<String, DateTime?> get nullableDateTimeMap;
+  Map<String, _i3.ByteData?> get nullableByteDataMap;
+  Map<String, Duration?> get nullableDurationMap;
+  Map<String, _i1.UuidValue?> get nullableUuidMap;
+  Map<int, int> get intIntMap;
+}
+
+class _Undefined {}
+
+/// Just some simple data.
+class _ExtraDataClass extends ExtraDataClass {
+  const _ExtraDataClass({
+    this.id,
+    required this.duration,
+    required this.object,
+    this.nullableObject,
+    required this.list,
+    this.nullableList,
+    required this.optionalValueList,
+    required this.testEnum,
+    this.nullableEnum,
+    required this.enumList,
+    required this.nullableEnumList,
+    required this.enumListList,
+    required this.dataMap,
+    required this.intMap,
+    required this.stringMap,
+    required this.dateTimeMap,
+    required this.byteDataMap,
+    required this.durationMap,
+    required this.uuidMap,
+    required this.nullableDataMap,
+    required this.nullableIntMap,
+    required this.nullableStringMap,
+    required this.nullableDateTimeMap,
+    required this.nullableByteDataMap,
+    required this.nullableDurationMap,
+    required this.nullableUuidMap,
+    required this.intIntMap,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  @override
+  final Duration duration;
+
+  @override
+  final _i2.ExtraDataSimple object;
+
+  @override
+  final _i2.ExtraDataSimple? nullableObject;
+
+  @override
+  final List<_i2.ExtraDataSimple> list;
+
+  @override
+  final List<_i2.ExtraDataSimple>? nullableList;
+
+  @override
+  final List<_i2.ExtraDataSimple?> optionalValueList;
+
+  @override
+  final _i2.TestEnum testEnum;
+
+  @override
+  final _i2.TestEnum? nullableEnum;
+
+  @override
+  final List<_i2.TestEnum> enumList;
+
+  @override
+  final List<_i2.TestEnum?> nullableEnumList;
+
+  @override
+  final List<List<_i2.TestEnum>> enumListList;
+
+  @override
+  final Map<String, _i2.ExtraDataSimple> dataMap;
+
+  @override
+  final Map<String, int> intMap;
+
+  @override
+  final Map<String, String> stringMap;
+
+  @override
+  final Map<String, DateTime> dateTimeMap;
+
+  @override
+  final Map<String, _i3.ByteData> byteDataMap;
+
+  @override
+  final Map<String, Duration> durationMap;
+
+  @override
+  final Map<String, _i1.UuidValue> uuidMap;
+
+  @override
+  final Map<String, _i2.ExtraDataSimple?> nullableDataMap;
+
+  @override
+  final Map<String, int?> nullableIntMap;
+
+  @override
+  final Map<String, String?> nullableStringMap;
+
+  @override
+  final Map<String, DateTime?> nullableDateTimeMap;
+
+  @override
+  final Map<String, _i3.ByteData?> nullableByteDataMap;
+
+  @override
+  final Map<String, Duration?> nullableDurationMap;
+
+  @override
+  final Map<String, _i1.UuidValue?> nullableUuidMap;
+
+  @override
+  final Map<int, int> intIntMap;
 
   @override
   Map<String, dynamic> toJson() {
@@ -388,7 +481,8 @@ class ExtraDataClass extends _i1.SerializableEntity {
         const _i4.DeepCollectionEquality().hash(intIntMap),
       ]);
 
-  ExtraDataClass _copyWith({
+  @override
+  ExtraDataClass copyWith({
     Object? id = _Undefined,
     Duration? duration,
     _i2.ExtraDataSimple? object,

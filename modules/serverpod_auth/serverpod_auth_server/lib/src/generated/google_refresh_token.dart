@@ -8,15 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef GoogleRefreshTokenExpressionBuilder = _i1.Expression Function(
+    GoogleRefreshTokenTable);
 
 /// Database bindings for a Google refresh token.
-class GoogleRefreshToken extends _i1.TableRow {
-  GoogleRefreshToken({
+abstract class GoogleRefreshToken extends _i1.TableRow {
+  const GoogleRefreshToken._();
+
+  const factory GoogleRefreshToken({
     int? id,
-    required this.userId,
-    required this.refreshToken,
-  }) : super(id);
+    required int userId,
+    required String refreshToken,
+  }) = _GoogleRefreshToken;
 
   factory GoogleRefreshToken.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,74 +34,15 @@ class GoogleRefreshToken extends _i1.TableRow {
     );
   }
 
-  static var t = GoogleRefreshTokenTable();
+  static const t = GoogleRefreshTokenTable();
 
-  /// The user id associated with the token.
-  final int userId;
-
-  /// The token iteself.
-  final String refreshToken;
-
-  late Function({
+  GoogleRefreshToken copyWith({
     int? id,
     int? userId,
     String? refreshToken,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_google_refresh_token';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'refreshToken': refreshToken,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is GoogleRefreshToken &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.userId,
-                  userId,
-                ) ||
-                other.userId == userId) &&
-            (identical(
-                  other.refreshToken,
-                  refreshToken,
-                ) ||
-                other.refreshToken == refreshToken));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        userId,
-        refreshToken,
-      );
-
-  GoogleRefreshToken _copyWith({
-    Object? id = _Undefined,
-    int? userId,
-    String? refreshToken,
-  }) {
-    return GoogleRefreshToken(
-      id: id == _Undefined ? this.id : (id as int?),
-      userId: userId ?? this.userId,
-      refreshToken: refreshToken ?? this.refreshToken,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -215,25 +159,102 @@ class GoogleRefreshToken extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The user id associated with the token.
+  int get userId;
+
+  /// The token iteself.
+  String get refreshToken;
 }
 
-typedef GoogleRefreshTokenExpressionBuilder = _i1.Expression Function(
-    GoogleRefreshTokenTable);
+class _Undefined {}
+
+/// Database bindings for a Google refresh token.
+class _GoogleRefreshToken extends GoogleRefreshToken {
+  const _GoogleRefreshToken({
+    int? id,
+    required this.userId,
+    required this.refreshToken,
+  }) : super._();
+
+  /// The user id associated with the token.
+  @override
+  final int userId;
+
+  /// The token iteself.
+  @override
+  final String refreshToken;
+
+  @override
+  String get tableName => 'serverpod_google_refresh_token';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'refreshToken': refreshToken,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is GoogleRefreshToken &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.refreshToken,
+                  refreshToken,
+                ) ||
+                other.refreshToken == refreshToken));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        refreshToken,
+      );
+
+  @override
+  GoogleRefreshToken copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? refreshToken,
+  }) {
+    return GoogleRefreshToken(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      refreshToken: refreshToken ?? this.refreshToken,
+    );
+  }
+}
 
 class GoogleRefreshTokenTable extends _i1.Table {
-  GoogleRefreshTokenTable()
+  const GoogleRefreshTokenTable()
       : super(tableName: 'serverpod_google_refresh_token');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The user id associated with the token.
-  final userId = _i1.ColumnInt('userId');
+  final userId = const _i1.ColumnInt('userId');
 
   /// The token iteself.
-  final refreshToken = _i1.ColumnString('refreshToken');
+  final refreshToken = const _i1.ColumnString('refreshToken');
 
   @override
   List<_i1.Column> get columns => [
@@ -244,4 +265,4 @@ class GoogleRefreshTokenTable extends _i1.Table {
 }
 
 @Deprecated('Use GoogleRefreshTokenTable.t instead.')
-GoogleRefreshTokenTable tGoogleRefreshToken = GoogleRefreshTokenTable();
+GoogleRefreshTokenTable tGoogleRefreshToken = const GoogleRefreshTokenTable();

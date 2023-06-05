@@ -10,11 +10,12 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// Information about a cluster of servers.
-class ClusterInfo extends _i1.SerializableEntity {
-  ClusterInfo({required this.servers});
+abstract class ClusterInfo extends _i1.SerializableEntity {
+  const ClusterInfo._();
+
+  const factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =
+      _ClusterInfo;
 
   factory ClusterInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -25,10 +26,19 @@ class ClusterInfo extends _i1.SerializableEntity {
             jsonSerialization['servers']));
   }
 
-  /// List of servers in the cluster.
-  final List<_i2.ClusterServerInfo> servers;
+  ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
 
-  late Function({List<_i2.ClusterServerInfo>? servers}) copyWith = _copyWith;
+  /// List of servers in the cluster.
+  List<_i2.ClusterServerInfo> get servers;
+}
+
+/// Information about a cluster of servers.
+class _ClusterInfo extends ClusterInfo {
+  const _ClusterInfo({required this.servers}) : super._();
+
+  /// List of servers in the cluster.
+  @override
+  final List<_i2.ClusterServerInfo> servers;
 
   @override
   Map<String, dynamic> toJson() {
@@ -51,7 +61,8 @@ class ClusterInfo extends _i1.SerializableEntity {
   @override
   int get hashCode => const _i3.DeepCollectionEquality().hash(servers);
 
-  ClusterInfo _copyWith({List<_i2.ClusterServerInfo>? servers}) {
+  @override
+  ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
     return ClusterInfo(servers: servers ?? this.servers);
   }
 }

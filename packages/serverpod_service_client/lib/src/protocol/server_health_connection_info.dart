@@ -8,21 +8,21 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
-class ServerHealthConnectionInfo extends _i1.SerializableEntity {
-  ServerHealthConnectionInfo({
-    this.id,
-    required this.serverId,
-    required this.timestamp,
-    required this.active,
-    required this.closing,
-    required this.idle,
-    required this.granularity,
-  });
+abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
+  const ServerHealthConnectionInfo._();
+
+  const factory ServerHealthConnectionInfo({
+    int? id,
+    required String serverId,
+    required DateTime timestamp,
+    required int active,
+    required int closing,
+    required int idle,
+    required int granularity,
+  }) = _ServerHealthConnectionInfo;
 
   factory ServerHealthConnectionInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -44,31 +44,7 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The server associated with this connection info.
-  final String serverId;
-
-  /// The time when the connections was checked, granularity is one minute.
-  final DateTime timestamp;
-
-  /// Number of active connections currently open.
-  final int active;
-
-  /// Number of connections currently closing.
-  final int closing;
-
-  /// Number of connections currently idle.
-  final int idle;
-
-  /// The granularity of this timestamp, null represents 1 minute, other valid
-  /// values are 60 minutes and 1440 minutes (one day).
-  final int granularity;
-
-  late Function({
+  ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
     DateTime? timestamp,
@@ -76,7 +52,79 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     int? closing,
     int? idle,
     int? granularity,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The server associated with this connection info.
+  String get serverId;
+
+  /// The time when the connections was checked, granularity is one minute.
+  DateTime get timestamp;
+
+  /// Number of active connections currently open.
+  int get active;
+
+  /// Number of connections currently closing.
+  int get closing;
+
+  /// Number of connections currently idle.
+  int get idle;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  int get granularity;
+}
+
+class _Undefined {}
+
+/// Represents a snapshot of the number of open connections the server currently
+/// is handling. An entry is written every minute for each server. All health
+/// data can be accessed through Serverpod Insights.
+class _ServerHealthConnectionInfo extends ServerHealthConnectionInfo {
+  const _ServerHealthConnectionInfo({
+    this.id,
+    required this.serverId,
+    required this.timestamp,
+    required this.active,
+    required this.closing,
+    required this.idle,
+    required this.granularity,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The server associated with this connection info.
+  @override
+  final String serverId;
+
+  /// The time when the connections was checked, granularity is one minute.
+  @override
+  final DateTime timestamp;
+
+  /// Number of active connections currently open.
+  @override
+  final int active;
+
+  /// Number of connections currently closing.
+  @override
+  final int closing;
+
+  /// Number of connections currently idle.
+  @override
+  final int idle;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  @override
+  final int granularity;
 
   @override
   Map<String, dynamic> toJson() {
@@ -146,7 +194,8 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
         granularity,
       );
 
-  ServerHealthConnectionInfo _copyWith({
+  @override
+  ServerHealthConnectionInfo copyWith({
     Object? id = _Undefined,
     String? serverId,
     DateTime? timestamp,

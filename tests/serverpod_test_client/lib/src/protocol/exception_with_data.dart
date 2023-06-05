@@ -9,16 +9,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:collection/collection.dart' as _i2;
 
-class _Undefined {}
-
-class ExceptionWithData extends _i1.SerializableEntity
+abstract class ExceptionWithData extends _i1.SerializableEntity
     implements _i1.SerializableException {
-  ExceptionWithData({
-    required this.message,
-    required this.creationDate,
-    required this.errorFields,
-    this.someNullableField,
-  });
+  const ExceptionWithData._();
+
+  const factory ExceptionWithData({
+    required String message,
+    required DateTime creationDate,
+    required List<String> errorFields,
+    int? someNullableField,
+  }) = _ExceptionWithData;
 
   factory ExceptionWithData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -36,20 +36,40 @@ class ExceptionWithData extends _i1.SerializableEntity
     );
   }
 
-  final String message;
-
-  final DateTime creationDate;
-
-  final List<String> errorFields;
-
-  final int? someNullableField;
-
-  late Function({
+  ExceptionWithData copyWith({
     String? message,
     DateTime? creationDate,
     List<String>? errorFields,
     int? someNullableField,
-  }) copyWith = _copyWith;
+  });
+  String get message;
+  DateTime get creationDate;
+  List<String> get errorFields;
+  int? get someNullableField;
+}
+
+class _Undefined {}
+
+class _ExceptionWithData extends ExceptionWithData
+    implements _i1.SerializableException {
+  const _ExceptionWithData({
+    required this.message,
+    required this.creationDate,
+    required this.errorFields,
+    this.someNullableField,
+  }) : super._();
+
+  @override
+  final String message;
+
+  @override
+  final DateTime creationDate;
+
+  @override
+  final List<String> errorFields;
+
+  @override
+  final int? someNullableField;
 
   @override
   Map<String, dynamic> toJson() {
@@ -97,7 +117,8 @@ class ExceptionWithData extends _i1.SerializableEntity
         const _i2.DeepCollectionEquality().hash(errorFields),
       );
 
-  ExceptionWithData _copyWith({
+  @override
+  ExceptionWithData copyWith({
     String? message,
     DateTime? creationDate,
     List<String>? errorFields,

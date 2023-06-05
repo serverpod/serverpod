@@ -10,16 +10,16 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
+abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
+  const DatabaseMigrationWarning._();
 
-class DatabaseMigrationWarning extends _i1.SerializableEntity {
-  DatabaseMigrationWarning({
-    required this.type,
-    required this.message,
-    required this.table,
-    required this.columns,
-    required this.destrucive,
-  });
+  const factory DatabaseMigrationWarning({
+    required _i2.DatabaseMigrationWarningType type,
+    required String message,
+    required String table,
+    required List<String> columns,
+    required bool destrucive,
+  }) = _DatabaseMigrationWarning;
 
   factory DatabaseMigrationWarning.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,23 +39,43 @@ class DatabaseMigrationWarning extends _i1.SerializableEntity {
     );
   }
 
-  final _i2.DatabaseMigrationWarningType type;
-
-  final String message;
-
-  final String table;
-
-  final List<String> columns;
-
-  final bool destrucive;
-
-  late Function({
+  DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,
     String? message,
     String? table,
     List<String>? columns,
     bool? destrucive,
-  }) copyWith = _copyWith;
+  });
+  _i2.DatabaseMigrationWarningType get type;
+  String get message;
+  String get table;
+  List<String> get columns;
+  bool get destrucive;
+}
+
+class _DatabaseMigrationWarning extends DatabaseMigrationWarning {
+  const _DatabaseMigrationWarning({
+    required this.type,
+    required this.message,
+    required this.table,
+    required this.columns,
+    required this.destrucive,
+  }) : super._();
+
+  @override
+  final _i2.DatabaseMigrationWarningType type;
+
+  @override
+  final String message;
+
+  @override
+  final String table;
+
+  @override
+  final List<String> columns;
+
+  @override
+  final bool destrucive;
 
   @override
   Map<String, dynamic> toJson() {
@@ -110,7 +130,8 @@ class DatabaseMigrationWarning extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(columns),
       );
 
-  DatabaseMigrationWarning _copyWith({
+  @override
+  DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,
     String? message,
     String? table,

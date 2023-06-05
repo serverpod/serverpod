@@ -11,22 +11,25 @@ import 'package:serverpod_auth_server/module.dart' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:collection/collection.dart' as _i4;
 
-class _Undefined {}
+typedef ChatMessageExpressionBuilder = _i1.Expression Function(
+    ChatMessageTable);
 
 /// A chat message.
-class ChatMessage extends _i1.TableRow {
-  ChatMessage({
+abstract class ChatMessage extends _i1.TableRow {
+  const ChatMessage._();
+
+  const factory ChatMessage({
     int? id,
-    required this.channel,
-    required this.message,
-    required this.time,
-    required this.sender,
-    this.senderInfo,
-    required this.removed,
-    this.clientMessageId,
-    this.sent,
-    this.attachments,
-  }) : super(id);
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) = _ChatMessage;
 
   factory ChatMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -55,36 +58,9 @@ class ChatMessage extends _i1.TableRow {
     );
   }
 
-  static var t = ChatMessageTable();
+  static const t = ChatMessageTable();
 
-  /// The channel this message was posted to.
-  final String channel;
-
-  /// The body of the message.
-  final String message;
-
-  /// The time when this message was posted.
-  final DateTime time;
-
-  /// The user id of the sender.
-  final int sender;
-
-  /// Information about the sender.
-  final _i2.UserInfoPublic? senderInfo;
-
-  /// True, if this message has been removed.
-  final bool removed;
-
-  /// The client message id, used to track if a message has been delivered.
-  final int? clientMessageId;
-
-  /// True if the message has been sent.
-  final bool? sent;
-
-  /// List of attachments associated with this message.
-  final List<_i3.ChatMessageAttachment>? attachments;
-
-  late Function({
+  ChatMessage copyWith({
     int? id,
     String? channel,
     String? message,
@@ -95,130 +71,9 @@ class ChatMessage extends _i1.TableRow {
     int? clientMessageId,
     bool? sent,
     List<_i3.ChatMessageAttachment>? attachments,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_chat_message';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'channel': channel,
-      'message': message,
-      'time': time,
-      'sender': sender,
-      'senderInfo': senderInfo,
-      'removed': removed,
-      'clientMessageId': clientMessageId,
-      'sent': sent,
-      'attachments': attachments,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ChatMessage &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.channel,
-                  channel,
-                ) ||
-                other.channel == channel) &&
-            (identical(
-                  other.message,
-                  message,
-                ) ||
-                other.message == message) &&
-            (identical(
-                  other.time,
-                  time,
-                ) ||
-                other.time == time) &&
-            (identical(
-                  other.sender,
-                  sender,
-                ) ||
-                other.sender == sender) &&
-            (identical(
-                  other.senderInfo,
-                  senderInfo,
-                ) ||
-                other.senderInfo == senderInfo) &&
-            (identical(
-                  other.removed,
-                  removed,
-                ) ||
-                other.removed == removed) &&
-            (identical(
-                  other.clientMessageId,
-                  clientMessageId,
-                ) ||
-                other.clientMessageId == clientMessageId) &&
-            (identical(
-                  other.sent,
-                  sent,
-                ) ||
-                other.sent == sent) &&
-            const _i4.DeepCollectionEquality().equals(
-              attachments,
-              other.attachments,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        channel,
-        message,
-        time,
-        sender,
-        senderInfo,
-        removed,
-        clientMessageId,
-        sent,
-        const _i4.DeepCollectionEquality().hash(attachments),
-      );
-
-  ChatMessage _copyWith({
-    Object? id = _Undefined,
-    String? channel,
-    String? message,
-    DateTime? time,
-    int? sender,
-    Object? senderInfo = _Undefined,
-    bool? removed,
-    Object? clientMessageId = _Undefined,
-    Object? sent = _Undefined,
-    Object? attachments = _Undefined,
-  }) {
-    return ChatMessage(
-      id: id == _Undefined ? this.id : (id as int?),
-      channel: channel ?? this.channel,
-      message: message ?? this.message,
-      time: time ?? this.time,
-      sender: sender ?? this.sender,
-      senderInfo: senderInfo == _Undefined
-          ? this.senderInfo
-          : (senderInfo as _i2.UserInfoPublic?),
-      removed: removed ?? this.removed,
-      clientMessageId: clientMessageId == _Undefined
-          ? this.clientMessageId
-          : (clientMessageId as int?),
-      sent: sent == _Undefined ? this.sent : (sent as bool?),
-      attachments: attachments == _Undefined
-          ? this.attachments
-          : (attachments as List<_i3.ChatMessageAttachment>?),
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -339,36 +194,237 @@ class ChatMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The channel this message was posted to.
+  String get channel;
+
+  /// The body of the message.
+  String get message;
+
+  /// The time when this message was posted.
+  DateTime get time;
+
+  /// The user id of the sender.
+  int get sender;
+
+  /// Information about the sender.
+  _i2.UserInfoPublic? get senderInfo;
+
+  /// True, if this message has been removed.
+  bool get removed;
+
+  /// The client message id, used to track if a message has been delivered.
+  int? get clientMessageId;
+
+  /// True if the message has been sent.
+  bool? get sent;
+
+  /// List of attachments associated with this message.
+  List<_i3.ChatMessageAttachment>? get attachments;
 }
 
-typedef ChatMessageExpressionBuilder = _i1.Expression Function(
-    ChatMessageTable);
+class _Undefined {}
+
+/// A chat message.
+class _ChatMessage extends ChatMessage {
+  const _ChatMessage({
+    int? id,
+    required this.channel,
+    required this.message,
+    required this.time,
+    required this.sender,
+    this.senderInfo,
+    required this.removed,
+    this.clientMessageId,
+    this.sent,
+    this.attachments,
+  }) : super._();
+
+  /// The channel this message was posted to.
+  @override
+  final String channel;
+
+  /// The body of the message.
+  @override
+  final String message;
+
+  /// The time when this message was posted.
+  @override
+  final DateTime time;
+
+  /// The user id of the sender.
+  @override
+  final int sender;
+
+  /// Information about the sender.
+  @override
+  final _i2.UserInfoPublic? senderInfo;
+
+  /// True, if this message has been removed.
+  @override
+  final bool removed;
+
+  /// The client message id, used to track if a message has been delivered.
+  @override
+  final int? clientMessageId;
+
+  /// True if the message has been sent.
+  @override
+  final bool? sent;
+
+  /// List of attachments associated with this message.
+  @override
+  final List<_i3.ChatMessageAttachment>? attachments;
+
+  @override
+  String get tableName => 'serverpod_chat_message';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'channel': channel,
+      'message': message,
+      'time': time,
+      'sender': sender,
+      'senderInfo': senderInfo,
+      'removed': removed,
+      'clientMessageId': clientMessageId,
+      'sent': sent,
+      'attachments': attachments,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatMessage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.message,
+                  message,
+                ) ||
+                other.message == message) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.sender,
+                  sender,
+                ) ||
+                other.sender == sender) &&
+            (identical(
+                  other.senderInfo,
+                  senderInfo,
+                ) ||
+                other.senderInfo == senderInfo) &&
+            (identical(
+                  other.removed,
+                  removed,
+                ) ||
+                other.removed == removed) &&
+            (identical(
+                  other.clientMessageId,
+                  clientMessageId,
+                ) ||
+                other.clientMessageId == clientMessageId) &&
+            (identical(
+                  other.sent,
+                  sent,
+                ) ||
+                other.sent == sent) &&
+            const _i4.DeepCollectionEquality().equals(
+              attachments,
+              other.attachments,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        channel,
+        message,
+        time,
+        sender,
+        senderInfo,
+        removed,
+        clientMessageId,
+        sent,
+        const _i4.DeepCollectionEquality().hash(attachments),
+      );
+
+  @override
+  ChatMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    Object? senderInfo = _Undefined,
+    bool? removed,
+    Object? clientMessageId = _Undefined,
+    Object? sent = _Undefined,
+    Object? attachments = _Undefined,
+  }) {
+    return ChatMessage(
+      id: id == _Undefined ? this.id : (id as int?),
+      channel: channel ?? this.channel,
+      message: message ?? this.message,
+      time: time ?? this.time,
+      sender: sender ?? this.sender,
+      senderInfo: senderInfo == _Undefined
+          ? this.senderInfo
+          : (senderInfo as _i2.UserInfoPublic?),
+      removed: removed ?? this.removed,
+      clientMessageId: clientMessageId == _Undefined
+          ? this.clientMessageId
+          : (clientMessageId as int?),
+      sent: sent == _Undefined ? this.sent : (sent as bool?),
+      attachments: attachments == _Undefined
+          ? this.attachments
+          : (attachments as List<_i3.ChatMessageAttachment>?),
+    );
+  }
+}
 
 class ChatMessageTable extends _i1.Table {
-  ChatMessageTable() : super(tableName: 'serverpod_chat_message');
+  const ChatMessageTable() : super(tableName: 'serverpod_chat_message');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The channel this message was posted to.
-  final channel = _i1.ColumnString('channel');
+  final channel = const _i1.ColumnString('channel');
 
   /// The body of the message.
-  final message = _i1.ColumnString('message');
+  final message = const _i1.ColumnString('message');
 
   /// The time when this message was posted.
-  final time = _i1.ColumnDateTime('time');
+  final time = const _i1.ColumnDateTime('time');
 
   /// The user id of the sender.
-  final sender = _i1.ColumnInt('sender');
+  final sender = const _i1.ColumnInt('sender');
 
   /// True, if this message has been removed.
-  final removed = _i1.ColumnBool('removed');
+  final removed = const _i1.ColumnBool('removed');
 
   /// List of attachments associated with this message.
-  final attachments = _i1.ColumnSerializable('attachments');
+  final attachments = const _i1.ColumnSerializable('attachments');
 
   @override
   List<_i1.Column> get columns => [
@@ -383,4 +439,4 @@ class ChatMessageTable extends _i1.Table {
 }
 
 @Deprecated('Use ChatMessageTable.t instead.')
-ChatMessageTable tChatMessage = ChatMessageTable();
+ChatMessageTable tChatMessage = const ChatMessageTable();

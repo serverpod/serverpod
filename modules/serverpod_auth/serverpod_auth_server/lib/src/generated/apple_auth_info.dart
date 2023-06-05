@@ -8,18 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
-
 /// Authentication info for Sign in with Apple.
-class AppleAuthInfo extends _i1.SerializableEntity {
-  AppleAuthInfo({
-    required this.userIdentifier,
-    this.email,
-    required this.fullName,
-    required this.nickname,
-    required this.identityToken,
-    required this.authorizationCode,
-  });
+abstract class AppleAuthInfo extends _i1.SerializableEntity {
+  const AppleAuthInfo._();
+
+  const factory AppleAuthInfo({
+    required String userIdentifier,
+    String? email,
+    required String fullName,
+    required String nickname,
+    required String identityToken,
+    required String authorizationCode,
+  }) = _AppleAuthInfo;
 
   factory AppleAuthInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,32 +41,70 @@ class AppleAuthInfo extends _i1.SerializableEntity {
     );
   }
 
-  /// The unique user identifier.
-  final String userIdentifier;
-
-  /// User email, if available.
-  final String? email;
-
-  /// Full name of the user.
-  final String fullName;
-
-  /// Nickname or first name of the user.
-  final String nickname;
-
-  /// Identity token associated with the sign in.
-  final String identityToken;
-
-  /// Authorization code associated with the sign in.
-  final String authorizationCode;
-
-  late Function({
+  AppleAuthInfo copyWith({
     String? userIdentifier,
     String? email,
     String? fullName,
     String? nickname,
     String? identityToken,
     String? authorizationCode,
-  }) copyWith = _copyWith;
+  });
+
+  /// The unique user identifier.
+  String get userIdentifier;
+
+  /// User email, if available.
+  String? get email;
+
+  /// Full name of the user.
+  String get fullName;
+
+  /// Nickname or first name of the user.
+  String get nickname;
+
+  /// Identity token associated with the sign in.
+  String get identityToken;
+
+  /// Authorization code associated with the sign in.
+  String get authorizationCode;
+}
+
+class _Undefined {}
+
+/// Authentication info for Sign in with Apple.
+class _AppleAuthInfo extends AppleAuthInfo {
+  const _AppleAuthInfo({
+    required this.userIdentifier,
+    this.email,
+    required this.fullName,
+    required this.nickname,
+    required this.identityToken,
+    required this.authorizationCode,
+  }) : super._();
+
+  /// The unique user identifier.
+  @override
+  final String userIdentifier;
+
+  /// User email, if available.
+  @override
+  final String? email;
+
+  /// Full name of the user.
+  @override
+  final String fullName;
+
+  /// Nickname or first name of the user.
+  @override
+  final String nickname;
+
+  /// Identity token associated with the sign in.
+  @override
+  final String identityToken;
+
+  /// Authorization code associated with the sign in.
+  @override
+  final String authorizationCode;
 
   @override
   Map<String, dynamic> toJson() {
@@ -129,7 +167,8 @@ class AppleAuthInfo extends _i1.SerializableEntity {
         authorizationCode,
       );
 
-  AppleAuthInfo _copyWith({
+  @override
+  AppleAuthInfo copyWith({
     String? userIdentifier,
     Object? email = _Undefined,
     String? fullName,

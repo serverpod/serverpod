@@ -10,16 +10,16 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:serverpod_auth_server/module.dart' as _i3;
 
-class _Undefined {}
-
 /// A message passed to a user when it joins a channel.
-class ChatJoinedChannel extends _i1.SerializableEntity {
-  ChatJoinedChannel({
-    required this.channel,
-    required this.initialMessageChunk,
-    required this.lastReadMessageId,
-    required this.userInfo,
-  });
+abstract class ChatJoinedChannel extends _i1.SerializableEntity {
+  const ChatJoinedChannel._();
+
+  const factory ChatJoinedChannel({
+    required String channel,
+    required _i2.ChatMessageChunk initialMessageChunk,
+    required int lastReadMessageId,
+    required _i3.UserInfo userInfo,
+  }) = _ChatJoinedChannel;
 
   factory ChatJoinedChannel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,24 +38,50 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
     );
   }
 
-  /// The channel the user joined.
-  final String channel;
-
-  /// Initial chunk of chat messages from the channel the user joined.
-  final _i2.ChatMessageChunk initialMessageChunk;
-
-  /// The id of the last read message.
-  final int lastReadMessageId;
-
-  /// The user info of the user who joined the channel.
-  final _i3.UserInfo userInfo;
-
-  late Function({
+  ChatJoinedChannel copyWith({
     String? channel,
     _i2.ChatMessageChunk? initialMessageChunk,
     int? lastReadMessageId,
     _i3.UserInfo? userInfo,
-  }) copyWith = _copyWith;
+  });
+
+  /// The channel the user joined.
+  String get channel;
+
+  /// Initial chunk of chat messages from the channel the user joined.
+  _i2.ChatMessageChunk get initialMessageChunk;
+
+  /// The id of the last read message.
+  int get lastReadMessageId;
+
+  /// The user info of the user who joined the channel.
+  _i3.UserInfo get userInfo;
+}
+
+/// A message passed to a user when it joins a channel.
+class _ChatJoinedChannel extends ChatJoinedChannel {
+  const _ChatJoinedChannel({
+    required this.channel,
+    required this.initialMessageChunk,
+    required this.lastReadMessageId,
+    required this.userInfo,
+  }) : super._();
+
+  /// The channel the user joined.
+  @override
+  final String channel;
+
+  /// Initial chunk of chat messages from the channel the user joined.
+  @override
+  final _i2.ChatMessageChunk initialMessageChunk;
+
+  /// The id of the last read message.
+  @override
+  final int lastReadMessageId;
+
+  /// The user info of the user who joined the channel.
+  @override
+  final _i3.UserInfo userInfo;
 
   @override
   Map<String, dynamic> toJson() {
@@ -104,7 +130,8 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
         userInfo,
       );
 
-  ChatJoinedChannel _copyWith({
+  @override
+  ChatJoinedChannel copyWith({
     String? channel,
     _i2.ChatMessageChunk? initialMessageChunk,
     int? lastReadMessageId,

@@ -20,7 +20,7 @@ class AppleEndpoint extends Endpoint {
       var result =
           await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
       if (result.statusCode != 200) {
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.internalError,
         );
@@ -57,14 +57,14 @@ class AppleEndpoint extends Endpoint {
     }
 
     if (!verified) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
     }
 
     if (userIdentifier != payload.jsonContent['sub']) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
@@ -72,7 +72,7 @@ class AppleEndpoint extends Endpoint {
 
     session.log('checking email', level: LogLevel.debug);
     if (email != null && email != payload.jsonContent['email']) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
@@ -97,7 +97,7 @@ class AppleEndpoint extends Endpoint {
     }
 
     if (userInfo == null) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );

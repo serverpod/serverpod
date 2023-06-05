@@ -20,7 +20,7 @@ void main() {
   group('Logging', () {
     test('Set runtime settings', () async {
       // Log everything
-      var settings = service.RuntimeSettings(
+      var settings = const service.RuntimeSettings(
         logSettings: service.LogSettings(
           logAllSessions: true,
           logSlowSessions: true,
@@ -45,7 +45,12 @@ void main() {
       settings = await serviceClient.insights.getRuntimeSettings();
       expect(settings.logSettings.logFailedSessions, equals(false));
 
-      settings.logSettings.logFailedSessions = true;
+      settings = settings.copyWith(
+        logSettings: settings.logSettings.copyWith(
+          logFailedSessions: true,
+        ),
+      );
+
       await serviceClient.insights.setRuntimeSettings(settings);
       settings = await serviceClient.insights.getRuntimeSettings();
       expect(settings.logSettings.logFailedSessions, equals(true));
@@ -104,7 +109,7 @@ void main() {
 
     test('Error log level', () async {
       // Set log level to error
-      var settings = service.RuntimeSettings(
+      var settings = const service.RuntimeSettings(
         logSettings: service.LogSettings(
           logAllSessions: true,
           logSlowSessions: true,
@@ -185,7 +190,7 @@ void main() {
 
     test('Future call logging', () async {
       // Set log level to info
-      var settings = service.RuntimeSettings(
+      var settings = const service.RuntimeSettings(
         logSettings: service.LogSettings(
           logAllSessions: true,
           logSlowSessions: true,
@@ -204,7 +209,7 @@ void main() {
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
-      await client.futureCalls.makeFutureCall(SimpleData(num: 42));
+      await client.futureCalls.makeFutureCall(const SimpleData(num: 42));
 
       // Make sure that the future call has been executed
       // The check for future calls is made very 5 s and future call is set for
@@ -246,7 +251,7 @@ void main() {
 
     test('Logging in stream', () async {
       // Set log level to info
-      var settings = service.RuntimeSettings(
+      var settings = const service.RuntimeSettings(
         logSettings: service.LogSettings(
           logAllSessions: true,
           logSlowSessions: true,
@@ -270,13 +275,16 @@ void main() {
       );
 
       for (var i = 0; i < 5; i += 1) {
-        await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
+        await client.streamingLogging
+            .sendStreamMessage(const SimpleData(num: 42));
       }
 
-      await client.streamingLogging.sendStreamMessage(SimpleData(num: -1));
+      await client.streamingLogging
+          .sendStreamMessage(const SimpleData(num: -1));
 
       for (var i = 0; i < 5; i += 1) {
-        await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
+        await client.streamingLogging
+            .sendStreamMessage(const SimpleData(num: 42));
       }
 
       // This test failed some times due to some kind of race condition.

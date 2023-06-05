@@ -9,18 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:collection/collection.dart' as _i2;
 
-class _Undefined {}
+typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
 
 /// Provides a method of access for a user to authenticate with the server.
-class AuthKey extends _i1.TableRow {
-  AuthKey({
+abstract class AuthKey extends _i1.TableRow {
+  const AuthKey._();
+
+  const factory AuthKey({
     int? id,
-    required this.userId,
-    required this.hash,
-    this.key,
-    required this.scopeNames,
-    required this.method,
-  }) : super(id);
+    required int userId,
+    required String hash,
+    String? key,
+    required List<String> scopeNames,
+    required String method,
+  }) = _AuthKey;
 
   factory AuthKey.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,113 +41,18 @@ class AuthKey extends _i1.TableRow {
     );
   }
 
-  static var t = AuthKeyTable();
+  static const t = AuthKeyTable();
 
-  /// The id of the user to provide access to.
-  final int userId;
-
-  /// The hashed version of the key.
-  final String hash;
-
-  /// The key sent to the server to authenticate.
-  final String? key;
-
-  /// The scopes this key provides access to.
-  final List<String> scopeNames;
-
-  /// The method of signing in this key was generated through. This can be email
-  /// or different social logins.
-  final String method;
-
-  late Function({
+  AuthKey copyWith({
     int? id,
     int? userId,
     String? hash,
     String? key,
     List<String>? scopeNames,
     String? method,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_auth_key';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'hash': hash,
-      'key': key,
-      'scopeNames': scopeNames,
-      'method': method,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is AuthKey &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.userId,
-                  userId,
-                ) ||
-                other.userId == userId) &&
-            (identical(
-                  other.hash,
-                  hash,
-                ) ||
-                other.hash == hash) &&
-            (identical(
-                  other.key,
-                  key,
-                ) ||
-                other.key == key) &&
-            (identical(
-                  other.method,
-                  method,
-                ) ||
-                other.method == method) &&
-            const _i2.DeepCollectionEquality().equals(
-              scopeNames,
-              other.scopeNames,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        userId,
-        hash,
-        key,
-        method,
-        const _i2.DeepCollectionEquality().hash(scopeNames),
-      );
-
-  AuthKey _copyWith({
-    Object? id = _Undefined,
-    int? userId,
-    String? hash,
-    Object? key = _Undefined,
-    List<String>? scopeNames,
-    String? method,
-  }) {
-    return AuthKey(
-      id: id == _Undefined ? this.id : (id as int?),
-      userId: userId ?? this.userId,
-      hash: hash ?? this.hash,
-      key: key == _Undefined ? this.key : (key as String?),
-      scopeNames: scopeNames ?? this.scopeNames,
-      method: method ?? this.method,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -264,30 +171,160 @@ class AuthKey extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The id of the user to provide access to.
+  int get userId;
+
+  /// The hashed version of the key.
+  String get hash;
+
+  /// The key sent to the server to authenticate.
+  String? get key;
+
+  /// The scopes this key provides access to.
+  List<String> get scopeNames;
+
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
+  String get method;
 }
 
-typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
+class _Undefined {}
+
+/// Provides a method of access for a user to authenticate with the server.
+class _AuthKey extends AuthKey {
+  const _AuthKey({
+    int? id,
+    required this.userId,
+    required this.hash,
+    this.key,
+    required this.scopeNames,
+    required this.method,
+  }) : super._();
+
+  /// The id of the user to provide access to.
+  @override
+  final int userId;
+
+  /// The hashed version of the key.
+  @override
+  final String hash;
+
+  /// The key sent to the server to authenticate.
+  @override
+  final String? key;
+
+  /// The scopes this key provides access to.
+  @override
+  final List<String> scopeNames;
+
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
+  @override
+  final String method;
+
+  @override
+  String get tableName => 'serverpod_auth_key';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'hash': hash,
+      'key': key,
+      'scopeNames': scopeNames,
+      'method': method,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is AuthKey &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.hash,
+                  hash,
+                ) ||
+                other.hash == hash) &&
+            (identical(
+                  other.key,
+                  key,
+                ) ||
+                other.key == key) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method) &&
+            const _i2.DeepCollectionEquality().equals(
+              scopeNames,
+              other.scopeNames,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        hash,
+        key,
+        method,
+        const _i2.DeepCollectionEquality().hash(scopeNames),
+      );
+
+  @override
+  AuthKey copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? hash,
+    Object? key = _Undefined,
+    List<String>? scopeNames,
+    String? method,
+  }) {
+    return AuthKey(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      hash: hash ?? this.hash,
+      key: key == _Undefined ? this.key : (key as String?),
+      scopeNames: scopeNames ?? this.scopeNames,
+      method: method ?? this.method,
+    );
+  }
+}
 
 class AuthKeyTable extends _i1.Table {
-  AuthKeyTable() : super(tableName: 'serverpod_auth_key');
+  const AuthKeyTable() : super(tableName: 'serverpod_auth_key');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The id of the user to provide access to.
-  final userId = _i1.ColumnInt('userId');
+  final userId = const _i1.ColumnInt('userId');
 
   /// The hashed version of the key.
-  final hash = _i1.ColumnString('hash');
+  final hash = const _i1.ColumnString('hash');
 
   /// The scopes this key provides access to.
-  final scopeNames = _i1.ColumnSerializable('scopeNames');
+  final scopeNames = const _i1.ColumnSerializable('scopeNames');
 
   /// The method of signing in this key was generated through. This can be email
   /// or different social logins.
-  final method = _i1.ColumnString('method');
+  final method = const _i1.ColumnString('method');
 
   @override
   List<_i1.Column> get columns => [
@@ -300,4 +337,4 @@ class AuthKeyTable extends _i1.Table {
 }
 
 @Deprecated('Use AuthKeyTable.t instead.')
-AuthKeyTable tAuthKey = AuthKeyTable();
+AuthKeyTable tAuthKey = const AuthKeyTable();

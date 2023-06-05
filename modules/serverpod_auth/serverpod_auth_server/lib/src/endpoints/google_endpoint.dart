@@ -47,7 +47,9 @@ class GoogleEndpoint extends Endpoint {
       personFields: 'emailAddresses,names,photos',
     );
 
-    if (person.names == null) return AuthenticationResponse(success: false);
+    if (person.names == null) {
+      return const AuthenticationResponse(success: false);
+    }
 
     var fullName = person.names?[0].displayName; // TODO: Double check
     var name = person.names?[0].givenName;
@@ -55,7 +57,7 @@ class GoogleEndpoint extends Endpoint {
     var email = person.emailAddresses?[0].value;
 
     if (fullName == null || name == null || image == null || email == null) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
@@ -66,7 +68,7 @@ class GoogleEndpoint extends Endpoint {
     var userInfo = await _setupUserInfo(session, email, name, fullName, image);
 
     if (userInfo == null) {
-      return AuthenticationResponse(
+      return const AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
@@ -85,7 +87,10 @@ class GoogleEndpoint extends Endpoint {
         );
         await GoogleRefreshToken.insert(session, token);
       } else {
-        token.refreshToken = jsonEncode(authClient.credentials.toJson());
+        token = token.copyWith(
+          refreshToken: jsonEncode(authClient.credentials.toJson()),
+        );
+
         await GoogleRefreshToken.update(session, token);
       }
     }
@@ -117,7 +122,7 @@ class GoogleEndpoint extends Endpoint {
 
       if (response.statusCode != 200) {
         session.log('Invalid token received', level: LogLevel.debug);
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
@@ -126,7 +131,7 @@ class GoogleEndpoint extends Endpoint {
       var data = jsonDecode(response.body);
       if (data['iss'] != 'accounts.google.com') {
         session.log('Invalid token received', level: LogLevel.debug);
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
@@ -134,7 +139,7 @@ class GoogleEndpoint extends Endpoint {
 
       if (data['aud'] != clientId) {
         session.log('Client ID doesn\'t match', level: LogLevel.debug);
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
@@ -149,7 +154,7 @@ class GoogleEndpoint extends Endpoint {
         session.log(
             'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
             level: LogLevel.debug);
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
@@ -159,7 +164,7 @@ class GoogleEndpoint extends Endpoint {
           await _setupUserInfo(session, email, name, fullName, image);
       if (userInfo == null) {
         session.log('Failed to create UserInfo', level: LogLevel.debug);
-        return AuthenticationResponse(
+        return const AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.userCreationDenied,
         );
@@ -182,7 +187,7 @@ class GoogleEndpoint extends Endpoint {
         exception: e,
         stackTrace: stackTrace,
       );
-      return AuthenticationResponse(success: false);
+      return const AuthenticationResponse(success: false);
     }
   }
 

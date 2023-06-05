@@ -11,57 +11,57 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:collection/collection.dart' as _i4;
 
-class _Undefined {}
+abstract class Nullability extends _i1.SerializableEntity {
+  const Nullability._();
 
-class Nullability extends _i1.SerializableEntity {
-  Nullability({
-    required this.anInt,
-    this.aNullableInt,
-    required this.aDouble,
-    this.aNullableDouble,
-    required this.aBool,
-    this.aNullableBool,
-    required this.aString,
-    this.aNullableString,
-    required this.aDateTime,
-    this.aNullableDateTime,
-    required this.aByteData,
-    this.aNullableByteData,
-    required this.aDuration,
-    this.aNullableDuration,
-    required this.aUuid,
-    this.aNullableUuid,
-    required this.anObject,
-    this.aNullableObject,
-    required this.anIntList,
-    this.aNullableIntList,
-    required this.aListWithNullableInts,
-    this.aNullableListWithNullableInts,
-    required this.anObjectList,
-    this.aNullableObjectList,
-    required this.aListWithNullableObjects,
-    this.aNullableListWithNullableObjects,
-    required this.aDateTimeList,
-    this.aNullableDateTimeList,
-    required this.aListWithNullableDateTimes,
-    this.aNullableListWithNullableDateTimes,
-    required this.aByteDataList,
-    this.aNullableByteDataList,
-    required this.aListWithNullableByteDatas,
-    this.aNullableListWithNullableByteDatas,
-    required this.aDurationList,
-    this.aNullableDurationList,
-    required this.aListWithNullableDurations,
-    this.aNullableListWithNullableDurations,
-    required this.aUuidList,
-    this.aNullableUuidList,
-    required this.aListWithNullableUuids,
-    this.aNullableListWithNullableUuids,
-    required this.anIntMap,
-    this.aNullableIntMap,
-    required this.aMapWithNullableInts,
-    this.aNullableMapWithNullableInts,
-  });
+  const factory Nullability({
+    required int anInt,
+    int? aNullableInt,
+    required double aDouble,
+    double? aNullableDouble,
+    required bool aBool,
+    bool? aNullableBool,
+    required String aString,
+    String? aNullableString,
+    required DateTime aDateTime,
+    DateTime? aNullableDateTime,
+    required _i2.ByteData aByteData,
+    _i2.ByteData? aNullableByteData,
+    required Duration aDuration,
+    Duration? aNullableDuration,
+    required _i1.UuidValue aUuid,
+    _i1.UuidValue? aNullableUuid,
+    required _i3.SimpleData anObject,
+    _i3.SimpleData? aNullableObject,
+    required List<int> anIntList,
+    List<int>? aNullableIntList,
+    required List<int?> aListWithNullableInts,
+    List<int?>? aNullableListWithNullableInts,
+    required List<_i3.SimpleData> anObjectList,
+    List<_i3.SimpleData>? aNullableObjectList,
+    required List<_i3.SimpleData?> aListWithNullableObjects,
+    List<_i3.SimpleData?>? aNullableListWithNullableObjects,
+    required List<DateTime> aDateTimeList,
+    List<DateTime>? aNullableDateTimeList,
+    required List<DateTime?> aListWithNullableDateTimes,
+    List<DateTime?>? aNullableListWithNullableDateTimes,
+    required List<_i2.ByteData> aByteDataList,
+    List<_i2.ByteData>? aNullableByteDataList,
+    required List<_i2.ByteData?> aListWithNullableByteDatas,
+    List<_i2.ByteData?>? aNullableListWithNullableByteDatas,
+    required List<Duration> aDurationList,
+    List<Duration>? aNullableDurationList,
+    required List<Duration?> aListWithNullableDurations,
+    List<Duration?>? aNullableListWithNullableDurations,
+    required List<_i1.UuidValue> aUuidList,
+    List<_i1.UuidValue>? aNullableUuidList,
+    required List<_i1.UuidValue?> aListWithNullableUuids,
+    List<_i1.UuidValue?>? aNullableListWithNullableUuids,
+    required Map<String, int> anIntMap,
+    Map<String, int>? aNullableIntMap,
+    required Map<String, int?> aMapWithNullableInts,
+    Map<String, int?>? aNullableMapWithNullableInts,
+  }) = _Nullability;
 
   factory Nullability.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -175,99 +175,7 @@ class Nullability extends _i1.SerializableEntity {
     );
   }
 
-  final int anInt;
-
-  final int? aNullableInt;
-
-  final double aDouble;
-
-  final double? aNullableDouble;
-
-  final bool aBool;
-
-  final bool? aNullableBool;
-
-  final String aString;
-
-  final String? aNullableString;
-
-  final DateTime aDateTime;
-
-  final DateTime? aNullableDateTime;
-
-  final _i2.ByteData aByteData;
-
-  final _i2.ByteData? aNullableByteData;
-
-  final Duration aDuration;
-
-  final Duration? aNullableDuration;
-
-  final _i1.UuidValue aUuid;
-
-  final _i1.UuidValue? aNullableUuid;
-
-  final _i3.SimpleData anObject;
-
-  final _i3.SimpleData? aNullableObject;
-
-  final List<int> anIntList;
-
-  final List<int>? aNullableIntList;
-
-  final List<int?> aListWithNullableInts;
-
-  final List<int?>? aNullableListWithNullableInts;
-
-  final List<_i3.SimpleData> anObjectList;
-
-  final List<_i3.SimpleData>? aNullableObjectList;
-
-  final List<_i3.SimpleData?> aListWithNullableObjects;
-
-  final List<_i3.SimpleData?>? aNullableListWithNullableObjects;
-
-  final List<DateTime> aDateTimeList;
-
-  final List<DateTime>? aNullableDateTimeList;
-
-  final List<DateTime?> aListWithNullableDateTimes;
-
-  final List<DateTime?>? aNullableListWithNullableDateTimes;
-
-  final List<_i2.ByteData> aByteDataList;
-
-  final List<_i2.ByteData>? aNullableByteDataList;
-
-  final List<_i2.ByteData?> aListWithNullableByteDatas;
-
-  final List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
-
-  final List<Duration> aDurationList;
-
-  final List<Duration>? aNullableDurationList;
-
-  final List<Duration?> aListWithNullableDurations;
-
-  final List<Duration?>? aNullableListWithNullableDurations;
-
-  final List<_i1.UuidValue> aUuidList;
-
-  final List<_i1.UuidValue>? aNullableUuidList;
-
-  final List<_i1.UuidValue?> aListWithNullableUuids;
-
-  final List<_i1.UuidValue?>? aNullableListWithNullableUuids;
-
-  final Map<String, int> anIntMap;
-
-  final Map<String, int>? aNullableIntMap;
-
-  final Map<String, int?> aMapWithNullableInts;
-
-  final Map<String, int?>? aNullableMapWithNullableInts;
-
-  late Function({
+  Nullability copyWith({
     int? anInt,
     int? aNullableInt,
     double? aDouble,
@@ -314,7 +222,244 @@ class Nullability extends _i1.SerializableEntity {
     Map<String, int>? aNullableIntMap,
     Map<String, int?>? aMapWithNullableInts,
     Map<String, int?>? aNullableMapWithNullableInts,
-  }) copyWith = _copyWith;
+  });
+  int get anInt;
+  int? get aNullableInt;
+  double get aDouble;
+  double? get aNullableDouble;
+  bool get aBool;
+  bool? get aNullableBool;
+  String get aString;
+  String? get aNullableString;
+  DateTime get aDateTime;
+  DateTime? get aNullableDateTime;
+  _i2.ByteData get aByteData;
+  _i2.ByteData? get aNullableByteData;
+  Duration get aDuration;
+  Duration? get aNullableDuration;
+  _i1.UuidValue get aUuid;
+  _i1.UuidValue? get aNullableUuid;
+  _i3.SimpleData get anObject;
+  _i3.SimpleData? get aNullableObject;
+  List<int> get anIntList;
+  List<int>? get aNullableIntList;
+  List<int?> get aListWithNullableInts;
+  List<int?>? get aNullableListWithNullableInts;
+  List<_i3.SimpleData> get anObjectList;
+  List<_i3.SimpleData>? get aNullableObjectList;
+  List<_i3.SimpleData?> get aListWithNullableObjects;
+  List<_i3.SimpleData?>? get aNullableListWithNullableObjects;
+  List<DateTime> get aDateTimeList;
+  List<DateTime>? get aNullableDateTimeList;
+  List<DateTime?> get aListWithNullableDateTimes;
+  List<DateTime?>? get aNullableListWithNullableDateTimes;
+  List<_i2.ByteData> get aByteDataList;
+  List<_i2.ByteData>? get aNullableByteDataList;
+  List<_i2.ByteData?> get aListWithNullableByteDatas;
+  List<_i2.ByteData?>? get aNullableListWithNullableByteDatas;
+  List<Duration> get aDurationList;
+  List<Duration>? get aNullableDurationList;
+  List<Duration?> get aListWithNullableDurations;
+  List<Duration?>? get aNullableListWithNullableDurations;
+  List<_i1.UuidValue> get aUuidList;
+  List<_i1.UuidValue>? get aNullableUuidList;
+  List<_i1.UuidValue?> get aListWithNullableUuids;
+  List<_i1.UuidValue?>? get aNullableListWithNullableUuids;
+  Map<String, int> get anIntMap;
+  Map<String, int>? get aNullableIntMap;
+  Map<String, int?> get aMapWithNullableInts;
+  Map<String, int?>? get aNullableMapWithNullableInts;
+}
+
+class _Undefined {}
+
+class _Nullability extends Nullability {
+  const _Nullability({
+    required this.anInt,
+    this.aNullableInt,
+    required this.aDouble,
+    this.aNullableDouble,
+    required this.aBool,
+    this.aNullableBool,
+    required this.aString,
+    this.aNullableString,
+    required this.aDateTime,
+    this.aNullableDateTime,
+    required this.aByteData,
+    this.aNullableByteData,
+    required this.aDuration,
+    this.aNullableDuration,
+    required this.aUuid,
+    this.aNullableUuid,
+    required this.anObject,
+    this.aNullableObject,
+    required this.anIntList,
+    this.aNullableIntList,
+    required this.aListWithNullableInts,
+    this.aNullableListWithNullableInts,
+    required this.anObjectList,
+    this.aNullableObjectList,
+    required this.aListWithNullableObjects,
+    this.aNullableListWithNullableObjects,
+    required this.aDateTimeList,
+    this.aNullableDateTimeList,
+    required this.aListWithNullableDateTimes,
+    this.aNullableListWithNullableDateTimes,
+    required this.aByteDataList,
+    this.aNullableByteDataList,
+    required this.aListWithNullableByteDatas,
+    this.aNullableListWithNullableByteDatas,
+    required this.aDurationList,
+    this.aNullableDurationList,
+    required this.aListWithNullableDurations,
+    this.aNullableListWithNullableDurations,
+    required this.aUuidList,
+    this.aNullableUuidList,
+    required this.aListWithNullableUuids,
+    this.aNullableListWithNullableUuids,
+    required this.anIntMap,
+    this.aNullableIntMap,
+    required this.aMapWithNullableInts,
+    this.aNullableMapWithNullableInts,
+  }) : super._();
+
+  @override
+  final int anInt;
+
+  @override
+  final int? aNullableInt;
+
+  @override
+  final double aDouble;
+
+  @override
+  final double? aNullableDouble;
+
+  @override
+  final bool aBool;
+
+  @override
+  final bool? aNullableBool;
+
+  @override
+  final String aString;
+
+  @override
+  final String? aNullableString;
+
+  @override
+  final DateTime aDateTime;
+
+  @override
+  final DateTime? aNullableDateTime;
+
+  @override
+  final _i2.ByteData aByteData;
+
+  @override
+  final _i2.ByteData? aNullableByteData;
+
+  @override
+  final Duration aDuration;
+
+  @override
+  final Duration? aNullableDuration;
+
+  @override
+  final _i1.UuidValue aUuid;
+
+  @override
+  final _i1.UuidValue? aNullableUuid;
+
+  @override
+  final _i3.SimpleData anObject;
+
+  @override
+  final _i3.SimpleData? aNullableObject;
+
+  @override
+  final List<int> anIntList;
+
+  @override
+  final List<int>? aNullableIntList;
+
+  @override
+  final List<int?> aListWithNullableInts;
+
+  @override
+  final List<int?>? aNullableListWithNullableInts;
+
+  @override
+  final List<_i3.SimpleData> anObjectList;
+
+  @override
+  final List<_i3.SimpleData>? aNullableObjectList;
+
+  @override
+  final List<_i3.SimpleData?> aListWithNullableObjects;
+
+  @override
+  final List<_i3.SimpleData?>? aNullableListWithNullableObjects;
+
+  @override
+  final List<DateTime> aDateTimeList;
+
+  @override
+  final List<DateTime>? aNullableDateTimeList;
+
+  @override
+  final List<DateTime?> aListWithNullableDateTimes;
+
+  @override
+  final List<DateTime?>? aNullableListWithNullableDateTimes;
+
+  @override
+  final List<_i2.ByteData> aByteDataList;
+
+  @override
+  final List<_i2.ByteData>? aNullableByteDataList;
+
+  @override
+  final List<_i2.ByteData?> aListWithNullableByteDatas;
+
+  @override
+  final List<_i2.ByteData?>? aNullableListWithNullableByteDatas;
+
+  @override
+  final List<Duration> aDurationList;
+
+  @override
+  final List<Duration>? aNullableDurationList;
+
+  @override
+  final List<Duration?> aListWithNullableDurations;
+
+  @override
+  final List<Duration?>? aNullableListWithNullableDurations;
+
+  @override
+  final List<_i1.UuidValue> aUuidList;
+
+  @override
+  final List<_i1.UuidValue>? aNullableUuidList;
+
+  @override
+  final List<_i1.UuidValue?> aListWithNullableUuids;
+
+  @override
+  final List<_i1.UuidValue?>? aNullableListWithNullableUuids;
+
+  @override
+  final Map<String, int> anIntMap;
+
+  @override
+  final Map<String, int>? aNullableIntMap;
+
+  @override
+  final Map<String, int?> aMapWithNullableInts;
+
+  @override
+  final Map<String, int?>? aNullableMapWithNullableInts;
 
   @override
   Map<String, dynamic> toJson() {
@@ -633,7 +778,8 @@ class Nullability extends _i1.SerializableEntity {
         const _i4.DeepCollectionEquality().hash(aNullableMapWithNullableInts),
       ]);
 
-  Nullability _copyWith({
+  @override
+  Nullability copyWith({
     int? anInt,
     Object? aNullableInt = _Undefined,
     double? aDouble,

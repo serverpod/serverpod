@@ -9,15 +9,15 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// High level information about the caches.
-class CachesInfo extends _i1.SerializableEntity {
-  CachesInfo({
-    required this.local,
-    required this.localPrio,
-    required this.global,
-  });
+abstract class CachesInfo extends _i1.SerializableEntity {
+  const CachesInfo._();
+
+  const factory CachesInfo({
+    required _i2.CacheInfo local,
+    required _i2.CacheInfo localPrio,
+    required _i2.CacheInfo global,
+  }) = _CachesInfo;
 
   factory CachesInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,20 +33,41 @@ class CachesInfo extends _i1.SerializableEntity {
     );
   }
 
-  /// Information about the local cache.
-  final _i2.CacheInfo local;
-
-  /// Information about the local priority cache.
-  final _i2.CacheInfo localPrio;
-
-  /// Information about the global cache.
-  final _i2.CacheInfo global;
-
-  late Function({
+  CachesInfo copyWith({
     _i2.CacheInfo? local,
     _i2.CacheInfo? localPrio,
     _i2.CacheInfo? global,
-  }) copyWith = _copyWith;
+  });
+
+  /// Information about the local cache.
+  _i2.CacheInfo get local;
+
+  /// Information about the local priority cache.
+  _i2.CacheInfo get localPrio;
+
+  /// Information about the global cache.
+  _i2.CacheInfo get global;
+}
+
+/// High level information about the caches.
+class _CachesInfo extends CachesInfo {
+  const _CachesInfo({
+    required this.local,
+    required this.localPrio,
+    required this.global,
+  }) : super._();
+
+  /// Information about the local cache.
+  @override
+  final _i2.CacheInfo local;
+
+  /// Information about the local priority cache.
+  @override
+  final _i2.CacheInfo localPrio;
+
+  /// Information about the global cache.
+  @override
+  final _i2.CacheInfo global;
 
   @override
   Map<String, dynamic> toJson() {
@@ -88,7 +109,8 @@ class CachesInfo extends _i1.SerializableEntity {
         global,
       );
 
-  CachesInfo _copyWith({
+  @override
+  CachesInfo copyWith({
     _i2.CacheInfo? local,
     _i2.CacheInfo? localPrio,
     _i2.CacheInfo? global,

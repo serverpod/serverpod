@@ -72,7 +72,7 @@ class MigrationGenerator {
     var latest = await getLatestMigrationVersion();
 
     var srcDatabase =
-        latest?.databaseDefinition ?? DatabaseDefinition(tables: []);
+        latest?.databaseDefinition ?? const DatabaseDefinition(tables: []);
     var dstDatabase = await generateDatabaseDefinition(directory: directory);
 
     var warnings = <DatabaseMigrationWarning>[];

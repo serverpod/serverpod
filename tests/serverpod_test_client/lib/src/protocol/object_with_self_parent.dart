@@ -8,13 +8,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class ObjectWithSelfParent extends _i1.SerializableEntity {
+  const ObjectWithSelfParent._();
 
-class ObjectWithSelfParent extends _i1.SerializableEntity {
-  ObjectWithSelfParent({
-    this.id,
-    this.other,
-  });
+  const factory ObjectWithSelfParent({
+    int? id,
+    int? other,
+  }) = _ObjectWithSelfParent;
 
   factory ObjectWithSelfParent.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -26,17 +26,34 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
     );
   }
 
+  ObjectWithSelfParent copyWith({
+    int? id,
+    int? other,
+  });
+
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
+  int? get id;
+  int? get other;
+}
+
+class _Undefined {}
+
+class _ObjectWithSelfParent extends ObjectWithSelfParent {
+  const _ObjectWithSelfParent({
+    this.id,
+    this.other,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
   final int? id;
 
+  @override
   final int? other;
-
-  late Function({
-    int? id,
-    int? other,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -71,7 +88,8 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
         other,
       );
 
-  ObjectWithSelfParent _copyWith({
+  @override
+  ObjectWithSelfParent copyWith({
     Object? id = _Undefined,
     Object? other = _Undefined,
   }) {

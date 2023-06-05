@@ -9,18 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:collection/collection.dart' as _i2;
 
-class _Undefined {}
-
 /// Provides a method of access for a user to authenticate with the server.
-class AuthKey extends _i1.SerializableEntity {
-  AuthKey({
-    this.id,
-    required this.userId,
-    required this.hash,
-    this.key,
-    required this.scopeNames,
-    required this.method,
-  });
+abstract class AuthKey extends _i1.SerializableEntity {
+  const AuthKey._();
+
+  const factory AuthKey({
+    int? id,
+    required int userId,
+    required String hash,
+    String? key,
+    required List<String> scopeNames,
+    required String method,
+  }) = _AuthKey;
 
   factory AuthKey.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,35 +39,76 @@ class AuthKey extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The id of the user to provide access to.
-  final int userId;
-
-  /// The hashed version of the key.
-  final String hash;
-
-  /// The key sent to the server to authenticate.
-  final String? key;
-
-  /// The scopes this key provides access to.
-  final List<String> scopeNames;
-
-  /// The method of signing in this key was generated through. This can be email
-  /// or different social logins.
-  final String method;
-
-  late Function({
+  AuthKey copyWith({
     int? id,
     int? userId,
     String? hash,
     String? key,
     List<String>? scopeNames,
     String? method,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The id of the user to provide access to.
+  int get userId;
+
+  /// The hashed version of the key.
+  String get hash;
+
+  /// The key sent to the server to authenticate.
+  String? get key;
+
+  /// The scopes this key provides access to.
+  List<String> get scopeNames;
+
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
+  String get method;
+}
+
+class _Undefined {}
+
+/// Provides a method of access for a user to authenticate with the server.
+class _AuthKey extends AuthKey {
+  const _AuthKey({
+    this.id,
+    required this.userId,
+    required this.hash,
+    this.key,
+    required this.scopeNames,
+    required this.method,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The id of the user to provide access to.
+  @override
+  final int userId;
+
+  /// The hashed version of the key.
+  @override
+  final String hash;
+
+  /// The key sent to the server to authenticate.
+  @override
+  final String? key;
+
+  /// The scopes this key provides access to.
+  @override
+  final List<String> scopeNames;
+
+  /// The method of signing in this key was generated through. This can be email
+  /// or different social logins.
+  @override
+  final String method;
 
   @override
   Map<String, dynamic> toJson() {
@@ -129,7 +170,8 @@ class AuthKey extends _i1.SerializableEntity {
         const _i2.DeepCollectionEquality().hash(scopeNames),
       );
 
-  AuthKey _copyWith({
+  @override
+  AuthKey copyWith({
     Object? id = _Undefined,
     int? userId,
     String? hash,

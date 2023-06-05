@@ -10,14 +10,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// Information about health and connection metrics.
-class ServerHealthResult extends _i1.SerializableEntity {
-  ServerHealthResult({
-    required this.metrics,
-    required this.connectionInfos,
-  });
+abstract class ServerHealthResult extends _i1.SerializableEntity {
+  const ServerHealthResult._();
+
+  const factory ServerHealthResult({
+    required List<_i2.ServerHealthMetric> metrics,
+    required List<_i2.ServerHealthConnectionInfo> connectionInfos,
+  }) = _ServerHealthResult;
 
   factory ServerHealthResult.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -32,16 +32,32 @@ class ServerHealthResult extends _i1.SerializableEntity {
     );
   }
 
+  ServerHealthResult copyWith({
+    List<_i2.ServerHealthMetric>? metrics,
+    List<_i2.ServerHealthConnectionInfo>? connectionInfos,
+  });
+
   /// List of health metrics.
+  List<_i2.ServerHealthMetric> get metrics;
+
+  /// List of connection metrics.
+  List<_i2.ServerHealthConnectionInfo> get connectionInfos;
+}
+
+/// Information about health and connection metrics.
+class _ServerHealthResult extends ServerHealthResult {
+  const _ServerHealthResult({
+    required this.metrics,
+    required this.connectionInfos,
+  }) : super._();
+
+  /// List of health metrics.
+  @override
   final List<_i2.ServerHealthMetric> metrics;
 
   /// List of connection metrics.
+  @override
   final List<_i2.ServerHealthConnectionInfo> connectionInfos;
-
-  late Function({
-    List<_i2.ServerHealthMetric>? metrics,
-    List<_i2.ServerHealthConnectionInfo>? connectionInfos,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +90,8 @@ class ServerHealthResult extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(connectionInfos),
       );
 
-  ServerHealthResult _copyWith({
+  @override
+  ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,
     List<_i2.ServerHealthConnectionInfo>? connectionInfos,
   }) {

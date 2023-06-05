@@ -8,18 +8,21 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
+    EmailCreateAccountRequestTable);
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-class EmailCreateAccountRequest extends _i1.TableRow {
-  EmailCreateAccountRequest({
+abstract class EmailCreateAccountRequest extends _i1.TableRow {
+  const EmailCreateAccountRequest._();
+
+  const factory EmailCreateAccountRequest({
     int? id,
-    required this.userName,
-    required this.email,
-    required this.hash,
-    required this.verificationCode,
-  }) : super(id);
+    required String userName,
+    required String email,
+    required String hash,
+    required String verificationCode,
+  }) = _EmailCreateAccountRequest;
 
   factory EmailCreateAccountRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,100 +40,17 @@ class EmailCreateAccountRequest extends _i1.TableRow {
     );
   }
 
-  static var t = EmailCreateAccountRequestTable();
+  static const t = EmailCreateAccountRequestTable();
 
-  /// The name of the user.
-  final String userName;
-
-  /// The email of the user.
-  final String email;
-
-  /// Hash of the user's requested password.
-  final String hash;
-
-  /// The verification code sent to the user.
-  final String verificationCode;
-
-  late Function({
+  EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
     String? email,
     String? hash,
     String? verificationCode,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_email_create_request';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userName': userName,
-      'email': email,
-      'hash': hash,
-      'verificationCode': verificationCode,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is EmailCreateAccountRequest &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.userName,
-                  userName,
-                ) ||
-                other.userName == userName) &&
-            (identical(
-                  other.email,
-                  email,
-                ) ||
-                other.email == email) &&
-            (identical(
-                  other.hash,
-                  hash,
-                ) ||
-                other.hash == hash) &&
-            (identical(
-                  other.verificationCode,
-                  verificationCode,
-                ) ||
-                other.verificationCode == verificationCode));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        userName,
-        email,
-        hash,
-        verificationCode,
-      );
-
-  EmailCreateAccountRequest _copyWith({
-    Object? id = _Undefined,
-    String? userName,
-    String? email,
-    String? hash,
-    String? verificationCode,
-  }) {
-    return EmailCreateAccountRequest(
-      id: id == _Undefined ? this.id : (id as int?),
-      userName: userName ?? this.userName,
-      email: email ?? this.email,
-      hash: hash ?? this.hash,
-      verificationCode: verificationCode ?? this.verificationCode,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -249,31 +169,143 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The name of the user.
+  String get userName;
+
+  /// The email of the user.
+  String get email;
+
+  /// Hash of the user's requested password.
+  String get hash;
+
+  /// The verification code sent to the user.
+  String get verificationCode;
 }
 
-typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
-    EmailCreateAccountRequestTable);
+class _Undefined {}
+
+/// A request for creating an email signin. Created during the sign up process
+/// to keep track of the user's details and verification code.
+class _EmailCreateAccountRequest extends EmailCreateAccountRequest {
+  const _EmailCreateAccountRequest({
+    int? id,
+    required this.userName,
+    required this.email,
+    required this.hash,
+    required this.verificationCode,
+  }) : super._();
+
+  /// The name of the user.
+  @override
+  final String userName;
+
+  /// The email of the user.
+  @override
+  final String email;
+
+  /// Hash of the user's requested password.
+  @override
+  final String hash;
+
+  /// The verification code sent to the user.
+  @override
+  final String verificationCode;
+
+  @override
+  String get tableName => 'serverpod_email_create_request';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userName': userName,
+      'email': email,
+      'hash': hash,
+      'verificationCode': verificationCode,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailCreateAccountRequest &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userName,
+                  userName,
+                ) ||
+                other.userName == userName) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email) &&
+            (identical(
+                  other.hash,
+                  hash,
+                ) ||
+                other.hash == hash) &&
+            (identical(
+                  other.verificationCode,
+                  verificationCode,
+                ) ||
+                other.verificationCode == verificationCode));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userName,
+        email,
+        hash,
+        verificationCode,
+      );
+
+  @override
+  EmailCreateAccountRequest copyWith({
+    Object? id = _Undefined,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  }) {
+    return EmailCreateAccountRequest(
+      id: id == _Undefined ? this.id : (id as int?),
+      userName: userName ?? this.userName,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+      verificationCode: verificationCode ?? this.verificationCode,
+    );
+  }
+}
 
 class EmailCreateAccountRequestTable extends _i1.Table {
-  EmailCreateAccountRequestTable()
+  const EmailCreateAccountRequestTable()
       : super(tableName: 'serverpod_email_create_request');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The name of the user.
-  final userName = _i1.ColumnString('userName');
+  final userName = const _i1.ColumnString('userName');
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  final email = const _i1.ColumnString('email');
 
   /// Hash of the user's requested password.
-  final hash = _i1.ColumnString('hash');
+  final hash = const _i1.ColumnString('hash');
 
   /// The verification code sent to the user.
-  final verificationCode = _i1.ColumnString('verificationCode');
+  final verificationCode = const _i1.ColumnString('verificationCode');
 
   @override
   List<_i1.Column> get columns => [
@@ -287,4 +319,4 @@ class EmailCreateAccountRequestTable extends _i1.Table {
 
 @Deprecated('Use EmailCreateAccountRequestTable.t instead.')
 EmailCreateAccountRequestTable tEmailCreateAccountRequest =
-    EmailCreateAccountRequestTable();
+    const EmailCreateAccountRequestTable();

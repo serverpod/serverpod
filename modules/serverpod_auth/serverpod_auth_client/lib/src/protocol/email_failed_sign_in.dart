@@ -8,17 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-class EmailFailedSignIn extends _i1.SerializableEntity {
-  EmailFailedSignIn({
-    this.id,
-    required this.email,
-    required this.time,
-    required this.ipAddress,
-  });
+abstract class EmailFailedSignIn extends _i1.SerializableEntity {
+  const EmailFailedSignIn._();
+
+  const factory EmailFailedSignIn({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) = _EmailFailedSignIn;
 
   factory EmailFailedSignIn.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -35,26 +35,57 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// Email attempting to sign in with.
-  final String email;
-
-  /// The time of the sign in attempt.
-  final DateTime time;
-
-  /// The IP address of the sign in attempt.
-  final String ipAddress;
-
-  late Function({
+  EmailFailedSignIn copyWith({
     int? id,
     String? email,
     DateTime? time,
     String? ipAddress,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// Email attempting to sign in with.
+  String get email;
+
+  /// The time of the sign in attempt.
+  DateTime get time;
+
+  /// The IP address of the sign in attempt.
+  String get ipAddress;
+}
+
+class _Undefined {}
+
+/// Database table for tracking failed email sign-ins. Saves IP-address, time,
+/// and email to be prevent brute force attacks.
+class _EmailFailedSignIn extends EmailFailedSignIn {
+  const _EmailFailedSignIn({
+    this.id,
+    required this.email,
+    required this.time,
+    required this.ipAddress,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// Email attempting to sign in with.
+  @override
+  final String email;
+
+  /// The time of the sign in attempt.
+  @override
+  final DateTime time;
+
+  /// The IP address of the sign in attempt.
+  @override
+  final String ipAddress;
 
   @override
   Map<String, dynamic> toJson() {
@@ -103,7 +134,8 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
         ipAddress,
       );
 
-  EmailFailedSignIn _copyWith({
+  @override
+  EmailFailedSignIn copyWith({
     Object? id = _Undefined,
     String? email,
     DateTime? time,

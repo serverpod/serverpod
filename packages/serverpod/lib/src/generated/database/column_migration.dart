@@ -8,16 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+abstract class ColumnMigration extends _i1.SerializableEntity {
+  const ColumnMigration._();
 
-class ColumnMigration extends _i1.SerializableEntity {
-  ColumnMigration({
-    required this.columnName,
-    required this.addNullable,
-    required this.removeNullable,
-    required this.changeDefault,
-    this.newDefault,
-  });
+  const factory ColumnMigration({
+    required String columnName,
+    required bool addNullable,
+    required bool removeNullable,
+    required bool changeDefault,
+    String? newDefault,
+  }) = _ColumnMigration;
 
   factory ColumnMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,23 +37,45 @@ class ColumnMigration extends _i1.SerializableEntity {
     );
   }
 
-  final String columnName;
-
-  final bool addNullable;
-
-  final bool removeNullable;
-
-  final bool changeDefault;
-
-  final String? newDefault;
-
-  late Function({
+  ColumnMigration copyWith({
     String? columnName,
     bool? addNullable,
     bool? removeNullable,
     bool? changeDefault,
     String? newDefault,
-  }) copyWith = _copyWith;
+  });
+  String get columnName;
+  bool get addNullable;
+  bool get removeNullable;
+  bool get changeDefault;
+  String? get newDefault;
+}
+
+class _Undefined {}
+
+class _ColumnMigration extends ColumnMigration {
+  const _ColumnMigration({
+    required this.columnName,
+    required this.addNullable,
+    required this.removeNullable,
+    required this.changeDefault,
+    this.newDefault,
+  }) : super._();
+
+  @override
+  final String columnName;
+
+  @override
+  final bool addNullable;
+
+  @override
+  final bool removeNullable;
+
+  @override
+  final bool changeDefault;
+
+  @override
+  final String? newDefault;
 
   @override
   Map<String, dynamic> toJson() {
@@ -109,7 +131,8 @@ class ColumnMigration extends _i1.SerializableEntity {
         newDefault,
       );
 
-  ColumnMigration _copyWith({
+  @override
+  ColumnMigration copyWith({
     String? columnName,
     bool? addNullable,
     bool? removeNullable,

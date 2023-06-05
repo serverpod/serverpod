@@ -97,7 +97,10 @@ class UserImages {
     var userInfo =
         await Users.findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return false;
-    userInfo.imageUrl = publicUrl.toString();
+    userInfo = userInfo.copyWith(
+      imageUrl: publicUrl.toString(),
+    );
+
     await session.db.update(userInfo);
 
     if (AuthConfig.current.onUserUpdated != null) {

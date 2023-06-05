@@ -8,21 +8,21 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
-
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-class ServerHealthMetric extends _i1.SerializableEntity {
-  ServerHealthMetric({
-    this.id,
-    required this.name,
-    required this.serverId,
-    required this.timestamp,
-    required this.isHealthy,
-    required this.value,
-    required this.granularity,
-  });
+abstract class ServerHealthMetric extends _i1.SerializableEntity {
+  const ServerHealthMetric._();
+
+  const factory ServerHealthMetric({
+    int? id,
+    required String name,
+    required String serverId,
+    required DateTime timestamp,
+    required bool isHealthy,
+    required double value,
+    required int granularity,
+  }) = _ServerHealthMetric;
 
   factory ServerHealthMetric.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -44,31 +44,7 @@ class ServerHealthMetric extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The name of the metric.
-  final String name;
-
-  /// The server associated with this metric.
-  final String serverId;
-
-  /// The time when the connections was checked, granularity is one minute.
-  final DateTime timestamp;
-
-  /// True if the metric is healthy.
-  final bool isHealthy;
-
-  /// The value of the metric.
-  final double value;
-
-  /// The granularity of this timestamp, null represents 1 minute, other valid
-  /// values are 60 minutes and 1440 minutes (one day).
-  final int granularity;
-
-  late Function({
+  ServerHealthMetric copyWith({
     int? id,
     String? name,
     String? serverId,
@@ -76,7 +52,79 @@ class ServerHealthMetric extends _i1.SerializableEntity {
     bool? isHealthy,
     double? value,
     int? granularity,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The name of the metric.
+  String get name;
+
+  /// The server associated with this metric.
+  String get serverId;
+
+  /// The time when the connections was checked, granularity is one minute.
+  DateTime get timestamp;
+
+  /// True if the metric is healthy.
+  bool get isHealthy;
+
+  /// The value of the metric.
+  double get value;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  int get granularity;
+}
+
+class _Undefined {}
+
+/// Represents a snapshot of a specific health metric. An entry is written every
+/// minute for each server. All health data can be accessed through Serverpod
+/// Insights.
+class _ServerHealthMetric extends ServerHealthMetric {
+  const _ServerHealthMetric({
+    this.id,
+    required this.name,
+    required this.serverId,
+    required this.timestamp,
+    required this.isHealthy,
+    required this.value,
+    required this.granularity,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The name of the metric.
+  @override
+  final String name;
+
+  /// The server associated with this metric.
+  @override
+  final String serverId;
+
+  /// The time when the connections was checked, granularity is one minute.
+  @override
+  final DateTime timestamp;
+
+  /// True if the metric is healthy.
+  @override
+  final bool isHealthy;
+
+  /// The value of the metric.
+  @override
+  final double value;
+
+  /// The granularity of this timestamp, null represents 1 minute, other valid
+  /// values are 60 minutes and 1440 minutes (one day).
+  @override
+  final int granularity;
 
   @override
   Map<String, dynamic> toJson() {
@@ -146,7 +194,8 @@ class ServerHealthMetric extends _i1.SerializableEntity {
         granularity,
       );
 
-  ServerHealthMetric _copyWith({
+  @override
+  ServerHealthMetric copyWith({
     Object? id = _Undefined,
     String? name,
     String? serverId,

@@ -52,7 +52,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
             IndexDefinition(
               indexName: '${classDefinition.tableName!}_pkey',
               elements: [
-                IndexElementDefinition(
+                const IndexElementDefinition(
                     definition: 'id', type: IndexElementDefinitionType.column)
               ],
               type: 'btree',

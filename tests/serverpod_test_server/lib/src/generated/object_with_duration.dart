@@ -8,13 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
+    ObjectWithDurationTable);
 
-class ObjectWithDuration extends _i1.TableRow {
-  ObjectWithDuration({
+abstract class ObjectWithDuration extends _i1.TableRow {
+  const ObjectWithDuration._();
+
+  const factory ObjectWithDuration({
     int? id,
-    required this.duration,
-  }) : super(id);
+    required Duration duration,
+  }) = _ObjectWithDuration;
 
   factory ObjectWithDuration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -27,60 +30,14 @@ class ObjectWithDuration extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithDurationTable();
+  static const t = ObjectWithDurationTable();
 
-  final Duration duration;
-
-  late Function({
+  ObjectWithDuration copyWith({
     int? id,
     Duration? duration,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_duration';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'duration': duration,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithDuration &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.duration,
-                  duration,
-                ) ||
-                other.duration == duration));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        duration,
-      );
-
-  ObjectWithDuration _copyWith({
-    Object? id = _Undefined,
-    Duration? duration,
-  }) {
-    return ObjectWithDuration(
-      id: id == _Undefined ? this.id : (id as int?),
-      duration: duration ?? this.duration,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -196,20 +153,77 @@ class ObjectWithDuration extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  Duration get duration;
 }
 
-typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
-    ObjectWithDurationTable);
+class _Undefined {}
+
+class _ObjectWithDuration extends ObjectWithDuration {
+  const _ObjectWithDuration({
+    int? id,
+    required this.duration,
+  }) : super._();
+
+  @override
+  final Duration duration;
+
+  @override
+  String get tableName => 'object_with_duration';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'duration': duration,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithDuration &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        duration,
+      );
+
+  @override
+  ObjectWithDuration copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id == _Undefined ? this.id : (id as int?),
+      duration: duration ?? this.duration,
+    );
+  }
+}
 
 class ObjectWithDurationTable extends _i1.Table {
-  ObjectWithDurationTable() : super(tableName: 'object_with_duration');
+  const ObjectWithDurationTable() : super(tableName: 'object_with_duration');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final duration = _i1.ColumnDuration('duration');
+  final duration = const _i1.ColumnDuration('duration');
 
   @override
   List<_i1.Column> get columns => [
@@ -219,4 +233,4 @@ class ObjectWithDurationTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithDurationTable.t instead.')
-ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
+ObjectWithDurationTable tObjectWithDuration = const ObjectWithDurationTable();

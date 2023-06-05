@@ -8,13 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ObjectWithSelfParentExpressionBuilder = _i1.Expression Function(
+    ObjectWithSelfParentTable);
 
-class ObjectWithSelfParent extends _i1.TableRow {
-  ObjectWithSelfParent({
+abstract class ObjectWithSelfParent extends _i1.TableRow {
+  const ObjectWithSelfParent._();
+
+  const factory ObjectWithSelfParent({
     int? id,
-    this.other,
-  }) : super(id);
+    int? other,
+  }) = _ObjectWithSelfParent;
 
   factory ObjectWithSelfParent.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -26,60 +29,14 @@ class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithSelfParentTable();
+  static const t = ObjectWithSelfParentTable();
 
-  final int? other;
-
-  late Function({
+  ObjectWithSelfParent copyWith({
     int? id,
     int? other,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_self_parent';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'other': other,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithSelfParent &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.other,
-                  other,
-                ) ||
-                other.other == other));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        other,
-      );
-
-  ObjectWithSelfParent _copyWith({
-    Object? id = _Undefined,
-    Object? other = _Undefined,
-  }) {
-    return ObjectWithSelfParent(
-      id: id == _Undefined ? this.id : (id as int?),
-      other: other == _Undefined ? this.other : (other as int?),
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -195,20 +152,78 @@ class ObjectWithSelfParent extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  int? get other;
 }
 
-typedef ObjectWithSelfParentExpressionBuilder = _i1.Expression Function(
-    ObjectWithSelfParentTable);
+class _Undefined {}
+
+class _ObjectWithSelfParent extends ObjectWithSelfParent {
+  const _ObjectWithSelfParent({
+    int? id,
+    this.other,
+  }) : super._();
+
+  @override
+  final int? other;
+
+  @override
+  String get tableName => 'object_with_self_parent';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'other': other,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithSelfParent &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.other,
+                  other,
+                ) ||
+                other.other == other));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        other,
+      );
+
+  @override
+  ObjectWithSelfParent copyWith({
+    Object? id = _Undefined,
+    Object? other = _Undefined,
+  }) {
+    return ObjectWithSelfParent(
+      id: id == _Undefined ? this.id : (id as int?),
+      other: other == _Undefined ? this.other : (other as int?),
+    );
+  }
+}
 
 class ObjectWithSelfParentTable extends _i1.Table {
-  ObjectWithSelfParentTable() : super(tableName: 'object_with_self_parent');
+  const ObjectWithSelfParentTable()
+      : super(tableName: 'object_with_self_parent');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final other = _i1.ColumnInt('other');
+  final other = const _i1.ColumnInt('other');
 
   @override
   List<_i1.Column> get columns => [
@@ -218,4 +233,5 @@ class ObjectWithSelfParentTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithSelfParentTable.t instead.')
-ObjectWithSelfParentTable tObjectWithSelfParent = ObjectWithSelfParentTable();
+ObjectWithSelfParentTable tObjectWithSelfParent =
+    const ObjectWithSelfParentTable();

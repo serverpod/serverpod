@@ -9,23 +9,23 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class _Undefined {}
-
 /// Bindings to a log entry in the database.
-class LogEntry extends _i1.SerializableEntity {
-  LogEntry({
-    this.id,
-    required this.sessionLogId,
-    this.messageId,
-    this.reference,
-    required this.serverId,
-    required this.time,
-    required this.logLevel,
-    required this.message,
-    this.error,
-    this.stackTrace,
-    required this.order,
-  });
+abstract class LogEntry extends _i1.SerializableEntity {
+  const LogEntry._();
+
+  const factory LogEntry({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) = _LogEntry;
 
   factory LogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -55,42 +55,7 @@ class LogEntry extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The id of the session this log entry is associated with.
-  final int sessionLogId;
-
-  /// The message id this entry is associated with, if in a streaming session.
-  final int? messageId;
-
-  /// Currently unused.
-  final String? reference;
-
-  /// The id of the server which created this log entry.
-  final String serverId;
-
-  /// Timpstamp of this log entry.
-  final DateTime time;
-
-  /// The log level of this entry.
-  final _i2.LogLevel logLevel;
-
-  /// The logging message.
-  final String message;
-
-  /// Optional error associated with this log entry.
-  final String? error;
-
-  /// Optional stack trace associated with this log entry.
-  final String? stackTrace;
-
-  /// The order of this log entry, used for sorting.
-  final int order;
-
-  late Function({
+  LogEntry copyWith({
     int? id,
     int? sessionLogId,
     int? messageId,
@@ -102,7 +67,107 @@ class LogEntry extends _i1.SerializableEntity {
     String? error,
     String? stackTrace,
     int? order,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The id of the session this log entry is associated with.
+  int get sessionLogId;
+
+  /// The message id this entry is associated with, if in a streaming session.
+  int? get messageId;
+
+  /// Currently unused.
+  String? get reference;
+
+  /// The id of the server which created this log entry.
+  String get serverId;
+
+  /// Timpstamp of this log entry.
+  DateTime get time;
+
+  /// The log level of this entry.
+  _i2.LogLevel get logLevel;
+
+  /// The logging message.
+  String get message;
+
+  /// Optional error associated with this log entry.
+  String? get error;
+
+  /// Optional stack trace associated with this log entry.
+  String? get stackTrace;
+
+  /// The order of this log entry, used for sorting.
+  int get order;
+}
+
+class _Undefined {}
+
+/// Bindings to a log entry in the database.
+class _LogEntry extends LogEntry {
+  const _LogEntry({
+    this.id,
+    required this.sessionLogId,
+    this.messageId,
+    this.reference,
+    required this.serverId,
+    required this.time,
+    required this.logLevel,
+    required this.message,
+    this.error,
+    this.stackTrace,
+    required this.order,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The id of the session this log entry is associated with.
+  @override
+  final int sessionLogId;
+
+  /// The message id this entry is associated with, if in a streaming session.
+  @override
+  final int? messageId;
+
+  /// Currently unused.
+  @override
+  final String? reference;
+
+  /// The id of the server which created this log entry.
+  @override
+  final String serverId;
+
+  /// Timpstamp of this log entry.
+  @override
+  final DateTime time;
+
+  /// The log level of this entry.
+  @override
+  final _i2.LogLevel logLevel;
+
+  /// The logging message.
+  @override
+  final String message;
+
+  /// Optional error associated with this log entry.
+  @override
+  final String? error;
+
+  /// Optional stack trace associated with this log entry.
+  @override
+  final String? stackTrace;
+
+  /// The order of this log entry, used for sorting.
+  @override
+  final int order;
 
   @override
   Map<String, dynamic> toJson() {
@@ -200,7 +265,8 @@ class LogEntry extends _i1.SerializableEntity {
         order,
       );
 
-  LogEntry _copyWith({
+  @override
+  LogEntry copyWith({
     Object? id = _Undefined,
     int? sessionLogId,
     Object? messageId = _Undefined,

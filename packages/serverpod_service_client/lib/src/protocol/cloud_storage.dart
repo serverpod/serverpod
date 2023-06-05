@@ -9,19 +9,19 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class _Undefined {}
-
 /// An entry in the database for an uploaded file.
-class CloudStorageEntry extends _i1.SerializableEntity {
-  CloudStorageEntry({
-    this.id,
-    required this.storageId,
-    required this.path,
-    required this.addedTime,
-    this.expiration,
-    required this.byteData,
-    required this.verified,
-  });
+abstract class CloudStorageEntry extends _i1.SerializableEntity {
+  const CloudStorageEntry._();
+
+  const factory CloudStorageEntry({
+    int? id,
+    required String storageId,
+    required String path,
+    required DateTime addedTime,
+    DateTime? expiration,
+    required _i2.ByteData byteData,
+    required bool verified,
+  }) = _CloudStorageEntry;
 
   factory CloudStorageEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -43,30 +43,7 @@ class CloudStorageEntry extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// The storageId, typically `public` or `private`.
-  final String storageId;
-
-  /// The path where the file is stored.
-  final String path;
-
-  /// The time when the file was added.
-  final DateTime addedTime;
-
-  /// The time at which the file expires and can be deleted.
-  final DateTime? expiration;
-
-  /// The actual data of the uploaded file.
-  final _i2.ByteData byteData;
-
-  /// True if the file has been verified as uploaded.
-  final bool verified;
-
-  late Function({
+  CloudStorageEntry copyWith({
     int? id,
     String? storageId,
     String? path,
@@ -74,7 +51,75 @@ class CloudStorageEntry extends _i1.SerializableEntity {
     DateTime? expiration,
     _i2.ByteData? byteData,
     bool? verified,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// The storageId, typically `public` or `private`.
+  String get storageId;
+
+  /// The path where the file is stored.
+  String get path;
+
+  /// The time when the file was added.
+  DateTime get addedTime;
+
+  /// The time at which the file expires and can be deleted.
+  DateTime? get expiration;
+
+  /// The actual data of the uploaded file.
+  _i2.ByteData get byteData;
+
+  /// True if the file has been verified as uploaded.
+  bool get verified;
+}
+
+class _Undefined {}
+
+/// An entry in the database for an uploaded file.
+class _CloudStorageEntry extends CloudStorageEntry {
+  const _CloudStorageEntry({
+    this.id,
+    required this.storageId,
+    required this.path,
+    required this.addedTime,
+    this.expiration,
+    required this.byteData,
+    required this.verified,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// The storageId, typically `public` or `private`.
+  @override
+  final String storageId;
+
+  /// The path where the file is stored.
+  @override
+  final String path;
+
+  /// The time when the file was added.
+  @override
+  final DateTime addedTime;
+
+  /// The time at which the file expires and can be deleted.
+  @override
+  final DateTime? expiration;
+
+  /// The actual data of the uploaded file.
+  @override
+  final _i2.ByteData byteData;
+
+  /// True if the file has been verified as uploaded.
+  @override
+  final bool verified;
 
   @override
   Map<String, dynamic> toJson() {
@@ -144,7 +189,8 @@ class CloudStorageEntry extends _i1.SerializableEntity {
         verified,
       );
 
-  CloudStorageEntry _copyWith({
+  @override
+  CloudStorageEntry copyWith({
     Object? id = _Undefined,
     String? storageId,
     String? path,

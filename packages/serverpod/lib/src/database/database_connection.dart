@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:retry/retry.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -142,7 +142,7 @@ Current type was $T''');
     table = table!;
 
     var startTime = DateTime.now();
-    where ??= Expression('TRUE');
+    where ??= const Expression('TRUE');
 
     var tableName = table.tableName;
     var query = 'SELECT * FROM $tableName WHERE $where';
@@ -256,7 +256,7 @@ Current type was $T''');
 
     var startTime = DateTime.now();
 
-    where ??= Expression('TRUE');
+    where ??= const Expression('TRUE');
 
     var tableName = table.tableName;
     var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
@@ -380,7 +380,9 @@ Current type was $T''');
 
     _logQuery(session, query, startTime, numRowsAffected: 1);
 
-    row.setColumn('id', insertedId);
+    // TODO: pro100andrey This is a bit of a hack. We should 
+    //probably not set the id like this.
+    // row.setColumn('id', insertedId);
   }
 
   /// For most cases use the corresponding method in [Database] instead.

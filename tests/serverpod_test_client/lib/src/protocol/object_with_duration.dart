@@ -8,13 +8,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class _Undefined {}
+abstract class ObjectWithDuration extends _i1.SerializableEntity {
+  const ObjectWithDuration._();
 
-class ObjectWithDuration extends _i1.SerializableEntity {
-  ObjectWithDuration({
-    this.id,
-    required this.duration,
-  });
+  const factory ObjectWithDuration({
+    int? id,
+    required Duration duration,
+  }) = _ObjectWithDuration;
 
   factory ObjectWithDuration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -27,17 +27,34 @@ class ObjectWithDuration extends _i1.SerializableEntity {
     );
   }
 
+  ObjectWithDuration copyWith({
+    int? id,
+    Duration? duration,
+  });
+
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
+  int? get id;
+  Duration get duration;
+}
+
+class _Undefined {}
+
+class _ObjectWithDuration extends ObjectWithDuration {
+  const _ObjectWithDuration({
+    this.id,
+    required this.duration,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
   final int? id;
 
+  @override
   final Duration duration;
-
-  late Function({
-    int? id,
-    Duration? duration,
-  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -72,7 +89,8 @@ class ObjectWithDuration extends _i1.SerializableEntity {
         duration,
       );
 
-  ObjectWithDuration _copyWith({
+  @override
+  ObjectWithDuration copyWith({
     Object? id = _Undefined,
     Duration? duration,
   }) {

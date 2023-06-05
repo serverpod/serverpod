@@ -8,13 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
+    ObjectWithParentTable);
 
-class ObjectWithParent extends _i1.TableRow {
-  ObjectWithParent({
+abstract class ObjectWithParent extends _i1.TableRow {
+  const ObjectWithParent._();
+
+  const factory ObjectWithParent({
     int? id,
-    required this.other,
-  }) : super(id);
+    required int other,
+  }) = _ObjectWithParent;
 
   factory ObjectWithParent.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -26,60 +29,14 @@ class ObjectWithParent extends _i1.TableRow {
     );
   }
 
-  static var t = ObjectWithParentTable();
+  static const t = ObjectWithParentTable();
 
-  final int other;
-
-  late Function({
+  ObjectWithParent copyWith({
     int? id,
     int? other,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'object_with_parent';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'other': other,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ObjectWithParent &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.other,
-                  other,
-                ) ||
-                other.other == other));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        other,
-      );
-
-  ObjectWithParent _copyWith({
-    Object? id = _Undefined,
-    int? other,
-  }) {
-    return ObjectWithParent(
-      id: id == _Undefined ? this.id : (id as int?),
-      other: other ?? this.other,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -195,20 +152,77 @@ class ObjectWithParent extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  int get other;
 }
 
-typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
-    ObjectWithParentTable);
+class _Undefined {}
+
+class _ObjectWithParent extends ObjectWithParent {
+  const _ObjectWithParent({
+    int? id,
+    required this.other,
+  }) : super._();
+
+  @override
+  final int other;
+
+  @override
+  String get tableName => 'object_with_parent';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'other': other,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithParent &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.other,
+                  other,
+                ) ||
+                other.other == other));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        other,
+      );
+
+  @override
+  ObjectWithParent copyWith({
+    Object? id = _Undefined,
+    int? other,
+  }) {
+    return ObjectWithParent(
+      id: id == _Undefined ? this.id : (id as int?),
+      other: other ?? this.other,
+    );
+  }
+}
 
 class ObjectWithParentTable extends _i1.Table {
-  ObjectWithParentTable() : super(tableName: 'object_with_parent');
+  const ObjectWithParentTable() : super(tableName: 'object_with_parent');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
-  final other = _i1.ColumnInt('other');
+  final other = const _i1.ColumnInt('other');
 
   @override
   List<_i1.Column> get columns => [
@@ -218,4 +232,4 @@ class ObjectWithParentTable extends _i1.Table {
 }
 
 @Deprecated('Use ObjectWithParentTable.t instead.')
-ObjectWithParentTable tObjectWithParent = ObjectWithParentTable();
+ObjectWithParentTable tObjectWithParent = const ObjectWithParentTable();

@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+
 import '../generated/protocol.dart';
 
 class ModuleEndpoint extends Endpoint {
@@ -8,7 +9,6 @@ class ModuleEndpoint extends Endpoint {
 
   Future<ModuleClass> modifyModuleObject(
       Session session, ModuleClass object) async {
-    object.data = 42;
-    return object;
+    return object.copyWith(data: 42);
   }
 }

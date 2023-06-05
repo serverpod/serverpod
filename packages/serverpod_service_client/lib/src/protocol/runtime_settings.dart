@@ -10,17 +10,17 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:collection/collection.dart' as _i3;
 
-class _Undefined {}
-
 /// Runtime settings of the server.
-class RuntimeSettings extends _i1.SerializableEntity {
-  RuntimeSettings({
-    this.id,
-    required this.logSettings,
-    required this.logSettingsOverrides,
-    required this.logServiceCalls,
-    required this.logMalformedCalls,
-  });
+abstract class RuntimeSettings extends _i1.SerializableEntity {
+  const RuntimeSettings._();
+
+  const factory RuntimeSettings({
+    int? id,
+    required _i2.LogSettings logSettings,
+    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required bool logServiceCalls,
+    required bool logMalformedCalls,
+  }) = _RuntimeSettings;
 
   factory RuntimeSettings.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,30 +40,65 @@ class RuntimeSettings extends _i1.SerializableEntity {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final int? id;
-
-  /// Log settings.
-  final _i2.LogSettings logSettings;
-
-  /// List of log setting overrides.
-  final List<_i2.LogSettingsOverride> logSettingsOverrides;
-
-  /// True if service calls to Serverpod Insights should be logged.
-  final bool logServiceCalls;
-
-  /// True if malformed calls should be logged.
-  final bool logMalformedCalls;
-
-  late Function({
+  RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
     List<_i2.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
-  }) copyWith = _copyWith;
+  });
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? get id;
+
+  /// Log settings.
+  _i2.LogSettings get logSettings;
+
+  /// List of log setting overrides.
+  List<_i2.LogSettingsOverride> get logSettingsOverrides;
+
+  /// True if service calls to Serverpod Insights should be logged.
+  bool get logServiceCalls;
+
+  /// True if malformed calls should be logged.
+  bool get logMalformedCalls;
+}
+
+class _Undefined {}
+
+/// Runtime settings of the server.
+class _RuntimeSettings extends RuntimeSettings {
+  const _RuntimeSettings({
+    this.id,
+    required this.logSettings,
+    required this.logSettingsOverrides,
+    required this.logServiceCalls,
+    required this.logMalformedCalls,
+  }) : super._();
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  @override
+  final int? id;
+
+  /// Log settings.
+  @override
+  final _i2.LogSettings logSettings;
+
+  /// List of log setting overrides.
+  @override
+  final List<_i2.LogSettingsOverride> logSettingsOverrides;
+
+  /// True if service calls to Serverpod Insights should be logged.
+  @override
+  final bool logServiceCalls;
+
+  /// True if malformed calls should be logged.
+  @override
+  final bool logMalformedCalls;
 
   @override
   Map<String, dynamic> toJson() {
@@ -118,7 +153,8 @@ class RuntimeSettings extends _i1.SerializableEntity {
         const _i3.DeepCollectionEquality().hash(logSettingsOverrides),
       );
 
-  RuntimeSettings _copyWith({
+  @override
+  RuntimeSettings copyWith({
     Object? id = _Undefined,
     _i2.LogSettings? logSettings,
     List<_i2.LogSettingsOverride>? logSettingsOverrides,

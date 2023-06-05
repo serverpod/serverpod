@@ -8,16 +8,19 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class _Undefined {}
+typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
+    ChatReadMessageTable);
 
 /// Message to notifiy the server that messages have been read.
-class ChatReadMessage extends _i1.TableRow {
-  ChatReadMessage({
+abstract class ChatReadMessage extends _i1.TableRow {
+  const ChatReadMessage._();
+
+  const factory ChatReadMessage({
     int? id,
-    required this.channel,
-    required this.userId,
-    required this.lastReadMessageId,
-  }) : super(id);
+    required String channel,
+    required int userId,
+    required int lastReadMessageId,
+  }) = _ChatReadMessage;
 
   factory ChatReadMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,87 +37,16 @@ class ChatReadMessage extends _i1.TableRow {
     );
   }
 
-  static var t = ChatReadMessageTable();
+  static const t = ChatReadMessageTable();
 
-  /// The channel this that has been read.
-  final String channel;
-
-  /// The id of the user that read the messages.
-  final int userId;
-
-  /// The id of the last read message.
-  final int lastReadMessageId;
-
-  late Function({
+  ChatReadMessage copyWith({
     int? id,
     String? channel,
     int? userId,
     int? lastReadMessageId,
-  }) copyWith = _copyWith;
-
+  });
   @override
   String get tableName => 'serverpod_chat_read_message';
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'channel': channel,
-      'userId': userId,
-      'lastReadMessageId': lastReadMessageId,
-    };
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(
-          this,
-          other,
-        ) ||
-        (other is ChatReadMessage &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.channel,
-                  channel,
-                ) ||
-                other.channel == channel) &&
-            (identical(
-                  other.userId,
-                  userId,
-                ) ||
-                other.userId == userId) &&
-            (identical(
-                  other.lastReadMessageId,
-                  lastReadMessageId,
-                ) ||
-                other.lastReadMessageId == lastReadMessageId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        id,
-        channel,
-        userId,
-        lastReadMessageId,
-      );
-
-  ChatReadMessage _copyWith({
-    Object? id = _Undefined,
-    String? channel,
-    int? userId,
-    int? lastReadMessageId,
-  }) {
-    return ChatReadMessage(
-      id: id == _Undefined ? this.id : (id as int?),
-      channel: channel ?? this.channel,
-      userId: userId ?? this.userId,
-      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
-    );
-  }
-
   @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
@@ -232,27 +164,122 @@ class ChatReadMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  /// The channel this that has been read.
+  String get channel;
+
+  /// The id of the user that read the messages.
+  int get userId;
+
+  /// The id of the last read message.
+  int get lastReadMessageId;
 }
 
-typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
-    ChatReadMessageTable);
+class _Undefined {}
+
+/// Message to notifiy the server that messages have been read.
+class _ChatReadMessage extends ChatReadMessage {
+  const _ChatReadMessage({
+    int? id,
+    required this.channel,
+    required this.userId,
+    required this.lastReadMessageId,
+  }) : super._();
+
+  /// The channel this that has been read.
+  @override
+  final String channel;
+
+  /// The id of the user that read the messages.
+  @override
+  final int userId;
+
+  /// The id of the last read message.
+  @override
+  final int lastReadMessageId;
+
+  @override
+  String get tableName => 'serverpod_chat_read_message';
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'channel': channel,
+      'userId': userId,
+      'lastReadMessageId': lastReadMessageId,
+    };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatReadMessage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.lastReadMessageId,
+                  lastReadMessageId,
+                ) ||
+                other.lastReadMessageId == lastReadMessageId));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        channel,
+        userId,
+        lastReadMessageId,
+      );
+
+  @override
+  ChatReadMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  }) {
+    return ChatReadMessage(
+      id: id == _Undefined ? this.id : (id as int?),
+      channel: channel ?? this.channel,
+      userId: userId ?? this.userId,
+      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+    );
+  }
+}
 
 class ChatReadMessageTable extends _i1.Table {
-  ChatReadMessageTable() : super(tableName: 'serverpod_chat_read_message');
+  const ChatReadMessageTable()
+      : super(tableName: 'serverpod_chat_read_message');
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  final id = const _i1.ColumnInt('id');
 
   /// The channel this that has been read.
-  final channel = _i1.ColumnString('channel');
+  final channel = const _i1.ColumnString('channel');
 
   /// The id of the user that read the messages.
-  final userId = _i1.ColumnInt('userId');
+  final userId = const _i1.ColumnInt('userId');
 
   /// The id of the last read message.
-  final lastReadMessageId = _i1.ColumnInt('lastReadMessageId');
+  final lastReadMessageId = const _i1.ColumnInt('lastReadMessageId');
 
   @override
   List<_i1.Column> get columns => [
@@ -264,4 +291,4 @@ class ChatReadMessageTable extends _i1.Table {
 }
 
 @Deprecated('Use ChatReadMessageTable.t instead.')
-ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
+ChatReadMessageTable tChatReadMessage = const ChatReadMessageTable();
