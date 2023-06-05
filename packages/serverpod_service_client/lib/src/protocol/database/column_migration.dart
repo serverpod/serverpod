@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 class ColumnMigration extends _i1.SerializableEntity {
   ColumnMigration({
     required this.columnName,
@@ -35,15 +37,23 @@ class ColumnMigration extends _i1.SerializableEntity {
     );
   }
 
-  String columnName;
+  final String columnName;
 
-  bool addNullable;
+  final bool addNullable;
 
-  bool removeNullable;
+  final bool removeNullable;
 
-  bool changeDefault;
+  final bool changeDefault;
 
-  String? newDefault;
+  final String? newDefault;
+
+  late Function({
+    String? columnName,
+    bool? addNullable,
+    bool? removeNullable,
+    bool? changeDefault,
+    String? newDefault,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -54,5 +64,65 @@ class ColumnMigration extends _i1.SerializableEntity {
       'changeDefault': changeDefault,
       'newDefault': newDefault,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ColumnMigration &&
+            (identical(
+                  other.columnName,
+                  columnName,
+                ) ||
+                other.columnName == columnName) &&
+            (identical(
+                  other.addNullable,
+                  addNullable,
+                ) ||
+                other.addNullable == addNullable) &&
+            (identical(
+                  other.removeNullable,
+                  removeNullable,
+                ) ||
+                other.removeNullable == removeNullable) &&
+            (identical(
+                  other.changeDefault,
+                  changeDefault,
+                ) ||
+                other.changeDefault == changeDefault) &&
+            (identical(
+                  other.newDefault,
+                  newDefault,
+                ) ||
+                other.newDefault == newDefault));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        columnName,
+        addNullable,
+        removeNullable,
+        changeDefault,
+        newDefault,
+      );
+
+  ColumnMigration _copyWith({
+    String? columnName,
+    bool? addNullable,
+    bool? removeNullable,
+    bool? changeDefault,
+    Object? newDefault = _Undefined,
+  }) {
+    return ColumnMigration(
+      columnName: columnName ?? this.columnName,
+      addNullable: addNullable ?? this.addNullable,
+      removeNullable: removeNullable ?? this.removeNullable,
+      changeDefault: changeDefault ?? this.changeDefault,
+      newDefault:
+          newDefault == _Undefined ? this.newDefault : (newDefault as String?),
+    );
   }
 }

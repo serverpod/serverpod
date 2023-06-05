@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Message to notifiy the server that messages have been read.
 class ChatReadMessage extends _i1.SerializableEntity {
   ChatReadMessage({
@@ -35,16 +37,23 @@ class ChatReadMessage extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The channel this that has been read.
-  String channel;
+  final String channel;
 
   /// The id of the user that read the messages.
-  int userId;
+  final int userId;
 
   /// The id of the last read message.
-  int lastReadMessageId;
+  final int lastReadMessageId;
+
+  late Function({
+    int? id,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -54,5 +63,56 @@ class ChatReadMessage extends _i1.SerializableEntity {
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatReadMessage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.lastReadMessageId,
+                  lastReadMessageId,
+                ) ||
+                other.lastReadMessageId == lastReadMessageId));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        channel,
+        userId,
+        lastReadMessageId,
+      );
+
+  ChatReadMessage _copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  }) {
+    return ChatReadMessage(
+      id: id == _Undefined ? this.id : (id as int?),
+      channel: channel ?? this.channel,
+      userId: userId ?? this.userId,
+      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+    );
   }
 }

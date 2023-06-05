@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectFieldScopes extends _i1.TableRow {
   ObjectFieldScopes({
     int? id,
@@ -30,13 +32,20 @@ class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectFieldScopesTable();
+  static var t = ObjectFieldScopesTable();
 
-  String normal;
+  final String normal;
 
-  String? api;
+  final String? api;
 
-  String? database;
+  final String? database;
+
+  late Function({
+    int? id,
+    String? normal,
+    String? api,
+    String? database,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_field_scopes';
@@ -50,42 +59,63 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectFieldScopes &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.normal,
+                  normal,
+                ) ||
+                other.normal == normal) &&
+            (identical(
+                  other.api,
+                  api,
+                ) ||
+                other.api == api) &&
+            (identical(
+                  other.database,
+                  database,
+                ) ||
+                other.database == database));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        normal,
+        api,
+        database,
+      );
+
+  ObjectFieldScopes _copyWith({
+    Object? id = _Undefined,
+    String? normal,
+    Object? api = _Undefined,
+    Object? database = _Undefined,
+  }) {
+    return ObjectFieldScopes(
+      id: id == _Undefined ? this.id : (id as int?),
+      normal: normal ?? this.normal,
+      api: api == _Undefined ? this.api : (api as String?),
+      database: database == _Undefined ? this.database : (database as String?),
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'normal': normal,
       'database': database,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'normal': normal,
-      'api': api,
-      'database': database,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'normal':
-        normal = value;
-        return;
-      case 'database':
-        database = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectFieldScopes>> find(

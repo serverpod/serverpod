@@ -9,6 +9,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/module.dart' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:collection/collection.dart' as _i4;
+
+class _Undefined {}
 
 /// A chat message.
 class ChatMessage extends _i1.TableRow {
@@ -52,34 +55,47 @@ class ChatMessage extends _i1.TableRow {
     );
   }
 
-  static final t = ChatMessageTable();
+  static var t = ChatMessageTable();
 
   /// The channel this message was posted to.
-  String channel;
+  final String channel;
 
   /// The body of the message.
-  String message;
+  final String message;
 
   /// The time when this message was posted.
-  DateTime time;
+  final DateTime time;
 
   /// The user id of the sender.
-  int sender;
+  final int sender;
 
   /// Information about the sender.
-  _i2.UserInfoPublic? senderInfo;
+  final _i2.UserInfoPublic? senderInfo;
 
   /// True, if this message has been removed.
-  bool removed;
+  final bool removed;
 
   /// The client message id, used to track if a message has been delivered.
-  int? clientMessageId;
+  final int? clientMessageId;
 
   /// True if the message has been sent.
-  bool? sent;
+  final bool? sent;
 
   /// List of attachments associated with this message.
-  List<_i3.ChatMessageAttachment>? attachments;
+  final List<_i3.ChatMessageAttachment>? attachments;
+
+  late Function({
+    int? id,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    _i2.UserInfoPublic? senderInfo,
+    bool? removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_chat_message';
@@ -100,6 +116,110 @@ class ChatMessage extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatMessage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.message,
+                  message,
+                ) ||
+                other.message == message) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.sender,
+                  sender,
+                ) ||
+                other.sender == sender) &&
+            (identical(
+                  other.senderInfo,
+                  senderInfo,
+                ) ||
+                other.senderInfo == senderInfo) &&
+            (identical(
+                  other.removed,
+                  removed,
+                ) ||
+                other.removed == removed) &&
+            (identical(
+                  other.clientMessageId,
+                  clientMessageId,
+                ) ||
+                other.clientMessageId == clientMessageId) &&
+            (identical(
+                  other.sent,
+                  sent,
+                ) ||
+                other.sent == sent) &&
+            const _i4.DeepCollectionEquality().equals(
+              attachments,
+              other.attachments,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        channel,
+        message,
+        time,
+        sender,
+        senderInfo,
+        removed,
+        clientMessageId,
+        sent,
+        const _i4.DeepCollectionEquality().hash(attachments),
+      );
+
+  ChatMessage _copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    Object? senderInfo = _Undefined,
+    bool? removed,
+    Object? clientMessageId = _Undefined,
+    Object? sent = _Undefined,
+    Object? attachments = _Undefined,
+  }) {
+    return ChatMessage(
+      id: id == _Undefined ? this.id : (id as int?),
+      channel: channel ?? this.channel,
+      message: message ?? this.message,
+      time: time ?? this.time,
+      sender: sender ?? this.sender,
+      senderInfo: senderInfo == _Undefined
+          ? this.senderInfo
+          : (senderInfo as _i2.UserInfoPublic?),
+      removed: removed ?? this.removed,
+      clientMessageId: clientMessageId == _Undefined
+          ? this.clientMessageId
+          : (clientMessageId as int?),
+      sent: sent == _Undefined ? this.sent : (sent as bool?),
+      attachments: attachments == _Undefined
+          ? this.attachments
+          : (attachments as List<_i3.ChatMessageAttachment>?),
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -110,54 +230,6 @@ class ChatMessage extends _i1.TableRow {
       'removed': removed,
       'attachments': attachments,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'channel': channel,
-      'message': message,
-      'time': time,
-      'sender': sender,
-      'senderInfo': senderInfo,
-      'removed': removed,
-      'clientMessageId': clientMessageId,
-      'sent': sent,
-      'attachments': attachments,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'channel':
-        channel = value;
-        return;
-      case 'message':
-        message = value;
-        return;
-      case 'time':
-        time = value;
-        return;
-      case 'sender':
-        sender = value;
-        return;
-      case 'removed':
-        removed = value;
-        return;
-      case 'attachments':
-        attachments = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ChatMessage>> find(

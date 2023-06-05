@@ -7,6 +7,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:collection/collection.dart' as _i2;
+
+class _Undefined {}
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensative information, such as the users email.
@@ -51,32 +54,44 @@ class UserInfo extends _i1.TableRow {
     );
   }
 
-  static final t = UserInfoTable();
+  static var t = UserInfoTable();
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
-  String userIdentifier;
+  final String userIdentifier;
 
   /// The first name of the user or the user's nickname.
-  String userName;
+  final String userName;
 
   /// The full name of the user.
-  String? fullName;
+  final String? fullName;
 
   /// The email of the user.
-  String? email;
+  final String? email;
 
   /// The time when this user was created.
-  DateTime created;
+  final DateTime created;
 
   /// A URL to the user's avatar.
-  String? imageUrl;
+  final String? imageUrl;
 
   /// List of scopes that this user can access.
-  List<String> scopeNames;
+  final List<String> scopeNames;
 
   /// True if the user is blocked from signing in.
-  bool blocked;
+  final bool blocked;
+
+  late Function({
+    int? id,
+    String? userIdentifier,
+    String? userName,
+    String? fullName,
+    String? email,
+    DateTime? created,
+    String? imageUrl,
+    List<String>? scopeNames,
+    bool? blocked,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_user_info';
@@ -96,6 +111,96 @@ class UserInfo extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is UserInfo &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userIdentifier,
+                  userIdentifier,
+                ) ||
+                other.userIdentifier == userIdentifier) &&
+            (identical(
+                  other.userName,
+                  userName,
+                ) ||
+                other.userName == userName) &&
+            (identical(
+                  other.fullName,
+                  fullName,
+                ) ||
+                other.fullName == fullName) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email) &&
+            (identical(
+                  other.created,
+                  created,
+                ) ||
+                other.created == created) &&
+            (identical(
+                  other.imageUrl,
+                  imageUrl,
+                ) ||
+                other.imageUrl == imageUrl) &&
+            (identical(
+                  other.blocked,
+                  blocked,
+                ) ||
+                other.blocked == blocked) &&
+            const _i2.DeepCollectionEquality().equals(
+              scopeNames,
+              other.scopeNames,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userIdentifier,
+        userName,
+        fullName,
+        email,
+        created,
+        imageUrl,
+        blocked,
+        const _i2.DeepCollectionEquality().hash(scopeNames),
+      );
+
+  UserInfo _copyWith({
+    Object? id = _Undefined,
+    String? userIdentifier,
+    String? userName,
+    Object? fullName = _Undefined,
+    Object? email = _Undefined,
+    DateTime? created,
+    Object? imageUrl = _Undefined,
+    List<String>? scopeNames,
+    bool? blocked,
+  }) {
+    return UserInfo(
+      id: id == _Undefined ? this.id : (id as int?),
+      userIdentifier: userIdentifier ?? this.userIdentifier,
+      userName: userName ?? this.userName,
+      fullName: fullName == _Undefined ? this.fullName : (fullName as String?),
+      email: email == _Undefined ? this.email : (email as String?),
+      created: created ?? this.created,
+      imageUrl: imageUrl == _Undefined ? this.imageUrl : (imageUrl as String?),
+      scopeNames: scopeNames ?? this.scopeNames,
+      blocked: blocked ?? this.blocked,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -108,59 +213,6 @@ class UserInfo extends _i1.TableRow {
       'scopeNames': scopeNames,
       'blocked': blocked,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userIdentifier': userIdentifier,
-      'userName': userName,
-      'fullName': fullName,
-      'email': email,
-      'created': created,
-      'imageUrl': imageUrl,
-      'scopeNames': scopeNames,
-      'blocked': blocked,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userIdentifier':
-        userIdentifier = value;
-        return;
-      case 'userName':
-        userName = value;
-        return;
-      case 'fullName':
-        fullName = value;
-        return;
-      case 'email':
-        email = value;
-        return;
-      case 'created':
-        created = value;
-        return;
-      case 'imageUrl':
-        imageUrl = value;
-        return;
-      case 'scopeNames':
-        scopeNames = value;
-        return;
-      case 'blocked':
-        blocked = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<UserInfo>> find(

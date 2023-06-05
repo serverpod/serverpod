@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Connects a table for handling uploading of files.
 class CloudStorageDirectUploadEntry extends _i1.TableRow {
   CloudStorageDirectUploadEntry({
@@ -34,19 +36,27 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
     );
   }
 
-  static final t = CloudStorageDirectUploadEntryTable();
+  static var t = CloudStorageDirectUploadEntryTable();
 
   /// The storageId, typically `public` or `private`.
-  String storageId;
+  final String storageId;
 
   /// The path where the file is stored.
-  String path;
+  final String path;
 
   /// The expiration time of when the file can be uploaded.
-  DateTime expiration;
+  final DateTime expiration;
 
   /// Access key for retrieving a private file.
-  String authKey;
+  final String authKey;
+
+  late Function({
+    int? id,
+    String? storageId,
+    String? path,
+    DateTime? expiration,
+    String? authKey,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_cloud_storage_direct_upload';
@@ -62,6 +72,65 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is CloudStorageDirectUploadEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.storageId,
+                  storageId,
+                ) ||
+                other.storageId == storageId) &&
+            (identical(
+                  other.path,
+                  path,
+                ) ||
+                other.path == path) &&
+            (identical(
+                  other.expiration,
+                  expiration,
+                ) ||
+                other.expiration == expiration) &&
+            (identical(
+                  other.authKey,
+                  authKey,
+                ) ||
+                other.authKey == authKey));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        storageId,
+        path,
+        expiration,
+        authKey,
+      );
+
+  CloudStorageDirectUploadEntry _copyWith({
+    Object? id = _Undefined,
+    String? storageId,
+    String? path,
+    DateTime? expiration,
+    String? authKey,
+  }) {
+    return CloudStorageDirectUploadEntry(
+      id: id == _Undefined ? this.id : (id as int?),
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
+      expiration: expiration ?? this.expiration,
+      authKey: authKey ?? this.authKey,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -70,43 +139,6 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
       'expiration': expiration,
       'authKey': authKey,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'storageId': storageId,
-      'path': path,
-      'expiration': expiration,
-      'authKey': authKey,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'storageId':
-        storageId = value;
-        return;
-      case 'path':
-        path = value;
-        return;
-      case 'expiration':
-        expiration = value;
-        return;
-      case 'authKey':
-        authKey = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<CloudStorageDirectUploadEntry>> find(

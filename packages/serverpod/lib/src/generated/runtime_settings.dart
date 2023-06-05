@@ -8,6 +8,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
+
+class _Undefined {}
 
 /// Runtime settings of the server.
 class RuntimeSettings extends _i1.TableRow {
@@ -37,19 +40,27 @@ class RuntimeSettings extends _i1.TableRow {
     );
   }
 
-  static final t = RuntimeSettingsTable();
+  static var t = RuntimeSettingsTable();
 
   /// Log settings.
-  _i2.LogSettings logSettings;
+  final _i2.LogSettings logSettings;
 
   /// List of log setting overrides.
-  List<_i2.LogSettingsOverride> logSettingsOverrides;
+  final List<_i2.LogSettingsOverride> logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
-  bool logServiceCalls;
+  final bool logServiceCalls;
 
   /// True if malformed calls should be logged.
-  bool logMalformedCalls;
+  final bool logMalformedCalls;
+
+  late Function({
+    int? id,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_runtime_settings';
@@ -65,6 +76,64 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is RuntimeSettings &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.logSettings,
+                  logSettings,
+                ) ||
+                other.logSettings == logSettings) &&
+            (identical(
+                  other.logServiceCalls,
+                  logServiceCalls,
+                ) ||
+                other.logServiceCalls == logServiceCalls) &&
+            (identical(
+                  other.logMalformedCalls,
+                  logMalformedCalls,
+                ) ||
+                other.logMalformedCalls == logMalformedCalls) &&
+            const _i3.DeepCollectionEquality().equals(
+              logSettingsOverrides,
+              other.logSettingsOverrides,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        logSettings,
+        logServiceCalls,
+        logMalformedCalls,
+        const _i3.DeepCollectionEquality().hash(logSettingsOverrides),
+      );
+
+  RuntimeSettings _copyWith({
+    Object? id = _Undefined,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  }) {
+    return RuntimeSettings(
+      id: id == _Undefined ? this.id : (id as int?),
+      logSettings: logSettings ?? this.logSettings,
+      logSettingsOverrides: logSettingsOverrides ?? this.logSettingsOverrides,
+      logServiceCalls: logServiceCalls ?? this.logServiceCalls,
+      logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -73,43 +142,6 @@ class RuntimeSettings extends _i1.TableRow {
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
-      'logServiceCalls': logServiceCalls,
-      'logMalformedCalls': logMalformedCalls,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'logSettings':
-        logSettings = value;
-        return;
-      case 'logSettingsOverrides':
-        logSettingsOverrides = value;
-        return;
-      case 'logServiceCalls':
-        logServiceCalls = value;
-        return;
-      case 'logMalformedCalls':
-        logMalformedCalls = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<RuntimeSettings>> find(

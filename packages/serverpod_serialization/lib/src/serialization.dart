@@ -13,14 +13,13 @@ typedef constructor<T> = T Function(
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
 abstract class SerializableEntity {
+  /// Creates a new [SerializableEntity] from a JSON structure.
+  const SerializableEntity();
+
   /// Returns a serialized JSON structure of the entity, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
   dynamic toJson();
-
-  /// Returns a serialized JSON structure of the entity which also includes
-  /// fields used by the database.
-  dynamic allToJson() => toJson();
 
   @override
   String toString() {
@@ -35,6 +34,9 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
+  /// Creates a new [SerializationManager].
+  const SerializationManager();
+
   /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {
     return deserialize<T>(jsonDecode(data), t);

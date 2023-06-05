@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// User settings.
 class UserSettingsConfig extends _i1.SerializableEntity {
   UserSettingsConfig({
@@ -37,19 +39,27 @@ class UserSettingsConfig extends _i1.SerializableEntity {
   }
 
   /// True if the user's nickname should be visible.
-  bool canSeeUserName;
+  final bool canSeeUserName;
 
   /// True if the user's full name should be visible.
-  bool canSeeFullName;
+  final bool canSeeFullName;
 
   /// True if the user should be able to edit its user name.
-  bool canEditUserName;
+  final bool canEditUserName;
 
   /// True if the user should be able to edit its full name.
-  bool canEditFullName;
+  final bool canEditFullName;
 
   /// True if the user should be able to upload a new user image.
-  bool canEditUserImage;
+  final bool canEditUserImage;
+
+  late Function({
+    bool? canSeeUserName,
+    bool? canSeeFullName,
+    bool? canEditUserName,
+    bool? canEditFullName,
+    bool? canEditUserImage,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -63,13 +73,61 @@ class UserSettingsConfig extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'canSeeUserName': canSeeUserName,
-      'canSeeFullName': canSeeFullName,
-      'canEditUserName': canEditUserName,
-      'canEditFullName': canEditFullName,
-      'canEditUserImage': canEditUserImage,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is UserSettingsConfig &&
+            (identical(
+                  other.canSeeUserName,
+                  canSeeUserName,
+                ) ||
+                other.canSeeUserName == canSeeUserName) &&
+            (identical(
+                  other.canSeeFullName,
+                  canSeeFullName,
+                ) ||
+                other.canSeeFullName == canSeeFullName) &&
+            (identical(
+                  other.canEditUserName,
+                  canEditUserName,
+                ) ||
+                other.canEditUserName == canEditUserName) &&
+            (identical(
+                  other.canEditFullName,
+                  canEditFullName,
+                ) ||
+                other.canEditFullName == canEditFullName) &&
+            (identical(
+                  other.canEditUserImage,
+                  canEditUserImage,
+                ) ||
+                other.canEditUserImage == canEditUserImage));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        canSeeUserName,
+        canSeeFullName,
+        canEditUserName,
+        canEditFullName,
+        canEditUserImage,
+      );
+
+  UserSettingsConfig _copyWith({
+    bool? canSeeUserName,
+    bool? canSeeFullName,
+    bool? canEditUserName,
+    bool? canEditFullName,
+    bool? canEditUserImage,
+  }) {
+    return UserSettingsConfig(
+      canSeeUserName: canSeeUserName ?? this.canSeeUserName,
+      canSeeFullName: canSeeFullName ?? this.canSeeFullName,
+      canEditUserName: canEditUserName ?? this.canEditUserName,
+      canEditFullName: canEditFullName ?? this.canEditFullName,
+      canEditUserImage: canEditUserImage ?? this.canEditUserImage,
+    );
   }
 }

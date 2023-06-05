@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Database bindings for a user image.
 class UserImage extends _i1.SerializableEntity {
   UserImage({
@@ -34,16 +36,23 @@ class UserImage extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The id of the user.
-  int userId;
+  final int userId;
 
   /// Version of the image. Increased by one for every uploaded image.
-  int version;
+  final int version;
 
   /// The URL to the image.
-  String url;
+  final String url;
+
+  late Function({
+    int? id,
+    int? userId,
+    int? version,
+    String? url,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -53,5 +62,56 @@ class UserImage extends _i1.SerializableEntity {
       'version': version,
       'url': url,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is UserImage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.version,
+                  version,
+                ) ||
+                other.version == version) &&
+            (identical(
+                  other.url,
+                  url,
+                ) ||
+                other.url == url));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        version,
+        url,
+      );
+
+  UserImage _copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    int? version,
+    String? url,
+  }) {
+    return UserImage(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      version: version ?? this.version,
+      url: url ?? this.url,
+    );
   }
 }

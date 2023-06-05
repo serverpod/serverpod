@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
@@ -42,26 +44,36 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
     );
   }
 
-  static final t = ServerHealthConnectionInfoTable();
+  static var t = ServerHealthConnectionInfoTable();
 
   /// The server associated with this connection info.
-  String serverId;
+  final String serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  DateTime timestamp;
+  final DateTime timestamp;
 
   /// Number of active connections currently open.
-  int active;
+  final int active;
 
   /// Number of connections currently closing.
-  int closing;
+  final int closing;
 
   /// Number of connections currently idle.
-  int idle;
+  final int idle;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  int granularity;
+  final int granularity;
+
+  late Function({
+    int? id,
+    String? serverId,
+    DateTime? timestamp,
+    int? active,
+    int? closing,
+    int? idle,
+    int? granularity,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_health_connection_info';
@@ -79,6 +91,81 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ServerHealthConnectionInfo &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.timestamp,
+                  timestamp,
+                ) ||
+                other.timestamp == timestamp) &&
+            (identical(
+                  other.active,
+                  active,
+                ) ||
+                other.active == active) &&
+            (identical(
+                  other.closing,
+                  closing,
+                ) ||
+                other.closing == closing) &&
+            (identical(
+                  other.idle,
+                  idle,
+                ) ||
+                other.idle == idle) &&
+            (identical(
+                  other.granularity,
+                  granularity,
+                ) ||
+                other.granularity == granularity));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        serverId,
+        timestamp,
+        active,
+        closing,
+        idle,
+        granularity,
+      );
+
+  ServerHealthConnectionInfo _copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    DateTime? timestamp,
+    int? active,
+    int? closing,
+    int? idle,
+    int? granularity,
+  }) {
+    return ServerHealthConnectionInfo(
+      id: id == _Undefined ? this.id : (id as int?),
+      serverId: serverId ?? this.serverId,
+      timestamp: timestamp ?? this.timestamp,
+      active: active ?? this.active,
+      closing: closing ?? this.closing,
+      idle: idle ?? this.idle,
+      granularity: granularity ?? this.granularity,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -89,51 +176,6 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
       'idle': idle,
       'granularity': granularity,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'serverId': serverId,
-      'timestamp': timestamp,
-      'active': active,
-      'closing': closing,
-      'idle': idle,
-      'granularity': granularity,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'timestamp':
-        timestamp = value;
-        return;
-      case 'active':
-        active = value;
-        return;
-      case 'closing':
-        closing = value;
-        return;
-      case 'idle':
-        idle = value;
-        return;
-      case 'granularity':
-        granularity = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ServerHealthConnectionInfo>> find(

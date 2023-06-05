@@ -35,16 +35,16 @@ export 'chat_read_message.dart';
 export 'chat_request_message_chunk.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
-  Protocol._();
+  const Protocol._();
 
   factory Protocol() => _instance;
 
   static final Map<Type, _i1.constructor> customConstructors = {};
 
-  static final Protocol _instance = Protocol._();
+  static const Protocol _instance = Protocol._();
 
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'serverpod_chat_message',
       dartName: 'ChatMessage',
       schema: 'public',
@@ -125,7 +125,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'serverpod_chat_read_message',
       dartName: 'ChatReadMessage',
       schema: 'public',

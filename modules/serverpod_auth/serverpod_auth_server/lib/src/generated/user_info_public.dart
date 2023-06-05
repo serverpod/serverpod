@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Information about a user that can safely be publically accessible.
 class UserInfoPublic extends _i1.SerializableEntity {
   UserInfoPublic({
@@ -36,19 +38,27 @@ class UserInfoPublic extends _i1.SerializableEntity {
   }
 
   /// Id of the user, if known.
-  int? id;
+  final int? id;
 
   /// The first name or nickname of the user.
-  String userName;
+  final String userName;
 
   /// The full name of the user.
-  String? fullName;
+  final String? fullName;
 
   /// The time when the user was created.
-  DateTime created;
+  final DateTime created;
 
   /// URL to the user's avatar.
-  String? imageUrl;
+  final String? imageUrl;
+
+  late Function({
+    int? id,
+    String? userName,
+    String? fullName,
+    DateTime? created,
+    String? imageUrl,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -62,13 +72,61 @@ class UserInfoPublic extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userName': userName,
-      'fullName': fullName,
-      'created': created,
-      'imageUrl': imageUrl,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is UserInfoPublic &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userName,
+                  userName,
+                ) ||
+                other.userName == userName) &&
+            (identical(
+                  other.fullName,
+                  fullName,
+                ) ||
+                other.fullName == fullName) &&
+            (identical(
+                  other.created,
+                  created,
+                ) ||
+                other.created == created) &&
+            (identical(
+                  other.imageUrl,
+                  imageUrl,
+                ) ||
+                other.imageUrl == imageUrl));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userName,
+        fullName,
+        created,
+        imageUrl,
+      );
+
+  UserInfoPublic _copyWith({
+    Object? id = _Undefined,
+    String? userName,
+    Object? fullName = _Undefined,
+    DateTime? created,
+    Object? imageUrl = _Undefined,
+  }) {
+    return UserInfoPublic(
+      id: id == _Undefined ? this.id : (id as int?),
+      userName: userName ?? this.userName,
+      fullName: fullName == _Undefined ? this.fullName : (fullName as String?),
+      created: created ?? this.created,
+      imageUrl: imageUrl == _Undefined ? this.imageUrl : (imageUrl as String?),
+    );
   }
 }

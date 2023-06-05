@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Database bindings for a sign in with email.
 class EmailAuth extends _i1.TableRow {
   EmailAuth({
@@ -31,16 +33,23 @@ class EmailAuth extends _i1.TableRow {
     );
   }
 
-  static final t = EmailAuthTable();
+  static var t = EmailAuthTable();
 
   /// The id of the user, corresponds to the id field in [UserInfo].
-  int userId;
+  final int userId;
 
   /// The email of the user.
-  String email;
+  final String email;
 
   /// The hashed password of the user.
-  String hash;
+  final String hash;
+
+  late Function({
+    int? id,
+    int? userId,
+    String? email,
+    String? hash,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_email_auth';
@@ -55,6 +64,57 @@ class EmailAuth extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailAuth &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email) &&
+            (identical(
+                  other.hash,
+                  hash,
+                ) ||
+                other.hash == hash));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        email,
+        hash,
+      );
+
+  EmailAuth _copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? email,
+    String? hash,
+  }) {
+    return EmailAuth(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -62,39 +122,6 @@ class EmailAuth extends _i1.TableRow {
       'email': email,
       'hash': hash,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'email': email,
-      'hash': hash,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'email':
-        email = value;
-        return;
-      case 'hash':
-        hash = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<EmailAuth>> find(

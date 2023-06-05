@@ -9,6 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
+class _Undefined {}
+
 /// Defines an element of an index.
 class IndexElementDefinition extends _i1.SerializableEntity {
   IndexElementDefinition({
@@ -29,10 +31,15 @@ class IndexElementDefinition extends _i1.SerializableEntity {
   }
 
   /// The type of this index element.
-  _i2.IndexElementDefinitionType type;
+  final _i2.IndexElementDefinitionType type;
 
   /// Depending on the [type], this is either a column name or an expression.
-  String definition;
+  final String definition;
+
+  late Function({
+    _i2.IndexElementDefinitionType? type,
+    String? definition,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -43,10 +50,37 @@ class IndexElementDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'type': type,
-      'definition': definition,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is IndexElementDefinition &&
+            (identical(
+                  other.type,
+                  type,
+                ) ||
+                other.type == type) &&
+            (identical(
+                  other.definition,
+                  definition,
+                ) ||
+                other.definition == definition));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        type,
+        definition,
+      );
+
+  IndexElementDefinition _copyWith({
+    _i2.IndexElementDefinitionType? type,
+    String? definition,
+  }) {
+    return IndexElementDefinition(
+      type: type ?? this.type,
+      definition: definition ?? this.definition,
+    );
   }
 }

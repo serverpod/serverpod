@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Information about a single server in a cluster.
 class ClusterServerInfo extends _i1.SerializableEntity {
   ClusterServerInfo({required this.serverId});
@@ -22,10 +24,33 @@ class ClusterServerInfo extends _i1.SerializableEntity {
   }
 
   /// The id of the server.
-  String serverId;
+  final String serverId;
+
+  late Function({String? serverId}) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
     return {'serverId': serverId};
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ClusterServerInfo &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId));
+  }
+
+  @override
+  int get hashCode => serverId.hashCode;
+
+  ClusterServerInfo _copyWith({String? serverId}) {
+    return ClusterServerInfo(serverId: serverId ?? this.serverId);
   }
 }

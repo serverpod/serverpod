@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// A message indicating an attempt to join a channel.
 class ChatJoinChannel extends _i1.SerializableEntity {
   ChatJoinChannel({
@@ -28,10 +30,15 @@ class ChatJoinChannel extends _i1.SerializableEntity {
   }
 
   /// The channel the user wants to join.
-  String channel;
+  final String channel;
 
   /// The name of the user.
-  String? userName;
+  final String? userName;
+
+  late Function({
+    String? channel,
+    String? userName,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -42,10 +49,37 @@ class ChatJoinChannel extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'channel': channel,
-      'userName': userName,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatJoinChannel &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.userName,
+                  userName,
+                ) ||
+                other.userName == userName));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        channel,
+        userName,
+      );
+
+  ChatJoinChannel _copyWith({
+    String? channel,
+    Object? userName = _Undefined,
+  }) {
+    return ChatJoinChannel(
+      channel: channel ?? this.channel,
+      userName: userName == _Undefined ? this.userName : (userName as String?),
+    );
   }
 }

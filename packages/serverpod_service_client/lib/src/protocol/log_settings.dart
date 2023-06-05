@@ -9,6 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+class _Undefined {}
+
 /// Log settings for the server.
 class LogSettings extends _i1.SerializableEntity {
   LogSettings({
@@ -53,35 +55,48 @@ class LogSettings extends _i1.SerializableEntity {
   }
 
   /// Log level. Everything above this level will be logged.
-  _i2.LogLevel logLevel;
+  final _i2.LogLevel logLevel;
 
   /// True if all sessions should be logged.
-  bool logAllSessions;
+  final bool logAllSessions;
 
   /// True if all queries should be logged.
-  bool logAllQueries;
+  final bool logAllQueries;
 
   /// True if all slow sessions should be logged.
-  bool logSlowSessions;
+  final bool logSlowSessions;
 
   /// True if streaming sessions should be logged continuously. If set to false,
   /// the logging will take place when the session is closed.
-  bool logStreamingSessionsContinuously;
+  final bool logStreamingSessionsContinuously;
 
   /// True if all slow queries should be logged.
-  bool logSlowQueries;
+  final bool logSlowQueries;
 
   /// True if all failed sessions should be logged.
-  bool logFailedSessions;
+  final bool logFailedSessions;
 
   /// True if all failed queries should be logged.
-  bool logFailedQueries;
+  final bool logFailedQueries;
 
   /// The duration in seconds for a session to be considered slow.
-  double slowSessionDuration;
+  final double slowSessionDuration;
 
   /// The duration in seconds for a query to be considered slow.
-  double slowQueryDuration;
+  final double slowQueryDuration;
+
+  late Function({
+    _i2.LogLevel? logLevel,
+    bool? logAllSessions,
+    bool? logAllQueries,
+    bool? logSlowSessions,
+    bool? logStreamingSessionsContinuously,
+    bool? logSlowQueries,
+    bool? logFailedSessions,
+    bool? logFailedQueries,
+    double? slowSessionDuration,
+    double? slowQueryDuration,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -97,5 +112,106 @@ class LogSettings extends _i1.SerializableEntity {
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is LogSettings &&
+            (identical(
+                  other.logLevel,
+                  logLevel,
+                ) ||
+                other.logLevel == logLevel) &&
+            (identical(
+                  other.logAllSessions,
+                  logAllSessions,
+                ) ||
+                other.logAllSessions == logAllSessions) &&
+            (identical(
+                  other.logAllQueries,
+                  logAllQueries,
+                ) ||
+                other.logAllQueries == logAllQueries) &&
+            (identical(
+                  other.logSlowSessions,
+                  logSlowSessions,
+                ) ||
+                other.logSlowSessions == logSlowSessions) &&
+            (identical(
+                  other.logStreamingSessionsContinuously,
+                  logStreamingSessionsContinuously,
+                ) ||
+                other.logStreamingSessionsContinuously ==
+                    logStreamingSessionsContinuously) &&
+            (identical(
+                  other.logSlowQueries,
+                  logSlowQueries,
+                ) ||
+                other.logSlowQueries == logSlowQueries) &&
+            (identical(
+                  other.logFailedSessions,
+                  logFailedSessions,
+                ) ||
+                other.logFailedSessions == logFailedSessions) &&
+            (identical(
+                  other.logFailedQueries,
+                  logFailedQueries,
+                ) ||
+                other.logFailedQueries == logFailedQueries) &&
+            (identical(
+                  other.slowSessionDuration,
+                  slowSessionDuration,
+                ) ||
+                other.slowSessionDuration == slowSessionDuration) &&
+            (identical(
+                  other.slowQueryDuration,
+                  slowQueryDuration,
+                ) ||
+                other.slowQueryDuration == slowQueryDuration));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        logLevel,
+        logAllSessions,
+        logAllQueries,
+        logSlowSessions,
+        logStreamingSessionsContinuously,
+        logSlowQueries,
+        logFailedSessions,
+        logFailedQueries,
+        slowSessionDuration,
+        slowQueryDuration,
+      );
+
+  LogSettings _copyWith({
+    _i2.LogLevel? logLevel,
+    bool? logAllSessions,
+    bool? logAllQueries,
+    bool? logSlowSessions,
+    bool? logStreamingSessionsContinuously,
+    bool? logSlowQueries,
+    bool? logFailedSessions,
+    bool? logFailedQueries,
+    double? slowSessionDuration,
+    double? slowQueryDuration,
+  }) {
+    return LogSettings(
+      logLevel: logLevel ?? this.logLevel,
+      logAllSessions: logAllSessions ?? this.logAllSessions,
+      logAllQueries: logAllQueries ?? this.logAllQueries,
+      logSlowSessions: logSlowSessions ?? this.logSlowSessions,
+      logStreamingSessionsContinuously: logStreamingSessionsContinuously ??
+          this.logStreamingSessionsContinuously,
+      logSlowQueries: logSlowQueries ?? this.logSlowQueries,
+      logFailedSessions: logFailedSessions ?? this.logFailedSessions,
+      logFailedQueries: logFailedQueries ?? this.logFailedQueries,
+      slowSessionDuration: slowSessionDuration ?? this.slowSessionDuration,
+      slowQueryDuration: slowQueryDuration ?? this.slowQueryDuration,
+    );
   }
 }

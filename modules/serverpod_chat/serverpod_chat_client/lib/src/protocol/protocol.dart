@@ -35,13 +35,13 @@ export 'chat_request_message_chunk.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
-  Protocol._();
+  const Protocol._();
 
   factory Protocol() => _instance;
 
   static final Map<Type, _i1.constructor> customConstructors = {};
 
-  static final Protocol _instance = Protocol._();
+  static const Protocol _instance = Protocol._();
 
   @override
   T deserialize<T>(

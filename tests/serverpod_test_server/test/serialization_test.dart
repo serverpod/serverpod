@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 ByteData createByteData() {
   var ints = Uint8List(256);
@@ -17,14 +17,14 @@ void main() {
 
   group('Serializations', () {
     test('Simple data', () {
-      var data = SimpleData(num: 42);
+      var data = const SimpleData(num: 42);
       var s = SerializationManager.encode(data);
       var unpacked = SimpleData.fromJson(jsonDecode(s), protocol);
       expect(unpacked.num, equals(42));
     });
 
     test('Basic types with null values', () {
-      var types = Types();
+      var types = const Types();
       var s = SerializationManager.encode(types);
       var unpacked = protocol.deserialize<Types>(jsonDecode(s));
       expect(unpacked.aBool, isNull);
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('Object with enum', () {
-      var object = ObjectWithEnum(
+      var object = const ObjectWithEnum(
           testEnum: TestEnum.one,
           nullableEnum: null,
           nullableEnumList: [
@@ -110,11 +110,11 @@ void main() {
         aBool: true,
         aString: 'foo',
         aDateTime: DateTime.utc(1976),
-        anObject: SimpleData(num: 42),
+        anObject: const SimpleData(num: 42),
         anIntList: [10, 20],
         aListWithNullableInts: [10, null],
-        anObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-        aListWithNullableObjects: [SimpleData(num: 10), null],
+        anObjectList: [const SimpleData(num: 10), const SimpleData(num: 20)],
+        aListWithNullableObjects: [const SimpleData(num: 10), null],
         aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aListWithNullableDateTimes: [DateTime.utc(1976), null],
         aByteData: createByteData(),
@@ -233,16 +233,19 @@ void main() {
         aNullableDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
         aNullableByteData: createByteData(),
-        anObject: SimpleData(num: 42),
-        aNullableObject: SimpleData(num: 42),
+        anObject: const SimpleData(num: 42),
+        aNullableObject: const SimpleData(num: 42),
         anIntList: [10, 20],
         aNullableIntList: [10, 20],
         aListWithNullableInts: [10, null],
         aNullableListWithNullableInts: [10, null],
-        anObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-        aNullableObjectList: [SimpleData(num: 10), SimpleData(num: 20)],
-        aListWithNullableObjects: [SimpleData(num: 10), null],
-        aNullableListWithNullableObjects: [SimpleData(num: 10), null],
+        anObjectList: [const SimpleData(num: 10), const SimpleData(num: 20)],
+        aNullableObjectList: [
+          const SimpleData(num: 10),
+          const SimpleData(num: 20)
+        ],
+        aListWithNullableObjects: [const SimpleData(num: 10), null],
+        aNullableListWithNullableObjects: [const SimpleData(num: 10), null],
         aDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aNullableDateTimeList: [DateTime.utc(1976), DateTime.utc(1977)],
         aListWithNullableDateTimes: [DateTime.utc(1976), null],
@@ -362,9 +365,9 @@ void main() {
     test('Map types', () {
       var maps = ObjectWithMaps(
         dataMap: {
-          '0': SimpleData(num: 0),
-          '1': SimpleData(num: 1),
-          '2': SimpleData(num: 2),
+          '0': const SimpleData(num: 0),
+          '1': const SimpleData(num: 1),
+          '2': const SimpleData(num: 2),
         },
         intMap: {'0': 0, '1': 1, '2': 2},
         stringMap: {'0': 'String 0', '1': 'String 1', '2': 'String 2'},
@@ -378,9 +381,9 @@ void main() {
           '1': createByteData(),
         },
         nullableDataMap: {
-          '0': SimpleData(num: 0),
+          '0': const SimpleData(num: 0),
           '1': null,
-          '2': SimpleData(num: 2),
+          '2': const SimpleData(num: 2),
         },
         nullableIntMap: {'0': 0, '1': null, '2': 2},
         nullableStringMap: {'0': 'null', '1': null, '2': 'String 2'},

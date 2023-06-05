@@ -8,6 +8,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
+
+class _Undefined {}
 
 class ObjectWithObject extends _i1.TableRow {
   ObjectWithObject({
@@ -43,19 +46,29 @@ class ObjectWithObject extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithObjectTable();
+  static var t = ObjectWithObjectTable();
 
-  _i2.SimpleData data;
+  final _i2.SimpleData data;
 
-  _i2.SimpleData? nullableData;
+  final _i2.SimpleData? nullableData;
 
-  List<_i2.SimpleData> dataList;
+  final List<_i2.SimpleData> dataList;
 
-  List<_i2.SimpleData>? nullableDataList;
+  final List<_i2.SimpleData>? nullableDataList;
 
-  List<_i2.SimpleData?> listWithNullableData;
+  final List<_i2.SimpleData?> listWithNullableData;
 
-  List<_i2.SimpleData?>? nullableListWithNullableData;
+  final List<_i2.SimpleData?>? nullableListWithNullableData;
+
+  late Function({
+    int? id,
+    _i2.SimpleData? data,
+    _i2.SimpleData? nullableData,
+    List<_i2.SimpleData>? dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    List<_i2.SimpleData?>? listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_object';
@@ -73,6 +86,83 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithObject &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.data,
+                  data,
+                ) ||
+                other.data == data) &&
+            (identical(
+                  other.nullableData,
+                  nullableData,
+                ) ||
+                other.nullableData == nullableData) &&
+            const _i3.DeepCollectionEquality().equals(
+              dataList,
+              other.dataList,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              nullableDataList,
+              other.nullableDataList,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              listWithNullableData,
+              other.listWithNullableData,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              nullableListWithNullableData,
+              other.nullableListWithNullableData,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        data,
+        nullableData,
+        const _i3.DeepCollectionEquality().hash(dataList),
+        const _i3.DeepCollectionEquality().hash(nullableDataList),
+        const _i3.DeepCollectionEquality().hash(listWithNullableData),
+        const _i3.DeepCollectionEquality().hash(nullableListWithNullableData),
+      );
+
+  ObjectWithObject _copyWith({
+    Object? id = _Undefined,
+    _i2.SimpleData? data,
+    Object? nullableData = _Undefined,
+    List<_i2.SimpleData>? dataList,
+    Object? nullableDataList = _Undefined,
+    List<_i2.SimpleData?>? listWithNullableData,
+    Object? nullableListWithNullableData = _Undefined,
+  }) {
+    return ObjectWithObject(
+      id: id == _Undefined ? this.id : (id as int?),
+      data: data ?? this.data,
+      nullableData: nullableData == _Undefined
+          ? this.nullableData
+          : (nullableData as _i2.SimpleData?),
+      dataList: dataList ?? this.dataList,
+      nullableDataList: nullableDataList == _Undefined
+          ? this.nullableDataList
+          : (nullableDataList as List<_i2.SimpleData>?),
+      listWithNullableData: listWithNullableData ?? this.listWithNullableData,
+      nullableListWithNullableData: nullableListWithNullableData == _Undefined
+          ? this.nullableListWithNullableData
+          : (nullableListWithNullableData as List<_i2.SimpleData?>?),
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -83,51 +173,6 @@ class ObjectWithObject extends _i1.TableRow {
       'listWithNullableData': listWithNullableData,
       'nullableListWithNullableData': nullableListWithNullableData,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'data': data,
-      'nullableData': nullableData,
-      'dataList': dataList,
-      'nullableDataList': nullableDataList,
-      'listWithNullableData': listWithNullableData,
-      'nullableListWithNullableData': nullableListWithNullableData,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'data':
-        data = value;
-        return;
-      case 'nullableData':
-        nullableData = value;
-        return;
-      case 'dataList':
-        dataList = value;
-        return;
-      case 'nullableDataList':
-        nullableDataList = value;
-        return;
-      case 'listWithNullableData':
-        listWithNullableData = value;
-        return;
-      case 'nullableListWithNullableData':
-        nullableListWithNullableData = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithObject>> find(

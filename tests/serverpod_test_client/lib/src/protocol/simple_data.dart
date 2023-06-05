@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Just some simple data.
 class SimpleData extends _i1.SerializableEntity {
   SimpleData({
@@ -28,12 +30,17 @@ class SimpleData extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
-  int num;
+  final int num;
+
+  late Function({
+    int? id,
+    int? num,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -41,5 +48,40 @@ class SimpleData extends _i1.SerializableEntity {
       'id': id,
       'num': num,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is SimpleData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.num,
+                  num,
+                ) ||
+                other.num == num));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        num,
+      );
+
+  SimpleData _copyWith({
+    Object? id = _Undefined,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id == _Undefined ? this.id : (id as int?),
+      num: num ?? this.num,
+    );
   }
 }

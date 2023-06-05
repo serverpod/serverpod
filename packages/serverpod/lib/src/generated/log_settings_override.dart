@@ -9,6 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
+class _Undefined {}
+
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
 class LogSettingsOverride extends _i1.SerializableEntity {
@@ -36,16 +38,23 @@ class LogSettingsOverride extends _i1.SerializableEntity {
   }
 
   /// Module to override settings for, null for main project.
-  String? module;
+  final String? module;
 
   /// Endpoint to override settings for.
-  String? endpoint;
+  final String? endpoint;
 
   /// Method to override settings for.
-  String? method;
+  final String? method;
 
   /// Log settings override.
-  _i2.LogSettings logSettings;
+  final _i2.LogSettings logSettings;
+
+  late Function({
+    String? module,
+    String? endpoint,
+    String? method,
+    _i2.LogSettings? logSettings,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -58,12 +67,53 @@ class LogSettingsOverride extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'logSettings': logSettings,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is LogSettingsOverride &&
+            (identical(
+                  other.module,
+                  module,
+                ) ||
+                other.module == module) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method) &&
+            (identical(
+                  other.logSettings,
+                  logSettings,
+                ) ||
+                other.logSettings == logSettings));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        module,
+        endpoint,
+        method,
+        logSettings,
+      );
+
+  LogSettingsOverride _copyWith({
+    Object? module = _Undefined,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
+    _i2.LogSettings? logSettings,
+  }) {
+    return LogSettingsOverride(
+      module: module == _Undefined ? this.module : (module as String?),
+      endpoint: endpoint == _Undefined ? this.endpoint : (endpoint as String?),
+      method: method == _Undefined ? this.method : (method as String?),
+      logSettings: logSettings ?? this.logSettings,
+    );
   }
 }

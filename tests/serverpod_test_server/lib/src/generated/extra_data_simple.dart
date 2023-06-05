@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Just some simple data.
 class ExtraDataSimple extends _i1.SerializableEntity {
   ExtraDataSimple({this.num});
@@ -20,7 +22,9 @@ class ExtraDataSimple extends _i1.SerializableEntity {
         num: serializationManager.deserialize<int?>(jsonSerialization['num']));
   }
 
-  int? num;
+  final int? num;
+
+  late Function({int? num}) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -28,7 +32,23 @@ class ExtraDataSimple extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'num': num};
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ExtraDataSimple &&
+            (identical(
+                  other.num,
+                  num,
+                ) ||
+                other.num == num));
+  }
+
+  @override
+  int get hashCode => num.hashCode;
+
+  ExtraDataSimple _copyWith({Object? num = _Undefined}) {
+    return ExtraDataSimple(num: num == _Undefined ? this.num : (num as int?));
   }
 }

@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// An entry in the distributed cache.
 class DistributedCacheEntry extends _i1.SerializableEntity {
   DistributedCacheEntry({required this.data});
@@ -22,7 +24,9 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   }
 
   /// The cached data.
-  String data;
+  final String data;
+
+  late Function({String? data}) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -30,7 +34,23 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'data': data};
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is DistributedCacheEntry &&
+            (identical(
+                  other.data,
+                  data,
+                ) ||
+                other.data == data));
+  }
+
+  @override
+  int get hashCode => data.hashCode;
+
+  DistributedCacheEntry _copyWith({String? data}) {
+    return DistributedCacheEntry(data: data ?? this.data);
   }
 }

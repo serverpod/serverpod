@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
 class EmailCreateAccountRequest extends _i1.SerializableEntity {
@@ -38,19 +40,27 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The name of the user.
-  String userName;
+  final String userName;
 
   /// The email of the user.
-  String email;
+  final String email;
 
   /// Hash of the user's requested password.
-  String hash;
+  final String hash;
 
   /// The verification code sent to the user.
-  String verificationCode;
+  final String verificationCode;
+
+  late Function({
+    int? id,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -61,5 +71,64 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
       'hash': hash,
       'verificationCode': verificationCode,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailCreateAccountRequest &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userName,
+                  userName,
+                ) ||
+                other.userName == userName) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email) &&
+            (identical(
+                  other.hash,
+                  hash,
+                ) ||
+                other.hash == hash) &&
+            (identical(
+                  other.verificationCode,
+                  verificationCode,
+                ) ||
+                other.verificationCode == verificationCode));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userName,
+        email,
+        hash,
+        verificationCode,
+      );
+
+  EmailCreateAccountRequest _copyWith({
+    Object? id = _Undefined,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  }) {
+    return EmailCreateAccountRequest(
+      id: id == _Undefined ? this.id : (id as int?),
+      userName: userName ?? this.userName,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+      verificationCode: verificationCode ?? this.verificationCode,
+    );
   }
 }

@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
@@ -45,26 +47,36 @@ class ServerHealthMetric extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// The name of the metric.
-  String name;
+  final String name;
 
   /// The server associated with this metric.
-  String serverId;
+  final String serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  DateTime timestamp;
+  final DateTime timestamp;
 
   /// True if the metric is healthy.
-  bool isHealthy;
+  final bool isHealthy;
 
   /// The value of the metric.
-  double value;
+  final double value;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  int granularity;
+  final int granularity;
+
+  late Function({
+    int? id,
+    String? name,
+    String? serverId,
+    DateTime? timestamp,
+    bool? isHealthy,
+    double? value,
+    int? granularity,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -77,5 +89,80 @@ class ServerHealthMetric extends _i1.SerializableEntity {
       'value': value,
       'granularity': granularity,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ServerHealthMetric &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.timestamp,
+                  timestamp,
+                ) ||
+                other.timestamp == timestamp) &&
+            (identical(
+                  other.isHealthy,
+                  isHealthy,
+                ) ||
+                other.isHealthy == isHealthy) &&
+            (identical(
+                  other.value,
+                  value,
+                ) ||
+                other.value == value) &&
+            (identical(
+                  other.granularity,
+                  granularity,
+                ) ||
+                other.granularity == granularity));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        name,
+        serverId,
+        timestamp,
+        isHealthy,
+        value,
+        granularity,
+      );
+
+  ServerHealthMetric _copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? serverId,
+    DateTime? timestamp,
+    bool? isHealthy,
+    double? value,
+    int? granularity,
+  }) {
+    return ServerHealthMetric(
+      id: id == _Undefined ? this.id : (id as int?),
+      name: name ?? this.name,
+      serverId: serverId ?? this.serverId,
+      timestamp: timestamp ?? this.timestamp,
+      isHealthy: isHealthy ?? this.isHealthy,
+      value: value ?? this.value,
+      granularity: granularity ?? this.granularity,
+    );
   }
 }

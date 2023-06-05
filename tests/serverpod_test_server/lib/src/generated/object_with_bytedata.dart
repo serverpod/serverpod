@@ -9,6 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
+class _Undefined {}
+
 class ObjectWithByteData extends _i1.TableRow {
   ObjectWithByteData({
     int? id,
@@ -26,9 +28,14 @@ class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithByteDataTable();
+  static var t = ObjectWithByteDataTable();
 
-  _i2.ByteData byteData;
+  final _i2.ByteData byteData;
+
+  late Function({
+    int? id,
+    _i2.ByteData? byteData,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_bytedata';
@@ -41,36 +48,46 @@ class ObjectWithByteData extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithByteData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.byteData,
+                  byteData,
+                ) ||
+                other.byteData == byteData));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        byteData,
+      );
+
+  ObjectWithByteData _copyWith({
+    Object? id = _Undefined,
+    _i2.ByteData? byteData,
+  }) {
+    return ObjectWithByteData(
+      id: id == _Undefined ? this.id : (id as int?),
+      byteData: byteData ?? this.byteData,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'byteData': byteData,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'byteData': byteData,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'byteData':
-        byteData = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithByteData>> find(

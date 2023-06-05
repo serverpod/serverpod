@@ -10,6 +10,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:serverpod_auth_client/module.dart' as _i3;
 
+class _Undefined {}
+
 /// A message passed to a user when it joins a channel.
 class ChatJoinedChannel extends _i1.SerializableEntity {
   ChatJoinedChannel({
@@ -37,16 +39,23 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
   }
 
   /// The channel the user joined.
-  String channel;
+  final String channel;
 
   /// Initial chunk of chat messages from the channel the user joined.
-  _i2.ChatMessageChunk initialMessageChunk;
+  final _i2.ChatMessageChunk initialMessageChunk;
 
   /// The id of the last read message.
-  int lastReadMessageId;
+  final int lastReadMessageId;
 
   /// The user info of the user who joined the channel.
-  _i3.UserInfo userInfo;
+  final _i3.UserInfo userInfo;
+
+  late Function({
+    String? channel,
+    _i2.ChatMessageChunk? initialMessageChunk,
+    int? lastReadMessageId,
+    _i3.UserInfo? userInfo,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -56,5 +65,56 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
       'lastReadMessageId': lastReadMessageId,
       'userInfo': userInfo,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatJoinedChannel &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.initialMessageChunk,
+                  initialMessageChunk,
+                ) ||
+                other.initialMessageChunk == initialMessageChunk) &&
+            (identical(
+                  other.lastReadMessageId,
+                  lastReadMessageId,
+                ) ||
+                other.lastReadMessageId == lastReadMessageId) &&
+            (identical(
+                  other.userInfo,
+                  userInfo,
+                ) ||
+                other.userInfo == userInfo));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        channel,
+        initialMessageChunk,
+        lastReadMessageId,
+        userInfo,
+      );
+
+  ChatJoinedChannel _copyWith({
+    String? channel,
+    _i2.ChatMessageChunk? initialMessageChunk,
+    int? lastReadMessageId,
+    _i3.UserInfo? userInfo,
+  }) {
+    return ChatJoinedChannel(
+      channel: channel ?? this.channel,
+      initialMessageChunk: initialMessageChunk ?? this.initialMessageChunk,
+      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+      userInfo: userInfo ?? this.userInfo,
+    );
   }
 }

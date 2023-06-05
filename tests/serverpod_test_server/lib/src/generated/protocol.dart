@@ -67,16 +67,16 @@ export 'test_enum.dart';
 export 'types.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
-  Protocol._();
+  const Protocol._();
 
   factory Protocol() => _instance;
 
   static final Map<Type, _i1.constructor> customConstructors = {};
 
-  static final Protocol _instance = Protocol._();
+  static const Protocol _instance = Protocol._();
 
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'extra_data_class',
       dartName: 'ExtraDataClass',
       schema: 'public',
@@ -264,7 +264,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_field_scopes',
       dartName: 'ObjectFieldScopes',
       schema: 'public',
@@ -308,7 +308,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_bytedata',
       dartName: 'ObjectWithByteData',
       schema: 'public',
@@ -346,7 +346,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_duration',
       dartName: 'ObjectWithDuration',
       schema: 'public',
@@ -384,7 +384,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_enum',
       dartName: 'ObjectWithEnum',
       schema: 'public',
@@ -446,7 +446,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_index',
       dartName: 'ObjectWithIndex',
       schema: 'public',
@@ -507,7 +507,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_object',
       dartName: 'ObjectWithObject',
       schema: 'public',
@@ -575,7 +575,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_parent',
       dartName: 'ObjectWithParent',
       schema: 'public',
@@ -624,7 +624,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_self_parent',
       dartName: 'ObjectWithSelfParent',
       schema: 'public',
@@ -674,7 +674,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'object_with_uuid',
       dartName: 'ObjectWithUuid',
       schema: 'public',
@@ -718,7 +718,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'simple_data',
       dartName: 'SimpleData',
       schema: 'public',
@@ -756,7 +756,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'types',
       dartName: 'Types',
       schema: 'public',

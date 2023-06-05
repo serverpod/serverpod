@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Represents a chat channel.
 class Channel extends _i1.TableRow {
   Channel({
@@ -28,13 +30,19 @@ class Channel extends _i1.TableRow {
     );
   }
 
-  static final t = ChannelTable();
+  static var t = ChannelTable();
 
   /// The name of the channel.
-  String name;
+  final String name;
 
   /// The id of the channel.
-  String channel;
+  final String channel;
+
+  late Function({
+    int? id,
+    String? name,
+    String? channel,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'channel';
@@ -48,41 +56,55 @@ class Channel extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is Channel &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        name,
+        channel,
+      );
+
+  Channel _copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? channel,
+  }) {
+    return Channel(
+      id: id == _Undefined ? this.id : (id as int?),
+      name: name ?? this.name,
+      channel: channel ?? this.channel,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'name': name,
       'channel': channel,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'name': name,
-      'channel': channel,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'channel':
-        channel = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<Channel>> find(

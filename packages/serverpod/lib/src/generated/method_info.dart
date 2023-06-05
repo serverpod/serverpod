@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Information about a server method.
 class MethodInfo extends _i1.TableRow {
   MethodInfo({
@@ -29,13 +31,19 @@ class MethodInfo extends _i1.TableRow {
     );
   }
 
-  static final t = MethodInfoTable();
+  static var t = MethodInfoTable();
 
   /// The endpoint of this method.
-  String endpoint;
+  final String endpoint;
 
   /// The name of this method.
-  String method;
+  final String method;
+
+  late Function({
+    int? id,
+    String? endpoint,
+    String? method,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_method';
@@ -49,41 +57,55 @@ class MethodInfo extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is MethodInfo &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        endpoint,
+        method,
+      );
+
+  MethodInfo _copyWith({
+    Object? id = _Undefined,
+    String? endpoint,
+    String? method,
+  }) {
+    return MethodInfo(
+      id: id == _Undefined ? this.id : (id as int?),
+      endpoint: endpoint ?? this.endpoint,
+      method: method ?? this.method,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'endpoint': endpoint,
       'method': method,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'endpoint': endpoint,
-      'method': method,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'endpoint':
-        endpoint = value;
-        return;
-      case 'method':
-        method = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<MethodInfo>> find(

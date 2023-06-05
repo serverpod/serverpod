@@ -10,7 +10,7 @@ class Expression {
   final String expression;
 
   /// Creates a new [Expression].
-  Expression(this.expression);
+  const Expression(this.expression);
 
   @override
   String toString() {
@@ -77,14 +77,14 @@ abstract class Column extends Expression {
   String get columnName => _columnName;
 
   /// Creates a new [Column], this is typically done in generated code only.
-  Column(this._columnName, this.type, {this.varcharLength})
+  const Column(this._columnName, this.type, {this.varcharLength})
       : super('"$_columnName"');
 }
 
 /// A [Column] holding an [int].
 class ColumnInt extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnInt(String name) : super(name, int);
+  const ColumnInt(String name) : super(name, int);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -110,7 +110,7 @@ class ColumnInt extends Column {
 /// A [Column] holding an enum.
 class ColumnEnum<E extends Enum> extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(String name) : super(name, E);
+  const ColumnEnum(String name) : super(name, E);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -136,7 +136,7 @@ class ColumnEnum<E extends Enum> extends Column {
 /// A [Column] holding an [double].
 class ColumnDouble extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(String name) : super(name, double);
+  const ColumnDouble(String name) : super(name, double);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -162,7 +162,7 @@ class ColumnDouble extends Column {
 /// A [Column] holding an [String].
 class ColumnString extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnString(String name, {int? varcharLength})
+  const ColumnString(String name, {int? varcharLength})
       : super(name, String, varcharLength: varcharLength);
 
   /// Creates an [Expression] checking if the value in the column equals the
@@ -206,7 +206,7 @@ class ColumnString extends Column {
 /// A [Column] holding an [bool].
 class ColumnBool extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnBool(String name) : super(name, bool);
+  const ColumnBool(String name) : super(name, bool);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -239,7 +239,7 @@ class ColumnBool extends Column {
 /// timestamp without time zone.
 class ColumnDateTime extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDateTime(String name) : super(name, DateTime);
+  const ColumnDateTime(String name) : super(name, DateTime);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -267,13 +267,13 @@ class ColumnDateTime extends Column {
 /// A [Column] holding [ByteData].
 class ColumnByteData extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnByteData(String name) : super(name, ByteData);
+  const ColumnByteData(String name) : super(name, ByteData);
 }
 
 /// A [Column] holding [Duration].
 class ColumnDuration extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDuration(String name) : super(name, Duration);
+  const ColumnDuration(String name) : super(name, Duration);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -303,7 +303,7 @@ class ColumnDuration extends Column {
 /// A [Column] holding [UuidValue].
 class ColumnUuid extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnUuid(String name) : super(name, UuidValue);
+  const ColumnUuid(String name) : super(name, UuidValue);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -334,7 +334,7 @@ class ColumnUuid extends Column {
 /// database as a json column.
 class ColumnSerializable extends Column {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnSerializable(String name) : super(name, String);
+  const ColumnSerializable(String name) : super(name, String);
 
 // TODO: Add comparisons and possibly other operations
 }
@@ -362,15 +362,14 @@ class Constant extends Expression {
 class Table {
   /// Name of the table as used in the database.
   final String tableName;
-  late List<Column>? _columns;
+  final List<Column>? _columns;
 
   /// List of [Column] used by the table.
   List<Column> get columns => _columns!;
 
   /// Creates a new [Table]. Typically, this is done only by generated code.
-  Table({required this.tableName, List<Column>? columns}) {
-    _columns = columns;
-  }
+  const Table({required this.tableName, List<Column>? columns})
+      : _columns = columns;
 
   @override
   String toString() {

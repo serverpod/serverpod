@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithParent extends _i1.TableRow {
   ObjectWithParent({
     int? id,
@@ -24,9 +26,14 @@ class ObjectWithParent extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithParentTable();
+  static var t = ObjectWithParentTable();
 
-  int other;
+  final int other;
+
+  late Function({
+    int? id,
+    int? other,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_parent';
@@ -39,36 +46,46 @@ class ObjectWithParent extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithParent &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.other,
+                  other,
+                ) ||
+                other.other == other));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        other,
+      );
+
+  ObjectWithParent _copyWith({
+    Object? id = _Undefined,
+    int? other,
+  }) {
+    return ObjectWithParent(
+      id: id == _Undefined ? this.id : (id as int?),
+      other: other ?? this.other,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'other': other,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'other': other,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'other':
-        other = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithParent>> find(

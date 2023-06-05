@@ -9,6 +9,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:collection/collection.dart' as _i4;
+
+class _Undefined {}
 
 /// Just some simple data.
 class ExtraDataClass extends _i1.TableRow {
@@ -111,59 +114,89 @@ class ExtraDataClass extends _i1.TableRow {
     );
   }
 
-  static final t = ExtraDataClassTable();
+  static var t = ExtraDataClassTable();
 
-  Duration duration;
+  final Duration duration;
 
-  _i2.ExtraDataSimple object;
+  final _i2.ExtraDataSimple object;
 
-  _i2.ExtraDataSimple? nullableObject;
+  final _i2.ExtraDataSimple? nullableObject;
 
-  List<_i2.ExtraDataSimple> list;
+  final List<_i2.ExtraDataSimple> list;
 
-  List<_i2.ExtraDataSimple>? nullableList;
+  final List<_i2.ExtraDataSimple>? nullableList;
 
-  List<_i2.ExtraDataSimple?> optionalValueList;
+  final List<_i2.ExtraDataSimple?> optionalValueList;
 
-  _i2.TestEnum testEnum;
+  final _i2.TestEnum testEnum;
 
-  _i2.TestEnum? nullableEnum;
+  final _i2.TestEnum? nullableEnum;
 
-  List<_i2.TestEnum> enumList;
+  final List<_i2.TestEnum> enumList;
 
-  List<_i2.TestEnum?> nullableEnumList;
+  final List<_i2.TestEnum?> nullableEnumList;
 
-  List<List<_i2.TestEnum>> enumListList;
+  final List<List<_i2.TestEnum>> enumListList;
 
-  Map<String, _i2.ExtraDataSimple> dataMap;
+  final Map<String, _i2.ExtraDataSimple> dataMap;
 
-  Map<String, int> intMap;
+  final Map<String, int> intMap;
 
-  Map<String, String> stringMap;
+  final Map<String, String> stringMap;
 
-  Map<String, DateTime> dateTimeMap;
+  final Map<String, DateTime> dateTimeMap;
 
-  Map<String, _i3.ByteData> byteDataMap;
+  final Map<String, _i3.ByteData> byteDataMap;
 
-  Map<String, Duration> durationMap;
+  final Map<String, Duration> durationMap;
 
-  Map<String, _i1.UuidValue> uuidMap;
+  final Map<String, _i1.UuidValue> uuidMap;
 
-  Map<String, _i2.ExtraDataSimple?> nullableDataMap;
+  final Map<String, _i2.ExtraDataSimple?> nullableDataMap;
 
-  Map<String, int?> nullableIntMap;
+  final Map<String, int?> nullableIntMap;
 
-  Map<String, String?> nullableStringMap;
+  final Map<String, String?> nullableStringMap;
 
-  Map<String, DateTime?> nullableDateTimeMap;
+  final Map<String, DateTime?> nullableDateTimeMap;
 
-  Map<String, _i3.ByteData?> nullableByteDataMap;
+  final Map<String, _i3.ByteData?> nullableByteDataMap;
 
-  Map<String, Duration?> nullableDurationMap;
+  final Map<String, Duration?> nullableDurationMap;
 
-  Map<String, _i1.UuidValue?> nullableUuidMap;
+  final Map<String, _i1.UuidValue?> nullableUuidMap;
 
-  Map<int, int> intIntMap;
+  final Map<int, int> intIntMap;
+
+  late Function({
+    int? id,
+    Duration? duration,
+    _i2.ExtraDataSimple? object,
+    _i2.ExtraDataSimple? nullableObject,
+    List<_i2.ExtraDataSimple>? list,
+    List<_i2.ExtraDataSimple>? nullableList,
+    List<_i2.ExtraDataSimple?>? optionalValueList,
+    _i2.TestEnum? testEnum,
+    _i2.TestEnum? nullableEnum,
+    List<_i2.TestEnum>? enumList,
+    List<_i2.TestEnum?>? nullableEnumList,
+    List<List<_i2.TestEnum>>? enumListList,
+    Map<String, _i2.ExtraDataSimple>? dataMap,
+    Map<String, int>? intMap,
+    Map<String, String>? stringMap,
+    Map<String, DateTime>? dateTimeMap,
+    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, Duration>? durationMap,
+    Map<String, _i1.UuidValue>? uuidMap,
+    Map<String, _i2.ExtraDataSimple?>? nullableDataMap,
+    Map<String, int?>? nullableIntMap,
+    Map<String, String?>? nullableStringMap,
+    Map<String, DateTime?>? nullableDateTimeMap,
+    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, Duration?>? nullableDurationMap,
+    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<int, int>? intIntMap,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'extra_data_class';
@@ -201,6 +234,226 @@ class ExtraDataClass extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ExtraDataClass &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration) &&
+            (identical(
+                  other.object,
+                  object,
+                ) ||
+                other.object == object) &&
+            (identical(
+                  other.nullableObject,
+                  nullableObject,
+                ) ||
+                other.nullableObject == nullableObject) &&
+            (identical(
+                  other.testEnum,
+                  testEnum,
+                ) ||
+                other.testEnum == testEnum) &&
+            (identical(
+                  other.nullableEnum,
+                  nullableEnum,
+                ) ||
+                other.nullableEnum == nullableEnum) &&
+            const _i4.DeepCollectionEquality().equals(
+              list,
+              other.list,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableList,
+              other.nullableList,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              optionalValueList,
+              other.optionalValueList,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              enumList,
+              other.enumList,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableEnumList,
+              other.nullableEnumList,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              enumListList,
+              other.enumListList,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              dataMap,
+              other.dataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              intMap,
+              other.intMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              stringMap,
+              other.stringMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              dateTimeMap,
+              other.dateTimeMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              byteDataMap,
+              other.byteDataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              durationMap,
+              other.durationMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              uuidMap,
+              other.uuidMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableDataMap,
+              other.nullableDataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableIntMap,
+              other.nullableIntMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableStringMap,
+              other.nullableStringMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableDateTimeMap,
+              other.nullableDateTimeMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableByteDataMap,
+              other.nullableByteDataMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableDurationMap,
+              other.nullableDurationMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              nullableUuidMap,
+              other.nullableUuidMap,
+            ) &&
+            const _i4.DeepCollectionEquality().equals(
+              intIntMap,
+              other.intIntMap,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        id,
+        duration,
+        object,
+        nullableObject,
+        testEnum,
+        nullableEnum,
+        const _i4.DeepCollectionEquality().hash(list),
+        const _i4.DeepCollectionEquality().hash(nullableList),
+        const _i4.DeepCollectionEquality().hash(optionalValueList),
+        const _i4.DeepCollectionEquality().hash(enumList),
+        const _i4.DeepCollectionEquality().hash(nullableEnumList),
+        const _i4.DeepCollectionEquality().hash(enumListList),
+        const _i4.DeepCollectionEquality().hash(dataMap),
+        const _i4.DeepCollectionEquality().hash(intMap),
+        const _i4.DeepCollectionEquality().hash(stringMap),
+        const _i4.DeepCollectionEquality().hash(dateTimeMap),
+        const _i4.DeepCollectionEquality().hash(byteDataMap),
+        const _i4.DeepCollectionEquality().hash(durationMap),
+        const _i4.DeepCollectionEquality().hash(uuidMap),
+        const _i4.DeepCollectionEquality().hash(nullableDataMap),
+        const _i4.DeepCollectionEquality().hash(nullableIntMap),
+        const _i4.DeepCollectionEquality().hash(nullableStringMap),
+        const _i4.DeepCollectionEquality().hash(nullableDateTimeMap),
+        const _i4.DeepCollectionEquality().hash(nullableByteDataMap),
+        const _i4.DeepCollectionEquality().hash(nullableDurationMap),
+        const _i4.DeepCollectionEquality().hash(nullableUuidMap),
+        const _i4.DeepCollectionEquality().hash(intIntMap),
+      ]);
+
+  ExtraDataClass _copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+    _i2.ExtraDataSimple? object,
+    Object? nullableObject = _Undefined,
+    List<_i2.ExtraDataSimple>? list,
+    Object? nullableList = _Undefined,
+    List<_i2.ExtraDataSimple?>? optionalValueList,
+    _i2.TestEnum? testEnum,
+    Object? nullableEnum = _Undefined,
+    List<_i2.TestEnum>? enumList,
+    List<_i2.TestEnum?>? nullableEnumList,
+    List<List<_i2.TestEnum>>? enumListList,
+    Map<String, _i2.ExtraDataSimple>? dataMap,
+    Map<String, int>? intMap,
+    Map<String, String>? stringMap,
+    Map<String, DateTime>? dateTimeMap,
+    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, Duration>? durationMap,
+    Map<String, _i1.UuidValue>? uuidMap,
+    Map<String, _i2.ExtraDataSimple?>? nullableDataMap,
+    Map<String, int?>? nullableIntMap,
+    Map<String, String?>? nullableStringMap,
+    Map<String, DateTime?>? nullableDateTimeMap,
+    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, Duration?>? nullableDurationMap,
+    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<int, int>? intIntMap,
+  }) {
+    return ExtraDataClass(
+      id: id == _Undefined ? this.id : (id as int?),
+      duration: duration ?? this.duration,
+      object: object ?? this.object,
+      nullableObject: nullableObject == _Undefined
+          ? this.nullableObject
+          : (nullableObject as _i2.ExtraDataSimple?),
+      list: list ?? this.list,
+      nullableList: nullableList == _Undefined
+          ? this.nullableList
+          : (nullableList as List<_i2.ExtraDataSimple>?),
+      optionalValueList: optionalValueList ?? this.optionalValueList,
+      testEnum: testEnum ?? this.testEnum,
+      nullableEnum: nullableEnum == _Undefined
+          ? this.nullableEnum
+          : (nullableEnum as _i2.TestEnum?),
+      enumList: enumList ?? this.enumList,
+      nullableEnumList: nullableEnumList ?? this.nullableEnumList,
+      enumListList: enumListList ?? this.enumListList,
+      dataMap: dataMap ?? this.dataMap,
+      intMap: intMap ?? this.intMap,
+      stringMap: stringMap ?? this.stringMap,
+      dateTimeMap: dateTimeMap ?? this.dateTimeMap,
+      byteDataMap: byteDataMap ?? this.byteDataMap,
+      durationMap: durationMap ?? this.durationMap,
+      uuidMap: uuidMap ?? this.uuidMap,
+      nullableDataMap: nullableDataMap ?? this.nullableDataMap,
+      nullableIntMap: nullableIntMap ?? this.nullableIntMap,
+      nullableStringMap: nullableStringMap ?? this.nullableStringMap,
+      nullableDateTimeMap: nullableDateTimeMap ?? this.nullableDateTimeMap,
+      nullableByteDataMap: nullableByteDataMap ?? this.nullableByteDataMap,
+      nullableDurationMap: nullableDurationMap ?? this.nullableDurationMap,
+      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap,
+      intIntMap: intIntMap ?? this.intIntMap,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -231,131 +484,6 @@ class ExtraDataClass extends _i1.TableRow {
       'nullableUuidMap': nullableUuidMap,
       'intIntMap': intIntMap,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'duration': duration,
-      'object': object,
-      'nullableObject': nullableObject,
-      'list': list,
-      'nullableList': nullableList,
-      'optionalValueList': optionalValueList,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
-      'dataMap': dataMap,
-      'intMap': intMap,
-      'stringMap': stringMap,
-      'dateTimeMap': dateTimeMap,
-      'byteDataMap': byteDataMap,
-      'durationMap': durationMap,
-      'uuidMap': uuidMap,
-      'nullableDataMap': nullableDataMap,
-      'nullableIntMap': nullableIntMap,
-      'nullableStringMap': nullableStringMap,
-      'nullableDateTimeMap': nullableDateTimeMap,
-      'nullableByteDataMap': nullableByteDataMap,
-      'nullableDurationMap': nullableDurationMap,
-      'nullableUuidMap': nullableUuidMap,
-      'intIntMap': intIntMap,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      case 'object':
-        object = value;
-        return;
-      case 'nullableObject':
-        nullableObject = value;
-        return;
-      case 'list':
-        list = value;
-        return;
-      case 'nullableList':
-        nullableList = value;
-        return;
-      case 'optionalValueList':
-        optionalValueList = value;
-        return;
-      case 'testEnum':
-        testEnum = value;
-        return;
-      case 'nullableEnum':
-        nullableEnum = value;
-        return;
-      case 'enumList':
-        enumList = value;
-        return;
-      case 'nullableEnumList':
-        nullableEnumList = value;
-        return;
-      case 'enumListList':
-        enumListList = value;
-        return;
-      case 'dataMap':
-        dataMap = value;
-        return;
-      case 'intMap':
-        intMap = value;
-        return;
-      case 'stringMap':
-        stringMap = value;
-        return;
-      case 'dateTimeMap':
-        dateTimeMap = value;
-        return;
-      case 'byteDataMap':
-        byteDataMap = value;
-        return;
-      case 'durationMap':
-        durationMap = value;
-        return;
-      case 'uuidMap':
-        uuidMap = value;
-        return;
-      case 'nullableDataMap':
-        nullableDataMap = value;
-        return;
-      case 'nullableIntMap':
-        nullableIntMap = value;
-        return;
-      case 'nullableStringMap':
-        nullableStringMap = value;
-        return;
-      case 'nullableDateTimeMap':
-        nullableDateTimeMap = value;
-        return;
-      case 'nullableByteDataMap':
-        nullableByteDataMap = value;
-        return;
-      case 'nullableDurationMap':
-        nullableDurationMap = value;
-        return;
-      case 'nullableUuidMap':
-        nullableUuidMap = value;
-        return;
-      case 'intIntMap':
-        intIntMap = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ExtraDataClass>> find(
@@ -490,9 +618,9 @@ class ExtraDataClassTable extends _i1.Table {
 
   final optionalValueList = _i1.ColumnSerializable('optionalValueList');
 
-  final testEnum = _i1.ColumnEnum<_i2.TestEnum>('testEnum');
+  final testEnum = _i1.ColumnEnum('testEnum');
 
-  final nullableEnum = _i1.ColumnEnum<_i2.TestEnum>('nullableEnum');
+  final nullableEnum = _i1.ColumnEnum('nullableEnum');
 
   final enumList = _i1.ColumnSerializable('enumList');
 

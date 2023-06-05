@@ -10,7 +10,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// All the types, that are possible for columns.
 /// Contains all the values of [TypeDefinition.databaseType]
-enum ColumnType with _i1.SerializableEntity {
+enum ColumnType implements _i1.SerializableEntity {
   /// Dart type: [String]
   text,
 

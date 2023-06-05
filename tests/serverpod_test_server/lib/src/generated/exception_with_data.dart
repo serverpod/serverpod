@@ -7,6 +7,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:collection/collection.dart' as _i2;
+
+class _Undefined {}
 
 class ExceptionWithData extends _i1.SerializableEntity
     implements _i1.SerializableException {
@@ -33,13 +36,20 @@ class ExceptionWithData extends _i1.SerializableEntity
     );
   }
 
-  String message;
+  final String message;
 
-  DateTime creationDate;
+  final DateTime creationDate;
 
-  List<String> errorFields;
+  final List<String> errorFields;
 
-  int? someNullableField;
+  final int? someNullableField;
+
+  late Function({
+    String? message,
+    DateTime? creationDate,
+    List<String>? errorFields,
+    int? someNullableField,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -52,12 +62,54 @@ class ExceptionWithData extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'message': message,
-      'creationDate': creationDate,
-      'errorFields': errorFields,
-      'someNullableField': someNullableField,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ExceptionWithData &&
+            (identical(
+                  other.message,
+                  message,
+                ) ||
+                other.message == message) &&
+            (identical(
+                  other.creationDate,
+                  creationDate,
+                ) ||
+                other.creationDate == creationDate) &&
+            (identical(
+                  other.someNullableField,
+                  someNullableField,
+                ) ||
+                other.someNullableField == someNullableField) &&
+            const _i2.DeepCollectionEquality().equals(
+              errorFields,
+              other.errorFields,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        message,
+        creationDate,
+        someNullableField,
+        const _i2.DeepCollectionEquality().hash(errorFields),
+      );
+
+  ExceptionWithData _copyWith({
+    String? message,
+    DateTime? creationDate,
+    List<String>? errorFields,
+    Object? someNullableField = _Undefined,
+  }) {
+    return ExceptionWithData(
+      message: message ?? this.message,
+      creationDate: creationDate ?? this.creationDate,
+      errorFields: errorFields ?? this.errorFields,
+      someNullableField: someNullableField == _Undefined
+          ? this.someNullableField
+          : (someNullableField as int?),
+    );
   }
 }

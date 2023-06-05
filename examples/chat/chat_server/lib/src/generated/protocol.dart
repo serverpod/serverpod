@@ -16,16 +16,16 @@ import 'package:chat_server/src/generated/channel.dart' as _i6;
 export 'channel.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
-  Protocol._();
+  const Protocol._();
 
   factory Protocol() => _instance;
 
   static final Map<Type, _i1.constructor> customConstructors = {};
 
-  static final Protocol _instance = Protocol._();
+  static const Protocol _instance = Protocol._();
 
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    _i2.TableDefinition(
+    const _i2.TableDefinition(
       name: 'channel',
       dartName: 'Channel',
       schema: 'public',

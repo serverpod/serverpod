@@ -8,7 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-enum DatabaseMigrationWarningType with _i1.SerializableEntity {
+enum DatabaseMigrationWarningType implements _i1.SerializableEntity {
   tableDropped,
   columnDropped,
   notNullAdded,

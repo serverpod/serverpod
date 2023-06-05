@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithSelfParent extends _i1.TableRow {
   ObjectWithSelfParent({
     int? id,
@@ -24,9 +26,14 @@ class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithSelfParentTable();
+  static var t = ObjectWithSelfParentTable();
 
-  int? other;
+  final int? other;
+
+  late Function({
+    int? id,
+    int? other,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_self_parent';
@@ -39,36 +46,46 @@ class ObjectWithSelfParent extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithSelfParent &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.other,
+                  other,
+                ) ||
+                other.other == other));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        other,
+      );
+
+  ObjectWithSelfParent _copyWith({
+    Object? id = _Undefined,
+    Object? other = _Undefined,
+  }) {
+    return ObjectWithSelfParent(
+      id: id == _Undefined ? this.id : (id as int?),
+      other: other == _Undefined ? this.other : (other as int?),
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'other': other,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'other': other,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'other':
-        other = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithSelfParent>> find(

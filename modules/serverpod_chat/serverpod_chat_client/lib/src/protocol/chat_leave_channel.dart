@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Indicates that a user wants to leave a channel.
 class ChatLeaveChannel extends _i1.SerializableEntity {
   ChatLeaveChannel({required this.channel});
@@ -22,10 +24,33 @@ class ChatLeaveChannel extends _i1.SerializableEntity {
   }
 
   /// The name of the channel to leave.
-  String channel;
+  final String channel;
+
+  late Function({String? channel}) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
     return {'channel': channel};
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatLeaveChannel &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel));
+  }
+
+  @override
+  int get hashCode => channel.hashCode;
+
+  ChatLeaveChannel _copyWith({String? channel}) {
+    return ChatLeaveChannel(channel: channel ?? this.channel);
   }
 }

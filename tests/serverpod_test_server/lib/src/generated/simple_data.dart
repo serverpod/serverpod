@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Just some simple data.
 class SimpleData extends _i1.TableRow {
   SimpleData({
@@ -25,12 +27,17 @@ class SimpleData extends _i1.TableRow {
     );
   }
 
-  static final t = SimpleDataTable();
+  static var t = SimpleDataTable();
 
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
-  int num;
+  final int num;
+
+  late Function({
+    int? id,
+    int? num,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'simple_data';
@@ -43,36 +50,46 @@ class SimpleData extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is SimpleData &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.num,
+                  num,
+                ) ||
+                other.num == num));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        num,
+      );
+
+  SimpleData _copyWith({
+    Object? id = _Undefined,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id == _Undefined ? this.id : (id as int?),
+      num: num ?? this.num,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'num': num,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'num': num,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'num':
-        num = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<SimpleData>> find(

@@ -9,7 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Defines how a foreign key should be matched.
-enum ForeignKeyMatchType with _i1.SerializableEntity {
+enum ForeignKeyMatchType implements _i1.SerializableEntity {
   /// [full] will not allow one column of a multicolumn foreign key
   /// to be null unless all foreign key columns are null.
   full,

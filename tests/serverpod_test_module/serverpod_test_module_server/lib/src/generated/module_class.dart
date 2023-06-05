@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ModuleClass extends _i1.SerializableEntity {
   ModuleClass({
     required this.name,
@@ -24,9 +26,14 @@ class ModuleClass extends _i1.SerializableEntity {
     );
   }
 
-  String name;
+  final String name;
 
-  int data;
+  final int data;
+
+  late Function({
+    String? name,
+    int? data,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -37,10 +44,37 @@ class ModuleClass extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'name': name,
-      'data': data,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ModuleClass &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.data,
+                  data,
+                ) ||
+                other.data == data));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        data,
+      );
+
+  ModuleClass _copyWith({
+    String? name,
+    int? data,
+  }) {
+    return ModuleClass(
+      name: name ?? this.name,
+      data: data ?? this.data,
+    );
   }
 }

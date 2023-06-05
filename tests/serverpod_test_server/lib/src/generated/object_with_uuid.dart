@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithUuid extends _i1.TableRow {
   ObjectWithUuid({
     int? id,
@@ -28,11 +30,17 @@ class ObjectWithUuid extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithUuidTable();
+  static var t = ObjectWithUuidTable();
 
-  _i1.UuidValue uuid;
+  final _i1.UuidValue uuid;
 
-  _i1.UuidValue? uuidNullable;
+  final _i1.UuidValue? uuidNullable;
+
+  late Function({
+    int? id,
+    _i1.UuidValue? uuid,
+    _i1.UuidValue? uuidNullable,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_uuid';
@@ -46,41 +54,57 @@ class ObjectWithUuid extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithUuid &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.uuid,
+                  uuid,
+                ) ||
+                other.uuid == uuid) &&
+            (identical(
+                  other.uuidNullable,
+                  uuidNullable,
+                ) ||
+                other.uuidNullable == uuidNullable));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        uuid,
+        uuidNullable,
+      );
+
+  ObjectWithUuid _copyWith({
+    Object? id = _Undefined,
+    _i1.UuidValue? uuid,
+    Object? uuidNullable = _Undefined,
+  }) {
+    return ObjectWithUuid(
+      id: id == _Undefined ? this.id : (id as int?),
+      uuid: uuid ?? this.uuid,
+      uuidNullable: uuidNullable == _Undefined
+          ? this.uuidNullable
+          : (uuidNullable as _i1.UuidValue?),
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'uuid': uuid,
       'uuidNullable': uuidNullable,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'uuidNullable': uuidNullable,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'uuid':
-        uuid = value;
-        return;
-      case 'uuidNullable':
-        uuidNullable = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithUuid>> find(

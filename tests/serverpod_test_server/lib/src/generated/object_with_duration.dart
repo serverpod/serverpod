@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithDuration extends _i1.TableRow {
   ObjectWithDuration({
     int? id,
@@ -25,9 +27,14 @@ class ObjectWithDuration extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithDurationTable();
+  static var t = ObjectWithDurationTable();
 
-  Duration duration;
+  final Duration duration;
+
+  late Function({
+    int? id,
+    Duration? duration,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_duration';
@@ -40,36 +47,46 @@ class ObjectWithDuration extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithDuration &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        duration,
+      );
+
+  ObjectWithDuration _copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id == _Undefined ? this.id : (id as int?),
+      duration: duration ?? this.duration,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'duration': duration,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'duration': duration,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithDuration>> find(

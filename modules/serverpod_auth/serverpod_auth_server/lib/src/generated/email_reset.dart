@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Database bindings for an email reset.
 class EmailReset extends _i1.TableRow {
   EmailReset({
@@ -32,16 +34,23 @@ class EmailReset extends _i1.TableRow {
     );
   }
 
-  static final t = EmailResetTable();
+  static var t = EmailResetTable();
 
   /// The id of the user that is resetting his/her password.
-  int userId;
+  final int userId;
 
   /// The verification code for the password reset.
-  String verificationCode;
+  final String verificationCode;
 
   /// The expiration time for the password reset.
-  DateTime expiration;
+  final DateTime expiration;
+
+  late Function({
+    int? id,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_email_reset';
@@ -56,6 +65,57 @@ class EmailReset extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailReset &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.verificationCode,
+                  verificationCode,
+                ) ||
+                other.verificationCode == verificationCode) &&
+            (identical(
+                  other.expiration,
+                  expiration,
+                ) ||
+                other.expiration == expiration));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        verificationCode,
+        expiration,
+      );
+
+  EmailReset _copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  }) {
+    return EmailReset(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      verificationCode: verificationCode ?? this.verificationCode,
+      expiration: expiration ?? this.expiration,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -63,39 +123,6 @@ class EmailReset extends _i1.TableRow {
       'verificationCode': verificationCode,
       'expiration': expiration,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'verificationCode': verificationCode,
-      'expiration': expiration,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'verificationCode':
-        verificationCode = value;
-        return;
-      case 'expiration':
-        expiration = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<EmailReset>> find(

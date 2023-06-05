@@ -98,15 +98,15 @@ export 'session_log_info.dart';
 export 'session_log_result.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
-  Protocol._();
+  const Protocol._();
 
   factory Protocol() => _instance;
 
   static final Map<Type, _i1.constructor> customConstructors = {};
 
-  static final Protocol _instance = Protocol._();
+  static const Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
+  static const targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_auth_key',
       dartName: 'AuthKey',

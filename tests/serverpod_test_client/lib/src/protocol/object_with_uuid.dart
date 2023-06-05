@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithUuid extends _i1.SerializableEntity {
   ObjectWithUuid({
     this.id,
@@ -31,11 +33,17 @@ class ObjectWithUuid extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
-  _i1.UuidValue uuid;
+  final _i1.UuidValue uuid;
 
-  _i1.UuidValue? uuidNullable;
+  final _i1.UuidValue? uuidNullable;
+
+  late Function({
+    int? id,
+    _i1.UuidValue? uuid,
+    _i1.UuidValue? uuidNullable,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -44,5 +52,50 @@ class ObjectWithUuid extends _i1.SerializableEntity {
       'uuid': uuid,
       'uuidNullable': uuidNullable,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithUuid &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.uuid,
+                  uuid,
+                ) ||
+                other.uuid == uuid) &&
+            (identical(
+                  other.uuidNullable,
+                  uuidNullable,
+                ) ||
+                other.uuidNullable == uuidNullable));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        uuid,
+        uuidNullable,
+      );
+
+  ObjectWithUuid _copyWith({
+    Object? id = _Undefined,
+    _i1.UuidValue? uuid,
+    Object? uuidNullable = _Undefined,
+  }) {
+    return ObjectWithUuid(
+      id: id == _Undefined ? this.id : (id as int?),
+      uuid: uuid ?? this.uuid,
+      uuidNullable: uuidNullable == _Undefined
+          ? this.uuidNullable
+          : (uuidNullable as _i1.UuidValue?),
+    );
   }
 }

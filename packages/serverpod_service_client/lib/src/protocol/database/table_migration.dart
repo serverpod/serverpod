@@ -8,6 +8,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
+
+class _Undefined {}
 
 class TableMigration extends _i1.SerializableEntity {
   TableMigration({
@@ -59,29 +62,44 @@ class TableMigration extends _i1.SerializableEntity {
     );
   }
 
-  String name;
+  final String name;
 
-  String? dartName;
+  final String? dartName;
 
-  String? module;
+  final String? module;
 
-  String schema;
+  final String schema;
 
-  List<_i2.ColumnDefinition> addColumns;
+  final List<_i2.ColumnDefinition> addColumns;
 
-  List<String> deleteColumns;
+  final List<String> deleteColumns;
 
-  List<_i2.ColumnMigration> modifyColumns;
+  final List<_i2.ColumnMigration> modifyColumns;
 
-  List<_i2.IndexDefinition> addIndexes;
+  final List<_i2.IndexDefinition> addIndexes;
 
-  List<String> deleteIndexes;
+  final List<String> deleteIndexes;
 
-  List<_i2.ForeignKeyDefinition> addForeignKeys;
+  final List<_i2.ForeignKeyDefinition> addForeignKeys;
 
-  List<String> deleteForeignKeys;
+  final List<String> deleteForeignKeys;
 
-  List<_i2.DatabaseMigrationWarning> warnings;
+  final List<_i2.DatabaseMigrationWarning> warnings;
+
+  late Function({
+    String? name,
+    String? dartName,
+    String? module,
+    String? schema,
+    List<_i2.ColumnDefinition>? addColumns,
+    List<String>? deleteColumns,
+    List<_i2.ColumnMigration>? modifyColumns,
+    List<_i2.IndexDefinition>? addIndexes,
+    List<String>? deleteIndexes,
+    List<_i2.ForeignKeyDefinition>? addForeignKeys,
+    List<String>? deleteForeignKeys,
+    List<_i2.DatabaseMigrationWarning>? warnings,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -99,5 +117,112 @@ class TableMigration extends _i1.SerializableEntity {
       'deleteForeignKeys': deleteForeignKeys,
       'warnings': warnings,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is TableMigration &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.dartName,
+                  dartName,
+                ) ||
+                other.dartName == dartName) &&
+            (identical(
+                  other.module,
+                  module,
+                ) ||
+                other.module == module) &&
+            (identical(
+                  other.schema,
+                  schema,
+                ) ||
+                other.schema == schema) &&
+            const _i3.DeepCollectionEquality().equals(
+              addColumns,
+              other.addColumns,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              deleteColumns,
+              other.deleteColumns,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              modifyColumns,
+              other.modifyColumns,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              addIndexes,
+              other.addIndexes,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              deleteIndexes,
+              other.deleteIndexes,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              addForeignKeys,
+              other.addForeignKeys,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              deleteForeignKeys,
+              other.deleteForeignKeys,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              warnings,
+              other.warnings,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        dartName,
+        module,
+        schema,
+        const _i3.DeepCollectionEquality().hash(addColumns),
+        const _i3.DeepCollectionEquality().hash(deleteColumns),
+        const _i3.DeepCollectionEquality().hash(modifyColumns),
+        const _i3.DeepCollectionEquality().hash(addIndexes),
+        const _i3.DeepCollectionEquality().hash(deleteIndexes),
+        const _i3.DeepCollectionEquality().hash(addForeignKeys),
+        const _i3.DeepCollectionEquality().hash(deleteForeignKeys),
+        const _i3.DeepCollectionEquality().hash(warnings),
+      );
+
+  TableMigration _copyWith({
+    String? name,
+    Object? dartName = _Undefined,
+    Object? module = _Undefined,
+    String? schema,
+    List<_i2.ColumnDefinition>? addColumns,
+    List<String>? deleteColumns,
+    List<_i2.ColumnMigration>? modifyColumns,
+    List<_i2.IndexDefinition>? addIndexes,
+    List<String>? deleteIndexes,
+    List<_i2.ForeignKeyDefinition>? addForeignKeys,
+    List<String>? deleteForeignKeys,
+    List<_i2.DatabaseMigrationWarning>? warnings,
+  }) {
+    return TableMigration(
+      name: name ?? this.name,
+      dartName: dartName == _Undefined ? this.dartName : (dartName as String?),
+      module: module == _Undefined ? this.module : (module as String?),
+      schema: schema ?? this.schema,
+      addColumns: addColumns ?? this.addColumns,
+      deleteColumns: deleteColumns ?? this.deleteColumns,
+      modifyColumns: modifyColumns ?? this.modifyColumns,
+      addIndexes: addIndexes ?? this.addIndexes,
+      deleteIndexes: deleteIndexes ?? this.deleteIndexes,
+      addForeignKeys: addForeignKeys ?? this.addForeignKeys,
+      deleteForeignKeys: deleteForeignKeys ?? this.deleteForeignKeys,
+      warnings: warnings ?? this.warnings,
+    );
   }
 }

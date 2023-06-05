@@ -57,12 +57,6 @@ class ClassDefinition extends SerializableEntityDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
-  /// If `extraFeature` is value of `server, client, both`, the following methods will be generated:
-  /// - `operator==` for equality comparison
-  /// - `hashCode` for generating hash codes
-  /// - `copyWith` for creating a copy of the object with modified properties.
-  final ExtraFeature extraFeature;
-
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -74,7 +68,6 @@ class ClassDefinition extends SerializableEntityDefinition {
     this.indexes,
     super.subDirParts,
     this.documentation,
-    required this.extraFeature,
   });
 }
 

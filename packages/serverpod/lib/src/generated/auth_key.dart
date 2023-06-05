@@ -7,6 +7,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:collection/collection.dart' as _i2;
+
+class _Undefined {}
 
 /// Provides a method of access for a user to authenticate with the server.
 class AuthKey extends _i1.TableRow {
@@ -36,23 +39,32 @@ class AuthKey extends _i1.TableRow {
     );
   }
 
-  static final t = AuthKeyTable();
+  static var t = AuthKeyTable();
 
   /// The id of the user to provide access to.
-  int userId;
+  final int userId;
 
   /// The hashed version of the key.
-  String hash;
+  final String hash;
 
   /// The key sent to the server to authenticate.
-  String? key;
+  final String? key;
 
   /// The scopes this key provides access to.
-  List<String> scopeNames;
+  final List<String> scopeNames;
 
   /// The method of signing in this key was generated through. This can be email
   /// or different social logins.
-  String method;
+  final String method;
+
+  late Function({
+    int? id,
+    int? userId,
+    String? hash,
+    String? key,
+    List<String>? scopeNames,
+    String? method,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_auth_key';
@@ -69,6 +81,72 @@ class AuthKey extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is AuthKey &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.hash,
+                  hash,
+                ) ||
+                other.hash == hash) &&
+            (identical(
+                  other.key,
+                  key,
+                ) ||
+                other.key == key) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method) &&
+            const _i2.DeepCollectionEquality().equals(
+              scopeNames,
+              other.scopeNames,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        hash,
+        key,
+        method,
+        const _i2.DeepCollectionEquality().hash(scopeNames),
+      );
+
+  AuthKey _copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? hash,
+    Object? key = _Undefined,
+    List<String>? scopeNames,
+    String? method,
+  }) {
+    return AuthKey(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      hash: hash ?? this.hash,
+      key: key == _Undefined ? this.key : (key as String?),
+      scopeNames: scopeNames ?? this.scopeNames,
+      method: method ?? this.method,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -77,44 +155,6 @@ class AuthKey extends _i1.TableRow {
       'scopeNames': scopeNames,
       'method': method,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'hash': hash,
-      'key': key,
-      'scopeNames': scopeNames,
-      'method': method,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'hash':
-        hash = value;
-        return;
-      case 'scopeNames':
-        scopeNames = value;
-        return;
-      case 'method':
-        method = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<AuthKey>> find(

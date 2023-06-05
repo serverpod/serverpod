@@ -1,6 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_module_client/module.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
+import 'package:serverpod_test_module_client/module.dart';
 import 'package:test/test.dart';
 
 import 'authentication_test.dart';
@@ -87,7 +87,7 @@ void main() {
   group('Authentication', () {
     test('Access restricted endpoint without authentication', () async {
       // This should be ignored by the server as user isn't authenticated.
-      await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
+      await client.signInRequired.sendStreamMessage(const SimpleData(num: 666));
       await Future.delayed(const Duration(seconds: 1));
     });
 
@@ -138,7 +138,7 @@ void main() {
       );
 
       // This should be ignored by the server as user isn't authenticated.
-      await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
+      await client.signInRequired.sendStreamMessage(const SimpleData(num: 666));
       await Future.delayed(const Duration(seconds: 1));
 
       // Authenticate and upgrade stream.

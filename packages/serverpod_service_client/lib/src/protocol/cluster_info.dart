@@ -8,6 +8,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
+
+class _Undefined {}
 
 /// Information about a cluster of servers.
 class ClusterInfo extends _i1.SerializableEntity {
@@ -23,10 +26,32 @@ class ClusterInfo extends _i1.SerializableEntity {
   }
 
   /// List of servers in the cluster.
-  List<_i2.ClusterServerInfo> servers;
+  final List<_i2.ClusterServerInfo> servers;
+
+  late Function({List<_i2.ClusterServerInfo>? servers}) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
     return {'servers': servers};
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ClusterInfo &&
+            const _i3.DeepCollectionEquality().equals(
+              servers,
+              other.servers,
+            ));
+  }
+
+  @override
+  int get hashCode => const _i3.DeepCollectionEquality().hash(servers);
+
+  ClusterInfo _copyWith({List<_i2.ClusterServerInfo>? servers}) {
+    return ClusterInfo(servers: servers ?? this.servers);
   }
 }

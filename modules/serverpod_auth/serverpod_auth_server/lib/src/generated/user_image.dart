@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Database bindings for a user image.
 class UserImage extends _i1.TableRow {
   UserImage({
@@ -31,16 +33,23 @@ class UserImage extends _i1.TableRow {
     );
   }
 
-  static final t = UserImageTable();
+  static var t = UserImageTable();
 
   /// The id of the user.
-  int userId;
+  final int userId;
 
   /// Version of the image. Increased by one for every uploaded image.
-  int version;
+  final int version;
 
   /// The URL to the image.
-  String url;
+  final String url;
+
+  late Function({
+    int? id,
+    int? userId,
+    int? version,
+    String? url,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_user_image';
@@ -55,6 +64,57 @@ class UserImage extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is UserImage &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.version,
+                  version,
+                ) ||
+                other.version == version) &&
+            (identical(
+                  other.url,
+                  url,
+                ) ||
+                other.url == url));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        version,
+        url,
+      );
+
+  UserImage _copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    int? version,
+    String? url,
+  }) {
+    return UserImage(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      version: version ?? this.version,
+      url: url ?? this.url,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -62,39 +122,6 @@ class UserImage extends _i1.TableRow {
       'version': version,
       'url': url,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'version': version,
-      'url': url,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'version':
-        version = value;
-        return;
-      case 'url':
-        url = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<UserImage>> find(

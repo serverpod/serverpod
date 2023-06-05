@@ -9,7 +9,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just an test enum.
-enum TestEnum with _i1.SerializableEntity {
+enum TestEnum implements _i1.SerializableEntity {
   /// The first value of [TestEnum].
   one,
 

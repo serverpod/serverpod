@@ -9,6 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
+class _Undefined {}
+
 /// The definition of a (desired) column in the database.
 class ColumnDefinition extends _i1.SerializableEntity {
   ColumnDefinition({
@@ -37,21 +39,29 @@ class ColumnDefinition extends _i1.SerializableEntity {
   }
 
   /// The column name
-  String name;
+  final String name;
 
   /// The actual column type
-  _i2.ColumnType columnType;
+  final _i2.ColumnType columnType;
 
   /// Whether this column is nullable.
-  bool isNullable;
+  final bool isNullable;
 
   /// The default for the column.
-  String? columnDefault;
+  final String? columnDefault;
 
   /// The (dart) type specified in the yaml file.
   /// Is nullable, since this is not available when
   /// analyzing the database.
-  String? dartType;
+  final String? dartType;
+
+  late Function({
+    String? name,
+    _i2.ColumnType? columnType,
+    bool? isNullable,
+    String? columnDefault,
+    String? dartType,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -65,13 +75,63 @@ class ColumnDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'name': name,
-      'columnType': columnType,
-      'isNullable': isNullable,
-      'columnDefault': columnDefault,
-      'dartType': dartType,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ColumnDefinition &&
+            (identical(
+                  other.name,
+                  name,
+                ) ||
+                other.name == name) &&
+            (identical(
+                  other.columnType,
+                  columnType,
+                ) ||
+                other.columnType == columnType) &&
+            (identical(
+                  other.isNullable,
+                  isNullable,
+                ) ||
+                other.isNullable == isNullable) &&
+            (identical(
+                  other.columnDefault,
+                  columnDefault,
+                ) ||
+                other.columnDefault == columnDefault) &&
+            (identical(
+                  other.dartType,
+                  dartType,
+                ) ||
+                other.dartType == dartType));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        columnType,
+        isNullable,
+        columnDefault,
+        dartType,
+      );
+
+  ColumnDefinition _copyWith({
+    String? name,
+    _i2.ColumnType? columnType,
+    bool? isNullable,
+    Object? columnDefault = _Undefined,
+    Object? dartType = _Undefined,
+  }) {
+    return ColumnDefinition(
+      name: name ?? this.name,
+      columnType: columnType ?? this.columnType,
+      isNullable: isNullable ?? this.isNullable,
+      columnDefault: columnDefault == _Undefined
+          ? this.columnDefault
+          : (columnDefault as String?),
+      dartType: dartType == _Undefined ? this.dartType : (dartType as String?),
+    );
   }
 }

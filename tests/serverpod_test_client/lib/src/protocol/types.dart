@@ -9,6 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
+class _Undefined {}
+
 class Types extends _i1.SerializableEntity {
   Types({
     this.id,
@@ -49,23 +51,35 @@ class Types extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
-  int? anInt;
+  final int? anInt;
 
-  bool? aBool;
+  final bool? aBool;
 
-  double? aDouble;
+  final double? aDouble;
 
-  DateTime? aDateTime;
+  final DateTime? aDateTime;
 
-  String? aString;
+  final String? aString;
 
-  _i2.ByteData? aByteData;
+  final _i2.ByteData? aByteData;
 
-  Duration? aDuration;
+  final Duration? aDuration;
 
-  _i1.UuidValue? aUuid;
+  final _i1.UuidValue? aUuid;
+
+  late Function({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -80,5 +94,100 @@ class Types extends _i1.SerializableEntity {
       'aDuration': aDuration,
       'aUuid': aUuid,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is Types &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.anInt,
+                  anInt,
+                ) ||
+                other.anInt == anInt) &&
+            (identical(
+                  other.aBool,
+                  aBool,
+                ) ||
+                other.aBool == aBool) &&
+            (identical(
+                  other.aDouble,
+                  aDouble,
+                ) ||
+                other.aDouble == aDouble) &&
+            (identical(
+                  other.aDateTime,
+                  aDateTime,
+                ) ||
+                other.aDateTime == aDateTime) &&
+            (identical(
+                  other.aString,
+                  aString,
+                ) ||
+                other.aString == aString) &&
+            (identical(
+                  other.aByteData,
+                  aByteData,
+                ) ||
+                other.aByteData == aByteData) &&
+            (identical(
+                  other.aDuration,
+                  aDuration,
+                ) ||
+                other.aDuration == aDuration) &&
+            (identical(
+                  other.aUuid,
+                  aUuid,
+                ) ||
+                other.aUuid == aUuid));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        anInt,
+        aBool,
+        aDouble,
+        aDateTime,
+        aString,
+        aByteData,
+        aDuration,
+        aUuid,
+      );
+
+  Types _copyWith({
+    Object? id = _Undefined,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
+    Object? aDateTime = _Undefined,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
+    Object? aDuration = _Undefined,
+    Object? aUuid = _Undefined,
+  }) {
+    return Types(
+      id: id == _Undefined ? this.id : (id as int?),
+      anInt: anInt == _Undefined ? this.anInt : (anInt as int?),
+      aBool: aBool == _Undefined ? this.aBool : (aBool as bool?),
+      aDouble: aDouble == _Undefined ? this.aDouble : (aDouble as double?),
+      aDateTime:
+          aDateTime == _Undefined ? this.aDateTime : (aDateTime as DateTime?),
+      aString: aString == _Undefined ? this.aString : (aString as String?),
+      aByteData: aByteData == _Undefined
+          ? this.aByteData
+          : (aByteData as _i2.ByteData?),
+      aDuration:
+          aDuration == _Undefined ? this.aDuration : (aDuration as Duration?),
+      aUuid: aUuid == _Undefined ? this.aUuid : (aUuid as _i1.UuidValue?),
+    );
   }
 }

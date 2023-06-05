@@ -9,6 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
+class _Undefined {}
+
 /// An entry in the database for an uploaded file.
 class CloudStorageEntry extends _i1.TableRow {
   CloudStorageEntry({
@@ -41,25 +43,35 @@ class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
-  static final t = CloudStorageEntryTable();
+  static var t = CloudStorageEntryTable();
 
   /// The storageId, typically `public` or `private`.
-  String storageId;
+  final String storageId;
 
   /// The path where the file is stored.
-  String path;
+  final String path;
 
   /// The time when the file was added.
-  DateTime addedTime;
+  final DateTime addedTime;
 
   /// The time at which the file expires and can be deleted.
-  DateTime? expiration;
+  final DateTime? expiration;
 
   /// The actual data of the uploaded file.
-  _i2.ByteData byteData;
+  final _i2.ByteData byteData;
 
   /// True if the file has been verified as uploaded.
-  bool verified;
+  final bool verified;
+
+  late Function({
+    int? id,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    DateTime? expiration,
+    _i2.ByteData? byteData,
+    bool? verified,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_cloud_storage';
@@ -77,6 +89,83 @@ class CloudStorageEntry extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is CloudStorageEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.storageId,
+                  storageId,
+                ) ||
+                other.storageId == storageId) &&
+            (identical(
+                  other.path,
+                  path,
+                ) ||
+                other.path == path) &&
+            (identical(
+                  other.addedTime,
+                  addedTime,
+                ) ||
+                other.addedTime == addedTime) &&
+            (identical(
+                  other.expiration,
+                  expiration,
+                ) ||
+                other.expiration == expiration) &&
+            (identical(
+                  other.byteData,
+                  byteData,
+                ) ||
+                other.byteData == byteData) &&
+            (identical(
+                  other.verified,
+                  verified,
+                ) ||
+                other.verified == verified));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        storageId,
+        path,
+        addedTime,
+        expiration,
+        byteData,
+        verified,
+      );
+
+  CloudStorageEntry _copyWith({
+    Object? id = _Undefined,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    Object? expiration = _Undefined,
+    _i2.ByteData? byteData,
+    bool? verified,
+  }) {
+    return CloudStorageEntry(
+      id: id == _Undefined ? this.id : (id as int?),
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
+      addedTime: addedTime ?? this.addedTime,
+      expiration: expiration == _Undefined
+          ? this.expiration
+          : (expiration as DateTime?),
+      byteData: byteData ?? this.byteData,
+      verified: verified ?? this.verified,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -87,51 +176,6 @@ class CloudStorageEntry extends _i1.TableRow {
       'byteData': byteData,
       'verified': verified,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'storageId': storageId,
-      'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
-      'verified': verified,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'storageId':
-        storageId = value;
-        return;
-      case 'path':
-        path = value;
-        return;
-      case 'addedTime':
-        addedTime = value;
-        return;
-      case 'expiration':
-        expiration = value;
-        return;
-      case 'byteData':
-        byteData = value;
-        return;
-      case 'verified':
-        verified = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<CloudStorageEntry>> find(

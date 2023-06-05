@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Information about an email password reset.
 class EmailPasswordReset extends _i1.SerializableEntity {
   EmailPasswordReset({
@@ -28,10 +30,15 @@ class EmailPasswordReset extends _i1.SerializableEntity {
   }
 
   /// The user name of the user.
-  String userName;
+  final String userName;
 
   /// The email of the user.
-  String email;
+  final String email;
+
+  late Function({
+    String? userName,
+    String? email,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -39,5 +46,40 @@ class EmailPasswordReset extends _i1.SerializableEntity {
       'userName': userName,
       'email': email,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailPasswordReset &&
+            (identical(
+                  other.userName,
+                  userName,
+                ) ||
+                other.userName == userName) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        userName,
+        email,
+      );
+
+  EmailPasswordReset _copyWith({
+    String? userName,
+    String? email,
+  }) {
+    return EmailPasswordReset(
+      userName: userName ?? this.userName,
+      email: email ?? this.email,
+    );
   }
 }

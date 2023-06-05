@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
 class EmailFailedSignIn extends _i1.SerializableEntity {
@@ -36,16 +38,23 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
   /// Email attempting to sign in with.
-  String email;
+  final String email;
 
   /// The time of the sign in attempt.
-  DateTime time;
+  final DateTime time;
 
   /// The IP address of the sign in attempt.
-  String ipAddress;
+  final String ipAddress;
+
+  late Function({
+    int? id,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -55,5 +64,56 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
       'time': time,
       'ipAddress': ipAddress,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is EmailFailedSignIn &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.email,
+                  email,
+                ) ||
+                other.email == email) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.ipAddress,
+                  ipAddress,
+                ) ||
+                other.ipAddress == ipAddress));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        email,
+        time,
+        ipAddress,
+      );
+
+  EmailFailedSignIn _copyWith({
+    Object? id = _Undefined,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  }) {
+    return EmailFailedSignIn(
+      id: id == _Undefined ? this.id : (id as int?),
+      email: email ?? this.email,
+      time: time ?? this.time,
+      ipAddress: ipAddress ?? this.ipAddress,
+    );
   }
 }

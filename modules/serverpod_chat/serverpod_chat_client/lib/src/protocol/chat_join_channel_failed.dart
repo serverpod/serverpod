@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 /// Message being sent if a user failed to join a channel.
 class ChatJoinChannelFailed extends _i1.SerializableEntity {
   ChatJoinChannelFailed({
@@ -28,10 +30,15 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
   }
 
   /// The name of the channel the user attempted to join.
-  String channel;
+  final String channel;
 
   /// The reason of failure.
-  String reason;
+  final String reason;
+
+  late Function({
+    String? channel,
+    String? reason,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -39,5 +46,40 @@ class ChatJoinChannelFailed extends _i1.SerializableEntity {
       'channel': channel,
       'reason': reason,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatJoinChannelFailed &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.reason,
+                  reason,
+                ) ||
+                other.reason == reason));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        channel,
+        reason,
+      );
+
+  ChatJoinChannelFailed _copyWith({
+    String? channel,
+    String? reason,
+  }) {
+    return ChatJoinChannelFailed(
+      channel: channel ?? this.channel,
+      reason: reason ?? this.reason,
+    );
   }
 }

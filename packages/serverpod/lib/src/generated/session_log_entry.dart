@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Log entry for a session.
 class SessionLogEntry extends _i1.TableRow {
   SessionLogEntry({
@@ -61,50 +63,67 @@ class SessionLogEntry extends _i1.TableRow {
     );
   }
 
-  static final t = SessionLogEntryTable();
+  static var t = SessionLogEntryTable();
 
   /// The id of the server that handled this session.
-  String serverId;
+  final String serverId;
 
   /// The starting time of this session.
-  DateTime time;
+  final DateTime time;
 
   /// The module this session is associated with, if any.
-  String? module;
+  final String? module;
 
   /// The endpoint this session is associated with, if any.
-  String? endpoint;
+  final String? endpoint;
 
   /// The method this session is associated with, if any.
-  String? method;
+  final String? method;
 
   /// The running time of this session. May be null if the session is still
   /// active.
-  double? duration;
+  final double? duration;
 
   /// The number of queries performed during this session.
-  int? numQueries;
+  final int? numQueries;
 
   /// True if this session was slow to complete.
-  bool? slow;
+  final bool? slow;
 
   /// If the session ends with an exception, the error field will be set.
-  String? error;
+  final String? error;
 
   /// If the session ends with an exception, a stack trace will be set.
-  String? stackTrace;
+  final String? stackTrace;
 
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
   /// user.
-  int? authenticatedUserId;
+  final int? authenticatedUserId;
 
   /// True if the session is still open.
-  bool? isOpen;
+  final bool? isOpen;
 
   /// Timestamp of the last time this record was modified.
-  DateTime touched;
+  final DateTime touched;
+
+  late Function({
+    int? id,
+    String? serverId,
+    DateTime? time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    DateTime? touched,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_session_log';
@@ -129,6 +148,141 @@ class SessionLogEntry extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is SessionLogEntry &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.serverId,
+                  serverId,
+                ) ||
+                other.serverId == serverId) &&
+            (identical(
+                  other.time,
+                  time,
+                ) ||
+                other.time == time) &&
+            (identical(
+                  other.module,
+                  module,
+                ) ||
+                other.module == module) &&
+            (identical(
+                  other.endpoint,
+                  endpoint,
+                ) ||
+                other.endpoint == endpoint) &&
+            (identical(
+                  other.method,
+                  method,
+                ) ||
+                other.method == method) &&
+            (identical(
+                  other.duration,
+                  duration,
+                ) ||
+                other.duration == duration) &&
+            (identical(
+                  other.numQueries,
+                  numQueries,
+                ) ||
+                other.numQueries == numQueries) &&
+            (identical(
+                  other.slow,
+                  slow,
+                ) ||
+                other.slow == slow) &&
+            (identical(
+                  other.error,
+                  error,
+                ) ||
+                other.error == error) &&
+            (identical(
+                  other.stackTrace,
+                  stackTrace,
+                ) ||
+                other.stackTrace == stackTrace) &&
+            (identical(
+                  other.authenticatedUserId,
+                  authenticatedUserId,
+                ) ||
+                other.authenticatedUserId == authenticatedUserId) &&
+            (identical(
+                  other.isOpen,
+                  isOpen,
+                ) ||
+                other.isOpen == isOpen) &&
+            (identical(
+                  other.touched,
+                  touched,
+                ) ||
+                other.touched == touched));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        serverId,
+        time,
+        module,
+        endpoint,
+        method,
+        duration,
+        numQueries,
+        slow,
+        error,
+        stackTrace,
+        authenticatedUserId,
+        isOpen,
+        touched,
+      );
+
+  SessionLogEntry _copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    DateTime? time,
+    Object? module = _Undefined,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
+    Object? duration = _Undefined,
+    Object? numQueries = _Undefined,
+    Object? slow = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    Object? authenticatedUserId = _Undefined,
+    Object? isOpen = _Undefined,
+    DateTime? touched,
+  }) {
+    return SessionLogEntry(
+      id: id == _Undefined ? this.id : (id as int?),
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      module: module == _Undefined ? this.module : (module as String?),
+      endpoint: endpoint == _Undefined ? this.endpoint : (endpoint as String?),
+      method: method == _Undefined ? this.method : (method as String?),
+      duration: duration == _Undefined ? this.duration : (duration as double?),
+      numQueries:
+          numQueries == _Undefined ? this.numQueries : (numQueries as int?),
+      slow: slow == _Undefined ? this.slow : (slow as bool?),
+      error: error == _Undefined ? this.error : (error as String?),
+      stackTrace:
+          stackTrace == _Undefined ? this.stackTrace : (stackTrace as String?),
+      authenticatedUserId: authenticatedUserId == _Undefined
+          ? this.authenticatedUserId
+          : (authenticatedUserId as int?),
+      isOpen: isOpen == _Undefined ? this.isOpen : (isOpen as bool?),
+      touched: touched ?? this.touched,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -146,79 +300,6 @@ class SessionLogEntry extends _i1.TableRow {
       'isOpen': isOpen,
       'touched': touched,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'time':
-        time = value;
-        return;
-      case 'module':
-        module = value;
-        return;
-      case 'endpoint':
-        endpoint = value;
-        return;
-      case 'method':
-        method = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      case 'numQueries':
-        numQueries = value;
-        return;
-      case 'slow':
-        slow = value;
-        return;
-      case 'error':
-        error = value;
-        return;
-      case 'stackTrace':
-        stackTrace = value;
-        return;
-      case 'authenticatedUserId':
-        authenticatedUserId = value;
-        return;
-      case 'isOpen':
-        isOpen = value;
-        return;
-      case 'touched':
-        touched = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<SessionLogEntry>> find(

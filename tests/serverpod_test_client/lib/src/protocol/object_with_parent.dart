@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithParent extends _i1.SerializableEntity {
   ObjectWithParent({
     this.id,
@@ -27,9 +29,14 @@ class ObjectWithParent extends _i1.SerializableEntity {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  final int? id;
 
-  int other;
+  final int other;
+
+  late Function({
+    int? id,
+    int? other,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -37,5 +44,40 @@ class ObjectWithParent extends _i1.SerializableEntity {
       'id': id,
       'other': other,
     };
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithParent &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.other,
+                  other,
+                ) ||
+                other.other == other));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        other,
+      );
+
+  ObjectWithParent _copyWith({
+    Object? id = _Undefined,
+    int? other,
+  }) {
+    return ObjectWithParent(
+      id: id == _Undefined ? this.id : (id as int?),
+      other: other ?? this.other,
+    );
   }
 }

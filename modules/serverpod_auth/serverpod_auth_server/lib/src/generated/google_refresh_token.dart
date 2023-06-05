@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 /// Database bindings for a Google refresh token.
 class GoogleRefreshToken extends _i1.TableRow {
   GoogleRefreshToken({
@@ -29,13 +31,19 @@ class GoogleRefreshToken extends _i1.TableRow {
     );
   }
 
-  static final t = GoogleRefreshTokenTable();
+  static var t = GoogleRefreshTokenTable();
 
   /// The user id associated with the token.
-  int userId;
+  final int userId;
 
   /// The token iteself.
-  String refreshToken;
+  final String refreshToken;
+
+  late Function({
+    int? id,
+    int? userId,
+    String? refreshToken,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'serverpod_google_refresh_token';
@@ -49,41 +57,55 @@ class GoogleRefreshToken extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is GoogleRefreshToken &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.userId,
+                  userId,
+                ) ||
+                other.userId == userId) &&
+            (identical(
+                  other.refreshToken,
+                  refreshToken,
+                ) ||
+                other.refreshToken == refreshToken));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        refreshToken,
+      );
+
+  GoogleRefreshToken _copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? refreshToken,
+  }) {
+    return GoogleRefreshToken(
+      id: id == _Undefined ? this.id : (id as int?),
+      userId: userId ?? this.userId,
+      refreshToken: refreshToken ?? this.refreshToken,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'refreshToken': refreshToken,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'refreshToken':
-        refreshToken = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<GoogleRefreshToken>> find(

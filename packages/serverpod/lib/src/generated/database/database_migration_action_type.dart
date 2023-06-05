@@ -8,7 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-enum DatabaseMigrationActionType with _i1.SerializableEntity {
+enum DatabaseMigrationActionType implements _i1.SerializableEntity {
   createTable,
   deleteTable,
   alterTable;

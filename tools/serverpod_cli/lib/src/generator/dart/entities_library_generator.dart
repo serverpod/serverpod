@@ -32,7 +32,7 @@ class SerializableEntityLibraryGenerator {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
-    var extraFeature = classDefinition.extraFeature;
+    // var extraFeature = classDefinition.extraFeature;
 
     var library = Library(
       (library) {
@@ -49,11 +49,14 @@ class SerializableEntityLibraryGenerator {
             classBuilder.extend =
                 refer('TableRow', 'package:serverpod/serverpod.dart');
 
-            classBuilder.fields.add(Field((f) => f
-              ..static = true
-              ..modifier = FieldModifier.final$
-              ..name = 't'
-              ..assignment = refer('${className}Table').call([]).code));
+            classBuilder.fields.add(
+              Field((f) => f
+                ..static = true
+                ..modifier = FieldModifier.constant
+                ..name = 't'
+                ..assignment =
+                    refer('${className}Table').constInstance([]).code),
+            );
 
             // add tableName getter
             classBuilder.methods.add(Method(
@@ -75,9 +78,7 @@ class SerializableEntityLibraryGenerator {
             if (field.shouldIncludeField(serverCode) &&
                 !(field.name == 'id' && serverCode && tableName != null)) {
               classBuilder.fields.add(Field((f) {
-                if (extraFeature.isClient && !serverCode) {
-                  f.modifier = FieldModifier.final$;
-                }
+                f.modifier = FieldModifier.final$;
 
                 f.type = field.type.reference(serverCode,
                     subDirParts: classDefinition.subDirParts, config: config);
@@ -90,6 +91,8 @@ class SerializableEntityLibraryGenerator {
 
           // Default constructor
           classBuilder.constructors.add(Constructor((c) {
+            // c.constant = true;
+
             for (var field in fields) {
               if (field.shouldIncludeField(serverCode)) {
                 if (field.name == 'id' && serverCode && tableName != null) {
@@ -170,7 +173,7 @@ class SerializableEntityLibraryGenerator {
           ));
 
           // operator==, hashCode, copyWith
-          if (extraFeature.isClient && !serverCode) {
+          if (true) {
             var primaryFields = fields
                 .where(
                   (e) =>
@@ -385,49 +388,7 @@ class SerializableEntityLibraryGenerator {
               ));
             }
 
-            classBuilder.methods.add(Method(
-              (m) {
-                m.returns = refer('Map<String,dynamic>');
-                m.name = 'allToJson';
-                m.annotations.add(refer('override'));
-
-                m.body = literalMap(
-                  {
-                    for (var field in fields)
-                      literalString(field.name): refer(field.name)
-                  },
-                  //  refer('String'), refer('dynamic')
-                ).returned.statement;
-              },
-            ));
-
             if (tableName != null) {
-              // Column setter
-              classBuilder.methods.add(Method((m) => m
-                ..annotations.add(refer('override'))
-                ..name = 'setColumn'
-                ..returns = refer('void')
-                ..requiredParameters.addAll([
-                  Parameter((p) => p
-                    ..name = 'columnName'
-                    ..type = refer('String')),
-                  Parameter((p) => p..name = 'value'),
-                ])
-                ..body = Block.of([
-                  const Code('switch(columnName){'),
-                  for (var field in fields)
-                    if (field.shouldSerializeFieldForDatabase(serverCode))
-                      Block.of([
-                        Code('case \'${field.name}\':'),
-                        refer(field.name).assign(refer('value')).statement,
-                        refer('').returned.statement,
-                      ]),
-                  const Code('default:'),
-                  refer('UnimplementedError').call([]).thrown.statement,
-                  const Code('}'),
-                ])));
-
-              // find
               classBuilder.methods.add(Method((m) => m
                 ..static = true
                 ..name = 'find'
@@ -873,6 +834,8 @@ class SerializableEntityLibraryGenerator {
             c.name = '${className}Table';
             c.extend = refer('Table', serverpodUrl(serverCode));
             c.constructors.add(Constructor((constructor) {
+              constructor.constant = true;
+
               constructor.initializers.add(refer('super')
                   .call([], {'tableName': literalString(tableName)}).code);
             }));
@@ -880,23 +843,34 @@ class SerializableEntityLibraryGenerator {
             // Column descriptions
             for (var field in fields) {
               if (field.shouldSerializeFieldForDatabase(serverCode)) {
-                c.fields.add(Field((f) => f
-                  ..modifier = FieldModifier.final$
-                  ..name = field.name
-                  ..docs.addAll(field.documentation ?? [])
-                  ..assignment = TypeReference((t) => t
-                    ..symbol = field.type.columnType
-                    ..url = 'package:serverpod/serverpod.dart'
-                    ..types.addAll(field.type.isEnum
-                        ? [
-                            field.type.reference(
-                              serverCode,
-                              nullable: false,
-                              subDirParts: classDefinition.subDirParts,
-                              config: config,
-                            )
-                          ]
-                        : [])).call([literalString(field.name)]).code));
+                c.fields.add(
+                  Field(
+                    (f) => f
+                      ..modifier = FieldModifier.final$
+                      ..name = field.name
+                      ..docs.addAll(field.documentation ?? [])
+                      ..assignment = refer(
+                        field.type.columnType,
+                        'package:serverpod/serverpod.dart',
+                      ).constInstance([
+                        literalString(field.name),
+                      ]).code,
+                  ),
+                );
+
+                // TypeReference((t) => t
+                //   ..symbol = field.type.columnType
+                //   ..url = 'package:serverpod/serverpod.dart'
+                //   ..types.addAll(field.type.isEnum
+                //       ? [
+                //           field.type.reference(
+                //             serverCode,
+                //             nullable: false,
+                //             subDirParts: classDefinition.subDirParts,
+                //             config: config,
+                //           )
+                //         ]
+                //       : [])).call([literalString(field.name)]).code));
               }
             }
 
@@ -925,7 +899,7 @@ class SerializableEntityLibraryGenerator {
                 .call([literalString('Use ${className}Table.t instead.')]))
             ..name = 't$className'
             ..type = refer('${className}Table')
-            ..assignment = refer('${className}Table').call([]).code));
+            ..assignment = refer('${className}Table').constInstance([]).code));
         }
       },
     );
@@ -942,7 +916,8 @@ class SerializableEntityLibraryGenerator {
         Enum((e) {
           e.name = enumName;
           e.docs.addAll(enumDefinition.documentation ?? []);
-          e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
+          e.implements
+              .add(refer('SerializableEntity', serverpodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {

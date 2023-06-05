@@ -8,6 +8,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:collection/collection.dart' as _i3;
+
+class _Undefined {}
 
 /// A chunk of chat messages.
 class ChatMessageChunk extends _i1.SerializableEntity {
@@ -32,13 +35,19 @@ class ChatMessageChunk extends _i1.SerializableEntity {
   }
 
   /// The chat channel.
-  String channel;
+  final String channel;
 
   /// List of chat messages.
-  List<_i2.ChatMessage> messages;
+  final List<_i2.ChatMessage> messages;
 
   /// True if there are more chat messages to fetch from this channel.
-  bool hasOlderMessages;
+  final bool hasOlderMessages;
+
+  late Function({
+    String? channel,
+    List<_i2.ChatMessage>? messages,
+    bool? hasOlderMessages,
+  }) copyWith = _copyWith;
 
   @override
   Map<String, dynamic> toJson() {
@@ -50,11 +59,44 @@ class ChatMessageChunk extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'channel': channel,
-      'messages': messages,
-      'hasOlderMessages': hasOlderMessages,
-    };
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ChatMessageChunk &&
+            (identical(
+                  other.channel,
+                  channel,
+                ) ||
+                other.channel == channel) &&
+            (identical(
+                  other.hasOlderMessages,
+                  hasOlderMessages,
+                ) ||
+                other.hasOlderMessages == hasOlderMessages) &&
+            const _i3.DeepCollectionEquality().equals(
+              messages,
+              other.messages,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        channel,
+        hasOlderMessages,
+        const _i3.DeepCollectionEquality().hash(messages),
+      );
+
+  ChatMessageChunk _copyWith({
+    String? channel,
+    List<_i2.ChatMessage>? messages,
+    bool? hasOlderMessages,
+  }) {
+    return ChatMessageChunk(
+      channel: channel ?? this.channel,
+      messages: messages ?? this.messages,
+      hasOlderMessages: hasOlderMessages ?? this.hasOlderMessages,
+    );
   }
 }

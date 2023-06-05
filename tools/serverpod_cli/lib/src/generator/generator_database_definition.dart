@@ -41,10 +41,20 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
     var moduleDatabaseDefinition = createDatabaseDefinitionFromEntities(
       moduleDefinitions,
     );
+    var tables = <TableDefinition>[];
     for (var table in moduleDatabaseDefinition.tables) {
-      table.module = config.name;
+      // TODO: copyWith
+      var updatedTable = TableDefinition(
+        name: table.name,
+        schema: table.schema,
+        columns: table.columns,
+        foreignKeys: table.foreignKeys,
+        indexes: table.indexes,
+      );
+      tables.add(updatedTable);
     }
-    tableDefinitions.addAll(moduleDatabaseDefinition.tables);
+
+    tableDefinitions.addAll(tables);
   }
 
   var databaseDefinition = DatabaseDefinition(tables: tableDefinitions);
@@ -70,8 +80,19 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
   var databaseDefinition = createDatabaseDefinitionFromEntities(
     entityDefinitions,
   );
+  var tables = <TableDefinition>[];
+
   for (var table in databaseDefinition.tables) {
-    table.module = config.name;
+    // TODO: copyWith
+    var updatedTable = TableDefinition(
+      name: table.name,
+      schema: table.schema,
+      columns: table.columns,
+      foreignKeys: table.foreignKeys,
+      indexes: table.indexes,
+    );
+    tables.add(updatedTable);
   }
+
   return databaseDefinition;
 }

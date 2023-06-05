@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -49,7 +49,9 @@ class LibraryGenerator {
           : refer('SerializationManager', serverpodUrl(false));
 
     protocol.constructors.addAll([
-      Constructor((c) => c..name = '_'),
+      Constructor((c) => c
+        ..constant = true
+        ..name = '_'),
       Constructor((c) => c
         ..factory = true
         ..body = refer('_instance').code),
@@ -71,14 +73,16 @@ class LibraryGenerator {
         ..name = '_instance'
         ..static = true
         ..type = refer('Protocol')
-        ..modifier = FieldModifier.final$
+        ..modifier = FieldModifier.constant
         ..assignment = const Code('Protocol._()')),
       if (serverCode)
         Field(
           (f) => f
             ..name = 'targetDatabaseDefinition'
             ..static = true
-            ..modifier = FieldModifier.final$
+            ..modifier = config.modules.isEmpty
+                ? FieldModifier.constant
+                : FieldModifier.final$
             ..assignment =
                 createDatabaseDefinitionFromEntities(entities).toCode(
               config: config,
@@ -687,7 +691,8 @@ extension on DatabaseDefinition {
       if (name != null) 'name': literalString(name!),
       'tables': literalList([
         for (var table in tables)
-          refer('TableDefinition', serverpodProtocolUrl(serverCode)).call([], {
+          refer('TableDefinition', serverpodProtocolUrl(serverCode))
+              .constInstance([], {
             'name': literalString(table.name),
             if (table.dartName != null)
               'dartName': literalString(table.dartName!),

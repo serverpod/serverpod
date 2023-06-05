@@ -207,29 +207,6 @@ class SerializableEntityAnalyzer {
       return null;
     }
 
-    // validate client extra
-    var extraFeature = ExtraFeature.none;
-
-    var extraNode = documentContents.nodes['extra'];
-
-    if (extraNode != null) {
-      var supportedValues = ExtraFeature.values.map((e) => e.name);
-      var value = extraNode.value;
-
-      if (value is! String && !supportedValues.contains(value)) {
-        collector.addError(SourceSpanException(
-          'The "extra" property must be set to one of the following values: '
-          '${ExtraFeature.values.map((e) => '"${e.name}"').join(', ')}',
-          extraNode.span,
-        ));
-        return null;
-      }
-
-      extraFeature = ExtraFeature.values.firstWhere(
-        (e) => e.name == extraNode.value!,
-      );
-    }
-
     // Validate table name.
     String? tableName;
     var tableNameNode = documentContents.nodes['table'];
@@ -578,7 +555,6 @@ class SerializableEntityAnalyzer {
       documentation: classDocumentation,
       isException: type == exceptionKeyword,
       serverOnly: serverOnly,
-      extraFeature: extraFeature,
     );
   }
 

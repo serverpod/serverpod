@@ -8,6 +8,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+class _Undefined {}
+
 class ObjectWithIndex extends _i1.TableRow {
   ObjectWithIndex({
     int? id,
@@ -28,11 +30,17 @@ class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
-  static final t = ObjectWithIndexTable();
+  static var t = ObjectWithIndexTable();
 
-  int indexed;
+  final int indexed;
 
-  int indexed2;
+  final int indexed2;
+
+  late Function({
+    int? id,
+    int? indexed,
+    int? indexed2,
+  }) copyWith = _copyWith;
 
   @override
   String get tableName => 'object_with_index';
@@ -46,41 +54,55 @@ class ObjectWithIndex extends _i1.TableRow {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    return identical(
+          this,
+          other,
+        ) ||
+        (other is ObjectWithIndex &&
+            (identical(
+                  other.id,
+                  id,
+                ) ||
+                other.id == id) &&
+            (identical(
+                  other.indexed,
+                  indexed,
+                ) ||
+                other.indexed == indexed) &&
+            (identical(
+                  other.indexed2,
+                  indexed2,
+                ) ||
+                other.indexed2 == indexed2));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        indexed,
+        indexed2,
+      );
+
+  ObjectWithIndex _copyWith({
+    Object? id = _Undefined,
+    int? indexed,
+    int? indexed2,
+  }) {
+    return ObjectWithIndex(
+      id: id == _Undefined ? this.id : (id as int?),
+      indexed: indexed ?? this.indexed,
+      indexed2: indexed2 ?? this.indexed2,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
       'indexed': indexed,
       'indexed2': indexed2,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'indexed':
-        indexed = value;
-        return;
-      case 'indexed2':
-        indexed2 = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
   }
 
   static Future<List<ObjectWithIndex>> find(
