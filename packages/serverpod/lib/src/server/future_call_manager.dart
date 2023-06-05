@@ -41,7 +41,8 @@ class FutureCallManager {
   ) async {
     String? serialization;
     if (object != null) {
-      serialization = SerializationManager.encode(object.allToJson());
+      // TODO: pro100andrey allToJson()
+      serialization = SerializationManager.encode(object.toJson());
     }
 
     var entry = FutureCallEntry(

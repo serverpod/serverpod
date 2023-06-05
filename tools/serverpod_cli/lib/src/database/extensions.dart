@@ -20,7 +20,12 @@ extension DatabaseComparisons on DatabaseDefinition {
   }
 
   bool like(DatabaseDefinition other) {
-    var diff = generateDatabaseMigration(this, other, []);
+    var diff = generateDatabaseMigration(
+      srcDatabase: this,
+      dstDatabase: other,
+      warnings: [],
+      priority: -1,
+    );
     return diff.isEmpty;
   }
 }
@@ -197,7 +202,6 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
   String toPgSql({
     required String version,
     required String module,
-    required int priority,
   }) {
     String out = '';
 
@@ -216,7 +220,7 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     out += _sqlStoreMigrationVersion(
       module: module,
       version: version,
-      priority: priority,
+      priority: priority!,
     );
 
     out += '\n';
@@ -363,9 +367,7 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
 
 extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
-    required String version,
-    required String module,
-    required int priority,
+    required Map<String, String> versions,
   }) {
     var out = '';
 
@@ -377,11 +379,14 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
       out += action.toPgSql();
     }
 
-    out += _sqlStoreMigrationVersion(
-      module: module,
-      version: version,
-      priority: priority,
-    );
+    for (var module in versions.keys) {
+      var version = versions[module]!;
+      out += _sqlStoreMigrationVersion(
+        module: module,
+        version: version,
+        priority: priority,
+      );
+    }
 
     out += '\n';
     out += 'COMMIT;\n';
@@ -431,7 +436,7 @@ extension TableMigrationPgSqlGenerator on TableMigration {
 
     // Drop foreign keys
     for (var deleteKey in deleteForeignKeys) {
-      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey"\n';
+      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey";\n';
     }
 
     // Drop columns

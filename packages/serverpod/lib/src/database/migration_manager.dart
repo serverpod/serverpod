@@ -57,6 +57,7 @@ class MigrationManager {
         ),
       );
     }
+    installedVersions.clear();
     installedVersions.addAll(versions);
 
     // Get available migrations
@@ -163,10 +164,20 @@ class MigrationManager {
 
   /// Migrates all modules to the latest version.
   Future<void> migrateToLatest(Session session) async {
+    var migrations = <Migration>[];
+
     for (var module in availableModules) {
       if (!isLatestInstalled(module)) {
-        await migrateToLatestModule(session, module);
+        var latest = getLatestVersion(module);
+        var migration = await Migration.load(module, latest);
+        migrations.add(migration);
       }
+    }
+
+    migrations.sort((a, b) => a.priority.compareTo(b.priority));
+
+    for (var migration in migrations) {
+      await migrateToLatestModule(session, migration.module);
     }
   }
 
@@ -281,7 +292,15 @@ class Migration {
     required this.sqlMigration,
     required this.definition,
     required this.migration,
+    required this.module,
   });
+
+  /// The module associated with the migration.
+  final String module;
+
+  /// The priority of the migration. Migrations with lower priority will be
+  /// applied first.
+  int get priority => migration.priority;
 
   /// Loads the specified migration version from the migrations directory.
   static Future<Migration> load(String module, String version) async {
@@ -324,6 +343,7 @@ class Migration {
       sqlMigration: sqlMigration,
       definition: definition,
       migration: migration,
+      module: module,
     );
   }
 

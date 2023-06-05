@@ -16,6 +16,7 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
   const factory DatabaseMigration({
     required List<_i2.DatabaseMigrationAction> actions,
     required List<_i2.DatabaseMigrationWarning> warnings,
+    required int priority,
   }) = _DatabaseMigration;
 
   factory DatabaseMigration.fromJson(
@@ -29,21 +30,26 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
       warnings:
           serializationManager.deserialize<List<_i2.DatabaseMigrationWarning>>(
               jsonSerialization['warnings']),
+      priority:
+          serializationManager.deserialize<int>(jsonSerialization['priority']),
     );
   }
 
   DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i2.DatabaseMigrationWarning>? warnings,
+    int? priority,
   });
   List<_i2.DatabaseMigrationAction> get actions;
   List<_i2.DatabaseMigrationWarning> get warnings;
+  int get priority;
 }
 
 class _DatabaseMigration extends DatabaseMigration {
   const _DatabaseMigration({
     required this.actions,
     required this.warnings,
+    required this.priority,
   }) : super._();
 
   @override
@@ -53,10 +59,14 @@ class _DatabaseMigration extends DatabaseMigration {
   final List<_i2.DatabaseMigrationWarning> warnings;
 
   @override
+  final int priority;
+
+  @override
   Map<String, dynamic> toJson() {
     return {
       'actions': actions,
       'warnings': warnings,
+      'priority': priority,
     };
   }
 
@@ -67,6 +77,11 @@ class _DatabaseMigration extends DatabaseMigration {
           other,
         ) ||
         (other is DatabaseMigration &&
+            (identical(
+                  other.priority,
+                  priority,
+                ) ||
+                other.priority == priority) &&
             const _i3.DeepCollectionEquality().equals(
               actions,
               other.actions,
@@ -79,6 +94,7 @@ class _DatabaseMigration extends DatabaseMigration {
 
   @override
   int get hashCode => Object.hash(
+        priority,
         const _i3.DeepCollectionEquality().hash(actions),
         const _i3.DeepCollectionEquality().hash(warnings),
       );
@@ -87,10 +103,12 @@ class _DatabaseMigration extends DatabaseMigration {
   DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i2.DatabaseMigrationWarning>? warnings,
+    int? priority,
   }) {
     return DatabaseMigration(
       actions: actions ?? this.actions,
       warnings: warnings ?? this.warnings,
+      priority: priority ?? this.priority,
     );
   }
 }

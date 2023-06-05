@@ -201,8 +201,25 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getTargetDatabaseDefinition]
-  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
-    return DatabaseAnalyzer.analyze(session.db);
+  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
+    // Get database definition of the live database.
+    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+    // Make sure that the migration manager is up-to-date.
+    await session.serverpod.migrationManager.initialize(session);
+
+    // Create map of installed modules.
+    var modules = session.serverpod.migrationManager.installedVersions;
+    var installedModules = <String, String>{};
+    for (var module in modules) {
+      installedModules[module.module] = module.version;
+    }
+
+    databaseDefinition = databaseDefinition.copyWith(
+      installedModules: installedModules,
+    );
+
+    return databaseDefinition;
   }
 
   /// Exports raw data serialized in JSON from the database.
@@ -222,6 +239,13 @@ class InsightsEndpoint extends Endpoint {
 
   /// Executes SQL commands. Returns the number of rows affected.
   Future<int> executeSql(Session session, String sql) async {
-    return await session.db.execute(sql);
+    try {
+      return await session.db.execute(sql);
+    } catch (e) {
+      throw ServerpodSqlException(
+        message: '$e',
+        sql: sql,
+      );
+    }
   }
 }

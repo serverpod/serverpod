@@ -73,14 +73,13 @@ Future<void> testMigration({
     force: force,
     tag: version,
     verbose: true,
+    priority: 2,
   );
   if (expectSuccess) {
     expect(migration, isNotNull);
 
     var sql = migration!.migration.toPgSql(
-      version: migration.versionName,
-      module: 'serverdpod_test',
-      priority: 1,
+      versions: {'serverpod_test': migration.versionName},
     );
 
     await serviceClient.insights.executeSql(sql);
@@ -214,6 +213,24 @@ void main() {
       await testMigration(
         serviceClient: serviceClient,
         version: '4',
+        force: false,
+        expectSuccess: true,
+      );
+    });
+
+    test('Apply migrations 5 - drop index and parent', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '5',
+        force: false,
+        expectSuccess: true,
+      );
+    });
+
+    test('Apply migrations 6 - add multiple tables', () async {
+      await testMigration(
+        serviceClient: serviceClient,
+        version: '6',
         force: false,
         expectSuccess: true,
       );

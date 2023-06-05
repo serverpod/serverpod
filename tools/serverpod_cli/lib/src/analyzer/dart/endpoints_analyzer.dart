@@ -150,15 +150,12 @@ class EndpointsAnalyzer {
                   }
                 }
 
-                if (paramDefs.isNotEmpty &&
-                    paramDefs[0].type.className == 'Session' &&
-                    method.returnType.isDartAsyncFuture) {
-                  _validateReturnType(
-                    dartType: method.returnType,
-                    dartElement: method,
-                    collector: collector,
-                  );
-
+                if (_isEndpointMethod(paramDefs) &&
+                    _isValidReturnType(
+                      dartType: method.returnType,
+                      dartElement: method,
+                      collector: collector,
+                    )) {
                   var methodDef = MethodDefinition(
                     name: method.name,
                     documentationComment: method.documentationComment,
@@ -201,25 +198,29 @@ class EndpointsAnalyzer {
     return endpointName;
   }
 
-  void _validateReturnType({
+  bool _isEndpointMethod(List<ParameterDefinition> paramDefs) {
+    return paramDefs.isNotEmpty && paramDefs[0].type.className == 'Session';
+  }
+
+  bool _isValidReturnType({
     required DartType dartType,
     required Element dartElement,
     required CodeAnalysisCollector collector,
   }) {
-    if (dartType is! InterfaceType) {
-      collector.addError(SourceSpanException(
-        'This type is not supported as return type.',
-        dartElement.span,
-      ));
-      return;
-    }
-
     if (!dartType.isDartAsyncFuture) {
       collector.addError(SourceSpanException(
         'Return type must be a Future.',
         dartElement.span,
       ));
-      return;
+      return false;
+    }
+
+    if (dartType is! InterfaceType) {
+      collector.addError(SourceSpanException(
+        'This type is not supported as return type.',
+        dartElement.span,
+      ));
+      return false;
     }
 
     var typeArguments = dartType.typeArguments;
@@ -228,12 +229,20 @@ class EndpointsAnalyzer {
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
       ));
-      return;
+      return false;
     }
     var innerType = typeArguments[0];
 
     if (innerType is VoidType) {
-      return;
+      return true;
+    }
+
+    if (innerType is InvalidType) {
+      collector.addError(SourceSpanException(
+        'Future has an invalid return type.',
+        dartElement.span,
+      ));
+      return false;
     }
 
     if (innerType is DynamicType) {
@@ -241,8 +250,10 @@ class EndpointsAnalyzer {
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
       ));
-      return;
+      return false;
     }
+
+    return true;
   }
 }
 

@@ -17,6 +17,8 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   const factory DatabaseDefinition({
     String? name,
     required List<_i2.TableDefinition> tables,
+    int? priority,
+    Map<String, String>? installedModules,
   }) = _DatabaseDefinition;
 
   factory DatabaseDefinition.fromJson(
@@ -28,12 +30,18 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
           serializationManager.deserialize<String?>(jsonSerialization['name']),
       tables: serializationManager
           .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
+      priority:
+          serializationManager.deserialize<int?>(jsonSerialization['priority']),
+      installedModules: serializationManager.deserialize<Map<String, String>?>(
+          jsonSerialization['installedModules']),
     );
   }
 
   DatabaseDefinition copyWith({
     String? name,
     List<_i2.TableDefinition>? tables,
+    int? priority,
+    Map<String, String>? installedModules,
   });
 
   /// The name of the database.
@@ -42,6 +50,15 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
 
   /// The tables of the database.
   List<_i2.TableDefinition> get tables;
+
+  /// The priority of this database definition. Determines the order in which
+  /// the database definitions are applied. Only valid if the definition
+  /// defines a single module.
+  int? get priority;
+
+  /// Modules installed in the database, together with their version. Only
+  /// set if known.
+  Map<String, String>? get installedModules;
 }
 
 class _Undefined {}
@@ -51,6 +68,8 @@ class _DatabaseDefinition extends DatabaseDefinition {
   const _DatabaseDefinition({
     this.name,
     required this.tables,
+    this.priority,
+    this.installedModules,
   }) : super._();
 
   /// The name of the database.
@@ -62,11 +81,24 @@ class _DatabaseDefinition extends DatabaseDefinition {
   @override
   final List<_i2.TableDefinition> tables;
 
+  /// The priority of this database definition. Determines the order in which
+  /// the database definitions are applied. Only valid if the definition
+  /// defines a single module.
+  @override
+  final int? priority;
+
+  /// Modules installed in the database, together with their version. Only
+  /// set if known.
+  @override
+  final Map<String, String>? installedModules;
+
   @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'tables': tables,
+      'priority': priority,
+      'installedModules': installedModules,
     };
   }
 
@@ -82,26 +114,43 @@ class _DatabaseDefinition extends DatabaseDefinition {
                   name,
                 ) ||
                 other.name == name) &&
+            (identical(
+                  other.priority,
+                  priority,
+                ) ||
+                other.priority == priority) &&
             const _i3.DeepCollectionEquality().equals(
               tables,
               other.tables,
+            ) &&
+            const _i3.DeepCollectionEquality().equals(
+              installedModules,
+              other.installedModules,
             ));
   }
 
   @override
   int get hashCode => Object.hash(
         name,
+        priority,
         const _i3.DeepCollectionEquality().hash(tables),
+        const _i3.DeepCollectionEquality().hash(installedModules),
       );
 
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,
     List<_i2.TableDefinition>? tables,
+    Object? priority = _Undefined,
+    Object? installedModules = _Undefined,
   }) {
     return DatabaseDefinition(
       name: name == _Undefined ? this.name : (name as String?),
       tables: tables ?? this.tables,
+      priority: priority == _Undefined ? this.priority : (priority as int?),
+      installedModules: installedModules == _Undefined
+          ? this.installedModules
+          : (installedModules as Map<String, String>?),
     );
   }
 }

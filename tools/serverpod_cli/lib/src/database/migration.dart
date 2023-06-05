@@ -1,16 +1,21 @@
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'extensions.dart';
 
-DatabaseMigration generateDatabaseMigration(
-  DatabaseDefinition srcDatabase,
-  DatabaseDefinition dstDatabase,
-  List<DatabaseMigrationWarning> warnings,
-) {
+DatabaseMigration generateDatabaseMigration({
+  required DatabaseDefinition srcDatabase,
+  required DatabaseDefinition dstDatabase,
+  required List<DatabaseMigrationWarning> warnings,
+  required int priority,
+}) {
   var actions = <DatabaseMigrationAction>[];
 
   // Find deleted tables
   var deleteTables = <String>[];
   for (var srcTable in srcDatabase.tables) {
+    if (srcTable.name == 'serverpod_migrations') {
+      continue;
+    }
+
     if (!dstDatabase.containsTableNamed(srcTable.name)) {
       deleteTables.add(srcTable.name);
     }
@@ -79,6 +84,7 @@ DatabaseMigration generateDatabaseMigration(
   return DatabaseMigration(
     actions: actions,
     warnings: [],
+    priority: priority,
   );
 }
 

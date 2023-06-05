@@ -8,12 +8,16 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 Future<DatabaseDefinition> generateDatabaseDefinition({
   required Directory directory,
+  required int priority,
   bool full = false,
 }) {
   if (full) {
     return _generateFullDatabaseDefinition(directory: directory);
   } else {
-    return _generateSinglePackageDatabaseDefinion(directory: directory);
+    return _generateSinglePackageDatabaseDefinion(
+      directory: directory,
+      priority: priority,
+    );
   }
 }
 
@@ -42,13 +46,15 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
       moduleDefinitions,
     );
 
-    var tables = moduleDatabaseDefinition.tables
-        .map((e) => e.copyWith(
-              module: config.name,
-            ))
-        .toList();
+    for (int i = 0; i < moduleDatabaseDefinition.tables.length; i++) {
+      var table = moduleDatabaseDefinition.tables[i];
 
-    tableDefinitions.addAll(tables);
+      moduleDatabaseDefinition.tables[i] = table.copyWith(
+        module: config.name,
+      );
+    }
+
+    tableDefinitions.addAll(moduleDatabaseDefinition.tables);
   }
 
   var databaseDefinition = DatabaseDefinition(tables: tableDefinitions);
@@ -58,6 +64,7 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
 
 Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
   required Directory directory,
+  required int priority,
 }) async {
   var config = await GeneratorConfig.load(directory.path);
   if (config == null) {
@@ -75,11 +82,15 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
     entityDefinitions,
   );
 
-  var tables = databaseDefinition.tables
-      .map((e) => e.copyWith(module: config.name))
-      .toList();
+  databaseDefinition = databaseDefinition.copyWith(priority: priority);
 
-      
-  
-  return databaseDefinition.copyWith(tables: tables);
+  for (int i = 0; i < databaseDefinition.tables.length; i++) {
+    var table = databaseDefinition.tables[i];
+
+    databaseDefinition.tables[i] = table.copyWith(
+      module: config.name,
+    );
+  }
+
+  return databaseDefinition;
 }
