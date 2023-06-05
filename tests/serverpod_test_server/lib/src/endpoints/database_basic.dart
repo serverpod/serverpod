@@ -122,8 +122,9 @@ class BasicDatabase extends Endpoint {
 
   Future<int?> storeObjectWithObject(
       Session session, ObjectWithObject object) async {
-    await ObjectWithObject.insert(session, object);
-    return object.id;
+    var result = await ObjectWithObject.insert(session, object);
+
+    return result.id;
   }
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {

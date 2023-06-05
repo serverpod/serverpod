@@ -162,7 +162,9 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<Types> insert(
     _i1.Session session,
     Types row, {
     _i1.Transaction? transaction,

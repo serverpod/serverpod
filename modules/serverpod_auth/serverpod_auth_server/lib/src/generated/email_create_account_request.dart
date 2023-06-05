@@ -144,7 +144,9 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<EmailCreateAccountRequest> insert(
     _i1.Session session,
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,

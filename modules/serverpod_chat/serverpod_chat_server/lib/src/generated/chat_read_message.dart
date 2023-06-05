@@ -139,7 +139,9 @@ abstract class ChatReadMessage extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<ChatReadMessage> insert(
     _i1.Session session,
     ChatReadMessage row, {
     _i1.Transaction? transaction,

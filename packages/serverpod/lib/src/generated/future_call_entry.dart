@@ -148,7 +148,9 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<FutureCallEntry> insert(
     _i1.Session session,
     FutureCallEntry row, {
     _i1.Transaction? transaction,

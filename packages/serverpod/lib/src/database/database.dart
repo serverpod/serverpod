@@ -127,18 +127,23 @@ class Database {
     );
   }
 
-  /// Inserts a single [TableRow].
-  Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  Future<T> insert<T extends TableRow>(
     TableRow row, {
     Transaction? transaction,
   }) async {
     var conn = await databaseConnection;
 
-    await conn.insert(
+    var id = await conn.insert(
       row,
       session: session,
       transaction: transaction,
     );
+
+    dynamic update = row;
+
+    return update.copyWith(id: id) as T;
   }
 
   /// Deletes all rows matching the [where] expression.
@@ -148,7 +153,7 @@ class Database {
   }) async {
     var conn = await databaseConnection;
 
-    return await conn.delete<T>(
+    return conn.delete<T>(
       where: where,
       session: session,
       transaction: transaction,

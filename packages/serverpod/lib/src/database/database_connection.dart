@@ -323,7 +323,8 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<void> insert(
+  /// Returns the id of the inserted row.
+  Future<int> insert(
     TableRow row, {
     required Session session,
     Transaction? transaction,
@@ -351,7 +352,6 @@ Current type was $T''');
     var query =
         'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
 
-    int insertedId;
     try {
       List<List<dynamic>> result;
 
@@ -372,17 +372,13 @@ Current type was $T''');
             'Failed to insert row, updated number of columns is ${returnedRow.length} != 1');
       }
 
-      insertedId = returnedRow[0];
+      _logQuery(session, query, startTime, numRowsAffected: 1);
+
+      return returnedRow[0];
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
-
-    _logQuery(session, query, startTime, numRowsAffected: 1);
-
-    // TODO: pro100andrey This is a bit of a hack. We should 
-    //probably not set the id like this.
-    // row.setColumn('id', insertedId);
   }
 
   /// For most cases use the corresponding method in [Database] instead.

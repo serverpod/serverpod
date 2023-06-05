@@ -20,7 +20,8 @@ class Users {
       if (!approved) return null;
     }
 
-    await session.db.insert(userInfo);
+    userInfo = await session.db.insert(userInfo);
+    
     if (userInfo.id != null) {
       if (AuthConfig.current.onUserCreated != null) {
         await AuthConfig.current.onUserCreated!(session, userInfo);

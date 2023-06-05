@@ -91,7 +91,7 @@ class UserImages {
     // Store the path to the image.
     var imageRef =
         UserImage(userId: userId, version: version, url: publicUrl.toString());
-    await session.db.insert(imageRef);
+    imageRef = await session.db.insert(imageRef);
 
     // Update the UserInfo with the new image path.
     var userInfo =

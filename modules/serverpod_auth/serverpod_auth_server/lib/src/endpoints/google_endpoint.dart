@@ -204,6 +204,7 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
+      
       userInfo = await Users.createUser(session, userInfo, _authMethod);
 
       // Set the user image.

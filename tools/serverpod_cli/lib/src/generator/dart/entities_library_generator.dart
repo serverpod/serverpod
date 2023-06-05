@@ -455,12 +455,16 @@ class SerializableEntityLibraryGenerator {
 
               // insert
               c.methods.add(Method((m) => m
+                ..docs.addAll([
+                  '/// Inserts a row into the database.',
+                  '/// Returns updated row with the id set.'
+                ])
                 ..static = true
                 ..name = 'insert'
                 ..returns = TypeReference(
                   (r) => r
                     ..symbol = 'Future'
-                    ..types.add(refer('void')),
+                    ..types.add(refer(className)),
                 )
                 ..requiredParameters.addAll([
                   Parameter((p) => p

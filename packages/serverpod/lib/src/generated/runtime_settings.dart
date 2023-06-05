@@ -147,7 +147,9 @@ abstract class RuntimeSettings extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<RuntimeSettings> insert(
     _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,

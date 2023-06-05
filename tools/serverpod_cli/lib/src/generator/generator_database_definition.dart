@@ -14,7 +14,7 @@ Future<DatabaseDefinition> generateDatabaseDefinition({
   if (full) {
     return _generateFullDatabaseDefinition(directory: directory);
   } else {
-    return _generateSinglePackageDatabaseDefinion(
+    return _generateSinglePackageDatabaseDefinition(
       directory: directory,
       priority: priority,
     );
@@ -62,7 +62,7 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
   return databaseDefinition;
 }
 
-Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
+Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinition({
   required Directory directory,
   required int priority,
 }) async {

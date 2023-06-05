@@ -130,7 +130,9 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<ReadWriteTestEntry> insert(
     _i1.Session session,
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,

@@ -173,7 +173,9 @@ abstract class LogEntry extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<LogEntry> insert(
     _i1.Session session,
     LogEntry row, {
     _i1.Transaction? transaction,

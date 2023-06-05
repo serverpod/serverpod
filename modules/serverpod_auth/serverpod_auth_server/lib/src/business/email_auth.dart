@@ -63,7 +63,8 @@ class Emails {
       email: email,
       hash: hash,
     );
-    await session.db.insert(auth);
+
+    auth = await session.db.insert(auth);
 
     await UserImages.setDefaultUserImage(session, userInfo.id!);
     await Users.invalidateCacheForUser(session, userInfo.id!);
@@ -126,7 +127,8 @@ class Emails {
         AuthConfig.current.passwordResetExpirationTime,
       ),
     );
-    await session.db.insert(emailReset);
+
+    emailReset = await session.db.insert(emailReset);
 
     return AuthConfig.current.sendPasswordResetEmail!(
       session,
@@ -231,13 +233,15 @@ class Emails {
           hash: generatePasswordHash(password, email),
           verificationCode: _generateVerificationCode(),
         );
-        await session.db.insert(accountRequest);
+        
+        accountRequest = await session.db.insert(accountRequest);
+
       } else {
         accountRequest = accountRequest.copyWith(
           userName: userName,
           verificationCode: _generateVerificationCode(),
         );
-        
+
         await EmailCreateAccountRequest.update(session, accountRequest);
       }
 

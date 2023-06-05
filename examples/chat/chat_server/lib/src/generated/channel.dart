@@ -132,7 +132,9 @@ abstract class Channel extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<Channel> insert(
     _i1.Session session,
     Channel row, {
     _i1.Transaction? transaction,

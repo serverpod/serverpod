@@ -143,7 +143,9 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
     );
   }
 
-  static Future<void> insert(
+  /// Inserts a row into the database.
+  /// Returns updated row with the id set.
+  static Future<CloudStorageDirectUploadEntry> insert(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
     _i1.Transaction? transaction,
