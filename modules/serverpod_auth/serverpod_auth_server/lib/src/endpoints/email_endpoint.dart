@@ -90,6 +90,7 @@ class EmailEndpoint extends Endpoint {
       time: DateTime.now(),
       ipAddress: session.httpRequest.remoteIpAddress,
     );
+    
     await EmailFailedSignIn.insert(session, failedSignIn);
   }
 

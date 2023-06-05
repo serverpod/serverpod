@@ -80,12 +80,14 @@ class GoogleEndpoint extends Endpoint {
         session,
         where: (t) => t.userId.equals(userInfo.id!),
       );
+
       if (token == null) {
         token = GoogleRefreshToken(
           userId: userInfo.id!,
           refreshToken: jsonEncode(authClient.credentials.toJson()),
         );
-        await GoogleRefreshToken.insert(session, token);
+
+        token = await GoogleRefreshToken.insert(session, token);
       } else {
         token = token.copyWith(
           refreshToken: jsonEncode(authClient.credentials.toJson()),
@@ -204,7 +206,7 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      
+
       userInfo = await Users.createUser(session, userInfo, _authMethod);
 
       // Set the user image.

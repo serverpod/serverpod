@@ -54,6 +54,7 @@ class FutureCallManager {
     );
 
     var session = await _server.serverpod.createSession(enableLogging: false);
+    
     await session.db.insert(entry);
     await session.close();
   }

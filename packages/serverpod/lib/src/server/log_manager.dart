@@ -178,8 +178,9 @@ class LogManager {
       var tempSession = await session.serverpod.createSession(
         enableLogging: false,
       );
+
       try {
-        await LogEntry.insert(tempSession, entry);
+        entry = await LogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING ENTRY');
@@ -213,7 +214,7 @@ class LogManager {
         enableLogging: false,
       );
       try {
-        await QueryLogEntry.insert(tempSession, entry);
+        entry = await QueryLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY');
@@ -248,7 +249,7 @@ class LogManager {
           sessionLogId: session.sessionLogId!,
         );
 
-        await MessageLogEntry.insert(tempSession, entry);
+        entry = await MessageLogEntry.insert(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} FAILED TO LOG STREAMING MESSAGE');
@@ -306,7 +307,11 @@ class LogManager {
         isOpen: true,
       );
 
-      await SessionLogEntry.insert(tempSession, sessionLogEntry);
+      sessionLogEntry = await SessionLogEntry.insert(
+        tempSession,
+        sessionLogEntry,
+      );
+
       session.sessionLogId = sessionLogEntry.id;
 
       await tempSession.close();
@@ -399,25 +404,24 @@ class LogManager {
           await SessionLogEntry.update(tempSession, sessionLogEntry);
         } else {
           // Create new session row.
-          await tempSession.db.insert(sessionLogEntry);
+          sessionLogEntry = await tempSession.db.insert(sessionLogEntry);
           sessionLogId = sessionLogEntry.id!;
         }
 
         // Write log entries
         for (var logInfo in cachedEntry.logEntries) {
           logInfo = logInfo.copyWith(sessionLogId: sessionLogId);
-
-          await tempSession.db.insert(logInfo);
+          logInfo = await tempSession.db.insert(logInfo);
         }
         // Write queries
         for (var queryInfo in cachedEntry.queries) {
           queryInfo = queryInfo.copyWith(sessionLogId: sessionLogId);
-          await tempSession.db.insert(queryInfo);
+          queryInfo = await tempSession.db.insert(queryInfo);
         }
         // Write streaming messages
         for (var messageInfo in cachedEntry.messages) {
           messageInfo = messageInfo.copyWith(sessionLogId: sessionLogId);
-          await tempSession.db.insert(messageInfo);
+          messageInfo = await tempSession.db.insert(messageInfo);
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');

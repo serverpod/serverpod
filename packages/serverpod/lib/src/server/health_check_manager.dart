@@ -5,9 +5,9 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/util/date_time_extension.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:system_resources/system_resources.dart';
-import 'package:serverpod/src/util/date_time_extension.dart';
 
 /// Performs health checks on the server once a minute, typically this class
 /// is managed internally by Serverpod. Writes results to the database.
@@ -58,11 +58,14 @@ class HealthCheckManager {
       numHealthChecks = result.metrics.length;
 
       for (var metric in result.metrics) {
-        await ServerHealthMetric.insert(session, metric);
+        metric = await ServerHealthMetric.insert(session, metric);
       }
 
       for (var connectionInfo in result.connectionInfos) {
-        await ServerHealthConnectionInfo.insert(session, connectionInfo);
+        connectionInfo = await ServerHealthConnectionInfo.insert(
+          session,
+          connectionInfo,
+        );
       }
     } catch (e) {
       // TODO: Sometimes serverpod attempts to write duplicate health checks for

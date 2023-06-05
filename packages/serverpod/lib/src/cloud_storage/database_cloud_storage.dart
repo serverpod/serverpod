@@ -104,7 +104,9 @@ class DatabaseCloudStorage extends CloudStorage {
       expiration: expiration,
       authKey: _generateAuthKey(),
     );
-    await session.db.insert(uploadEntry);
+    
+    uploadEntry = await session.db.insert(uploadEntry);
+    
     if (uploadEntry.id == null) return null;
 
     var uri = Uri(

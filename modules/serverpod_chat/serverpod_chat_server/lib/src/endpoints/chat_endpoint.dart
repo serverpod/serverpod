@@ -132,7 +132,7 @@ class ChatEndpoint extends Endpoint {
       );
 
       if (!_isEphemeralChannel(message.channel)) {
-        await session.db.insert(chatMessage);
+        chatMessage = await session.db.insert(chatMessage);
       }
 
       session.messages.postMessage(
@@ -244,7 +244,7 @@ class ChatEndpoint extends Endpoint {
         userId: userId,
         lastReadMessageId: lastReadMessageId,
       );
-      await session.db.insert(readMessageRow);
+      readMessageRow = await session.db.insert(readMessageRow);
     } else {
       readMessageRow = readMessageRow.copyWith(
         lastReadMessageId: lastReadMessageId,

@@ -370,7 +370,7 @@ class UserAuthetication {
       method: method,
     );
 
-    await _session.db.insert(authKey);
+    authKey = await _session.db.insert(authKey);
 
     _session._authenticatedUser = userId;
 

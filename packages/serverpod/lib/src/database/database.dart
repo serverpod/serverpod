@@ -141,9 +141,7 @@ class Database {
       transaction: transaction,
     );
 
-    dynamic update = row;
-
-    return update.copyWith(id: id) as T;
+    return (row as dynamic).copyWith(id: id) as T;
   }
 
   /// Deletes all rows matching the [where] expression.

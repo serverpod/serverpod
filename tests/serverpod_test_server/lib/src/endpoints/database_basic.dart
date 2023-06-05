@@ -8,7 +8,7 @@ int globalInt = 0;
 
 class BasicDatabase extends Endpoint {
   Future<int?> storeTypes(Session session, Types types) async {
-    await Types.insert(session, types);
+    types = await Types.insert(session, types);
     return types.id;
   }
 
@@ -21,7 +21,7 @@ class BasicDatabase extends Endpoint {
     Session session,
     ObjectWithEnum object,
   ) async {
-    await ObjectWithEnum.insert(session, object);
+    object = await ObjectWithEnum.insert(session, object);
     return object.id;
   }
 
@@ -121,7 +121,9 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<int?> storeObjectWithObject(
-      Session session, ObjectWithObject object) async {
+    Session session,
+    ObjectWithObject object,
+  ) async {
     var result = await ObjectWithObject.insert(session, object);
 
     return result.id;

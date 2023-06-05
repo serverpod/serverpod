@@ -17,6 +17,7 @@ class AsyncTasksEndpoint extends Endpoint {
     var data = SimpleData(
       num: num,
     );
+
     await session.db.insert(data);
   }
 

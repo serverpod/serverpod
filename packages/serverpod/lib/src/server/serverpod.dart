@@ -166,12 +166,12 @@ class Serverpod {
           await session.db.findSingleRow<internal.RuntimeSettings>();
       if (oldRuntimeSettings == null) {
         settings = settings.copyWith(id: null);
-        
-        await session.db.insert(settings);
+
+        settings = await session.db.insert(settings);
       }
 
       settings = settings.copyWith(id: oldRuntimeSettings!.id);
-      
+
       await session.db.update(settings);
     } catch (e, stackTrace) {
       await session.close(error: e, stackTrace: stackTrace);
@@ -362,7 +362,7 @@ class Serverpod {
 
             // Store default settings.
             _runtimeSettings = _defaultRuntimeSettings;
-            await session.db.insert(_runtimeSettings!);
+            _runtimeSettings = await session.db.insert(_runtimeSettings!);
           } else {
             logVerbose('Runtime settings loaded.');
           }
