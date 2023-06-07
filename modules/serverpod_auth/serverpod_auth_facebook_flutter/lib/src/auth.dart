@@ -108,7 +108,9 @@ Future<UserInfo?> signInWithFacebook(
       if (kDebugMode) {
         print(
           'serverpod_auth_facebook: Failed to authenticate with '
-          'Serverpod backend. Aborting.',
+          'Serverpod backend: '
+          '${serverResponse.failReason ?? 'reason unknown'}'
+          '. Aborting.',
         );
       }
       try {
