@@ -464,6 +464,18 @@ class StorageAccess {
     return await storage.getPublicUrl(session: _session, path: path);
   }
 
+  /// Bulk lookup of a list of public links to files given a list of paths in
+  /// the storage. If any given file isn't public or if no such file exists,
+  /// null is stored at the corresponding position in the output list. Saves
+  /// on server roundtrips if a large number of public URLs must be fetched,
+  /// relative to calling [getPublicUrl] via an endpoint for each one.
+  Future<List<Uri?>> getPublicUrls({
+    required String storageId,
+    required List<String> paths,
+  }) =>
+      Future.wait(
+          paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
+
   /// Creates a new file upload description, that can be passed to the client's
   /// [FileUploader]. After the file has been uploaded, the
   /// [verifyDirectFileUpload] method should be called, or the file may be
