@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
@@ -36,6 +37,14 @@ Future<UserInfo?> signInWithFirebase({
                     if (!serverResponse.success &&
                         serverResponse.userInfo != null) {
                       // Failed to sign in.
+                      if (kDebugMode) {
+                        print(
+                          'serverpod_auth_firebase: Failed to authenticate '
+                          'with Serverpod backend: '
+                          '${serverResponse.failReason ?? 'reason unknown'}'
+                          '. Aborting.',
+                        );
+                      }
                       completer.complete(null);
                       return;
                     }
