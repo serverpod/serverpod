@@ -37,6 +37,7 @@ dependencies:
     path: ../../packages/serverpod_service_client
   async: ^2.11.0
   meta: ^1.8.0
+  json_rpc_2: ^3.0.2
 
 dev_dependencies:
   lints: ^2.0.1
