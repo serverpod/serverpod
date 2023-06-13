@@ -407,9 +407,10 @@ void _printUsage(ArgParser parser) {
     parser.commands[cmdMigrate]!,
   );
   _printCommandUsage(
-      cmdLanguageServer,
-      'Launches a serverpod language server communicating with JSON-RPC-2 intended to be used with a client integrated in an IDE.',
-      parser.commands[cmdLanguageServer]!);
+    cmdLanguageServer,
+    'Launches a serverpod language server communicating with JSON-RPC-2 intended to be used with a client integrated in an IDE.',
+    parser.commands[cmdLanguageServer]!,
+  );
 }
 
 void _printCommandUsage(String name, String descr,
