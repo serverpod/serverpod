@@ -13,7 +13,7 @@ export function activate(context: ExtensionContext) {
 	console.log("starting serverpod language server client side");
 	const serverOptions = {
 		command: 'serverpod',
-		args: ['language-server', '--stdio'],
+		args: ['language-server', '--no-development-print', '--stdio'],
 		options: {},
 		transport: TransportKind.stdio
 	};
