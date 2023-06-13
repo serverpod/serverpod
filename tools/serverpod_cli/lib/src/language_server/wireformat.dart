@@ -8,8 +8,8 @@ import 'package:async/async.dart';
 
 StreamChannel<String> lspChannel(
     Stream<List<int>> stream, StreamSink<List<int>> sink) {
-  final parser = _Parser(stream);
-  final outSink = StreamSinkTransformer.fromHandlers(
+  var parser = _Parser(stream);
+  var outSink = StreamSinkTransformer.fromHandlers(
       handleData: _serialize,
       handleDone: (sink) {
         sink.close();
@@ -19,8 +19,8 @@ StreamChannel<String> lspChannel(
 }
 
 void _serialize(String data, EventSink<List<int>> sink) {
-  final message = utf8.encode(data);
-  final header = 'Content-Length: ${message.length}\r\n\r\n';
+  var message = utf8.encode(data);
+  var header = 'Content-Length: ${message.length}\r\n\r\n';
   sink.add(ascii.encode(header));
   for (var chunk in _chunks(message, 1024)) {
     sink.add(chunk);
@@ -64,17 +64,17 @@ class _Parser {
 
   /// Decodes [_buffer] into a String and looks for the 'Content-Length' header.
   int _parseContentLength() {
-    final asString = ascii.decode(_buffer);
-    final headers = asString.split('\r\n');
-    final lengthHeader =
+    var asString = ascii.decode(_buffer);
+    var headers = asString.split('\r\n');
+    var lengthHeader =
         headers.firstWhere((h) => h.startsWith('Content-Length'));
-    final length = lengthHeader.split(':').last.trim();
+    var length = lengthHeader.split(':').last.trim();
     return int.parse(length);
   }
 
   /// Whether [_buffer] ends in '\r\n\r\n'.
   bool get _headerComplete {
-    final l = _buffer.length;
+    var l = _buffer.length;
     return l > 4 &&
         _buffer[l - 1] == 10 &&
         _buffer[l - 2] == 13 &&
