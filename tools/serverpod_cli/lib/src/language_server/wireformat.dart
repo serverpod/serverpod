@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:stream_channel/stream_channel.dart';
 import 'package:async/async.dart';
+
 StreamChannel<String> lspChannel(
     Stream<List<int>> stream, StreamSink<List<int>> sink) {
   final parser = _Parser(stream);
