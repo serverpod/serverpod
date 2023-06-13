@@ -28,5 +28,10 @@ void main() {
       bool isValid = StringValidators.isValidProjectName(invalidName);
       expect(isValid, false);
     });
+    test('Invalid name starting with number', () {
+      var invalidName = '0_my_project';
+      bool isValid = StringValidators.isValidProjectName(invalidName);
+      expect(isValid, false);
+    });
   });
 }
