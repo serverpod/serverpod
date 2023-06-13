@@ -7,21 +7,21 @@ version: VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
   serverpod: #^VERSION
     path: ../../../packages/serverpod
   serverpod_serialization: #^VERSION
     path: ../../../packages/serverpod_serialization
-  crypto: ^3.0.1
-  email_validator: ^2.0.1
+  crypto: ^3.0.2
+  email_validator: ^2.1.17
   firebase_admin: ^0.2.0
-  googleapis: ^7.0.0
-  googleapis_auth: ^1.3.0
-  http: ^0.13.0
+  googleapis: ^9.2.0
+  googleapis_auth: ^1.4.0
+  http: ^0.13.5
   image: ^4.0.15
-  jose: ^0.3.2
+  jose: ^0.3.3
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1

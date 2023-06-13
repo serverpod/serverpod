@@ -24,8 +24,9 @@ import 'protocol.dart' as _i10;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
-class _EndpointInsights extends _i1.EndpointRef {
-  _EndpointInsights(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointInsights extends _i1.EndpointRef {
+  EndpointInsights(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'insights';
@@ -154,6 +155,29 @@ class _EndpointInsights extends _i1.EndpointRef {
         'getLiveDatabaseDefinition',
         {},
       );
+
+  /// Exports raw data serialized in JSON from the database.
+  _i2.Future<String> fetchDatabaseBulkData({
+    required String table,
+    required int startingId,
+    required int limit,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'insights',
+        'fetchDatabaseBulkData',
+        {
+          'table': table,
+          'startingId': startingId,
+          'limit': limit,
+        },
+      );
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  _i2.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
+        'insights',
+        'executeSql',
+        {'sql': sql},
+      );
 }
 
 class Client extends _i1.ServerpodClient {
@@ -167,10 +191,10 @@ class Client extends _i1.ServerpodClient {
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
-    insights = _EndpointInsights(this);
+    insights = EndpointInsights(this);
   }
 
-  late final _EndpointInsights insights;
+  late final EndpointInsights insights;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {'insights': insights};

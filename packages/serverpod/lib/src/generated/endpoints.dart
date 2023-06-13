@@ -204,6 +204,55 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['insights'] as _i2.InsightsEndpoint)
                   .getLiveDatabaseDefinition(session),
         ),
+        'fetchDatabaseBulkData': _i1.MethodConnector(
+          name: 'fetchDatabaseBulkData',
+          params: {
+            'table': _i1.ParameterDescription(
+              name: 'table',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'startingId': _i1.ParameterDescription(
+              name: 'startingId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .fetchDatabaseBulkData(
+            session,
+            table: params['table'],
+            startingId: params['startingId'],
+            limit: params['limit'],
+          ),
+        ),
+        'executeSql': _i1.MethodConnector(
+          name: 'executeSql',
+          params: {
+            'sql': _i1.ParameterDescription(
+              name: 'sql',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
+            session,
+            params['sql'],
+          ),
+        ),
       },
     );
   }

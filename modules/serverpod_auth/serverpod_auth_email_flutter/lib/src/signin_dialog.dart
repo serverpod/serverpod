@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_email_flutter/src/auth.dart';
 
+const _defaultMaxPasswordLength = 128;
+const _defaultMinPasswordLength = 8;
+
 enum _Page {
   createAccount,
   confirmEmail,
@@ -14,11 +17,15 @@ enum _Page {
 class SignInWithEmailDialog extends StatefulWidget {
   final Caller caller;
   final VoidCallback onSignedIn;
+  final int maxPasswordLength;
+  final int minPasswordLength;
 
   const SignInWithEmailDialog({
     Key? key,
     required this.caller,
     required this.onSignedIn,
+    this.maxPasswordLength = _defaultMaxPasswordLength,
+    this.minPasswordLength = _defaultMinPasswordLength,
   }) : super(key: key);
 
   @override
@@ -283,7 +290,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         TextField(
           enabled: _enabled,
-          maxLength: 32,
+          maxLength: widget.maxPasswordLength,
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
@@ -333,6 +340,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _createAccount() async {
+    _resetIssues();
     var userName = _usernameController.text.trim();
     if (userName.isEmpty) {
       setState(() {
@@ -350,15 +358,15 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     var password = _passwordController.text;
-    if (password.length < 8) {
+    if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Minimum 8 characters';
+        _passwordIssue = 'Minimum ${widget.minPasswordLength} characters';
       });
       return;
     }
-    if (password.length > 32) {
+    if (password.length > widget.maxPasswordLength) {
       setState(() {
-        _passwordIssue = 'Maximum 32 characters';
+        _passwordIssue = 'Maximum ${widget.maxPasswordLength} characters';
       });
       return;
     }
@@ -375,16 +383,17 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
 
     setState(() {
       _enabled = true;
-    });
 
-    if (success) {
-      setState(() {
+      if (success) {
         _page = _Page.confirmEmail;
-      });
-    }
+      } else {
+        _emailIssue = 'Email already in use';
+      }
+    });
   }
 
   Future<void> _validateAccount() async {
+    _resetIssues();
     if (_validationCodeController.text.isEmpty) {
       setState(() {
         _validationCodeIssue = 'Enter your code';
@@ -429,6 +438,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _signIn() async {
+    _resetIssues();
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
@@ -438,9 +448,9 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     }
 
     var password = _passwordController.text;
-    if (password.length < 8) {
+    if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Minimum 8 characters';
+        _passwordIssue = 'Minimum ${widget.minPasswordLength} characters';
       });
       return;
     }
@@ -467,6 +477,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _initiatePasswordReset() async {
+    _resetIssues();
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
@@ -488,6 +499,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 
   Future<void> _resetPassword() async {
+    _resetIssues();
     if (_passwordController.text.length < 8) {
       setState(() {
         _passwordIssue = 'Min 8 characters';
@@ -533,6 +545,15 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     widget.onSignedIn();
   }
 
+  void _resetIssues() {
+    setState(() {
+      _emailIssue = '';
+      _passwordIssue = '';
+      _validationCodeIssue = '';
+      _userNameIssue = '';
+    });
+  }
+
   void _resetTextFields() {
     setState(() {
       _validationCodeController.text = '';
@@ -547,6 +568,8 @@ void showSignInWithEmailDialog({
   required BuildContext context,
   required Caller caller,
   required VoidCallback onSignedIn,
+  int? maxPasswordLength,
+  int? minPasswordLength,
 }) {
   showDialog(
     context: context,
@@ -554,6 +577,8 @@ void showSignInWithEmailDialog({
       return SignInWithEmailDialog(
         caller: caller,
         onSignedIn: onSignedIn,
+        maxPasswordLength: maxPasswordLength ?? _defaultMaxPasswordLength,
+        minPasswordLength: minPasswordLength ?? _defaultMinPasswordLength,
       );
     },
   );

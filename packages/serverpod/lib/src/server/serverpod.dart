@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
+import 'package:serverpod/src/database/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
@@ -98,6 +99,9 @@ class Serverpod {
 
   /// The web server managed by this [Serverpod].
   late WebServer webServer;
+
+  /// The migration manager used by this [Serverpod].
+  late MigrationManager migrationManager;
 
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
@@ -308,27 +312,27 @@ class Serverpod {
       while (!databaseConnectionIsUp) {
         var session = await createSession(enableLogging: false);
         try {
-          logVerbose('Loading runtime settings.');
+          // Initialize migration manager.
+          logVerbose('Initializing migration manager.');
+          migrationManager = MigrationManager();
+          await migrationManager.initialize(session);
 
-          _runtimeSettings =
-              await session.db.findSingleRow<internal.RuntimeSettings>();
-          if (_runtimeSettings == null) {
-            logVerbose('Runtime settings not found, creting default settings.');
-
-            // Store default settings.
-            _runtimeSettings = _defaultRuntimeSettings;
-            await session.db.insert(_runtimeSettings!);
-          } else {
-            logVerbose('Runtime settings loaded.');
+          if (commandLineArgs.applyMigrations) {
+            logVerbose('Applying database migrations.');
+            await migrationManager.migrateToLatest(session);
           }
+
+          logVerbose('Verifying database integrity.');
+          await migrationManager.verifyDatabaseIntegrity(session);
 
           // We successfully connected to the database.
           databaseConnectionIsUp = true;
-        } catch (e) {
+        } catch (e, stackTrace) {
           // Write connection error to stderr.
           stderr.writeln(
             'Failed to connect to the database. Retrying in 10 seconds. $e',
           );
+          stderr.writeln('$stackTrace');
           if (!printedDatabaseConnectionError) {
             stderr.writeln('Database configuration:');
             stderr.writeln(config.database.toString());
@@ -336,6 +340,34 @@ class Serverpod {
           }
 
           await Future.delayed(const Duration(seconds: 10));
+        }
+
+        try {
+          logVerbose('Loading runtime settings.');
+
+          _runtimeSettings =
+              await session.db.findSingleRow<internal.RuntimeSettings>();
+        } catch (e) {
+          stderr.writeln(
+            'Failed to load runtime settings. $e',
+          );
+        }
+        try {
+          if (_runtimeSettings == null) {
+            logVerbose(
+              'Runtime settings not found, creating default settings.',
+            );
+
+            // Store default settings.
+            _runtimeSettings = _defaultRuntimeSettings;
+            await session.db.insert(_runtimeSettings!);
+          } else {
+            logVerbose('Runtime settings loaded.');
+          }
+        } catch (e) {
+          stderr.writeln(
+            'Failed to store runtime settings. $e',
+          );
         }
 
         await session.close();

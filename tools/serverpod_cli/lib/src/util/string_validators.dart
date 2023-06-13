@@ -6,6 +6,8 @@ class StringValidators {
   static final _snakeCaseTester = RegExp(r'^[a-z]+[a-z0-9_]*$');
   static final _mixedSnakeCaseTester =
       RegExp(r'^[a-z]+((\d)|([A-Z0-9_][a-z0-9_]+))*([A-Z])?$');
+  static final _lowerCaseWithDashesTester =
+      RegExp(r'^[a-z0-9]+([-][a-z0-9]+)*$');
 
   static bool isValidFieldName(String name) =>
       _camelCaseTester.hasMatch(name) || _snakeCaseTester.hasMatch(name);
@@ -17,6 +19,11 @@ class StringValidators {
   static bool isValidTableIndexName(String name) =>
       _mixedSnakeCaseTester.hasMatch(name);
 
+  static bool isValidTagName(String name) =>
+      _lowerCaseWithDashesTester.hasMatch(name);
+
   static bool isValidProjectName(String name) =>
+      /// This regex will let you allow only name starting with smalls 
+      /// and contains only `_` special char and ending with smalls or numbers
       RegExp(r'^[a-z]+(?:[0-9a-z]+|_[0-9a-z]+)*$').hasMatch(name);
 }

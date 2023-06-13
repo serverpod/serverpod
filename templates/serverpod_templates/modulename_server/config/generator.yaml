@@ -1,3 +1,4 @@
 type: module
+nickname: modulename
 
-client_package_path: ../MODULENAME_client
+client_package_path: ../modulename_client

@@ -1333,16 +1333,6 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'exceptionTest',
       endpoint: endpoints['exceptionTest']!,
       methodConnectors: {
-        'throwSerializableException': _i1.MethodConnector(
-          name: 'throwSerializableException',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['exceptionTest'] as _i10.ExceptionTestEndpoint)
-                  .throwSerializableException(session),
-        ),
         'throwNormalException': _i1.MethodConnector(
           name: 'throwNormalException',
           params: {},

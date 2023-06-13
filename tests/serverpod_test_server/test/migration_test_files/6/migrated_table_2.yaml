@@ -1,0 +1,11 @@
+class: MigratedTable2
+table: migrated_table_2
+fields:
+  anInt: int
+  aString: String?
+  aNonNullString: String
+indexes:
+  migrated_table_2_idx:
+    fields: aNonNullString
+    unique: false
+    type: hash

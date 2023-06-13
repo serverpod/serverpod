@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
-import 'package:serverpod_cli/src/generator/psql/pgsql_generator.dart';
+import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 
@@ -62,7 +62,7 @@ abstract class CodeGenerator {
   List<String> get outputFileExtensions;
 
   /// The generators, that run on [generateAll].
-  static const generators = [DartCodeGenerator(), PgsqlCodeGenerator()];
+  static const generators = [DartCodeGenerator(), LegacyPgsqlCodeGenerator()];
 
   /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all
   /// [CodeGenerator]s and save the files.

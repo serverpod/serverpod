@@ -74,7 +74,9 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'object_field_scopes',
+      dartName: 'ObjectFieldScopes',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -116,7 +118,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_bytedata',
+      dartName: 'ObjectWithByteData',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -152,7 +156,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_duration',
+      dartName: 'ObjectWithDuration',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -188,7 +194,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_enum',
+      dartName: 'ObjectWithEnum',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -248,7 +256,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_index',
+      dartName: 'ObjectWithIndex',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -307,7 +317,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_object',
+      dartName: 'ObjectWithObject',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -373,7 +385,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_parent',
+      dartName: 'ObjectWithParent',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -420,7 +434,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_self_parent',
+      dartName: 'ObjectWithSelfParent',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -468,7 +484,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'object_with_uuid',
+      dartName: 'ObjectWithUuid',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -510,7 +528,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'simple_data',
+      dartName: 'SimpleData',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -546,7 +566,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'types',
+      dartName: 'Types',
       schema: 'public',
+      module: 'serverpod_test',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

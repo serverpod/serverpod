@@ -7,6 +7,7 @@ on:
       - dev
       - tests
       - stable-1.0
+      - stable-1.1
   pull_request:
     branches:
       - main
@@ -15,22 +16,28 @@ jobs:
   dart_format:
     name: dart format
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dart-version: ['2.19.0', '3.0.0']
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1.3
         with:
-          sdk: 2.19.0
+          sdk: ${{ matrix.dart-version }}
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
   dart_analyze:
     name: dart analyze
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.7.0"
+          flutter-version: ${{ matrix.flutter-version }}
       # - name: Setup Firebase dummy file
       #   run: mv packages/serverpod/example/example_flutter/lib/firebase_options_dummy.dart packages/serverpod/example/example_flutter/lib/firebase_options.dart
       - name: Install dependencies
@@ -41,33 +48,42 @@ jobs:
   serverpod_generate:
     name: serverpod generate
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.7.0"
+          flutter-version: ${{ matrix.flutter-version }}
       - name: Run serverpod generate
         run: util/run_tests_serverpod_generate
 
   update_pubspecs:
     name: update pubspecs
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.7.0"
-      - name: Run serverpod generate
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run serverpod update pubspecs
         run: util/run_tests_update_pubspecs
 
   single_server_tests:
     name: Serverpod tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.7.0"
+          flutter-version: ${{ matrix.flutter-version }}
 
       - name: Run single server tests
         run: util/run_tests_single_server
@@ -75,10 +91,13 @@ jobs:
   cli_tests:
     name: CLI tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.7.0"
+          flutter-version: ${{ matrix.flutter-version }}
       - name: Run CLI tests
         run: util/run_tests_cli

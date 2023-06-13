@@ -619,6 +619,33 @@ Current type was $T''');
     }
   }
 
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<int> execute(
+    String query, {
+    required Session session,
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    var startTime = DateTime.now();
+
+    try {
+      var context = transaction != null
+          ? transaction.postgresContext
+          : postgresConnection;
+
+      var result = await context.execute(
+        query,
+        timeoutInSeconds: timeoutInSeconds,
+        substitutionValues: {},
+      );
+      _logQuery(session, query, startTime);
+      return result;
+    } catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
+
   void _logQuery(
     Session session,
     String query,

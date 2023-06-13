@@ -17,6 +17,7 @@ doc/api/
 .DS_Store
 .atom/
 .idea
+.vscode/
 .packages
 .pub/
 build/

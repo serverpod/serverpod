@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
@@ -200,7 +201,48 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getTargetDatabaseDefinition]
-  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
-    return DatabaseAnalyzer.analyze(session.db);
+  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
+    // Get database definition of the live database.
+    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+    // Make sure that the migration manager is up-to-date.
+    await session.serverpod.migrationManager.initialize(session);
+
+    // Create map of installed modules.
+    var modules = session.serverpod.migrationManager.installedVersions;
+    var installedModules = <String, String>{};
+    for (var module in modules) {
+      installedModules[module.module] = module.version;
+    }
+    databaseDefinition.installedModules = installedModules;
+
+    return databaseDefinition;
+  }
+
+  /// Exports raw data serialized in JSON from the database.
+  Future<String> fetchDatabaseBulkData(
+    Session session, {
+    required String table,
+    required int startingId,
+    required int limit,
+  }) async {
+    return DatabaseBulkData.exportTableData(
+      database: session.db,
+      table: table,
+      startingId: startingId,
+      limit: limit,
+    );
+  }
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  Future<int> executeSql(Session session, String sql) async {
+    try {
+      return await session.db.execute(sql);
+    } catch (e) {
+      throw ServerpodSqlException(
+        message: '$e',
+        sql: sql,
+      );
+    }
   }
 }

@@ -79,18 +79,22 @@ class LibraryGenerator {
             ..name = 'targetDatabaseDefinition'
             ..static = true
             ..modifier = FieldModifier.final$
-            ..assignment = createDatabaseDefinitionFromEntities(entities)
-                .toCode(serverCode: serverCode, additionalTables: [
-              for (var module in config.modules)
-                refer('Protocol.targetDatabaseDefinition.tables',
-                        module.dartImportUrl(serverCode))
-                    .spread,
-              if (config.name != 'serverpod' &&
-                  config.type == PackageType.server)
-                refer('Protocol.targetDatabaseDefinition.tables',
-                        serverpodProtocolUrl(serverCode))
-                    .spread,
-            ]),
+            ..assignment =
+                createDatabaseDefinitionFromEntities(entities).toCode(
+              config: config,
+              serverCode: serverCode,
+              additionalTables: [
+                for (var module in config.modules)
+                  refer('Protocol.targetDatabaseDefinition.tables',
+                          module.dartImportUrl(serverCode))
+                      .spread,
+                if (config.name != 'serverpod' &&
+                    config.type != PackageType.module)
+                  refer('Protocol.targetDatabaseDefinition.tables',
+                          serverpodProtocolUrl(serverCode))
+                      .spread,
+              ],
+            ),
         ),
     ]);
     protocol.methods.addAll([
@@ -320,7 +324,7 @@ class LibraryGenerator {
                                   .call([
                                     refer('server'),
                                     literalString(endpoint.name),
-                                    config.type == PackageType.server
+                                    config.type != PackageType.module
                                         ? refer('null')
                                         : literalString(config.name)
                                   ])
@@ -430,16 +434,16 @@ class LibraryGenerator {
   /// (if [serverCode] is `false`).
   Library generateClientEndpointCalls() {
     String getEndpointClassName(String endpointName) {
-      return '_Endpoint${ReCase(endpointName).pascalCase}';
+      return 'Endpoint${ReCase(endpointName).pascalCase}';
     }
 
     var library = LibraryBuilder();
 
     var hasModules =
-        config.modules.isNotEmpty && config.type == PackageType.server;
+        config.modules.isNotEmpty && config.type != PackageType.module;
 
     var modulePrefix =
-        config.type == PackageType.server ? '' : '${config.name}.';
+        config.type != PackageType.module ? '' : '${config.name}.';
 
     for (var endpointDef in protocolDefinition.endpoints) {
       var endpointClassName = getEndpointClassName(endpointDef.name);
@@ -448,6 +452,7 @@ class LibraryGenerator {
         Class((endpoint) {
           endpoint
             ..docs.add(endpointDef.documentationComment ?? '')
+            ..docs.add('/// {@category Endpoint}')
             ..name = endpointClassName
             ..extend = refer('EndpointRef', serverpodUrl(false));
 
@@ -555,8 +560,8 @@ class LibraryGenerator {
     library.body.add(
       Class(
         (c) => c
-          ..name = config.type == PackageType.server ? 'Client' : 'Caller'
-          ..extend = config.type == PackageType.server
+          ..name = config.type != PackageType.module ? 'Client' : 'Caller'
+          ..extend = config.type != PackageType.module
               ? refer('ServerpodClient', serverpodUrl(false))
               : refer('ModuleEndpointCaller', serverpodUrl(false))
           ..fields.addAll([
@@ -575,7 +580,7 @@ class LibraryGenerator {
           ])
           ..constructors.add(
             Constructor((c) {
-              if (config.type == PackageType.server) {
+              if (config.type != PackageType.module) {
                 c
                   ..requiredParameters.add(Parameter((p) => p
                     ..type = refer('String')
@@ -644,7 +649,7 @@ class LibraryGenerator {
                           refer(endpointDef.name)
                   }).code,
               ),
-              if (config.type == PackageType.server)
+              if (config.type != PackageType.module)
                 Method(
                   (m) => m
                     ..name = 'moduleLookup'
@@ -675,6 +680,7 @@ extension on DatabaseDefinition {
   Code toCode({
     required List<Expression> additionalTables,
     required bool serverCode,
+    required GeneratorConfig config,
   }) {
     return refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
         .call([], {
@@ -683,7 +689,10 @@ extension on DatabaseDefinition {
         for (var table in tables)
           refer('TableDefinition', serverpodProtocolUrl(serverCode)).call([], {
             'name': literalString(table.name),
+            if (table.dartName != null)
+              'dartName': literalString(table.dartName!),
             'schema': literalString(table.schema),
+            'module': literalString(config.name),
             'columns': literalList([
               for (var column in table.columns)
                 refer('ColumnDefinition', serverpodProtocolUrl(serverCode))
