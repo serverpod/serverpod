@@ -75,18 +75,6 @@ Future<void> _main(List<String> args) async {
   }
 
   // Make sure all necessary downloads are installed
-  if (!productionMode) {
-    /*
-    print(
-      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-    );
-    print('SERVERPOD_HOME is set to $serverpodHome');
-    */
-    if (!resourceManager.isTemplatesInstalled) {
-      print('WARNING! Could not find templates.');
-    }
-  }
-
   if (!resourceManager.isTemplatesInstalled) {
     try {
       await resourceManager.installTemplates();
@@ -102,6 +90,12 @@ Future<void> _main(List<String> args) async {
   }
 
   var parser = ArgParser();
+  parser.addFlag(
+    'development-print',
+    defaultsTo: true,
+    negatable: true,
+    help: 'Prints additional information useful for development.',
+  );
 
   // "version" command
   var versionParser = ArgParser();
@@ -182,15 +176,6 @@ Future<void> _main(List<String> args) async {
   );
   parser.addCommand(cmdMigrate, migrateParser);
 
-  // "language-server" command
-  var languageServerParser = ArgParser();
-  languageServerParser.addFlag(
-    'stdio',
-    negatable: false,
-    help: 'Sets the communication channel to use stdin/stdout',
-  );
-  parser.addCommand(cmdLanguageServer, languageServerParser);
-
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
@@ -210,6 +195,18 @@ Future<void> _main(List<String> args) async {
   ArgResults results;
   try {
     results = parser.parse(args);
+    bool devPrint = results['development-print'];
+
+    if (!productionMode && devPrint) {
+      print(
+        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+      );
+      print('SERVERPOD_HOME is set to $serverpodHome');
+
+      if (!resourceManager.isTemplatesInstalled) {
+        print('WARNING! Could not find templates.');
+      }
+    }
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
@@ -351,7 +348,7 @@ Future<void> _main(List<String> args) async {
     }
 
     if (results.command!.name == cmdLanguageServer) {
-      await startLanguageServer();
+      await runLanguageServer();
       _analytics.cleanUp();
       return;
     }

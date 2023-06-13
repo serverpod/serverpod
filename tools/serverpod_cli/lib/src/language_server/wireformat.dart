@@ -1,5 +1,6 @@
 // Code taken from depricated package dart_lsp.
 // https://github.com/natebosch/dart_lsp/blob/master/lib/src/protocol/language_server/wireformat.dart
+// LICENCE: https://github.com/natebosch/dart_lsp/blob/master/LICENSE
 import 'dart:async';
 import 'dart:convert';
 
