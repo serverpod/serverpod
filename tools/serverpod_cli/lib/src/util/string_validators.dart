@@ -21,4 +21,9 @@ class StringValidators {
 
   static bool isValidTagName(String name) =>
       _lowerCaseWithDashesTester.hasMatch(name);
+
+  /// This function with regex, that will let you allow only name starting with smalls
+  /// and contains only `_` special char and ending with smalls or numbers
+  static bool isValidProjectName(String name) =>
+      RegExp(r'^[a-z]+(?:[0-9a-z]+|_[0-9a-z]+)*$').hasMatch(name);
 }

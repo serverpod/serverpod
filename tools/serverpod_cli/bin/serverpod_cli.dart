@@ -239,12 +239,9 @@ Future<void> _main(List<String> args) async {
         return;
       }
 
-      var re = RegExp(r'^[a-z0-9_]+$');
-      if (results.arguments.length > 1 && re.hasMatch(name)) {
-        await performCreate(name, verbose, template, force);
-        _analytics.cleanUp();
-        return;
-      }
+      await performCreate(name, verbose, template, force);
+      _analytics.cleanUp();
+      return;
     }
 
     // Generate command.

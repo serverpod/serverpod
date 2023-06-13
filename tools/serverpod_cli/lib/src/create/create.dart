@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../downloads/resource_manager.dart';
@@ -25,6 +26,12 @@ Future<void> performCreate(
   String template,
   bool force,
 ) async {
+  // check if project name is valid
+  if (!StringValidators.isValidProjectName(name)) {
+    printwwln(
+        'Invalid project name. Project names can only contain letters, numbers, and underscores.');
+    return;
+  }
   // Check we are set to create a new project
   var usedPorts = <String, int>{};
   for (var serverDescription in _defaultPorts.keys) {
