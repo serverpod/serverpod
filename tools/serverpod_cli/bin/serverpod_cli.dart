@@ -14,6 +14,7 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
+import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
@@ -24,11 +25,11 @@ import 'package:serverpod_cli/src/util/version.dart';
 
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
-// const cmdRun = 'run';
 const cmdGeneratePubspecs = 'generate-pubspecs';
 const cmdAnalyzePubspecs = 'analyze-pubspecs';
 const cmdVersion = 'version';
 const cmdMigrate = 'migrate';
+const cmdLanguageServer = 'language-server';
 
 final runModes = <String>['development', 'staging', 'production'];
 
@@ -74,16 +75,6 @@ Future<void> _main(List<String> args) async {
   }
 
   // Make sure all necessary downloads are installed
-  if (!productionMode) {
-    print(
-      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-    );
-    print('SERVERPOD_HOME is set to $serverpodHome');
-    if (!resourceManager.isTemplatesInstalled) {
-      print('WARNING! Could not find templates.');
-    }
-  }
-
   if (!resourceManager.isTemplatesInstalled) {
     try {
       await resourceManager.installTemplates();
@@ -99,6 +90,12 @@ Future<void> _main(List<String> args) async {
   }
 
   var parser = ArgParser();
+  parser.addFlag(
+    'development-print',
+    defaultsTo: true,
+    negatable: true,
+    help: 'Prints additional information useful for development.',
+  );
 
   // "version" command
   var versionParser = ArgParser();
@@ -179,17 +176,6 @@ Future<void> _main(List<String> args) async {
   );
   parser.addCommand(cmdMigrate, migrateParser);
 
-  // "run" command
-  // var runParser = ArgParser();
-  // runParser.addFlag(
-  //   'verbose',
-  //   abbr: 'v',
-  //   negatable: false,
-  //   help: 'Output more detailed information',
-  // );
-  // // TODO: Fix Docker management
-  // parser.addCommand(cmdRun, runParser);
-
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
@@ -209,6 +195,18 @@ Future<void> _main(List<String> args) async {
   ArgResults results;
   try {
     results = parser.parse(args);
+    bool devPrint = results['development-print'];
+
+    if (!productionMode && devPrint) {
+      print(
+        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+      );
+      print('SERVERPOD_HOME is set to $serverpodHome');
+
+      if (!resourceManager.isTemplatesInstalled) {
+        print('WARNING! Could not find templates.');
+      }
+    }
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
@@ -346,24 +344,11 @@ Future<void> _main(List<String> args) async {
       return;
     }
 
-    // Run command.
-    // TODO: Fix in future version.
-    // if (results.command!.name == cmdRun) {
-    //   if (Platform.isWindows) {
-    //     printwwln(
-    //         'Sorry, `serverpod run` is not yet supported on Windows. You can still start your server by running:');
-    //     stdout.writeln('  \$ docker compose up --build --detach');
-    //     stdout.writeln('  \$ dart .\\bin\\main.dart');
-    //     printww('');
-    //   } else {
-    //     // TODO: Fix Docker management
-    //     performRun(
-    //       results.command!['verbose'],
-    //     );
-    //   }
-    //   _analytics.cleanUp();
-    //   return;
-    // }
+    if (results.command!.name == cmdLanguageServer) {
+      await runLanguageServer();
+      _analytics.cleanUp();
+      return;
+    }
 
     // Generate pubspecs command.
     if (results.command!.name == cmdGeneratePubspecs) {
@@ -412,14 +397,14 @@ void _printUsage(ArgParser parser) {
   );
   _printCommandUsage(
     cmdMigrate,
-    'Creates a migration from the last migration to the current state of the database',
+    'Creates a migration from the last migration to the current state of the database.',
     parser.commands[cmdMigrate]!,
   );
-  // _printCommandUsage(
-  //   cmdRun,
-  //   'Run server in development mode. Code is generated continuously and server is hot reloaded when source files are edited.',
-  //   parser.commands[cmdGenerate]!,
-  // );
+  _printCommandUsage(
+    cmdLanguageServer,
+    'Launches a serverpod language server communicating with JSON-RPC-2 intended to be used with a client integrated in an IDE.',
+    parser.commands[cmdLanguageServer]!,
+  );
 }
 
 void _printCommandUsage(String name, String descr,
