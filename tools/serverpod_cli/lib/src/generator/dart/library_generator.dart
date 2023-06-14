@@ -600,6 +600,19 @@ class LibraryGenerator {
                         ..symbol = 'AuthenticationKeyManager'
                         ..url = serverpodUrl(false)
                         ..isNullable = true)),
+                    Parameter((p) => p
+                      ..name = 'onFailedCall'
+                      ..named = true
+                      ..type = FunctionType((f) => f
+                        ..isNullable = true
+                        ..requiredParameters.add(TypeReference((t) => t
+                          ..symbol = 'Object'
+                          ..url = 'dart:core'
+                          ..isNullable = false)))),
+                    Parameter((p) => p
+                      ..name = 'onSucceededCall'
+                      ..named = true
+                      ..type = FunctionType((f) => f..isNullable = true)),
                   ])
                   ..initializers.add(refer('super').call([
                     refer('host'),
@@ -608,6 +621,8 @@ class LibraryGenerator {
                     'context': refer('context'),
                     'authenticationKeyManager':
                         refer('authenticationKeyManager'),
+                    'onFailedCall': refer('onFailedCall'),
+                    'onSucceededCall': refer('onSucceededCall'),
                   }).code);
               } else {
                 c
