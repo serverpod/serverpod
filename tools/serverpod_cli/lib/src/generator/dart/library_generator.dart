@@ -622,6 +622,7 @@ class LibraryGenerator {
                     'authenticationKeyManager':
                         refer('authenticationKeyManager'),
                     'onFailedCall': refer('onFailedCall'),
+                    'onSucceededCall': refer('onSucceededCall'),
                   }).code);
               } else {
                 c
