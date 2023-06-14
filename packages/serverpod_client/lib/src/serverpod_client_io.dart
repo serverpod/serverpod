@@ -17,6 +17,7 @@ import 'serverpod_client_shared_private.dart';
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
   bool _initialized = false;
+  void Function(Object error)? _onFailedCall;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -25,6 +26,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
     dynamic context,
     AuthenticationKeyManager? authenticationKeyManager,
     bool logFailedCalls = true,
+    void Function(Object error)? onFailedCall,
   }) : super(
           host,
           serializationManager,
@@ -32,6 +34,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
           logFailedCalls: logFailedCalls,
         ) {
     assert(context == null || context is SecurityContext);
+    _onFailedCall = onFailedCall;
 
     // Setup client
     _httpClient = HttpClient(context: context);
@@ -48,6 +51,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
 //      print('host: $host');
 //      print('port: $port');
 //      return false;
+      _onFailedCall?.call(Exception('Failed to verify server certificate'));
       return true;
     });
   }
@@ -96,6 +100,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
+      _onFailedCall?.call(e);
 
       rethrow;
     }
@@ -109,6 +114,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
     }, onDone: () //
         {
       return completer.complete(contents.toString());
+    }, onError: (e) {
+      _onFailedCall?.call(e);
     });
     return completer.future;
   }
