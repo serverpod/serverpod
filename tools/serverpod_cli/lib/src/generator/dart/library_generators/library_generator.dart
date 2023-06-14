@@ -605,8 +605,11 @@ class LibraryGenerator {
                         ..requiredParameters.add(TypeReference((t) => t
                           ..symbol = 'Object'
                           ..url = 'dart:core'
-                          ..isNullable = false))
-                        ..isNullable = true)),
+                          ..isNullable = false)))),
+                    Parameter((p) => p
+                      ..name = 'onSucceededCall'
+                      ..named = true
+                      ..type = FunctionType((f) => f..isNullable = true)),
                   ])
                   ..initializers.add(refer('super').call([
                     refer('host'),

@@ -18,6 +18,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
   bool _initialized = false;
   void Function(Object error)? _onFailedCall;
+  void Function()? _onSucceededCall;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -27,6 +28,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
     AuthenticationKeyManager? authenticationKeyManager,
     bool logFailedCalls = true,
     void Function(Object error)? onFailedCall,
+    void Function()? onSucceededCall,
   }) : super(
           host,
           serializationManager,
@@ -35,6 +37,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
         ) {
     assert(context == null || context is SecurityContext);
     _onFailedCall = onFailedCall;
+    _onSucceededCall = onSucceededCall;
 
     // Setup client
     _httpClient = HttpClient(context: context);
@@ -90,11 +93,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
         );
       }
 
+      T result;
       if (T == getType<void>()) {
-        return returnVoid() as T;
+        result = returnVoid() as T;
       } else {
-        return parseData<T>(data, T, serializationManager);
+        result = parseData<T>(data, T, serializationManager);
       }
+      _onSucceededCall?.call();
+      return result;
     } catch (e) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
@@ -113,7 +119,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
       contents.write(data);
     }, onDone: () //
         {
-      return completer.complete(contents.toString());
+      var result = completer.complete(contents.toString());
+      _onSucceededCall?.call();
+      return result;
     }, onError: (e) {
       _onFailedCall?.call(e);
     });
