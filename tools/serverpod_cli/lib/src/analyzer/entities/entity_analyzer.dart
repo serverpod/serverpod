@@ -26,7 +26,7 @@ class SerializableEntityAnalyzer {
   final CodeAnalysisCollector collector;
 
   /// Create a new [SerializableEntityAnalyzer].
-  SerializableEntityAnalyzer._({
+  SerializableEntityAnalyzer({
     required this.yaml,
     required this.sourceFileName,
     required this.outFileName,
@@ -60,14 +60,14 @@ class SerializableEntityAnalyzer {
       // Process a file.
       if (verbose) print('  - processing file: ${entity.path}');
       var yaml = await entity.readAsString();
-      var analyzer = SerializableEntityAnalyzer._(
+      var analyzer = SerializableEntityAnalyzer(
         yaml: yaml,
         sourceFileName: entity.path,
         outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
         collector: collector,
         subDirectoryParts: subDirectoryParts,
       );
-      var classDefinition = analyzer._analyze();
+      var classDefinition = analyzer.analyze();
       if (classDefinition != null) {
         classDefinitions.add(classDefinition);
       }
@@ -100,7 +100,7 @@ class SerializableEntityAnalyzer {
     return classDefinitions;
   }
 
-  SerializableEntityDefinition? _analyze() {
+  SerializableEntityDefinition? analyze() {
     var yamlErrorCollector = ErrorCollector();
 
     YamlDocument document;
