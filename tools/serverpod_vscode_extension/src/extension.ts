@@ -4,26 +4,25 @@ import {
 	LanguageClient,
 	LanguageClientOptions,
 	RevealOutputChannelOn,
+	ServerOptions,
 	TransportKind,
 } from 'vscode-languageclient/node';
 
-
 let client: LanguageClient;
+
 export function activate(context: ExtensionContext) {
-	console.log("starting serverpod language server client side");
-	const serverOptions = {
+	const serverOptions: ServerOptions = {
 		command: 'serverpod',
-		args: ['language-server', '--no-development-print', '--stdio'],
+		args: ['language-server', '--no-development-print'],
 		options: {},
 		transport: TransportKind.stdio
 	};
 
-	
 	const clientOptions: LanguageClientOptions = {
 		revealOutputChannelOn: RevealOutputChannelOn.Info,
 		documentSelector: [
 			{ scheme: 'file', language: 'yaml', pattern: '**/protocol/**/*.yaml' },
-			{ scheme: 'file', pattern: '**/protocol/**/*.sp.yaml' },
+			{ scheme: 'file', pattern: '**/*.sp.yaml' },
 		],
 	};
 

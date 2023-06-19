@@ -176,6 +176,10 @@ Future<void> _main(List<String> args) async {
   );
   parser.addCommand(cmdMigrate, migrateParser);
 
+  // "language-server" command
+  var languageServerParser = ArgParser();
+  parser.addCommand(cmdLanguageServer, languageServerParser);
+
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
   generatePubspecs.addOption('version', defaultsTo: 'X');
