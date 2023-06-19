@@ -18,7 +18,7 @@ Future<void> runLanguageServer() async {
   });
 
   connection.onDidOpenTextDocument((params) async {
-    var diagnostics = _validateTextDocument(
+    var diagnostics = _validateYamlProtocol(
       params.textDocument.text,
       params.textDocument.uri.toString(),
     );
@@ -39,7 +39,7 @@ Future<void> runLanguageServer() async {
       );
     });
 
-    var diagnostics = _validateTextDocument(
+    var diagnostics = _validateYamlProtocol(
       contentChanges.last.text,
       params.textDocument.uri.toString(),
     );
@@ -55,7 +55,7 @@ Future<void> runLanguageServer() async {
   await connection.listen();
 }
 
-List<Diagnostic> _validateTextDocument(String yaml, String sourcePath) {
+List<Diagnostic> _validateYamlProtocol(String yaml, String sourcePath) {
   var collector = CodeGenerationCollector();
 
   var analyzer = SerializableEntityAnalyzer(
