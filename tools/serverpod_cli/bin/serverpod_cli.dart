@@ -178,6 +178,11 @@ Future<void> _main(List<String> args) async {
 
   // "language-server" command
   var languageServerParser = ArgParser();
+  languageServerParser.addFlag(
+    'stdio',
+    defaultsTo: true,
+    help: 'Use stdin/stdout channels for communication.',
+  );
   parser.addCommand(cmdLanguageServer, languageServerParser);
 
   // "generate-pubspecs"

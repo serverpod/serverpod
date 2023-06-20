@@ -46,7 +46,7 @@ fields:
     var error = collector.errors.first;
 
     expect(error.message,
-        'The "class" property must be a valid class name (e.g. PascalCaseString).');
+        'The "class" type must be a valid class name (e.g. PascalCaseString).');
   });
 
   test(
@@ -72,7 +72,7 @@ fields:
     var error = collector.errors.first;
 
     expect(error.message,
-        'The "exception" property must be a valid class name (e.g. PascalCaseString).');
+        'The "exception" type must be a valid class name (e.g. PascalCaseString).');
   });
 
   test(
@@ -99,6 +99,6 @@ values:
     var error = collector.errors.first;
 
     expect(error.message,
-        'The "enum" property must be a valid class name (e.g. PascalCaseString).');
+        'The "enum" type must be a valid class name (e.g. PascalCaseString).');
   });
 }

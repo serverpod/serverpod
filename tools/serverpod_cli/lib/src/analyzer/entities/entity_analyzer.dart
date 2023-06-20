@@ -137,6 +137,8 @@ class SerializableEntityAnalyzer {
     }
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
+    _validateEntityType(documentContents);
+
     if (documentContents.nodes['class'] != null ||
         documentContents.nodes['exception'] != null) {
       return _analyzeClassFile(documentContents, docsExtractor);
@@ -145,11 +147,52 @@ class SerializableEntityAnalyzer {
       return _analyzeEnumFile(documentContents, docsExtractor);
     }
 
-    collector.addError(SourceSpanException(
-      'No "class" or "enum" property is defined.',
-      documentContents.span,
-    ));
     return null;
+  }
+
+  void _validateEntityType(YamlMap documentContents) {
+    var typeNodes = _findNodesByKeys(
+      documentContents,
+      {'class', 'exception', 'enum'},
+    );
+
+    if (typeNodes.length == 1) return;
+
+    if (typeNodes.isEmpty) {
+      collector.addError(SourceSpanException(
+        'No "class", "exception" or "enum" type is defined.',
+        documentContents.span,
+      ));
+      return;
+    }
+
+    var formattedKeys = _formatNodeKeys(typeNodes);
+    var errors = typeNodes
+        .skip(1)
+        .map(
+          (e) => SourceSpanException(
+              'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
+              documentContents.key(e.key.toString())?.span),
+        )
+        .toList();
+
+    collector.addErrors(errors);
+  }
+
+  String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
+    return nodes.map((e) => e.key.toString()).fold('', (output, element) {
+      if (output.isEmpty) return '"$element"';
+      return '$output, "$element"';
+    });
+  }
+
+  Iterable<MapEntry<dynamic, YamlNode>> _findNodesByKeys(
+    YamlMap documentContents,
+    Set<String> keys,
+  ) {
+    return documentContents.nodes.entries.where((element) {
+      return keys.contains(element.key.toString());
+    });
   }
 
   SerializableEntityDefinition? _analyzeClassFile(
@@ -184,7 +227,7 @@ class SerializableEntityAnalyzer {
     var className = workingNode.value;
     if (className is! String) {
       collector.addError(SourceSpanException(
-        'The "$type" property must be a String.',
+        'The "$type" type must be a String.',
         workingNode.span,
       ));
       return null;
@@ -192,7 +235,7 @@ class SerializableEntityAnalyzer {
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "$type" property must be a valid class name (e.g. PascalCaseString).',
+        'The "$type" type must be a valid class name (e.g. PascalCaseString).',
         workingNode.span,
       ));
       return null;
@@ -562,7 +605,7 @@ class SerializableEntityAnalyzer {
     var classNameNode = documentContents.nodes['enum'];
     if (classNameNode == null) {
       collector.addError(SourceSpanException(
-        'No "enum" property is defined.',
+        'No "enum" type is defined.',
         documentContents.span,
       ));
       return null;
@@ -573,7 +616,7 @@ class SerializableEntityAnalyzer {
     var className = classNameNode.value;
     if (className is! String) {
       collector.addError(SourceSpanException(
-        'The "enum" property must be a String.',
+        'The "enum" type must be a String.',
         classNameNode.span,
       ));
       return null;
@@ -581,7 +624,7 @@ class SerializableEntityAnalyzer {
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "enum" property must be a valid class name (e.g. PascalCaseString).',
+        'The "enum" type must be a valid class name (e.g. PascalCaseString).',
         classNameNode.span,
       ));
       return null;
