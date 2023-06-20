@@ -137,6 +137,8 @@ class SerializableEntityAnalyzer {
     }
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
+    _validateEntityProperties(documentContents);
+
     if (documentContents.nodes['class'] != null ||
         documentContents.nodes['exception'] != null) {
       return _analyzeClassFile(documentContents, docsExtractor);
@@ -145,11 +147,52 @@ class SerializableEntityAnalyzer {
       return _analyzeEnumFile(documentContents, docsExtractor);
     }
 
-    collector.addError(SourceSpanException(
-      'No "class" or "enum" property is defined.',
-      documentContents.span,
-    ));
     return null;
+  }
+
+  void _validateEntityProperties(YamlMap documentContents) {
+    var typeNodes = _readNodesByKeys(
+      documentContents,
+      {'class', 'exception', 'enum'},
+    );
+
+    if (typeNodes.length == 1) return;
+
+    if (typeNodes.isEmpty) {
+      collector.addError(SourceSpanException(
+        'No "class", "exception" or "enum" property is defined.',
+        documentContents.span,
+      ));
+      return;
+    }
+
+    var formattedKeys = _formatNodeKeys(typeNodes);
+    var errors = typeNodes
+        .skip(1)
+        .map(
+          (e) => SourceSpanException(
+              'Multiple entity properties ($formattedKeys) found for a single entity. Only one property per entity allowed.',
+              documentContents.key(e.key.toString())?.span),
+        )
+        .toList();
+
+    collector.addErrors(errors);
+  }
+
+  String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
+    return nodes.map((e) => e.key.toString()).fold('', (output, element) {
+      if (output.isEmpty) return '"$element"';
+      return '$output, "$element"';
+    });
+  }
+
+  Iterable<MapEntry<dynamic, YamlNode>> _readNodesByKeys(
+    YamlMap documentContents,
+    Set<String> keys,
+  ) {
+    return documentContents.nodes.entries.where((element) {
+      return keys.contains(element.key.toString());
+    });
   }
 
   SerializableEntityDefinition? _analyzeClassFile(
