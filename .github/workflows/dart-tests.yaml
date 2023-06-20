@@ -85,7 +85,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run unit tests
-        run: util/run_tests_unit
+        run: bash util/run_tests_unit
 
   single_server_tests:
     name: Serverpod tests
