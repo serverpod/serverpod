@@ -3,9 +3,10 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
 void main() {
-
   group('Given a protocol without any defined entity property', () {
-    test('Then return a human readable error message informing the user that the entity property is missing.', () {
+    test(
+        'Then return a human readable error message informing the user that the entity property is missing.',
+        () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
         yaml: '''
@@ -160,7 +161,6 @@ fields:
       expect(span?.start.column, 0);
       expect(span?.end.line, 1);
       expect(span?.end.column, 'exception'.length);
-
 
       var span2 = collector.errors[1].span;
 
