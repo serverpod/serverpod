@@ -235,7 +235,7 @@ class SerializableEntityAnalyzer {
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "$type" type must be a valid class name (e.g. CamelCaseString).',
+        'The "$type" type must be a valid class name (e.g. PascalCaseString).',
         workingNode.span,
       ));
       return null;
@@ -624,7 +624,7 @@ class SerializableEntityAnalyzer {
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "enum" type must be a valid class name (e.g. CamelCaseString).',
+        'The "enum" type must be a valid class name (e.g. PascalCaseString).',
         classNameNode.span,
       ));
       return null;
