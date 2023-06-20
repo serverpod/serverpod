@@ -137,7 +137,7 @@ class SerializableEntityAnalyzer {
     }
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
-    _validateEntityProperties(documentContents);
+    _validateEntityType(documentContents);
 
     if (documentContents.nodes['class'] != null ||
         documentContents.nodes['exception'] != null) {
@@ -150,8 +150,8 @@ class SerializableEntityAnalyzer {
     return null;
   }
 
-  void _validateEntityProperties(YamlMap documentContents) {
-    var typeNodes = _readNodesByKeys(
+  void _validateEntityType(YamlMap documentContents) {
+    var typeNodes = _findNodesByKeys(
       documentContents,
       {'class', 'exception', 'enum'},
     );
@@ -160,7 +160,7 @@ class SerializableEntityAnalyzer {
 
     if (typeNodes.isEmpty) {
       collector.addError(SourceSpanException(
-        'No "class", "exception" or "enum" property is defined.',
+        'No "class", "exception" or "enum" type is defined.',
         documentContents.span,
       ));
       return;
@@ -171,7 +171,7 @@ class SerializableEntityAnalyzer {
         .skip(1)
         .map(
           (e) => SourceSpanException(
-              'Multiple entity properties ($formattedKeys) found for a single entity. Only one property per entity allowed.',
+              'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
               documentContents.key(e.key.toString())?.span),
         )
         .toList();
@@ -186,7 +186,7 @@ class SerializableEntityAnalyzer {
     });
   }
 
-  Iterable<MapEntry<dynamic, YamlNode>> _readNodesByKeys(
+  Iterable<MapEntry<dynamic, YamlNode>> _findNodesByKeys(
     YamlMap documentContents,
     Set<String> keys,
   ) {
@@ -227,7 +227,7 @@ class SerializableEntityAnalyzer {
     var className = workingNode.value;
     if (className is! String) {
       collector.addError(SourceSpanException(
-        'The "$type" property must be a String.',
+        'The "$type" type must be a String.',
         workingNode.span,
       ));
       return null;
@@ -235,7 +235,7 @@ class SerializableEntityAnalyzer {
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "$type" property must be a valid class name (e.g. CamelCaseString).',
+        'The "$type" type must be a valid class name (e.g. CamelCaseString).',
         workingNode.span,
       ));
       return null;
@@ -605,7 +605,7 @@ class SerializableEntityAnalyzer {
     var classNameNode = documentContents.nodes['enum'];
     if (classNameNode == null) {
       collector.addError(SourceSpanException(
-        'No "enum" property is defined.',
+        'No "enum" type is defined.',
         documentContents.span,
       ));
       return null;
@@ -616,7 +616,7 @@ class SerializableEntityAnalyzer {
     var className = classNameNode.value;
     if (className is! String) {
       collector.addError(SourceSpanException(
-        'The "enum" property must be a String.',
+        'The "enum" type must be a String.',
         classNameNode.span,
       ));
       return null;
@@ -624,7 +624,7 @@ class SerializableEntityAnalyzer {
 
     if (!StringValidators.isValidClassName(className)) {
       collector.addError(SourceSpanException(
-        'The "enum" property must be a valid class name (e.g. CamelCaseString).',
+        'The "enum" type must be a valid class name (e.g. CamelCaseString).',
         classNameNode.span,
       ));
       return null;

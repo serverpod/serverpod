@@ -3,14 +3,14 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a protocol without any defined entity property', () {
+  group('Given a protocol without any defined entity type', () {
     test(
-        'Then return a human readable error message informing the user that the entity property is missing.',
+        'Then return a human readable error message informing the user that the entity type is missing.',
         () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
         yaml: '''
-invalid: Property 
+invalid: Type 
 fields:
   name: String
 ''',
@@ -26,11 +26,11 @@ fields:
 
       var error = collector.errors.first;
       expect(error.message,
-          'No "class", "exception" or "enum" property is defined.');
+          'No "class", "exception" or "enum" type is defined.');
     });
   });
 
-  group('Given a protocol with class and exception property defined.', () {
+  group('Given a protocol with class and exception type defined.', () {
     test('Then return a human readable error message when analyzing.', () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
@@ -52,10 +52,10 @@ fields:
 
       var error = collector.errors.first;
       expect(error.message,
-          'Multiple entity properties ("class", "exception") found for a single entity. Only one property per entity allowed.');
+          'Multiple entity types ("class", "exception") found for a single entity. Only one type per entity allowed.');
     });
 
-    test('Then the second property is highlighted.', () {
+    test('Then the second type is highlighted.', () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
         yaml: '''
@@ -83,7 +83,7 @@ fields:
     });
   });
 
-  group('Given a protocol with exception and enum property defined.', () {
+  group('Given a protocol with exception and enum type defined.', () {
     test('Then return a human readable error message when analyzing.', () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
@@ -105,11 +105,11 @@ fields:
 
       var error = collector.errors.first;
       expect(error.message,
-          'Multiple entity properties ("exception", "enum") found for a single entity. Only one property per entity allowed.');
+          'Multiple entity types ("exception", "enum") found for a single entity. Only one type per entity allowed.');
     });
   });
 
-  group('Given a protocol with three different properties defined.', () {
+  group('Given a protocol with three different types defined.', () {
     test('Then return a human readable error message when analyzing.', () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
@@ -132,10 +132,10 @@ fields:
 
       var error = collector.errors.first;
       expect(error.message,
-          'Multiple entity properties ("class", "exception", "enum") found for a single entity. Only one property per entity allowed.');
+          'Multiple entity types ("class", "exception", "enum") found for a single entity. Only one type per entity allowed.');
     });
 
-    test('Then the second and third property is highlighted.', () {
+    test('Then the second and third type is highlighted.', () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
         yaml: '''
