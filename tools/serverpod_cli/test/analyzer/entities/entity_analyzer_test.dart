@@ -25,8 +25,8 @@ fields:
       expect(collector.errors, hasLength(1));
 
       var error = collector.errors.first;
-      expect(error.message,
-          'No "class", "exception" or "enum" type is defined.');
+      expect(
+          error.message, 'No "class", "exception" or "enum" type is defined.');
     });
   });
 
