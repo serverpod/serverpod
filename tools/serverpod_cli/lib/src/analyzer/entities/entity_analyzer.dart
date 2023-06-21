@@ -283,10 +283,11 @@ class SerializableEntityAnalyzer {
     }
 
     if (fieldsNode is! YamlMap) {
-      collector.addError(SourceSpanException(
-        'The "fields" property must be a Map.',
-        documentContents.span,
-      ));
+      collector.addError(
+        SourceSpanException(
+            'The "fields" property must have at least one field.',
+            documentContents.key('fields')?.span),
+      );
       return null;
     }
 
@@ -716,7 +717,7 @@ class SerializableEntityAnalyzer {
       }
       if (!validKeys.contains(key)) {
         collector.addError(SourceSpanException(
-          'This key is not recognized. Valid keys are $validKeys',
+          'The "$key" property is not allowed for enums. Valid keys are $validKeys.',
           keyNode.span,
         ));
         return false;
