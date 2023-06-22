@@ -225,7 +225,7 @@ values:
       var error = collector.errors.first;
 
       expect(error.message,
-          'This key is not recognized. Valid keys are {enum, serverOnly, values}.');
+          'The "table" property is not allowed for enums. Valid keys are {enum, serverOnly, values}.');
     });
   });
 }
