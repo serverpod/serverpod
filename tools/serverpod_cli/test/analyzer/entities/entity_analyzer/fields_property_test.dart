@@ -1,18 +1,16 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
 void main() {
   test(
-      'Given a PascalCASEString class name with several uppercase letters, then the class name is set.',
+      'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
       () {
     var collector = CodeGenerationCollector();
     var analyzer = SerializableEntityAnalyzer(
       yaml: '''
-class: PascalCASEString
+class: Example
 fields:
-  name: String
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
       outFileName: 'example.yaml',
@@ -22,20 +20,22 @@ fields:
 
     analyzer.analyze();
 
-    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+    expect(collector.errors.length, greaterThan(0));
 
-    expect(entities.className, 'PascalCASEString');
+    var error = collector.errors.first;
+
+    expect(
+        error.message, 'The "fields" property must have at least one field.');
   });
 
   test(
-      'Given a exception class with a PascalStringName, then the class name is set.',
+      'Given an exception with the fields key defined but without any field, then collect an error that at least one field has to be added.',
       () {
     var collector = CodeGenerationCollector();
     var analyzer = SerializableEntityAnalyzer(
       yaml: '''
-exception: PascalStringName
+exception: Example
 fields:
-  name: String
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
       outFileName: 'example.yaml',
@@ -45,21 +45,22 @@ fields:
 
     analyzer.analyze();
 
-    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+    expect(collector.errors.length, greaterThan(0));
 
-    expect(entities.className, 'PascalStringName');
+    var error = collector.errors.first;
+
+    expect(
+        error.message, 'The "fields" property must have at least one field.');
   });
 
   test(
-      'Given a enum class with a PascalStringName, then the class name is set.',
+      'Given an class with the fields key defined as a primitive datatype instead of a Map, then collect an error that at least one field has to be added.',
       () {
     var collector = CodeGenerationCollector();
     var analyzer = SerializableEntityAnalyzer(
       yaml: '''
-enum: PascalStringName
-values:
-  - yes
-  - no
+class: Example
+fields: int
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
       outFileName: 'example.yaml',
@@ -69,16 +70,46 @@ values:
 
     analyzer.analyze();
 
-    EnumDefinition entities = analyzer.analyze() as EnumDefinition;
+    expect(collector.errors.length, greaterThan(0));
 
-    expect(entities.className, 'PascalStringName');
+    var error = collector.errors.first;
+
+    expect(
+        error.message, 'The "fields" property must have at least one field.');
   });
 
-  test('Given a class, then the definition is set to a class type.', () {
+  test(
+      'Given an enum with the fields key defined, then collect an error that fields are not allowed.',
+      () {
     var collector = CodeGenerationCollector();
     var analyzer = SerializableEntityAnalyzer(
       yaml: '''
-class: PascalStringName
+enum: Example
+fields:
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    analyzer.analyze();
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(error.message,
+        'The "fields" property is not allowed for enums. Valid keys are {enum, serverOnly, values}.');
+  });
+
+  test(
+      'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+exception: PascalCASEString
 fields:
   name: String
 ''',
@@ -90,30 +121,7 @@ fields:
 
     analyzer.analyze();
 
-    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-    expect(entities.isException, false);
-  });
-  test('Given a exception class, then the definition is set to exception type.',
-      () {
-    var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
-exception: PascalStringName
-fields:
-  name: String
-''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
-    );
-
-    analyzer.analyze();
-
-    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-    expect(entities.isException, true);
+    expect(collector.errors.length, 0);
   });
   test(
       'Given a camelCase class name, then give an error indicating that PascalCase is required.',

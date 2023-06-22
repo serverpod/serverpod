@@ -73,6 +73,20 @@ jobs:
       - name: Run serverpod update pubspecs
         run: util/run_tests_update_pubspecs
 
+  unit_tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run unit tests
+        run: bash util/run_tests_unit
+
   single_server_tests:
     name: Serverpod tests
     runs-on: ubuntu-latest

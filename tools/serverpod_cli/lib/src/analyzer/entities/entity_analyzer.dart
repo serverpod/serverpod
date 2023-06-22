@@ -283,10 +283,11 @@ class SerializableEntityAnalyzer {
     }
 
     if (fieldsNode is! YamlMap) {
-      collector.addError(SourceSpanException(
-        'The "fields" property must be a Map.',
-        documentContents.span,
-      ));
+      collector.addError(
+        SourceSpanException(
+            'The "fields" property must have at least one field.',
+            documentContents.key('fields')?.span),
+      );
       return null;
     }
 
@@ -443,7 +444,7 @@ class SerializableEntityAnalyzer {
     if (indexesNode != null) {
       if (indexesNode is! YamlMap) {
         collector.addError(SourceSpanException(
-          'The "indexes" property must be a Map.',
+          'The "indexes" property must have at least one index.',
           indexesNode.span,
         ));
         return null;
@@ -456,7 +457,7 @@ class SerializableEntityAnalyzer {
         // Validate index name.
         if (indexNameNode is! YamlScalar) {
           collector.addError(SourceSpanException(
-            'Keys of "indexes" Map must be of type String.',
+            'Keys of "indexes" must be of type String.',
             indexNameNode.span,
           ));
           continue;
@@ -465,7 +466,7 @@ class SerializableEntityAnalyzer {
         var indexName = indexNameNode.value;
         if (indexName is! String) {
           collector.addError(SourceSpanException(
-            'Keys of "indexes" Map must be of type String.',
+            'Keys of "indexes" must be of type String.',
             indexNameNode.span,
           ));
           continue;
@@ -473,7 +474,7 @@ class SerializableEntityAnalyzer {
 
         if (!StringValidators.isValidTableIndexName(indexName)) {
           collector.addError(SourceSpanException(
-            'The index name must be in lower_snake_case.',
+            'Invalid format for index "$indexName", must follow the format lower_snake_case.',
             indexNameNode.span,
           ));
           continue;
@@ -490,7 +491,7 @@ class SerializableEntityAnalyzer {
         }
         if (indexDescriptionNode is! YamlMap) {
           collector.addError(SourceSpanException(
-            'The index description mus be of type Map.',
+            'The "$indexNameNode" needs to define at least one field, (e.g. fields: fieldName).',
             indexDescriptionNode.span,
           ));
           continue;
@@ -508,7 +509,7 @@ class SerializableEntityAnalyzer {
         var fieldsStr = fieldsNode.value;
         if (fieldsStr is! String) {
           collector.addError(SourceSpanException(
-            'The "fields" property must be of type String.',
+            'The "fields" property must have at least one field, (e.g. fields: fieldName).',
             fieldsNode.span,
           ));
           continue;
@@ -716,7 +717,7 @@ class SerializableEntityAnalyzer {
       }
       if (!validKeys.contains(key)) {
         collector.addError(SourceSpanException(
-          'This key is not recognized. Valid keys are $validKeys',
+          'The "$key" property is not allowed for enums. Valid keys are $validKeys.',
           keyNode.span,
         ));
         return false;
