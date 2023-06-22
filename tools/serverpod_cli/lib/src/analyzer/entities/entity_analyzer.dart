@@ -348,7 +348,7 @@ class SerializableEntityAnalyzer {
       var fieldDescription = fieldDescriptionNode.value;
       if (fieldDescription is! String) {
         collector.addError(SourceSpanException(
-          'Field description must be of type String.',
+          'The field "$fieldName" must have a datatype defined (e.g. $fieldName: String).',
           fieldDescriptionNode.span,
         ));
         continue;
@@ -401,7 +401,7 @@ class SerializableEntityAnalyzer {
         if (parentTable != null &&
             !StringValidators.isValidTableIndexName(parentTable)) {
           collector.addError(SourceSpanException(
-            '$tableName is no valid parent name.',
+            'The parent must reference a valid table name (e.g. parent=table_name). "$parentTable" is not a valid parent name.',
             fieldDescriptionNode.span,
           ));
           continue;
