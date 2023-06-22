@@ -247,22 +247,25 @@ class SerializableEntityAnalyzer {
     if (tableNameNode != null) {
       if (type == exceptionKeyword) {
         collector.addError(SourceSpanException(
-          'The "$type" can\'t have a "table" property',
+          'The "$type" can\'t have a "table" property.',
           tableNameNode.span,
         ));
         return null;
       }
-      tableName = tableNameNode.value;
-      if (tableName is! String) {
+
+      if (tableNameNode.value is! String) {
         collector.addError(SourceSpanException(
-          'The "table" property must be a String.',
+          'The "table" property must be a snake_case_string.',
           tableNameNode.span,
         ));
         tableName = null;
+      } else {
+        tableName = tableNameNode.value;
       }
+
       if (tableName != null && !StringValidators.isValidTableName(tableName)) {
         collector.addError(SourceSpanException(
-          'The "table" property must be lower_snake_case.',
+          'The "table" property must be a snake_case_string.',
           tableNameNode.span,
         ));
         tableName = null;
@@ -716,7 +719,7 @@ class SerializableEntityAnalyzer {
       }
       if (!validKeys.contains(key)) {
         collector.addError(SourceSpanException(
-          'This key is not recognized. Valid keys are $validKeys',
+          'This key is not recognized. Valid keys are $validKeys.',
           keyNode.span,
         ));
         return false;
