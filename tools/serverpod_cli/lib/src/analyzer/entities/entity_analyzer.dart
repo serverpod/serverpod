@@ -1,8 +1,6 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:source_span/source_span.dart';
-import 'package:uuid/uuid.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
 import 'package:path/path.dart' as p;
