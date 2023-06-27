@@ -10,11 +10,11 @@ environment:
   sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  serverpod: #--CONDITIONAL COMMENT--#VERSION
+  serverpod: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../../packages/serverpod
-  serverpod_auth_server: #--CONDITIONAL COMMENT--#VERSION
+  serverpod_auth_server: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../serverpod_auth/serverpod_auth_server
-  serverpod_serialization: #--CONDITIONAL COMMENT--#VERSION
+  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../../packages/serverpod_serialization/
   http: ^0.13.5
   image: ^4.0.15

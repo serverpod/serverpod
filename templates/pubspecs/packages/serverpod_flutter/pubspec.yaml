@@ -14,7 +14,7 @@ environment:
 
 dependencies:
   connectivity_plus: ^3.0.4
-  serverpod_client: #--CONDITIONAL COMMENT--#VERSION
+  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
     path: ../serverpod_client
   flutter:
     sdk: flutter

@@ -30,9 +30,9 @@ dependencies:
   pub_api_client: ^2.4.0
   uuid: ^3.0.7
   yaml: ^3.1.1
-  serverpod_shared: #--CONDITIONAL COMMENT--#VERSION
+  serverpod_shared: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../packages/serverpod_shared
-  serverpod_service_client: #--CONDITIONAL COMMENT--#VERSION
+  serverpod_service_client: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../packages/serverpod_service_client
   async: ^2.11.0
   meta: ^1.8.0

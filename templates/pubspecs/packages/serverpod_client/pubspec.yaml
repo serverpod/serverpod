@@ -12,7 +12,7 @@ environment:
   sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  serverpod_serialization: #--CONDITIONAL COMMENT--#VERSION
+  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
     path: ../serverpod_serialization
   http: ^0.13.5
   meta: ^1.8.0
