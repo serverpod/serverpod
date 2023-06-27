@@ -30,6 +30,10 @@ void performGeneratePubspecs(String version, String mode) {
           replacement: 'publish_to: none',
         ),
         Replacement(
+          slotName: '#--CONDITIONAL COMMENT--#',
+          replacement: '#',
+        ),
+        Replacement(
           slotName: 'VERSION',
           replacement: version,
         ),
