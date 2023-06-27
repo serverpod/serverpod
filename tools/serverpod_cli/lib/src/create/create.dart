@@ -140,7 +140,7 @@ Future<void> performCreate(
         ),
         Replacement(
           slotName: '#^',
-          replacement: '^',
+          replacement: '',
         ),
         Replacement(
           slotName: 'VERSION',
@@ -207,7 +207,7 @@ Future<void> performCreate(
         ),
         Replacement(
           slotName: '#^',
-          replacement: '^',
+          replacement: '',
         ),
         Replacement(
           slotName: 'VERSION',
@@ -242,7 +242,7 @@ Future<void> performCreate(
         ),
         Replacement(
           slotName: '#^',
-          replacement: '^',
+          replacement: '',
         ),
         Replacement(
           slotName: 'VERSION',
@@ -315,7 +315,7 @@ Future<void> performCreate(
         ),
         Replacement(
           slotName: '#^',
-          replacement: '^',
+          replacement: '',
         ),
         Replacement(
           slotName: 'VERSION',
@@ -350,7 +350,7 @@ Future<void> performCreate(
         ),
         Replacement(
           slotName: '#^',
-          replacement: '^',
+          replacement: '',
         ),
         Replacement(
           slotName: 'VERSION',
