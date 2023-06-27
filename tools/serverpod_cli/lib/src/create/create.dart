@@ -139,7 +139,7 @@ Future<void> performCreate(
           replacement: randomAwsId,
         ),
         Replacement(
-          slotName: '#^',
+          slotName: '#--CONDITIONAL COMMENT--#',
           replacement: '',
         ),
         Replacement(
@@ -206,7 +206,7 @@ Future<void> performCreate(
           replacement: name,
         ),
         Replacement(
-          slotName: '#^',
+          slotName: '#--CONDITIONAL COMMENT--#',
           replacement: '',
         ),
         Replacement(
@@ -241,7 +241,7 @@ Future<void> performCreate(
           replacement: name,
         ),
         Replacement(
-          slotName: '#^',
+          slotName: '#--CONDITIONAL COMMENT--#',
           replacement: '',
         ),
         Replacement(
@@ -314,7 +314,7 @@ Future<void> performCreate(
           replacement: name,
         ),
         Replacement(
-          slotName: '#^',
+          slotName: '#--CONDITIONAL COMMENT--#',
           replacement: '',
         ),
         Replacement(
@@ -349,7 +349,7 @@ Future<void> performCreate(
           replacement: name,
         ),
         Replacement(
-          slotName: '#^',
+          slotName: '#--CONDITIONAL COMMENT--#',
           replacement: '',
         ),
         Replacement(
