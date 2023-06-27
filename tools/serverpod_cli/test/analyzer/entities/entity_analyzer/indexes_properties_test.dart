@@ -29,7 +29,7 @@ indexes:
     var error = collector.errors.first;
 
     expect(
-        error.message, 'The "indexes" property must have at least one index.');
+        error.message, 'The "indexes" property must have at least one value.');
   });
 
   test(
@@ -58,7 +58,7 @@ indexes:
 
     var error = collector.errors.first;
 
-    expect(error.message, 'Keys of "indexes" must be of type String.');
+    expect(error.message, 'Key must be of type String.');
   });
 
   test(

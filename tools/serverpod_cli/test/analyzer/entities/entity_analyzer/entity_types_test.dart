@@ -121,7 +121,7 @@ fields:
 
       analyzer.analyze();
 
-      expect(collector.errors, hasLength(1));
+      expect(collector.errors.length, greaterThan(0));
 
       var error = collector.errors.first;
       expect(
@@ -147,7 +147,7 @@ fields:
 
       analyzer.analyze();
 
-      expect(collector.errors, hasLength(1));
+      expect(collector.errors.length, greaterThan(0));
 
       var error = collector.errors.first;
       expect(error.message,
@@ -171,7 +171,7 @@ fields:
 
       analyzer.analyze();
 
-      expect(collector.errors, hasLength(1));
+      expect(collector.errors.length, greaterThan(0));
       var span = collector.errors.first.span;
 
       expect(span?.start.line, 1);

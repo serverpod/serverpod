@@ -4,7 +4,52 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Testing key of fields', () {
+  test(
+      'Given a class without the fields key, then collect an error that the fields key is required',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+class: Example
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    analyzer.analyze();
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(error.message, 'No "fields" property is defined.');
+  });
+
+  test(
+      'Given an exception without the fields key, then collect an error that the fields key is required',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+exception: Example
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    analyzer.analyze();
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(error.message, 'No "fields" property is defined.');
+  });
+  group('Testing key of fields.', () {
     test(
         'Given a class with a field key that is not a string, then collect an error that field keys have to be of the type string.',
         () {
