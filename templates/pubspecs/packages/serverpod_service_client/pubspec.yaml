@@ -12,7 +12,7 @@ environment:
   sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  serverpod_client: #^VERSION
+  serverpod_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_client
   meta: ^1.8.0
 

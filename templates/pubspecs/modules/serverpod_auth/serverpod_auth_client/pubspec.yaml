@@ -12,5 +12,5 @@ environment:
   sdk: '>=2.19.0 <4.0.0'
 dependencies:
   lints: ^2.0.1
-  serverpod_client: #^VERSION
+  serverpod_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../../../packages/serverpod_client

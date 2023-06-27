@@ -15,9 +15,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_client: #^VERSION
+  serverpod_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../../../packages/serverpod_client
-  serverpod_auth_client: #^VERSION
+  serverpod_auth_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_auth_client
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3

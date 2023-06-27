@@ -6,5 +6,5 @@ description: Starting point for a Serverpod module client.
 environment:
   sdk: '>=2.19.0 <4.0.0'
 dependencies:
-  serverpod_client: #^VERSION
+  serverpod_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../../../packages/serverpod_client

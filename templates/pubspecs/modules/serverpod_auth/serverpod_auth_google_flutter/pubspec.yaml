@@ -13,9 +13,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_auth_client: #^VERSION
+  serverpod_auth_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter: #^VERSION
+  serverpod_auth_shared_flutter: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_auth_shared_flutter
   google_sign_in: ^6.1.0
 

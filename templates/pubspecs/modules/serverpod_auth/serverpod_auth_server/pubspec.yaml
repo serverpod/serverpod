@@ -10,9 +10,9 @@ environment:
   sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  serverpod: #^VERSION
+  serverpod: #--CONDITIONAL COMMENT--#VERSION
     path: ../../../packages/serverpod
-  serverpod_serialization: #^VERSION
+  serverpod_serialization: #--CONDITIONAL COMMENT--#VERSION
     path: ../../../packages/serverpod_serialization
   crypto: ^3.0.2
   email_validator: ^2.1.17

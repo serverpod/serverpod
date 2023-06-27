@@ -28,13 +28,13 @@ dependencies:
   system_resources: ^1.6.0
   vm_service: ^11.4.0
   yaml: ^3.1.1
-  serverpod_shared: #^VERSION
+  serverpod_shared: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_shared
-  serverpod_serialization: #^VERSION
+  serverpod_serialization: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_serialization
-  serverpod_service_client: #^VERSION
+  serverpod_service_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_service_client
-  serverpod_client: #^VERSION
+  serverpod_client: #--CONDITIONAL COMMENT--#VERSION
     path: ../serverpod_client
 
 dev_dependencies:
