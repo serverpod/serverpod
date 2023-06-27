@@ -68,7 +68,7 @@ void performGeneratePubspecs(String version, String mode) {
         ),
         Replacement(
           slotName: '#^',
-          replacement: '^',
+          replacement: '',
         ),
         Replacement(
           slotName: 'PRODUCTION_MODE',
