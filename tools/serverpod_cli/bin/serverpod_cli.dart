@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 
 import 'package:serverpod_cli/src/analytics/analytics.dart';
@@ -10,11 +11,12 @@ import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/database/copy_migrations.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
+import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
+import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
@@ -261,6 +263,21 @@ Future<void> _main(List<String> args) async {
       var config = await GeneratorConfig.load();
       if (config == null) {
         return;
+      }
+
+      // Validate cli version is compatible with serverpod packages
+      try {
+        var warnings = performServerpodPackagesAndCliVersionCheck(
+            Version.parse(templateVersion), Directory.current.parent);
+        if (warnings.isNotEmpty) {
+          printww(
+              'WARNING: Version compatibility warnings between the running cli and '
+              'serverpod packages found.');
+          warnings.forEach(print);
+        }
+      } catch (e) {
+        print(e);
+        exit(1);
       }
 
       // Copy migrations from modules.
