@@ -5,8 +5,7 @@ class ValidateNode {
   String key;
   bool isRequired;
   bool isDepricated;
-  Set<String> mutualExclusiveKeys;
-  bool Function(String)? keyRestriction;
+  void Function(String, SourceSpan?, CodeAnalysisCollector)? keyRestriction;
   void Function(dynamic, SourceSpan?, CodeAnalysisCollector)? valueRestriction;
   Set<ValidateNode> nested;
 
@@ -14,7 +13,6 @@ class ValidateNode {
     this.key, {
     this.isRequired = false,
     this.isDepricated = false,
-    this.mutualExclusiveKeys = const {},
     this.keyRestriction,
     this.valueRestriction,
     this.nested = const {},

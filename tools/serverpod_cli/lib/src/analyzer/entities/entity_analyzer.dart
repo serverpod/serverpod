@@ -161,7 +161,7 @@ class SerializableEntityAnalyzer {
   void _validateEntityType(YamlMap documentContents) {
     var typeNodes = _findNodesByKeys(
       documentContents,
-      {'class', 'exception', 'enum'},
+      {Keyword.classType, Keyword.exceptionType, Keyword.enumType},
     );
 
     if (typeNodes.length == 1) return;
@@ -205,7 +205,10 @@ class SerializableEntityAnalyzer {
 
   SerializableEntityDefinition? _serializeExceptionFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
-    var restrictions = Restrictions(Keyword.exceptionType);
+    var restrictions = Restrictions(
+      documentType: Keyword.exceptionType,
+      documentContents: documentContents,
+    );
     Set<ValidateNode> documentStructure = {
       ValidateNode(
         Keyword.exceptionType,
@@ -214,10 +217,18 @@ class SerializableEntityAnalyzer {
       ),
       ValidateNode(
         Keyword.serverOnly,
+        valueRestriction: restrictions.isBoolType,
       ),
       ValidateNode(
         Keyword.fields,
         isRequired: true,
+        nested: {
+          ValidateNode(
+            Keyword.any,
+            keyRestriction: restrictions.isValidFieldName,
+            valueRestriction: restrictions.isValidFieldDescription,
+          )
+        },
       ),
     };
 
@@ -234,7 +245,10 @@ class SerializableEntityAnalyzer {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
   ) {
-    var restrictions = Restrictions(Keyword.classType);
+    var restrictions = Restrictions(
+      documentType: Keyword.classType,
+      documentContents: documentContents,
+    );
 
     Set<ValidateNode> documentStructure = {
       ValidateNode(
@@ -248,20 +262,39 @@ class SerializableEntityAnalyzer {
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.isValidServerOnlyValue,
+        valueRestriction: restrictions.isBoolType,
       ),
       ValidateNode(
         Keyword.fields,
         isRequired: true,
-      ),
-      ValidateNode(Keyword.indexes, nested: {
-        ValidateNode(Keyword.any, nested: {
+        nested: {
           ValidateNode(
-            Keyword.fields,
-            isRequired: true,
-          ),
-        })
-      }),
+            Keyword.any,
+            keyRestriction: restrictions.isValidFieldName,
+          )
+        },
+      ),
+      ValidateNode(
+        Keyword.indexes,
+        nested: {
+          ValidateNode(
+            Keyword.any,
+            keyRestriction: restrictions.isValidTableIndexName,
+            nested: {
+              ValidateNode(
+                Keyword.fields,
+                isRequired: true,
+                valueRestriction: restrictions.isValidIndexFieldsValue,
+              ),
+              ValidateNode(Keyword.type),
+              ValidateNode(
+                Keyword.unique,
+                valueRestriction: restrictions.isBoolType,
+              ),
+            },
+          )
+        },
+      ),
     };
 
     ProtocolValidator.validate(
@@ -272,6 +305,25 @@ class SerializableEntityAnalyzer {
     );
 
     return _analyzeClassFile(documentContents, docsExtractor);
+
+    /*
+    String className = documentContents[Keyword.classType];
+
+    bool serverOnly = _parseServerOnly(documentContents);
+    String? tableName = _parseTableName(documentContents);
+
+    return ClassDefinition(
+      className: className,
+      tableName: tableName,
+      fileName: outFileName,
+      fields: [],
+      indexes: [],
+      subDirParts: subDirectoryParts,
+      documentation: [],
+      isException: false,
+      serverOnly: serverOnly,
+    );
+    */
   }
 
   SerializableEntityDefinition? _analyzeClassFile(
@@ -299,22 +351,14 @@ class SerializableEntityAnalyzer {
     var className = workingNode.value;
 
     // Validate table name.
-    String? tableName = documentContents.nodes['table']?.value is String
-        ? documentContents.nodes['table']?.value
-        : null;
+    String? tableName = _parseTableName(documentContents);
 
-    // Validate and get `serverOnly`
-    bool serverOnly = _parseServerOnly(documentContents, collector);
+    bool serverOnly = _parseServerOnly(documentContents);
 
     // Validate fields map exists.
     var fieldsNode = documentContents.nodes['fields'];
 
     if (fieldsNode is! YamlMap) {
-      collector.addError(
-        SourceSpanException(
-            'The "fields" property must have at least one field.',
-            documentContents.key('fields')?.span),
-      );
       return null;
     }
 
@@ -346,22 +390,11 @@ class SerializableEntityAnalyzer {
       }
       var fieldDocumentation =
           docsExtractor.getDocumentation(fieldNameNode.span.start);
+
       var fieldName = fieldNameNode.value;
       if (fieldName is! String) {
-        collector.addError(SourceSpanException(
-          'Keys of "fields" Map must be of type String.',
-          fieldNameNode.span,
-        ));
         continue;
       }
-      if (!StringValidators.isValidFieldName(fieldName)) {
-        collector.addError(SourceSpanException(
-          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
-          fieldNameNode.span,
-        ));
-        continue;
-      }
-
       // Field name checks out, let's validate the argument.
       var fieldDescriptionNode = fieldsNode.nodes[fieldNameNode];
       if (fieldDescriptionNode == null) {
@@ -483,46 +516,19 @@ class SerializableEntityAnalyzer {
           continue;
         }
 
-        if (!StringValidators.isValidTableIndexName(indexName)) {
-          collector.addError(SourceSpanException(
-            'Invalid format for index "$indexName", must follow the format lower_snake_case.',
-            indexNameNode.span,
-          ));
-          continue;
-        }
-
         // Validate index description.
         var indexDescriptionNode = indexesNode.nodes[indexNameNode];
-        if (indexDescriptionNode == null) {
-          collector.addError(SourceSpanException(
-            'The index is missing a description.',
-            indexNameNode.span,
-          ));
-          continue;
-        }
         if (indexDescriptionNode is! YamlMap) {
-          collector.addError(SourceSpanException(
-            'The "$indexNameNode" needs to define at least one field, (e.g. fields: fieldName).',
-            indexDescriptionNode.span,
-          ));
           continue;
         }
 
         // Validate index fields.
         var fieldsNode = indexDescriptionNode.nodes['fields'];
         if (fieldsNode == null) {
-          collector.addError(SourceSpanException(
-            'The "fields" property must be defined for an index.',
-            indexDescriptionNode.span,
-          ));
           continue;
         }
         var fieldsStr = fieldsNode.value;
         if (fieldsStr is! String) {
-          collector.addError(SourceSpanException(
-            'The "fields" property must have at least one field, (e.g. fields: fieldName).',
-            fieldsNode.span,
-          ));
           continue;
         }
 
@@ -565,21 +571,8 @@ class SerializableEntityAnalyzer {
         }
 
         // Validate unique index.
-        bool unique;
         var uniqueNode = indexDescriptionNode.nodes['unique'];
-        if (uniqueNode == null) {
-          unique = false;
-        } else {
-          var uniqueVal = uniqueNode.value;
-          if (uniqueVal is! bool) {
-            collector.addError(SourceSpanException(
-              'The "unique" property must be of type bool.',
-              uniqueNode.span,
-            ));
-            continue;
-          }
-          unique = uniqueVal;
-        }
+        bool unique = uniqueNode?.value is bool ? uniqueNode?.value : false;
 
         var indexDefinition = SerializableEntityIndexDefinition(
           name: indexName,
@@ -642,8 +635,7 @@ class SerializableEntityAnalyzer {
       return null;
     }
 
-    // Validate and get `serverOnly`
-    bool serverOnly = _parseServerOnly(documentContents, collector);
+    bool serverOnly = _parseServerOnly(documentContents);
 
     // Validate enum values.
     var valuesNode = documentContents.nodes['values'];
@@ -738,8 +730,7 @@ class SerializableEntityAnalyzer {
     return true;
   }
 
-  bool _parseServerOnly(
-      YamlMap documentContents, CodeAnalysisCollector collector) {
+  bool _parseServerOnly(YamlMap documentContents) {
     var serverOnly = documentContents.nodes['serverOnly']?.value;
 
     if (serverOnly is! bool) {
@@ -747,5 +738,13 @@ class SerializableEntityAnalyzer {
     }
 
     return serverOnly;
+  }
+
+  String? _parseTableName(YamlMap documentContents) {
+    var tableName = documentContents.nodes['table']?.value;
+
+    if (tableName is! String) return null;
+
+    return tableName;
   }
 }

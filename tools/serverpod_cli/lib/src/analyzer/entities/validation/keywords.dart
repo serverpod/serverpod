@@ -10,9 +10,11 @@ class Keyword {
   static String values = 'values';
 
   static String type = 'type';
+  static String unique = 'unique';
   static String parent = 'parent';
   static String api = 'api';
   static String database = 'database';
 
+  /// Special keyword to allow keys to be any string.
   static String any = 'any';
 }

@@ -1,11 +1,19 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
+import 'package:yaml/yaml.dart';
 
 class Restrictions {
   String documentType;
+  YamlMap documentContents;
+  Set<SerializableEntityDefinition> entities;
 
-  Restrictions(this.documentType);
+  Restrictions({
+    required this.documentType,
+    required this.documentContents,
+    this.entities = const {},
+  });
 
   void isValidClassName(
     dynamic content,
@@ -49,17 +57,86 @@ class Restrictions {
     }
   }
 
-  void isValidServerOnlyValue(
+  void isBoolType(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
   ) {
     if (content is! bool) {
       collector.addError(SourceSpanException(
-        'The "serverOnly" property must be a bool.',
+        'The property value must be a bool.',
         span,
       ));
+    }
+  }
+
+  void isValidTableIndexName(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    if (content is! String ||
+        !StringValidators.isValidTableIndexName(content)) {
+      collector.addError(SourceSpanException(
+        'Invalid format for index "$content", must follow the format lower_snake_case.',
+        span,
+      ));
+    }
+  }
+
+  void isValidFieldName(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    if (!StringValidators.isValidFieldName(content)) {
+      collector.addError(SourceSpanException(
+        'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
+        span,
+      ));
+    }
+  }
+
+  void isValidFieldDescription(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+
+  }
+
+  void isValidIndexFieldsValue(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    if (content is! String) {
+      collector.addError(SourceSpanException(
+        'The "fields" property must have at least one field, (e.g. fields: fieldName).',
+        span,
+      ));
+    }
+
+    /*
+
+    var fieldNames = content.split(',').map((String str) => str.trim()).toList();
+
+    var doc = documentContents.nodes[Keyword.fields];
+
+    if (doc is! YamlMap)  {
       return;
     }
+
+
+    var doc.keys.whereType<String>().toSet();
+        for (var fieldName in fieldNames) {
+          if (!validDatabaseFieldNames.contains(fieldName)) {
+            collector.addError(SourceSpanException(
+              'The field name "$fieldName" is not added to the class or has an api scope.',
+              fieldsNode.span,
+            ));
+            continue indexLoop;
+          }
+        }*/
   }
 }
