@@ -33,7 +33,36 @@ indexes:
   });
 
   test(
-      'Given a class with an index key that is not a string, then collect an error that the index name has do be defined as a string.',
+      'Given a class with an index that does not define the fields keyword, then collect an error that fields are required.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yateriml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    analyzer.analyze();
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(error.message,
+        'The "example_index" property is missing required keys (fields).');
+  });
+
+  test(
+      'Given a class with an index key that is not a string, then collect an error that the index name has to be defined as a string.',
       () {
     var collector = CodeGenerationCollector();
     var analyzer = SerializableEntityAnalyzer(
@@ -90,36 +119,6 @@ indexes:
     expect(error.message,
         'Invalid format for index "PascalCaseIndex", must follow the format lower_snake_case.');
   });
-
-  test(
-      'Given a class with an index defined but without any definitions, then collect an error that at least one field has to be defined.',
-      () {
-    var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
-class: Example
-table: example
-fields:
-  name: String
-indexes:
-  name_index:
-''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
-    );
-
-    analyzer.analyze();
-
-    expect(collector.errors.length, greaterThan(0));
-
-    var error = collector.errors.first;
-
-    expect(error.message,
-        'The "name_index" needs to define at least one field, (e.g. fields: fieldName).');
-  });
-
   test(
       'Given a class with an index without any fields, then collect an error that at least one field has to be added.',
       () {
@@ -390,7 +389,7 @@ indexes:
 
     var error = collector.errors.first;
 
-    expect(error.message, 'The "unique" property must be of type bool.');
+    expect(error.message, 'The property value must be a bool.');
   });
 
   test(
@@ -474,5 +473,36 @@ indexes:
     var index = entityDefinition.indexes?.first;
 
     expect(index!.unique, true);
+  });
+
+  test(
+      'Given a class with an index with a an invalid key, then collect an error indicating that the key is invalid.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    invalidKey: true
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yateriml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    analyzer.analyze();
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(error.message,
+        'The "invalidKey" property is not allowed for example_index type. Valid keys are {fields, type, unique}.');
   });
 }

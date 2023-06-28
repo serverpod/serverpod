@@ -72,7 +72,7 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'Keys of "fields" Map must be of type String.');
+      expect(error.message, 'Key must be of type String.');
     });
 
     test(

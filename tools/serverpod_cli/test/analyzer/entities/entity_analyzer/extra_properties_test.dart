@@ -93,7 +93,33 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The "serverOnly" property must be a bool.');
+      expect(error.message, 'The property value must be a bool.');
+    });
+
+    test(
+        'Given an exception with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+exception: Example
+serverOnly: Yes
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message, 'The property value must be a bool.');
     });
   });
 

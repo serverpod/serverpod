@@ -25,7 +25,7 @@ fields:
     var error = collector.errors.first;
 
     expect(
-        error.message, 'The "fields" property must have at least one field.');
+        error.message, 'The "fields" property must have at least one value.');
   });
 
   test(
@@ -50,7 +50,7 @@ fields:
     var error = collector.errors.first;
 
     expect(
-        error.message, 'The "fields" property must have at least one field.');
+        error.message, 'The "fields" property must have at least one value.');
   });
 
   test(
@@ -75,7 +75,7 @@ fields: int
     var error = collector.errors.first;
 
     expect(
-        error.message, 'The "fields" property must have at least one field.');
+        error.message, 'The "fields" property must have at least one value.');
   });
 
   test(
