@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/internal_tools/pubspec_helpers.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
@@ -18,10 +19,16 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
     exit(1);
   }
 
-  var pubspecs = _getPubspecs();
+  var pubspecFiles = findPubspecsFiles(Directory.current,
+      ignorePaths: ['/serverpod/templates/pubspecs/']);
   var dependencies = <String, List<_ServerpodDependency>>{};
 
-  for (var pubspec in pubspecs) {
+  for (var pubspecFile in pubspecFiles) {
+    var parseErrorMessage =
+        'Failed to load PUBLISHABLE_PACKAGES or the pubspec files. Are you'
+        'running this command from the serverpod repository root?';
+    var pubspec = parsePubspec(pubspecFile, parseErrorMessage);
+
     // Dependencies
     for (var depName in pubspec.dependencies.keys) {
       var dep = pubspec.dependencies[depName]!;
@@ -122,48 +129,6 @@ String _latestStableVersion(List<String> packageVersions) {
     }
   }
   return packageVersions.first;
-}
-
-List<Pubspec> _getPubspecs() {
-  try {
-    var pubspecFiles = _findPubspecsFiles(['/serverpod/templates/pubspecs/']);
-
-    var pubspecs = <Pubspec>[];
-    for (var file in pubspecFiles) {
-      var yaml = file.readAsStringSync();
-      var pubspec = Pubspec.parse(yaml);
-      pubspecs.add(pubspec);
-    }
-    return pubspecs;
-  } catch (e) {
-    print(
-      'Failed to load PUBLISHABLE_PACKAGES or the pubspec files. Are you'
-      'running this command from the serverpod repository root?',
-    );
-    print(e);
-    exit(1);
-  }
-}
-
-List<File> _findPubspecsFiles(List<String> ignorePaths) {
-  var dir = Directory.current;
-  var pubspecFiles = <File>[];
-  for (var file in dir.listSync(recursive: true)) {
-    bool ignore = false;
-    for (var ignorePath in ignorePaths) {
-      if (file.path.contains(ignorePath)) {
-        ignore = true;
-      }
-    }
-
-    if (ignore) continue;
-
-    if (file is File && file.path.endsWith('pubspec.yaml')) {
-      pubspecFiles.add(file);
-    }
-  }
-
-  return pubspecFiles;
 }
 
 class _ServerpodDependency {
