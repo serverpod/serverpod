@@ -213,11 +213,11 @@ class SerializableEntityAnalyzer {
       ValidateNode(
         Keyword.exceptionType,
         isRequired: true,
-        valueRestriction: restrictions.isValidClassName,
+        valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.isBoolType,
+        valueRestriction: restrictions.validateBoolType,
       ),
       ValidateNode(
         Keyword.fields,
@@ -225,8 +225,8 @@ class SerializableEntityAnalyzer {
         nested: {
           ValidateNode(
             Keyword.any,
-            keyRestriction: restrictions.isValidFieldName,
-            valueRestriction: restrictions.isValidFieldDataType,
+            keyRestriction: restrictions.validateFieldName,
+            valueRestriction: restrictions.validateFieldDataType,
           )
         },
       ),
@@ -254,15 +254,15 @@ class SerializableEntityAnalyzer {
       ValidateNode(
         Keyword.classType,
         isRequired: true,
-        valueRestriction: restrictions.isValidClassName,
+        valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
         Keyword.table,
-        valueRestriction: restrictions.isValidTableName,
+        valueRestriction: restrictions.validateTableName,
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.isBoolType,
+        valueRestriction: restrictions.validateBoolType,
       ),
       ValidateNode(
         Keyword.fields,
@@ -270,13 +270,13 @@ class SerializableEntityAnalyzer {
         nested: {
           ValidateNode(
             Keyword.any,
-            keyRestriction: restrictions.isValidFieldName,
+            keyRestriction: restrictions.validateFieldName,
             allowStringifiedNestedValue: true,
             nested: {
               ValidateNode(
                 Keyword.type,
                 isRequired: true,
-                valueRestriction: restrictions.isValidFieldType,
+                valueRestriction: restrictions.validateFieldType,
               ),
               ValidateNode(
                 Keyword.parent,
@@ -298,20 +298,20 @@ class SerializableEntityAnalyzer {
         nested: {
           ValidateNode(
             Keyword.any,
-            keyRestriction: restrictions.isValidTableIndexName,
+            keyRestriction: restrictions.validateTableIndexName,
             nested: {
               ValidateNode(
                 Keyword.fields,
                 isRequired: true,
-                valueRestriction: restrictions.isValidIndexFieldsValue,
+                valueRestriction: restrictions.validateIndexFieldsValue,
               ),
               ValidateNode(
                 Keyword.type,
-                valueRestriction: restrictions.isValidIndexType,
+                valueRestriction: restrictions.validateIndexType,
               ),
               ValidateNode(
                 Keyword.unique,
-                valueRestriction: restrictions.isBoolType,
+                valueRestriction: restrictions.validateBoolType,
               ),
             },
           )

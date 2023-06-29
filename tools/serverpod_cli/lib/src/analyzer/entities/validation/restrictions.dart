@@ -15,7 +15,7 @@ class Restrictions {
     this.entities = const {},
   });
 
-  void isValidClassName(
+  void validateClassName(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -36,7 +36,7 @@ class Restrictions {
     }
   }
 
-  void isValidTableName(
+  void validateTableName(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -57,7 +57,7 @@ class Restrictions {
     }
   }
 
-  void isBoolType(
+  void validateBoolType(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -70,7 +70,7 @@ class Restrictions {
     }
   }
 
-  void isValidTableIndexName(
+  void validateTableIndexName(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -84,7 +84,7 @@ class Restrictions {
     }
   }
 
-  void isValidFieldName(
+  void validateFieldName(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -97,7 +97,7 @@ class Restrictions {
     }
   }
 
-  void isValidFieldType(
+  void validateFieldType(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -110,7 +110,7 @@ class Restrictions {
     }
   }
 
-  void isValidFieldDataType(
+  void validateFieldDataType(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -118,7 +118,7 @@ class Restrictions {
     // todo implement
   }
 
-  void isValidIndexFieldsValue(
+  void validateIndexFieldsValue(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
@@ -130,30 +130,10 @@ class Restrictions {
       ));
     }
 
-    /*
-
-    var fieldNames = content.split(',').map((String str) => str.trim()).toList();
-
-    var doc = documentContents.nodes[Keyword.fields];
-
-    if (doc is! YamlMap)  {
-      return;
-    }
-
-
-    var doc.keys.whereType<String>().toSet();
-        for (var fieldName in fieldNames) {
-          if (!validDatabaseFieldNames.contains(fieldName)) {
-            collector.addError(SourceSpanException(
-              'The field name "$fieldName" is not added to the class or has an api scope.',
-              fieldsNode.span,
-            ));
-            continue indexLoop;
-          }
-        }*/
+    // todo add 2 pass check that fields exists in the class
   }
 
-  void isValidIndexType(
+  void validateIndexType(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
