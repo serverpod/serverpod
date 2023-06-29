@@ -505,4 +505,92 @@ indexes:
     expect(error.message,
         'The "invalidKey" property is not allowed for example_index type. Valid keys are {fields, type, unique}.');
   });
+
+  group('Index type tests.', () {
+    test(
+        'Given a class with an index without a type set, then default to type btree',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yateriml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      ClassDefinition entityDefinition = analyzer.analyze() as ClassDefinition;
+
+      var index = entityDefinition.indexes?.first;
+
+      expect(index?.type, 'btree');
+    });
+
+    test(
+        'Given a class with an index type explisitly set to btree, then use that type',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: btree
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yateriml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      ClassDefinition entityDefinition = analyzer.analyze() as ClassDefinition;
+
+      var index = entityDefinition.indexes?.first;
+
+      expect(index?.type, 'btree');
+    });
+
+    test(
+        'Given a class with an index with an invalid type, then collect an error indicating that the type is invalid.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: 1
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yateriml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      // todo validate the explicit list of valid types
+      expect(error.message, 'The "type" property must be of type String.');
+    });
+  });
 }

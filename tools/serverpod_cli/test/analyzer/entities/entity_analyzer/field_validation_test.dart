@@ -147,7 +147,7 @@ fields:
       var error = collector.errors.first;
 
       expect(error.message,
-          'The field "name" must have a datatype defined (e.g. name: String).');
+          'The field must have a datatype defined (e.g. field: String).');
     });
 
     test(
@@ -414,7 +414,8 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'Only one parent must be set.');
+      expect(error.message,
+          'The field option "parent" is defined more than once.');
     });
   });
 
@@ -442,7 +443,7 @@ fields:
       var error = collector.errors.first;
 
       expect(error.message,
-          'The field scope (database or api) must at most be set once.');
+          'The field option "database" is defined more than once.');
     });
 
     test(
@@ -467,8 +468,8 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message,
-          'The field scope (database or api) must at most be set once.');
+      expect(
+          error.message, 'The field option "api" is defined more than once.');
     });
 
     test(
@@ -489,12 +490,38 @@ fields:
 
       analyzer.analyze();
 
-      expect(collector.errors.length, greaterThan(0));
+      expect(collector.errors.length, greaterThan(1));
 
-      var error = collector.errors.first;
+      var error1 = collector.errors[0];
+      var error2 = collector.errors[1];
 
-      expect(error.message,
-          'The field scope (database or api) must at most be set once.');
+      expect(error1.message,
+          'The "database" property is mutually exclusive with the "api" property.');
+      expect(error2.message,
+          'The "api" property is mutually exclusive with the "database" property.');
+    });
+
+    test(
+        'Given a class with a field with a complex datatype, then generate an entity with that datatype.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+fields:
+  name: Map<String, String>
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+
+      expect(entities.fields.first.type.className, 'Map');
     });
 
     test(
