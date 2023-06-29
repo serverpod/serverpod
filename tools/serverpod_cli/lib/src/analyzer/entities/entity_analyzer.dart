@@ -232,7 +232,7 @@ class SerializableEntityAnalyzer {
       ),
     };
 
-    ProtocolValidator.validate(
+    validateYamlProtocol(
       Keyword.exceptionType,
       documentStructure,
       documentContents,
@@ -319,7 +319,7 @@ class SerializableEntityAnalyzer {
       ),
     };
 
-    ProtocolValidator.validate(
+    validateYamlProtocol(
       Keyword.classType,
       documentStructure,
       documentContents,
