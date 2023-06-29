@@ -18,14 +18,7 @@ List<File> findPubspecsFiles(Directory dir,
     {List<String> ignorePaths = const []}) {
   var pubspecFiles = <File>[];
   for (var file in dir.listSync(recursive: true)) {
-    bool ignore = false;
-    for (var ignorePath in ignorePaths) {
-      if (file.path.contains(ignorePath)) {
-        ignore = true;
-      }
-    }
-
-    if (ignore) continue;
+    if (_shouldBeIgnored(file.path, ignorePaths)) continue;
 
     if (file is File && file.path.endsWith('pubspec.yaml')) {
       pubspecFiles.add(file);
@@ -33,4 +26,14 @@ List<File> findPubspecsFiles(Directory dir,
   }
 
   return pubspecFiles;
+}
+
+bool _shouldBeIgnored(String path, List<String> ignorePaths) {
+  for (var ignorePath in ignorePaths) {
+    if (path.contains(ignorePath)) {
+      return true;
+    }
+  }
+
+  return false;
 }
