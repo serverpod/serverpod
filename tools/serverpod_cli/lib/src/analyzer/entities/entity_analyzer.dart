@@ -226,7 +226,7 @@ class SerializableEntityAnalyzer {
           ValidateNode(
             Keyword.any,
             keyRestriction: restrictions.isValidFieldName,
-            valueRestriction: restrictions.isValidFieldDescription,
+            valueRestriction: restrictions.isValidFieldDataType,
           )
         },
       ),
@@ -271,6 +271,25 @@ class SerializableEntityAnalyzer {
           ValidateNode(
             Keyword.any,
             keyRestriction: restrictions.isValidFieldName,
+            allowStringifiedNestedValue: true,
+            nested: {
+              ValidateNode(
+                Keyword.type,
+                isRequired: true,
+                valueRestriction: restrictions.isValidFieldType,
+              ),
+              ValidateNode(
+                Keyword.parent,
+              ),
+              ValidateNode(
+                Keyword.database,
+                mutuallyExclusiveKeys: {Keyword.api},
+              ),
+              ValidateNode(
+                Keyword.api,
+                mutuallyExclusiveKeys: {Keyword.database},
+              ),
+            },
           )
         },
       ),
@@ -286,7 +305,10 @@ class SerializableEntityAnalyzer {
                 isRequired: true,
                 valueRestriction: restrictions.isValidIndexFieldsValue,
               ),
-              ValidateNode(Keyword.type),
+              ValidateNode(
+                Keyword.type,
+                valueRestriction: restrictions.isValidIndexType,
+              ),
               ValidateNode(
                 Keyword.unique,
                 valueRestriction: restrictions.isBoolType,
@@ -350,9 +372,7 @@ class SerializableEntityAnalyzer {
 
     var className = workingNode.value;
 
-    // Validate table name.
     String? tableName = _parseTableName(documentContents);
-
     bool serverOnly = _parseServerOnly(documentContents);
 
     // Validate fields map exists.
@@ -381,13 +401,7 @@ class SerializableEntityAnalyzer {
 
     for (var fieldNameNode in fieldsNode.nodes.keys) {
       // Validate field name.
-      if (fieldNameNode is! YamlScalar) {
-        collector.addError(SourceSpanException(
-          'Keys of "fields" Map must be of type String.',
-          fieldNameNode.span,
-        ));
-        continue;
-      }
+
       var fieldDocumentation =
           docsExtractor.getDocumentation(fieldNameNode.span.start);
 
@@ -398,19 +412,11 @@ class SerializableEntityAnalyzer {
       // Field name checks out, let's validate the argument.
       var fieldDescriptionNode = fieldsNode.nodes[fieldNameNode];
       if (fieldDescriptionNode == null) {
-        collector.addError(SourceSpanException(
-          'Field description is missing.',
-          fieldNameNode.span,
-        ));
         continue;
       }
 
       var fieldDescription = fieldDescriptionNode.value;
       if (fieldDescription is! String) {
-        collector.addError(SourceSpanException(
-          'The field "$fieldName" must have a datatype defined (e.g. $fieldName: String).',
-          fieldDescriptionNode.span,
-        ));
         continue;
       }
 
@@ -424,31 +430,11 @@ class SerializableEntityAnalyzer {
         var fieldOptions =
             fieldDescription.substring(typeResult.parsedPosition).split(',');
 
-        if (fieldOptions
-                .where((option) => option == 'database' || option == 'api')
-                .length >
-            1) {
-          collector.addError(SourceSpanException(
-            'The field scope (database or api) must at most be set once.',
-            fieldDescriptionNode.span,
-          ));
-          continue;
-        }
-
         var scope = fieldOptions.any((option) => option == 'database')
             ? SerializableEntityFieldScope.database
             : fieldOptions.any((option) => option == 'api')
                 ? SerializableEntityFieldScope.api
                 : SerializableEntityFieldScope.all;
-
-        if (fieldOptions.where((option) => option.startsWith('parent')).length >
-            1) {
-          collector.addError(SourceSpanException(
-            'Only one parent must be set.',
-            fieldDescriptionNode.span,
-          ));
-          continue;
-        }
 
         var parentTable = fieldOptions
             .whereType<String?>()
@@ -551,28 +537,8 @@ class SerializableEntityAnalyzer {
           }
         }
 
-        // Validate index type.
-        String type;
-        var typeNode = indexDescriptionNode.nodes['type'];
-        if (typeNode == null) {
-          type = 'btree';
-        } else {
-          var typeStr = typeNode.value;
-          if (typeStr is! String) {
-            collector.addError(SourceSpanException(
-              'The "type" property must be of type String.',
-              typeNode.span,
-            ));
-            continue;
-          }
-
-          // TODO: Validate types
-          type = typeStr;
-        }
-
-        // Validate unique index.
-        var uniqueNode = indexDescriptionNode.nodes['unique'];
-        bool unique = uniqueNode?.value is bool ? uniqueNode?.value : false;
+        String type = _parseIndexType(indexDescriptionNode);
+        var unique = _parseUniqueKey(indexDescriptionNode);
 
         var indexDefinition = SerializableEntityIndexDefinition(
           name: indexName,
@@ -746,5 +712,22 @@ class SerializableEntityAnalyzer {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  String _parseIndexType(YamlMap documentContents) {
+    var typeNode = documentContents.nodes['type'];
+    var type = typeNode?.value;
+
+    if (type == null || type is! String) {
+      return 'btree';
+    }
+
+    return type;
+  }
+
+  bool _parseUniqueKey(YamlMap documentContents) {
+    var node = documentContents.nodes['unique'];
+    var nodeValue = node?.value;
+    return nodeValue is bool ? nodeValue : false;
   }
 }

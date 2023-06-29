@@ -97,12 +97,25 @@ class Restrictions {
     }
   }
 
-  void isValidFieldDescription(
+  void isValidFieldType(
     dynamic content,
     SourceSpan? span,
     CodeAnalysisCollector collector,
   ) {
+    if (content is! String) {
+      collector.addError(SourceSpanException(
+        'The field must have a datatype defined (e.g. field: String).',
+        span,
+      ));
+    }
+  }
 
+  void isValidFieldDataType(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    // todo implement
   }
 
   void isValidIndexFieldsValue(
@@ -138,5 +151,18 @@ class Restrictions {
             continue indexLoop;
           }
         }*/
+  }
+
+  void isValidIndexType(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    if (content is! String) {
+      collector.addError(SourceSpanException(
+        'The "type" property must be of type String.',
+        span,
+      ));
+    }
   }
 }

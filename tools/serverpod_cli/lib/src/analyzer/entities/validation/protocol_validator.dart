@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:yaml/yaml.dart';
 
+import '../converter/converter.dart';
 import 'validate_node.dart';
 
 class ProtocolValidator {
@@ -13,6 +14,12 @@ class ProtocolValidator {
   ) {
     _collectInvalidKeyErrors(
       documentType,
+      documentStructure,
+      documentContents,
+      collector,
+    );
+
+    _collectMutuallyExclusiveKeyErrors(
       documentStructure,
       documentContents,
       collector,
@@ -42,13 +49,30 @@ class ProtocolValidator {
       collector,
     );
 
-    var nestedNodes = documentStructure.where((node) => node.nested.isNotEmpty);
-    var anyNodes = nestedNodes.where((node) => node.key == Keyword.any);
+    var nodesWithNestedNodes =
+        documentStructure.where((node) => node.nested.isNotEmpty);
+    var anyNodes =
+        nodesWithNestedNodes.where((node) => node.key == Keyword.any);
 
     for (var node in anyNodes) {
       for (var document in documentContents.nodes.entries) {
-        var content = document.value;
-       if (content is! YamlMap) {
+        var content = document.value.value;
+
+        if (content is String? && node.allowStringifiedNestedValue) {
+          content = convertStringifiedNestedNodesToYamlMap(
+            content,
+            document.value,
+            node,
+            onDuplicateKey: (key, span) {
+              collector.addError(SourceSpanException(
+                'The field option "$key" is defined more than once.',
+                span,
+              ));
+            },
+          );
+        } 
+        
+        if (content is! YamlMap) {
           var requiredKeys =
               node.nested.where((e) => e.isRequired).map((e) => e.key);
 
@@ -57,7 +81,7 @@ class ProtocolValidator {
               'The "${document.key}" property is missing required keys $requiredKeys.',
               documentContents.span,
             ));
-          } 
+          }
 
           continue;
         }
@@ -71,8 +95,9 @@ class ProtocolValidator {
       }
     }
 
-    var specificNodes =
-        nestedNodes.where((node) => documentContents.containsKey(node.key));
+    var specificNodes = nodesWithNestedNodes.where(
+      (node) => documentContents.containsKey(node.key),
+    );
 
     for (var node in specificNodes) {
       var document = documentContents[node.key];
@@ -86,7 +111,7 @@ class ProtocolValidator {
             'The "${document.key}" property is missing required keys $requiredKeys.',
             documentContents.span,
           ));
-        } 
+        }
 
         continue;
       }
@@ -129,6 +154,33 @@ class ProtocolValidator {
         ));
       }
     }
+  }
+
+  static void _collectMutuallyExclusiveKeyErrors(
+    Set<ValidateNode> documentStructure,
+    YamlMap documentContents,
+    CodeAnalysisCollector collector,
+  ) {
+    for (var node in documentStructure) {
+      if (_shouldCheckMutuallyExclusiveKeys(node, documentContents)) {
+        for (var mutuallyExclusiveKey in node.mutuallyExclusiveKeys) {
+          if (documentContents.containsKey(mutuallyExclusiveKey)) {
+            collector.addError(SourceSpanException(
+              'The "${node.key}" property is mutually exclusive with the "$mutuallyExclusiveKey" property.',
+              documentContents.nodes[node.key]?.span,
+            ));
+          }
+        }
+      }
+    }
+  }
+
+  static bool _shouldCheckMutuallyExclusiveKeys(
+    ValidateNode node,
+    YamlMap documentContents,
+  ) {
+    return documentContents.containsKey(node.key) &&
+        node.mutuallyExclusiveKeys.isNotEmpty;
   }
 
   static void _collectMissingRequiredKeyErrors(
