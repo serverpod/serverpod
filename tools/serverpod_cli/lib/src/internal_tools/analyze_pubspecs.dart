@@ -13,7 +13,7 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   }
 
   var pubspecFiles = findPubspecsFiles(Directory.current,
-      ignorePaths: ['/serverpod/templates/pubspecs/']);
+      ignorePaths: ['/templates/pubspecs/']);
 
   var dependencies = _getDependencies(pubspecFiles);
 
