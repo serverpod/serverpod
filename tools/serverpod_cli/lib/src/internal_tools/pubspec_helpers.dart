@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-Pubspec parsePubspec(File pubspecFile, String errorMessage) {
+Pubspec? tryParsePubspec(File pubspecFile) {
   try {
     var yaml = pubspecFile.readAsStringSync();
     var pubspec = Pubspec.parse(yaml);
     return pubspec;
   } catch (e) {
-    print(errorMessage);
+    print('Error while parsing pubspec file: ${pubspecFile.path}');
     print(e);
-    exit(1);
+    return null;
   }
 }
 

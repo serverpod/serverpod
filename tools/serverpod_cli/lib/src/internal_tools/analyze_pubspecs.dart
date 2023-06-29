@@ -107,10 +107,12 @@ Map<String, List<_ServerpodDependency>> _getDependencies(
     List<File> pubspecFiles) {
   var dependencies = <String, List<_ServerpodDependency>>{};
   for (var pubspecFile in pubspecFiles) {
-    var parseErrorMessage =
-        'Failed to load PUBLISHABLE_PACKAGES or the pubspec files. Are you '
-        'running this command from the serverpod repository root?';
-    var pubspec = parsePubspec(pubspecFile, parseErrorMessage);
+    var pubspec = tryParsePubspec(pubspecFile);
+    if (pubspec == null) {
+      print('Failed to load PUBLISHABLE_PACKAGES or the pubspec files. Are you '
+          'running this command from the serverpod repository root?');
+      exit(1);
+    }
 
     // Dependencies
     for (var depName in pubspec.dependencies.keys) {
