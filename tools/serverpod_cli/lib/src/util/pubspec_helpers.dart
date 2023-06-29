@@ -1,16 +1,16 @@
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-Pubspec? tryParsePubspec(File pubspecFile) {
+Pubspec parsePubspec(File pubspecFile) {
   try {
     var yaml = pubspecFile.readAsStringSync();
     var pubspec = Pubspec.parse(yaml);
     return pubspec;
   } catch (e) {
-    print('Error while parsing pubspec file: ${pubspecFile.path}');
-    print(e);
-    return null;
+    throw Exception(
+        'Error while parsing pubspec file: ${pubspecFile.path}: $e');
   }
 }
 
@@ -20,7 +20,7 @@ List<File> findPubspecsFiles(Directory dir,
   for (var file in dir.listSync(recursive: true)) {
     if (_shouldBeIgnored(file.path, ignorePaths)) continue;
 
-    if (file is File && file.path.endsWith('pubspec.yaml')) {
+    if (file is File && basename(file.path) == 'pubspec.yaml') {
       pubspecFiles.add(file);
     }
   }

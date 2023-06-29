@@ -2,20 +2,29 @@ import 'dart:io';
 
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
 Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
-  if (!_isServerpodRootDirectory()) {
+  var directory = Directory.current;
+  if (!isServerpodRootDirectory(directory)) {
     print('Must be run from the serverpod repository root');
     exit(1);
   }
 
-  var pubspecFiles = findPubspecsFiles(Directory.current,
+  var pubspecFiles = findPubspecsFiles(directory,
       ignorePaths: ['/templates/pubspecs/', '/test_assets/']);
 
-  var dependencies = _getDependencies(pubspecFiles);
+  Map<String, List<_ServerpodDependency>> dependencies;
+  try {
+    dependencies = _getDependencies(pubspecFiles);
+  } catch (e) {
+    print('Failed to get dependencies');
+    print(e);
+    exit(1);
+  }
 
   var missmatchedDeps = _findMissmatchedDependencies(dependencies);
 
@@ -60,21 +69,6 @@ Future<void> _checkLatestVersion(
   }
 }
 
-bool _isServerpodRootDirectory() {
-  // Verify that we are in the serverpod directory
-  var dirPackages = Directory('packages');
-  var dirTemplates = Directory('templates/pubspecs');
-  var dirRoot = Directory('.');
-
-  if (!dirPackages.existsSync() ||
-      !dirTemplates.existsSync() ||
-      !dirRoot.existsSync()) {
-    return false;
-  }
-
-  return true;
-}
-
 void _printMissmatchedDependencies(Set<String> missmatchedDeps,
     Map<String, List<_ServerpodDependency>> dependencies) {
   print('Found missmatched dependencies:');
@@ -88,7 +82,8 @@ void _printMissmatchedDependencies(Set<String> missmatchedDeps,
 }
 
 Set<String> _findMissmatchedDependencies(
-    Map<String, List<_ServerpodDependency>> dependencies) {
+  Map<String, List<_ServerpodDependency>> dependencies,
+) {
   var missmatchedDeps = <String>{};
   for (var depName in dependencies.keys) {
     var deps = dependencies[depName]!;
@@ -104,15 +99,11 @@ Set<String> _findMissmatchedDependencies(
 }
 
 Map<String, List<_ServerpodDependency>> _getDependencies(
-    List<File> pubspecFiles) {
+  List<File> pubspecFiles,
+) {
   var dependencies = <String, List<_ServerpodDependency>>{};
   for (var pubspecFile in pubspecFiles) {
-    var pubspec = tryParsePubspec(pubspecFile);
-    if (pubspec == null) {
-      print('Failed to load PUBLISHABLE_PACKAGES or the pubspec files. Are you '
-          'running this command from the serverpod repository root?');
-      exit(1);
-    }
+    var pubspec = parsePubspec(pubspecFile);
 
     // Dependencies
     for (var depName in pubspec.dependencies.keys) {
