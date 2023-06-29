@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:serverpod_cli/src/internal_tools/pubspec_helpers.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
