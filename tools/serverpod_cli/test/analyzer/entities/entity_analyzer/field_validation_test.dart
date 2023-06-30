@@ -596,4 +596,58 @@ fields:
       expect(entities.fields.last.scope, SerializableEntityFieldScope.api);
     });
   });
+
+  group('Test id field.', () {
+    test(
+        'Given a class with a table defined, then add an id field to the generated entity.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+table: example
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+
+      expect(entities.fields.first.name, 'id');
+      expect(entities.fields.first.type.className, 'int');
+      expect(entities.fields.first.type.nullable, true);
+      
+    });
+
+    test(
+        'Given a class without a table defined, then no id field is added.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+
+      expect(entities.fields.first.name, isNot('id'));
+      expect(entities.fields, hasLength(1));
+      
+    });
+  });
 }
