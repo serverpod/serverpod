@@ -785,4 +785,38 @@ fields:
       expect(entities.fields, hasLength(1));
     });
   });
+
+  test(
+      'Given a class with a field of a Map type, then all the data types components are extracted.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+class: Example
+fields:
+  customField: Map<String, CustomClass>
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+
+    expect(
+      entities.fields.first.type.className,
+      'Map',
+    );
+
+    expect(
+      entities.fields.first.type.generics.first.className,
+      'String',
+    );
+
+    expect(
+      entities.fields.first.type.generics.last.className,
+      'CustomClass',
+    );
+  });
 }
