@@ -145,9 +145,9 @@ class SerializableEntityAnalyzer {
       ));
       return null;
     }
-    var docsExtractor = YamlDocumentationExtractor(yaml);
-
     _validateEntityType(documentContents);
+
+    var docsExtractor = YamlDocumentationExtractor(yaml);
 
     if (documentContents.nodes[Keyword.classType] != null) {
       return _analyzeClassFile(documentContents, docsExtractor);
@@ -254,6 +254,7 @@ class SerializableEntityAnalyzer {
       documentContents,
       collector,
     );
+
     return _serializeClassFile(
       Keyword.exceptionType,
       documentContents,
@@ -358,6 +359,59 @@ class SerializableEntityAnalyzer {
     );
   }
 
+  SerializableEntityDefinition? _analyzeEnumFile(
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+  ) {
+    var restrictions = Restrictions(
+      documentType: Keyword.enumType,
+      documentContents: documentContents,
+    );
+
+    Set<ValidateNode> documentStructure = {
+      ValidateNode(
+        Keyword.enumType,
+        isRequired: true,
+        valueRestriction: restrictions.validateClassName,
+      ),
+      ValidateNode(
+        Keyword.serverOnly,
+        valueRestriction: restrictions.validateBoolType,
+      ),
+      ValidateNode(
+        Keyword.values,
+        isRequired: true,
+        valueRestriction: restrictions.validateEnumValues,
+      ),
+    };
+
+    validateYamlProtocol(
+      Keyword.enumType,
+      documentStructure,
+      documentContents,
+      collector,
+    );
+
+    var className = documentContents[Keyword.enumType];
+    if (className is! String) return null;
+
+    var enumDocumentation = docsExtractor.getDocumentation(
+      documentContents.key(Keyword.enumType)!.span.start,
+    );
+
+    var serverOnly = _parseServerOnly(documentContents);
+    var values = _parseEnumValues(documentContents, docsExtractor);
+
+    return EnumDefinition(
+      fileName: outFileName,
+      className: className,
+      values: values,
+      documentation: enumDocumentation,
+      subDirParts: subDirectoryParts,
+      serverOnly: serverOnly,
+    );
+  }
+
   SerializableEntityDefinition? _serializeClassFile(
     String documentType,
     YamlMap documentContents,
@@ -403,124 +457,15 @@ class SerializableEntityAnalyzer {
     );
   }
 
-  SerializableEntityDefinition? _analyzeEnumFile(
-    YamlMap documentContents,
-    YamlDocumentationExtractor docsExtractor,
-  ) {
-    var restrictions = Restrictions(
-      documentType: Keyword.enumType,
-      documentContents: documentContents,
-    );
-
-    Set<ValidateNode> documentStructure = {
-      ValidateNode(
-        Keyword.enumType,
-        isRequired: true,
-        valueRestriction: restrictions.validateClassName,
-      ),
-      ValidateNode(
-        Keyword.serverOnly,
-        valueRestriction: restrictions.validateBoolType,
-      ),
-      ValidateNode(
-        Keyword.values,
-        isRequired: true,
-      ),
-    };
-
-    validateYamlProtocol(
-      Keyword.enumType,
-      documentStructure,
-      documentContents,
-      collector,
-    );
-
-    var className = documentContents[Keyword.enumType];
-    if (className is! String) return null;
-
-    var enumDocumentation = docsExtractor.getDocumentation(
-      documentContents.key(Keyword.enumType)!.span.start,
-    );
-
-    bool serverOnly = _parseServerOnly(documentContents);
-
-    // Validate enum values.
-    var valuesNode = documentContents.nodes['values'];
-    if (valuesNode == null) {
-      collector.addError(SourceSpanException(
-        'An enum must have a "values" property.',
-        documentContents.span,
-      ));
-      return null;
-    }
-
-    if (valuesNode is! YamlList) {
-      collector.addError(SourceSpanException(
-        'The "values" property must be a List.',
-        valuesNode.span,
-      ));
-      return null;
-    }
-    var values = <ProtocolEnumValueDefinition>[];
-    for (var valueNode in valuesNode.nodes) {
-      if (valueNode is! YamlScalar) {
-        collector.addError(SourceSpanException(
-          'The list value must be of type String.',
-          valueNode.span,
-        ));
-        return null;
-      }
-
-      var value = valueNode.value;
-      if (value is! String) {
-        collector.addError(SourceSpanException(
-          'The list value must be of type String.',
-          valueNode.span,
-        ));
-        return null;
-      }
-
-      if (!StringValidators.isValidFieldName(value)) {
-        collector.addError(SourceSpanException(
-          'Enum values must be lowerCamelCase.',
-          valueNode.span,
-        ));
-        return null;
-      }
-      var start = valueNode.span.start;
-      // 2 is the length of '- ' in '- enumValue'
-      var valueDocumentation = docsExtractor.getDocumentation(SourceLocation(
-          start.offset - 2,
-          column: start.column - 2,
-          line: start.line,
-          sourceUrl: start.sourceUrl));
-
-      values.add(ProtocolEnumValueDefinition(value, valueDocumentation));
-    }
-
-    return EnumDefinition(
-      fileName: outFileName,
-      className: className,
-      values: values,
-      documentation: enumDocumentation,
-      subDirParts: subDirectoryParts,
-      serverOnly: serverOnly,
-    );
-  }
-
   bool _parseServerOnly(YamlMap documentContents) {
     var serverOnly = documentContents.nodes[Keyword.serverOnly]?.value;
-
-    if (serverOnly is! bool) {
-      return false;
-    }
+    if (serverOnly is! bool) return false;
 
     return serverOnly;
   }
 
   String? _parseTableName(YamlMap documentContents) {
     var tableName = documentContents.nodes[Keyword.table]?.value;
-
     if (tableName is! String) return null;
 
     return tableName;
@@ -725,5 +670,34 @@ class SerializableEntityAnalyzer {
         ));
       }
     }
+  }
+
+  List<ProtocolEnumValueDefinition> _parseEnumValues(
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+  ) {
+    var valuesNode = documentContents.nodes[Keyword.values];
+    if (valuesNode is! YamlList) return [];
+
+    var values = valuesNode.nodes.map((node) {
+      var value = node.value;
+      if (value is! String) return null;
+
+      var start = node.span.start;
+      // 2 is the length of '- ' in '- enumValue'
+      var valueDocumentation = docsExtractor.getDocumentation(
+        SourceLocation(start.offset - 2,
+            column: start.column - 2,
+            line: start.line,
+            sourceUrl: start.sourceUrl),
+      );
+
+      return ProtocolEnumValueDefinition(value, valueDocumentation);
+    });
+
+    return values
+        .where((value) => value != null)
+        .cast<ProtocolEnumValueDefinition>()
+        .toList();
   }
 }

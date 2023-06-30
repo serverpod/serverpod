@@ -158,4 +158,35 @@ class Restrictions {
       ));
     }
   }
+
+  void validateEnumValues(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    if (content is! YamlList) {
+      collector.addError(SourceSpanException(
+        'The "values" property must be a list of strings.',
+        span,
+      ));
+      return;
+    }
+
+    for (var node in content.nodes) {
+      if (node is! YamlScalar || node.value is! String) {
+        collector.addError(SourceSpanException(
+          'The "values" property must be a list of strings.',
+          node.span,
+        ));
+        continue;
+      }
+
+      if (!StringValidators.isValidFieldName(node.value)) {
+        collector.addError(SourceSpanException(
+          'Enum values must be lowerCamelCase.',
+          node.span,
+        ));
+      }
+    }
+  }
 }
