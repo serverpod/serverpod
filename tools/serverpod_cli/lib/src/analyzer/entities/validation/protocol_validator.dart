@@ -92,7 +92,8 @@ void validateYamlProtocol(
     for (var document in documentContents.nodes.entries) {
       var content = document.value.value;
 
-      if (content is String? && node.allowStringifiedNestedValue) {
+      if ((content == null || content is String) &&
+          node.allowStringifiedNestedValue) {
         content = convertStringifiedNestedNodesToYamlMap(
           content,
           document.value,
