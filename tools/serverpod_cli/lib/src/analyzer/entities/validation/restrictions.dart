@@ -128,7 +128,12 @@ class Restrictions {
     SourceSpan? span,
     CodeAnalysisCollector collector,
   ) {
-    // todo implement
+    if (content is! String) {
+      collector.addError(SourceSpanException(
+        'The field must have a datatype defined (e.g. field: String).',
+        span,
+      ));
+    }
   }
 
   void validateIndexFieldsValue(

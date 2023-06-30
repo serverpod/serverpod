@@ -254,6 +254,53 @@ fields:
     });
 
     test(
+        'Given a exception with a field without a datatype defined, then collect an error that defining a datatype is required.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+exception: Example
+fields:
+  name:
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message,
+          'The field must have a datatype defined (e.g. field: String).');
+    });
+
+    test(
+        'Given a exception with a field with the type String, then a class with that field type set to String is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+exception: Example
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+
+      expect(entities.fields.first.type.toString(), 'String');
+    });
+
+    test(
         'Given a class with a field with the parent keyword but without a value, then collect an error that the parent has to have a valid table name.',
         () {
       var collector = CodeGenerationCollector();
