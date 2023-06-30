@@ -254,7 +254,12 @@ class SerializableEntityAnalyzer {
       documentContents,
       collector,
     );
-    return _analyzeClassFile(documentContents, docsExtractor, fieldStructure);
+    return _analyzeClassFile(
+      Keyword.exceptionType,
+      documentContents,
+      docsExtractor,
+      fieldStructure,
+    );
   }
 
   SerializableEntityDefinition? _serializeClassFile(
@@ -346,35 +351,30 @@ class SerializableEntityAnalyzer {
     );
 
     return _analyzeClassFile(
+      Keyword.classType,
       documentContents,
       docsExtractor,
       fieldStructure,
     );
   }
 
-  SerializableEntityDefinition? _analyzeClassFile(YamlMap documentContents,
-      YamlDocumentationExtractor docsExtractor, ValidateNode fieldStructure) {
-    String classKeyword = 'class';
-    String exceptionKeyword = 'exception';
+  SerializableEntityDefinition? _analyzeClassFile(
+    String documentType,
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+    ValidateNode fieldStructure,
+  ) {
+    YamlNode? classNode = documentContents.nodes[documentType];
 
-    // Validate class name exists and is correct.
-    YamlNode? classNameNodePrivate = documentContents.nodes[classKeyword];
-    YamlNode? exceptionNodePrivate = documentContents.nodes[exceptionKeyword];
-    YamlNode? workingNode = classNameNodePrivate ?? exceptionNodePrivate;
-    String type =
-        classNameNodePrivate != null ? classKeyword : exceptionKeyword;
-    if (workingNode == null) {
-      collector.addError(SourceSpanException(
-        'No "$type" property is defined.',
-        documentContents.span,
-      ));
-      return null;
+    if (classNode == null) {
+      throw ArgumentError(
+          'No $documentType node found, only valid to call this function if the documentType exists as a top level key in the document.');
     }
 
-    var classDocumentation =
-        docsExtractor.getDocumentation(documentContents.key(type)!.span.start);
+    var classDocumentation = docsExtractor
+        .getDocumentation(documentContents.key(documentType)!.span.start);
 
-    var className = workingNode.value;
+    var className = classNode.value;
 
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
@@ -408,7 +408,7 @@ class SerializableEntityAnalyzer {
       indexes: indexes,
       subDirParts: subDirectoryParts,
       documentation: classDocumentation,
-      isException: type == exceptionKeyword,
+      isException: documentType == Keyword.exceptionType,
       serverOnly: serverOnly,
     );
   }
@@ -574,9 +574,10 @@ class SerializableEntityAnalyzer {
 
     var fields = fieldsNode.nodes.entries.map((fieldNode) {
       var key = fieldNode.key;
+      if (key is! YamlScalar) return null;
+
       var nodeValue = fieldNode.value;
       var value = nodeValue.value;
-      if (key is! YamlScalar) return null;
       if (value is String) {
         value = convertStringifiedNestedNodesToYamlMap(
           value,
@@ -595,8 +596,10 @@ class SerializableEntityAnalyzer {
       if (typeValue is! String) return null;
 
       var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
-      var typeResult =
-          parseAndAnalyzeType(typeValue, sourceSpan: typeNode.span);
+      var typeResult = parseAndAnalyzeType(
+        typeValue,
+        sourceSpan: typeNode.span,
+      );
       var scope = _parseFieldScope(value);
       var parentTable = _parseParentTable(value);
       var isEnum = _parseIsEnumField(value);
