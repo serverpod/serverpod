@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
@@ -143,15 +144,15 @@ class SerializableEntityAnalyzer {
 
     _validateEntityType(documentContents);
 
-    if (documentContents.nodes['class'] != null) {
+    if (documentContents.nodes[Keyword.classType] != null) {
       return _serializeClassFile(documentContents, docsExtractor);
     }
 
-    if (documentContents.nodes['exception'] != null) {
+    if (documentContents.nodes[Keyword.exceptionType] != null) {
       return _serializeExceptionFile(documentContents, docsExtractor);
     }
 
-    if (documentContents.nodes['enum'] != null) {
+    if (documentContents.nodes[Keyword.enumType] != null) {
       return _analyzeEnumFile(documentContents, docsExtractor);
     }
 
@@ -209,6 +210,20 @@ class SerializableEntityAnalyzer {
       documentType: Keyword.exceptionType,
       documentContents: documentContents,
     );
+
+    var fieldStructure = ValidateNode(
+      Keyword.any,
+      keyRestriction: restrictions.validateFieldName,
+      allowStringifiedNestedValue: true,
+      nested: {
+        ValidateNode(
+          Keyword.type,
+          isRequired: true,
+          valueRestriction: restrictions.validateFieldDataType,
+        ),
+      },
+    );
+
     Set<ValidateNode> documentStructure = {
       ValidateNode(
         Keyword.exceptionType,
@@ -223,11 +238,7 @@ class SerializableEntityAnalyzer {
         Keyword.fields,
         isRequired: true,
         nested: {
-          ValidateNode(
-            Keyword.any,
-            keyRestriction: restrictions.validateFieldName,
-            valueRestriction: restrictions.validateFieldDataType,
-          )
+          fieldStructure,
         },
       ),
     };
@@ -238,7 +249,7 @@ class SerializableEntityAnalyzer {
       documentContents,
       collector,
     );
-    return _analyzeClassFile(documentContents, docsExtractor);
+    return _analyzeClassFile(documentContents, docsExtractor, fieldStructure);
   }
 
   SerializableEntityDefinition? _serializeClassFile(
@@ -248,6 +259,31 @@ class SerializableEntityAnalyzer {
     var restrictions = Restrictions(
       documentType: Keyword.classType,
       documentContents: documentContents,
+    );
+
+    var fieldStructure = ValidateNode(
+      Keyword.any,
+      keyRestriction: restrictions.validateFieldName,
+      allowStringifiedNestedValue: true,
+      nested: {
+        ValidateNode(
+          Keyword.type,
+          isRequired: true,
+          valueRestriction: restrictions.validateFieldType,
+        ),
+        ValidateNode(
+          Keyword.parent,
+          valueRestriction: restrictions.validateParentName,
+        ),
+        ValidateNode(
+          Keyword.database,
+          mutuallyExclusiveKeys: {Keyword.api},
+        ),
+        ValidateNode(
+          Keyword.api,
+          mutuallyExclusiveKeys: {Keyword.database},
+        ),
+      },
     );
 
     Set<ValidateNode> documentStructure = {
@@ -268,29 +304,7 @@ class SerializableEntityAnalyzer {
         Keyword.fields,
         isRequired: true,
         nested: {
-          ValidateNode(
-            Keyword.any,
-            keyRestriction: restrictions.validateFieldName,
-            allowStringifiedNestedValue: true,
-            nested: {
-              ValidateNode(
-                Keyword.type,
-                isRequired: true,
-                valueRestriction: restrictions.validateFieldType,
-              ),
-              ValidateNode(
-                Keyword.parent,
-              ),
-              ValidateNode(
-                Keyword.database,
-                mutuallyExclusiveKeys: {Keyword.api},
-              ),
-              ValidateNode(
-                Keyword.api,
-                mutuallyExclusiveKeys: {Keyword.database},
-              ),
-            },
-          )
+          fieldStructure,
         },
       ),
       ValidateNode(
@@ -326,30 +340,15 @@ class SerializableEntityAnalyzer {
       collector,
     );
 
-    return _analyzeClassFile(documentContents, docsExtractor);
-
-    /*
-    String className = documentContents[Keyword.classType];
-
-    bool serverOnly = _parseServerOnly(documentContents);
-    String? tableName = _parseTableName(documentContents);
-
-    return ClassDefinition(
-      className: className,
-      tableName: tableName,
-      fileName: outFileName,
-      fields: [],
-      indexes: [],
-      subDirParts: subDirectoryParts,
-      documentation: [],
-      isException: false,
-      serverOnly: serverOnly,
+    return _analyzeClassFile(
+      documentContents,
+      docsExtractor,
+      fieldStructure,
     );
-    */
   }
 
-  SerializableEntityDefinition? _analyzeClassFile(
-      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
+  SerializableEntityDefinition? _analyzeClassFile(YamlMap documentContents,
+      YamlDocumentationExtractor docsExtractor, ValidateNode fieldStructure) {
     String classKeyword = 'class';
     String exceptionKeyword = 'exception';
 
@@ -372,108 +371,24 @@ class SerializableEntityAnalyzer {
 
     var className = workingNode.value;
 
-    String? tableName = _parseTableName(documentContents);
-    bool serverOnly = _parseServerOnly(documentContents);
+    var tableName = _parseTableName(documentContents);
+    var serverOnly = _parseServerOnly(documentContents);
+    var fields = _parseFields(documentContents, docsExtractor, fieldStructure);
 
-    // Validate fields map exists.
-    var fieldsNode = documentContents.nodes['fields'];
-
-    if (fieldsNode is! YamlMap) {
-      return null;
-    }
-
-    // Validate and add fields.
-    var fields = <SerializableEntityFieldDefinition>[];
-
-    // Add default id field, if object has database table.
     if (tableName != null) {
-      fields.add(SerializableEntityFieldDefinition(
-        name: 'id',
-        type: TypeDefinition.int.asNullable,
-        scope: SerializableEntityFieldScope.all,
-        documentation: [
-          '/// The database id, set if the object has been inserted into the',
-          '/// database or if it has been fetched from the database. Otherwise,',
-          '/// the id will be null.',
-        ],
-      ));
-    }
-
-    for (var fieldNameNode in fieldsNode.nodes.keys) {
-      // Validate field name.
-
-      var fieldDocumentation =
-          docsExtractor.getDocumentation(fieldNameNode.span.start);
-
-      var fieldName = fieldNameNode.value;
-      if (fieldName is! String) {
-        continue;
-      }
-      // Field name checks out, let's validate the argument.
-      var fieldDescriptionNode = fieldsNode.nodes[fieldNameNode];
-      if (fieldDescriptionNode == null) {
-        continue;
-      }
-
-      var fieldDescription = fieldDescriptionNode.value;
-      if (fieldDescription is! String) {
-        continue;
-      }
-
-      try {
-        fieldDescription = fieldDescription.replaceAll(' ', '');
-        var typeResult = parseAndAnalyzeType(
-          fieldDescription,
-          sourceSpan: fieldDescriptionNode.span,
-        );
-
-        var fieldOptions =
-            fieldDescription.substring(typeResult.parsedPosition).split(',');
-
-        var scope = fieldOptions.any((option) => option == 'database')
-            ? SerializableEntityFieldScope.database
-            : fieldOptions.any((option) => option == 'api')
-                ? SerializableEntityFieldScope.api
-                : SerializableEntityFieldScope.all;
-
-        var parentTable = fieldOptions
-            .whereType<String?>()
-            .firstWhere(
-              (option) => option?.startsWith('parent=') ?? false,
-              orElse: () => null,
-            )
-            ?.substring(7);
-
-        if (parentTable != null &&
-            !StringValidators.isValidTableIndexName(parentTable)) {
-          collector.addError(SourceSpanException(
-            'The parent must reference a valid table name (e.g. parent=table_name). "$parentTable" is not a valid parent name.',
-            fieldDescriptionNode.span,
-          ));
-          continue;
-        }
-
-        var isEnum =
-            fieldOptions.whereType<String?>().any((option) => option == 'enum');
-
-        var fieldDefinition = SerializableEntityFieldDefinition(
-          name: fieldName,
-          scope: scope,
-          type: typeResult.type..isEnum = isEnum,
-          parentTable: parentTable,
-          documentation: fieldDocumentation,
-        );
-
-        fields.add(fieldDefinition);
-      } catch (e) {
-        collector.addError(SourceSpanException(
-          'Field description is invalid.',
-          fieldDescriptionNode.span,
-        ));
-        continue;
-      }
-
-      // TODO: Better type checks.
+      fields.insert(
+        0,
+        SerializableEntityFieldDefinition(
+          name: 'id',
+          type: TypeDefinition.int.asNullable,
+          scope: SerializableEntityFieldScope.all,
+          documentation: [
+            '/// The database id, set if the object has been inserted into the',
+            '/// database or if it has been fetched from the database. Otherwise,',
+            '/// the id will be null.',
+          ],
+        ),
+      );
     }
 
     var validDatabaseFieldNames = <String>{};
@@ -697,7 +612,7 @@ class SerializableEntityAnalyzer {
   }
 
   bool _parseServerOnly(YamlMap documentContents) {
-    var serverOnly = documentContents.nodes['serverOnly']?.value;
+    var serverOnly = documentContents.nodes[Keyword.serverOnly]?.value;
 
     if (serverOnly is! bool) {
       return false;
@@ -707,15 +622,96 @@ class SerializableEntityAnalyzer {
   }
 
   String? _parseTableName(YamlMap documentContents) {
-    var tableName = documentContents.nodes['table']?.value;
+    var tableName = documentContents.nodes[Keyword.table]?.value;
 
     if (tableName is! String) return null;
 
     return tableName;
   }
 
+  List<SerializableEntityFieldDefinition> _parseFields(
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+    ValidateNode fieldStructure,
+  ) {
+    var fieldsNode = documentContents.nodes[Keyword.fields];
+    if (fieldsNode is! YamlMap) return [];
+
+    var fields = fieldsNode.nodes.entries.map((fieldNode) {
+      var key = fieldNode.key;
+      var nodeValue = fieldNode.value;
+      var value = nodeValue.value;
+      if (key is! YamlScalar) return null;
+      if (value is String) {
+        value = convertStringifiedNestedNodesToYamlMap(
+          value,
+          nodeValue,
+          fieldStructure,
+        );
+      }
+      if (value is! YamlMap) return null;
+
+      var fieldName = key.value;
+      if (fieldName is! String) return null;
+
+      var typeNode = value.nodes[Keyword.type];
+      var typeValue = typeNode?.value;
+      if (typeNode is! YamlScalar) return null;
+      if (typeValue is! String) return null;
+
+      var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
+      var typeResult = parseAndAnalyzeType(
+        typeValue,
+        sourceSpan: typeNode.span,
+      );
+      var scope = _parseFieldScope(value);
+      var parentTable = _parseParentTable(value);
+      var isEnum = _parseIsEnumField(value);
+
+      return SerializableEntityFieldDefinition(
+        name: fieldName,
+        scope: scope,
+        type: typeResult.type..isEnum = isEnum,
+        parentTable: parentTable,
+        documentation: fieldDocumentation,
+      );
+    });
+
+    return fields
+        .where((field) => field != null)
+        .cast<SerializableEntityFieldDefinition>()
+        .toList();
+  }
+
+  SerializableEntityFieldScope _parseFieldScope(YamlMap documentContents) {
+    var database = documentContents.containsKey(Keyword.database);
+    var api = documentContents.containsKey(Keyword.api);
+
+    if (database) {
+      return SerializableEntityFieldScope.database;
+    }
+
+    if (api) {
+      return SerializableEntityFieldScope.api;
+    }
+
+    return SerializableEntityFieldScope.all;
+  }
+
+  String? _parseParentTable(YamlMap documentContents) {
+    var parent = documentContents.nodes[Keyword.parent]?.value;
+
+    if (parent is! String) return null;
+
+    return parent;
+  }
+
+  bool _parseIsEnumField(YamlMap documentContents) {
+    return documentContents.containsKey(Keyword.enumType);
+  }
+
   String _parseIndexType(YamlMap documentContents) {
-    var typeNode = documentContents.nodes['type'];
+    var typeNode = documentContents.nodes[Keyword.type];
     var type = typeNode?.value;
 
     if (type == null || type is! String) {
@@ -726,7 +722,7 @@ class SerializableEntityAnalyzer {
   }
 
   bool _parseUniqueKey(YamlMap documentContents) {
-    var node = documentContents.nodes['unique'];
+    var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
   }

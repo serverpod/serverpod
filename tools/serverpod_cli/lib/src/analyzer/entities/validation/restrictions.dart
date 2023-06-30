@@ -97,6 +97,19 @@ class Restrictions {
     }
   }
 
+  void validateParentName(
+    dynamic content,
+    SourceSpan? span,
+    CodeAnalysisCollector collector,
+  ) {
+    if (content != null && !StringValidators.isValidTableIndexName(content)) {
+      collector.addError(SourceSpanException(
+        'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
+        span,
+      ));
+    }
+  }
+
   void validateFieldType(
     dynamic content,
     SourceSpan? span,
