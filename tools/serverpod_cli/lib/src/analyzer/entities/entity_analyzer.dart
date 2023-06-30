@@ -150,11 +150,11 @@ class SerializableEntityAnalyzer {
     _validateEntityType(documentContents);
 
     if (documentContents.nodes[Keyword.classType] != null) {
-      return _serializeClassFile(documentContents, docsExtractor);
+      return _analyzeClassFile(documentContents, docsExtractor);
     }
 
     if (documentContents.nodes[Keyword.exceptionType] != null) {
-      return _serializeExceptionFile(documentContents, docsExtractor);
+      return _analyzeExceptionFile(documentContents, docsExtractor);
     }
 
     if (documentContents.nodes[Keyword.enumType] != null) {
@@ -209,7 +209,7 @@ class SerializableEntityAnalyzer {
     });
   }
 
-  SerializableEntityDefinition? _serializeExceptionFile(
+  SerializableEntityDefinition? _analyzeExceptionFile(
       YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
     var restrictions = Restrictions(
       documentType: Keyword.exceptionType,
@@ -254,7 +254,7 @@ class SerializableEntityAnalyzer {
       documentContents,
       collector,
     );
-    return _analyzeClassFile(
+    return _serializeClassFile(
       Keyword.exceptionType,
       documentContents,
       docsExtractor,
@@ -262,7 +262,7 @@ class SerializableEntityAnalyzer {
     );
   }
 
-  SerializableEntityDefinition? _serializeClassFile(
+  SerializableEntityDefinition? _analyzeClassFile(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
   ) {
@@ -350,7 +350,7 @@ class SerializableEntityAnalyzer {
       collector,
     );
 
-    return _analyzeClassFile(
+    return _serializeClassFile(
       Keyword.classType,
       documentContents,
       docsExtractor,
@@ -358,7 +358,7 @@ class SerializableEntityAnalyzer {
     );
   }
 
-  SerializableEntityDefinition? _analyzeClassFile(
+  SerializableEntityDefinition? _serializeClassFile(
     String documentType,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
