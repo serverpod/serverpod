@@ -353,7 +353,7 @@ fields:
         yaml: '''
 class: Example
 fields:
-  name: Map<String, String>
+  name: Map<String,String>
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
         outFileName: 'example.yaml',
