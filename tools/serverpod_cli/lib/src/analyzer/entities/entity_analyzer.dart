@@ -404,42 +404,43 @@ class SerializableEntityAnalyzer {
   }
 
   SerializableEntityDefinition? _analyzeEnumFile(
-      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
-    if (!_containsOnlyValidKeys(
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+  ) {
+    var restrictions = Restrictions(
+      documentType: Keyword.enumType,
+      documentContents: documentContents,
+    );
+
+    Set<ValidateNode> documentStructure = {
+      ValidateNode(
+        Keyword.enumType,
+        isRequired: true,
+        valueRestriction: restrictions.validateClassName,
+      ),
+      ValidateNode(
+        Keyword.serverOnly,
+        valueRestriction: restrictions.validateBoolType,
+      ),
+      ValidateNode(
+        Keyword.values,
+        isRequired: true,
+      ),
+    };
+
+    validateYamlProtocol(
+      Keyword.enumType,
+      documentStructure,
       documentContents,
-      {'enum', 'serverOnly', 'values'},
-    )) {
-      return null;
-    }
+      collector,
+    );
 
-    // Validate class name exists and is correct.
-    var classNameNode = documentContents.nodes['enum'];
-    if (classNameNode == null) {
-      collector.addError(SourceSpanException(
-        'No "enum" type is defined.',
-        documentContents.span,
-      ));
-      return null;
-    }
-    var enumDocumentation = docsExtractor
-        .getDocumentation(documentContents.key('enum')!.span.start);
+    var className = documentContents[Keyword.enumType];
+    if (className is! String) return null;
 
-    var className = classNameNode.value;
-    if (className is! String) {
-      collector.addError(SourceSpanException(
-        'The "enum" type must be a String.',
-        classNameNode.span,
-      ));
-      return null;
-    }
-
-    if (!StringValidators.isValidClassName(className)) {
-      collector.addError(SourceSpanException(
-        'The "enum" type must be a valid class name (e.g. PascalCaseString).',
-        classNameNode.span,
-      ));
-      return null;
-    }
+    var enumDocumentation = docsExtractor.getDocumentation(
+      documentContents.key(Keyword.enumType)!.span.start,
+    );
 
     bool serverOnly = _parseServerOnly(documentContents);
 
@@ -505,35 +506,6 @@ class SerializableEntityAnalyzer {
       subDirParts: subDirectoryParts,
       serverOnly: serverOnly,
     );
-  }
-
-  bool _containsOnlyValidKeys(YamlMap documentMap, Set<String> validKeys) {
-    for (var keyNode in documentMap.nodes.keys) {
-      if (keyNode is! YamlScalar) {
-        collector.addError(SourceSpanException(
-          'Key must be of type String.',
-          keyNode.span,
-        ));
-        return false;
-      }
-      var key = keyNode.value;
-      if (key is! String) {
-        collector.addError(SourceSpanException(
-          'Key must be of type String.',
-          keyNode.span,
-        ));
-        return false;
-      }
-      if (!validKeys.contains(key)) {
-        collector.addError(SourceSpanException(
-          'The "$key" property is not allowed for enums. Valid keys are $validKeys.',
-          keyNode.span,
-        ));
-        return false;
-      }
-    }
-
-    return true;
   }
 
   bool _parseServerOnly(YamlMap documentContents) {
@@ -665,7 +637,7 @@ class SerializableEntityAnalyzer {
     YamlMap documentContents,
     List<SerializableEntityFieldDefinition> fields,
   ) {
-    var indexesNode = documentContents.nodes['indexes'];
+    var indexesNode = documentContents.nodes[Keyword.indexes];
     if (indexesNode is! YamlMap) return null;
 
     var indexes = indexesNode.nodes.entries.map((node) {
@@ -687,7 +659,7 @@ class SerializableEntityAnalyzer {
         unique: unique,
         fields: indexFields,
       );
-    }).toList();
+    });
 
     return indexes
         .where((index) => index != null)
@@ -705,8 +677,12 @@ class SerializableEntityAnalyzer {
     var stringifiedFields = fieldsNode.value;
     if (stringifiedFields is! String) return [];
 
-    var indexFields =
-        stringifiedFields.split(',').map((String str) => str.trim()).toList();
+    var indexFields = stringifiedFields
+        .split(',')
+        .map(
+          (String str) => str.trim(),
+        )
+        .toList();
 
     // Validate that index fields exists in class,
     // Todo: move this to validation file when we support multipass parsing.

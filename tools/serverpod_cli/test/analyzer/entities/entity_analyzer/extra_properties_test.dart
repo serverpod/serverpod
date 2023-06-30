@@ -223,7 +223,8 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The "table" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
+      expect(error.message,
+          'The "table" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
     });
   });
 
@@ -337,7 +338,7 @@ values:
       var error = collector.errors.first;
 
       expect(error.message,
-          'The "table" property is not allowed for enums. Valid keys are {enum, serverOnly, values}.');
+          'The "table" property is not allowed for enum type. Valid keys are {enum, serverOnly, values}.');
     });
   });
 }
