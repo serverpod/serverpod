@@ -26,7 +26,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
 
   var duplicates = _findDuplicateKeys(fieldKeyValuePairs);
   for (var duplicate in duplicates) {
-    onDuplicateKey?.call(duplicate, contentNode.span.subspan(contentNode.span.text.lastIndexOf(duplicate)));
+    onDuplicateKey?.call(duplicate, contentNode.span);
   }
 
   Map<dynamic, YamlNode> initNodes = _createdYamlNode(

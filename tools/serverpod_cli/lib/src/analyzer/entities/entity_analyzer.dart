@@ -10,7 +10,6 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
-import '../../util/string_validators.dart';
 import '../../util/extensions.dart';
 import '../../util/yaml_docs.dart';
 import '../code_analysis_collector.dart';

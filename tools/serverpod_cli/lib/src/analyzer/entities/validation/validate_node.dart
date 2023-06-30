@@ -9,9 +9,6 @@ class ValidateNode {
   /// If true, the key must be present in the document.
   bool isRequired;
 
-  /// If true, the key is allowed but depricated and should not be used.
-  bool isDepricated;
-
   /// If set, the key must match the restriction, add any errors to the collector.
   /// Should only be used together with a [Keyword.any].
   void Function(String, SourceSpan?, CodeAnalysisCollector)? keyRestriction;
@@ -38,7 +35,6 @@ class ValidateNode {
   ValidateNode(
     this.key, {
     this.isRequired = false,
-    this.isDepricated = false,
     this.keyRestriction,
     this.valueRestriction,
     this.mutuallyExclusiveKeys = const {},
