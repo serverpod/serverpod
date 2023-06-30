@@ -50,6 +50,5 @@ class ValidateNode {
       throw ArgumentError(
           'keyRestriction can only be set if key is ${Keyword.any}.');
     }
-
   }
 }

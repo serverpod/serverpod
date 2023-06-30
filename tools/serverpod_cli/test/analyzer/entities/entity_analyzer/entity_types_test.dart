@@ -25,8 +25,7 @@ fields:
 
     var error = collector.errors.first;
 
-    expect(error.message,
-        'The "class" type must be a String.');
+    expect(error.message, 'The "class" type must be a String.');
   });
   test(
       'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
