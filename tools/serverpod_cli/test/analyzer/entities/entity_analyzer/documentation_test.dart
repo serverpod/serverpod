@@ -163,4 +163,52 @@ fields:
     ClassDefinition entities = analyzer.analyze() as ClassDefinition;
     expect(entities.fields.first.documentation, null);
   });
+
+  test(
+      'Given an enum with a multiline class documentation comment then an entity with the class documentation set is generated.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+### This is a...
+### multiline comment.
+enum: Example
+values:
+  - first
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    EnumDefinition entities = analyzer.analyze() as EnumDefinition;
+
+    expect(
+        entities.documentation, ['/// This is a...', '/// multiline comment.']);
+  });
+
+  test(
+      'Given an enum with a multiline value documentation comment then the entity that is generated has the documentation set for that specific field.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+enum: Example
+values:
+  ### This is a multiline
+  ### field comment.
+  - first
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    EnumDefinition entities = analyzer.analyze() as EnumDefinition;
+
+    expect(entities.values.first.documentation,
+        ['/// This is a multiline', '/// field comment.']);
+  });
 }
