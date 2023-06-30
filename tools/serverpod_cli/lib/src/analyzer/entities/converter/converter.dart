@@ -5,13 +5,6 @@ import 'package:yaml/yaml.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
 
-List<String> _extractOptions(String? input) {
-  if (input == null) return [];
-
-  // Split on comma, but not if the comma is inside < >
-  return input.split(RegExp(r',(?![^<]*>)')).map((e) => e.trim()).toList();
-}
-
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
   YamlNode contentNode,
@@ -59,6 +52,13 @@ class _KeyValuePair {
   _KeyValuePair(this.key, this.value);
 }
 
+List<String> _extractOptions(String? input) {
+  if (input == null) return [];
+
+  // Split on comma, but not if the comma is inside < >
+  return input.split(RegExp(r',(?![^<]*>)')).map((e) => e.trim()).toList();
+}
+
 Iterable<_KeyValuePair> _extractKeyValuePairs(Iterable<String> fieldOptions) {
   var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
     var keyValuePair = stringifiedKeyValuePair.split('=');
@@ -91,15 +91,8 @@ Map<dynamic, YamlNode> _createdYamlNode(
   dynamic rawValue,
   SourceSpan span,
 ) {
-  var key = YamlScalar.internalWithSpan(
-    rawKey,
-    span,
-  );
-
-  var value = YamlScalar.internalWithSpan(
-    rawValue,
-    span,
-  );
+  var key = YamlScalar.internalWithSpan(rawKey, span);
+  var value = YamlScalar.internalWithSpan(rawValue, span);
 
   return {key: value};
 }
