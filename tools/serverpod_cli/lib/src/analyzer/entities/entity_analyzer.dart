@@ -145,7 +145,12 @@ class SerializableEntityAnalyzer {
       ));
       return null;
     }
-    _validateEntityType(documentContents);
+
+    validateTopLevelEntityType(
+      documentContents,
+      _protocolClassTypes,
+      collector,
+    );
 
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
@@ -162,105 +167,6 @@ class SerializableEntityAnalyzer {
     }
 
     return null;
-  }
-
-  void _validateEntityType(YamlMap documentContents) {
-    var typeNodes = _findNodesByKeys(
-      documentContents,
-      _protocolClassTypes,
-    );
-
-    if (typeNodes.length == 1) return;
-
-    if (typeNodes.isEmpty) {
-      collector.addError(SourceSpanException(
-        'No $_protocolClassTypes type is defined.',
-        documentContents.span,
-      ));
-      return;
-    }
-
-    var formattedKeys = _formatNodeKeys(typeNodes);
-    var errors = typeNodes
-        .skip(1)
-        .map(
-          (e) => SourceSpanException(
-              'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
-              documentContents.key(e.key.toString())?.span),
-        )
-        .toList();
-
-    collector.addErrors(errors);
-  }
-
-  String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
-    return nodes.map((e) => e.key.toString()).fold('', (output, element) {
-      if (output.isEmpty) return '"$element"';
-      return '$output, "$element"';
-    });
-  }
-
-  Iterable<MapEntry<dynamic, YamlNode>> _findNodesByKeys(
-    YamlMap documentContents,
-    Set<String> keys,
-  ) {
-    return documentContents.nodes.entries.where((element) {
-      return keys.contains(element.key.toString());
-    });
-  }
-
-  SerializableEntityDefinition? _analyzeExceptionFile(
-      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
-    var restrictions = Restrictions(
-      documentType: Keyword.exceptionType,
-      documentContents: documentContents,
-    );
-
-    var fieldStructure = ValidateNode(
-      Keyword.any,
-      keyRestriction: restrictions.validateFieldName,
-      allowStringifiedNestedValue: true,
-      nested: {
-        ValidateNode(
-          Keyword.type,
-          isRequired: true,
-          valueRestriction: restrictions.validateFieldDataType,
-        ),
-      },
-    );
-
-    Set<ValidateNode> documentStructure = {
-      ValidateNode(
-        Keyword.exceptionType,
-        isRequired: true,
-        valueRestriction: restrictions.validateClassName,
-      ),
-      ValidateNode(
-        Keyword.serverOnly,
-        valueRestriction: restrictions.validateBoolType,
-      ),
-      ValidateNode(
-        Keyword.fields,
-        isRequired: true,
-        nested: {
-          fieldStructure,
-        },
-      ),
-    };
-
-    validateYamlProtocol(
-      Keyword.exceptionType,
-      documentStructure,
-      documentContents,
-      collector,
-    );
-
-    return _serializeClassFile(
-      Keyword.exceptionType,
-      documentContents,
-      docsExtractor,
-      fieldStructure,
-    );
   }
 
   SerializableEntityDefinition? _analyzeClassFile(
@@ -359,6 +265,60 @@ class SerializableEntityAnalyzer {
     );
   }
 
+  SerializableEntityDefinition? _analyzeExceptionFile(
+      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
+    var restrictions = Restrictions(
+      documentType: Keyword.exceptionType,
+      documentContents: documentContents,
+    );
+
+    var fieldStructure = ValidateNode(
+      Keyword.any,
+      keyRestriction: restrictions.validateFieldName,
+      allowStringifiedNestedValue: true,
+      nested: {
+        ValidateNode(
+          Keyword.type,
+          isRequired: true,
+          valueRestriction: restrictions.validateFieldDataType,
+        ),
+      },
+    );
+
+    Set<ValidateNode> documentStructure = {
+      ValidateNode(
+        Keyword.exceptionType,
+        isRequired: true,
+        valueRestriction: restrictions.validateClassName,
+      ),
+      ValidateNode(
+        Keyword.serverOnly,
+        valueRestriction: restrictions.validateBoolType,
+      ),
+      ValidateNode(
+        Keyword.fields,
+        isRequired: true,
+        nested: {
+          fieldStructure,
+        },
+      ),
+    };
+
+    validateYamlProtocol(
+      Keyword.exceptionType,
+      documentStructure,
+      documentContents,
+      collector,
+    );
+
+    return _serializeClassFile(
+      Keyword.exceptionType,
+      documentContents,
+      docsExtractor,
+      fieldStructure,
+    );
+  }
+
   SerializableEntityDefinition? _analyzeEnumFile(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
@@ -436,7 +396,7 @@ class SerializableEntityAnalyzer {
 
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
-    var fields = _parseFields(
+    var fields = _parseClassFields(
       documentContents,
       docsExtractor,
       tableName != null,
@@ -471,7 +431,7 @@ class SerializableEntityAnalyzer {
     return tableName;
   }
 
-  List<SerializableEntityFieldDefinition> _parseFields(
+  List<SerializableEntityFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
@@ -544,7 +504,7 @@ class SerializableEntityAnalyzer {
       typeValue,
       sourceSpan: typeNode.span,
     );
-    var scope = _parseFieldScope(value);
+    var scope = _parseClassFieldscope(value);
     var parentTable = _parseParentTable(value);
     var isEnum = _parseIsEnumField(value);
 
@@ -557,7 +517,7 @@ class SerializableEntityAnalyzer {
     );
   }
 
-  SerializableEntityFieldScope _parseFieldScope(YamlMap documentContents) {
+  SerializableEntityFieldScope _parseClassFieldscope(YamlMap documentContents) {
     var database = documentContents.containsKey(Keyword.database);
     var api = documentContents.containsKey(Keyword.api);
 
@@ -653,25 +613,6 @@ class SerializableEntityAnalyzer {
     return nodeValue is bool ? nodeValue : false;
   }
 
-  void _validateIndexFileds(
-    List<SerializableEntityFieldDefinition> fields,
-    List<String> indexFields,
-    SourceSpan span,
-  ) {
-    var validDatabaseFieldNames = fields
-        .where((field) => field.scope != SerializableEntityFieldScope.api)
-        .fold(<String>{}, (output, field) => output..add(field.name));
-
-    for (var indexField in indexFields) {
-      if (!validDatabaseFieldNames.contains(indexField)) {
-        collector.addError(SourceSpanException(
-          'The field name "$indexField" is not added to the class or has an api scope.',
-          span,
-        ));
-      }
-    }
-  }
-
   List<ProtocolEnumValueDefinition> _parseEnumValues(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
@@ -699,5 +640,24 @@ class SerializableEntityAnalyzer {
         .where((value) => value != null)
         .cast<ProtocolEnumValueDefinition>()
         .toList();
+  }
+
+  void _validateIndexFileds(
+    List<SerializableEntityFieldDefinition> fields,
+    List<String> indexFields,
+    SourceSpan span,
+  ) {
+    var validDatabaseFieldNames = fields
+        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .fold(<String>{}, (output, field) => output..add(field.name));
+
+    for (var indexField in indexFields) {
+      if (!validDatabaseFieldNames.contains(indexField)) {
+        collector.addError(SourceSpanException(
+          'The field name "$indexField" is not added to the class or has an api scope.',
+          span,
+        ));
+      }
+    }
   }
 }

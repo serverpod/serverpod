@@ -1,9 +1,45 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
+import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:yaml/yaml.dart';
 
 import '../converter/converter.dart';
 import 'validate_node.dart';
+
+void validateTopLevelEntityType(
+  YamlNode documentContents,
+  Set<String> classTypes,
+  CodeAnalysisCollector collector,
+) {
+  if (documentContents is! YamlMap) return;
+
+  var typeNodes = _findNodesByKeys(
+    documentContents,
+    classTypes,
+  );
+
+  if (typeNodes.length == 1) return;
+
+  if (typeNodes.isEmpty) {
+    collector.addError(SourceSpanException(
+      'No $classTypes type is defined.',
+      documentContents.span,
+    ));
+    return;
+  }
+
+  var formattedKeys = _formatNodeKeys(typeNodes);
+  var errors = typeNodes
+      .skip(1)
+      .map(
+        (e) => SourceSpanException(
+            'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
+            documentContents.key(e.key.toString())?.span),
+      )
+      .toList();
+
+  collector.addErrors(errors);
+}
 
 void validateYamlProtocol(
   String documentType,
@@ -173,14 +209,6 @@ void _collectMutuallyExclusiveKeyErrors(
   }
 }
 
-bool _shouldCheckMutuallyExclusiveKeys(
-  ValidateNode node,
-  YamlMap documentContents,
-) {
-  return documentContents.containsKey(node.key) &&
-      node.mutuallyExclusiveKeys.isNotEmpty;
-}
-
 void _collectMissingRequiredKeyErrors(
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
@@ -194,10 +222,6 @@ void _collectMissingRequiredKeyErrors(
       ));
     }
   }
-}
-
-bool _isMissingRequiredKey(ValidateNode node, YamlMap documentContents) {
-  return node.isRequired && !documentContents.containsKey(node.key);
 }
 
 void _collectRequiredChildrenErrors(
@@ -253,4 +277,32 @@ void _collectValueValidationErrors(
       node.valueRestriction?.call(content, span, collector);
     }
   }
+}
+
+String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
+  return nodes.map((e) => e.key.toString()).fold('', (output, element) {
+    if (output.isEmpty) return '"$element"';
+    return '$output, "$element"';
+  });
+}
+
+Iterable<MapEntry<dynamic, YamlNode>> _findNodesByKeys(
+  YamlMap documentContents,
+  Set<String> keys,
+) {
+  return documentContents.nodes.entries.where((element) {
+    return keys.contains(element.key.toString());
+  });
+}
+
+bool _isMissingRequiredKey(ValidateNode node, YamlMap documentContents) {
+  return node.isRequired && !documentContents.containsKey(node.key);
+}
+
+bool _shouldCheckMutuallyExclusiveKeys(
+  ValidateNode node,
+  YamlMap documentContents,
+) {
+  return documentContents.containsKey(node.key) &&
+      node.mutuallyExclusiveKeys.isNotEmpty;
 }
