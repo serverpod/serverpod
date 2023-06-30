@@ -1,20 +1,20 @@
 class Keyword {
-  static String classType = 'class';
-  static String exceptionType = 'exception';
-  static String enumType = 'enum';
+  static const String classType = 'class';
+  static const String exceptionType = 'exception';
+  static const String enumType = 'enum';
 
-  static String serverOnly = 'serverOnly';
-  static String table = 'table';
-  static String fields = 'fields';
-  static String indexes = 'indexes';
-  static String values = 'values';
+  static const String serverOnly = 'serverOnly';
+  static const String table = 'table';
+  static const String fields = 'fields';
+  static const String indexes = 'indexes';
+  static const String values = 'values';
 
-  static String type = 'type';
-  static String unique = 'unique';
-  static String parent = 'parent';
-  static String api = 'api';
-  static String database = 'database';
+  static const String type = 'type';
+  static const String unique = 'unique';
+  static const String parent = 'parent';
+  static const String api = 'api';
+  static const String database = 'database';
 
   /// Special keyword to allow keys to be any string.
-  static String any = 'any';
+  static const String any = 'any';
 }

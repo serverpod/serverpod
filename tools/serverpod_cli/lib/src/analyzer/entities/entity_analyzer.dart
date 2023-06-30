@@ -29,6 +29,11 @@ class SerializableEntityAnalyzer {
   final String outFileName;
   final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
+  static const Set<String> _protocolClassTypes = {
+    Keyword.classType,
+    Keyword.exceptionType,
+    Keyword.enumType,
+  };
 
   /// Create a new [SerializableEntityAnalyzer].
   SerializableEntityAnalyzer({
@@ -162,14 +167,14 @@ class SerializableEntityAnalyzer {
   void _validateEntityType(YamlMap documentContents) {
     var typeNodes = _findNodesByKeys(
       documentContents,
-      {Keyword.classType, Keyword.exceptionType, Keyword.enumType},
+      _protocolClassTypes,
     );
 
     if (typeNodes.length == 1) return;
 
     if (typeNodes.isEmpty) {
       collector.addError(SourceSpanException(
-        'No "class", "exception" or "enum" type is defined.',
+        'No $_protocolClassTypes type is defined.',
         documentContents.span,
       ));
       return;
@@ -391,79 +396,9 @@ class SerializableEntityAnalyzer {
       );
     }
 
-    var validDatabaseFieldNames = <String>{};
-    for (var field in fields) {
-      if (field.scope != SerializableEntityFieldScope.api) {
-        validDatabaseFieldNames.add(field.name);
-      }
-    }
-
-    // Validate indexes.
-    List<SerializableEntityIndexDefinition>? indexes;
-
-    var indexesNode = documentContents.nodes['indexes'];
-    if (indexesNode != null) {
-      if (indexesNode is! YamlMap) {
-        return null;
-      }
-
-      indexes = [];
-
-      indexLoop:
-      for (var indexNameNode in indexesNode.nodes.keys) {
-        // Validate index name.
-        var indexName = indexNameNode.value;
-        if (indexName is! String) {
-          continue;
-        }
-
-        // Validate index description.
-        var indexDescriptionNode = indexesNode.nodes[indexNameNode];
-        if (indexDescriptionNode is! YamlMap) {
-          continue;
-        }
-
-        // Validate index fields.
-        var fieldsNode = indexDescriptionNode.nodes['fields'];
-        if (fieldsNode == null) {
-          continue;
-        }
-        var fieldsStr = fieldsNode.value;
-        if (fieldsStr is! String) {
-          continue;
-        }
-
-        var fieldNames =
-            fieldsStr.split(',').map((String str) => str.trim()).toList();
-        if (fieldNames.isEmpty) {
-          collector.addError(SourceSpanException(
-            'The "fields" property must be defined.',
-            fieldsNode.span,
-          ));
-          continue;
-        }
-        for (var fieldName in fieldNames) {
-          if (!validDatabaseFieldNames.contains(fieldName)) {
-            collector.addError(SourceSpanException(
-              'The field name "$fieldName" is not added to the class or has an api scope.',
-              fieldsNode.span,
-            ));
-            continue indexLoop;
-          }
-        }
-
-        String type = _parseIndexType(indexDescriptionNode);
-        var unique = _parseUniqueKey(indexDescriptionNode);
-
-        var indexDefinition = SerializableEntityIndexDefinition(
-          name: indexName,
-          type: type,
-          unique: unique,
-          fields: fieldNames,
-        );
-        indexes.add(indexDefinition);
-      }
-    }
+    // Validate that index fields exists in class,
+    // Todo: move this to validation when we support multipass validation
+    var indexes = _parseIndexes(documentContents, fields);
 
     return ClassDefinition(
       className: className,
@@ -660,10 +595,8 @@ class SerializableEntityAnalyzer {
       if (typeValue is! String) return null;
 
       var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
-      var typeResult = parseAndAnalyzeType(
-        typeValue,
-        sourceSpan: typeNode.span,
-      );
+      var typeResult =
+          parseAndAnalyzeType(typeValue, sourceSpan: typeNode.span);
       var scope = _parseFieldScope(value);
       var parentTable = _parseParentTable(value);
       var isEnum = _parseIsEnumField(value);
@@ -687,20 +620,14 @@ class SerializableEntityAnalyzer {
     var database = documentContents.containsKey(Keyword.database);
     var api = documentContents.containsKey(Keyword.api);
 
-    if (database) {
-      return SerializableEntityFieldScope.database;
-    }
-
-    if (api) {
-      return SerializableEntityFieldScope.api;
-    }
+    if (database) return SerializableEntityFieldScope.database;
+    if (api) return SerializableEntityFieldScope.api;
 
     return SerializableEntityFieldScope.all;
   }
 
   String? _parseParentTable(YamlMap documentContents) {
     var parent = documentContents.nodes[Keyword.parent]?.value;
-
     if (parent is! String) return null;
 
     return parent;
@@ -708,6 +635,60 @@ class SerializableEntityAnalyzer {
 
   bool _parseIsEnumField(YamlMap documentContents) {
     return documentContents.containsKey(Keyword.enumType);
+  }
+
+  List<SerializableEntityIndexDefinition>? _parseIndexes(
+    YamlMap documentContents,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    var indexesNode = documentContents.nodes['indexes'];
+    if (indexesNode is! YamlMap) return null;
+
+    var indexes = indexesNode.nodes.entries.map((node) {
+      var keyScalar = node.key;
+      var nodeDocument = node.value;
+      if (keyScalar is! YamlScalar) return null;
+      if (nodeDocument is! YamlMap) return null;
+
+      var indexName = keyScalar.value;
+      if (indexName is! String) return null;
+
+      var indexFields = _parseIndexFields(nodeDocument, fields);
+      var type = _parseIndexType(nodeDocument);
+      var unique = _parseUniqueKey(nodeDocument);
+
+      return SerializableEntityIndexDefinition(
+        name: indexName,
+        type: type,
+        unique: unique,
+        fields: indexFields,
+      );
+    }).toList();
+
+    return indexes
+        .where((index) => index != null)
+        .cast<SerializableEntityIndexDefinition>()
+        .toList();
+  }
+
+  List<String> _parseIndexFields(
+    YamlMap documentContents,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    var fieldsNode = documentContents.nodes[Keyword.fields];
+    if (fieldsNode is! YamlNode) return [];
+
+    var stringifiedFields = fieldsNode.value;
+    if (stringifiedFields is! String) return [];
+
+    var indexFields =
+        stringifiedFields.split(',').map((String str) => str.trim()).toList();
+
+    // Validate that index fields exists in class,
+    // Todo: move this to validation when we support multipass validation
+    _validateIndexFileds(fields, indexFields, fieldsNode.span);
+
+    return indexFields;
   }
 
   String _parseIndexType(YamlMap documentContents) {
@@ -725,5 +706,24 @@ class SerializableEntityAnalyzer {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  void _validateIndexFileds(
+    List<SerializableEntityFieldDefinition> fields,
+    List<String> indexFields,
+    SourceSpan span,
+  ) {
+    var validDatabaseFieldNames = fields
+        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .fold(<String>{}, (output, field) => output..add(field.name));
+
+    for (var indexField in indexFields) {
+      if (!validDatabaseFieldNames.contains(indexField)) {
+        collector.addError(SourceSpanException(
+          'The field name "$indexField" is not added to the class or has an api scope.',
+          span,
+        ));
+      }
+    }
   }
 }

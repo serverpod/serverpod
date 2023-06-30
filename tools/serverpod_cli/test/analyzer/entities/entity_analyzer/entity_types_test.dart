@@ -125,7 +125,7 @@ fields:
 
       var error = collector.errors.first;
       expect(
-          error.message, 'No "class", "exception" or "enum" type is defined.');
+          error.message, 'No {class, exception, enum} type is defined.');
     });
   });
 
