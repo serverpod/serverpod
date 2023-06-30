@@ -500,7 +500,7 @@ class SerializableEntityAnalyzer {
 
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
     var typeResult = parseAndAnalyzeType(
-      typeValue,
+      typeValue.replaceAll(' ', ''),
       sourceSpan: typeNode.span,
     );
     var scope = _parseClassFieldscope(value);
