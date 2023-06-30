@@ -517,8 +517,6 @@ fields:
         collector: collector,
       );
 
-      analyzer.analyze();
-
       ClassDefinition entities = analyzer.analyze() as ClassDefinition;
 
       expect(entities.fields.first.type.className, 'Map');
@@ -540,8 +538,6 @@ fields:
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
-
-      analyzer.analyze();
 
       ClassDefinition entities = analyzer.analyze() as ClassDefinition;
 
@@ -565,8 +561,6 @@ fields:
         collector: collector,
       );
 
-      analyzer.analyze();
-
       ClassDefinition entities = analyzer.analyze() as ClassDefinition;
 
       expect(entities.fields.last.scope, SerializableEntityFieldScope.database);
@@ -588,8 +582,6 @@ fields:
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
-
-      analyzer.analyze();
 
       ClassDefinition entities = analyzer.analyze() as ClassDefinition;
 
@@ -615,18 +607,14 @@ fields:
         collector: collector,
       );
 
-      analyzer.analyze();
-
       ClassDefinition entities = analyzer.analyze() as ClassDefinition;
 
       expect(entities.fields.first.name, 'id');
       expect(entities.fields.first.type.className, 'int');
       expect(entities.fields.first.type.nullable, true);
-      
     });
 
-    test(
-        'Given a class without a table defined, then no id field is added.',
+    test('Given a class without a table defined, then no id field is added.',
         () {
       var collector = CodeGenerationCollector();
       var analyzer = SerializableEntityAnalyzer(
@@ -641,13 +629,10 @@ fields:
         collector: collector,
       );
 
-      analyzer.analyze();
-
       ClassDefinition entities = analyzer.analyze() as ClassDefinition;
 
       expect(entities.fields.first.name, isNot('id'));
       expect(entities.fields, hasLength(1));
-      
     });
   });
 }

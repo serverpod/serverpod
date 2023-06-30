@@ -1,8 +1,33 @@
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('Given a class with a null value as name, then collect an error ....',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+class:
+fields:
+  name: String
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    analyzer.analyze();
+
+    expect(collector.errors.length, greaterThan(0), reason: 'No errors found');
+
+    var error = collector.errors.first;
+
+    expect(error.message,
+        'The "class" type must be a String.');
+  });
   test(
       'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
       () {
@@ -22,6 +47,27 @@ fields:
     analyzer.analyze();
 
     expect(collector.errors.length, 0);
+  });
+
+  test(
+      'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
+      () {
+    var collector = CodeGenerationCollector();
+    var analyzer = SerializableEntityAnalyzer(
+      yaml: '''
+exception: PascalCASEString
+fields:
+  name: String
+''',
+      sourceFileName: 'lib/src/protocol/example.yaml',
+      outFileName: 'example.yaml',
+      subDirectoryParts: ['lib', 'src', 'protocol'],
+      collector: collector,
+    );
+
+    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+
+    expect(entities.className, 'PascalCASEString');
   });
   test(
       'Given a camelCase class name, then give an error indicating that PascalCase is required.',
@@ -124,8 +170,7 @@ fields:
       expect(collector.errors.length, greaterThan(0));
 
       var error = collector.errors.first;
-      expect(
-          error.message, 'No {class, exception, enum} type is defined.');
+      expect(error.message, 'No {class, exception, enum} type is defined.');
     });
   });
 

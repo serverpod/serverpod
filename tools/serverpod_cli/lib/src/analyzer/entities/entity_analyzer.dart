@@ -368,36 +368,26 @@ class SerializableEntityAnalyzer {
 
     if (classNode == null) {
       throw ArgumentError(
-          'No $documentType node found, only valid to call this function if the documentType exists as a top level key in the document.');
-    }
-
-    var classDocumentation = docsExtractor
-        .getDocumentation(documentContents.key(documentType)!.span.start);
-
-    var className = classNode.value;
-
-    var tableName = _parseTableName(documentContents);
-    var serverOnly = _parseServerOnly(documentContents);
-    var fields = _parseFields(documentContents, docsExtractor, fieldStructure);
-
-    if (tableName != null) {
-      fields.insert(
-        0,
-        SerializableEntityFieldDefinition(
-          name: 'id',
-          type: TypeDefinition.int.asNullable,
-          scope: SerializableEntityFieldScope.all,
-          documentation: [
-            '/// The database id, set if the object has been inserted into the',
-            '/// database or if it has been fetched from the database. Otherwise,',
-            '/// the id will be null.',
-          ],
-        ),
+        'No $documentType node found, only valid to call this function if '
+        ' the documentType exists as a top level key in the document.',
       );
     }
 
-    // Validate that index fields exists in class,
-    // Todo: move this to validation when we support multipass validation
+    var classDocumentation = docsExtractor.getDocumentation(
+      documentContents.key(documentType)!.span.start,
+    );
+
+    var className = classNode.value;
+    if (className is! String) return null;
+
+    var tableName = _parseTableName(documentContents);
+    var serverOnly = _parseServerOnly(documentContents);
+    var fields = _parseFields(
+      documentContents,
+      docsExtractor,
+      tableName != null,
+      fieldStructure,
+    );
     var indexes = _parseIndexes(documentContents, fields);
 
     return ClassDefinition(
@@ -567,56 +557,87 @@ class SerializableEntityAnalyzer {
   List<SerializableEntityFieldDefinition> _parseFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    bool hasTable,
     ValidateNode fieldStructure,
   ) {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is! YamlMap) return [];
 
-    var fields = fieldsNode.nodes.entries.map((fieldNode) {
-      var key = fieldNode.key;
-      if (key is! YamlScalar) return null;
-
-      var nodeValue = fieldNode.value;
-      var value = nodeValue.value;
-      if (value is String) {
-        value = convertStringifiedNestedNodesToYamlMap(
-          value,
-          nodeValue,
-          fieldStructure,
-        );
-      }
-      if (value is! YamlMap) return null;
-
-      var fieldName = key.value;
-      if (fieldName is! String) return null;
-
-      var typeNode = value.nodes[Keyword.type];
-      var typeValue = typeNode?.value;
-      if (typeNode is! YamlScalar) return null;
-      if (typeValue is! String) return null;
-
-      var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
-      var typeResult = parseAndAnalyzeType(
-        typeValue,
-        sourceSpan: typeNode.span,
-      );
-      var scope = _parseFieldScope(value);
-      var parentTable = _parseParentTable(value);
-      var isEnum = _parseIsEnumField(value);
-
-      return SerializableEntityFieldDefinition(
-        name: fieldName,
-        scope: scope,
-        type: typeResult.type..isEnum = isEnum,
-        parentTable: parentTable,
-        documentation: fieldDocumentation,
+    var parsedFields = fieldsNode.nodes.entries.map((fieldNode) {
+      return _parseEntityFieldDefinition(
+        fieldNode,
+        fieldStructure,
+        docsExtractor,
       );
     });
 
-    return fields
+    var fields = parsedFields
         .where((field) => field != null)
         .cast<SerializableEntityFieldDefinition>()
         .toList();
+
+    if (hasTable) {
+      fields = [
+        SerializableEntityFieldDefinition(
+          name: 'id',
+          type: TypeDefinition.int.asNullable,
+          scope: SerializableEntityFieldScope.all,
+          documentation: [
+            '/// The database id, set if the object has been inserted into the',
+            '/// database or if it has been fetched from the database. Otherwise,',
+            '/// the id will be null.',
+          ],
+        ),
+        ...fields,
+      ];
+    }
+
+    return fields;
+  }
+
+  SerializableEntityFieldDefinition? _parseEntityFieldDefinition(
+    MapEntry<dynamic, YamlNode> fieldNode,
+    ValidateNode fieldStructure,
+    YamlDocumentationExtractor docsExtractor,
+  ) {
+    var key = fieldNode.key;
+    if (key is! YamlScalar) return null;
+
+    var nodeValue = fieldNode.value;
+    var value = nodeValue.value;
+    if (value is String) {
+      value = convertStringifiedNestedNodesToYamlMap(
+        value,
+        nodeValue,
+        fieldStructure,
+      );
+    }
+    if (value is! YamlMap) return null;
+
+    var fieldName = key.value;
+    if (fieldName is! String) return null;
+
+    var typeNode = value.nodes[Keyword.type];
+    var typeValue = typeNode?.value;
+    if (typeNode is! YamlScalar) return null;
+    if (typeValue is! String) return null;
+
+    var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
+    var typeResult = parseAndAnalyzeType(
+      typeValue,
+      sourceSpan: typeNode.span,
+    );
+    var scope = _parseFieldScope(value);
+    var parentTable = _parseParentTable(value);
+    var isEnum = _parseIsEnumField(value);
+
+    return SerializableEntityFieldDefinition(
+      name: fieldName,
+      scope: scope,
+      type: typeResult.type..isEnum = isEnum,
+      parentTable: parentTable,
+      documentation: fieldDocumentation,
+    );
   }
 
   SerializableEntityFieldScope _parseFieldScope(YamlMap documentContents) {
@@ -688,7 +709,7 @@ class SerializableEntityAnalyzer {
         stringifiedFields.split(',').map((String str) => str.trim()).toList();
 
     // Validate that index fields exists in class,
-    // Todo: move this to validation when we support multipass validation
+    // Todo: move this to validation file when we support multipass parsing.
     _validateIndexFileds(fields, indexFields, fieldsNode.span);
 
     return indexFields;
