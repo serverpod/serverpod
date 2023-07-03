@@ -9,14 +9,13 @@ import 'package:yaml/yaml.dart';
 
 class ServerpodPackagesVersionCheckWarnings {
   static const incompatibleVersion =
-      'Version not compatible with the running serverpod cli version. This '
-      'may cause unexpected behavior. Please use the same version for both to '
-      'ensure full functionality.';
+      'The package version does not match the version of the Serverpod\'s '
+      'CLI. This may cause errors or unexpected behavior.';
   static String approximateVersion(Version cliVersion) =>
-      'Package is defined with a version range (for example "^$cliVersion"). '
-      'Ensure full compatibility between the serverpod cli and serverpod '
-      'packages by defining a concrete package version. Prefer "$cliVersion" '
-      'over "^$cliVersion".';
+      'The package is defined with a version range (for example '
+      '"^$cliVersion"). This can cause a mismatch with Serverpod\'s CLI '
+      'version. It\'s preferred to use "$cliVersion" over "^$cliVersion" for '
+      'the Serverpod packages.';
 }
 
 List<SourceSpanException> performServerpodPackagesAndCliVersionCheck(
@@ -101,7 +100,7 @@ List<SourceSpanException> _validatePackageCompatibilities(
 
     if (packageYamlNode == null) {
       throw SourceSpanException(
-          'Could not find package "$packageName" when inspecting as Yaml file',
+          'Could not find package "$packageName" in pubspec file.',
           packagesYaml.span);
     }
 

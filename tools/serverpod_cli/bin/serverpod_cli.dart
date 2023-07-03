@@ -271,8 +271,8 @@ Future<void> _main(List<String> args) async {
             Version.parse(templateVersion), Directory.current.parent);
         if (warnings.isNotEmpty) {
           printww(
-              'WARNING: Version compatibility warnings between the running cli and '
-              'serverpod packages found.');
+              'WARNING: The version of the CLI may be incompatible with the '
+              'Serverpod packages used in your project.');
           warnings.forEach(print);
         }
       } catch (e) {

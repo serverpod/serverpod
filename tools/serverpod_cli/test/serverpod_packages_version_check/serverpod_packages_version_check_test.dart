@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 void main() {
   var testAssetsPath =
       p.join('test', 'serverpod_packages_version_check', 'test_assets');
-  group('performServerpodPackagesVersionCheck', () {
+  group('performServerpodPackagesAndCliVersionCheck', () {
     test(
-        '.performServerpodPackagesVersionCheck() when there are no pubspec files',
+        'performServerpodPackagesAndCliVersionCheck() when there are no pubspec files',
         () {
       var packageWarnings = performServerpodPackagesAndCliVersionCheck(
         Version(1, 1, 0),
@@ -23,7 +23,8 @@ void main() {
     group('With explicit serverpod package version', () {
       var explicitVersionPath =
           Directory(p.join(testAssetsPath, 'explicit_1.1.0'));
-      test('.performServerpodPackagesVersionCheck() with same version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with same version',
+          () {
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           Version(1, 1, 0),
           explicitVersionPath,
@@ -32,7 +33,8 @@ void main() {
         expect(packageWarnings.isEmpty, equals(true));
       });
 
-      test('.performServerpodPackagesVersionCheck() with older version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with older version',
+          () {
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           Version(1, 0, 0),
           explicitVersionPath,
@@ -43,7 +45,8 @@ void main() {
             ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
       });
 
-      test('.performServerpodPackagesVersionCheck() with newer version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with newer version',
+          () {
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           Version(1, 2, 0),
           explicitVersionPath,
@@ -58,7 +61,8 @@ void main() {
     group('With approximate serverpod package version', () {
       var approximateVersionPath =
           Directory(p.join(testAssetsPath, 'approximate_1.1.0'));
-      test('.performServerpodPackagesVersionCheck() with same version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with same version',
+          () {
         var cliVersion = Version(1, 1, 0);
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           cliVersion,
@@ -72,7 +76,8 @@ void main() {
                 cliVersion));
       });
 
-      test('.performServerpodPackagesVersionCheck() with older version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with older version',
+          () {
         var cliVersion = Version(1, 0, 0);
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           cliVersion,
@@ -88,7 +93,8 @@ void main() {
                 cliVersion));
       });
 
-      test('.performServerpodPackagesVersionCheck() with newer version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with newer version',
+          () {
         var cliVersion = Version(1, 2, 0);
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           cliVersion,
@@ -105,7 +111,8 @@ void main() {
 
     group('With multiple pubspec files', () {
       var testAssets = Directory(testAssetsPath);
-      test('.performServerpodPackagesVersionCheck() with same version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with same version',
+          () {
         var cliVersion = Version(1, 1, 0);
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           Version(1, 1, 0),
@@ -119,7 +126,8 @@ void main() {
                 cliVersion));
       });
 
-      test('.performServerpodPackagesVersionCheck() with older version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with older version',
+          () {
         var cliVersion = Version(1, 0, 0);
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           cliVersion,
@@ -137,7 +145,8 @@ void main() {
                 cliVersion));
       });
 
-      test('.performServerpodPackagesVersionCheck() with newer version', () {
+      test('performServerpodPackagesAndCliVersionCheck() with newer version',
+          () {
         var cliVersion = Version(1, 2, 0);
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           cliVersion,
