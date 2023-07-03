@@ -93,7 +93,33 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The "serverOnly" property must be a bool.');
+      expect(error.message, 'The property value must be a bool.');
+    });
+
+    test(
+        'Given an exception with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+exception: Example
+serverOnly: Yes
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message, 'The property value must be a bool.');
     });
   });
 
@@ -197,7 +223,94 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The "exception" can\'t have a "table" property.');
+      expect(error.message,
+          'The "table" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
+    });
+  });
+
+  group('Invalid properties', () {
+    test(
+        'Given a class with an invalid property, then collect an error that such a property is not allowed.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+invalidProperty: true
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message,
+          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.');
+    });
+
+    test(
+        'Given a class with an invalid property, then collect an error that such a property is not allowed.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+class: Example
+invalidProperty: true
+fields:
+  name: String
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message,
+          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.');
+    });
+
+    test(
+        'Given an exception with an indexes defined, then collect an error that indexes cannot be used together with exceptions.',
+        () {
+      var collector = CodeGenerationCollector();
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: '''
+exception: ExampleException
+fields:
+  name: String
+indexes:
+  example_exception_idx: 
+    fields: name
+    unique: true
+''',
+        sourceFileName: 'lib/src/protocol/example.yaml',
+        outFileName: 'example.yaml',
+        subDirectoryParts: ['lib', 'src', 'protocol'],
+        collector: collector,
+      );
+
+      analyzer.analyze();
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message,
+          'The "indexes" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
     });
 
     test(
@@ -225,7 +338,7 @@ values:
       var error = collector.errors.first;
 
       expect(error.message,
-          'The "table" property is not allowed for enums. Valid keys are {enum, serverOnly, values}.');
+          'The "table" property is not allowed for enum type. Valid keys are {enum, serverOnly, values}.');
     });
   });
 }
