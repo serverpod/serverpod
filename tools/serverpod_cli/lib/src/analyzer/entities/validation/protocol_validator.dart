@@ -102,11 +102,11 @@ void validateYamlProtocol(
 void _collectInvalidKeyErrors(
   String documentType,
   Set<ValidateNode> documentStructure,
-  YamlMap documentMap,
+  YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
   var validKeys = documentStructure.map((e) => e.key).toSet();
-  for (var keyNode in documentMap.nodes.keys) {
+  for (var keyNode in documentContents.nodes.keys) {
     if (keyNode is! YamlScalar) {
       collector.addError(SourceSpanException(
         'Key must be of type String.',
