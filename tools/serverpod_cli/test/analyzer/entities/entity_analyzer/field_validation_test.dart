@@ -550,7 +550,7 @@ fields:
 class: Example
 table: example
 fields:
-  name: String, parent=first, parent=second
+  name: String, parent=my_table, parent=second
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
         outFileName: 'example.yaml',
