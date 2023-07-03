@@ -227,9 +227,7 @@ void _collectNodesWithNestedNodesErrors(
     var contentNode = document.value;
     var content = contentNode?.value;
 
-    if (node.allowStringifiedNestedValue &&
-        contentNode != null &&
-        (content is String || content == null)) {
+    if (contentNode != null && _isStringifiedNode(contentNode, node, content)) {
       content = convertStringifiedNestedNodesToYamlMap(
         content,
         contentNode,
@@ -266,18 +264,6 @@ void _collectNodesWithNestedNodesErrors(
   }
 }
 
-Iterable<MapEntry<dynamic, YamlNode?>> _extractDocumentNodesToCheck(
-    YamlMap documentContents, ValidateNode node) {
-  if (node.key == Keyword.any) {
-    return documentContents.nodes.entries;
-  }
-
-  var key = documentContents.key(node.key);
-  var value = documentContents.nodes[node.key];
-
-  return [MapEntry(key, value)];
-}
-
 String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
   return nodes.map((e) => e.key.toString()).fold('', (output, element) {
     if (output.isEmpty) return '"$element"';
@@ -304,4 +290,22 @@ bool _shouldCheckMutuallyExclusiveKeys(
 ) {
   return documentContents.containsKey(node.key) &&
       node.mutuallyExclusiveKeys.isNotEmpty;
+}
+
+Iterable<MapEntry<dynamic, YamlNode?>> _extractDocumentNodesToCheck(
+    YamlMap documentContents, ValidateNode node) {
+  if (node.key == Keyword.any) {
+    return documentContents.nodes.entries;
+  }
+
+  var key = documentContents.key(node.key);
+  var value = documentContents.nodes[node.key];
+
+  return [MapEntry(key, value)];
+}
+
+bool _isStringifiedNode(YamlNode? contentNode, ValidateNode node, content) {
+  if (!node.allowStringifiedNestedValue) return false;
+
+  return (content is String || content == null);
 }
