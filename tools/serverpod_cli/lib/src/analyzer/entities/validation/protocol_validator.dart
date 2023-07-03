@@ -6,6 +6,7 @@ import 'package:yaml/yaml.dart';
 import '../converter/converter.dart';
 import 'validate_node.dart';
 
+/// Validates that only one top level entity type is defined.
 void validateTopLevelEntityType(
   YamlNode documentContents,
   Set<String> classTypes,
@@ -41,6 +42,10 @@ void validateTopLevelEntityType(
   collector.addErrors(errors);
 }
 
+/// Recursivly validates a yaml document against a set of [ValidateNode]s.
+/// The [documentType] represents the parent key of the [documentContents],
+/// in the initial processing this is expected to be the top level entity type
+/// we are checking. E.g. 'class', 'enum', 'exception', etc.
 void validateYamlProtocol(
   String documentType,
   Set<ValidateNode> documentStructure,
@@ -54,104 +59,43 @@ void validateYamlProtocol(
     collector,
   );
 
-  _collectMutuallyExclusiveKeyErrors(
-    documentStructure,
-    documentContents,
-    collector,
-  );
+  for (var node in documentStructure) {
+    _collectMutuallyExclusiveKeyErrors(
+      node,
+      documentContents,
+      collector,
+    );
 
-  _collectMissingRequiredKeyErrors(
-    documentStructure,
-    documentContents,
-    collector,
-  );
+    _collectMissingRequiredKeyErrors(
+      node,
+      documentContents,
+      collector,
+    );
 
-  _collectMissingRequiredChildrenErrors(
-    documentStructure,
-    documentContents,
-    collector,
-  );
+    _collectMissingRequiredChildrenErrors(
+      node,
+      documentContents,
+      collector,
+    );
 
-  _collectKeyRestrictionErrors(
-    documentStructure,
-    documentContents,
-    collector,
-  );
+    _collectKeyRestrictionErrors(
+      node,
+      documentContents,
+      collector,
+    );
 
-  _collectValueRestrictionErrors(
-    documentStructure,
-    documentContents,
-    collector,
-  );
+    _collectValueRestrictionErrors(
+      node,
+      documentContents,
+      collector,
+    );
 
-
-  var nodesWithNestedNodes = documentStructure.where(
-    (node) => node.nested.isNotEmpty,
-  );
-
-  _processNestedNodes(
-    nodesWithNestedNodes,
-    documentContents,
-    collector,
-    validateNestedNodes: validateYamlProtocol, // Recursion
-  );
-}
-
-void _processNestedNodes(
-  Iterable<ValidateNode> nodes,
-  YamlMap documentContents,
-  CodeAnalysisCollector collector, {
-  void Function(
-    String documentType,
-    Set<ValidateNode> documentStructure,
-    YamlMap documentContents,
-    CodeAnalysisCollector collector,
-  )? validateNestedNodes,
-}) {
-  for (var node in nodes) {
-    var documentNodes = _extractDocumentNodesToCheck(documentContents, node);
-
-    for (var document in documentNodes) {
-      var contentNode = document.value;
-      var content = contentNode?.value;
-
-      if (node.allowStringifiedNestedValue &&
-          contentNode != null &&
-          (content is String || content == null)) {
-        content = convertStringifiedNestedNodesToYamlMap(
-          content,
-          contentNode,
-          node,
-          onDuplicateKey: (key, span) {
-            collector.addError(SourceSpanException(
-              'The field option "$key" is defined more than once.',
-              span,
-            ));
-          },
-        );
-      }
-
-      if (content is! YamlMap) {
-        var requiredKeys =
-            node.nested.where((e) => e.isRequired).map((e) => e.key);
-
-        if (requiredKeys.isNotEmpty) {
-          collector.addError(SourceSpanException(
-            'The "${document.key}" property is missing required keys $requiredKeys.',
-            documentContents.span,
-          ));
-        }
-
-        continue;
-      }
-
-      validateNestedNodes?.call(
-        document.key.toString(),
-        node.nested,
-        content,
-        collector,
-      );
-    }
+    _collectNodesWithNestedNodesErrors(
+      node,
+      documentContents,
+      collector,
+      validateNestedNodes: validateYamlProtocol, // Recursion
+    );
   }
 }
 
@@ -188,91 +132,137 @@ void _collectInvalidKeyErrors(
 }
 
 void _collectMutuallyExclusiveKeyErrors(
-  Set<ValidateNode> documentStructure,
+  ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  for (var node in documentStructure) {
-    if (_shouldCheckMutuallyExclusiveKeys(node, documentContents)) {
-      for (var mutuallyExclusiveKey in node.mutuallyExclusiveKeys) {
-        if (documentContents.containsKey(mutuallyExclusiveKey)) {
-          collector.addError(SourceSpanException(
-            'The "${node.key}" property is mutually exclusive with the "$mutuallyExclusiveKey" property.',
-            documentContents.nodes[node.key]?.span,
-          ));
-        }
+  if (_shouldCheckMutuallyExclusiveKeys(node, documentContents)) {
+    for (var mutuallyExclusiveKey in node.mutuallyExclusiveKeys) {
+      if (documentContents.containsKey(mutuallyExclusiveKey)) {
+        collector.addError(SourceSpanException(
+          'The "${node.key}" property is mutually exclusive with the "$mutuallyExclusiveKey" property.',
+          documentContents.nodes[node.key]?.span,
+        ));
       }
     }
   }
 }
 
 void _collectMissingRequiredKeyErrors(
-  Set<ValidateNode> documentStructure,
+  ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  for (var node in documentStructure) {
-    if (_isMissingRequiredKey(node, documentContents)) {
-      collector.addError(SourceSpanException(
-        'No "${node.key}" property is defined.',
-        documentContents.nodes[node.key]?.span,
-      ));
-    }
+  if (_isMissingRequiredKey(node, documentContents)) {
+    collector.addError(SourceSpanException(
+      'No "${node.key}" property is defined.',
+      documentContents.nodes[node.key]?.span,
+    ));
   }
 }
 
 void _collectMissingRequiredChildrenErrors(
-  Set<ValidateNode> documentStructure,
+  ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  for (var node in documentStructure) {
-    var content = documentContents[node.key];
-    var span = documentContents.nodes[node.key]?.span;
+  var content = documentContents[node.key];
+  var span = documentContents.nodes[node.key]?.span;
 
-    if (documentContents.containsKey(node.key) &&
-        node.nested.isNotEmpty &&
-        content is! YamlMap) {
-      collector.addError(SourceSpanException(
-        'The "${node.key}" property must have at least one value.',
-        span,
-      ));
-    }
+  if (documentContents.containsKey(node.key) &&
+      node.nested.isNotEmpty &&
+      content is! YamlMap) {
+    collector.addError(SourceSpanException(
+      'The "${node.key}" property must have at least one value.',
+      span,
+    ));
   }
 }
 
 void _collectKeyRestrictionErrors(
-  Set<ValidateNode> documentStructure,
+  ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  var validateNode = documentStructure.where(
-    (node) => node.keyRestriction != null,
-  );
+  if (node.keyRestriction == null) return;
 
-  for (var node in validateNode) {
-    for (var document in documentContents.nodes.entries) {
-      node.keyRestriction?.call(
-        document.key.toString(),
-        document.key.span,
-        collector,
-      );
-    }
+  for (var document in documentContents.nodes.entries) {
+    node.keyRestriction?.call(
+      document.key.toString(),
+      document.key.span,
+      collector,
+    );
   }
 }
 
 void _collectValueRestrictionErrors(
-  Set<ValidateNode> documentStructure,
+  ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  for (var node in documentStructure) {
-    var content = documentContents[node.key];
-    var span = documentContents.nodes[node.key]?.span;
+  var content = documentContents[node.key];
+  var span = documentContents.nodes[node.key]?.span;
 
-    if (documentContents.containsKey(node.key)) {
-      node.valueRestriction?.call(content, span, collector);
+  if (documentContents.containsKey(node.key)) {
+    node.valueRestriction?.call(content, span, collector);
+  }
+}
+
+void _collectNodesWithNestedNodesErrors(
+  ValidateNode node,
+  YamlMap documentContents,
+  CodeAnalysisCollector collector, {
+  void Function(
+    String documentType,
+    Set<ValidateNode> documentStructure,
+    YamlMap documentContents,
+    CodeAnalysisCollector collector,
+  )? validateNestedNodes,
+}) {
+  if (node.nested.isEmpty) return;
+
+  var documentNodes = _extractDocumentNodesToCheck(documentContents, node);
+
+  for (var document in documentNodes) {
+    var contentNode = document.value;
+    var content = contentNode?.value;
+
+    if (node.allowStringifiedNestedValue &&
+        contentNode != null &&
+        (content is String || content == null)) {
+      content = convertStringifiedNestedNodesToYamlMap(
+        content,
+        contentNode,
+        node,
+        onDuplicateKey: (key, span) {
+          collector.addError(SourceSpanException(
+            'The field option "$key" is defined more than once.',
+            span,
+          ));
+        },
+      );
     }
+
+    if (content is! YamlMap) {
+      var requiredKeys =
+          node.nested.where((e) => e.isRequired).map((e) => e.key);
+
+      if (requiredKeys.isNotEmpty) {
+        collector.addError(SourceSpanException(
+          'The "${document.key}" property is missing required keys $requiredKeys.',
+          documentContents.span,
+        ));
+      }
+
+      continue;
+    }
+
+    validateNestedNodes?.call(
+      document.key.toString(),
+      node.nested,
+      content,
+      collector,
+    );
   }
 }
 
