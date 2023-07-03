@@ -28,4 +28,8 @@ class ModuleSerializationEndpoint extends Endpoint {
     object.data = 42;
     return object;
   }
+
+  Future<ModuleDatatype> serializeNestedModuleObject(Session session) async {
+    
+  }
 }
