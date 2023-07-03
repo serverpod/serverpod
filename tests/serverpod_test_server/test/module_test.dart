@@ -7,8 +7,6 @@ import 'config.dart';
 void main() {
   var client = Client(serverUrl);
 
-  setUp(() {});
-
   group('Modules', () {
     test('Serialization', () async {
       var success = await client.moduleSerialization.serializeModuleObject();
@@ -39,5 +37,18 @@ void main() {
           await client.modules.module.module.modifyModuleObject(moduleClass);
       expect(result.data, equals(42));
     });
+  });
+
+  group('Nested modules classes.', () {
+    test(
+      'Given a generated protocol class with a custom class, then serialze the internal data.',
+      () async {
+        var result =
+            await client.moduleSerialization.serializeNestedModuleObject();
+        expect(result.entity.data, equals(42));
+        expect(result.list[0].data, equals(42));
+        expect(result.map['foo']?.data, equals(42));
+      },
+    );
   });
 }
