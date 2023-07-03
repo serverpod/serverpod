@@ -21,6 +21,7 @@ doc/api/
 .vscode-test/
 .packages
 .pub/
+.fvm/
 build/
 ios/.generated/
 pubspec.lock
