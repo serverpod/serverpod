@@ -45,13 +45,6 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
   return YamlMap.internal(nodes, contentNode.span, CollectionStyle.ANY);
 }
 
-class _KeyValuePair {
-  String key;
-  dynamic value;
-
-  _KeyValuePair(this.key, this.value);
-}
-
 List<String> _extractOptions(String? input) {
   if (input == null) return [];
 
@@ -59,19 +52,22 @@ List<String> _extractOptions(String? input) {
   return input.split(RegExp(r',(?![^<]*>)')).map((e) => e.trim()).toList();
 }
 
-Iterable<_KeyValuePair> _extractKeyValuePairs(Iterable<String> fieldOptions) {
+Iterable<MapEntry<String, dynamic>> _extractKeyValuePairs(
+  Iterable<String> fieldOptions,
+) {
   var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
     var keyValuePair = stringifiedKeyValuePair.split('=');
 
     var key = keyValuePair.first;
     var value = keyValuePair.length == 2 ? keyValuePair.last : null;
 
-    return _KeyValuePair(key, value);
+    return MapEntry(key, value);
   });
+
   return fieldPairs;
 }
 
-Set<String> _findDuplicateKeys(Iterable<_KeyValuePair> list) {
+Set<String> _findDuplicateKeys(Iterable<MapEntry<String, dynamic>> list) {
   var seenStrings = <String>{};
   var duplicates = <String>{};
 
