@@ -66,7 +66,7 @@ void validateYamlProtocol(
     collector,
   );
 
-  _collectRequiredChildrenErrors(
+  _collectMissingRequiredChildrenErrors(
     documentStructure,
     documentContents,
     collector,
@@ -78,25 +78,49 @@ void validateYamlProtocol(
     collector,
   );
 
-  _collectValueValidationErrors(
+  _collectValueRestrictionErrors(
     documentStructure,
     documentContents,
     collector,
   );
 
-  var nodesWithNestedNodes =
-      documentStructure.where((node) => node.nested.isNotEmpty);
-  var anyNodes = nodesWithNestedNodes.where((node) => node.key == Keyword.any);
 
-  for (var node in anyNodes) {
-    for (var document in documentContents.nodes.entries) {
-      var content = document.value.value;
+  var nodesWithNestedNodes = documentStructure.where(
+    (node) => node.nested.isNotEmpty,
+  );
 
-      if ((content == null || content is String) &&
-          node.allowStringifiedNestedValue) {
+  _processNestedNodes(
+    nodesWithNestedNodes,
+    documentContents,
+    collector,
+    validateNestedNodes: validateYamlProtocol, // Recursion
+  );
+}
+
+void _processNestedNodes(
+  Iterable<ValidateNode> nodes,
+  YamlMap documentContents,
+  CodeAnalysisCollector collector, {
+  void Function(
+    String documentType,
+    Set<ValidateNode> documentStructure,
+    YamlMap documentContents,
+    CodeAnalysisCollector collector,
+  )? validateNestedNodes,
+}) {
+  for (var node in nodes) {
+    var documentNodes = _extractDocumentNodesToCheck(documentContents, node);
+
+    for (var document in documentNodes) {
+      var contentNode = document.value;
+      var content = contentNode?.value;
+
+      if (node.allowStringifiedNestedValue &&
+          contentNode != null &&
+          (content is String || content == null)) {
         content = convertStringifiedNestedNodesToYamlMap(
           content,
-          document.value,
+          contentNode,
           node,
           onDuplicateKey: (key, span) {
             collector.addError(SourceSpanException(
@@ -121,41 +145,13 @@ void validateYamlProtocol(
         continue;
       }
 
-      validateYamlProtocol(
+      validateNestedNodes?.call(
         document.key.toString(),
         node.nested,
         content,
         collector,
       );
     }
-  }
-
-  var specificNodes = nodesWithNestedNodes.where(
-    (node) => documentContents.containsKey(node.key),
-  );
-
-  for (var node in specificNodes) {
-    var document = documentContents[node.key];
-
-    if (document is! YamlMap) {
-      var requiredKeys =
-          node.nested.where((e) => e.isRequired).map((e) => e.key);
-
-      if (requiredKeys.isNotEmpty) {
-        collector.addError(SourceSpanException(
-          'The "${document.key}" property is missing required keys $requiredKeys.',
-          documentContents.span,
-        ));
-      }
-
-      continue;
-    }
-    validateYamlProtocol(
-      node.key,
-      node.nested,
-      document,
-      collector,
-    );
   }
 }
 
@@ -225,7 +221,7 @@ void _collectMissingRequiredKeyErrors(
   }
 }
 
-void _collectRequiredChildrenErrors(
+void _collectMissingRequiredChildrenErrors(
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
@@ -265,7 +261,7 @@ void _collectKeyRestrictionErrors(
   }
 }
 
-void _collectValueValidationErrors(
+void _collectValueRestrictionErrors(
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
@@ -278,6 +274,18 @@ void _collectValueValidationErrors(
       node.valueRestriction?.call(content, span, collector);
     }
   }
+}
+
+Iterable<MapEntry<dynamic, YamlNode?>> _extractDocumentNodesToCheck(
+    YamlMap documentContents, ValidateNode node) {
+  if (node.key == Keyword.any) {
+    return documentContents.nodes.entries;
+  }
+
+  var key = documentContents.key(node.key);
+  var value = documentContents.nodes[node.key];
+
+  return [MapEntry(key, value)];
 }
 
 String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
