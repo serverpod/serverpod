@@ -26,43 +26,6 @@ Future<void> promptToUpdateIfNeeded() async {
   }
 }
 
-/// Update Serverpod CLI to the latest available version
-Future<void> updateCLI({bool verbose = false}) async {
-  try {
-    String? currentVersion = _getPackageVersion();
-    String? packageName = _getPackageName();
-    if (currentVersion == null || packageName == null) return;
-    _Package? package = await _PackageService.getLatestPackage(packageName);
-    if (package == null) return;
-    if (package.version == currentVersion) {
-      return printww('Serverpod is up to date 😉');
-    }
-    ProcessResult upgrade = await Process.run(
-      'dart',
-      [
-        'pub',
-        'global',
-        'activate',
-        'serverpod',
-      ],
-    );
-    if (upgrade.exitCode == 0) {
-      stdout.write(upgrade.stdout);
-      stderr.write(upgrade.stderr);
-      printwwln('Serverpod CLI upgraded successfully');
-      return;
-    } else {
-      if (verbose) printwwln(upgrade.stderr.toString());
-      printwwln('Something went wrong, Failed to upgrade Serverpod CLI.');
-      return;
-    }
-  } on Exception catch (e) {
-    if (verbose) printwwln(e.toString());
-    printwwln('Something went wrong, Failed to upgrade Serverpod CLI.');
-    return;
-  }
-}
-
 YamlMap? _getcurrentPackage() {
   File file = File('pubspec.yaml');
   String str = file.readAsStringSync();

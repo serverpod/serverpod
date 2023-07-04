@@ -32,7 +32,6 @@ const cmdGenerate = 'generate';
 const cmdGeneratePubspecs = 'generate-pubspecs';
 const cmdLanguageServer = 'language-server';
 const cmdMigrate = 'migrate';
-const cmdUpgrade = 'upgrade';
 const cmdVersion = 'version';
 
 final runModes = <String>['development', 'staging', 'production'];
@@ -105,12 +104,6 @@ Future<void> _main(List<String> args) async {
   var versionParser = ArgParser();
 
   parser.addCommand(cmdVersion, versionParser);
-
-  // "upgrade" command
-  var upgradeParser = ArgParser();
-  upgradeParser.addFlag('verbose',
-      abbr: 'v', negatable: false, help: 'Output more detailed information');
-  parser.addCommand(cmdUpgrade, upgradeParser);
 
   // "create" command
   var createParser = ArgParser();
@@ -237,9 +230,7 @@ Future<void> _main(List<String> args) async {
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
 
-    if (results.command!.name != cmdUpgrade) {
-      await promptToUpdateIfNeeded();
-    }
+    await promptToUpdateIfNeeded();
 
     // Version command.
     if (results.command!.name == cmdVersion) {
@@ -263,12 +254,6 @@ Future<void> _main(List<String> args) async {
 
       await performCreate(name, verbose, template, force);
       _analytics.cleanUp();
-      return;
-    }
-
-    if (results.command!.name == cmdUpgrade) {
-      bool verbose = results.command!['verbose'];
-      await updateCLI(verbose: verbose);
       return;
     }
 
