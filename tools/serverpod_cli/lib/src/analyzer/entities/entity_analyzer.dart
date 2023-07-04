@@ -82,6 +82,22 @@ class SerializableEntityAnalyzer {
       }
     }
 
+    var classes = classDefinitions.map((definition) {
+      var analyzer = SerializableEntityAnalyzer(
+        yaml: definition.yamlProtocol,
+        sourceFileName: definition.sourceFileName,
+        outFileName: definition.fileName,
+        collector: collector,
+        subDirectoryParts: definition.subDirParts,
+      );
+      return analyzer.analyze(protocolEntities: classDefinitions);
+    });
+
+    classDefinitions = classes
+        .where((definition) => definition != null)
+        .cast<SerializableEntityDefinition>()
+        .toList();
+
     // Detect protocol references
     for (var classDefinition in classDefinitions) {
       if (classDefinition is ClassDefinition) {
@@ -109,7 +125,9 @@ class SerializableEntityAnalyzer {
     return classDefinitions;
   }
 
-  SerializableEntityDefinition? analyze() {
+  SerializableEntityDefinition? analyze({
+    List<SerializableEntityDefinition>? protocolEntities,
+  }) {
     var yamlErrorCollector = ErrorCollector();
 
     YamlDocument document;
@@ -154,15 +172,27 @@ class SerializableEntityAnalyzer {
     var docsExtractor = YamlDocumentationExtractor(yaml);
 
     if (documentContents.nodes[Keyword.classType] != null) {
-      return _analyzeClassFile(documentContents, docsExtractor);
+      return _analyzeClassFile(
+        documentContents,
+        docsExtractor,
+        protocolEntities,
+      );
     }
 
     if (documentContents.nodes[Keyword.exceptionType] != null) {
-      return _analyzeExceptionFile(documentContents, docsExtractor);
+      return _analyzeExceptionFile(
+        documentContents,
+        docsExtractor,
+        protocolEntities,
+      );
     }
 
     if (documentContents.nodes[Keyword.enumType] != null) {
-      return _analyzeEnumFile(documentContents, docsExtractor);
+      return _analyzeEnumFile(
+        documentContents,
+        docsExtractor,
+        protocolEntities,
+      );
     }
 
     return null;
@@ -171,10 +201,12 @@ class SerializableEntityAnalyzer {
   SerializableEntityDefinition? _analyzeClassFile(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    List<SerializableEntityDefinition>? protocolEntities,
   ) {
     var restrictions = Restrictions(
       documentType: Keyword.classType,
       documentContents: documentContents,
+      protocolEntities: protocolEntities,
     );
 
     var fieldStructure = ValidateNode(
@@ -265,10 +297,14 @@ class SerializableEntityAnalyzer {
   }
 
   SerializableEntityDefinition? _analyzeExceptionFile(
-      YamlMap documentContents, YamlDocumentationExtractor docsExtractor) {
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+    List<SerializableEntityDefinition>? protocolEntities,
+  ) {
     var restrictions = Restrictions(
       documentType: Keyword.exceptionType,
       documentContents: documentContents,
+      protocolEntities: protocolEntities,
     );
 
     var fieldStructure = ValidateNode(
@@ -321,10 +357,12 @@ class SerializableEntityAnalyzer {
   SerializableEntityDefinition? _analyzeEnumFile(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    List<SerializableEntityDefinition>? protocolEntities,
   ) {
     var restrictions = Restrictions(
       documentType: Keyword.enumType,
       documentContents: documentContents,
+      protocolEntities: protocolEntities,
     );
 
     Set<ValidateNode> documentStructure = {
@@ -362,7 +400,9 @@ class SerializableEntityAnalyzer {
     var values = _parseEnumValues(documentContents, docsExtractor);
 
     return EnumDefinition(
+      yamlProtocol: yaml,
       fileName: outFileName,
+      sourceFileName: sourceFileName,
       className: className,
       values: values,
       documentation: enumDocumentation,
@@ -404,7 +444,9 @@ class SerializableEntityAnalyzer {
     var indexes = _parseIndexes(documentContents, fields);
 
     return ClassDefinition(
+      yamlProtocol: yaml,
       className: className,
+      sourceFileName: sourceFileName,
       tableName: tableName,
       fileName: outFileName,
       fields: fields,
