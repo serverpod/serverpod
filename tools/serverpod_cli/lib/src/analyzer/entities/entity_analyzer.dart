@@ -23,7 +23,7 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
-  final String yaml;
+  String yaml;
   final String sourceFileName;
   final String outFileName;
   final List<String> subDirectoryParts;
@@ -126,14 +126,16 @@ class SerializableEntityAnalyzer {
   }
 
   SerializableEntityDefinition? analyze({
+    String? yaml,
     List<SerializableEntityDefinition>? protocolEntities,
   }) {
     var yamlErrorCollector = ErrorCollector();
+    this.yaml = yaml ?? this.yaml;
 
     YamlDocument document;
     try {
       document = loadYamlDocument(
-        yaml,
+        this.yaml,
         sourceUrl: Uri.file(sourceFileName),
         errorListener: yamlErrorCollector,
         recover: true,
@@ -169,7 +171,7 @@ class SerializableEntityAnalyzer {
       collector,
     );
 
-    var docsExtractor = YamlDocumentationExtractor(yaml);
+    var docsExtractor = YamlDocumentationExtractor(this.yaml);
 
     if (documentContents.nodes[Keyword.classType] != null) {
       return _analyzeClassFile(
