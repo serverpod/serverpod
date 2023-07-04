@@ -6,13 +6,12 @@ import 'package:yaml/yaml.dart';
 
 import 'print.dart';
 
+const _packageName = 'serverpod_cli';
+
 /// Check current Serverpod CLI version and prompt user to update if needed
-Future<void> promptToUpdateIfNeeded() async {
+Future<void> promptToUpdateIfNeeded(String currentVersion) async {
   try {
-    String? currentVersion = _getPackageVersion();
-    String? packageName = _getPackageName();
-    if (currentVersion == null || packageName == null) return;
-    _Package? package = await _PackageService.getLatestPackage(packageName);
+    _Package? package = await _PackageService.getLatestPackage(_packageName);
     if (package == null) return;
     bool isUpToDate = package.version == currentVersion;
 
@@ -26,33 +25,12 @@ Future<void> promptToUpdateIfNeeded() async {
   }
 }
 
-YamlMap? _getcurrentPackage() {
-  File file = File('pubspec.yaml');
-  String str = file.readAsStringSync();
-  YamlDocument doc = loadYamlDocument(str);
-  YamlNode contents = doc.contents;
-  if (contents is! YamlMap) return null;
-  return contents;
-}
-
-String? _getPackageVersion() {
-  YamlMap? package = _getcurrentPackage();
-
-  return package?.nodes['version']?.value.toString();
-}
-
-String? _getPackageName() {
-  YamlMap? package = _getcurrentPackage();
-
-  return package?.nodes['name']?.value.toString();
-}
-
 abstract class _PackageService {
   static Future<_Package?> getLatestPackage(String name) async {
     try {
-      Response respose =
+      Response response =
           await get(Uri.parse('https://pub.dev/api/packages/$name'));
-      Map<String, dynamic> map = jsonDecode(respose.body);
+      Map<String, dynamic> map = jsonDecode(response.body);
       return _Package(name: map['name'], version: map['latest']['version']);
     } catch (e) {
       print(e);

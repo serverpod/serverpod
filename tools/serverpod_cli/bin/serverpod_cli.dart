@@ -230,7 +230,7 @@ Future<void> _main(List<String> args) async {
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
 
-    await promptToUpdateIfNeeded();
+    await promptToUpdateIfNeeded(templateVersion);
 
     // Version command.
     if (results.command!.name == cmdVersion) {
