@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yaml/yaml.dart';
 
-import '../generated/version.dart';
-import '../shared/environment.dart';
+import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/shared/environment.dart';
 
 final resourceManager = ResourceManager();
 
@@ -56,6 +58,55 @@ class ResourceManager {
     return userId;
   }
 
+  Future<void> storeLatestCliVersion(LatestCliVersionArtefact cliData) async {
+    var latestCliVersionFile = File(
+        p.join(localCacheDirectory.path, _LatestCliVersionConstants.filePath));
+    try {
+      if (!latestCliVersionFile.existsSync()) {
+        latestCliVersionFile.createSync(recursive: true);
+      }
+
+      var data = {};
+      data[_LatestCliVersionConstants.versionKeyword] = cliData.version;
+      data[_LatestCliVersionConstants.validUntilKeyword] =
+          cliData.validUntil.millisecondsSinceEpoch;
+
+      latestCliVersionFile.writeAsStringSync(data.toString());
+    } catch (e) {
+      // Failed to write latest cli version to file.
+    }
+  }
+
+  Future<LatestCliVersionArtefact?> tryFetchLatestCliVersion() async {
+    var latestCliVersionFile = File(p.join(
+      localCacheDirectory.path,
+      _LatestCliVersionConstants.filePath,
+    ));
+    try {
+      if (latestCliVersionFile.existsSync()) {
+        var yaml = loadYaml(
+          latestCliVersionFile.readAsStringSync(),
+          sourceUrl: latestCliVersionFile.uri,
+        );
+        if (yaml is YamlMap) {
+          var version =
+              Version.parse(yaml[_LatestCliVersionConstants.versionKeyword]);
+          var validUntil = DateTime.fromMillisecondsSinceEpoch(
+              yaml[_LatestCliVersionConstants.validUntilKeyword]);
+          return LatestCliVersionArtefact(version, validUntil);
+        }
+      }
+    } catch (e) {
+      // Failed to read latest cli version, it's probably not created.
+      if (latestCliVersionFile.existsSync()) {
+        // If the file exists it might be corrupted so we delete it.
+        latestCliVersionFile.deleteSync();
+      }
+    }
+
+    return null;
+  }
+
   String get packageDownloadUrl =>
       'https://pub.dev/packages/serverpod_templates/versions/$templateVersion.tar.gz';
 
@@ -90,4 +141,17 @@ class ResourceManager {
     }
     print('Download complete.\n');
   }
+}
+
+abstract class _LatestCliVersionConstants {
+  static const filePath = 'latest_cli_version.yaml';
+  static const versionKeyword = 'latest_version';
+  static const validUntilKeyword = 'valid_until';
+}
+
+class LatestCliVersionArtefact {
+  Version version;
+  DateTime validUntil;
+
+  LatestCliVersionArtefact(this.version, this.validUntil);
 }

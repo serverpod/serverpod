@@ -219,6 +219,8 @@ Future<void> _main(List<String> args) async {
       if (!resourceManager.isTemplatesInstalled) {
         print('WARNING! Could not find templates.');
       }
+
+      await promptToUpdateIfNeeded(Version.parse(templateVersion));
     }
   } catch (e) {
     _analytics.track(event: 'invalid');
@@ -229,8 +231,6 @@ Future<void> _main(List<String> args) async {
 
   if (results.command != null) {
     _analytics.track(event: '${results.command?.name}');
-
-    await promptToUpdateIfNeeded(templateVersion);
 
     // Version command.
     if (results.command!.name == cmdVersion) {
