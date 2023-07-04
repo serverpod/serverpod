@@ -7,6 +7,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yaml/yaml.dart';
 
+import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 
@@ -58,17 +59,22 @@ class ResourceManager {
     return userId;
   }
 
-  Future<void> storeLatestCliVersion(LatestCliVersionArtefact cliData) async {
-    var latestCliVersionFile = File(
-        p.join(localCacheDirectory.path, _LatestCliVersionConstants.filePath));
+  Future<void> storeLatestCliVersion(
+    LatestCliVersionArtefact cliData, {
+    String? localCachePath,
+  }) async {
+    localCachePath ??= localCacheDirectory.path;
+    var latestCliVersionFile =
+        File(p.join(localCachePath, LatestCliVersionConstants.filePath));
+
     try {
       if (!latestCliVersionFile.existsSync()) {
         latestCliVersionFile.createSync(recursive: true);
       }
 
       var data = {};
-      data[_LatestCliVersionConstants.versionKeyword] = cliData.version;
-      data[_LatestCliVersionConstants.validUntilKeyword] =
+      data[LatestCliVersionConstants.versionKeyword] = cliData.version;
+      data[LatestCliVersionConstants.validUntilKeyword] =
           cliData.validUntil.millisecondsSinceEpoch;
 
       latestCliVersionFile.writeAsStringSync(data.toString());
@@ -77,11 +83,16 @@ class ResourceManager {
     }
   }
 
-  Future<LatestCliVersionArtefact?> tryFetchLatestCliVersion() async {
+  Future<LatestCliVersionArtefact?> tryFetchLatestCliVersion({
+    String? localCachePath,
+  }) async {
+    localCachePath ??= localCacheDirectory.path;
+
     var latestCliVersionFile = File(p.join(
-      localCacheDirectory.path,
-      _LatestCliVersionConstants.filePath,
+      localCachePath,
+      LatestCliVersionConstants.filePath,
     ));
+
     try {
       if (latestCliVersionFile.existsSync()) {
         var yaml = loadYaml(
@@ -90,18 +101,19 @@ class ResourceManager {
         );
         if (yaml is YamlMap) {
           var version =
-              Version.parse(yaml[_LatestCliVersionConstants.versionKeyword]);
+              Version.parse(yaml[LatestCliVersionConstants.versionKeyword]);
           var validUntil = DateTime.fromMillisecondsSinceEpoch(
-              yaml[_LatestCliVersionConstants.validUntilKeyword]);
+              yaml[LatestCliVersionConstants.validUntilKeyword]);
           return LatestCliVersionArtefact(version, validUntil);
         }
       }
     } catch (e) {
-      // Failed to read latest cli version, it's probably not created.
-      if (latestCliVersionFile.existsSync()) {
-        // If the file exists it might be corrupted so we delete it.
-        latestCliVersionFile.deleteSync();
-      }
+      // Failed to read latest cli version from file.
+    }
+
+    // If the file exists it might be corrupted so we delete it.
+    if (latestCliVersionFile.existsSync()) {
+      latestCliVersionFile.deleteSync();
     }
 
     return null;
@@ -141,12 +153,6 @@ class ResourceManager {
     }
     print('Download complete.\n');
   }
-}
-
-abstract class _LatestCliVersionConstants {
-  static const filePath = 'latest_cli_version.yaml';
-  static const versionKeyword = 'latest_version';
-  static const validUntilKeyword = 'valid_until';
 }
 
 class LatestCliVersionArtefact {
