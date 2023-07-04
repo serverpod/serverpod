@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterfire_ui/auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:serverpod_auth_client/module.dart';
 
@@ -20,14 +20,14 @@ class SignInWithFirebaseButton extends StatelessWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
-  /// List of Firebase sign in configurations.
-  final List<ProviderConfiguration> providerConfigs;
+  /// List of Firebase auth provider.
+  final List<AuthProvider> authProviders;
 
   /// Creates a new Sign in with Firebase button.
   const SignInWithFirebaseButton({
     Key? key,
     required this.caller,
-    required this.providerConfigs,
+    required this.authProviders,
     this.onSignedIn,
     this.onFailure,
     this.style,
@@ -46,7 +46,7 @@ class SignInWithFirebaseButton extends StatelessWidget {
       onPressed: () {
         signInWithFirebase(
           caller: caller,
-          providerConfigs: providerConfigs,
+          authProviders: authProviders,
           context: context,
         ).then((UserInfo? userInfo) {
           // Notify the parent.

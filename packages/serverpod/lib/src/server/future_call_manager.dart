@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
 import '../generated/protocol.dart';
 import 'future_call.dart';
@@ -14,13 +15,18 @@ import 'session.dart';
 /// [Serverpod] is restarted.
 class FutureCallManager {
   final Server _server;
+
+  /// Called when pending future calls have been completed, if the server is
+  /// running in [ServerpodRole.maintenance] mode.
+  final VoidCallback onCompleted;
+
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
 
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
   /// the [Serverpod].
-  FutureCallManager(this._server, this._serializationManager);
+  FutureCallManager(this._server, this._serializationManager, this.onCompleted);
 
   /// Schedules a [FutureCall] by its [name]. A [SerializableEntity] can be
   /// passed as an argument. The `invoke` method of the [FutureCall] will
@@ -90,6 +96,10 @@ class FutureCallManager {
   }
 
   Future<void> _checkQueue() async {
+    if (_server.serverpod.commandLineArgs.role == ServerpodRole.maintenance) {
+      stdout.writeln('Processing future calls.');
+    }
+
     try {
       // Get calls
       var now = DateTime.now().toUtc();
@@ -136,7 +146,14 @@ class FutureCallManager {
       stderr.writeln('${StackTrace.current}');
     }
 
-    // Check the queue again in 5 seconds
-    _timer = Timer(const Duration(seconds: 5), _checkQueue);
+    // If we are running as a maintenance task, we shouldn't check the queue
+    // again.
+    if (_server.serverpod.commandLineArgs.role == ServerpodRole.monolith) {
+      // Check the queue again in 5 seconds
+      _timer = Timer(const Duration(seconds: 5), _checkQueue);
+    } else if (_server.serverpod.commandLineArgs.role ==
+        ServerpodRole.maintenance) {
+      onCompleted();
+    }
   }
 }

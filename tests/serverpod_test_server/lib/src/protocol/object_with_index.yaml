@@ -1,0 +1,9 @@
+class: ObjectWithIndex
+table: object_with_index
+fields:
+  indexed: int
+  indexed2: int
+indexes:
+  object_with_index_test_index:
+    fields: indexed,indexed2
+    type: brin

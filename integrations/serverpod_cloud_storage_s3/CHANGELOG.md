@@ -1,3 +1,31 @@
+## 1.1.0
+- feat: Lightweight run mode and support for serverless platforms.
+- feat: Support for Google Cloud Platform deployments, including Terraform module.
+- feat: Adds serializable exeptions that can be passed from the server to the client.
+- feat: Adds `serverOnly` option to yaml-files, which is set to true will prevent the code to be generated for the client.
+- feat: Support for `UUID` in serialization.
+- feat: New supported static file types in Relic.
+- feat: Allows endpoints in sub directories.
+- feat: Support for GCP Cloud Storage.
+- feat: Support for connecting to Postgres through a UNIX socket.
+- feat: Adds database maintanance methods to Insights APIs (still experimental and API may change).
+- docs: Improved documentation.
+- fix: Better output on startup to aid in debugging connectivity issues.
+- fix: Prevents self referencing table to cause `serverpod generate` to hang.
+- fix: Adds email from Firebase to UserInfo in auth module.
+- fix: Don't print stack trace when Google signin disconnect fails.
+- fix: Return bool from `SessionManager.initizlize()` to indicate if server was reached.
+- fix: Better recovery when parsing yaml-files.
+- chore: Migrates Firebase to new Flutter APIs.
+- chore: Updates dependencies.
+- chore: Refactors CLI tooling.
+
+## 1.0.1
+- Fixes import of generics in subdirectories.
+- Generated enums now respect their subdirectories.
+- Masks out passwords in email debug logging.
+- Replaces deprecated `docker-compose` with `docker compose`
+
 ## 1.0.0
 - First stable release! :D
 - Fixes incorrectly set database index on health metrics.

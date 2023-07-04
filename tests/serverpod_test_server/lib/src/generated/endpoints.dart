@@ -31,22 +31,24 @@ import '../endpoints/signin_required.dart' as _i22;
 import '../endpoints/simple.dart' as _i23;
 import '../endpoints/streaming.dart' as _i24;
 import '../endpoints/streaming_logging.dart' as _i25;
-import 'dart:typed_data' as _i26;
-import 'package:uuid/uuid.dart' as _i27;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i28;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i29;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i30;
-import 'package:serverpod_test_server/src/generated/types.dart' as _i31;
+import '../endpoints/subDir/subSubDir/subsubdir_test_endpoint.dart' as _i26;
+import '../endpoints/subDir/subdir_test_endpoint.dart' as _i27;
+import 'dart:typed_data' as _i28;
+import 'package:uuid/uuid.dart' as _i29;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i30;
+import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i31;
+import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i32;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i33;
 import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
-    as _i32;
-import 'package:serverpod_test_server/src/generated/object_with_object.dart'
-    as _i33;
-import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i34;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i35;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i36;
-import 'package:serverpod_test_module_server/module.dart' as _i37;
-import 'package:serverpod_auth_server/module.dart' as _i38;
+import 'package:serverpod_test_server/src/generated/object_with_object.dart'
+    as _i35;
+import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+    as _i36;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i37;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i38;
+import 'package:serverpod_test_module_server/module.dart' as _i39;
+import 'package:serverpod_auth_server/module.dart' as _i40;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -194,6 +196,18 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'streamingLogging',
+          null,
+        ),
+      'subSubDirTest': _i26.SubSubDirTestEndpoint()
+        ..initialize(
+          server,
+          'subSubDirTest',
+          null,
+        ),
+      'subDirTest': _i27.SubDirTestEndpoint()
+        ..initialize(
+          server,
+          'subDirTest',
           null,
         ),
     };
@@ -432,7 +446,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i26.ByteData?>(),
+              type: _i1.getType<_i28.ByteData?>(),
               nullable: true,
             )
           },
@@ -468,7 +482,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i27.UuidValue?>(),
+              type: _i1.getType<_i29.UuidValue?>(),
               nullable: true,
             )
           },
@@ -507,7 +521,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'byteData': _i1.ParameterDescription(
               name: 'byteData',
-              type: _i1.getType<_i26.ByteData>(),
+              type: _i1.getType<_i28.ByteData>(),
               nullable: false,
             ),
           },
@@ -652,7 +666,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'byteData': _i1.ParameterDescription(
               name: 'byteData',
-              type: _i1.getType<_i26.ByteData>(),
+              type: _i1.getType<_i28.ByteData>(),
               nullable: false,
             ),
           },
@@ -792,7 +806,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i28.CustomClass>(),
+              type: _i1.getType<_i30.CustomClass>(),
               nullable: false,
             )
           },
@@ -811,7 +825,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i28.CustomClass?>(),
+              type: _i1.getType<_i30.CustomClass?>(),
               nullable: true,
             )
           },
@@ -830,7 +844,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i28.CustomClass2>(),
+              type: _i1.getType<_i30.CustomClass2>(),
               nullable: false,
             )
           },
@@ -849,7 +863,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i28.CustomClass2?>(),
+              type: _i1.getType<_i30.CustomClass2?>(),
               nullable: true,
             )
           },
@@ -868,7 +882,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i29.ExternalCustomClass>(),
+              type: _i1.getType<_i31.ExternalCustomClass>(),
               nullable: false,
             )
           },
@@ -887,7 +901,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i29.ExternalCustomClass?>(),
+              type: _i1.getType<_i31.ExternalCustomClass?>(),
               nullable: true,
             )
           },
@@ -906,7 +920,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i30.FreezedCustomClass>(),
+              type: _i1.getType<_i32.FreezedCustomClass>(),
               nullable: false,
             )
           },
@@ -925,7 +939,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i30.FreezedCustomClass?>(),
+              type: _i1.getType<_i32.FreezedCustomClass?>(),
               nullable: true,
             )
           },
@@ -950,7 +964,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<_i31.Types>(),
+              type: _i1.getType<_i33.Types>(),
               nullable: false,
             )
           },
@@ -986,7 +1000,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i32.ObjectWithEnum>(),
+              type: _i1.getType<_i34.ObjectWithEnum>(),
               nullable: false,
             )
           },
@@ -1202,7 +1216,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i33.ObjectWithObject>(),
+              type: _i1.getType<_i35.ObjectWithObject>(),
               nullable: false,
             )
           },
@@ -1319,16 +1333,6 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'exceptionTest',
       endpoint: endpoints['exceptionTest']!,
       methodConnectors: {
-        'throwSerializableException': _i1.MethodConnector(
-          name: 'throwSerializableException',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['exceptionTest'] as _i10.ExceptionTestEndpoint)
-                  .throwSerializableException(session),
-        ),
         'throwNormalException': _i1.MethodConnector(
           name: 'throwNormalException',
           params: {},
@@ -1426,7 +1430,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i34.ObjectFieldScopes>(),
+              type: _i1.getType<_i36.ObjectFieldScopes>(),
               nullable: false,
             )
           },
@@ -1461,7 +1465,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i35.SimpleData?>(),
+              type: _i1.getType<_i37.SimpleData?>(),
               nullable: true,
             )
           },
@@ -1771,7 +1775,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i26.ByteData>>(),
+              type: _i1.getType<List<_i28.ByteData>>(),
               nullable: false,
             )
           },
@@ -1790,7 +1794,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i26.ByteData?>>(),
+              type: _i1.getType<List<_i28.ByteData?>>(),
               nullable: false,
             )
           },
@@ -1809,7 +1813,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i35.SimpleData>>(),
+              type: _i1.getType<List<_i37.SimpleData>>(),
               nullable: false,
             )
           },
@@ -1828,7 +1832,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i35.SimpleData?>>(),
+              type: _i1.getType<List<_i37.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -1847,7 +1851,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i35.SimpleData>?>(),
+              type: _i1.getType<List<_i37.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -1866,7 +1870,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i35.SimpleData?>?>(),
+              type: _i1.getType<List<_i37.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -2133,7 +2137,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<_i36.TestEnum, int>>(),
+              type: _i1.getType<Map<_i38.TestEnum, int>>(),
               nullable: false,
             )
           },
@@ -2152,7 +2156,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i36.TestEnum>>(),
+              type: _i1.getType<Map<String, _i38.TestEnum>>(),
               nullable: false,
             )
           },
@@ -2323,7 +2327,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i26.ByteData>>(),
+              type: _i1.getType<Map<String, _i28.ByteData>>(),
               nullable: false,
             )
           },
@@ -2342,7 +2346,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i26.ByteData?>>(),
+              type: _i1.getType<Map<String, _i28.ByteData?>>(),
               nullable: false,
             )
           },
@@ -2361,7 +2365,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i35.SimpleData>>(),
+              type: _i1.getType<Map<String, _i37.SimpleData>>(),
               nullable: false,
             )
           },
@@ -2380,7 +2384,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i35.SimpleData?>>(),
+              type: _i1.getType<Map<String, _i37.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -2399,7 +2403,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i35.SimpleData>?>(),
+              type: _i1.getType<Map<String, _i37.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -2418,7 +2422,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i35.SimpleData?>?>(),
+              type: _i1.getType<Map<String, _i37.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -2492,7 +2496,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i37.ModuleClass>(),
+              type: _i1.getType<_i39.ModuleClass>(),
               nullable: false,
             )
           },
@@ -2506,6 +2510,17 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['object'],
           ),
+        ),
+        'serializeNestedModuleObject': _i1.MethodConnector(
+          name: 'serializeNestedModuleObject',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['moduleSerialization']
+                      as _i18.ModuleSerializationEndpoint)
+                  .serializeNestedModuleObject(session),
         ),
       },
     );
@@ -2617,7 +2632,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i35.SimpleData>(),
+              type: _i1.getType<_i37.SimpleData>(),
               nullable: false,
             ),
           },
@@ -2641,7 +2656,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i35.SimpleData>(),
+              type: _i1.getType<_i37.SimpleData>(),
               nullable: false,
             ),
           },
@@ -2730,7 +2745,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i35.SimpleData>(),
+              type: _i1.getType<_i37.SimpleData>(),
               nullable: false,
             ),
           },
@@ -2832,8 +2847,40 @@ class Endpoints extends _i1.EndpointDispatch {
       endpoint: endpoints['streamingLogging']!,
       methodConnectors: {},
     );
-    modules['serverpod_test_module'] = _i37.Endpoints()
+    connectors['subSubDirTest'] = _i1.EndpointConnector(
+      name: 'subSubDirTest',
+      endpoint: endpoints['subSubDirTest']!,
+      methodConnectors: {
+        'testMethod': _i1.MethodConnector(
+          name: 'testMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['subSubDirTest'] as _i26.SubSubDirTestEndpoint)
+                  .testMethod(session),
+        )
+      },
+    );
+    connectors['subDirTest'] = _i1.EndpointConnector(
+      name: 'subDirTest',
+      endpoint: endpoints['subDirTest']!,
+      methodConnectors: {
+        'testMethod': _i1.MethodConnector(
+          name: 'testMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['subDirTest'] as _i27.SubDirTestEndpoint)
+                  .testMethod(session),
+        )
+      },
+    );
+    modules['serverpod_test_module'] = _i39.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i38.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i40.Endpoints()..initializeEndpoints(server);
   }
 }

@@ -85,54 +85,73 @@ class Server {
   /// Starts the server.
   Future<void> start() async {
     if (securityContext != null) {
-      await HttpServer.bindSecure(
-              InternetAddress.anyIPv6, port, securityContext!)
-          .then(_runServer, onError: (e, StackTrace stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind secure socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      });
-    } else {
-      await HttpServer.bind(InternetAddress.anyIPv6, port).then(_runServer,
-          onError: (e, StackTrace stackTrace) {
+      try {
+        var httpServer = await HttpServer.bindSecure(
+          InternetAddress.anyIPv6,
+          port,
+          securityContext!,
+        );
+        _runServer(httpServer);
+      } catch (e, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
-      });
+      }
+    } else {
+      try {
+        var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
+        _runServer(httpServer);
+      } catch (e, stackTrace) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+      }
     }
 
     _running = true;
     stdout.writeln('$name listening on port $port');
   }
 
-  void _runServer(HttpServer httpServer) {
+  void _runServer(HttpServer httpServer) async {
+    serverpod.logVerbose(
+      'runServer address: ${httpServer.address}, port: ${httpServer.port}',
+    );
+
     _httpServer = httpServer;
     httpServer.autoCompress = true;
-    httpServer.listen(
-      (HttpRequest request) {
+
+    try {
+      await for (var request in httpServer) {
+        serverpod.logVerbose(
+          'received request: ${request.method} ${request.uri.path}',
+        );
+
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
           stderr.writeln(
-              '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.');
+            '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.',
+          );
           stderr.writeln('$e');
           stderr.writeln('$stackTrace');
         }
-      },
-      onError: (e, StackTrace stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      },
-    ).onDone(() {
-      stdout.writeln('$name stopped');
-    });
+      }
+    } catch (e, stackTrace) {
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+    }
+
+    stdout.writeln('$name stopped');
   }
 
-  Future<void> _handleRequest(HttpRequest request) async {
+  void _handleRequest(HttpRequest request) async {
+    serverpod
+        .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
+
     // Set Access-Control-Allow-Origin, required for Flutter web.
     request.response.headers.add('Access-Control-Allow-Origin', '*');
 

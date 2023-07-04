@@ -1,0 +1,7 @@
+class: DatabaseMigrationWarning
+fields:
+  type: DatabaseMigrationWarningType
+  message: String
+  table: String
+  columns: List<String>
+  destrucive: bool

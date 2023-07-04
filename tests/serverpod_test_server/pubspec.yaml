@@ -6,7 +6,7 @@ description: Test server for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 dependencies:
   http: ^0.13.5
   serverpod:
@@ -23,8 +23,11 @@ dependencies:
 
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.21.4
+  lints: ^2.0.1
+  test: ^1.24.2
+  path: ^1.8.2
+  serverpod_cli:
+    path: ../../tools/serverpod_cli
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:

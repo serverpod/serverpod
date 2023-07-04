@@ -1153,4 +1153,15 @@ void main() {
       await client.failedCalls.slowCall();
     });
   });
+
+  group('Sub directories', () {
+    test('Endpoint in sub directory', () async {
+      var result = await client.subDirTest.testMethod();
+      expect(result, 'subDir');
+    });
+    test('Endpoint in nested sub directory', () async {
+      var result = await client.subSubDirTest.testMethod();
+      expect(result, 'subSubDir');
+    });
+  });
 }

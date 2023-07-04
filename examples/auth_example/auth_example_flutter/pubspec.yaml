@@ -18,8 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  flutter: ">=3.3.0"
+  sdk: ">=2.17.0 <4.0.0"
+  flutter: ">=3.7.0"
 
 dependencies:
   flutter:
@@ -28,18 +28,20 @@ dependencies:
     path: ../../../packages/serverpod_flutter
   auth_example_client:
     path: ../auth_example_client
-  
+
   serverpod_auth_email_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
   serverpod_auth_shared_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_auth_google_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter
+  serverpod_auth_apple_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
 
 dev_dependencies:
   flutter_lints: ^2.0.1

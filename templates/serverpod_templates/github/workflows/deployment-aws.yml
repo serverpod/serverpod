@@ -65,7 +65,7 @@ jobs:
           TARGET="${TARGET:=${GITHUB_REF##*-}}"
           echo "Deploying to target: $TARGET"
           mkdir -p vendor
-          cp "${PROJECT_NAME}_server/aws/scripts/appspec.yml" appspec.yml
+          cp "${PROJECT_NAME}_server/deploy/aws/scripts/appspec.yml" appspec.yml
           zip -r deployment.zip .
           aws s3 cp deployment.zip "s3://${DEPLOYMENT_BUCKET}/deployment.zip"
           aws deploy create-deployment \

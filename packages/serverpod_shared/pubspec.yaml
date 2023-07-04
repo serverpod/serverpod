@@ -3,19 +3,20 @@
 publish_to: none
 
 name: serverpod_shared
-version: 1.0.0
+version: 1.1.0
 description: Severpod code that is shared between serverpod and tooling.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  yaml: ^3.1.0
-  serverpod_client: #^1.0.0
+  yaml: ^3.1.1
+  super_string: ^1.0.3
+  serverpod_client: #1.1.0
     path: ../serverpod_client
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1

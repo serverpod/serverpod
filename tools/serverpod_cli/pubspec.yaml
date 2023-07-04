@@ -3,38 +3,48 @@
 publish_to: none
 
 name: serverpod_cli
-version: 1.0.0
+version: 1.1.0
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  archive: ^3.1.2
-  args: ^2.0.0
+  archive: ^3.3.7
+  args: ^2.4.0
   ci: ^0.1.0
-  code_builder: ^4.3.0
+  code_builder: ^4.4.0
   colorize: ^3.0.0
-  dart_style: ^2.2.4
-  http: ^0.13.3
+  dart_style: ^2.3.0
+  http: ^0.13.5
   intl: ^0.17.0
-  recase: ^4.0.0
+  recase: ^4.1.0
   built_collection: ^5.1.1
-  source_span: ^1.9.1
+  package_config: ^2.1.0
+  pubspec_parse: ^1.2.2
+  source_span: ^1.10.0
   super_string: ^1.0.3
-  watcher: ^1.0.0
-  analyzer: ^4.7.0
-  path: ^1.8.0
-  uuid: ^3.0.5
-  yaml: ^3.1.0
-  serverpod_shared: #^1.0.0
+  watcher: ^1.0.2
+  analyzer: ^5.13.0
+  path: ^1.8.2
+  pub_api_client: ^2.4.0
+  uuid: ^3.0.7
+  yaml: ^3.1.1
+  serverpod_shared: #1.1.0
     path: ../../packages/serverpod_shared
-  serverpod_service_client: #^1.0.0
+  serverpod_service_client: #1.1.0
     path: ../../packages/serverpod_service_client
+  async: ^2.11.0
+  meta: ^1.8.0
+  json_rpc_2: ^3.0.2
+  stream_channel: ^2.1.1
+  lsp_server: ^0.1.0
+  pub_semver: ^2.1.4
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1
+  test: ^1.24.2
 
 executables:
   serverpod: serverpod_cli

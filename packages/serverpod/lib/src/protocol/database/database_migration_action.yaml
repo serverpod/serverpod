@@ -1,0 +1,6 @@
+class: DatabaseMigrationAction
+fields:
+  type: DatabaseMigrationActionType
+  deleteTable: String?
+  alterTable: TableMigration?
+  createTable: TableDefinition?

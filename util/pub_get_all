@@ -12,6 +12,18 @@ echo "serverpod"
 cd $BASE/packages/serverpod
 dart pub get
 
+echo "examples/auth_example/auth_example_client"
+cd $BASE/examples/auth_example/auth_example_client
+dart pub get
+
+echo "examples/auth_example/auth_example_flutter"
+cd $BASE/examples/auth_example/auth_example_flutter
+dart pub get
+
+echo "examples/auth_example/auth_example_server"
+cd $BASE/examples/auth_example/auth_example_server
+dart pub get
+
 echo "examples/chat/chat_client"
 cd $BASE/examples/chat/chat_client
 dart pub get
@@ -56,6 +68,10 @@ dart pub get
 
 echo "\nserverpod_test_server"
 cd $BASE/tests/serverpod_test_server
+dart pub get
+
+echo "\nserverpod_test_shared"
+cd $BASE/tests/serverpod_test_shared
 dart pub get
 
 echo "\nserverpod_test_module_client"
@@ -136,4 +152,13 @@ dart pub get
 
 echo "\nserverpod_cloud_storage_s3"
 cd $BASE/integrations/serverpod_cloud_storage_s3
+dart pub get
+
+echo "\nserverpod_cloud_storage_gcp"
+cd $BASE/integrations/serverpod_cloud_storage_gcp
+dart pub get
+
+# Tooling
+echo "\nserverpod_cli"
+cd $BASE/tools/serverpod_cli
 dart pub get

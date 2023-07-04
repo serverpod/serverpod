@@ -17,8 +17,11 @@ doc/api/
 .DS_Store
 .atom/
 .idea
+.vscode/
+.vscode-test/
 .packages
 .pub/
+.fvm/
 build/
 ios/.generated/
 pubspec.lock
@@ -32,3 +35,4 @@ tests/temp
 templates/serverpod_templates/projectname_flutter/android
 templates/serverpod_templates/projectname_flutter/ios
 templates/serverpod_templates/projectname_flutter/macos
+templates/serverpod_templates/projectname_server/deploy/gcp/.terraform

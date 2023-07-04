@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
+import 'package:serverpod/src/database/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -17,7 +18,6 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'method_lookup.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -48,6 +48,9 @@ class Serverpod {
 
   /// The servers run mode as specified in [ServerpodRunMode].
   String get runMode => _runMode;
+
+  /// The parsed runtime arguments passed to Serverpod at startup.
+  late final CommandLineArgs commandLineArgs;
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
@@ -96,6 +99,9 @@ class Serverpod {
 
   /// The web server managed by this [Serverpod].
   late WebServer webServer;
+
+  /// The migration manager used by this [Serverpod].
+  late MigrationManager migrationManager;
 
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
@@ -188,10 +194,6 @@ class Serverpod {
     }
   }
 
-  /// Maps [Endpoint] methods to integer ids. Persistent through restarts and
-  /// updates to the server, and consistent between servers in the same cluster.
-  final MethodLookup methodLookup = MethodLookup('generated/protocol.yaml');
-
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
 
@@ -212,31 +214,22 @@ class Serverpod {
   }) {
     _internalSerializationManager = internal.Protocol();
 
-    // Create a temporary log manager with default settings, until we have loaded settings from the database.
+    // Create a temporary log manager with default settings, until we have
+    // loaded settings from the database.
     _logManager = LogManager(_defaultRuntimeSettings);
 
-    // Read command line arguments
-    try {
-      var argParser = ArgParser()
-        ..addOption('mode',
-            abbr: 'm',
-            allowed: [
-              ServerpodRunMode.development,
-              ServerpodRunMode.staging,
-              ServerpodRunMode.production,
-            ],
-            defaultsTo: ServerpodRunMode.development)
-        ..addOption('server-id', abbr: 'i', defaultsTo: 'default');
-      var results = argParser.parse(args);
-      _runMode = results['mode'];
-      serverId = results['server-id'];
-    } catch (e) {
-      stdout.writeln('Unknown run mode, defaulting to development');
-      _runMode = ServerpodRunMode.development;
-    }
+    // Read command line arguments.
+    commandLineArgs = CommandLineArgs(args);
+    _runMode = commandLineArgs.runMode;
+    serverId = commandLineArgs.serverId;
 
     // Load passwords
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+
+    if (_passwords.isEmpty) {
+      stderr.writeln('Failed to load passwords. Serverpod cannot not start.');
+      exit(1);
+    }
 
     // Load config
     config = ServerpodConfig(_runMode, serverId, _passwords);
@@ -276,20 +269,29 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     // Setup future calls
-    _futureCallManager = FutureCallManager(server, serializationManager);
+    _futureCallManager = FutureCallManager(
+      server,
+      serializationManager,
+      _onCompletedFutureCalls,
+    );
 
     _instance = this;
 
     // Setup health check manager
-    _healthCheckManager = HealthCheckManager(this);
+    _healthCheckManager = HealthCheckManager(
+      this,
+      _onCompletedHealthChecks,
+    );
 
     // Create web server.
     webServer = WebServer(serverpod: this);
 
-    // Print version
+    // Print version and runtime arguments.
     stdout.writeln(
-      'SERVERPOD version: $serverpodVersion mode: $_runMode time: ${DateTime.now().toUtc()}',
+      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
+    stdout.writeln(commandLineArgs.toString());
+    logVerbose(config.toString());
   }
 
   /// Starts the Serverpod and all [Server]s that it manages.
@@ -303,54 +305,121 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      // Runtime settings
-      var session = await createSession(enableLogging: false);
-      try {
-        _runtimeSettings =
-            await session.db.findSingleRow<internal.RuntimeSettings>();
-        if (_runtimeSettings == null) {
-          // Store default settings
-          _runtimeSettings = _defaultRuntimeSettings;
-          await session.db.insert(_runtimeSettings!);
+      // Load runtime settings and check connection to the database.
+      bool databaseConnectionIsUp = false;
+      bool printedDatabaseConnectionError = false;
+
+      while (!databaseConnectionIsUp) {
+        var session = await createSession(enableLogging: false);
+        try {
+          // Initialize migration manager.
+          logVerbose('Initializing migration manager.');
+          migrationManager = MigrationManager();
+          await migrationManager.initialize(session);
+
+          if (commandLineArgs.applyMigrations) {
+            logVerbose('Applying database migrations.');
+            await migrationManager.migrateToLatest(session);
+          }
+
+          logVerbose('Verifying database integrity.');
+          await migrationManager.verifyDatabaseIntegrity(session);
+
+          // We successfully connected to the database.
+          databaseConnectionIsUp = true;
+        } catch (e, stackTrace) {
+          // Write connection error to stderr.
+          stderr.writeln(
+            'Failed to connect to the database. Retrying in 10 seconds. $e',
+          );
+          stderr.writeln('$stackTrace');
+          if (!printedDatabaseConnectionError) {
+            stderr.writeln('Database configuration:');
+            stderr.writeln(config.database.toString());
+            printedDatabaseConnectionError = true;
+          }
+
+          await Future.delayed(const Duration(seconds: 10));
         }
-        _logManager = LogManager(_runtimeSettings!);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Failed to connect to database.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
+
+        try {
+          logVerbose('Loading runtime settings.');
+
+          _runtimeSettings =
+              await session.db.findSingleRow<internal.RuntimeSettings>();
+        } catch (e) {
+          stderr.writeln(
+            'Failed to load runtime settings. $e',
+          );
+        }
+        try {
+          if (_runtimeSettings == null) {
+            logVerbose(
+              'Runtime settings not found, creating default settings.',
+            );
+
+            // Store default settings.
+            _runtimeSettings = _defaultRuntimeSettings;
+            await session.db.insert(_runtimeSettings!);
+          } else {
+            logVerbose('Runtime settings loaded.');
+          }
+        } catch (e) {
+          stderr.writeln(
+            'Failed to store runtime settings. $e',
+          );
+        }
+
+        await session.close();
       }
 
-      try {
-        await methodLookup.load(session);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to load method lookup.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      }
-
-      await session.close();
+      // Setup log manager.
+      _logManager = LogManager(_runtimeSettings!);
 
       // Connect to Redis
       if (redisController != null) {
+        logVerbose('Connecting to Redis.');
         await redisController!.start();
+      } else {
+        logVerbose('Redis is disabled, skipping.');
       }
 
-      // Start servers
-      await _startServiceServer();
+      // Start servers.
+      if (commandLineArgs.role == ServerpodRole.monolith ||
+          commandLineArgs.role == ServerpodRole.serverless) {
+        // Serverpod Insights.
+        await _startServiceServer();
 
-      await server.start();
+        // Main API server.
+        await server.start();
 
-      if (webServer.routes.isNotEmpty) {
-        await webServer.start();
+        /// Web server.
+        if (webServer.routes.isNotEmpty) {
+          logVerbose('Starting web server.');
+          await webServer.start();
+        } else {
+          logVerbose('No routes configured for web server, skipping.');
+        }
+
+        logVerbose('All servers started.');
       }
 
-      // Start future calls
-      _futureCallManager.start();
+      // Start maintenance tasks. If we are running in maintenance mode, we
+      // will only run the maintenance tasks once.
+      if (commandLineArgs.role == ServerpodRole.monolith ||
+          commandLineArgs.role == ServerpodRole.maintenance) {
+        logVerbose('Starting maintenance tasks.');
 
-      // Start health check manager
-      await _healthCheckManager.start();
+        // Start future calls
+        _futureCallManager.start();
+
+        // Start health check manager
+        await _healthCheckManager.start();
+      }
+
+      logVerbose('Serverpod start complete.');
+
+      // TODO: Run maintenance tasks once if in maintenance role.
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?
@@ -360,6 +429,28 @@ class Serverpod {
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
     });
+  }
+
+  bool _completedHealthChecks = false;
+  bool _completedFutureCalls = false;
+
+  void _onCompletedHealthChecks() {
+    logVerbose('Health checks completed.');
+    _completedHealthChecks = true;
+    _checkMaintenanceTasksCompletion();
+  }
+
+  void _onCompletedFutureCalls() {
+    logVerbose('Future calls completed.');
+    _completedFutureCalls = true;
+    _checkMaintenanceTasksCompletion();
+  }
+
+  void _checkMaintenanceTasksCompletion() {
+    if (_completedFutureCalls && _completedHealthChecks) {
+      stdout.writeln('All maintenance tasks completed. Exiting.');
+      exit(0);
+    }
   }
 
   Future<void> _startServiceServer() async {
@@ -468,5 +559,13 @@ class Serverpod {
     _futureCallManager.stop();
     _healthCheckManager.stop;
     exit(0);
+  }
+
+  /// Logs a message to the console if the logging command line argument is set
+  /// to verbose.
+  void logVerbose(String message) {
+    if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+      stdout.writeln(message);
+    }
   }
 }

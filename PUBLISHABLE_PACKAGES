@@ -17,3 +17,4 @@ modules/serverpod_chat/serverpod_chat_server
 modules/serverpod_chat/serverpod_chat_client
 modules/serverpod_chat/serverpod_chat_flutter
 integrations/serverpod_cloud_storage_s3
+integrations/serverpod_cloud_storage_gcp

@@ -9,3 +9,5 @@ insights:
   - checkHealth:
   - getHealthData:
   - hotReload:
+  - getTargetDatabaseDefinition:
+  - getLiveDatabaseDefinition:

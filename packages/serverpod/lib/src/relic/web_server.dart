@@ -50,7 +50,7 @@ class WebServer {
   Future<void> start() async {
     await templates.loadAll();
 
-    await runZonedGuarded(
+    runZonedGuarded(
       _start,
       (e, stackTrace) {
         // Last resort error handling
@@ -60,25 +60,24 @@ class WebServer {
     );
   }
 
-  Future<void> _start() async {
-    await HttpServer.bind(InternetAddress.anyIPv6, _port)
-        .then((HttpServer httpServer) {
-      _httpServer = httpServer;
-      httpServer.autoCompress = true;
-      httpServer.listen((HttpRequest request) {
+  void _start() async {
+    var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
+    _httpServer = httpServer;
+    httpServer.autoCompress = true;
+
+    stdout.writeln('Webserver listening on port $_port');
+
+    try {
+      await for (var request in httpServer) {
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
           logError(e, stackTrace: stackTrace);
         }
-      }, onError: (e, StackTrace stackTrace) {
-        logError(e, stackTrace: stackTrace);
-      }).onDone(() {
-        stdout.writeln('Server stopped.');
-      });
-    });
-
-    stdout.writeln('Webserver listening on port $_port');
+      }
+    } catch (e, stackTrace) {
+      logError(e, stackTrace: stackTrace);
+    }
   }
 
   void _handleRequest(HttpRequest request) async {

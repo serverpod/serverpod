@@ -26,11 +26,14 @@ import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i14;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i15;
 import 'package:serverpod_test_module_client/module.dart' as _i16;
-import 'dart:io' as _i17;
-import 'protocol.dart' as _i18;
+import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+    as _i17;
+import 'dart:io' as _i18;
+import 'protocol.dart' as _i19;
 
-class _EndpointAsyncTasks extends _i1.EndpointRef {
-  _EndpointAsyncTasks(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointAsyncTasks extends _i1.EndpointRef {
+  EndpointAsyncTasks(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'asyncTasks';
@@ -56,8 +59,9 @@ class _EndpointAsyncTasks extends _i1.EndpointRef {
       );
 }
 
-class _EndpointAuthentication extends _i1.EndpointRef {
-  _EndpointAuthentication(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointAuthentication extends _i1.EndpointRef {
+  EndpointAuthentication(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'authentication';
@@ -107,8 +111,9 @@ class _EndpointAuthentication extends _i1.EndpointRef {
       );
 }
 
-class _EndpointBasicTypes extends _i1.EndpointRef {
-  _EndpointBasicTypes(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointBasicTypes extends _i1.EndpointRef {
+  EndpointBasicTypes(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'basicTypes';
@@ -168,8 +173,9 @@ class _EndpointBasicTypes extends _i1.EndpointRef {
       );
 }
 
-class _EndpointCloudStorage extends _i1.EndpointRef {
-  _EndpointCloudStorage(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointCloudStorage extends _i1.EndpointRef {
+  EndpointCloudStorage(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'cloudStorage';
@@ -236,8 +242,9 @@ class _EndpointCloudStorage extends _i1.EndpointRef {
       );
 }
 
-class _EndpointS3CloudStorage extends _i1.EndpointRef {
-  _EndpointS3CloudStorage(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointS3CloudStorage extends _i1.EndpointRef {
+  EndpointS3CloudStorage(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 's3CloudStorage';
@@ -298,8 +305,9 @@ class _EndpointS3CloudStorage extends _i1.EndpointRef {
       );
 }
 
-class _EndpointCustomTypes extends _i1.EndpointRef {
-  _EndpointCustomTypes(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointCustomTypes extends _i1.EndpointRef {
+  EndpointCustomTypes(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'customTypes';
@@ -367,8 +375,9 @@ class _EndpointCustomTypes extends _i1.EndpointRef {
       );
 }
 
-class _EndpointBasicDatabase extends _i1.EndpointRef {
-  _EndpointBasicDatabase(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointBasicDatabase extends _i1.EndpointRef {
+  EndpointBasicDatabase(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'basicDatabase';
@@ -509,8 +518,9 @@ class _EndpointBasicDatabase extends _i1.EndpointRef {
       );
 }
 
-class _EndpointTransactionsDatabase extends _i1.EndpointRef {
-  _EndpointTransactionsDatabase(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointTransactionsDatabase extends _i1.EndpointRef {
+  EndpointTransactionsDatabase(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'transactionsDatabase';
@@ -537,18 +547,12 @@ class _EndpointTransactionsDatabase extends _i1.EndpointRef {
       );
 }
 
-class _EndpointExceptionTest extends _i1.EndpointRef {
-  _EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointExceptionTest extends _i1.EndpointRef {
+  EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'exceptionTest';
-
-  _i2.Future<String> throwSerializableException() =>
-      caller.callServerEndpoint<String>(
-        'exceptionTest',
-        'throwSerializableException',
-        {},
-      );
 
   _i2.Future<String> throwNormalException() =>
       caller.callServerEndpoint<String>(
@@ -572,8 +576,9 @@ class _EndpointExceptionTest extends _i1.EndpointRef {
       );
 }
 
-class _EndpointFailedCalls extends _i1.EndpointRef {
-  _EndpointFailedCalls(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointFailedCalls extends _i1.EndpointRef {
+  EndpointFailedCalls(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'failedCalls';
@@ -610,8 +615,9 @@ class _EndpointFailedCalls extends _i1.EndpointRef {
       );
 }
 
-class _EndpointFieldScopes extends _i1.EndpointRef {
-  _EndpointFieldScopes(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointFieldScopes extends _i1.EndpointRef {
+  EndpointFieldScopes(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'fieldScopes';
@@ -631,8 +637,9 @@ class _EndpointFieldScopes extends _i1.EndpointRef {
       );
 }
 
-class _EndpointFutureCalls extends _i1.EndpointRef {
-  _EndpointFutureCalls(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointFutureCalls extends _i1.EndpointRef {
+  EndpointFutureCalls(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'futureCalls';
@@ -645,8 +652,9 @@ class _EndpointFutureCalls extends _i1.EndpointRef {
       );
 }
 
-class _EndpointListParameters extends _i1.EndpointRef {
-  _EndpointListParameters(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointListParameters extends _i1.EndpointRef {
+  EndpointListParameters(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'listParameters';
@@ -825,8 +833,9 @@ class _EndpointListParameters extends _i1.EndpointRef {
       );
 }
 
-class _EndpointLogging extends _i1.EndpointRef {
-  _EndpointLogging(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointLogging extends _i1.EndpointRef {
+  EndpointLogging(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'logging';
@@ -859,8 +868,9 @@ class _EndpointLogging extends _i1.EndpointRef {
       );
 }
 
-class _EndpointLoggingDisabled extends _i1.EndpointRef {
-  _EndpointLoggingDisabled(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointLoggingDisabled extends _i1.EndpointRef {
+  EndpointLoggingDisabled(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'loggingDisabled';
@@ -872,8 +882,9 @@ class _EndpointLoggingDisabled extends _i1.EndpointRef {
       );
 }
 
-class _EndpointMapParameters extends _i1.EndpointRef {
-  _EndpointMapParameters(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointMapParameters extends _i1.EndpointRef {
+  EndpointMapParameters(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'mapParameters';
@@ -1067,8 +1078,9 @@ class _EndpointMapParameters extends _i1.EndpointRef {
       );
 }
 
-class _EndpointModuleSerialization extends _i1.EndpointRef {
-  _EndpointModuleSerialization(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointModuleSerialization extends _i1.EndpointRef {
+  EndpointModuleSerialization(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'moduleSerialization';
@@ -1085,10 +1097,18 @@ class _EndpointModuleSerialization extends _i1.EndpointRef {
         'modifyModuleObject',
         {'object': object},
       );
+
+  _i2.Future<_i17.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i17.ModuleDatatype>(
+        'moduleSerialization',
+        'serializeNestedModuleObject',
+        {},
+      );
 }
 
-class _EndpointNamedParameters extends _i1.EndpointRef {
-  _EndpointNamedParameters(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointNamedParameters extends _i1.EndpointRef {
+  EndpointNamedParameters(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'namedParameters';
@@ -1124,8 +1144,9 @@ class _EndpointNamedParameters extends _i1.EndpointRef {
       );
 }
 
-class _EndpointOptionalParameters extends _i1.EndpointRef {
-  _EndpointOptionalParameters(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointOptionalParameters extends _i1.EndpointRef {
+  EndpointOptionalParameters(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'optionalParameters';
@@ -1138,8 +1159,9 @@ class _EndpointOptionalParameters extends _i1.EndpointRef {
       );
 }
 
-class _EndpointRedis extends _i1.EndpointRef {
-  _EndpointRedis(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointRedis extends _i1.EndpointRef {
+  EndpointRedis(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'redis';
@@ -1217,8 +1239,9 @@ class _EndpointRedis extends _i1.EndpointRef {
       );
 }
 
-class _EndpointSignInRequired extends _i1.EndpointRef {
-  _EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointSignInRequired extends _i1.EndpointRef {
+  EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'signInRequired';
@@ -1232,8 +1255,9 @@ class _EndpointSignInRequired extends _i1.EndpointRef {
 
 /// A simple endpoint that modifies a global integer. This class is meant for
 /// testing and the documentation has multiple lines.
-class _EndpointSimple extends _i1.EndpointRef {
-  _EndpointSimple(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointSimple extends _i1.EndpointRef {
+  EndpointSimple(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'simple';
@@ -1267,18 +1291,48 @@ class _EndpointSimple extends _i1.EndpointRef {
       );
 }
 
-class _EndpointStreaming extends _i1.EndpointRef {
-  _EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointStreaming extends _i1.EndpointRef {
+  EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'streaming';
 }
 
-class _EndpointStreamingLogging extends _i1.EndpointRef {
-  _EndpointStreamingLogging(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointStreamingLogging extends _i1.EndpointRef {
+  EndpointStreamingLogging(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'streamingLogging';
+}
+
+/// {@category Endpoint}
+class EndpointSubSubDirTest extends _i1.EndpointRef {
+  EndpointSubSubDirTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'subSubDirTest';
+
+  _i2.Future<String> testMethod() => caller.callServerEndpoint<String>(
+        'subSubDirTest',
+        'testMethod',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointSubDirTest extends _i1.EndpointRef {
+  EndpointSubDirTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'subDirTest';
+
+  _i2.Future<String> testMethod() => caller.callServerEndpoint<String>(
+        'subDirTest',
+        'testMethod',
+        {},
+      );
 }
 
 class _Modules {
@@ -1295,88 +1349,94 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i17.SecurityContext? context,
+    _i18.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i18.Protocol(),
+          _i19.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
-    asyncTasks = _EndpointAsyncTasks(this);
-    authentication = _EndpointAuthentication(this);
-    basicTypes = _EndpointBasicTypes(this);
-    cloudStorage = _EndpointCloudStorage(this);
-    s3CloudStorage = _EndpointS3CloudStorage(this);
-    customTypes = _EndpointCustomTypes(this);
-    basicDatabase = _EndpointBasicDatabase(this);
-    transactionsDatabase = _EndpointTransactionsDatabase(this);
-    exceptionTest = _EndpointExceptionTest(this);
-    failedCalls = _EndpointFailedCalls(this);
-    fieldScopes = _EndpointFieldScopes(this);
-    futureCalls = _EndpointFutureCalls(this);
-    listParameters = _EndpointListParameters(this);
-    logging = _EndpointLogging(this);
-    loggingDisabled = _EndpointLoggingDisabled(this);
-    mapParameters = _EndpointMapParameters(this);
-    moduleSerialization = _EndpointModuleSerialization(this);
-    namedParameters = _EndpointNamedParameters(this);
-    optionalParameters = _EndpointOptionalParameters(this);
-    redis = _EndpointRedis(this);
-    signInRequired = _EndpointSignInRequired(this);
-    simple = _EndpointSimple(this);
-    streaming = _EndpointStreaming(this);
-    streamingLogging = _EndpointStreamingLogging(this);
+    asyncTasks = EndpointAsyncTasks(this);
+    authentication = EndpointAuthentication(this);
+    basicTypes = EndpointBasicTypes(this);
+    cloudStorage = EndpointCloudStorage(this);
+    s3CloudStorage = EndpointS3CloudStorage(this);
+    customTypes = EndpointCustomTypes(this);
+    basicDatabase = EndpointBasicDatabase(this);
+    transactionsDatabase = EndpointTransactionsDatabase(this);
+    exceptionTest = EndpointExceptionTest(this);
+    failedCalls = EndpointFailedCalls(this);
+    fieldScopes = EndpointFieldScopes(this);
+    futureCalls = EndpointFutureCalls(this);
+    listParameters = EndpointListParameters(this);
+    logging = EndpointLogging(this);
+    loggingDisabled = EndpointLoggingDisabled(this);
+    mapParameters = EndpointMapParameters(this);
+    moduleSerialization = EndpointModuleSerialization(this);
+    namedParameters = EndpointNamedParameters(this);
+    optionalParameters = EndpointOptionalParameters(this);
+    redis = EndpointRedis(this);
+    signInRequired = EndpointSignInRequired(this);
+    simple = EndpointSimple(this);
+    streaming = EndpointStreaming(this);
+    streamingLogging = EndpointStreamingLogging(this);
+    subSubDirTest = EndpointSubSubDirTest(this);
+    subDirTest = EndpointSubDirTest(this);
     modules = _Modules(this);
   }
 
-  late final _EndpointAsyncTasks asyncTasks;
+  late final EndpointAsyncTasks asyncTasks;
 
-  late final _EndpointAuthentication authentication;
+  late final EndpointAuthentication authentication;
 
-  late final _EndpointBasicTypes basicTypes;
+  late final EndpointBasicTypes basicTypes;
 
-  late final _EndpointCloudStorage cloudStorage;
+  late final EndpointCloudStorage cloudStorage;
 
-  late final _EndpointS3CloudStorage s3CloudStorage;
+  late final EndpointS3CloudStorage s3CloudStorage;
 
-  late final _EndpointCustomTypes customTypes;
+  late final EndpointCustomTypes customTypes;
 
-  late final _EndpointBasicDatabase basicDatabase;
+  late final EndpointBasicDatabase basicDatabase;
 
-  late final _EndpointTransactionsDatabase transactionsDatabase;
+  late final EndpointTransactionsDatabase transactionsDatabase;
 
-  late final _EndpointExceptionTest exceptionTest;
+  late final EndpointExceptionTest exceptionTest;
 
-  late final _EndpointFailedCalls failedCalls;
+  late final EndpointFailedCalls failedCalls;
 
-  late final _EndpointFieldScopes fieldScopes;
+  late final EndpointFieldScopes fieldScopes;
 
-  late final _EndpointFutureCalls futureCalls;
+  late final EndpointFutureCalls futureCalls;
 
-  late final _EndpointListParameters listParameters;
+  late final EndpointListParameters listParameters;
 
-  late final _EndpointLogging logging;
+  late final EndpointLogging logging;
 
-  late final _EndpointLoggingDisabled loggingDisabled;
+  late final EndpointLoggingDisabled loggingDisabled;
 
-  late final _EndpointMapParameters mapParameters;
+  late final EndpointMapParameters mapParameters;
 
-  late final _EndpointModuleSerialization moduleSerialization;
+  late final EndpointModuleSerialization moduleSerialization;
 
-  late final _EndpointNamedParameters namedParameters;
+  late final EndpointNamedParameters namedParameters;
 
-  late final _EndpointOptionalParameters optionalParameters;
+  late final EndpointOptionalParameters optionalParameters;
 
-  late final _EndpointRedis redis;
+  late final EndpointRedis redis;
 
-  late final _EndpointSignInRequired signInRequired;
+  late final EndpointSignInRequired signInRequired;
 
-  late final _EndpointSimple simple;
+  late final EndpointSimple simple;
 
-  late final _EndpointStreaming streaming;
+  late final EndpointStreaming streaming;
 
-  late final _EndpointStreamingLogging streamingLogging;
+  late final EndpointStreamingLogging streamingLogging;
+
+  late final EndpointSubSubDirTest subSubDirTest;
+
+  late final EndpointSubDirTest subDirTest;
 
   late final _Modules modules;
 
@@ -1406,6 +1466,8 @@ class Client extends _i1.ServerpodClient {
         'simple': simple,
         'streaming': streaming,
         'streamingLogging': streamingLogging,
+        'subSubDirTest': subSubDirTest,
+        'subDirTest': subDirTest,
       };
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
