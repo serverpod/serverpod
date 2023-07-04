@@ -7,12 +7,13 @@ import 'package:yaml/yaml.dart';
 class Restrictions {
   String documentType;
   YamlMap documentContents;
-  Set<SerializableEntityDefinition> entities;
+  List<SerializableEntityDefinition>? protocolEntities;
 
   Restrictions({
     required this.documentType,
     required this.documentContents,
-    this.entities = const {},
+    required CodeAnalysisCollector collector,
+    this.protocolEntities,
   });
 
   void validateClassName(
@@ -34,6 +35,24 @@ class Restrictions {
         span,
       ));
     }
+
+    // TODO n-squared time complexity when validating all protocol files.
+    if (_countClassNames(content, protocolEntities) > 1) {
+      collector.addError(SourceSpanException(
+        'The $documentType name "$content" is already used by another protocol class.',
+        span,
+      ));
+    }
+  }
+
+  int _countClassNames(
+      String className, List<SerializableEntityDefinition>? protocolEntities) {
+    if (protocolEntities == null) return 0;
+
+    return protocolEntities.fold(
+      0,
+      (sum, entity) => sum += entity.className == className ? 1 : 0,
+    );
   }
 
   void validateTableName(
