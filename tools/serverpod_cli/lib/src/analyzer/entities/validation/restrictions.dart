@@ -36,6 +36,7 @@ class Restrictions {
       ));
     }
 
+    // TODO n-squared time complexity when validating all protocol files.
     if (_countClassNames(content, protocolEntities) > 1) {
       collector.addError(SourceSpanException(
         'The $documentType name "$content" is already used by another protocol class.',
