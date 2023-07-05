@@ -9,15 +9,28 @@ void main() {
   var testAssetsPath =
       p.join('test', 'serverpod_packages_version_check', 'test_assets');
   group('performServerpodPackagesAndCliVersionCheck', () {
-    test(
-        'performServerpodPackagesAndCliVersionCheck() when there are no pubspec files',
-        () {
-      var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-        Version(1, 1, 0),
-        Directory(p.join(testAssetsPath, 'empty_folder')),
-      );
+    group('With empty folder', () {
+      var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
+      setUp(() {
+        if (!emptyFolder.existsSync()) {
+          emptyFolder.create();
+        }
+      });
 
-      expect(packageWarnings.isEmpty, equals(true));
+      tearDown(() {
+        if (emptyFolder.existsSync()) {
+          emptyFolder.delete();
+        }
+      });
+
+      test('performServerpodPackagesAndCliVersionCheck()', () {
+        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+          Version(1, 1, 0),
+          emptyFolder,
+        );
+
+        expect(packageWarnings.isEmpty, equals(true));
+      });
     });
 
     group('With explicit serverpod package version', () {
