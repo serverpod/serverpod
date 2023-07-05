@@ -18,8 +18,10 @@ doc/api/
 .atom/
 .idea
 .vscode/
+.vscode-test/
 .packages
 .pub/
+.fvm/
 build/
 ios/.generated/
 pubspec.lock

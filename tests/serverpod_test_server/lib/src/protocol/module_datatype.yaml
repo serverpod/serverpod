@@ -1,0 +1,5 @@
+class: ModuleDatatype
+fields:
+  entity: module:module:ModuleClass
+  list: List<module:module:ModuleClass>
+  map: Map<String, module:module:ModuleClass>
