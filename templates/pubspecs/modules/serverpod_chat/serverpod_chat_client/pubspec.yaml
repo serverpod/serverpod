@@ -11,7 +11,7 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: '>=2.19.0 <4.0.0'
 dependencies:
-  serverpod_client: #^VERSION
+  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../../packages/serverpod_client
-  serverpod_auth_client: #^VERSION
+  serverpod_auth_client: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../serverpod_auth/serverpod_auth_client

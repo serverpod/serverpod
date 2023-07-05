@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ['2.19.0', '3.0.0']
+        dart-version: ['3.0.0']
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1.3
@@ -72,6 +72,20 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run serverpod update pubspecs
         run: util/run_tests_update_pubspecs
+
+  unit_tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run unit tests
+        run: bash util/run_tests_unit
 
   single_server_tests:
     name: Serverpod tests
