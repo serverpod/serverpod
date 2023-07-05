@@ -162,5 +162,20 @@ void main() {
                 cliVersion));
       });
     });
+
+    group('With corrupted pubspec', () {
+      var corruptedPubspecPath =
+          Directory(p.join(testAssetsPath, 'corrupted_pubspec'));
+      test('performServerpodPackagesAndCliVersionCheck() with same version',
+          () {
+        var cliVersion = Version(1, 1, 0);
+        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+          cliVersion,
+          corruptedPubspecPath,
+        );
+
+        expect(packageWarnings.isEmpty, isTrue);
+      });
+    });
   });
 }
