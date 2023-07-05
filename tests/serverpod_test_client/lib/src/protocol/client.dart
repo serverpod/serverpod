@@ -26,8 +26,10 @@ import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i14;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i15;
 import 'package:serverpod_test_module_client/module.dart' as _i16;
-import 'dart:io' as _i17;
-import 'protocol.dart' as _i18;
+import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+    as _i17;
+import 'dart:io' as _i18;
+import 'protocol.dart' as _i19;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -1095,6 +1097,13 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         'modifyModuleObject',
         {'object': object},
       );
+
+  _i2.Future<_i17.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i17.ModuleDatatype>(
+        'moduleSerialization',
+        'serializeNestedModuleObject',
+        {},
+      );
 }
 
 /// {@category Endpoint}
@@ -1340,11 +1349,11 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i17.SecurityContext? context,
+    _i18.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i18.Protocol(),
+          _i19.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {

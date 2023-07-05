@@ -14,7 +14,7 @@ environment:
 
 
 dependencies:
-  serverpod: #^1.1.0
+  serverpod: #1.1.0
     path: ../../packages/serverpod
   amazon_cognito_identity_dart_2: ^1.0.3
   http: ^0.13.5
