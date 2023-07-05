@@ -27,6 +27,14 @@ Future<void> runLanguageServer() async {
     );
   });
 
+  connection.onShutdown(() async {
+    statefulAnalyzer.unregisterOnErrorsChangedNotifier();
+    statefulAnalyzer.clearState();
+    parsingEnabled = false;
+  });
+
+  connection.onExit(() => exit(0));
+
   connection.onInitialize((params) async {
     serverRootUri = params.rootUri;
     return InitializeResult(
