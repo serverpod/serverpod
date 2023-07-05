@@ -18,7 +18,7 @@ class StatefulAnalyzer {
       var analyzer = SerializableEntityAnalyzer(
         yaml: yamlSource.yaml,
         sourceFileName: yamlSource.uri.path,
-        subDirectoryParts: [],
+        subDirectoryParts: yamlSource.protocolRootPathParts,
         collector: CodeGenerationCollector(),
       );
 
@@ -52,6 +52,7 @@ class StatefulAnalyzer {
     if (document != null) {
       _upsertEntity(document, uri);
       // TODO if inserted, validate all again or we may miss errors.
+      // for now we let the caller take care of this.
     }
 
     _onErrorsChangedNotifier?.call(
@@ -65,22 +66,23 @@ class StatefulAnalyzer {
   /// Adds a new protocol to the state but leaves the responsibility of validating
   /// it to the caller. Please note that the validation needs to be done twice
   /// for the first validation pass to detect all errors.
-  void addYamlProtocol(ProtocolSource source) {
+  void addYamlProtocol(ProtocolSource yamlSource) {
     var analyzer = SerializableEntityAnalyzer(
-      yaml: source.yaml,
-      sourceFileName: source.uri.path,
-      subDirectoryParts: [],
+      yaml: yamlSource.yaml,
+      sourceFileName: yamlSource.uri.path,
+      subDirectoryParts: yamlSource.protocolRootPathParts,
       collector: CodeGenerationCollector(),
     );
 
-    _analyzers[source.uri.path] = analyzer;
+    _analyzers[yamlSource.uri.path] = analyzer;
   }
 
   /// Removes a protocol from the state but leaves the responsibility of validating
   /// the new state to the caller.
   void removeYamlProtocol(Uri protocolUri) {
     _analyzers.remove(protocolUri.path);
-    _entities.removeWhere((entity) => entity.sourceFileName == protocolUri.path);
+    _entities
+        .removeWhere((entity) => entity.sourceFileName == protocolUri.path);
   }
 
   /// Register a callback that is called when the errors in a file changes.
