@@ -22,7 +22,7 @@ import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
-import 'package:serverpod_cli/src/util/prompt_to_update.dart';
+import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_cli/src/util/version.dart';
 
