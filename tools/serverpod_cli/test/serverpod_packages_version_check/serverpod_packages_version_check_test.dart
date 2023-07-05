@@ -132,24 +132,28 @@ void main() {
         required int expectedIncompatibleWarnings,
         required int expectedApproximateVersionWarnings,
       }) {
-        var actualIncompatibleWarnings = packageWarnings
-            .where(
-              (warning) =>
-                  warning.message ==
-                  ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
-            )
-            .length;
-        var actualApproximateVersionWarnings = packageWarnings
-            .where((warning) =>
-                warning.message ==
-                ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                  cliVersion,
-                ))
-            .length;
+        var actualIncompatibleWarnings = packageWarnings.where(
+          (warning) {
+            return warning.message ==
+                ServerpodPackagesVersionCheckWarnings.incompatibleVersion;
+          },
+        ).length;
+
+        var actualApproximateVersionWarnings = packageWarnings.where((warning) {
+          return warning.message ==
+              ServerpodPackagesVersionCheckWarnings.approximateVersion(
+                cliVersion,
+              );
+        }).length;
+
         expect(
-            actualIncompatibleWarnings, equals(expectedIncompatibleWarnings));
-        expect(actualApproximateVersionWarnings,
-            equals(expectedApproximateVersionWarnings));
+          actualIncompatibleWarnings,
+          equals(expectedIncompatibleWarnings),
+        );
+        expect(
+          actualApproximateVersionWarnings,
+          equals(expectedApproximateVersionWarnings),
+        );
       }
 
       test('performServerpodPackagesAndCliVersionCheck() with same version',
