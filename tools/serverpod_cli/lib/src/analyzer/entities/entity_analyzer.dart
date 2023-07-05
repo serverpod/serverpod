@@ -195,7 +195,6 @@ class SerializableEntityAnalyzer {
     var restrictions = Restrictions(
       documentType: Keyword.classType,
       documentContents: documentContents,
-      collector: collector,
       protocolEntities: protocolEntities,
     );
 
@@ -294,7 +293,6 @@ class SerializableEntityAnalyzer {
     var restrictions = Restrictions(
       documentType: Keyword.exceptionType,
       documentContents: documentContents,
-      collector: collector,
       protocolEntities: protocolEntities,
     );
 
@@ -353,7 +351,6 @@ class SerializableEntityAnalyzer {
     var restrictions = Restrictions(
       documentType: Keyword.enumType,
       documentContents: documentContents,
-      collector: collector,
       protocolEntities: protocolEntities,
     );
 
