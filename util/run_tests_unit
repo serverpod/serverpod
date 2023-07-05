@@ -12,12 +12,20 @@ declare -a projectPaths=(
     "tools/serverpod_cli" 
 )
 
+exit_code=0
+
 for i in "${projectPaths[@]}"
 do
    echo "Running unit tests in $i"
    cd $i
 
-   dart test -r expanded
+   dart test 
+
+   if [ $? != 0 ]; then
+     exit_code=1
+   fi
 
    cd -
 done
+
+exit $exit_code
