@@ -206,9 +206,10 @@ Future<void> _main(List<String> args) async {
   parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
 
   ArgResults results;
+  var devPrint = true;
   try {
     results = parser.parse(args);
-    bool devPrint = results['development-print'];
+    devPrint = results['development-print'];
 
     if (!productionMode && devPrint) {
       print(
@@ -219,14 +220,16 @@ Future<void> _main(List<String> args) async {
       if (!resourceManager.isTemplatesInstalled) {
         print('WARNING! Could not find templates.');
       }
-
-      await promptToUpdateIfNeeded(Version.parse(templateVersion));
     }
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
     _analytics.cleanUp();
     return;
+  }
+
+  if (devPrint) {
+    await promptToUpdateIfNeeded(Version.parse(templateVersion));
   }
 
   if (results.command != null) {
