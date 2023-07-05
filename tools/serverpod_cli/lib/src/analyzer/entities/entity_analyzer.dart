@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
