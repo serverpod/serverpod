@@ -25,7 +25,7 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 class SerializableEntityAnalyzer {
   String yaml;
   final String sourceFileName;
-  final String outFileName;
+  late final String outFileName;
   final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
   static const Set<String> _protocolClassTypes = {
@@ -38,10 +38,11 @@ class SerializableEntityAnalyzer {
   SerializableEntityAnalyzer({
     required this.yaml,
     required this.sourceFileName,
-    required this.outFileName,
     this.subDirectoryParts = const [],
     required this.collector,
-  });
+  }) {
+    outFileName = _transformFileNameWithoutPathOrExtension(sourceFileName);
+  }
 
   /// Analyze all yaml files int the protocol directory.
   static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
@@ -72,7 +73,6 @@ class SerializableEntityAnalyzer {
       var analyzer = SerializableEntityAnalyzer(
         yaml: yaml,
         sourceFileName: entity.path,
-        outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
         collector: collector,
         subDirectoryParts: subDirectoryParts,
       );
@@ -86,7 +86,6 @@ class SerializableEntityAnalyzer {
       var analyzer = SerializableEntityAnalyzer(
         yaml: definition.yamlProtocol,
         sourceFileName: definition.sourceFileName,
-        outFileName: definition.fileName,
         collector: collector,
         subDirectoryParts: definition.subDirParts,
       );
