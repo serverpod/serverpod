@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:lsp_server/lsp_server.dart';
-import 'package:serverpod_cli/src/language_server/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
@@ -12,10 +12,10 @@ import '../generator/code_generation_collector.dart';
 Future<void> runLanguageServer() async {
   var connection = Connection(stdin, stdout);
 
+  bool parsingEnabled = true;
+  Uri? serverRootUri;
+  late GeneratorConfig config;
   StatefulAnalyzer statefulAnalyzer = StatefulAnalyzer();
-
-  // TODO fix this variable and clean it up!
-  Uri? serverUri;
 
   statefulAnalyzer.regsiterOnErrorsChangedNotifier((filePath, errors) {
     var diagnostics = _convertErrorsToDiagnostic(errors);
@@ -28,22 +28,7 @@ Future<void> runLanguageServer() async {
   });
 
   connection.onInitialize((params) async {
-    serverUri = params.rootUri;
-    try {
-      await _initializeAnalyzer(statefulAnalyzer, params.rootUri);
-    } catch (e) {
-      connection.sendNotification(
-        'window/showMessage',
-        ShowMessageParams(
-          message:
-              'Serverpod protocol validation disabled, not a Serverpod project.',
-          type: MessageType.Warning,
-        ).toJson(),
-      );
-
-      statefulAnalyzer.unregisterOnErrorsChangedNotifier();
-    }
-
+    serverRootUri = params.rootUri;
     return InitializeResult(
       capabilities: ServerCapabilities(
         textDocumentSync: const Either2.t1(TextDocumentSyncKind.Full),
@@ -51,24 +36,54 @@ Future<void> runLanguageServer() async {
     );
   });
 
-  connection.onDidCloseTextDocument((params) async {
-    if (statefulAnalyzer.isProtocolRegistered(params.textDocument.uri) &&
-        !isFileOnDisk(params.textDocument.uri)) {
-      statefulAnalyzer.removeYamlProtocol(params.textDocument.uri);
+  connection.onInitialized((_) async {
+    try {
+      if (serverRootUri == null) throw Exception('No root URI set.');
+      config = await _initializeAnalyzer(statefulAnalyzer, serverRootUri!);
+    } catch (e) {
+      statefulAnalyzer.unregisterOnErrorsChangedNotifier();
+      statefulAnalyzer.clearState();
+      parsingEnabled = false;
 
-      // This can be optimised to only validate the files we know have related errors.
-      statefulAnalyzer.validateAll();
+      connection.sendNotification(
+        'window/showMessage',
+        ShowMessageParams(
+          message:
+              'Serverpod protocol validation disabled, not a Serverpod project.',
+          type: MessageType.Info,
+        ).toJson(),
+      );
     }
   });
 
+  connection.onDidCloseTextDocument((params) async {
+    if (!parsingEnabled) return;
+    if (!statefulAnalyzer.isProtocolRegistered(params.textDocument.uri)) return;
+    if (_isFileOnDisk(params.textDocument.uri)) return;
+
+    statefulAnalyzer.removeYamlProtocol(params.textDocument.uri);
+
+    // This can be optimised to only validate the files we know have related errors.
+    statefulAnalyzer.validateAll();
+  });
+
   connection.onDidOpenTextDocument((params) async {
-    if (!statefulAnalyzer.isProtocolRegistered(params.textDocument.uri) &&
-        /*isProtocolInServerPath(params.textDocument.uri, serverUri)*/ true) {
-      statefulAnalyzer.addYamlProtocol(ProtocolSource(
+    if (!parsingEnabled) return;
+    if (statefulAnalyzer.isProtocolRegistered(params.textDocument.uri)) return;
+    if (!_isProtocolInServerPath(params.textDocument.uri, serverRootUri)) {
+      return;
+    }
+
+    statefulAnalyzer.addYamlProtocol(
+      ProtocolSource(
         params.textDocument.text,
         params.textDocument.uri,
-      ));
-    }
+        ProtocolHelper.extractPathFromProtocolRoot(
+          config,
+          params.textDocument.uri,
+        ),
+      ),
+    );
 
     statefulAnalyzer.validateProtocol(
       params.textDocument.text,
@@ -100,26 +115,38 @@ Future<void> runLanguageServer() async {
   await connection.listen();
 }
 
-Future<void> _initializeAnalyzer(
+Future<GeneratorConfig> _initializeAnalyzer(
   StatefulAnalyzer statefulAnalyzer,
-  Uri? rootUri,
+  Uri rootUri,
 ) async {
-  if (rootUri != null) {
-    var serverDir = Directory.fromUri(rootUri);
+  var rootDir = Directory.fromUri(rootUri);
 
-    // TODO extract and handle if serverdir is not what we expect
-    if (!isServerDirectory(serverDir)) {
-      var childDirs = serverDir.listSync().where(
-          (element) => isServerDirectory(Directory.fromUri(element.uri)));
-      serverDir = Directory.fromUri(childDirs.first.uri);
-    }
-
-    var config = await GeneratorConfig.load(serverDir.path);
-    var yamlSources =
-        await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config!);
-
-    statefulAnalyzer.initialValidation(yamlSources);
+  var serverDir = findServerDirectory(rootDir);
+  if (serverDir == null) {
+    throw Exception('No Serverpod server directory found.');
   }
+
+  var config = await GeneratorConfig.load(serverDir.path);
+  var yamlSources =
+      await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config!);
+
+  statefulAnalyzer.initialValidation(yamlSources);
+
+  return config;
+}
+
+Directory? findServerDirectory(Directory rootDir) {
+  if (isServerDirectory(rootDir)) return rootDir;
+
+  var childDirs = rootDir.listSync().where(
+        (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
+      );
+
+  if (childDirs.isNotEmpty) {
+    return Directory.fromUri(childDirs.first.uri);
+  }
+
+  return null;
 }
 
 List<Diagnostic> _convertErrorsToDiagnostic(
@@ -147,8 +174,7 @@ List<Diagnostic> _convertErrorsToDiagnostic(
   }).toList();
 }
 
-//TODO fix these helpers and clean them up!
-bool isProtocolInServerPath(Uri uri, Uri? serverUri) {
+bool _isProtocolInServerPath(Uri uri, Uri? serverUri) {
   if (serverUri == null) return false;
 
   var path = uri.path;
@@ -158,7 +184,7 @@ bool isProtocolInServerPath(Uri uri, Uri? serverUri) {
   return false;
 }
 
-bool isFileOnDisk(Uri uri) {
+bool _isFileOnDisk(Uri uri) {
   var file = File.fromUri(uri);
   return file.existsSync();
 }
