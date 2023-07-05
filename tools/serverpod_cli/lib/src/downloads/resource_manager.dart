@@ -113,7 +113,11 @@ class ResourceManager {
 
     // If the file exists it might be corrupted so we delete it.
     if (latestCliVersionFile.existsSync()) {
-      latestCliVersionFile.deleteSync();
+      try {
+        latestCliVersionFile.deleteSync();
+      } catch (e) {
+        // Failed to delete file
+      }
     }
 
     return null;
