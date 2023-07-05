@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dar
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/protocol_validator.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
@@ -52,31 +53,20 @@ class SerializableEntityAnalyzer {
   }) async {
     var classDefinitions = <SerializableEntityDefinition>[];
 
-    // Get list of all files in protocol source directory.
-    var sourceDir = Directory(p.joinAll(config.protocolSourcePathParts));
-    var sourceFileList = await sourceDir.list(recursive: true).toList();
-    sourceFileList.sort((a, b) => a.path.compareTo(b.path));
+    var protocols =
+        await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var sourceDirPartsLength = p.split(sourceDir.path).length;
-
-    for (var entity in sourceFileList) {
-      if (entity is! File || !entity.path.endsWith('.yaml')) {
-        if (verbose) print('  - skipping file: ${entity.path}');
-        continue;
-      }
-      var subDirectoryParts =
-          p.split(p.dirname(entity.path)).skip(sourceDirPartsLength).toList();
-
-      // Process a file.
-      if (verbose) print('  - processing file: ${entity.path}');
-      var yaml = await entity.readAsString();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: yaml,
-        sourceFileName: entity.path,
+    var validators = protocols.map((protocol) {
+      return SerializableEntityAnalyzer(
+        yaml: protocol.yaml,
+        sourceFileName: protocol.uri.path,
+        subDirectoryParts: protocol.protocolRootPathParts,
         collector: collector,
-        subDirectoryParts: subDirectoryParts,
       );
-      var classDefinition = analyzer.analyze();
+    });
+
+    for (var validator in validators) {
+      var classDefinition = validator.analyze();
       if (classDefinition != null) {
         classDefinitions.add(classDefinition);
       }
