@@ -2511,6 +2511,17 @@ class Endpoints extends _i1.EndpointDispatch {
             params['object'],
           ),
         ),
+        'serializeNestedModuleObject': _i1.MethodConnector(
+          name: 'serializeNestedModuleObject',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['moduleSerialization']
+                      as _i18.ModuleSerializationEndpoint)
+                  .serializeNestedModuleObject(session),
+        ),
       },
     );
     connectors['namedParameters'] = _i1.EndpointConnector(
