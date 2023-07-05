@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
+import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -124,6 +125,33 @@ void main() {
 
     group('With multiple pubspec files', () {
       var testAssets = Directory(testAssetsPath);
+
+      void expectWarningTypes({
+        required Version cliVersion,
+        required List<SourceSpanException> packageWarnings,
+        required int expectedIncompatibleWarnings,
+        required int expectedApproximateVersionWarnings,
+      }) {
+        var actualIncompatibleWarnings = packageWarnings
+            .where(
+              (warning) =>
+                  warning.message ==
+                  ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
+            )
+            .length;
+        var actualApproximateVersionWarnings = packageWarnings
+            .where((warning) =>
+                warning.message ==
+                ServerpodPackagesVersionCheckWarnings.approximateVersion(
+                  cliVersion,
+                ))
+            .length;
+        expect(
+            actualIncompatibleWarnings, equals(expectedIncompatibleWarnings));
+        expect(actualApproximateVersionWarnings,
+            equals(expectedApproximateVersionWarnings));
+      }
+
       test('performServerpodPackagesAndCliVersionCheck() with same version',
           () {
         var cliVersion = Version(1, 1, 0);
@@ -148,14 +176,12 @@ void main() {
         );
 
         expect(packageWarnings.length, equals(3));
-        expect(packageWarnings[0].message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
-        expect(packageWarnings[1].message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
-        expect(
-            packageWarnings[2].message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
+        expectWarningTypes(
+          cliVersion: cliVersion,
+          packageWarnings: packageWarnings,
+          expectedIncompatibleWarnings: 2,
+          expectedApproximateVersionWarnings: 1,
+        );
       });
 
       test('performServerpodPackagesAndCliVersionCheck() with newer version',
@@ -167,12 +193,12 @@ void main() {
         );
 
         expect(packageWarnings.length, equals(2));
-        expect(packageWarnings[0].message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
-        expect(
-            packageWarnings[1].message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
+        expectWarningTypes(
+          cliVersion: cliVersion,
+          packageWarnings: packageWarnings,
+          expectedIncompatibleWarnings: 1,
+          expectedApproximateVersionWarnings: 1,
+        );
       });
     });
 
