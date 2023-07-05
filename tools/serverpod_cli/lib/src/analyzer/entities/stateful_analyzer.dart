@@ -1,16 +1,12 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
-
-String _transformFileNameWithoutPathOrExtension(String path) {
-  return p.basenameWithoutExtension(path);
-}
 
 class StatefulAnalyzer {
   final Map<String, SerializableEntityAnalyzer> _analyzers = {};
-  Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
   List<SerializableEntityDefinition> _entities = [];
+
+  Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
   /// Validates all protocols by running the validater twice to make sure all
   /// references are resolved. The state is preserved to make future validations
@@ -22,8 +18,6 @@ class StatefulAnalyzer {
       var analyzer = SerializableEntityAnalyzer(
         yaml: yamlSource.yaml,
         sourceFileName: yamlSource.uri.path,
-        outFileName:
-            _transformFileNameWithoutPathOrExtension(yamlSource.uri.path),
         subDirectoryParts: [],
         collector: CodeGenerationCollector(),
       );
@@ -75,7 +69,6 @@ class StatefulAnalyzer {
     var analyzer = SerializableEntityAnalyzer(
       yaml: source.yaml,
       sourceFileName: source.uri.path,
-      outFileName: _transformFileNameWithoutPathOrExtension(source.uri.path),
       subDirectoryParts: [],
       collector: CodeGenerationCollector(),
     );
@@ -87,6 +80,7 @@ class StatefulAnalyzer {
   /// the new state to the caller.
   void removeYamlProtocol(Uri protocolUri) {
     _analyzers.remove(protocolUri.path);
+    _entities.removeWhere((entity) => entity.sourceFileName == protocolUri.path);
   }
 
   /// Register a callback that is called when the errors in a file changes.
@@ -104,6 +98,12 @@ class StatefulAnalyzer {
   /// Checks if a protocol is registered in the state.
   bool isProtocolRegistered(Uri uri) {
     return _analyzers.containsKey(uri.path);
+  }
+
+  /// Reset the internal state of the analyzer.
+  void clearState() {
+    _analyzers.clear();
+    _entities.clear();
   }
 
   List<SerializableEntityDefinition> _validateAllAnalyzers(
