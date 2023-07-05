@@ -39,6 +39,7 @@ dependencies:
   json_rpc_2: ^3.0.2
   stream_channel: ^2.1.1
   lsp_server: ^0.1.0
+  pub_semver: ^2.1.4
 
 dev_dependencies:
   lints: ^2.0.1
