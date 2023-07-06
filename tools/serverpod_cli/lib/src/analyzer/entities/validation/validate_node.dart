@@ -1,4 +1,3 @@
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:source_span/source_span.dart';
 
@@ -11,10 +10,10 @@ class ValidateNode {
 
   /// If set, the key must match the restriction, add any errors to the collector.
   /// Should only be used together with a [Keyword.any].
-  void Function(String, SourceSpan?, CodeAnalysisCollector)? keyRestriction;
+  List<SourceSpanException>? Function(String, SourceSpan?)? keyRestriction;
 
   /// If set, the value must match the restriction, add any errors to the collector.
-  void Function(dynamic, SourceSpan?, CodeAnalysisCollector)? valueRestriction;
+  List<SourceSpanException>? Function(dynamic, SourceSpan?)? valueRestriction;
 
   // A set of keys that are mutually exclusive with this key.
   late Set<String> mutuallyExclusiveKeys;

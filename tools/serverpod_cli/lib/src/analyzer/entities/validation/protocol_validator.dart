@@ -187,11 +187,12 @@ void _collectKeyRestrictionErrors(
   if (node.keyRestriction == null) return;
 
   for (var document in documentContents.nodes.entries) {
-    node.keyRestriction?.call(
-      document.key.toString(),
-      document.key.span,
-      collector,
-    );
+    var errors =
+        node.keyRestriction?.call(document.key.toString(), document.key.span);
+
+    if (errors != null) {
+      collector.addErrors(errors);
+    }
   }
 }
 
@@ -204,7 +205,11 @@ void _collectValueRestrictionErrors(
   var span = documentContents.nodes[node.key]?.span;
 
   if (documentContents.containsKey(node.key)) {
-    node.valueRestriction?.call(content, span, collector);
+    var errors = node.valueRestriction?.call(content, span);
+
+    if (errors != null) {
+      collector.addErrors(errors);
+    }
   }
 }
 
