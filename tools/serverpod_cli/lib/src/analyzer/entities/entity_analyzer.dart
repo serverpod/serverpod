@@ -50,41 +50,26 @@ class SerializableEntityAnalyzer {
     required CodeAnalysisCollector collector,
     required GeneratorConfig config,
   }) async {
-    var classDefinitions = <SerializableEntityDefinition>[];
-
     var protocols =
         await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var validators = protocols.map((protocol) {
-      return SerializableEntityAnalyzer(
-        yaml: protocol.yaml,
-        sourceFileName: protocol.yamlSourceUri.path,
-        subDirectoryParts: protocol.protocolRootPathParts,
-        collector: collector,
-      );
-    });
-
-    for (var validator in validators) {
-      var classDefinition = validator.analyze();
-      if (classDefinition != null) {
-        classDefinitions.add(classDefinition);
-      }
-    }
-
-    var classes = classDefinitions.map((definition) {
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: definition.yamlProtocol,
-        sourceFileName: definition.sourceFileName,
-        collector: collector,
-        subDirectoryParts: definition.subDirParts,
-      );
-      return analyzer.analyze(protocolEntities: classDefinitions);
-    });
-
-    classDefinitions = classes
+    var classDefinitions = protocols
+        .map((protocol) {
+          return SerializableEntityAnalyzer.extractYamlDefinition(protocol);
+        })
         .where((definition) => definition != null)
         .cast<SerializableEntityDefinition>()
         .toList();
+
+    for (var classDefinition in classDefinitions) {
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        classDefinition.yamlProtocol,
+        classDefinition.sourceFileName,
+        collector,
+        classDefinition,
+        classDefinitions,
+      );
+    }
 
     // Detect protocol references
     for (var classDefinition in classDefinitions) {
@@ -126,7 +111,13 @@ class SerializableEntityAnalyzer {
     );
 
     var serializedEntity = extractYamlDefinition(protocolSource);
-    validateYamlDefinition(this.yaml, sourceFileName, collector, serializedEntity, protocolEntities,);
+    validateYamlDefinition(
+      this.yaml,
+      sourceFileName,
+      collector,
+      serializedEntity,
+      protocolEntities,
+    );
 
     return serializedEntity;
   }
