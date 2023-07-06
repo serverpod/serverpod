@@ -107,7 +107,7 @@ void main() {
         expect(fetchedVersion, pubDevVersion);
       });
 
-      test('when failed to fetch latest version from pub.dev', () async {
+      test('when failed to fetch latest version from pub.dev.', () async {
         var client = MockClient();
         when(client.get(
           Uri.parse(LatestCliVersionConstants.pubDevUri),
@@ -122,7 +122,7 @@ void main() {
         expect(version, isNull);
       });
 
-      test('when timeout is reached fetching latest version from pub.dev',
+      test('when timeout is reached fetching latest version from pub.dev.',
           () async {
         var fetchedVersion = versionForTest.nextMajor;
         var timeout = const Duration(milliseconds: 1);
@@ -146,7 +146,7 @@ void main() {
   });
 
   group('No file on disk', () {
-    test('when successful in fetching latest version from pub.dev', () async {
+    test('when successful in fetching latest version from pub.dev.', () async {
       var client = MockClient();
       when(client.get(Uri.parse(LatestCliVersionConstants.pubDevUri)))
           .thenAnswer((_) async =>
@@ -165,7 +165,7 @@ void main() {
       expect(localStorageFile.existsSync(), isTrue);
     });
 
-    test('when failed to fetch latest version from pub.dev', () async {
+    test('when failed to fetch latest version from pub.dev.', () async {
       var client = MockClient();
       when(client.get(Uri.parse(LatestCliVersionConstants.pubDevUri)))
           .thenAnswer((_) async => http.Response('', 404));

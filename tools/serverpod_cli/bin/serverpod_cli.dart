@@ -102,7 +102,6 @@ Future<void> _main(List<String> args) async {
 
   // "version" command
   var versionParser = ArgParser();
-
   parser.addCommand(cmdVersion, versionParser);
 
   // "create" command
@@ -209,6 +208,8 @@ Future<void> _main(List<String> args) async {
   var devPrint = true;
   try {
     results = parser.parse(args);
+    // TODO: This should silence all warnings with a suitable name.
+    // Make this once we have a centralized logging and printing.
     devPrint = results['development-print'];
 
     if (!productionMode && devPrint) {

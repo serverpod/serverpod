@@ -87,7 +87,6 @@ class ResourceManager {
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-
     var latestCliVersionFile = File(p.join(
       localStoragePath,
       ResourceManagerConstants.latestVersionFilePath,

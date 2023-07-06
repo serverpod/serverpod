@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -8,7 +7,7 @@ import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Latest Cli Version', () {
+  group('Latest Cli Version: ', () {
     var testCacheFolderPath = p.join('test', 'downloads', 'localCache');
 
     tearDown(() {
@@ -18,7 +17,7 @@ void main() {
       }
     });
 
-    test('Serialization roundtrip for latest cli version artefact', () async {
+    test('serialization roundtrip for latest cli version artefact.', () async {
       var storedArtefact =
           LatestCliVersionArtefact(Version(1, 1, 1), DateTime.now());
 
@@ -33,7 +32,7 @@ void main() {
           storedArtefact.validUntil.millisecondsSinceEpoch);
     });
 
-    test('Corrupted file on disk is removed', () async {
+    test('when corrupted file is stored on disk.', () async {
       var file = File(p.join(
           testCacheFolderPath, ResourceManagerConstants.latestVersionFilePath));
       file.createSync(recursive: true);
