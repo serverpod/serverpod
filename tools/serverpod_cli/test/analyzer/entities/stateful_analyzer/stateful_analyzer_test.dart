@@ -104,7 +104,6 @@ fields:
       protocolUri,
       [],
     );
-    statefulAnalyzer.addYamlProtocol(yamlSource);
 
     var entities = statefulAnalyzer.initialValidation([yamlSource]);
 
@@ -184,6 +183,49 @@ fields:
     statefulAnalyzer.validateProtocol(yamlSource.yaml, protocolUri);
 
     expect(wasCalled, true, reason: 'The error callback was not triggered.');
+  });
+
+  test(
+      'Given a protocol that was invalid on first validation, when validating the same protocol with an updated valid syntax, then the previous errors are cleared.',
+      () {
+    var statefulAnalyzer = StatefulAnalyzer();
+
+    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var invalidSource = ProtocolSource(
+      '''
+class: 
+fields:
+  name: String
+''',
+      protocolUri,
+      [],
+    );
+
+    var validSource = ProtocolSource(
+      '''
+class: Example
+fields:
+  name: String
+''',
+      protocolUri,
+      [],
+    );
+
+    CodeGenerationCollector? reportedErrors;
+    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+      reportedErrors = errors;
+    });
+
+    statefulAnalyzer.initialValidation([invalidSource]);
+
+    expect(reportedErrors?.errors, hasLength(1),
+        reason: 'Expected an error to be reported.');
+
+    statefulAnalyzer.validateProtocol(validSource.yaml, protocolUri);
+
+    expect(reportedErrors?.errors, hasLength(0),
+        reason: 'Expected the error to be cleared.');
+
   });
 
   test(
@@ -303,8 +345,10 @@ fields:
     statefulAnalyzer.addYamlProtocol(yamlSource2);
 
     // Need to validate twice to run the two pass logic.
-    statefulAnalyzer.validateProtocol(yamlSource2.yaml, yamlSource2.yamlSourceUri);
-    statefulAnalyzer.validateProtocol(yamlSource2.yaml, yamlSource2.yamlSourceUri);
+    statefulAnalyzer.validateProtocol(
+        yamlSource2.yaml, yamlSource2.yamlSourceUri);
+    statefulAnalyzer.validateProtocol(
+        yamlSource2.yaml, yamlSource2.yamlSourceUri);
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
