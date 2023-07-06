@@ -172,9 +172,9 @@ class TypeDefinition {
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all suported types here
-    if (className == 'String') return 'text';
+    if (className == 'String' || isEnum) return 'text';
     if (className == 'bool') return 'boolean';
-    if (className == 'int' || isEnum) return 'integer';
+    if (className == 'int') return 'integer';
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';

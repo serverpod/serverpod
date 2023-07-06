@@ -226,27 +226,35 @@ class Restrictions {
       ];
     }
 
-    var nodeExceptions = content.nodes.map((node) {
-      if (node is! YamlScalar || node.value is! String) {
-        return SourceSpanException(
-          'The "values" property must be a list of strings.',
-          node.span,
-        );
-      }
+    var nodeExceptions = [
+      ...content.nodes
+          .map((node) {
+            if (node is! YamlScalar || node.value is! String) {
+              return SourceSpanException(
+                'The "values" property must be a list of strings.',
+                node.span,
+              );
+            }
 
-      if (!StringValidators.isValidFieldName(node.value)) {
-        return SourceSpanException(
-          'Enum values must be lowerCamelCase.',
-          node.span,
-        );
-      }
+            if (!StringValidators.isValidFieldName(node.value)) {
+              return SourceSpanException(
+                'Enum values must be lowerCamelCase.',
+                node.span,
+              );
+            }
 
-      return null;
-    });
+            return null;
+          })
+          .where((node) => node != null)
+          .cast<SourceSpanException>(),
+      if (content.nodes.map((n) => n.value).toSet().length <
+          content.nodes.length)
+        SourceSpanException(
+          'Enum values are not distinct',
+          content.span,
+        )
+    ];
 
-    return nodeExceptions
-        .where((node) => node != null)
-        .cast<SourceSpanException>()
-        .toList();
+    return nodeExceptions;
   }
 }
