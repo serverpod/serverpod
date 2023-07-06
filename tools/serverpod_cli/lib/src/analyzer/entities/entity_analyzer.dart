@@ -126,12 +126,12 @@ class SerializableEntityAnalyzer {
     );
 
     var serializedEntity = extractYamlDefinition(protocolSource);
-    validateYamlDefinition(this.yaml, serializedEntity, protocolEntities);
+    validateYamlDefinition(this.yaml, sourceFileName, collector, serializedEntity, protocolEntities,);
 
     return serializedEntity;
   }
 
-  SerializableEntityDefinition? extractYamlDefinition(
+  static SerializableEntityDefinition? extractYamlDefinition(
     ProtocolSource protocolSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
@@ -139,8 +139,8 @@ class SerializableEntityAnalyzer {
     );
     var yamlErrorCollector = ErrorCollector();
     YamlMap? documentContents = _loadYamlMap(
-      yaml,
-      sourceFileName,
+      protocolSource.yaml,
+      protocolSource.yamlSourceUri.path,
       yamlErrorCollector,
     );
 
@@ -148,7 +148,7 @@ class SerializableEntityAnalyzer {
     if (documentContents == null) return null;
 
     var definitionType = _findDefinitionType(documentContents);
-    var docsExtractor = YamlDocumentationExtractor(yaml);
+    var docsExtractor = YamlDocumentationExtractor(protocolSource.yaml);
 
     if (definitionType == null) return null;
 
@@ -191,8 +191,10 @@ class SerializableEntityAnalyzer {
     }
   }
 
-  void validateYamlDefinition(
+  static void validateYamlDefinition(
     String yaml,
+    String sourceFileName,
+    CodeAnalysisCollector collector,
     SerializableEntityDefinition? yamlDefinition,
     List<SerializableEntityDefinition>? protocolEntities,
   ) {
@@ -255,7 +257,7 @@ class SerializableEntityAnalyzer {
     return;
   }
 
-  YamlMap? _loadYamlMap(
+  static YamlMap? _loadYamlMap(
     String yaml,
     String sourceFileName, [
     ErrorCollector? collector,
@@ -272,7 +274,7 @@ class SerializableEntityAnalyzer {
     return documentContents;
   }
 
-  String? _findDefinitionType(YamlMap documentContents) {
+  static String? _findDefinitionType(YamlMap documentContents) {
     if (documentContents.nodes[Keyword.classType] != null) {
       return Keyword.classType;
     }
