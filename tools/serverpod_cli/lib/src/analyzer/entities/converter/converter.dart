@@ -5,6 +5,15 @@ import 'package:yaml/yaml.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
 
+List<String> convertIndexList(String stringifiedFields) {
+  return stringifiedFields
+      .split(',')
+      .map(
+        (String str) => str.trim(),
+      )
+      .toList();
+}
+
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
   YamlNode contentNode,
