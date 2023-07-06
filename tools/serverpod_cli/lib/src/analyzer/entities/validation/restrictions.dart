@@ -3,14 +3,18 @@ import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
+import '../converter/converter.dart';
+
 class Restrictions {
   String documentType;
   YamlMap documentContents;
+  SerializableEntityDefinition? documentDefinition;
   List<SerializableEntityDefinition>? protocolEntities;
 
   Restrictions({
     required this.documentType,
     required this.documentContents,
+    this.documentDefinition,
     this.protocolEntities,
   });
 
@@ -192,9 +196,23 @@ class Restrictions {
       ];
     }
 
-    return [];
+    if (documentDefinition is! ClassDefinition) return [];
+    var definition = documentDefinition as ClassDefinition;
 
-    // todo add 2 pass check that fields exists in the class
+    var fields = definition.fields;
+    var indexFields = convertIndexList(content);
+
+    var validDatabaseFieldNames = fields
+        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .fold(<String>{}, (output, field) => output..add(field.name));
+
+    return indexFields
+        .where((field) => !validDatabaseFieldNames.contains(field))
+        .map((field) => SourceSpanException(
+              'The field name "$field" is not added to the class or has an api scope.',
+              span,
+            ))
+        .toList();
   }
 
   List<SourceSpanException> validateIndexType(
