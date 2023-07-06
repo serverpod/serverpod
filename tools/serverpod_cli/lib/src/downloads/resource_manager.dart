@@ -25,11 +25,11 @@ class ResourceManager {
     throw (Exception('Unsupported platform.'));
   }
 
-  Directory get localCacheDirectory =>
+  Directory get localStorageDirectory =>
       Directory(p.join(homeDirectory.path, '.serverpod'));
 
   Directory get versionedDir =>
-      Directory(p.join(localCacheDirectory.path, templateVersion));
+      Directory(p.join(localStorageDirectory.path, templateVersion));
 
   Directory get templateDirectory {
     if (productionMode) {
@@ -43,7 +43,7 @@ class ResourceManager {
   String get uniqueUserId {
     const uuidFilePath = 'uuid';
     try {
-      var userIdFile = File(p.join(localCacheDirectory.path, uuidFilePath));
+      var userIdFile = File(p.join(localStorageDirectory.path, uuidFilePath));
       var userId = userIdFile.readAsStringSync();
       return userId;
     } catch (e) {
@@ -51,7 +51,7 @@ class ResourceManager {
     }
     var userId = const Uuid().v4();
     try {
-      var userIdFile = File(p.join(localCacheDirectory.path, uuidFilePath));
+      var userIdFile = File(p.join(localStorageDirectory.path, uuidFilePath));
       userIdFile.createSync(recursive: true);
       userIdFile.writeAsStringSync(userId);
     } finally {}
@@ -61,11 +61,11 @@ class ResourceManager {
 
   Future<void> storeLatestCliVersion(
     LatestCliVersionArtefact cliData, {
-    String? localCachePath,
+    String? localStoragePath,
   }) async {
-    localCachePath ??= localCacheDirectory.path;
-    var latestCliVersionFile =
-        File(p.join(localCachePath, LatestCliVersionConstants.filePath));
+    localStoragePath ??= localStorageDirectory.path;
+    var latestCliVersionFile = File(p.join(
+        localStoragePath, ResourceManagerConstants.latestVersionFilePath));
 
     try {
       if (!latestCliVersionFile.existsSync()) {
@@ -73,8 +73,8 @@ class ResourceManager {
       }
 
       var data = {};
-      data[LatestCliVersionConstants.versionKeyword] = cliData.version;
-      data[LatestCliVersionConstants.validUntilKeyword] =
+      data[ResourceManagerConstants.latestVersionKeyword] = cliData.version;
+      data[ResourceManagerConstants.latestValidUntilKeyword] =
           cliData.validUntil.millisecondsSinceEpoch;
 
       latestCliVersionFile.writeAsStringSync(data.toString());
@@ -84,13 +84,13 @@ class ResourceManager {
   }
 
   Future<LatestCliVersionArtefact?> tryFetchLatestCliVersion({
-    String? localCachePath,
+    String? localStoragePath,
   }) async {
-    localCachePath ??= localCacheDirectory.path;
+    localStoragePath ??= localStorageDirectory.path;
 
     var latestCliVersionFile = File(p.join(
-      localCachePath,
-      LatestCliVersionConstants.filePath,
+      localStoragePath,
+      ResourceManagerConstants.latestVersionFilePath,
     ));
 
     try {
@@ -100,10 +100,10 @@ class ResourceManager {
           sourceUrl: latestCliVersionFile.uri,
         );
         if (yaml is YamlMap) {
-          var version =
-              Version.parse(yaml[LatestCliVersionConstants.versionKeyword]);
+          var version = Version.parse(
+              yaml[ResourceManagerConstants.latestVersionKeyword]);
           var validUntil = DateTime.fromMillisecondsSinceEpoch(
-              yaml[LatestCliVersionConstants.validUntilKeyword]);
+              yaml[ResourceManagerConstants.latestValidUntilKeyword]);
           return LatestCliVersionArtefact(version, validUntil);
         }
       }

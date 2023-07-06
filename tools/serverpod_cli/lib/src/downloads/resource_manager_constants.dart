@@ -1,5 +1,5 @@
-abstract class LatestCliVersionConstants {
-  static const filePath = 'latest_cli_version.yaml';
-  static const versionKeyword = 'latest_version';
-  static const validUntilKeyword = 'valid_until';
+abstract class ResourceManagerConstants {
+  static const latestVersionFilePath = 'latest_cli_version.yaml';
+  static const latestVersionKeyword = 'latest_version';
+  static const latestValidUntilKeyword = 'valid_until';
 }

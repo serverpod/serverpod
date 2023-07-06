@@ -23,10 +23,10 @@ void main() {
           LatestCliVersionArtefact(Version(1, 1, 1), DateTime.now());
 
       await resourceManager.storeLatestCliVersion(storedArtefact,
-          localCachePath: testCacheFolderPath);
+          localStoragePath: testCacheFolderPath);
 
       var fetchedArtefact = await resourceManager.tryFetchLatestCliVersion(
-          localCachePath: testCacheFolderPath);
+          localStoragePath: testCacheFolderPath);
 
       expect(fetchedArtefact?.version, storedArtefact.version);
       expect(fetchedArtefact?.validUntil.millisecondsSinceEpoch,
@@ -34,15 +34,15 @@ void main() {
     });
 
     test('Corrupted file on disk is removed', () async {
-      var file =
-          File(p.join(testCacheFolderPath, LatestCliVersionConstants.filePath));
+      var file = File(p.join(
+          testCacheFolderPath, ResourceManagerConstants.latestVersionFilePath));
       file.createSync(recursive: true);
       file.writeAsStringSync(
           'This is corrupted content and :will not be :parsed as yaml');
       expect(file.existsSync(), isTrue);
 
       await resourceManager.tryFetchLatestCliVersion(
-          localCachePath: testCacheFolderPath);
+          localStoragePath: testCacheFolderPath);
 
       expect(file.existsSync(), isFalse);
     });
