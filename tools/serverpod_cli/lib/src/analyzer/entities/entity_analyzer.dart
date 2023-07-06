@@ -82,6 +82,8 @@ class SerializableEntityAnalyzer {
       }
     }
 
+    collector.clearErrors();
+
     var classes = classDefinitions.map((definition) {
       var analyzer = SerializableEntityAnalyzer(
         yaml: definition.yamlProtocol,
