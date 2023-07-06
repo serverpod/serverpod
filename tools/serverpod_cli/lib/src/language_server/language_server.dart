@@ -84,11 +84,6 @@ Future<void> runLanguageServer() async {
       ),
     );
 
-    statefulAnalyzer.validateProtocol(
-      params.textDocument.text,
-      params.textDocument.uri,
-    );
-
     // We need to validate all protocols as the new protocol might reference or
     // be referenced by other protocols.
     statefulAnalyzer.validateAll();
