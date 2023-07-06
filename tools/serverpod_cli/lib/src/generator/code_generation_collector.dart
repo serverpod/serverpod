@@ -5,6 +5,7 @@ import 'package:serverpod_cli/analyzer.dart';
 /// A [CodeAnalysisCollector] that also keeps track of generated files.
 class CodeGenerationCollector extends CodeAnalysisCollector {
   /// All the errors reported.
+  @override
   final List<SourceSpanException> errors = [];
 
   /// All the generated files reported.
