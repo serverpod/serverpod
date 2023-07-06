@@ -186,8 +186,8 @@ class SerializableEntityAnalyzer {
     String yaml,
     String sourceFileName,
     CodeAnalysisCollector collector,
-    SerializableEntityDefinition? yamlDefinition,
-    List<SerializableEntityDefinition>? protocolEntities,
+    SerializableEntityDefinition? entity,
+    List<SerializableEntityDefinition>? entities,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceFileName, yamlErrors);
@@ -216,8 +216,8 @@ class SerializableEntityAnalyzer {
     var restrictions = Restrictions(
       documentType: definitionType,
       documentContents: documentContents,
-      documentDefinition: yamlDefinition,
-      protocolEntities: protocolEntities,
+      documentDefinition: entity,
+      protocolEntities: entities,
     );
 
     Set<ValidateNode> documentStructure;
