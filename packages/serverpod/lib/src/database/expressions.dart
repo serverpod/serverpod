@@ -118,7 +118,7 @@ class ColumnEnum<E extends Enum> extends Column {
     if (value == null) {
       return Expression('"$columnName" IS NULL');
     } else {
-      return Expression('"$columnName" = ${value.index}');
+      return Expression('"$columnName" = \'${value.name}\'');
     }
   }
 
@@ -128,7 +128,7 @@ class ColumnEnum<E extends Enum> extends Column {
     if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
     } else {
-      return Expression('"$columnName" != ${value.index}');
+      return Expression('"$columnName" != \'${value.name}\'');
     }
   }
 }

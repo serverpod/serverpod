@@ -734,7 +734,6 @@ class SerializableEntityLibraryGenerator {
   /// Handle enums for [generateEntityLibrary]
   Library _generateEnumLibrary(EnumDefinition enumDefinition) {
     String enumName = enumDefinition.className;
-
     var library = Library((library) {
       library.body.add(
         Enum((e) {
@@ -750,31 +749,30 @@ class SerializableEntityLibraryGenerator {
               })
           ]);
 
+          e.fields.add(Field(
+            (f) => f
+              ..name = 'nameToValue'
+              ..static = true
+              ..modifier = FieldModifier.final$
+              ..assignment = Code('<String, $enumName>'
+                  '{for (var value in values) value.name: value}'),
+          ));
+
           e.methods.add(Method((m) => m
             ..static = true
             ..returns = refer('$enumName?')
             ..name = 'fromJson'
             ..requiredParameters.add(Parameter((p) => p
-              ..name = 'index'
-              ..type = refer('int')))
-            ..body = (BlockBuilder()
-                  ..statements.addAll([
-                    const Code('switch(index){'),
-                    for (int i = 0; i < enumDefinition.values.length; i++)
-                      Code('case $i: return ${enumDefinition.values[i].name};'),
-                    const Code('default: return null;'),
-                    const Code('}'),
-                  ]))
-                .build()));
+              ..name = 'name'
+              ..type = refer('String')))
+            ..body = const Code('return nameToValue[name];')));
 
-          e.methods.add(Method(
-            (m) => m
-              ..annotations.add(refer('override'))
-              ..returns = refer('int')
-              ..name = 'toJson'
-              ..lambda = true
-              ..body = refer('index').code,
-          ));
+          e.methods.add(Method((m) => m
+            ..annotations.add(refer('override'))
+            ..returns = refer('String')
+            ..name = 'toJson'
+            ..lambda = true
+            ..body = refer('name').code));
         }),
       );
     });
