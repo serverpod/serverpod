@@ -7,26 +7,26 @@ import '../converter/converter.dart';
 import 'validate_node.dart';
 
 /// Validates that only one top level entity type is defined.
-void validateTopLevelEntityType(
+List<SourceSpanException> validateTopLevelEntityType(
   YamlNode documentContents,
   Set<String> classTypes,
-  CodeAnalysisCollector collector,
 ) {
-  if (documentContents is! YamlMap) return;
+  if (documentContents is! YamlMap) return [];
 
   var typeNodes = _findNodesByKeys(
     documentContents,
     classTypes,
   );
 
-  if (typeNodes.length == 1) return;
+  if (typeNodes.length == 1) return [];
 
   if (typeNodes.isEmpty) {
-    collector.addError(SourceSpanException(
-      'No $classTypes type is defined.',
-      documentContents.span,
-    ));
-    return;
+    return [
+      SourceSpanException(
+        'No $classTypes type is defined.',
+        documentContents.span,
+      )
+    ];
   }
 
   var formattedKeys = _formatNodeKeys(typeNodes);
@@ -39,7 +39,7 @@ void validateTopLevelEntityType(
       )
       .toList();
 
-  collector.addErrors(errors);
+  return errors;
 }
 
 /// Recursivly validates a yaml document against a set of [ValidateNode]s.
