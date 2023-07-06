@@ -273,18 +273,12 @@ Future<void> _main(List<String> args) async {
       }
 
       // Validate cli version is compatible with serverpod packages
-      try {
-        var warnings = performServerpodPackagesAndCliVersionCheck(
-            Version.parse(templateVersion), Directory.current.parent);
-        if (warnings.isNotEmpty) {
-          printww(
-              'WARNING: The version of the CLI may be incompatible with the '
-              'Serverpod packages used in your project.');
-          warnings.forEach(print);
-        }
-      } catch (e) {
-        print(e);
-        exit(1);
+      var warnings = performServerpodPackagesAndCliVersionCheck(
+          Version.parse(templateVersion), Directory.current.parent);
+      if (warnings.isNotEmpty) {
+        printww('WARNING: The version of the CLI may be incompatible with the '
+            'Serverpod packages used in your project.');
+        warnings.forEach(print);
       }
 
       // Copy migrations from modules.

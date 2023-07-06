@@ -39,8 +39,8 @@ List<SourceSpanException> performServerpodPackagesAndCliVersionCheck(
 
       accumulatedWarnings.addAll(warnings);
     } catch (e) {
-      throw Exception(
-          'Error while parsing pubspec file: ${pubspecFile.path}: $e');
+      // TODO: Log to debug output
+      // Failed to open or parse pubspec file
     }
   }
 

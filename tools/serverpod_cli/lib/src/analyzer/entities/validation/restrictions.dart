@@ -1,4 +1,3 @@
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
@@ -7,191 +6,247 @@ import 'package:yaml/yaml.dart';
 class Restrictions {
   String documentType;
   YamlMap documentContents;
-  Set<SerializableEntityDefinition> entities;
+  List<SerializableEntityDefinition>? protocolEntities;
 
   Restrictions({
     required this.documentType,
     required this.documentContents,
-    this.entities = const {},
+    this.protocolEntities,
   });
 
-  void validateClassName(
+  List<SourceSpanException> validateClassName(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String) {
-      collector.addError(SourceSpanException(
-        'The "$documentType" type must be a String.',
-        span,
-      ));
-      return;
+      return [
+        SourceSpanException(
+          'The "$documentType" type must be a String.',
+          span,
+        )
+      ];
     }
 
     if (!StringValidators.isValidClassName(content)) {
-      collector.addError(SourceSpanException(
-        'The "$documentType" type must be a valid class name (e.g. PascalCaseString).',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The "$documentType" type must be a valid class name (e.g. PascalCaseString).',
+          span,
+        )
+      ];
     }
+
+    // TODO n-squared time complexity when validating all protocol files.
+    if (_countClassNames(content, protocolEntities) > 1) {
+      return [
+        SourceSpanException(
+          'The $documentType name "$content" is already used by another protocol class.',
+          span,
+        )
+      ];
+    }
+
+    return [];
   }
 
-  void validateTableName(
+  int _countClassNames(
+      String className, List<SerializableEntityDefinition>? protocolEntities) {
+    if (protocolEntities == null) return 0;
+
+    return protocolEntities.fold(
+      0,
+      (sum, entity) => sum += entity.className == className ? 1 : 0,
+    );
+  }
+
+  List<SourceSpanException> validateTableName(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String) {
-      collector.addError(SourceSpanException(
-        'The "table" property must be a snake_case_string.',
-        span,
-      ));
-      return;
+      return [
+        SourceSpanException(
+          'The "table" property must be a snake_case_string.',
+          span,
+        )
+      ];
     }
 
     if (!StringValidators.isValidTableName(content)) {
-      collector.addError(SourceSpanException(
-        'The "table" property must be a snake_case_string.',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The "table" property must be a snake_case_string.',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateBoolType(
+  List<SourceSpanException> validateBoolType(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
-    if (content is! bool) {
-      collector.addError(SourceSpanException(
+    if (content is bool) return [];
+
+    return [
+      SourceSpanException(
         'The property value must be a bool.',
         span,
-      ));
-    }
+      )
+    ];
   }
 
-  void validateTableIndexName(
+  List<SourceSpanException> validateTableIndexName(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String ||
         !StringValidators.isValidTableIndexName(content)) {
-      collector.addError(SourceSpanException(
-        'Invalid format for index "$content", must follow the format lower_snake_case.',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'Invalid format for index "$content", must follow the format lower_snake_case.',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateFieldName(
+  List<SourceSpanException> validateFieldName(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (!StringValidators.isValidFieldName(content)) {
-      collector.addError(SourceSpanException(
-        'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateParentName(
+  List<SourceSpanException> validateParentName(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content != null && !StringValidators.isValidTableIndexName(content)) {
-      collector.addError(SourceSpanException(
-        'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateFieldType(
+  List<SourceSpanException> validateFieldType(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String) {
-      collector.addError(SourceSpanException(
-        'The field must have a datatype defined (e.g. field: String).',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The field must have a datatype defined (e.g. field: String).',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateFieldDataType(
+  List<SourceSpanException> validateFieldDataType(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String) {
-      collector.addError(SourceSpanException(
-        'The field must have a datatype defined (e.g. field: String).',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The field must have a datatype defined (e.g. field: String).',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateIndexFieldsValue(
+  List<SourceSpanException> validateIndexFieldsValue(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String) {
-      collector.addError(SourceSpanException(
-        'The "fields" property must have at least one field, (e.g. fields: fieldName).',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The "fields" property must have at least one field, (e.g. fields: fieldName).',
+          span,
+        )
+      ];
     }
+
+    return [];
 
     // todo add 2 pass check that fields exists in the class
   }
 
-  void validateIndexType(
+  List<SourceSpanException> validateIndexType(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! String) {
-      collector.addError(SourceSpanException(
-        'The "type" property must be of type String.',
-        span,
-      ));
+      return [
+        SourceSpanException(
+          'The "type" property must be of type String.',
+          span,
+        )
+      ];
     }
+
+    return [];
   }
 
-  void validateEnumValues(
+  List<SourceSpanException> validateEnumValues(
     dynamic content,
     SourceSpan? span,
-    CodeAnalysisCollector collector,
   ) {
     if (content is! YamlList) {
-      collector.addError(SourceSpanException(
-        'The "values" property must be a list of strings.',
-        span,
-      ));
-      return;
+      return [
+        SourceSpanException(
+          'The "values" property must be a list of strings.',
+          span,
+        )
+      ];
     }
 
-    for (var node in content.nodes) {
+    var nodeExceptions = content.nodes.map((node) {
       if (node is! YamlScalar || node.value is! String) {
-        collector.addError(SourceSpanException(
+        return SourceSpanException(
           'The "values" property must be a list of strings.',
           node.span,
-        ));
-        continue;
+        );
       }
 
       if (!StringValidators.isValidFieldName(node.value)) {
-        collector.addError(SourceSpanException(
+        return SourceSpanException(
           'Enum values must be lowerCamelCase.',
           node.span,
-        ));
+        );
       }
-    }
+
+      return null;
+    });
+
+    return nodeExceptions
+        .where((node) => node != null)
+        .cast<SourceSpanException>()
+        .toList();
   }
 }
