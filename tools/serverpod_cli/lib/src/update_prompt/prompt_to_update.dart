@@ -18,8 +18,8 @@ void _printPrompt(Version version) {
 }
 
 String _promptMessage(Version version) {
-  var versionLine =
-      '│ A new version $version of Serverpod is available!                                              │';
+  var versionLine = '│ A new version $version of Serverpod is available!'
+      '                                              │';
   if (versionLine.length > 89) {
     while (versionLine.length > 89) {
       versionLine = versionLine.removeAtIndex(versionLine.length - 2);
@@ -30,7 +30,7 @@ String _promptMessage(Version version) {
 ┌───────────────────────────────────────────────────────────────────────────────────────┐
 $versionLine
 │                                                                                       │
-│ To update to the latest version, run "serverpod upgrade".                             │
+│ To update to the latest version, run "dart pub global activate serverpod_cli".        │
 │ Also, do not forget to update packages in your server, client, and flutter projects.  │
 └───────────────────────────────────────────────────────────────────────────────────────┘
 ''';
