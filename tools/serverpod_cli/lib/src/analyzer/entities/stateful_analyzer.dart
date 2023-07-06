@@ -53,7 +53,7 @@ class StatefulAnalyzer {
 
     state.source.yaml = yaml;
 
-    var doc = SerializableEntityAnalyzer.extractYamlDefinition(state.source);
+    var doc = SerializableEntityAnalyzer.extractEntityDefinition(state.source);
     state.entity = doc;
     if (doc != null) {
       _upsertEntity(doc, uri);
@@ -121,7 +121,7 @@ class StatefulAnalyzer {
 
   List<SerializableEntityDefinition> _validateAllAnalyzers() {
     for (var state in _protocolStates.values) {
-      var doc = SerializableEntityAnalyzer.extractYamlDefinition(state.source);
+      var doc = SerializableEntityAnalyzer.extractEntityDefinition(state.source);
       state.entity = doc;
       if (doc != null) {
         _upsertEntity(doc, state.source.yamlSourceUri);

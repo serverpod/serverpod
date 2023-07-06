@@ -23,26 +23,12 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
-  String yaml;
-  final String sourceFileName;
-  late final String outFileName;
-  final List<String> subDirectoryParts;
-  final CodeAnalysisCollector collector;
+
   static const Set<String> _protocolClassTypes = {
     Keyword.classType,
     Keyword.exceptionType,
     Keyword.enumType,
   };
-
-  /// Create a new [SerializableEntityAnalyzer].
-  SerializableEntityAnalyzer({
-    required this.yaml,
-    required this.sourceFileName,
-    this.subDirectoryParts = const [],
-    required this.collector,
-  }) {
-    outFileName = _transformFileNameWithoutPathOrExtension(sourceFileName);
-  }
 
   /// Analyze all yaml files int the protocol directory.
   static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
@@ -55,7 +41,7 @@ class SerializableEntityAnalyzer {
 
     var classDefinitions = protocols
         .map((protocol) {
-          return SerializableEntityAnalyzer.extractYamlDefinition(protocol);
+          return SerializableEntityAnalyzer.extractEntityDefinition(protocol);
         })
         .where((definition) => definition != null)
         .cast<SerializableEntityDefinition>()
@@ -98,31 +84,7 @@ class SerializableEntityAnalyzer {
     return classDefinitions;
   }
 
-  SerializableEntityDefinition? analyze({
-    String? yaml,
-    List<SerializableEntityDefinition>? protocolEntities,
-  }) {
-    this.yaml = yaml ?? this.yaml;
-
-    var protocolSource = ProtocolSource(
-      this.yaml,
-      Uri(path: sourceFileName),
-      subDirectoryParts,
-    );
-
-    var serializedEntity = extractYamlDefinition(protocolSource);
-    validateYamlDefinition(
-      this.yaml,
-      sourceFileName,
-      collector,
-      serializedEntity,
-      protocolEntities,
-    );
-
-    return serializedEntity;
-  }
-
-  static SerializableEntityDefinition? extractYamlDefinition(
+  static SerializableEntityDefinition? extractEntityDefinition(
     ProtocolSource protocolSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
