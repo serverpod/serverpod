@@ -11,9 +11,8 @@ import 'dart:async' as _i2;
 import 'package:serverpod_test_module_client/src/protocol/module_class.dart'
     as _i3;
 
-/// {@category Endpoint}
-class EndpointModule extends _i1.EndpointRef {
-  EndpointModule(_i1.EndpointCaller caller) : super(caller);
+class _EndpointModule extends _i1.EndpointRef {
+  _EndpointModule(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.module';
@@ -32,9 +31,8 @@ class EndpointModule extends _i1.EndpointRef {
       );
 }
 
-/// {@category Endpoint}
-class EndpointStreaming extends _i1.EndpointRef {
-  EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
+class _EndpointStreaming extends _i1.EndpointRef {
+  _EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.streaming';
@@ -42,13 +40,13 @@ class EndpointStreaming extends _i1.EndpointRef {
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
-    module = EndpointModule(this);
-    streaming = EndpointStreaming(this);
+    module = _EndpointModule(this);
+    streaming = _EndpointStreaming(this);
   }
 
-  late final EndpointModule module;
+  late final _EndpointModule module;
 
-  late final EndpointStreaming streaming;
+  late final _EndpointStreaming streaming;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {

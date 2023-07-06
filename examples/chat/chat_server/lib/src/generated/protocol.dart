@@ -27,9 +27,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'channel',
-      dartName: 'Channel',
       schema: 'public',
-      module: 'chat',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

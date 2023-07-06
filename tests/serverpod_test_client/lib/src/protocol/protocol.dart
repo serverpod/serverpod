@@ -36,7 +36,6 @@ import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i26;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i27;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i28;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i29;
-import 'package:serverpod_auth_client/module.dart' as _i30;
 export 'exception_with_data.dart';
 export 'module_datatype.dart';
 export 'nullability.dart';
@@ -750,9 +749,6 @@ class Protocol extends _i1.SerializationManager {
     try {
       return _i23.Protocol().deserialize<T>(data, t);
     } catch (_) {}
-    try {
-      return _i30.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -762,10 +758,6 @@ class Protocol extends _i1.SerializationManager {
     className = _i23.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
-    }
-    className = _i30.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
     }
     if (data is _i28.CustomClass) {
       return 'CustomClass';
@@ -847,10 +839,6 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
       return _i23.Protocol().deserializeByClassName(data);
-    }
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
-      return _i30.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
       return deserialize<_i28.CustomClass>(data['data']);

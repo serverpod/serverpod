@@ -24,9 +24,8 @@ import 'protocol.dart' as _i10;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
-/// {@category Endpoint}
-class EndpointInsights extends _i1.EndpointRef {
-  EndpointInsights(_i1.EndpointCaller caller) : super(caller);
+class _EndpointInsights extends _i1.EndpointRef {
+  _EndpointInsights(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'insights';
@@ -191,10 +190,10 @@ class Client extends _i1.ServerpodClient {
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
-    insights = EndpointInsights(this);
+    insights = _EndpointInsights(this);
   }
 
-  late final EndpointInsights insights;
+  late final _EndpointInsights insights;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {'insights': insights};
