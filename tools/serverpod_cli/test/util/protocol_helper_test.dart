@@ -106,7 +106,7 @@ void main() {
         var protocols =
             await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-        expect(protocols.first.uri.path,
+        expect(protocols.first.yamlSourceUri.path,
             'test/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.yaml');
       });
 

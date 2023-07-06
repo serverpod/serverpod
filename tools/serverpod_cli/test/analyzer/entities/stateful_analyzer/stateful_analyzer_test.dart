@@ -257,7 +257,7 @@ fields:
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
 
-    statefulAnalyzer.removeYamlProtocol(yamlSource2.uri);
+    statefulAnalyzer.removeYamlProtocol(yamlSource2.yamlSourceUri);
 
     statefulAnalyzer.validateAll();
 
@@ -303,8 +303,8 @@ fields:
     statefulAnalyzer.addYamlProtocol(yamlSource2);
 
     // Need to validate twice to run the two pass logic.
-    statefulAnalyzer.validateProtocol(yamlSource2.yaml, yamlSource2.uri);
-    statefulAnalyzer.validateProtocol(yamlSource2.yaml, yamlSource2.uri);
+    statefulAnalyzer.validateProtocol(yamlSource2.yaml, yamlSource2.yamlSourceUri);
+    statefulAnalyzer.validateProtocol(yamlSource2.yaml, yamlSource2.yamlSourceUri);
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');

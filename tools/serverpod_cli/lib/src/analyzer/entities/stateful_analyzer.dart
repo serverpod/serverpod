@@ -17,12 +17,12 @@ class StatefulAnalyzer {
     for (var yamlSource in sources) {
       var analyzer = SerializableEntityAnalyzer(
         yaml: yamlSource.yaml,
-        sourceFileName: yamlSource.uri.path,
+        sourceFileName: yamlSource.yamlSourceUri.path,
         subDirectoryParts: yamlSource.protocolRootPathParts,
         collector: CodeGenerationCollector(),
       );
 
-      _analyzers[yamlSource.uri.path] = analyzer;
+      _analyzers[yamlSource.yamlSourceUri.path] = analyzer;
     }
 
     _entities = _validateAllAnalyzers();
@@ -69,12 +69,12 @@ class StatefulAnalyzer {
   void addYamlProtocol(ProtocolSource yamlSource) {
     var analyzer = SerializableEntityAnalyzer(
       yaml: yamlSource.yaml,
-      sourceFileName: yamlSource.uri.path,
+      sourceFileName: yamlSource.yamlSourceUri.path,
       subDirectoryParts: yamlSource.protocolRootPathParts,
       collector: CodeGenerationCollector(),
     );
 
-    _analyzers[yamlSource.uri.path] = analyzer;
+    _analyzers[yamlSource.yamlSourceUri.path] = analyzer;
   }
 
   /// Removes a protocol from the state but leaves the responsibility of validating
