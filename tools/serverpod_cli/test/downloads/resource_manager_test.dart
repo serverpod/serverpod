@@ -18,8 +18,7 @@ void main() {
     });
 
     test('serialization roundtrip for latest cli version artefact.', () async {
-      var storedArtefact =
-          LatestCliVersionArtefact(Version(1, 1, 1), DateTime.now());
+      var storedArtefact = CliVersionData(Version(1, 1, 1), DateTime.now());
 
       await resourceManager.storeLatestCliVersion(storedArtefact,
           localStoragePath: testCacheFolderPath);
@@ -37,7 +36,7 @@ void main() {
           testCacheFolderPath, ResourceManagerConstants.latestVersionFilePath));
       file.createSync(recursive: true);
       file.writeAsStringSync(
-          'This is corrupted content and :will not be :parsed as yaml');
+          'This is corrupted content and :will not be :parsed as json');
       expect(file.existsSync(), isTrue);
 
       await resourceManager.tryFetchLatestCliVersion(

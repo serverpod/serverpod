@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
@@ -5,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:uuid/uuid.dart';
-import 'package:yaml/yaml.dart';
 
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
@@ -60,7 +60,7 @@ class ResourceManager {
   }
 
   Future<void> storeLatestCliVersion(
-    LatestCliVersionArtefact cliData, {
+    CliVersionData cliVersionData, {
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
@@ -72,18 +72,15 @@ class ResourceManager {
         latestCliVersionFile.createSync(recursive: true);
       }
 
-      var data = {};
-      data[ResourceManagerConstants.latestVersionKeyword] = cliData.version;
-      data[ResourceManagerConstants.latestValidUntilKeyword] =
-          cliData.validUntil.millisecondsSinceEpoch;
+      var json = jsonEncode(cliVersionData);
 
-      latestCliVersionFile.writeAsStringSync(data.toString());
+      latestCliVersionFile.writeAsStringSync(json);
     } catch (e) {
       // Failed to write latest cli version to file.
     }
   }
 
-  Future<LatestCliVersionArtefact?> tryFetchLatestCliVersion({
+  Future<CliVersionData?> tryFetchLatestCliVersion({
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
@@ -94,17 +91,8 @@ class ResourceManager {
 
     try {
       if (latestCliVersionFile.existsSync()) {
-        var yaml = loadYaml(
-          latestCliVersionFile.readAsStringSync(),
-          sourceUrl: latestCliVersionFile.uri,
-        );
-        if (yaml is YamlMap) {
-          var version = Version.parse(
-              yaml[ResourceManagerConstants.latestVersionKeyword]);
-          var validUntil = DateTime.fromMillisecondsSinceEpoch(
-              yaml[ResourceManagerConstants.latestValidUntilKeyword]);
-          return LatestCliVersionArtefact(version, validUntil);
-        }
+        var json = jsonDecode(latestCliVersionFile.readAsStringSync());
+        return CliVersionData.fromJson(json);
       }
     } catch (e) {
       // Failed to read latest cli version from file.
@@ -158,9 +146,19 @@ class ResourceManager {
   }
 }
 
-class LatestCliVersionArtefact {
+class CliVersionData {
   Version version;
   DateTime validUntil;
 
-  LatestCliVersionArtefact(this.version, this.validUntil);
+  CliVersionData(this.version, this.validUntil);
+
+  factory CliVersionData.fromJson(Map<String, dynamic> json) => CliVersionData(
+        Version.parse(json['version']),
+        DateTime.fromMillisecondsSinceEpoch(json['valid_until']),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'version': version.toString(),
+        'valid_until': validUntil.millisecondsSinceEpoch
+      };
 }

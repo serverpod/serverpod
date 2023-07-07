@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
@@ -62,16 +63,16 @@ class PubDevService {
   Future<Version?> tryFetchAndStoreLatestVersion() async {
     var pubDevLatestVersion = await _tryFetchLatestCliVersion();
 
-    LatestCliVersionArtefact versionArtefact;
+    CliVersionData versionArtefact;
     Version? returnVersion;
     if (pubDevLatestVersion != null) {
-      versionArtefact = LatestCliVersionArtefact(
+      versionArtefact = CliVersionData(
         pubDevLatestVersion,
         DateTime.now().add(LatestCliVersionConstants.localStorageValidityTime),
       );
       returnVersion = pubDevLatestVersion;
     } else {
-      versionArtefact = LatestCliVersionArtefact(
+      versionArtefact = CliVersionData(
         Version.none,
         DateTime.now().add(LatestCliVersionConstants.badConnectionRetryTimeout),
       );
@@ -90,7 +91,7 @@ class PubDevService {
       var httpClient = client ?? http.Client();
 
       var response = await httpClient.get(uri).timeout(timeout);
-      if (response.statusCode != 200) return null;
+      if (response.statusCode != HttpStatus.ok) return null;
 
       Map<String, dynamic> map = jsonDecode(response.body);
       return Version.parse(map['latest']['version']);
