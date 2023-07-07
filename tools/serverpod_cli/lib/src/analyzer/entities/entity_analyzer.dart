@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/protocol_validator.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
@@ -23,9 +22,9 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
-  final String yaml;
+  String yaml;
   final String sourceFileName;
-  final String outFileName;
+  late final String outFileName;
   final List<String> subDirectoryParts;
   final CodeAnalysisCollector collector;
   static const Set<String> _protocolClassTypes = {
@@ -38,10 +37,11 @@ class SerializableEntityAnalyzer {
   SerializableEntityAnalyzer({
     required this.yaml,
     required this.sourceFileName,
-    required this.outFileName,
     this.subDirectoryParts = const [],
     required this.collector,
-  });
+  }) {
+    outFileName = _transformFileNameWithoutPathOrExtension(sourceFileName);
+  }
 
   /// Analyze all yaml files int the protocol directory.
   static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
@@ -51,32 +51,20 @@ class SerializableEntityAnalyzer {
   }) async {
     var classDefinitions = <SerializableEntityDefinition>[];
 
-    // Get list of all files in protocol source directory.
-    var sourceDir = Directory(p.joinAll(config.protocolSourcePathParts));
-    var sourceFileList = await sourceDir.list(recursive: true).toList();
-    sourceFileList.sort((a, b) => a.path.compareTo(b.path));
+    var protocols =
+        await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var sourceDirPartsLength = p.split(sourceDir.path).length;
-
-    for (var entity in sourceFileList) {
-      if (entity is! File || !entity.path.endsWith('.yaml')) {
-        if (verbose) print('  - skipping file: ${entity.path}');
-        continue;
-      }
-      var subDirectoryParts =
-          p.split(p.dirname(entity.path)).skip(sourceDirPartsLength).toList();
-
-      // Process a file.
-      if (verbose) print('  - processing file: ${entity.path}');
-      var yaml = await entity.readAsString();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: yaml,
-        sourceFileName: entity.path,
-        outFileName: _transformFileNameWithoutPathOrExtension(entity.path),
+    var validators = protocols.map((protocol) {
+      return SerializableEntityAnalyzer(
+        yaml: protocol.yaml,
+        sourceFileName: protocol.uri.path,
+        subDirectoryParts: protocol.protocolRootPathParts,
         collector: collector,
-        subDirectoryParts: subDirectoryParts,
       );
-      var classDefinition = analyzer.analyze();
+    });
+
+    for (var validator in validators) {
+      var classDefinition = validator.analyze();
       if (classDefinition != null) {
         classDefinitions.add(classDefinition);
       }
@@ -86,7 +74,6 @@ class SerializableEntityAnalyzer {
       var analyzer = SerializableEntityAnalyzer(
         yaml: definition.yamlProtocol,
         sourceFileName: definition.sourceFileName,
-        outFileName: definition.fileName,
         collector: collector,
         subDirectoryParts: definition.subDirParts,
       );
@@ -126,14 +113,16 @@ class SerializableEntityAnalyzer {
   }
 
   SerializableEntityDefinition? analyze({
+    String? yaml,
     List<SerializableEntityDefinition>? protocolEntities,
   }) {
     var yamlErrorCollector = ErrorCollector();
+    this.yaml = yaml ?? this.yaml;
 
     YamlDocument document;
     try {
       document = loadYamlDocument(
-        yaml,
+        this.yaml,
         sourceUrl: Uri.file(sourceFileName),
         errorListener: yamlErrorCollector,
         recover: true,
@@ -169,7 +158,7 @@ class SerializableEntityAnalyzer {
       collector,
     );
 
-    var docsExtractor = YamlDocumentationExtractor(yaml);
+    var docsExtractor = YamlDocumentationExtractor(this.yaml);
 
     if (documentContents.nodes[Keyword.classType] != null) {
       return _analyzeClassFile(

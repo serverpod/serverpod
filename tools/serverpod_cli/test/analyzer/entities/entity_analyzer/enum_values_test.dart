@@ -13,7 +13,6 @@ void main() {
 enum: ExampleEnum
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -37,7 +36,6 @@ enum: ExampleEnum
 values:
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -63,7 +61,6 @@ values:
   value2: 2
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -89,7 +86,6 @@ values:
   - 2
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -114,7 +110,6 @@ values:
   - InvalidValue
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -140,7 +135,6 @@ values:
   - second
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );

@@ -17,7 +17,6 @@ fields:
 indexes:
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -46,7 +45,6 @@ indexes:
   example_index:
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -76,7 +74,6 @@ indexes:
     fields: name
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -105,7 +102,6 @@ indexes:
     fields: name
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -134,7 +130,6 @@ indexes:
     fields:
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -164,7 +159,6 @@ indexes:
     fields: missingField
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -195,7 +189,6 @@ indexes:
     fields: apiField
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -225,7 +218,6 @@ indexes:
     fields: name,
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -257,7 +249,6 @@ indexes:
     fields: name
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -284,7 +275,6 @@ indexes:
     fields: name
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -314,7 +304,6 @@ indexes:
     fields: name, foo
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -348,7 +337,6 @@ indexes:
     fields: foo
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -378,7 +366,6 @@ indexes:
     unique: InvalidValue
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -407,7 +394,6 @@ indexes:
     fields: name
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -435,7 +421,6 @@ indexes:
     unique: false
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -463,7 +448,6 @@ indexes:
     unique: true
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -491,7 +475,6 @@ indexes:
     invalidKey: true
 ''',
       sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yateriml',
       subDirectoryParts: ['lib', 'src', 'protocol'],
       collector: collector,
     );
@@ -522,7 +505,6 @@ indexes:
     fields: name
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yateriml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -550,7 +532,6 @@ indexes:
     type: btree
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yateriml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -578,7 +559,6 @@ indexes:
     type: 1
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yateriml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );

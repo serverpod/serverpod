@@ -8,11 +8,13 @@ class ValidateNode {
   /// If true, the key must be present in the document.
   bool isRequired;
 
-  /// If set, the key must match the restriction, add any errors to the collector.
+  /// If set, the key must match the restriction if an error is returned the key
+  /// is considered invalid.
   /// Should only be used together with a [Keyword.any].
   List<SourceSpanException>? Function(String, SourceSpan?)? keyRestriction;
 
-  /// If set, the value must match the restriction, add any errors to the collector.
+  /// If set, the value must match the restriction if an error is returned the
+  /// value is considered invalid.
   List<SourceSpanException>? Function(dynamic, SourceSpan?)? valueRestriction;
 
   // A set of keys that are mutually exclusive with this key.
