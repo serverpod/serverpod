@@ -19,7 +19,7 @@ class StatefulAnalyzer {
 
   StatefulAnalyzer(
     List<ProtocolSource> sources, [
-    Function(Uri, CodeGenerationCollector)? callback,
+    Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
   ]) {
     for (var yamlSource in sources) {
       _protocolStates[yamlSource.yamlSourceUri.path] = _ProtocolState(
@@ -27,29 +27,11 @@ class StatefulAnalyzer {
       );
     }
 
-    _onErrorsChangedNotifier = callback;
+    _onErrorsChangedNotifier = onErrorsChangedNotifier;
   }
 
-  /// Loads all yaml protocols and initializes the state. The state is preserved
-  /// to make future validations less expensive.
-  /// Subsequent validations should use [validateAll] or [validateProtocol].
-  List<SerializableEntityDefinition> initialValidation(
-      List<ProtocolSource> sources) {
-    for (var yamlSource in sources) {
-      _protocolStates[yamlSource.yamlSourceUri.path] = _ProtocolState(
-        source: yamlSource,
-      );
-    }
-
-    _updateAllEntities();
-    _validateAllProtocols();
-    return _entities;
-  }
-
-  /// Runs the validation on all protocols, assumes protocols have been added
-  /// by running [initialValidation] or adding them manually
-  /// with [addYamlProtocol]. If not protocol has been initialized this method
-  /// returns an empty list.
+  /// Runs the validation on all protocols in the state. If no protocols are
+  /// registered, this returns an empty list.
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableEntityDefinition> validateAll() {
     _updateAllEntities();
@@ -57,11 +39,9 @@ class StatefulAnalyzer {
     return _entities;
   }
 
-  /// Runs the validation on a single protocol, assumes [initialValidation] has been
-  /// run before. The protocol must exist in the state, if not this returns
-  /// the last validated state. To validate a new protocol, use [addYamlProtocol]
-  /// and then run [validateAll] or [validateProtocol].
-  /// Errors are reported through the [registerOnErrorsChangedNotifier].
+  /// Runs the validation on a single protocol. The protocol must exist in the
+  /// state, if not this returns the last validated state. 
+  /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableEntityDefinition> validateProtocol(String yaml, Uri uri) {
     var state = _protocolStates[uri.path];
     if (state == null) return _entities;
