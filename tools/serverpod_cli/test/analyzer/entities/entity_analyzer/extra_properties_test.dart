@@ -17,7 +17,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -39,7 +38,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -60,7 +58,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -82,7 +79,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -108,7 +104,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -136,7 +131,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -158,7 +152,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -185,7 +178,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -212,7 +204,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -241,7 +232,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -268,7 +258,6 @@ fields:
   name: String
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -298,7 +287,6 @@ indexes:
     unique: true
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
@@ -326,7 +314,6 @@ values:
   - no
 ''',
         sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
         subDirectoryParts: ['lib', 'src', 'protocol'],
         collector: collector,
       );
