@@ -18,24 +18,6 @@ Future<void> runLanguageServer() async {
   late GeneratorConfig config;
   StatefulAnalyzer statefulAnalyzer = StatefulAnalyzer();
 
-  statefulAnalyzer.registerOnErrorsChangedNotifier((filePath, errors) {
-    var diagnostics = _convertErrorsToDiagnostic(errors);
-    connection.sendDiagnostics(
-      PublishDiagnosticsParams(
-        diagnostics: diagnostics,
-        uri: filePath,
-      ),
-    );
-  });
-
-  connection.onShutdown(() async {
-    statefulAnalyzer.unregisterOnErrorsChangedNotifier();
-    statefulAnalyzer.clearState();
-    parsingEnabled = false;
-  });
-
-  connection.onExit(() => exit(0));
-
   connection.onInitialize((params) async {
     serverRootUri = params.rootUri;
     return InitializeResult(
@@ -64,6 +46,14 @@ Future<void> runLanguageServer() async {
       );
     }
   });
+
+  connection.onShutdown(() async {
+    statefulAnalyzer.unregisterOnErrorsChangedNotifier();
+    statefulAnalyzer.clearState();
+    parsingEnabled = false;
+  });
+
+  connection.onExit(() => exit(0));
 
   connection.onDidCloseTextDocument((params) async {
     if (!parsingEnabled) return;
@@ -117,8 +107,18 @@ Future<void> runLanguageServer() async {
       params.textDocument.uri,
     );
 
-    // This can be optimised to only validate the files we know have related errors.
+    // This can be optimized to only validate the files we know have related errors.
     statefulAnalyzer.validateAll();
+  });
+
+  statefulAnalyzer.registerOnErrorsChangedNotifier((filePath, errors) {
+    var diagnostics = _convertErrorsToDiagnostic(errors);
+    connection.sendDiagnostics(
+      PublishDiagnosticsParams(
+        diagnostics: diagnostics,
+        uri: filePath,
+      ),
+    );
   });
 
   await connection.listen();
