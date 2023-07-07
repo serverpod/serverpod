@@ -15,29 +15,6 @@ void main() {
   });
 
   test(
-      'When we add a protocol and clear the state, then an empty list is returned when validating all files.',
-      () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
-      '''
-class: Example
-fields:
-  name: String
-''',
-      protocolUri,
-      [],
-    );
-    statefulAnalyzer.addYamlProtocol(yamlSource);
-    statefulAnalyzer.clearState();
-
-    var entities = statefulAnalyzer.validateAll();
-
-    expect(entities, []);
-  });
-
-  test(
       'When we add and remove a protocol, then an empty list is returned when validating all files.',
       () {
     var statefulAnalyzer = StatefulAnalyzer();

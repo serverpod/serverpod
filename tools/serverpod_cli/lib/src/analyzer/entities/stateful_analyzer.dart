@@ -104,12 +104,6 @@ class StatefulAnalyzer {
     return _protocolStates.containsKey(uri.path);
   }
 
-  /// Reset the internal state of the analyzer.
-  void clearState() {
-    _protocolStates.clear();
-    _entities.clear();
-  }
-
   void _updateAllEntities() {
     for (var state in _protocolStates.values) {
       var doc = SerializableEntityAnalyzer.extractEntityDefinition(

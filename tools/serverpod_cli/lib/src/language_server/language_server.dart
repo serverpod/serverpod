@@ -33,7 +33,6 @@ Future<void> runLanguageServer() async {
       config = await _initializeAnalyzer(statefulAnalyzer, serverRootUri!);
     } catch (e) {
       statefulAnalyzer.unregisterOnErrorsChangedNotifier();
-      statefulAnalyzer.clearState();
       parsingEnabled = false;
 
       connection.sendNotification(
@@ -49,7 +48,6 @@ Future<void> runLanguageServer() async {
 
   connection.onShutdown(() async {
     statefulAnalyzer.unregisterOnErrorsChangedNotifier();
-    statefulAnalyzer.clearState();
     parsingEnabled = false;
   });
 
