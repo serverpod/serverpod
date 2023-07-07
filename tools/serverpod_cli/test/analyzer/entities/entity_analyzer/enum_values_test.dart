@@ -9,7 +9,7 @@ void main() {
       'Given an enum without a values property, then collect an error that the values property is required.',
       () {
     var collector = CodeGenerationCollector();
-    
+
     var protocol = ProtocolSource(
       '''
 enum: ExampleEnum
@@ -18,8 +18,9 @@ enum: ExampleEnum
       ['lib', 'src', 'protocol'],
     );
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-    
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
@@ -27,7 +28,7 @@ enum: ExampleEnum
       definition,
       [definition!],
     );
-    
+
     expect(collector.errors.length, greaterThan(0));
 
     var error = collector.errors.first;
@@ -39,7 +40,7 @@ enum: ExampleEnum
       'Given an enum with an empty values property, then collect an error that values must be defined.',
       () {
     var collector = CodeGenerationCollector();
-    
+
     var protocol = ProtocolSource(
       '''
 enum: ExampleEnum
@@ -49,8 +50,9 @@ values:
       ['lib', 'src', 'protocol'],
     );
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-    
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
@@ -70,7 +72,7 @@ values:
       'Given an enum with the values property defined as a map, then collect an error that values must be a list.',
       () {
     var collector = CodeGenerationCollector();
-    
+
     var protocol = ProtocolSource(
       '''
 enum: ExampleEnum
@@ -82,8 +84,9 @@ values:
       ['lib', 'src', 'protocol'],
     );
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-    
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
@@ -103,7 +106,7 @@ values:
       'Given an enum with the values with none string values, then collect an error that values must be a list of strings.',
       () {
     var collector = CodeGenerationCollector();
-    
+
     var protocol = ProtocolSource(
       '''
 enum: ExampleEnum
@@ -115,8 +118,9 @@ values:
       ['lib', 'src', 'protocol'],
     );
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-    
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
@@ -136,7 +140,7 @@ values:
       'Given an enum with an invalid enum string structure, then collect an error that the string must follow the required syntax.',
       () {
     var collector = CodeGenerationCollector();
-    
+
     var protocol = ProtocolSource(
       '''
 enum: ExampleEnum
@@ -147,8 +151,9 @@ values:
       ['lib', 'src', 'protocol'],
     );
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-    
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
@@ -178,7 +183,9 @@ values:
       ['lib', 'src', 'protocol'],
     );
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(protocol) as EnumDefinition;
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+            as EnumDefinition;
 
     expect(definition.values.first.name, 'first');
     expect(definition.values.last.name, 'second');

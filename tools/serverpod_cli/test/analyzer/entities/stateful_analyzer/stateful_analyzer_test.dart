@@ -225,7 +225,6 @@ fields:
 
     expect(reportedErrors?.errors, hasLength(0),
         reason: 'Expected the error to be cleared.');
-
   });
 
   test(

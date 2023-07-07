@@ -121,7 +121,8 @@ class StatefulAnalyzer {
 
   List<SerializableEntityDefinition> _validateAllAnalyzers() {
     for (var state in _protocolStates.values) {
-      var doc = SerializableEntityAnalyzer.extractEntityDefinition(state.source);
+      var doc =
+          SerializableEntityAnalyzer.extractEntityDefinition(state.source);
       state.entity = doc;
       if (doc != null) {
         _upsertEntity(doc, state.source.yamlSourceUri);

@@ -23,7 +23,6 @@ String _transformFileNameWithoutPathOrExtension(String path) {
 
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
-
   static const Set<String> _protocolClassTypes = {
     Keyword.classType,
     Keyword.exceptionType,

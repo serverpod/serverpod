@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-
 import '../../../generator/types.dart';
 import '../converter/converter.dart';
 import '../definitions.dart';
@@ -190,7 +189,8 @@ class EntityParser {
     );
   }
 
-  static SerializableEntityFieldScope _parseClassFieldscope(YamlMap documentContents) {
+  static SerializableEntityFieldScope _parseClassFieldscope(
+      YamlMap documentContents) {
     var database = documentContents.containsKey(Keyword.database);
     var api = documentContents.containsKey(Keyword.api);
 

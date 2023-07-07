@@ -52,12 +52,7 @@ fields:
     var definition =
         SerializableEntityAnalyzer.extractEntityDefinition(protocol);
     SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      []
-    );
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, 0);
   });
@@ -79,12 +74,7 @@ fields:
     var definition =
         SerializableEntityAnalyzer.extractEntityDefinition(protocol);
     SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      []
-    );
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect((definition as ClassDefinition).className, 'PascalCASEString');
   });
@@ -106,12 +96,7 @@ fields:
     var definition =
         SerializableEntityAnalyzer.extractEntityDefinition(protocol);
     SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      []
-    );
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, greaterThan(0));
 
@@ -138,12 +123,7 @@ fields:
     var definition =
         SerializableEntityAnalyzer.extractEntityDefinition(protocol);
     SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      []
-    );
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, greaterThan(0));
 
@@ -171,12 +151,7 @@ values:
     var definition =
         SerializableEntityAnalyzer.extractEntityDefinition(protocol);
     SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      []
-    );
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, greaterThan(0));
 
@@ -236,13 +211,8 @@ fields:
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
         protocol,
       );
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        []
-      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -268,13 +238,8 @@ fields:
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
         protocol,
       );
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        []
-      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
       var span = collector.errors.first.span;
@@ -305,13 +270,8 @@ fields:
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
         protocol,
       );
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        []
-      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -340,13 +300,8 @@ fields:
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
         protocol,
       );
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        []
-      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -373,13 +328,8 @@ fields:
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
         protocol,
       );
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        []
-      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(1));
 
