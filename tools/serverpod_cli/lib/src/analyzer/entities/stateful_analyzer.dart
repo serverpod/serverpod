@@ -100,18 +100,6 @@ class StatefulAnalyzer {
     );
   }
 
-  /// Register a callback that is called when the errors in a file changes.
-  void registerOnErrorsChangedNotifier(
-    Function(Uri, CodeGenerationCollector) callback,
-  ) {
-    _onErrorsChangedNotifier = callback;
-  }
-
-  /// Unregister the callback that is called when the errors in a file changes.
-  void unregisterOnErrorsChangedNotifier() {
-    _onErrorsChangedNotifier = null;
-  }
-
   /// Checks if a protocol is registered in the state.
   bool isProtocolRegistered(Uri uri) {
     return _protocolStates.containsKey(uri.path);
