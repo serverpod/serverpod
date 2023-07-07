@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:lsp_server/lsp_server.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
