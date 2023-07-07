@@ -20,6 +20,10 @@ class ValueEncoder extends PostgresTextEncoder {
           escapeStrings: escapeStrings);
     } else if (input is UuidValue) {
       return "'${input.uuid}'";
+    } else if (input is Enum) {
+      // Encode enum values without quotes (which would otherwise be added
+      // by JSON encoding)
+      return '\'${input.name}\'';
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {
