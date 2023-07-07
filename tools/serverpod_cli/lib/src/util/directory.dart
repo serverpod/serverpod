@@ -18,7 +18,9 @@ bool isServerpodRootDirectory([Directory? directory]) {
   return true;
 }
 
-bool isServerDirectory(Directory directory) {
+bool isServerDirectory(Directory? directory) {
+  if (directory == null) return false;
+
   var pubspec = File(p.join(directory.path, 'pubspec.yaml'));
   var generator = File(p.join(directory.path, 'config', 'generator.yaml'));
 
