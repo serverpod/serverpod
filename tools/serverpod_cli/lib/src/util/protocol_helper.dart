@@ -18,7 +18,7 @@ class ProtocolHelper {
     var sourceDir = Directory(joinAll(config.protocolSourcePathParts));
     var sourceFileList = await sourceDir.list(recursive: true).toList();
 
-    // TODO This sort is needed to make sure all generated methods 
+    // TODO This sort is needed to make sure all generated methods
     // are in the same order. Move this logic to the code generator instead.
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
