@@ -8,9 +8,9 @@ class StatefulAnalyzer {
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
-  /// Validates all protocols by running the validater twice to make sure all
+  /// Validates all protocols by running the validator twice to make sure all
   /// references are resolved. The state is preserved to make future validations
-  /// less expensive. This method is required to use for the initialisation of
+  /// less expensive. This method is required to use for the initialization of
   /// the state. Subsequent validations should use [validateAll] or [validateProtocol].
   List<SerializableEntityDefinition> initialValidation(
       List<ProtocolSource> sources) {
