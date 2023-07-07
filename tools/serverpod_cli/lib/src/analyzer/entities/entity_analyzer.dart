@@ -14,7 +14,7 @@ import '../../util/yaml_docs.dart';
 import '../code_analysis_collector.dart';
 import '../../config/config.dart';
 import 'definitions.dart';
-import 'entity_parser/enetity_parser.dart';
+import 'entity_parser/entity_parser.dart';
 import 'validation/restrictions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {

@@ -176,7 +176,7 @@ class EntityParser {
       typeValue.replaceAll(' ', ''),
       sourceSpan: typeNode.span,
     );
-    var scope = _parseClassFieldscope(value);
+    var scope = _parseClassFieldScope(value);
     var parentTable = _parseParentTable(value);
     var isEnum = _parseIsEnumField(value);
 
@@ -189,7 +189,7 @@ class EntityParser {
     );
   }
 
-  static SerializableEntityFieldScope _parseClassFieldscope(
+  static SerializableEntityFieldScope _parseClassFieldScope(
       YamlMap documentContents) {
     var database = documentContents.containsKey(Keyword.database);
     var api = documentContents.containsKey(Keyword.api);
