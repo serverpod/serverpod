@@ -40,7 +40,7 @@ class StatefulAnalyzer {
   }
 
   /// Runs the validation on a single protocol. The protocol must exist in the
-  /// state, if not this returns the last validated state. 
+  /// state, if not this returns the last validated state.
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableEntityDefinition> validateProtocol(String yaml, Uri uri) {
     var state = _protocolStates[uri.path];
