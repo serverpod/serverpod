@@ -212,7 +212,7 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       reportedErrors = errors;
     });
 
