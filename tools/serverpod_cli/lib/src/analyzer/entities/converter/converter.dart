@@ -6,12 +6,7 @@ import 'package:yaml/yaml.dart';
 import 'package:yaml/src/equality.dart';
 
 List<String> convertIndexList(String stringifiedFields) {
-  return stringifiedFields
-      .split(',')
-      .map(
-        (String str) => str.trim(),
-      )
-      .toList();
+  return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
 YamlMap convertStringifiedNestedNodesToYamlMap(
