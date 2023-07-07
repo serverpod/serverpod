@@ -86,7 +86,7 @@ class StatefulAnalyzer {
   }
 
   /// Register a callback that is called when the errors in a file changes.
-  void regsiterOnErrorsChangedNotifier(
+  void registerOnErrorsChangedNotifier(
     Function(Uri, CodeGenerationCollector) callback,
   ) {
     _onErrorsChangedNotifier = callback;
