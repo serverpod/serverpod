@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:http/http.dart';
+import 'package:http/testing.dart';
 import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
@@ -9,8 +9,6 @@ import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:serverpod_cli/src/util/latest_cli_version.dart';
 import 'package:test/test.dart';
-
-import 'latest_cli_version_test.mocks.dart';
 
 String _getPubDevResponse(Version version) {
   return '''
@@ -23,7 +21,6 @@ String _getPubDevResponse(Version version) {
 ''';
 }
 
-@GenerateMocks([http.Client])
 void main() {
   var testStorageFolderPath = p.join(
     'test',
@@ -67,6 +64,20 @@ void main() {
     expect(file.existsSync(), isTrue);
   }
 
+  MockClient createMockClient({
+    required String body,
+    required int status,
+    Duration responseDelay = const Duration(seconds: 0),
+  }) {
+    return MockClient((request) {
+      if (request.method != 'GET') throw NoSuchMethodError;
+      return Future<Response>(() async {
+        await Future.delayed(responseDelay);
+        return http.Response(body, HttpStatus.ok);
+      });
+    });
+  }
+
   var versionForTest = Version(1, 1, 0);
 
   group('Stored version on disk', () {
@@ -93,11 +104,9 @@ void main() {
       test('when successful in fetching latest version from pub.dev.',
           () async {
         var pubDevVersion = versionForTest.nextMajor;
-        var client = MockClient();
-        when(client.get(Uri.parse(LatestCliVersionConstants.pubDevUri)))
-            .thenAnswer(
-          (_) async =>
-              http.Response(_getPubDevResponse(pubDevVersion), HttpStatus.ok),
+        var client = createMockClient(
+          body: _getPubDevResponse(pubDevVersion),
+          status: HttpStatus.ok,
         );
 
         var fetchedVersion = await tryFetchLatestValidCliVersion(
@@ -109,12 +118,7 @@ void main() {
       });
 
       test('when failed to fetch latest version from pub.dev.', () async {
-        var client = MockClient();
-        when(client.get(
-          Uri.parse(LatestCliVersionConstants.pubDevUri),
-        )).thenAnswer(
-          (_) async => http.Response('', HttpStatus.notFound),
-        );
+        var client = createMockClient(body: '', status: HttpStatus.notFound);
 
         var version = await tryFetchLatestValidCliVersion(
             localStorageService: testStorageService,
@@ -129,13 +133,12 @@ void main() {
         var timeout = const Duration(milliseconds: 1);
         storeVersionOnDisk(
             versionForTest, DateTime.now().subtract(const Duration(hours: 1)));
-        var client = MockClient();
-        when(client.get(Uri.parse(LatestCliVersionConstants.pubDevUri)))
-            .thenAnswer((_) async {
-          await Future.delayed(timeout * 10);
-          return http.Response(
-              _getPubDevResponse(fetchedVersion), HttpStatus.ok);
-        });
+        var client = createMockClient(
+          body: _getPubDevResponse(fetchedVersion),
+          status: HttpStatus.ok,
+          responseDelay:
+              timeout * 10, // Messaged is delayed longer than the timeout
+        );
 
         var version = await tryFetchLatestValidCliVersion(
           localStorageService: testStorageService,
@@ -149,10 +152,10 @@ void main() {
 
   group('No file on disk', () {
     test('when successful in fetching latest version from pub.dev.', () async {
-      var client = MockClient();
-      when(client.get(Uri.parse(LatestCliVersionConstants.pubDevUri)))
-          .thenAnswer((_) async =>
-              http.Response(_getPubDevResponse(versionForTest), HttpStatus.ok));
+      var client = createMockClient(
+        body: _getPubDevResponse(versionForTest),
+        status: HttpStatus.ok,
+      );
 
       var version = await tryFetchLatestValidCliVersion(
           localStorageService: testStorageService,
@@ -168,9 +171,10 @@ void main() {
     });
 
     test('when failed to fetch latest version from pub.dev.', () async {
-      var client = MockClient();
-      when(client.get(Uri.parse(LatestCliVersionConstants.pubDevUri)))
-          .thenAnswer((_) async => http.Response('', HttpStatus.notFound));
+      var client = createMockClient(
+        body: '',
+        status: HttpStatus.notFound,
+      );
 
       var version = await tryFetchLatestValidCliVersion(
           localStorageService: testStorageService,
