@@ -129,7 +129,7 @@ fields:
     );
 
     var wasCalled = false;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       wasCalled = true;
     });
 
@@ -150,7 +150,7 @@ fields:
     );
 
     var wasCalled = false;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       wasCalled = true;
     });
 
@@ -177,7 +177,7 @@ fields:
     statefulAnalyzer.initialValidation([yamlSource]);
 
     var wasCalled = false;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       wasCalled = true;
     });
 
@@ -212,7 +212,7 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       reportedErrors = errors;
     });
 
@@ -248,7 +248,7 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       reportedErrors = errors;
     });
 
@@ -291,7 +291,7 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.regsiterOnErrorsChangedNotifier((uri, errors) {
+    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
       reportedErrors = errors;
     });
 
