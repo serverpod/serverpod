@@ -17,7 +17,6 @@ class ProtocolHelper {
   ) async {
     var sourceDir = Directory(joinAll(config.protocolSourcePathParts));
     var sourceFileList = await sourceDir.list(recursive: true).toList();
-    sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
     var files = sourceFileList
         .where((entity) => entity is File && entity.path.endsWith('.yaml'))
