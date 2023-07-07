@@ -18,7 +18,7 @@ Future<void> runLanguageServer() async {
   late GeneratorConfig config;
   StatefulAnalyzer statefulAnalyzer = StatefulAnalyzer();
 
-  statefulAnalyzer.regsiterOnErrorsChangedNotifier((filePath, errors) {
+  statefulAnalyzer.registerOnErrorsChangedNotifier((filePath, errors) {
     var diagnostics = _convertErrorsToDiagnostic(errors);
     connection.sendDiagnostics(
       PublishDiagnosticsParams(
