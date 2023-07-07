@@ -109,9 +109,6 @@ Future<void> runLanguageServer() async {
       contentChanges.first.text,
       params.textDocument.uri,
     );
-
-    // This can be optimized to only validate the files we know have related errors.
-    serverDirectory?.analyzer.validateAll();
   });
 
   await connection.listen();
