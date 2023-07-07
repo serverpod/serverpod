@@ -30,7 +30,6 @@ class LocalStorageService {
   final String? optionalLocalStoragePath;
 
   const LocalStorageService({this.optionalLocalStoragePath});
-  LocalStorageService.nonConst({this.optionalLocalStoragePath});
 
   Future<Version?> fetchLatestCliVersion() async {
     var localStorageData = await resourceManager.tryFetchLatestCliVersion(
@@ -50,11 +49,6 @@ class PubDevService {
   final Duration timeout;
 
   const PubDevService({
-    this.optionalLocalStoragePath,
-    this.client,
-    this.timeout = LatestCliVersionConstants.pubDevConnectionTimeout,
-  });
-  PubDevService.nonConst({
     this.optionalLocalStoragePath,
     this.client,
     this.timeout = LatestCliVersionConstants.pubDevConnectionTimeout,
