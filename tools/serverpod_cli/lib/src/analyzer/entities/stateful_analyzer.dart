@@ -42,7 +42,7 @@ class StatefulAnalyzer {
   /// run before. The protocol must exist in the state, if not this returns
   /// the last validated state. To validate a new protocol, use [addYamlProtocol]
   /// and then run [validateAll] or [validateProtocol].
-  /// Errors are reported through the [onErrorsChangedNotifier].
+  /// Errors are reported through the [registerOnErrorsChangedNotifier].
   List<SerializableEntityDefinition> validateProtocol(String yaml, Uri uri) {
     var analyzer = _analyzers[uri.path];
     if (analyzer == null) return _entities;
