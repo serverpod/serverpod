@@ -37,7 +37,7 @@ void main() {
   });
 
   var testStorageService =
-      LocalStorageService(optionalLocalStoragePath: testStorageFolderPath);
+      CliVersionStorageService(optionalLocalStoragePath: testStorageFolderPath);
 
   PubDevService getTestPubDevService(
     http.Client testClient, {

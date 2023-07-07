@@ -14,7 +14,7 @@ abstract class LatestCliVersionConstants {
 
 /// Attempts to fetch the latest cli version from either local storage of pub.dev
 Future<Version?> tryFetchLatestValidCliVersion({
-  localStorageService = const LocalStorageService(),
+  localStorageService = const CliVersionStorageService(),
   pubDevService = const PubDevService(),
 }) async {
   var latestCliVersion = await localStorageService.fetchLatestCliVersion();
@@ -26,10 +26,10 @@ Future<Version?> tryFetchLatestValidCliVersion({
   return latestCliVersion;
 }
 
-class LocalStorageService {
+class CliVersionStorageService {
   final String? optionalLocalStoragePath;
 
-  const LocalStorageService({this.optionalLocalStoragePath});
+  const CliVersionStorageService({this.optionalLocalStoragePath});
 
   Future<Version?> fetchLatestCliVersion() async {
     var localStorageData = await resourceManager.tryFetchLatestCliVersion(
