@@ -38,13 +38,9 @@ class SerializableEntityAnalyzer {
     var protocols =
         await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var classDefinitions = protocols
-        .map((protocol) {
-          return SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        })
-        .where((definition) => definition != null)
-        .cast<SerializableEntityDefinition>()
-        .toList();
+    var classDefinitions = _convertProtocolToEntityDefinitions(
+      protocols,
+    );
 
     for (var classDefinition in classDefinitions) {
       SerializableEntityAnalyzer.validateYamlDefinition(
@@ -81,6 +77,16 @@ class SerializableEntityAnalyzer {
     }
 
     return classDefinitions;
+  }
+
+  static List<SerializableEntityDefinition> _convertProtocolToEntityDefinitions(
+      List<ProtocolSource> protocols) {
+    return protocols
+        .map((protocol) {
+          return SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        })
+        .whereType<SerializableEntityDefinition>()
+        .toList();
   }
 
   static SerializableEntityDefinition? extractEntityDefinition(
