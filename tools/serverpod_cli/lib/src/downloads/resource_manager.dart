@@ -65,7 +65,9 @@ class ResourceManager {
   }) async {
     localStoragePath ??= localStorageDirectory.path;
     var latestCliVersionFile = File(p.join(
-        localStoragePath, ResourceManagerConstants.latestVersionFilePath));
+      localStoragePath,
+      ResourceManagerConstants.latestVersionFilePath,
+    ));
 
     try {
       if (!latestCliVersionFile.existsSync()) {
