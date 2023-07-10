@@ -29,7 +29,7 @@ class SerializableEntityAnalyzer {
     Keyword.enumType,
   };
 
-  /// Analyze all yaml files int the protocol directory.
+  /// Analyze all yaml files in the protocol directory.
   static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
     bool verbose = true,
     required CodeAnalysisCollector collector,
