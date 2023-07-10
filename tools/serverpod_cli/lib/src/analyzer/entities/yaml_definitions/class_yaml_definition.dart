@@ -51,7 +51,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
-                mutuallyExclusiveKeys: {Keyword.database},
+                mutuallyExclusiveKeys: {Keyword.database, Keyword.parent},
               ),
             },
           ),
