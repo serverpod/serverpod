@@ -13,10 +13,10 @@ class SignInWithEmailButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
-  /// The style of the button.
+  /// The text of the button.
   final Text? label;
 
-  /// The style of the button.
+  /// The icon of the button.
   final Icon? icon;
 
   /// Minimum allowed password length.
