@@ -12,24 +12,24 @@ import '../validation/validate_node.dart';
 
 class EntityParser {
   static SerializableEntityDefinition? serializeClassFile(
-    String documentType,
+    String documentTypeName,
     ProtocolSource protocolSource,
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     ValidateNode fieldStructure,
   ) {
-    YamlNode? classNode = documentContents.nodes[documentType];
+    YamlNode? classNode = documentContents.nodes[documentTypeName];
 
     if (classNode == null) {
       throw ArgumentError(
-        'No $documentType node found, only valid to call this function if '
+        'No $documentTypeName node found, only valid to call this function if '
         ' the documentType exists as a top level key in the document.',
       );
     }
 
     var classDocumentation = docsExtractor.getDocumentation(
-      documentContents.key(documentType)!.span.start,
+      documentContents.key(documentTypeName)!.span.start,
     );
 
     var className = classNode.value;
@@ -55,13 +55,12 @@ class EntityParser {
       indexes: indexes,
       subDirParts: protocolSource.protocolRootPathParts,
       documentation: classDocumentation,
-      isException: documentType == Keyword.exceptionType,
+      isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
     );
   }
 
   static SerializableEntityDefinition? serializeEnumFile(
-    String documentType,
     ProtocolSource protocolSource,
     String outFileName,
     YamlMap documentContents,

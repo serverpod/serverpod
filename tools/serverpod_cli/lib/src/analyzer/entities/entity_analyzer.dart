@@ -138,7 +138,6 @@ class SerializableEntityAnalyzer {
         );
       case Keyword.enumType:
         return EntityParser.serializeEnumFile(
-          Keyword.enumType,
           protocolSource,
           outFileName,
           documentContents,
