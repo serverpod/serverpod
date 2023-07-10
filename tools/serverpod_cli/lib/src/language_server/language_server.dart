@@ -10,16 +10,29 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import '../../analyzer.dart';
 import '../generator/code_generation_collector.dart';
 
+class ServerDirectory {
+  Uri serverRootUri;
+  GeneratorConfig config;
+  StatefulAnalyzer analyzer;
+
+  ServerDirectory({
+    required this.serverRootUri,
+    required this.config,
+    required this.analyzer,
+  });
+}
+
 Future<void> runLanguageServer() async {
   var connection = Connection(stdin, stdout);
 
-  bool parsingEnabled = true;
-  Uri? serverRootUri;
-  late GeneratorConfig config;
-  StatefulAnalyzer statefulAnalyzer = StatefulAnalyzer();
+  ServerDirectory? serverDirectory;
 
   connection.onInitialize((params) async {
-    serverRootUri = params.rootUri;
+    var rootUri = params.rootUri;
+    if (rootUri != null) {
+      serverDirectory = await _loadServerDirectory(rootUri, connection);
+    }
+
     return InitializeResult(
       capabilities: ServerCapabilities(
         textDocumentSync: const Either2.t1(TextDocumentSyncKind.Full),
@@ -28,55 +41,50 @@ Future<void> runLanguageServer() async {
   });
 
   connection.onInitialized((_) async {
-    try {
-      if (serverRootUri == null) throw Exception('No root URI set.');
-      config = await _initializeAnalyzer(statefulAnalyzer, serverRootUri!);
-    } catch (e) {
-      statefulAnalyzer.unregisterOnErrorsChangedNotifier();
-      parsingEnabled = false;
-
-      connection.sendNotification(
-        'window/showMessage',
-        ShowMessageParams(
-          message:
-              'Serverpod protocol validation disabled, not a Serverpod project.',
-          type: MessageType.Info,
-        ).toJson(),
-      );
+    if (serverDirectory == null) {
+      _sendServerDisabledNotification(connection);
+    } else {
+      serverDirectory?.analyzer.validateAll();
     }
   });
 
   connection.onShutdown(() async {
-    statefulAnalyzer.unregisterOnErrorsChangedNotifier();
-    parsingEnabled = false;
+    serverDirectory?.analyzer.unregisterOnErrorsChangedNotifier();
+    serverDirectory = null;
   });
 
   connection.onExit(() => exit(0));
 
   connection.onDidCloseTextDocument((params) async {
-    if (!parsingEnabled) return;
-    if (!statefulAnalyzer.isProtocolRegistered(params.textDocument.uri)) return;
+    var serverDir = serverDirectory;
+    if (serverDir == null) return;
+    if (!serverDir.analyzer.isProtocolRegistered(params.textDocument.uri)) {
+      return;
+    }
     if (_isFileOnDisk(params.textDocument.uri)) return;
 
-    statefulAnalyzer.removeYamlProtocol(params.textDocument.uri);
+    serverDir.analyzer.removeYamlProtocol(params.textDocument.uri);
 
-    // This can be optimized to only validate the files we know have related errors.
-    statefulAnalyzer.validateAll();
+    serverDir.analyzer.validateAll();
   });
 
   connection.onDidOpenTextDocument((params) async {
-    if (!parsingEnabled) return;
-    if (statefulAnalyzer.isProtocolRegistered(params.textDocument.uri)) return;
-    if (!_isProtocolInServerPath(params.textDocument.uri, serverRootUri)) {
+    var serverDir = serverDirectory;
+    if (serverDir == null) return;
+    if (serverDir.analyzer.isProtocolRegistered(params.textDocument.uri)) {
+      return;
+    }
+    if (!_isProtocolInServerPath(
+        params.textDocument.uri, serverDir.serverRootUri)) {
       return;
     }
 
-    statefulAnalyzer.addYamlProtocol(
+    serverDir.analyzer.addYamlProtocol(
       ProtocolSource(
         params.textDocument.text,
         params.textDocument.uri,
         ProtocolHelper.extractPathFromProtocolRoot(
-          config,
+          serverDir.config,
           params.textDocument.uri,
         ),
       ),
@@ -84,10 +92,12 @@ Future<void> runLanguageServer() async {
 
     // We need to validate all protocols as the new protocol might reference or
     // be referenced by other protocols.
-    statefulAnalyzer.validateAll();
+    serverDir.analyzer.validateAll();
   });
 
   connection.onDidChangeTextDocument((params) async {
+    if (serverDirectory == null) return;
+
     var contentChanges = params.contentChanges.map((content) {
       return content.map(
         (document) => TextDocumentContentChangeEvent2(text: document.text),
@@ -95,52 +105,75 @@ Future<void> runLanguageServer() async {
       );
     });
 
-    statefulAnalyzer.validateProtocol(
+    serverDirectory?.analyzer.validateProtocol(
       contentChanges.first.text,
       params.textDocument.uri,
     );
 
     // This can be optimized to only validate the files we know have related errors.
-    statefulAnalyzer.validateAll();
-  });
-
-  statefulAnalyzer.registerOnErrorsChangedNotifier((filePath, errors) {
-    var diagnostics = _convertErrorsToDiagnostic(errors);
-    connection.sendDiagnostics(
-      PublishDiagnosticsParams(
-        diagnostics: diagnostics,
-        uri: filePath,
-      ),
-    );
+    serverDirectory?.analyzer.validateAll();
   });
 
   await connection.listen();
 }
 
-Future<GeneratorConfig> _initializeAnalyzer(
-  StatefulAnalyzer statefulAnalyzer,
+void _reportDiagnosticErrors(
+  Connection connection,
+  Uri filePath,
+  CodeGenerationCollector errors,
+) {
+  var diagnostics = _convertErrorsToDiagnostic(errors);
+  connection.sendDiagnostics(
+    PublishDiagnosticsParams(
+      diagnostics: diagnostics,
+      uri: filePath,
+    ),
+  );
+}
+
+void _sendServerDisabledNotification(Connection connection) {
+  connection.sendNotification(
+    'window/showMessage',
+    ShowMessageParams(
+      message:
+          'Serverpod protocol validation disabled, not a Serverpod project.',
+      type: MessageType.Info,
+    ).toJson(),
+  );
+}
+
+Future<ServerDirectory?> _loadServerDirectory(
   Uri rootUri,
+  Connection connection,
 ) async {
   var rootDir = Directory.fromUri(rootUri);
 
-  var serverDir = findServerDirectory(rootDir);
-  if (serverDir == null) {
-    throw Exception('No Serverpod server directory found.');
-  }
+  var serverRootDir = findServerDirectory(rootDir);
+  if (serverRootDir == null) return null;
 
-  var config = await GeneratorConfig.load(serverDir.path);
-  var yamlSources =
-      await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config!);
+  var config = await GeneratorConfig.load(serverRootDir.path);
+  if (config == null) return null;
 
-  statefulAnalyzer.initialValidation(yamlSources);
+  var yamlSources = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
+    config,
+  );
 
-  return config;
+  var analyzer = StatefulAnalyzer(
+    yamlSources,
+    (filePath, errors) => _reportDiagnosticErrors(connection, filePath, errors),
+  );
+
+  return ServerDirectory(
+    serverRootUri: serverRootDir.uri,
+    config: config,
+    analyzer: analyzer,
+  );
 }
 
-Directory? findServerDirectory(Directory rootDir) {
-  if (isServerDirectory(rootDir)) return rootDir;
+Directory? findServerDirectory(Directory root) {
+  if (isServerDirectory(root)) return root;
 
-  var childDirs = rootDir.listSync().where(
+  var childDirs = root.listSync().where(
         (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
       );
 

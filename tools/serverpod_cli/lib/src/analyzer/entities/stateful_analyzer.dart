@@ -17,6 +17,19 @@ class StatefulAnalyzer {
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
+  StatefulAnalyzer(
+    List<ProtocolSource> sources, [
+    Function(Uri, CodeGenerationCollector)? callback,
+  ]) {
+    for (var yamlSource in sources) {
+      _protocolStates[yamlSource.yamlSourceUri.path] = _ProtocolState(
+        source: yamlSource,
+      );
+    }
+
+    _onErrorsChangedNotifier = callback;
+  }
+
   /// Loads all yaml protocols and initializes the state. The state is preserved
   /// to make future validations less expensive.
   /// Subsequent validations should use [validateAll] or [validateProtocol].
