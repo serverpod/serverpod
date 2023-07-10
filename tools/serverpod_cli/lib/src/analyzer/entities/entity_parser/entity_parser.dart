@@ -255,12 +255,7 @@ class EntityParser {
     var stringifiedFields = fieldsNode.value;
     if (stringifiedFields is! String) return [];
 
-    var indexFields = stringifiedFields
-        .split(',')
-        .map(
-          (String str) => str.trim(),
-        )
-        .toList();
+    var indexFields = convertIndexList(stringifiedFields);
 
     return indexFields;
   }
