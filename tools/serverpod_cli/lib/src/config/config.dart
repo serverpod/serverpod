@@ -190,6 +190,11 @@ class GeneratorConfig {
       directory: Directory(dir),
       exludePackages: [serverPackage],
     );
+
+    if (automagicModules == null) {
+      return null;
+    }
+
     for (var autoModule in automagicModules) {
       bool hasOverride = false;
       for (var module in modules) {
