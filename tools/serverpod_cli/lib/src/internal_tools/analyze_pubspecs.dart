@@ -26,10 +26,10 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
     exit(1);
   }
 
-  var missmatchedDeps = _findMissmatchedDependencies(dependencies);
+  var mismatchedDeps = _findMismatchedDependencies(dependencies);
 
-  if (missmatchedDeps.isNotEmpty) {
-    _printMissmatchedDependencies(missmatchedDeps, dependencies);
+  if (mismatchedDeps.isNotEmpty) {
+    _printMismatchedDependencies(mismatchedDeps, dependencies);
     exit(1);
   }
 
@@ -69,10 +69,10 @@ Future<void> _checkLatestVersion(
   }
 }
 
-void _printMissmatchedDependencies(Set<String> missmatchedDeps,
+void _printMismatchedDependencies(Set<String> mismatchedDeps,
     Map<String, List<_ServerpodDependency>> dependencies) {
-  print('Found missmatched dependencies:');
-  for (var depName in missmatchedDeps) {
+  print('Found mismatched dependencies:');
+  for (var depName in mismatchedDeps) {
     print(depName);
     var deps = dependencies[depName]!;
     for (var dep in deps) {
@@ -81,21 +81,21 @@ void _printMissmatchedDependencies(Set<String> missmatchedDeps,
   }
 }
 
-Set<String> _findMissmatchedDependencies(
+Set<String> _findMismatchedDependencies(
   Map<String, List<_ServerpodDependency>> dependencies,
 ) {
-  var missmatchedDeps = <String>{};
+  var mismatchedDeps = <String>{};
   for (var depName in dependencies.keys) {
     var deps = dependencies[depName]!;
     String? version;
     for (var dep in deps) {
       if (version != null && version != dep.version) {
-        missmatchedDeps.add(depName);
+        mismatchedDeps.add(depName);
       }
       version = dep.version;
     }
   }
-  return missmatchedDeps;
+  return mismatchedDeps;
 }
 
 Map<String, List<_ServerpodDependency>> _getDependencies(
