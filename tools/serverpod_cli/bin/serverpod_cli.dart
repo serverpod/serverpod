@@ -16,6 +16,8 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
@@ -38,6 +40,8 @@ final runModes = <String>['development', 'staging', 'production'];
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
+  logger = StdOutLogger();
+
   await runZonedGuarded(
     () async {
       try {
@@ -55,9 +59,9 @@ void main(List<String> args) async {
 
 Future<void> _main(List<String> args) async {
   if (Platform.isWindows) {
-    print(
-        'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
-    print('');
+    logger.printWarning(
+        'Windows is not officially supported yet. Things may or may not work '
+        'as expected.');
   }
 
   // Check that required tools are installed
