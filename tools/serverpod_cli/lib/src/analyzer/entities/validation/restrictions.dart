@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-import '../converter/converter.dart';
+import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 
 class Restrictions {
   String documentType;

@@ -1,10 +1,10 @@
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-import '../../../generator/types.dart';
 import '../converter/converter.dart';
 import '../definitions.dart';
 import '../validation/keywords.dart';
