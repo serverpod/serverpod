@@ -5,17 +5,19 @@ import 'package:yaml/yaml.dart';
 
 import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 
+import 'entity_relations.dart';
+
 class Restrictions {
   String documentType;
   YamlMap documentContents;
   SerializableEntityDefinition? documentDefinition;
-  List<SerializableEntityDefinition>? protocolEntities;
+  EntityRelations? entityRelations;
 
   Restrictions({
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
-    this.protocolEntities,
+    this.entityRelations,
   });
 
   List<SourceSpanException> validateClassName(
@@ -41,7 +43,7 @@ class Restrictions {
     }
 
     // TODO n-squared time complexity when validating all protocol files.
-    if (_countClassNames(content, protocolEntities) > 1) {
+    if (_countClassNames(content, entityRelations?.entities) > 1) {
       return [
         SourceSpanException(
           'The $documentType name "$content" is already used by another protocol class.',
