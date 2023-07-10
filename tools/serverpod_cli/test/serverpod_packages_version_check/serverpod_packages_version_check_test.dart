@@ -14,13 +14,13 @@ void main() {
       var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
       setUp(() {
         if (!emptyFolder.existsSync()) {
-          emptyFolder.create();
+          emptyFolder.createSync();
         }
       });
 
       tearDown(() {
         if (emptyFolder.existsSync()) {
-          emptyFolder.delete();
+          emptyFolder.deleteSync();
         }
       });
 
