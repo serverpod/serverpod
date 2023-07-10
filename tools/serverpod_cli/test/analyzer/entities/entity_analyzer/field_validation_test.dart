@@ -364,6 +364,8 @@ fields:
 
       var error = collector.errors.first;
 
+      print(collector.errors);
+
       expect(
         error.message,
         'The parent must reference a valid table name (e.g. parent=table_name). "" is not a valid parent name.',
@@ -396,6 +398,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'String');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -424,6 +431,11 @@ fields:
 
       expect(
           (definition as ClassDefinition).fields.first.type.toString(), 'int');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -452,6 +464,11 @@ fields:
 
       expect(
           (definition as ClassDefinition).fields.first.type.toString(), 'bool');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -480,6 +497,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'double');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -508,6 +530,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'DateTime');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -536,6 +563,11 @@ fields:
 
       expect(
           (definition as ClassDefinition).fields.first.type.toString(), 'Uuid');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -564,6 +596,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'dart:typed_data:ByteData');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -592,6 +629,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'List<String>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -620,6 +662,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'Map<String,String>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
   });
 
