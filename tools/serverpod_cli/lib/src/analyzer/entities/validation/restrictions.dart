@@ -132,6 +132,17 @@ class Restrictions {
       ];
     }
 
+    if (documentDefinition is ClassDefinition &&
+        (documentDefinition as ClassDefinition).tableName != null &&
+        content == 'id') {
+      return [
+        SourceSpanException(
+          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
+          span,
+        )
+      ];
+    }
+
     return [];
   }
 
