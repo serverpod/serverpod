@@ -219,10 +219,12 @@ class Restrictions {
     dynamic content,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    var validIndexTypes = {'btree', 'hash', 'gin', 'gist', 'spgist', 'brin'};
+
+    if (content is! String || !validIndexTypes.contains(content)) {
       return [
         SourceSpanException(
-          'The "type" property must be of type String.',
+          'The "type" property must be one of: ${validIndexTypes.join(', ')}.',
           span,
         )
       ];
