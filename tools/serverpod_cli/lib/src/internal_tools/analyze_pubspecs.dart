@@ -7,11 +7,11 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
-Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
+Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
   var directory = Directory.current;
   if (!isServerpodRootDirectory(directory)) {
     print('Must be run from the serverpod repository root');
-    exit(1);
+    return false;
   }
 
   var pubspecFiles = findPubspecsFiles(directory,
@@ -23,14 +23,14 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   } catch (e) {
     print('Failed to get dependencies');
     print(e);
-    exit(1);
+    return false;
   }
 
   var mismatchedDeps = _findMismatchedDependencies(dependencies);
 
   if (mismatchedDeps.isNotEmpty) {
     _printMismatchedDependencies(mismatchedDeps, dependencies);
-    exit(1);
+    return false;
   }
 
   print('Dependencies match.');
@@ -38,6 +38,8 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   if (checkLatestVersion) {
     await _checkLatestVersion(dependencies);
   }
+
+  return true;
 }
 
 Future<void> _checkLatestVersion(

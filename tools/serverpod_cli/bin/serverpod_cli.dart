@@ -394,7 +394,10 @@ Future<void> _main(List<String> args) async {
     // Analyze pubspecs command.
     if (results.command!.name == cmdAnalyzePubspecs) {
       bool checkLatestVersion = results.command!['check-latest-version'];
-      await performAnalyzePubspecs(checkLatestVersion);
+      if (!await pubspecDependenciesMatch(checkLatestVersion)) {
+        exit(1);
+      }
+
       return;
     }
   }
