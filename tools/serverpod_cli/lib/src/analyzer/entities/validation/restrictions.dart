@@ -244,8 +244,11 @@ class Restrictions {
       ];
     }
 
+    var enumCount = _countDuplicatesInList(content);
+
     var nodeExceptions = content.nodes.map((node) {
-      if (node is! YamlScalar || node.value is! String) {
+      var enumValue = node.value;
+      if (node is! YamlScalar || enumValue is! String) {
         return SourceSpanException(
           'The "values" property must be a list of strings.',
           node.span,
@@ -259,12 +262,27 @@ class Restrictions {
         );
       }
 
+      if (enumCount[enumValue] != 1) {
+        return SourceSpanException(
+          'Enum values must be unique.',
+          node.span,
+        );
+      }
+
       return null;
     });
 
-    return nodeExceptions
-        .where((node) => node != null)
-        .cast<SourceSpanException>()
-        .toList();
+    return nodeExceptions.whereType<SourceSpanException>().toList();
+  }
+
+  Map<dynamic, int> _countDuplicatesInList(YamlList list) {
+    Map<dynamic, int> valueCount = {};
+    for (var enumNode in list.nodes) {
+      var enumValue = enumNode.value;
+
+      valueCount.update(enumValue, (value) => value + 1, ifAbsent: () => 1);
+    }
+
+    return valueCount;
   }
 }
