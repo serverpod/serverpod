@@ -151,7 +151,7 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateFieldType(
+  List<SourceSpanException> validateFieldDataType(
     dynamic content,
     SourceSpan? span,
   ) {
@@ -164,17 +164,18 @@ class Restrictions {
       ];
     }
 
-    return [];
-  }
+    var typeComponents = content
+        .replaceAll(' ', '')
+        .replaceAll('<', ',')
+        .replaceAll('>', ',')
+        .split(',')
+        .where((t) => t.isNotEmpty);
 
-  List<SourceSpanException> validateFieldDataType(
-    dynamic content,
-    SourceSpan? span,
-  ) {
-    if (content is! String) {
+    if (typeComponents
+        .any((type) => !StringValidators.isValidFieldType(type))) {
       return [
         SourceSpanException(
-          'The field must have a datatype defined (e.g. field: String).',
+          'The field has an invalid datatype "$content".',
           span,
         )
       ];
