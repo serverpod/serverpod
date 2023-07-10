@@ -62,7 +62,7 @@ Future<void> runLanguageServer() async {
 
     statefulAnalyzer.removeYamlProtocol(params.textDocument.uri);
 
-    // This can be optimised to only validate the files we know have related errors.
+    // This can be optimized to only validate the files we know have related errors.
     statefulAnalyzer.validateAll();
   });
 
@@ -82,11 +82,6 @@ Future<void> runLanguageServer() async {
           params.textDocument.uri,
         ),
       ),
-    );
-
-    statefulAnalyzer.validateProtocol(
-      params.textDocument.text,
-      params.textDocument.uri,
     );
 
     // We need to validate all protocols as the new protocol might reference or

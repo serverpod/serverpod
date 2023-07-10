@@ -5,10 +5,10 @@ import 'package:path/path.dart';
 
 class ProtocolSource {
   String yaml;
-  Uri uri;
+  Uri yamlSourceUri;
   List<String> protocolRootPathParts;
 
-  ProtocolSource(this.yaml, this.uri, this.protocolRootPathParts);
+  ProtocolSource(this.yaml, this.yamlSourceUri, this.protocolRootPathParts);
 }
 
 class ProtocolHelper {

@@ -1,24 +1,32 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('Given a class with a null value as name, then collect an error ....',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol = ProtocolSource(
+      '''
 class:
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    analyzer.analyze();
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [],
+    );
 
     expect(collector.errors.length, greaterThan(0), reason: 'No errors found');
 
@@ -26,22 +34,25 @@ fields:
 
     expect(error.message, 'The "class" type must be a String.');
   });
+
   test(
       'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol = ProtocolSource(
+      '''
 exception: PascalCASEString
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    analyzer.analyze();
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, 0);
   });
@@ -50,37 +61,42 @@ fields:
       'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol = ProtocolSource(
+      '''
 exception: PascalCASEString
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
-    expect(entities.className, 'PascalCASEString');
+    expect((definition as ClassDefinition).className, 'PascalCASEString');
   });
+
   test(
       'Given a camelCase class name, then give an error indicating that PascalCase is required.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol = ProtocolSource(
+      '''
 class: exampleClass
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    analyzer.analyze();
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, greaterThan(0));
 
@@ -94,18 +110,20 @@ fields:
       'Given a snake_case exception name, then give an error indicating that PascalCase is required.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol = ProtocolSource(
+      '''
 exception: example_class
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    analyzer.analyze();
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, greaterThan(0));
 
@@ -119,19 +137,21 @@ fields:
       'Given an enum name with a leading number, then give an error indicating that PascalCase is required.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol = ProtocolSource(
+      '''
 enum: 1ExampleType
 values:
   - yes
   - no
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    analyzer.analyze();
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
 
     expect(collector.errors.length, greaterThan(0));
 
@@ -146,18 +166,25 @@ values:
         'Then return a human readable error message informing the user that the entity type is missing.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 invalid: Type 
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [],
+      );
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -169,19 +196,23 @@ fields:
   group('Given a protocol with class and exception type defined.', () {
     test('Then return a human readable error message when analyzing.', () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+
+      var protocol = ProtocolSource(
+        '''
 class: Example
 exception: ExampleException
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -192,19 +223,23 @@ fields:
 
     test('Then the second type is highlighted.', () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+
+      var protocol = ProtocolSource(
+        '''
 class: Example
 exception: ExampleException
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
       var span = collector.errors.first.span;
@@ -220,19 +255,23 @@ fields:
   group('Given a protocol with exception and enum type defined.', () {
     test('Then return a human readable error message when analyzing.', () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+
+      var protocol = ProtocolSource(
+        '''
 exception: ExampleException
 enum: ExampleType
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -245,20 +284,24 @@ fields:
   group('Given a protocol with three different types defined.', () {
     test('Then return a human readable error message when analyzing.', () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+
+      var protocol = ProtocolSource(
+        '''
 class: Example
 exception: ExampleException
 enum: ExampleType
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -269,20 +312,24 @@ fields:
 
     test('Then the second and third type is highlighted.', () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+
+      var protocol = ProtocolSource(
+        '''
 class: Example
 exception: ExampleException
 enum: ExampleType
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, []);
 
       expect(collector.errors.length, greaterThan(1));
 
