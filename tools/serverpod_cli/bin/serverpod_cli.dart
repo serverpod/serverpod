@@ -22,16 +22,17 @@ import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_cli/src/util/version.dart';
 
+const cmdAnalyzePubspecs = 'analyze-pubspecs';
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
 const cmdGeneratePubspecs = 'generate-pubspecs';
-const cmdAnalyzePubspecs = 'analyze-pubspecs';
-const cmdVersion = 'version';
-const cmdMigrate = 'migrate';
 const cmdLanguageServer = 'language-server';
+const cmdMigrate = 'migrate';
+const cmdVersion = 'version';
 
 final runModes = <String>['development', 'staging', 'production'];
 
@@ -204,9 +205,12 @@ Future<void> _main(List<String> args) async {
   parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
 
   ArgResults results;
+  var devPrint = true;
   try {
     results = parser.parse(args);
-    bool devPrint = results['development-print'];
+    // TODO: This should silence all warnings with a suitable name.
+    // Make this once we have a centralized logging and printing.
+    devPrint = results['development-print'];
 
     if (!productionMode && devPrint) {
       print(
@@ -223,6 +227,10 @@ Future<void> _main(List<String> args) async {
     _printUsage(parser);
     _analytics.cleanUp();
     return;
+  }
+
+  if (devPrint) {
+    await promptToUpdateIfNeeded(Version.parse(templateVersion));
   }
 
   if (results.command != null) {
