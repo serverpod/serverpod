@@ -685,6 +685,236 @@ indexes:
     });
 
     test(
+        'Given a class with an index type explicitly set to hash, then use that type',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: hash
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+              as ClassDefinition;
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition],
+      );
+
+      var index = definition.indexes?.first;
+
+      expect(index?.type, 'hash');
+    });
+
+    test(
+        'Given a class with an index type explicitly set to gist, then use that type',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: gist
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+              as ClassDefinition;
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition],
+      );
+
+      var index = definition.indexes?.first;
+
+      expect(index?.type, 'gist');
+    });
+
+    test(
+        'Given a class with an index type explicitly set to spgist, then use that type',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: spgist
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+              as ClassDefinition;
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition],
+      );
+
+      var index = definition.indexes?.first;
+
+      expect(index?.type, 'spgist');
+    });
+
+    test(
+        'Given a class with an index type explicitly set to gin, then use that type',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: gin
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+              as ClassDefinition;
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition],
+      );
+
+      var index = definition.indexes?.first;
+
+      expect(index?.type, 'gin');
+    });
+
+    test(
+        'Given a class with an index type explicitly set to brin, then use that type',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: brin
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+              as ClassDefinition;
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition],
+      );
+
+      var index = definition.indexes?.first;
+
+      expect(index?.type, 'brin');
+    });
+
+    test(
+        'Given a class with an index type explicitly set to an invalid type, then collect an error that only the defined index types can be used.',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+    type: invalid_pgsql_type
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+              as ClassDefinition;
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error, but none was collected.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "type" property must be one of: btree, hash, gin, gist, spgist, brin.',
+      );
+    });
+
+    test(
         'Given a class with an index with an invalid type, then collect an error indicating that the type is invalid.',
         () {
       var collector = CodeGenerationCollector();
@@ -715,12 +945,17 @@ indexes:
         [definition!],
       );
 
-      expect(collector.errors.length, greaterThan(0));
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error, but none was collected.',
+      );
 
       var error = collector.errors.first;
-
-      // todo validate the explicit list of valid types
-      expect(error.message, 'The "type" property must be of type String.');
+      expect(
+        error.message,
+        'The "type" property must be one of: btree, hash, gin, gist, spgist, brin.',
+      );
     });
   });
 }
