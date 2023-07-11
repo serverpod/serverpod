@@ -1,6 +1,3 @@
-
-
-
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 
 /// A collection of all parsed entities, and their potential collisions.
