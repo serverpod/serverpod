@@ -17,36 +17,31 @@ class StatefulAnalyzer {
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
-  /// Loads all yaml protocols and initializes the state. The state is preserved
-  /// to make future validations less expensive.
-  /// Subsequent validations should use [validateAll] or [validateProtocol].
-  List<SerializableEntityDefinition> initialValidation(
-      List<ProtocolSource> sources) {
+  StatefulAnalyzer(
+    List<ProtocolSource> sources, [
+    Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
+  ]) {
     for (var yamlSource in sources) {
       _protocolStates[yamlSource.yamlSourceUri.path] = _ProtocolState(
         source: yamlSource,
       );
     }
 
-    _entities = _validateAllAnalyzers();
-    return _entities;
+    _onErrorsChangedNotifier = onErrorsChangedNotifier;
   }
 
-  /// Runs the validation on all protocols, assumes protocols have been added
-  /// by running [initialValidation] or adding them manually
-  /// with [addYamlProtocol]. If not protocol has been initialized this method
-  /// returns an empty list.
+  /// Runs the validation on all protocols in the state. If no protocols are
+  /// registered, this returns an empty list.
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableEntityDefinition> validateAll() {
-    _entities = _validateAllAnalyzers();
+    _updateAllEntities();
+    _validateAllProtocols();
     return _entities;
   }
 
-  /// Runs the validation on a single protocol, assumes [initialValidation] has been
-  /// run before. The protocol must exist in the state, if not this returns
-  /// the last validated state. To validate a new protocol, use [addYamlProtocol]
-  /// and then run [validateAll] or [validateProtocol].
-  /// Errors are reported through the [registerOnErrorsChangedNotifier].
+  /// Runs the validation on a single protocol. The protocol must exist in the
+  /// state, if not this returns the last validated state.
+  /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableEntityDefinition> validateProtocol(String yaml, Uri uri) {
     var state = _protocolStates[uri.path];
     if (state == null) return _entities;
@@ -59,20 +54,8 @@ class StatefulAnalyzer {
       _upsertEntity(doc, uri);
     }
 
-    var collector = CodeGenerationCollector();
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      state.source.yaml,
-      state.source.yamlSourceUri.path,
-      collector,
-      state.entity,
-      _entities,
-    );
-
-    _onErrorsChangedNotifier?.call(
-      uri,
-      collector,
-    );
-
+    // This can be optimized to only validate the files we know have related errors.
+    _validateAllProtocols();
     return _entities;
   }
 
@@ -92,20 +75,9 @@ class StatefulAnalyzer {
   /// guarantee that all related errors are cleared.
   void removeYamlProtocol(Uri protocolUri) {
     _protocolStates.remove(protocolUri.path);
-    _entities
-        .removeWhere((entity) => entity.sourceFileName == protocolUri.path);
-  }
-
-  /// Register a callback that is called when the errors in a file changes.
-  void registerOnErrorsChangedNotifier(
-    Function(Uri, CodeGenerationCollector) callback,
-  ) {
-    _onErrorsChangedNotifier = callback;
-  }
-
-  /// Unregister the callback that is called when the errors in a file changes.
-  void unregisterOnErrorsChangedNotifier() {
-    _onErrorsChangedNotifier = null;
+    _entities.removeWhere(
+      (entity) => entity.sourceFileName == protocolUri.path,
+    );
   }
 
   /// Checks if a protocol is registered in the state.
@@ -113,22 +85,21 @@ class StatefulAnalyzer {
     return _protocolStates.containsKey(uri.path);
   }
 
-  /// Reset the internal state of the analyzer.
-  void clearState() {
-    _protocolStates.clear();
-    _entities.clear();
-  }
-
-  List<SerializableEntityDefinition> _validateAllAnalyzers() {
+  void _updateAllEntities() {
     for (var state in _protocolStates.values) {
-      var doc =
-          SerializableEntityAnalyzer.extractEntityDefinition(state.source);
+      var doc = SerializableEntityAnalyzer.extractEntityDefinition(
+        state.source,
+      );
       state.entity = doc;
-      if (doc != null) {
-        _upsertEntity(doc, state.source.yamlSourceUri);
-      }
     }
 
+    _entities = _protocolStates.values
+        .map((state) => state.entity)
+        .whereType<SerializableEntityDefinition>()
+        .toList();
+  }
+
+  void _validateAllProtocols() {
     for (var state in _protocolStates.values) {
       var collector = CodeGenerationCollector();
       SerializableEntityAnalyzer.validateYamlDefinition(
@@ -144,8 +115,6 @@ class StatefulAnalyzer {
         collector,
       );
     }
-
-    return _entities;
   }
 
   void _upsertEntity(

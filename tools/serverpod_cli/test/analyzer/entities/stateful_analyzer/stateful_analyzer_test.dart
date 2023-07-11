@@ -7,30 +7,7 @@ void main() {
   test(
       'Given that no initial validation was done, then an empty list is returned when validating all files.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
-    var entities = statefulAnalyzer.validateAll();
-
-    expect(entities, []);
-  });
-
-  test(
-      'When we add a protocol and clear the state, then an empty list is returned when validating all files.',
-      () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
-      '''
-class: Example
-fields:
-  name: String
-''',
-      protocolUri,
-      [],
-    );
-    statefulAnalyzer.addYamlProtocol(yamlSource);
-    statefulAnalyzer.clearState();
+    var statefulAnalyzer = StatefulAnalyzer([]);
 
     var entities = statefulAnalyzer.validateAll();
 
@@ -40,7 +17,7 @@ fields:
   test(
       'When we add and remove a protocol, then an empty list is returned when validating all files.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
+    var statefulAnalyzer = StatefulAnalyzer([]);
 
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     var yamlSource = ProtocolSource(
@@ -63,7 +40,7 @@ fields:
   test(
       'Given an empty state, when removing a protocol that does not exist and validating all, then an empty list is returned',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
+    var statefulAnalyzer = StatefulAnalyzer([]);
 
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     statefulAnalyzer.removeYamlProtocol(protocolUri);
@@ -76,7 +53,7 @@ fields:
   test(
       'Given an empty state, when validating a single protocol, then an empty list is returned',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
+    var statefulAnalyzer = StatefulAnalyzer([]);
 
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     var yaml = '''
@@ -90,10 +67,8 @@ fields:
     expect(entities, []);
   });
   test(
-      'Given a valid protocol class and an empty state, when running an initial validation, then the class is serialized.',
+      'Given a valid protocol class as the initial state, when validating all, then the class is serialized.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     var yamlSource = ProtocolSource(
       '''
@@ -105,17 +80,17 @@ fields:
       [],
     );
 
-    var entities = statefulAnalyzer.initialValidation([yamlSource]);
+    var statefulAnalyzer = StatefulAnalyzer([yamlSource]);
+
+    var entities = statefulAnalyzer.validateAll();
 
     expect(entities.length, 1);
     expect(entities.first.className, 'Example');
   });
 
   test(
-      'Given a valid protocol class and an error callback is registered, when running an initial validation, then the callback is triggered.',
+      'Given a valid protocol class and an error callback is registered, when validating all, then the callback is triggered.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     var yamlSource = ProtocolSource(
       '''
@@ -128,19 +103,17 @@ fields:
     );
 
     var wasCalled = false;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
+    var statefulAnalyzer = StatefulAnalyzer([yamlSource], (uri, errors) {
       wasCalled = true;
     });
 
-    statefulAnalyzer.initialValidation([yamlSource]);
+    statefulAnalyzer.validateAll();
     expect(wasCalled, true, reason: 'The error callback was not triggered.');
   });
 
   test(
-      'Given a protocol with invalid syntax and an error callback is registered, when running an initial validation, then the callback is triggered.',
+      'Given a protocol with invalid syntax and an error callback is registered, when validating all, then the callback is triggered.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     var yamlSource = ProtocolSource(
       '''''',
@@ -149,47 +122,17 @@ fields:
     );
 
     var wasCalled = false;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
+    var statefulAnalyzer = StatefulAnalyzer([yamlSource], (uri, errors) {
       wasCalled = true;
     });
 
-    statefulAnalyzer.initialValidation([yamlSource]);
-    expect(wasCalled, true, reason: 'The error callback was not triggered.');
-  });
-
-  test(
-      'Given a valid protocol class and an error callback is registered, when revalidating a protocol, then the callback is triggered.',
-      () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
-      '''
-class: Example
-fields:
-  name: String
-''',
-      protocolUri,
-      [],
-    );
-
-    statefulAnalyzer.initialValidation([yamlSource]);
-
-    var wasCalled = false;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
-      wasCalled = true;
-    });
-
-    statefulAnalyzer.validateProtocol(yamlSource.yaml, protocolUri);
-
+    statefulAnalyzer.validateAll();
     expect(wasCalled, true, reason: 'The error callback was not triggered.');
   });
 
   test(
       'Given a protocol that was invalid on first validation, when validating the same protocol with an updated valid syntax, then the previous errors are cleared.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     var invalidSource = ProtocolSource(
       '''
@@ -212,11 +155,11 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
+    var statefulAnalyzer = StatefulAnalyzer([invalidSource], (uri, errors) {
       reportedErrors = errors;
     });
 
-    statefulAnalyzer.initialValidation([invalidSource]);
+    statefulAnalyzer.validateAll();
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
@@ -228,10 +171,8 @@ fields:
   });
 
   test(
-      'Given two yaml protocols with the same class name, when running an initial validation, then an error is reported.',
+      'Given two yaml protocols with the same class name, when validating all, then an error is reported.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var yamlSource1 = ProtocolSource(
       '''
 class: Example
@@ -253,11 +194,13 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
+
+    var statefulAnalyzer =
+        StatefulAnalyzer([yamlSource1, yamlSource2], (uri, errors) {
       reportedErrors = errors;
     });
 
-    statefulAnalyzer.initialValidation([yamlSource1, yamlSource2]);
+    statefulAnalyzer.validateAll();
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
@@ -266,8 +209,6 @@ fields:
   test(
       'Given two yaml protocols with the same class name, when removing and revalidating, then the previous error is cleared.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var yamlSource1 = ProtocolSource(
       '''
 class: Example
@@ -289,11 +230,12 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
+    var statefulAnalyzer =
+        StatefulAnalyzer([yamlSource1, yamlSource2], (uri, errors) {
       reportedErrors = errors;
     });
 
-    statefulAnalyzer.initialValidation([yamlSource1, yamlSource2]);
+    statefulAnalyzer.validateAll();
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
@@ -309,8 +251,6 @@ fields:
   test(
       'Given an initial validation with one valid protocol, when adding a second protocol with the same class and revalidating, then an error is reported.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer();
-
     var yamlSource1 = ProtocolSource(
       '''
 class: Example
@@ -332,20 +272,17 @@ fields:
     );
 
     CodeGenerationCollector? reportedErrors;
-    statefulAnalyzer.registerOnErrorsChangedNotifier((uri, errors) {
+    var statefulAnalyzer = StatefulAnalyzer([yamlSource1], (uri, errors) {
       reportedErrors = errors;
     });
 
-    statefulAnalyzer.initialValidation([yamlSource1]);
+    statefulAnalyzer.validateAll();
 
     expect(reportedErrors?.errors, hasLength(0),
         reason: 'Expected no errors to be reported.');
 
     statefulAnalyzer.addYamlProtocol(yamlSource2);
 
-    // Need to validate twice to run the two pass logic.
-    statefulAnalyzer.validateProtocol(
-        yamlSource2.yaml, yamlSource2.yamlSourceUri);
     statefulAnalyzer.validateProtocol(
         yamlSource2.yaml, yamlSource2.yamlSourceUri);
 
