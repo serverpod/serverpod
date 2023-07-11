@@ -118,14 +118,24 @@ class Restrictions {
   }
 
   List<SourceSpanException> validateTableIndexName(
-    dynamic content,
+    dynamic indexName,
     SourceSpan? span,
   ) {
-    if (content is! String ||
-        !StringValidators.isValidTableIndexName(content)) {
+    if (indexName is! String ||
+        !StringValidators.isValidTableIndexName(indexName)) {
       return [
         SourceSpanException(
-          'Invalid format for index "$content", must follow the format lower_snake_case.',
+          'Invalid format for index "$indexName", must follow the format lower_snake_case.',
+          span,
+        )
+      ];
+    }
+    var indexNames = entityRelations?.indexNames;
+    if (indexNames != null && !_isKeyGloballyUnique(indexName, indexNames)) {
+      var collision = _findFirstClassOtherClass(indexName, indexNames);
+      return [
+        SourceSpanException(
+          'The index name "$indexName" is already used by the protocol class "${collision?.className}".',
           span,
         )
       ];
