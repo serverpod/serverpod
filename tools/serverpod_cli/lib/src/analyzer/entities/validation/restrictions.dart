@@ -254,13 +254,23 @@ class Restrictions {
         .where((field) => field.scope != SerializableEntityFieldScope.api)
         .fold(<String>{}, (output, field) => output..add(field.name));
 
-    return indexFields
+    var missingFieldErrors = indexFields
         .where((field) => !validDatabaseFieldNames.contains(field))
         .map((field) => SourceSpanException(
               'The field name "$field" is not added to the class or has an api scope.',
               span,
-            ))
-        .toList();
+            ));
+
+    var duplicatesCount = _duplicatesCount(indexFields);
+
+    var duplicateFieldErrors = duplicatesCount.entries
+        .where((entry) => entry.value > 1)
+        .map((entry) => SourceSpanException(
+              'Duplicated field name "name", can only reference a field once per index.',
+              span,
+            ));
+
+    return [...missingFieldErrors, ...duplicateFieldErrors];
   }
 
   List<SourceSpanException> validateIndexType(
@@ -294,7 +304,7 @@ class Restrictions {
       ];
     }
 
-    var enumCount = _countDuplicatesInList(content);
+    var enumCount = _duplicatesCount(content);
 
     var nodeExceptions = content.nodes.map((node) {
       var enumValue = node.value;
@@ -325,12 +335,10 @@ class Restrictions {
     return nodeExceptions.whereType<SourceSpanException>().toList();
   }
 
-  Map<dynamic, int> _countDuplicatesInList(YamlList list) {
+  Map<dynamic, int> _duplicatesCount(List<dynamic> list) {
     Map<dynamic, int> valueCount = {};
-    for (var enumNode in list.nodes) {
-      var enumValue = enumNode.value;
-
-      valueCount.update(enumValue, (value) => value + 1, ifAbsent: () => 1);
+    for (var listValue in list) {
+      valueCount.update(listValue, (value) => value + 1, ifAbsent: () => 1);
     }
 
     return valueCount;

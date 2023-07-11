@@ -240,6 +240,50 @@ indexes:
   );
 
   test(
+    'Given a class with an index with two duplicated fields, then collect an error that duplicated fields are not allowed.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name, name
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'Duplicated field name "name", can only reference a field once per index.',
+      );
+    },
+  );
+
+  test(
     'Given a class with an index with a field that has an api scope, then collect an error that the field is missing in the class.',
     () {
       var collector = CodeGenerationCollector();
@@ -435,7 +479,6 @@ indexes:
     },
   );
 
-  // todo convert!!
   test(
       'Given a class with an index with a unique key that is not a bool, then collect an error that the unique key has to be defined as a bool.',
       () {
