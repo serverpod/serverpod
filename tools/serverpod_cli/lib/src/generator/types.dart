@@ -79,6 +79,7 @@ class TypeDefinition {
       nullable: nullable,
       dartType: type,
       generics: generics,
+      isEnum: type.isDartCoreEnum,
       url: url,
     );
   }
