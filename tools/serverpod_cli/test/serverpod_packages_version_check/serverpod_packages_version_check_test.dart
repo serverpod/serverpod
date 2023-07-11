@@ -220,5 +220,20 @@ void main() {
         expect(packageWarnings.isEmpty, isTrue);
       });
     });
+
+    group('With approximate serverpod package version in vendor folder', () {
+      var vendorPubspecPath = Directory(p.join(testAssetsPath, 'vendor'));
+
+      test('performServerpodPackagesAndCliVersionCheck() with same version',
+          () {
+        var cliVersion = Version(1, 1, 0);
+        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+          cliVersion,
+          vendorPubspecPath,
+        );
+
+        expect(packageWarnings.isEmpty, isTrue);
+      });
+    });
   });
 }
