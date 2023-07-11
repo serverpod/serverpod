@@ -39,7 +39,7 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.type,
                 isRequired: true,
-                valueRestriction: restrictions.validateFieldType,
+                valueRestriction: restrictions.validateFieldDataType,
               ),
               ValidateNode(
                 Keyword.parent,

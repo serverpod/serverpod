@@ -396,6 +396,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'String');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -424,6 +429,11 @@ fields:
 
       expect(
           (definition as ClassDefinition).fields.first.type.toString(), 'int');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -452,6 +462,11 @@ fields:
 
       expect(
           (definition as ClassDefinition).fields.first.type.toString(), 'bool');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -480,6 +495,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'double');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -508,6 +528,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'DateTime');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -536,6 +561,11 @@ fields:
 
       expect(
           (definition as ClassDefinition).fields.first.type.toString(), 'Uuid');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -564,6 +594,49 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'dart:typed_data:ByteData');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the nullable type String, then a class with that field type set to String? is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: String?
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'String?');
+      expect(
+        definition.fields.first.type.nullable,
+        true,
+        reason: 'Expected the type to be nullable.',
+      );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -592,6 +665,11 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'List<String>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
@@ -602,7 +680,7 @@ fields:
         '''
 class: Example
 fields:
-  name: Map<String,String>
+  name: Map<String, String>
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
         ['lib', 'src', 'protocol'],
@@ -620,6 +698,74 @@ fields:
 
       expect((definition as ClassDefinition).fields.first.type.toString(),
           'Map<String,String>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a complex nested field datatype, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: List<List<Map<String, int>>>
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<List<Map<String,int>>>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with an invalid dart syntax for the type, then collect an error that the type is invalid.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: invalid-type
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0),
+          reason: 'Expected an error, but none was found.');
+      expect(collector.errors.first.message,
+          'The field has an invalid datatype "invalid-type".');
     });
   });
 
