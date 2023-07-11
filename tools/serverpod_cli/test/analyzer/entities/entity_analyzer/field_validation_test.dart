@@ -1097,6 +1097,40 @@ fields:
 
   group('Test id field.', () {
     test(
+      'Given a class with a table and a field called "id" defined, then collect an error that the id field is not allowed.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          id: int
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0),
+            reason: 'Expected an error, but got none.');
+
+        expect(
+          collector.errors.first.message,
+          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
+        );
+      },
+    );
+    test(
       'Given a class with a table defined, then add an id field to the generated entity.',
       () {
         var collector = CodeGenerationCollector();
