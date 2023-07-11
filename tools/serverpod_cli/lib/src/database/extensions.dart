@@ -492,7 +492,8 @@ extension ColumnMigrationPgSqlGenerator on ColumnMigration {
       var cases = migrateEnumValues!
           .asMap()
           .entries
-          .map((e) => 'WHEN $columnName=${e.key} THEN \'${e.value}\'');
+          .map((e) => 'WHEN $columnName=${e.key} THEN \'${e.value}\'')
+          .join(' ');
       out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
           ' TYPE TEXT USING CASE $cases END;\n';
     }
