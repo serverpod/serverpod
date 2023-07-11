@@ -862,7 +862,8 @@ fields:
 
         var error = collector.errors.first;
 
-        expect(error.message, 'The parent table "unknown_table" was not found in any protocol.');
+        expect(error.message,
+            'The parent table "unknown_table" was not found in any protocol.');
       },
     );
 
