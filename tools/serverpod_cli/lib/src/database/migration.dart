@@ -145,7 +145,7 @@ TableMigration? generateTableMigration(
             removeNullable: removeNullable,
             changeDefault: changeDefault,
             newDefault: dstColumn.columnDefault,
-            migrateEnumValues: migrateEnum,
+            migrateEnumValues: migrateEnumValues,
           ),
         );
 

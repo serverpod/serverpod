@@ -15,6 +15,7 @@ class ColumnMigration extends _i1.SerializableEntity {
     required this.removeNullable,
     required this.changeDefault,
     this.newDefault,
+    this.migrateEnumValues,
   });
 
   factory ColumnMigration.fromJson(
@@ -32,6 +33,8 @@ class ColumnMigration extends _i1.SerializableEntity {
           .deserialize<bool>(jsonSerialization['changeDefault']),
       newDefault: serializationManager
           .deserialize<String?>(jsonSerialization['newDefault']),
+      migrateEnumValues: serializationManager
+          .deserialize<List<String>?>(jsonSerialization['migrateEnumValues']),
     );
   }
 
@@ -45,6 +48,8 @@ class ColumnMigration extends _i1.SerializableEntity {
 
   String? newDefault;
 
+  List<String>? migrateEnumValues;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -53,6 +58,7 @@ class ColumnMigration extends _i1.SerializableEntity {
       'removeNullable': removeNullable,
       'changeDefault': changeDefault,
       'newDefault': newDefault,
+      'migrateEnumValues': migrateEnumValues,
     };
   }
 
@@ -64,6 +70,7 @@ class ColumnMigration extends _i1.SerializableEntity {
       'removeNullable': removeNullable,
       'changeDefault': changeDefault,
       'newDefault': newDefault,
+      'migrateEnumValues': migrateEnumValues,
     };
   }
 }

@@ -46,9 +46,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_chat_message',
-      dartName: 'ChatMessage',
       schema: 'public',
-      module: 'serverpod_chat',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -127,9 +125,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_chat_read_message',
-      dartName: 'ChatReadMessage',
       schema: 'public',
-      module: 'serverpod_chat',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

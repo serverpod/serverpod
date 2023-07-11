@@ -14,9 +14,8 @@ import 'package:serverpod_chat_client/src/protocol/chat_message_attachment.dart'
     as _i4;
 
 /// Connect to the chat endpoint to send and receive chat messages.
-/// {@category Endpoint}
-class EndpointChat extends _i1.EndpointRef {
-  EndpointChat(_i1.EndpointCaller caller) : super(caller);
+class _EndpointChat extends _i1.EndpointRef {
+  _EndpointChat(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_chat.chat';
@@ -47,10 +46,10 @@ class EndpointChat extends _i1.EndpointRef {
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
-    chat = EndpointChat(this);
+    chat = _EndpointChat(this);
   }
 
-  late final EndpointChat chat;
+  late final _EndpointChat chat;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup =>

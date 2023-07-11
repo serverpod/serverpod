@@ -14,9 +14,8 @@ import 'package:serverpod_chat_client/module.dart' as _i5;
 import 'dart:io' as _i6;
 import 'protocol.dart' as _i7;
 
-/// {@category Endpoint}
-class EndpointChannels extends _i1.EndpointRef {
-  EndpointChannels(_i1.EndpointCaller caller) : super(caller);
+class _EndpointChannels extends _i1.EndpointRef {
+  _EndpointChannels(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'channels';
@@ -51,11 +50,11 @@ class Client extends _i1.ServerpodClient {
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
-    channels = EndpointChannels(this);
+    channels = _EndpointChannels(this);
     modules = _Modules(this);
   }
 
-  late final EndpointChannels channels;
+  late final _EndpointChannels channels;
 
   late final _Modules modules;
 

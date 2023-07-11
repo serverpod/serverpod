@@ -24,7 +24,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
                   enumValueNames: !column.type.isEnum
                       ? null
                       : column.type.dartType?.element?.children
-                          .map((t) => t.name)
+                          .map((t) => t.name ?? 'unknown')
                           .toList(),
                   dartType: column.type.toString(),
                   columnDefault: column.name == 'id'
