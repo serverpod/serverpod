@@ -304,49 +304,101 @@ fields:
           'The "table" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
     });
 
-    group('Invalid properties', () {
-      test(
-          'Given a class with an invalid property, then collect an error that such a property is not allowed.',
-          () {
-        var collector = CodeGenerationCollector();
+    test(
+        'Given two classes with the same table name defined, then collect an error that the table name is already in use.',
+        () {
+      var collector = CodeGenerationCollector();
 
-        var protocol = ProtocolSource(
-          '''
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
+      var protocol2 = ProtocolSource(
+        '''
+class: Example2
+table: example
+fields:
+  name: String
+''',
+        Uri(path: 'lib/src/protocol/example2.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition2 =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol2);
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!, definition2!],
+      );
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The table name "example" is already in use by the class "Example2".',
+      );
+    });
+  });
+
+  group('Invalid properties', () {
+    test(
+        'Given a class with an invalid property, then collect an error that such a property is not allowed.',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
 class: Example
 invalidProperty: true
 fields:
   name: String
 ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
 
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-        expect(collector.errors.length, greaterThan(0));
+      expect(collector.errors.length, greaterThan(0));
 
-        var error = collector.errors.first;
+      var error = collector.errors.first;
 
-        expect(error.message,
-            'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.');
-      });
+      expect(error.message,
+          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.');
+    });
 
-      test(
-          'Given an exception with an indexes defined, then collect an error that indexes cannot be used together with exceptions.',
-          () {
-        var collector = CodeGenerationCollector();
+    test(
+        'Given an exception with an indexes defined, then collect an error that indexes cannot be used together with exceptions.',
+        () {
+      var collector = CodeGenerationCollector();
 
-        var protocol = ProtocolSource(
-          '''
+      var protocol = ProtocolSource(
+        '''
 exception: ExampleException
 fields:
   name: String
@@ -355,64 +407,63 @@ indexes:
     fields: name
     unique: true
 ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
 
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-        expect(collector.errors.length, greaterThan(0));
+      expect(collector.errors.length, greaterThan(0));
 
-        var error = collector.errors.first;
+      var error = collector.errors.first;
 
-        expect(error.message,
-            'The "indexes" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
-      });
+      expect(error.message,
+          'The "indexes" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.');
+    });
 
-      test(
-          'Given an enum with a table defined, then collect an error that table cannot be used together with enums.',
-          () {
-        var collector = CodeGenerationCollector();
+    test(
+        'Given an enum with a table defined, then collect an error that table cannot be used together with enums.',
+        () {
+      var collector = CodeGenerationCollector();
 
-        var protocol = ProtocolSource(
-          '''
+      var protocol = ProtocolSource(
+        '''
 enum: Example
 table: example
 values:
   - yes
   - no
 ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
 
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-        expect(collector.errors.length, greaterThan(0));
+      expect(collector.errors.length, greaterThan(0));
 
-        var error = collector.errors.first;
+      var error = collector.errors.first;
 
-        expect(error.message,
-            'The "table" property is not allowed for enum type. Valid keys are {enum, serverOnly, values}.');
-      });
+      expect(error.message,
+          'The "table" property is not allowed for enum type. Valid keys are {enum, serverOnly, values}.');
     });
   });
 }
