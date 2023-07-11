@@ -704,6 +704,39 @@ fields:
     });
 
     test(
+        'Given a class with a complex nested field datatype, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: module:auth:UserInfo
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'module:auth:UserInfo');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
         'Given a class with a field with an invalid dart syntax for the type, then collect an error that the type is invalid.',
         () {
       var collector = CodeGenerationCollector();
