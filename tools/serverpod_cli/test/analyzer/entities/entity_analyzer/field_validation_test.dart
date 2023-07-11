@@ -834,6 +834,39 @@ fields:
     );
 
     test(
+      'Given a class with a field with a parent that do not exist, then collect an error that the parent table is not found.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          name: String, parent=unknown_table
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(error.message, 'The parent table "unknown_table" was not found in any protocol.');
+      },
+    );
+
+    test(
       'Given a class with a field with two parent keywords, then collect an error that only one parent is allowed.',
       () {
         var collector = CodeGenerationCollector();
@@ -842,7 +875,7 @@ fields:
         class: Example
         table: example
         fields:
-          name: String, parent=my_table, parent=second
+          parentId: int, parent=example, parent=example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
           ['lib', 'src', 'protocol'],

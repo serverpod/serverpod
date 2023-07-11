@@ -172,6 +172,16 @@ class Restrictions {
       ];
     }
 
+    var relations = entityRelations;
+    if (relations != null && !relations.tableNames.containsKey(content)) {
+      return [
+        SourceSpanException(
+          'The parent table "$content" was not found in any protocol.',
+          span,
+        )
+      ];
+    }
+
     return [];
   }
 
