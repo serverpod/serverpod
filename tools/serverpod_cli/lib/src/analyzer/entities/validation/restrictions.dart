@@ -141,8 +141,8 @@ class Restrictions {
   ) {
     if (content == null) return [];
 
-    if (documentDefinition is ClassDefinition &&
-        (documentDefinition as ClassDefinition).tableName == null) {
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
       return [
         SourceSpanException(
           'The "table" property must be defined in the class to set a parent on a field.',
