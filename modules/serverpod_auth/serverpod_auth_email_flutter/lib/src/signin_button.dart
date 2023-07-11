@@ -19,7 +19,7 @@ class SignInWithEmailButton extends StatefulWidget {
   /// The icon of the button.
   final Icon? icon;
 
-  /// Minimum allowed password length.
+  /// Maximum allowed password length.
   /// Defaults to 128.
   /// If this value is modified, the server must be updated to match.
   final int? maxPasswordLength;
