@@ -336,41 +336,6 @@ fields:
     });
 
     test(
-        'Given a class with a field with the parent keyword but without a value, then collect an error that the parent has to have a valid table name.',
-        () {
-      var collector = CodeGenerationCollector();
-      var protocol = ProtocolSource(
-        '''
-class: Example
-table: example
-fields:
-  nameId: int, parent=
-''',
-        Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
-      );
-
-      var definition =
-          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        [definition!],
-      );
-
-      expect(collector.errors.length, greaterThan(0));
-
-      var error = collector.errors.first;
-
-      expect(
-        error.message,
-        'The parent must reference a valid table name (e.g. parent=table_name). "" is not a valid parent name.',
-      );
-    });
-
-    test(
         'Given a class with a field with the type String, then a class with that field type set to String is generated.',
         () {
       var collector = CodeGenerationCollector();
@@ -771,6 +736,41 @@ fields:
 
   group('Parent table tests', () {
     test(
+        'Given a class with a field with the parent keyword but without a value, then collect an error that the parent has to have a valid table name.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  nameId: int, parent=
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The parent must reference a valid table name (e.g. parent=table_name). "" is not a valid parent name.',
+      );
+    });
+
+    test(
       'Given a class with a field with a parent, then the generated entity has a parentTable property set to the parent table name.',
       () {
         var collector = CodeGenerationCollector();
@@ -779,7 +779,7 @@ fields:
         class: Example
         table: example
         fields:
-          parentId: int, parent=parent_table
+          parentId: int, parent=example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
           ['lib', 'src', 'protocol'],
@@ -795,8 +795,8 @@ fields:
           [definition!],
         );
 
-        expect((definition as ClassDefinition).fields.last.parentTable,
-            'parent_table');
+        expect(
+            (definition as ClassDefinition).fields.last.parentTable, 'example');
       },
     );
 
@@ -831,6 +831,41 @@ fields:
 
         expect(error.message,
             'The field option "parent" is defined more than once.');
+      },
+    );
+
+    test(
+      'Given a class without a table definition but with a field with a parent, then collect an error that the table needs to be defined.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          parentId: int, parent=example
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(
+          error.message,
+          'The "table" property must be defined in the class to set a parent on a field.',
+        );
       },
     );
   });

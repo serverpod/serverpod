@@ -149,7 +149,19 @@ class Restrictions {
     dynamic content,
     SourceSpan? span,
   ) {
-    if (content != null && !StringValidators.isValidTableIndexName(content)) {
+    if (content == null) return [];
+
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
+      return [
+        SourceSpanException(
+          'The "table" property must be defined in the class to set a parent on a field.',
+          span,
+        )
+      ];
+    }
+
+    if (!StringValidators.isValidTableIndexName(content)) {
       return [
         SourceSpanException(
           'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
