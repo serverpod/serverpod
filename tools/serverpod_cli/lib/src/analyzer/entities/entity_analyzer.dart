@@ -184,7 +184,7 @@ class SerializableEntityAnalyzer {
       documentType: definitionType,
       documentContents: documentContents,
       documentDefinition: entity,
-      // Todo: move instance creation of EntityRelations to StatefulAnalyzer
+      // TODO: move instance creation of EntityRelations to StatefulAnalyzer
       // to resolve n-squared time complexity.
       entityRelations: entities != null ? EntityRelations(entities) : null,
     );
