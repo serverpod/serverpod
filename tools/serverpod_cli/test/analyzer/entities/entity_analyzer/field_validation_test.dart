@@ -1026,37 +1026,74 @@ fields:
             SerializableEntityFieldScope.database);
       },
     );
-  });
 
-  test(
-    'Given a class with a field with the scope set to api, then the generated entity has the api scope.',
-    () {
-      var collector = CodeGenerationCollector();
-      var protocol = ProtocolSource(
-        '''
+    test(
+      'Given a class with a field with the scope set to api, then the generated entity has the api scope.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
       class: Example
       table: example
       fields:
         name: String, api
       ''',
-        Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
-      );
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
 
-      var definition =
-          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        [definition!],
-      );
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
 
-      expect((definition as ClassDefinition).fields.last.scope,
-          SerializableEntityFieldScope.api);
-    },
-  );
+        expect((definition as ClassDefinition).fields.last.scope,
+            SerializableEntityFieldScope.api);
+      },
+    );
+
+    test(
+      'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+      class: Example
+      table: example
+      fields:
+        nextId: int, parent=example, api
+      ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(
+          collector.errors.length,
+          greaterThan(0),
+          reason: 'Expected an error, none was found.',
+        );
+        expect(
+          collector.errors.first.message,
+          'The "api" property is mutually exclusive with the "parent" property.',
+        );
+      },
+    );
+  });
 
   group('Test id field.', () {
     test(
