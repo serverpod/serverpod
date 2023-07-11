@@ -66,10 +66,10 @@ class Restrictions {
   }
 
   List<SourceSpanException> validateTableName(
-    dynamic content,
+    dynamic tableName,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    if (tableName is! String) {
       return [
         SourceSpanException(
           'The "table" property must be a snake_case_string.',
@@ -78,10 +78,23 @@ class Restrictions {
       ];
     }
 
-    if (!StringValidators.isValidTableName(content)) {
+    if (!StringValidators.isValidTableName(tableName)) {
       return [
         SourceSpanException(
           'The "table" property must be a snake_case_string.',
+          span,
+        )
+      ];
+    }
+
+    var relations = entityRelations;
+    if (relations != null &&
+        !_isKeyGloballyUnique(tableName, relations.tableNames)) {
+      var otherClass =
+          _findFirstClassOtherClass(tableName, relations.tableNames);
+      return [
+        SourceSpanException(
+          'The table name "$tableName" is already in use by the class "${otherClass?.className}".',
           span,
         )
       ];
@@ -311,5 +324,28 @@ class Restrictions {
     }
 
     return valueCount;
+  }
+
+  bool _isKeyGloballyUnique(
+    String key,
+    Map<String, List<SerializableEntityDefinition>> map,
+  ) {
+    var classes = map[key];
+
+    if (documentDefinition == null && classes != null && classes.isNotEmpty) {
+      return false;
+    }
+
+    return classes == null || classes.length == 1;
+  }
+
+  SerializableEntityDefinition? _findFirstClassOtherClass(
+    String key,
+    Map<String, List<SerializableEntityDefinition>> map,
+  ) {
+    var classes = map[key];
+    if (classes == null || classes.isEmpty) return null;
+
+    return classes.firstWhere((c) => c != documentDefinition);
   }
 }
