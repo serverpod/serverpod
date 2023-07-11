@@ -7,6 +7,9 @@ fields:
   ### The actual column type
   columnType: ColumnType
 
+  ### A list of the enum value names, if this is an enum, otherwise null.
+  enumValueNames: List<String>?
+
   ### Whether this column is nullable.
   isNullable: bool
 
