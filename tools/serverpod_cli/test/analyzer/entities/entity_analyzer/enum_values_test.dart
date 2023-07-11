@@ -170,6 +170,52 @@ values:
   });
 
   test(
+      'Given an enum with two duplicated entries, then collect an error that the enum values must be unique.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+enum: ExampleEnum
+values:
+  - duplicated
+  - duplicated
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(1),
+      reason: 'Expected an error per duplicate value.',
+    );
+
+    var error1 = collector.errors.first;
+    var error2 = collector.errors.last;
+
+    expect(
+      error1.message,
+      'Enum values must be unique.',
+    );
+    expect(
+      error2.message,
+      'Enum values must be unique.',
+    );
+  });
+
+  test(
       'Given a valid enum with two values, then the enum definition should contain two values.',
       () {
     var protocol = ProtocolSource(
