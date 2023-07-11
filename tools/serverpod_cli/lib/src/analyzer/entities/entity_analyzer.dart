@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/validation/entity_relations.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/protocol_validator.dart';
@@ -183,7 +184,9 @@ class SerializableEntityAnalyzer {
       documentType: definitionType,
       documentContents: documentContents,
       documentDefinition: entity,
-      protocolEntities: entities,
+      // TODO: move instance creation of EntityRelations to StatefulAnalyzer
+      // to resolve n-squared time complexity.
+      entityRelations: entities != null ? EntityRelations(entities) : null,
     );
 
     Set<ValidateNode> documentStructure;
