@@ -48,7 +48,6 @@ import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i37;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i38;
 import 'package:serverpod_test_module_server/module.dart' as _i39;
-import 'package:serverpod_auth_server/module.dart' as _i40;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -2881,6 +2880,5 @@ class Endpoints extends _i1.EndpointDispatch {
     );
     modules['serverpod_test_module'] = _i39.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i40.Endpoints()..initializeEndpoints(server);
   }
 }

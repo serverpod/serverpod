@@ -11,9 +11,8 @@ import 'dart:async' as _i2;
 import 'dart:io' as _i3;
 import 'protocol.dart' as _i4;
 
-/// {@category Endpoint}
-class EndpointExample extends _i1.EndpointRef {
-  EndpointExample(_i1.EndpointCaller caller) : super(caller);
+class _EndpointExample extends _i1.EndpointRef {
+  _EndpointExample(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'example';
@@ -36,10 +35,10 @@ class Client extends _i1.ServerpodClient {
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
-    example = EndpointExample(this);
+    example = _EndpointExample(this);
   }
 
-  late final EndpointExample example;
+  late final _EndpointExample example;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};

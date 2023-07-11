@@ -48,9 +48,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_email_auth',
-      dartName: 'EmailAuth',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -111,9 +109,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_create_request',
-      dartName: 'EmailCreateAccountRequest',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -181,9 +177,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_failed_sign_in',
-      dartName: 'EmailFailedSignIn',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -258,9 +252,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_reset',
-      dartName: 'EmailReset',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -321,9 +313,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_google_refresh_token',
-      dartName: 'GoogleRefreshToken',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -379,9 +369,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_image',
-      dartName: 'UserImage',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -446,9 +434,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_info',
-      dartName: 'UserInfo',
       schema: 'public',
-      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',

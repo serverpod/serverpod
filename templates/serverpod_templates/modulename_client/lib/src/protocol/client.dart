@@ -9,9 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 
-/// {@category Endpoint}
-class EndpointModule extends _i1.EndpointRef {
-  EndpointModule(_i1.EndpointCaller caller) : super(caller);
+class _EndpointModule extends _i1.EndpointRef {
+  _EndpointModule(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'modulename.module';
@@ -25,10 +24,10 @@ class EndpointModule extends _i1.EndpointRef {
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
-    module = EndpointModule(this);
+    module = _EndpointModule(this);
   }
 
-  late final EndpointModule module;
+  late final _EndpointModule module;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup =>
