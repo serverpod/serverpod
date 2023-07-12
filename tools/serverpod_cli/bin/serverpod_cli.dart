@@ -101,7 +101,7 @@ Future<void> _main(List<String> args) async {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
     _analytics.cleanUp();
-    return;
+    exit(1);
   }
 
   // TODO: This should silence all warnings with a suitable name.
