@@ -95,28 +95,28 @@ Future<void> _main(List<String> args) async {
   ArgParser parser = _buildCommandParser();
 
   ArgResults results;
-  var devPrint = true;
   try {
     results = parser.parse(args);
-    // TODO: This should silence all warnings with a suitable name.
-    // Make this once we have a centralized logging and printing.
-    devPrint = results['development-print'];
-
-    if (!productionMode && devPrint) {
-      print(
-        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-      );
-      print('SERVERPOD_HOME is set to $serverpodHome');
-
-      if (!resourceManager.isTemplatesInstalled) {
-        print('WARNING! Could not find templates.');
-      }
-    }
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
     _analytics.cleanUp();
     return;
+  }
+
+  // TODO: This should silence all warnings with a suitable name.
+  // Make this once we have a centralized logging and printing.
+  var devPrint = results['development-print'];
+
+  if (!productionMode && devPrint) {
+    print(
+      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+    );
+    print('SERVERPOD_HOME is set to $serverpodHome');
+
+    if (!resourceManager.isTemplatesInstalled) {
+      print('WARNING! Could not find templates.');
+    }
   }
 
   if (devPrint) {
