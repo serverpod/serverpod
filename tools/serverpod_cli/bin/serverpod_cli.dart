@@ -134,18 +134,6 @@ Future<void> _main(List<String> args) async {
   _analytics.cleanUp();
 }
 
-ArgResults _parseCommand(ArgParser parser, List<String> args) {
-  try {
-    ArgResults results = parser.parse(args);
-    return results;
-  } catch (e) {
-    _analytics.track(event: 'invalid');
-    _printUsage(parser);
-    _analytics.cleanUp();
-    throw CommandNotFoundExit();
-  }
-}
-
 ArgParser _buildCommandParser() {
   var parser = ArgParser();
   parser.addFlag(
@@ -259,6 +247,18 @@ ArgParser _buildCommandParser() {
   );
   parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
   return parser;
+}
+
+ArgResults _parseCommand(ArgParser parser, List<String> args) {
+  try {
+    ArgResults results = parser.parse(args);
+    return results;
+  } catch (e) {
+    _analytics.track(event: 'invalid');
+    _printUsage(parser);
+    _analytics.cleanUp();
+    throw CommandNotFoundExit();
+  }
 }
 
 Future _runCommand(ArgResults results, ArgParser parser) async {
