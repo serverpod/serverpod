@@ -19,7 +19,7 @@ import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
-import 'package:serverpod_cli/src/util/exit_exceptions.dart';
+import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
@@ -44,21 +44,17 @@ void main(List<String> args) async {
     () async {
       try {
         await _main(args);
-      } on GeneralErrorExit {
-        exit(GeneralErrorExit.exitCode);
-      } on CommandInvokedCannotExecuteExit {
-        exit(CommandInvokedCannotExecuteExit.exitCode);
-      } on CommandNotFoundExit {
-        exit(CommandNotFoundExit.exitCode);
+      } on ExitException catch (e) {
+        exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
         printInternalError(error, stackTrace);
-        exit(GeneralErrorExit.exitCode);
+        exit(ExitCodeType.general.exitCode);
       }
     },
     (error, stackTrace) {
       printInternalError(error, stackTrace);
-      exit(GeneralErrorExit.exitCode);
+      exit(ExitCodeType.general.exitCode);
     },
   );
 }
@@ -74,16 +70,16 @@ Future<void> _main(List<String> args) async {
   if (!await CommandLineTools.existsCommand('dart')) {
     print(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    throw GeneralErrorExit();
+    throw ExitException(ExitCodeType.general);
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
     print(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    throw GeneralErrorExit();
+    throw ExitException(ExitCodeType.general);
   }
 
   if (!loadEnvironmentVars()) {
-    throw GeneralErrorExit();
+    throw ExitException(ExitCodeType.general);
   }
 
   // Make sure all necessary downloads are installed
@@ -92,13 +88,13 @@ Future<void> _main(List<String> args) async {
       await resourceManager.installTemplates();
     } catch (e) {
       print('Failed to download templates.');
-      throw GeneralErrorExit();
+      throw ExitException(ExitCodeType.general);
     }
 
     if (!resourceManager.isTemplatesInstalled) {
       print(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      throw GeneralErrorExit;
+      throw ExitException(ExitCodeType.general);
     }
   }
 
@@ -257,7 +253,7 @@ ArgResults _parseCommand(ArgParser parser, List<String> args) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
     _analytics.cleanUp();
-    throw CommandNotFoundExit();
+    throw ExitException(ExitCodeType.commandNotFound);
   }
 }
 
@@ -296,7 +292,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     var config = await GeneratorConfig.load();
     if (config == null) {
       _analytics.cleanUp();
-      throw CommandInvokedCannotExecuteExit();
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
     // Validate cli version is compatible with serverpod packages
@@ -346,7 +342,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
           'number, and dashes.',
         );
         _analytics.cleanUp();
-        throw CommandInvokedCannotExecuteExit();
+        throw ExitException(ExitCodeType.commandInvokedCannotExecute);
       }
     }
 
@@ -355,7 +351,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     var config = await GeneratorConfig.load();
     if (config == null) {
       _analytics.cleanUp();
-      throw GeneralErrorExit();
+      throw ExitException(ExitCodeType.general);
     }
 
     int priority;
@@ -407,7 +403,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     if (results.command!['version'] == 'X') {
       print('--version is not specified');
       _analytics.cleanUp();
-      throw CommandInvokedCannotExecuteExit();
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
     performGeneratePubspecs(
         results.command!['version'], results.command!['mode']);
@@ -419,7 +415,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     bool checkLatestVersion = results.command!['check-latest-version'];
     if (!await pubspecDependenciesMatch(checkLatestVersion)) {
       _analytics.cleanUp();
-      throw GeneralErrorExit();
+      throw ExitException(ExitCodeType.general);
     }
 
     return;
