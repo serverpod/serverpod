@@ -115,178 +115,179 @@ Future<void> _main(List<String> args) async {
     await promptToUpdateIfNeeded(Version.parse(templateVersion));
   }
 
-  if (results.command != null) {
-    _analytics.track(event: '${results.command?.name}');
+  if (results.command == null) {
+    _analytics.track(event: 'help');
+    _printUsage(parser);
+    _analytics.cleanUp();
+    return;
+  }
 
-    // Version command.
-    if (results.command!.name == cmdVersion) {
-      printVersion();
+  _analytics.track(event: '${results.command?.name}');
+
+  // Version command.
+  if (results.command!.name == cmdVersion) {
+    printVersion();
+    _analytics.cleanUp();
+    return;
+  }
+
+  // Create command.
+  if (results.command!.name == cmdCreate) {
+    var name = results.arguments.last;
+    bool verbose = results.command!['verbose'];
+    String template = results.command!['template'];
+    bool force = results.command!['force'];
+
+    if (name == 'server' || name == 'module' || name == 'create') {
+      _printUsage(parser);
       _analytics.cleanUp();
       return;
     }
 
-    // Create command.
-    if (results.command!.name == cmdCreate) {
-      var name = results.arguments.last;
-      bool verbose = results.command!['verbose'];
-      String template = results.command!['template'];
-      bool force = results.command!['force'];
+    await performCreate(name, verbose, template, force);
+    _analytics.cleanUp();
+    return;
+  }
 
-      if (name == 'server' || name == 'module' || name == 'create') {
-        _printUsage(parser);
-        _analytics.cleanUp();
-        return;
-      }
+  // Generate command.
+  if (results.command!.name == cmdGenerate) {
+    // Always do a full generate.
+    bool verbose = results.command!['verbose'];
+    bool watch = results.command!['watch'];
 
-      await performCreate(name, verbose, template, force);
-      _analytics.cleanUp();
+    // TODO: add a -d option to select the directory
+    var config = await GeneratorConfig.load();
+    if (config == null) {
       return;
     }
 
-    // Generate command.
-    if (results.command!.name == cmdGenerate) {
-      // Always do a full generate.
-      bool verbose = results.command!['verbose'];
-      bool watch = results.command!['watch'];
+    // Validate cli version is compatible with serverpod packages
+    var warnings = performServerpodPackagesAndCliVersionCheck(
+        Version.parse(templateVersion), Directory.current.parent);
+    if (warnings.isNotEmpty) {
+      printww('WARNING: The version of the CLI may be incompatible with the '
+          'Serverpod packages used in your project.');
+      warnings.forEach(print);
+    }
 
-      // TODO: add a -d option to select the directory
-      var config = await GeneratorConfig.load();
-      if (config == null) {
-        return;
-      }
+    // Copy migrations from modules.
+    await copyMigrations(config);
 
-      // Validate cli version is compatible with serverpod packages
-      var warnings = performServerpodPackagesAndCliVersionCheck(
-          Version.parse(templateVersion), Directory.current.parent);
-      if (warnings.isNotEmpty) {
-        printww('WARNING: The version of the CLI may be incompatible with the '
-            'Serverpod packages used in your project.');
-        warnings.forEach(print);
-      }
+    var endpointsAnalyzer = EndpointsAnalyzer(config);
 
-      // Copy migrations from modules.
-      await copyMigrations(config);
-
-      var endpointsAnalyzer = EndpointsAnalyzer(config);
-
-      await performGenerate(
+    await performGenerate(
+      verbose: verbose,
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
+    );
+    if (watch) {
+      print('Initial code generation complete. Listening for changes.');
+      performGenerateContinuously(
         verbose: verbose,
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
       );
-      if (watch) {
-        print('Initial code generation complete. Listening for changes.');
-        performGenerateContinuously(
-          verbose: verbose,
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-        );
-      } else {
-        print('Done.');
-      }
-      _analytics.cleanUp();
-      return;
+    } else {
+      print('Done.');
     }
+    _analytics.cleanUp();
+    return;
+  }
 
-    // Migrate command
-    if (results.command!.name == cmdMigrate) {
-      bool verbose = results.command!['verbose'];
-      bool force = results.command!['force'];
-      bool repair = results.command!['repair'];
-      String mode = results.command!['mode'];
-      String? tag = results.command!['tag'];
+  // Migrate command
+  if (results.command!.name == cmdMigrate) {
+    bool verbose = results.command!['verbose'];
+    bool force = results.command!['force'];
+    bool repair = results.command!['repair'];
+    String mode = results.command!['mode'];
+    String? tag = results.command!['tag'];
 
-      if (tag != null) {
-        if (!StringValidators.isValidTagName(tag)) {
-          printwwln(
-            'Invalid tag name. Tag names can only contain lowercase letters, '
-            'number, and dashes.',
-          );
-          _analytics.cleanUp();
-          return;
-        }
-      }
-
-      var projectName = await getProjectName();
-
-      var config = await GeneratorConfig.load();
-      if (config == null) {
-        exit(1);
-      }
-
-      int priority;
-      var packageType = config.type;
-      switch (packageType) {
-        case PackageType.internal:
-          priority = 0;
-          break;
-        case PackageType.module:
-          priority = 1;
-          break;
-        case PackageType.server:
-          priority = 2;
-          break;
-      }
-
-      var generator = MigrationGenerator(
-        directory: Directory.current,
-        projectName: projectName,
-      );
-
-      if (repair) {
-        await generator.repairMigration(
-          tag: tag,
-          force: force,
-          runMode: mode,
-          verbose: verbose,
+    if (tag != null) {
+      if (!StringValidators.isValidTagName(tag)) {
+        printwwln(
+          'Invalid tag name. Tag names can only contain lowercase letters, '
+          'number, and dashes.',
         );
-      } else {
-        await generator.createMigration(
-          tag: tag,
-          verbose: verbose,
-          force: force,
-          priority: priority,
-        );
-        print('Done.');
-      }
-
-      _analytics.cleanUp();
-      return;
-    }
-
-    if (results.command!.name == cmdLanguageServer) {
-      await runLanguageServer();
-      _analytics.cleanUp();
-      return;
-    }
-
-    // Generate pubspecs command.
-    if (results.command!.name == cmdGeneratePubspecs) {
-      if (results.command!['version'] == 'X') {
-        print('--version is not specified');
         _analytics.cleanUp();
         return;
       }
-      performGeneratePubspecs(
-          results.command!['version'], results.command!['mode']);
+    }
+
+    var projectName = await getProjectName();
+
+    var config = await GeneratorConfig.load();
+    if (config == null) {
+      exit(1);
+    }
+
+    int priority;
+    var packageType = config.type;
+    switch (packageType) {
+      case PackageType.internal:
+        priority = 0;
+        break;
+      case PackageType.module:
+        priority = 1;
+        break;
+      case PackageType.server:
+        priority = 2;
+        break;
+    }
+
+    var generator = MigrationGenerator(
+      directory: Directory.current,
+      projectName: projectName,
+    );
+
+    if (repair) {
+      await generator.repairMigration(
+        tag: tag,
+        force: force,
+        runMode: mode,
+        verbose: verbose,
+      );
+    } else {
+      await generator.createMigration(
+        tag: tag,
+        verbose: verbose,
+        force: force,
+        priority: priority,
+      );
+      print('Done.');
+    }
+
+    _analytics.cleanUp();
+    return;
+  }
+
+  if (results.command!.name == cmdLanguageServer) {
+    await runLanguageServer();
+    _analytics.cleanUp();
+    return;
+  }
+
+  // Generate pubspecs command.
+  if (results.command!.name == cmdGeneratePubspecs) {
+    if (results.command!['version'] == 'X') {
+      print('--version is not specified');
       _analytics.cleanUp();
       return;
     }
-
-    // Analyze pubspecs command.
-    if (results.command!.name == cmdAnalyzePubspecs) {
-      bool checkLatestVersion = results.command!['check-latest-version'];
-      if (!await pubspecDependenciesMatch(checkLatestVersion)) {
-        exit(1);
-      }
-
-      return;
-    }
+    performGeneratePubspecs(
+        results.command!['version'], results.command!['mode']);
+    _analytics.cleanUp();
+    return;
   }
 
-  _analytics.track(event: 'help');
-  _printUsage(parser);
-  _analytics.cleanUp();
+  // Analyze pubspecs command.
+  if (results.command!.name == cmdAnalyzePubspecs) {
+    bool checkLatestVersion = results.command!['check-latest-version'];
+    if (!await pubspecDependenciesMatch(checkLatestVersion)) {
+      exit(1);
+    }
+
+    return;
+  }
 }
 
 ArgResults _parseCommand(ArgParser parser, List<String> args) {
