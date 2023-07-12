@@ -42,7 +42,7 @@ List<SourceSpanException> validateTopLevelEntityType(
   return errors;
 }
 
-/// Recursivly validates a yaml document against a set of [ValidateNode]s.
+/// Recursively validates a yaml document against a set of [ValidateNode]s.
 /// The [documentType] represents the parent key of the [documentContents],
 /// in the initial processing this is expected to be the top level entity type
 /// we are checking. E.g. 'class', 'enum', 'exception', etc.
