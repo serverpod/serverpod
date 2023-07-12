@@ -118,11 +118,12 @@ Future<void> _main(List<String> args) async {
   if (results.command == null) {
     _analytics.track(event: 'help');
     _printUsage(parser);
-    _analytics.cleanUp();
     return;
+  } else {
+    await _runCommand(results, parser);
   }
 
-  await _runCommand(results, parser);
+  _analytics.cleanUp();
 }
 
 ArgResults _parseCommand(ArgParser parser, List<String> args) {
@@ -258,7 +259,6 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   // Version command.
   if (results.command!.name == cmdVersion) {
     printVersion();
-    _analytics.cleanUp();
     return;
   }
 
@@ -271,12 +271,10 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
     if (name == 'server' || name == 'module' || name == 'create') {
       _printUsage(parser);
-      _analytics.cleanUp();
       return;
     }
 
     await performCreate(name, verbose, template, force);
-    _analytics.cleanUp();
     return;
   }
 
@@ -321,7 +319,6 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     } else {
       print('Done.');
     }
-    _analytics.cleanUp();
     return;
   }
 
@@ -339,7 +336,6 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
           'Invalid tag name. Tag names can only contain lowercase letters, '
           'number, and dashes.',
         );
-        _analytics.cleanUp();
         return;
       }
     }
@@ -387,13 +383,11 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
       print('Done.');
     }
 
-    _analytics.cleanUp();
     return;
   }
 
   if (results.command!.name == cmdLanguageServer) {
     await runLanguageServer();
-    _analytics.cleanUp();
     return;
   }
 
@@ -401,12 +395,10 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   if (results.command!.name == cmdGeneratePubspecs) {
     if (results.command!['version'] == 'X') {
       print('--version is not specified');
-      _analytics.cleanUp();
       return;
     }
     performGeneratePubspecs(
         results.command!['version'], results.command!['mode']);
-    _analytics.cleanUp();
     return;
   }
 
