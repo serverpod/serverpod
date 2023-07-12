@@ -444,16 +444,6 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i46.ClusterServerInfo>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as dynamic;
-    }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as dynamic;
-    }
     if (t == List<_i46.TableDefinition>) {
       return (data as List)
           .map((e) => deserialize<_i46.TableDefinition>(e))
