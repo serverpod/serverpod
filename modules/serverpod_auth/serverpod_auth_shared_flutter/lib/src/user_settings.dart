@@ -17,6 +17,7 @@ class UserSettings extends StatefulWidget {
   const UserSettings({
     required this.sessionManager,
     this.compact = true,
+    super.key,
   });
 
   @override
