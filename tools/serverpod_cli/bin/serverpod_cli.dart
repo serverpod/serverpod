@@ -92,117 +92,7 @@ Future<void> _main(List<String> args) async {
     }
   }
 
-  var parser = ArgParser();
-  parser.addFlag(
-    'development-print',
-    defaultsTo: true,
-    negatable: true,
-    help: 'Prints additional information useful for development.',
-  );
-
-  // "version" command
-  var versionParser = ArgParser();
-  parser.addCommand(cmdVersion, versionParser);
-
-  // "create" command
-  var createParser = ArgParser();
-  createParser.addFlag('verbose',
-      abbr: 'v', negatable: false, help: 'Output more detailed information.');
-  createParser.addFlag(
-    'force',
-    abbr: 'f',
-    negatable: false,
-    help:
-        'Create the project even if there are issues that prevents if from running out of the box.',
-  );
-  createParser.addOption(
-    'template',
-    abbr: 't',
-    defaultsTo: 'server',
-    allowed: <String>['server', 'module'],
-    help:
-        'Template to use when creating a new project, valid options are "server" or "module".',
-  );
-  parser.addCommand(cmdCreate, createParser);
-
-  // "generate" command
-  var generateParser = ArgParser();
-  generateParser.addFlag(
-    'verbose',
-    abbr: 'v',
-    negatable: false,
-    help: 'Output more detailed information.',
-  );
-  generateParser.addFlag(
-    'watch',
-    abbr: 'w',
-    negatable: false,
-    help: 'Watch for changes and continuously generate code.',
-  );
-  parser.addCommand(cmdGenerate, generateParser);
-
-  // "migrate" commanbd
-  var migrateParser = ArgParser();
-  migrateParser.addFlag(
-    'verbose',
-    abbr: 'v',
-    negatable: false,
-    help: 'Output more detailed information.',
-  );
-  migrateParser.addFlag(
-    'force',
-    abbr: 'f',
-    negatable: false,
-    help:
-        'Creates the migration even if there are warnings or information that '
-        'may be destroyed.',
-  );
-  migrateParser.addFlag(
-    'repair',
-    abbr: 'r',
-    negatable: false,
-    help:
-        'Repairs the database by comparing the target state to what is in the '
-        'live database instead of comparing to the latest migration.',
-  );
-  migrateParser.addOption(
-    'mode',
-    abbr: 'm',
-    defaultsTo: 'development',
-    allowed: runModes,
-    help: 'Use together with --repair to specify which database to repair.',
-  );
-  migrateParser.addOption(
-    'tag',
-    abbr: 't',
-    help: 'Add a tag to the revision to easier identify it.',
-  );
-  parser.addCommand(cmdMigrate, migrateParser);
-
-  // "language-server" command
-  var languageServerParser = ArgParser();
-  languageServerParser.addFlag(
-    'stdio',
-    defaultsTo: true,
-    help: 'Use stdin/stdout channels for communication.',
-  );
-  parser.addCommand(cmdLanguageServer, languageServerParser);
-
-  // "generate-pubspecs"
-  var generatePubspecs = ArgParser();
-  generatePubspecs.addOption('version', defaultsTo: 'X');
-  generatePubspecs.addOption(
-    'mode',
-    defaultsTo: 'development',
-    allowed: ['development', 'production'],
-  );
-  parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
-
-  var analyzePubspecs = ArgParser();
-  analyzePubspecs.addFlag(
-    'check-latest-version',
-  );
-  parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
+  ArgParser parser = _buildCommandParser();
 
   ArgResults results;
   var devPrint = true;
@@ -405,6 +295,121 @@ Future<void> _main(List<String> args) async {
   _analytics.track(event: 'help');
   _printUsage(parser);
   _analytics.cleanUp();
+}
+
+ArgParser _buildCommandParser() {
+  var parser = ArgParser();
+  parser.addFlag(
+    'development-print',
+    defaultsTo: true,
+    negatable: true,
+    help: 'Prints additional information useful for development.',
+  );
+
+  // "version" command
+  var versionParser = ArgParser();
+  parser.addCommand(cmdVersion, versionParser);
+
+  // "create" command
+  var createParser = ArgParser();
+  createParser.addFlag('verbose',
+      abbr: 'v', negatable: false, help: 'Output more detailed information.');
+  createParser.addFlag(
+    'force',
+    abbr: 'f',
+    negatable: false,
+    help:
+        'Create the project even if there are issues that prevents if from running out of the box.',
+  );
+  createParser.addOption(
+    'template',
+    abbr: 't',
+    defaultsTo: 'server',
+    allowed: <String>['server', 'module'],
+    help:
+        'Template to use when creating a new project, valid options are "server" or "module".',
+  );
+  parser.addCommand(cmdCreate, createParser);
+
+  // "generate" command
+  var generateParser = ArgParser();
+  generateParser.addFlag(
+    'verbose',
+    abbr: 'v',
+    negatable: false,
+    help: 'Output more detailed information.',
+  );
+  generateParser.addFlag(
+    'watch',
+    abbr: 'w',
+    negatable: false,
+    help: 'Watch for changes and continuously generate code.',
+  );
+  parser.addCommand(cmdGenerate, generateParser);
+
+  // "migrate" commanbd
+  var migrateParser = ArgParser();
+  migrateParser.addFlag(
+    'verbose',
+    abbr: 'v',
+    negatable: false,
+    help: 'Output more detailed information.',
+  );
+  migrateParser.addFlag(
+    'force',
+    abbr: 'f',
+    negatable: false,
+    help:
+        'Creates the migration even if there are warnings or information that '
+        'may be destroyed.',
+  );
+  migrateParser.addFlag(
+    'repair',
+    abbr: 'r',
+    negatable: false,
+    help:
+        'Repairs the database by comparing the target state to what is in the '
+        'live database instead of comparing to the latest migration.',
+  );
+  migrateParser.addOption(
+    'mode',
+    abbr: 'm',
+    defaultsTo: 'development',
+    allowed: runModes,
+    help: 'Use together with --repair to specify which database to repair.',
+  );
+  migrateParser.addOption(
+    'tag',
+    abbr: 't',
+    help: 'Add a tag to the revision to easier identify it.',
+  );
+  parser.addCommand(cmdMigrate, migrateParser);
+
+  // "language-server" command
+  var languageServerParser = ArgParser();
+  languageServerParser.addFlag(
+    'stdio',
+    defaultsTo: true,
+    help: 'Use stdin/stdout channels for communication.',
+  );
+  parser.addCommand(cmdLanguageServer, languageServerParser);
+
+  // "generate-pubspecs"
+  var generatePubspecs = ArgParser();
+  generatePubspecs.addOption('version', defaultsTo: 'X');
+  generatePubspecs.addOption(
+    'mode',
+    defaultsTo: 'development',
+    allowed: ['development', 'production'],
+  );
+  parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
+
+  var analyzePubspecs = ArgParser();
+  analyzePubspecs.addFlag(
+    'check-latest-version',
+  );
+  parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
+  return parser;
 }
 
 void _printUsage(ArgParser parser) {
