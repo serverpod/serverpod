@@ -45,6 +45,7 @@ void main(List<String> args) async {
       try {
         await _main(args);
       } on ExitException catch (e) {
+        _analytics.cleanUp;
         exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
@@ -70,16 +71,16 @@ Future<void> _main(List<String> args) async {
   if (!await CommandLineTools.existsCommand('dart')) {
     print(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    throw ExitException(ExitCodeType.general);
+    throw ExitException();
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
     print(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    throw ExitException(ExitCodeType.general);
+    throw ExitException();
   }
 
   if (!loadEnvironmentVars()) {
-    throw ExitException(ExitCodeType.general);
+    throw ExitException();
   }
 
   // Make sure all necessary downloads are installed
@@ -88,13 +89,13 @@ Future<void> _main(List<String> args) async {
       await resourceManager.installTemplates();
     } catch (e) {
       print('Failed to download templates.');
-      throw ExitException(ExitCodeType.general);
+      throw ExitException();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
       print(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      throw ExitException(ExitCodeType.general);
+      throw ExitException();
     }
   }
 
@@ -252,7 +253,6 @@ ArgResults _parseCommand(ArgParser parser, List<String> args) {
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
-    _analytics.cleanUp();
     throw ExitException(ExitCodeType.commandNotFound);
   }
 }
@@ -291,7 +291,6 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load();
     if (config == null) {
-      _analytics.cleanUp();
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
@@ -341,7 +340,6 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
           'Invalid tag name. Tag names can only contain lowercase letters, '
           'number, and dashes.',
         );
-        _analytics.cleanUp();
         throw ExitException(ExitCodeType.commandInvokedCannotExecute);
       }
     }
@@ -350,8 +348,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
     var config = await GeneratorConfig.load();
     if (config == null) {
-      _analytics.cleanUp();
-      throw ExitException(ExitCodeType.general);
+      throw ExitException();
     }
 
     int priority;
@@ -402,7 +399,6 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   if (results.command!.name == cmdGeneratePubspecs) {
     if (results.command!['version'] == 'X') {
       print('--version is not specified');
-      _analytics.cleanUp();
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
     performGeneratePubspecs(
@@ -414,8 +410,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   if (results.command!.name == cmdAnalyzePubspecs) {
     bool checkLatestVersion = results.command!['check-latest-version'];
     if (!await pubspecDependenciesMatch(checkLatestVersion)) {
-      _analytics.cleanUp();
-      throw ExitException(ExitCodeType.general);
+      throw ExitException();
     }
 
     return;
