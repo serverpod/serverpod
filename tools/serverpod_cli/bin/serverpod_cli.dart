@@ -45,7 +45,7 @@ void main(List<String> args) async {
       try {
         await _main(args);
       } on ExitException catch (e) {
-        _analytics.cleanUp;
+        _analytics.cleanUp();
         exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
