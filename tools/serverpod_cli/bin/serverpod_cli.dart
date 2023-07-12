@@ -94,15 +94,7 @@ Future<void> _main(List<String> args) async {
 
   ArgParser parser = _buildCommandParser();
 
-  ArgResults results;
-  try {
-    results = parser.parse(args);
-  } catch (e) {
-    _analytics.track(event: 'invalid');
-    _printUsage(parser);
-    _analytics.cleanUp();
-    exit(1);
-  }
+  ArgResults results = _parseCommand(parser, args);
 
   // TODO: This should silence all warnings with a suitable name.
   // Make this once we have a centralized logging and printing.
@@ -295,6 +287,18 @@ Future<void> _main(List<String> args) async {
   _analytics.track(event: 'help');
   _printUsage(parser);
   _analytics.cleanUp();
+}
+
+ArgResults _parseCommand(ArgParser parser, List<String> args) {
+  try {
+    ArgResults results = parser.parse(args);
+    return results;
+  } catch (e) {
+    _analytics.track(event: 'invalid');
+    _printUsage(parser);
+    _analytics.cleanUp();
+    exit(1);
+  }
 }
 
 ArgParser _buildCommandParser() {
