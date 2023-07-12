@@ -605,6 +605,158 @@ fields:
     });
 
     test(
+        'Given a class with a field with the nullable type List<String>, then a class with that field type set to List<String>? is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: List<String>?
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<String>?');
+      expect(
+        definition.fields.first.type.nullable,
+        true,
+        reason: 'Expected the type to be nullable.',
+      );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with a nested nullable type, then a class with that field type set.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: List<String?>?
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<String?>?');
+      expect(
+        definition.fields.first.type.nullable,
+        true,
+        reason: 'Expected the type to be nullable.',
+      );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with a only ??? as the type, then collect an error that it is an invalid type.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: ???
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error, but none was found.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field has an invalid datatype "???".',
+      );
+    });
+
+    test(
+        'Given a class with a field with a type of String???, then collect an error that it is an invalid type.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: String???
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error, but none was found.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field has an invalid datatype "String???".',
+      );
+    });
+
+    test(
         'Given a class with a field with the type List, then a class with that field type is generated.',
         () {
       var collector = CodeGenerationCollector();
