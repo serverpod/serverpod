@@ -7,23 +7,42 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:io' as _i2;
-import 'protocol.dart' as _i3;
+import 'dart:async' as _i2;
+import 'dart:io' as _i3;
+import 'protocol.dart' as _i4;
+
+/// {@category Endpoint}
+class EndpointExample extends _i1.EndpointRef {
+  EndpointExample(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'example';
+
+  _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
+        'example',
+        'hello',
+        {'name': name},
+      );
+}
 
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i2.SecurityContext? context,
+    _i3.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i3.Protocol(),
+          _i4.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
-        ) {}
+        ) {
+    example = EndpointExample(this);
+  }
+
+  late final EndpointExample example;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
 }

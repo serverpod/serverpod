@@ -483,11 +483,19 @@ extension ColumnMigrationPgSqlGenerator on ColumnMigration {
       if (newDefault == null) {
         out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
             ' DROP DEFAULT;\n';
-        return out;
       } else {
         out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
             ' SET DEFAULT $newDefault;\n';
       }
+    }
+    if (migrateEnumValues != null) {
+      var cases = migrateEnumValues!
+          .asMap()
+          .entries
+          .map((e) => 'WHEN $columnName=${e.key} THEN \'${e.value}\'')
+          .join(' ');
+      out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          ' TYPE TEXT USING CASE $cases END;\n';
     }
 
     return out;

@@ -17,12 +17,11 @@ import 'email_create_account_request.dart' as _i7;
 import 'email_failed_sign_in.dart' as _i8;
 import 'email_password_reset.dart' as _i9;
 import 'email_reset.dart' as _i10;
-import 'facebook_long_lived_token.dart' as _i11;
-import 'google_refresh_token.dart' as _i12;
-import 'user_image.dart' as _i13;
-import 'user_info.dart' as _i14;
-import 'user_info_public.dart' as _i15;
-import 'user_settings_config.dart' as _i16;
+import 'google_refresh_token.dart' as _i11;
+import 'user_image.dart' as _i12;
+import 'user_info.dart' as _i13;
+import 'user_info_public.dart' as _i14;
+import 'user_settings_config.dart' as _i15;
 export 'apple_auth_info.dart';
 export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
@@ -31,7 +30,6 @@ export 'email_create_account_request.dart';
 export 'email_failed_sign_in.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
-export 'facebook_long_lived_token.dart';
 export 'google_refresh_token.dart';
 export 'user_image.dart';
 export 'user_info.dart';
@@ -50,7 +48,9 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
     _i2.TableDefinition(
       name: 'serverpod_email_auth',
+      dartName: 'EmailAuth',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -111,7 +111,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_create_request',
+      dartName: 'EmailCreateAccountRequest',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -179,7 +181,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_failed_sign_in',
+      dartName: 'EmailFailedSignIn',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -254,7 +258,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_reset',
+      dartName: 'EmailReset',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -314,76 +320,10 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'serverpod_facebook_long_lived_token',
-      schema: 'public',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_facebook_long_lived_token_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'userId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'fbProfileId',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'token',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'expiresAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_facebook_long_lived_token_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_facebook_long_lived_token_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'userId',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'serverpod_google_refresh_token',
+      dartName: 'GoogleRefreshToken',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -439,7 +379,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_image',
+      dartName: 'UserImage',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -504,7 +446,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_info',
+      dartName: 'UserInfo',
       schema: 'public',
+      module: 'serverpod_auth',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -641,23 +585,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i10.EmailReset) {
       return _i10.EmailReset.fromJson(data, this) as T;
     }
-    if (t == _i11.FacebookLongLivedToken) {
-      return _i11.FacebookLongLivedToken.fromJson(data, this) as T;
+    if (t == _i11.GoogleRefreshToken) {
+      return _i11.GoogleRefreshToken.fromJson(data, this) as T;
     }
-    if (t == _i12.GoogleRefreshToken) {
-      return _i12.GoogleRefreshToken.fromJson(data, this) as T;
+    if (t == _i12.UserImage) {
+      return _i12.UserImage.fromJson(data, this) as T;
     }
-    if (t == _i13.UserImage) {
-      return _i13.UserImage.fromJson(data, this) as T;
+    if (t == _i13.UserInfo) {
+      return _i13.UserInfo.fromJson(data, this) as T;
     }
-    if (t == _i14.UserInfo) {
-      return _i14.UserInfo.fromJson(data, this) as T;
+    if (t == _i14.UserInfoPublic) {
+      return _i14.UserInfoPublic.fromJson(data, this) as T;
     }
-    if (t == _i15.UserInfoPublic) {
-      return _i15.UserInfoPublic.fromJson(data, this) as T;
-    }
-    if (t == _i16.UserSettingsConfig) {
-      return _i16.UserSettingsConfig.fromJson(data, this) as T;
+    if (t == _i15.UserSettingsConfig) {
+      return _i15.UserSettingsConfig.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i3.AppleAuthInfo?>()) {
       return (data != null ? _i3.AppleAuthInfo.fromJson(data, this) : null)
@@ -691,29 +632,24 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i10.EmailReset?>()) {
       return (data != null ? _i10.EmailReset.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i11.FacebookLongLivedToken?>()) {
+    if (t == _i1.getType<_i11.GoogleRefreshToken?>()) {
       return (data != null
-          ? _i11.FacebookLongLivedToken.fromJson(data, this)
+          ? _i11.GoogleRefreshToken.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i12.GoogleRefreshToken?>()) {
-      return (data != null
-          ? _i12.GoogleRefreshToken.fromJson(data, this)
-          : null) as T;
+    if (t == _i1.getType<_i12.UserImage?>()) {
+      return (data != null ? _i12.UserImage.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i13.UserImage?>()) {
-      return (data != null ? _i13.UserImage.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i13.UserInfo?>()) {
+      return (data != null ? _i13.UserInfo.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i14.UserInfo?>()) {
-      return (data != null ? _i14.UserInfo.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i15.UserInfoPublic?>()) {
-      return (data != null ? _i15.UserInfoPublic.fromJson(data, this) : null)
+    if (t == _i1.getType<_i14.UserInfoPublic?>()) {
+      return (data != null ? _i14.UserInfoPublic.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.UserSettingsConfig?>()) {
+    if (t == _i1.getType<_i15.UserSettingsConfig?>()) {
       return (data != null
-          ? _i16.UserSettingsConfig.fromJson(data, this)
+          ? _i15.UserSettingsConfig.fromJson(data, this)
           : null) as T;
     }
     if (t == List<String>) {
@@ -752,22 +688,19 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i10.EmailReset) {
       return 'EmailReset';
     }
-    if (data is _i11.FacebookLongLivedToken) {
-      return 'FacebookLongLivedToken';
-    }
-    if (data is _i12.GoogleRefreshToken) {
+    if (data is _i11.GoogleRefreshToken) {
       return 'GoogleRefreshToken';
     }
-    if (data is _i13.UserImage) {
+    if (data is _i12.UserImage) {
       return 'UserImage';
     }
-    if (data is _i14.UserInfo) {
+    if (data is _i13.UserInfo) {
       return 'UserInfo';
     }
-    if (data is _i15.UserInfoPublic) {
+    if (data is _i14.UserInfoPublic) {
       return 'UserInfoPublic';
     }
-    if (data is _i16.UserSettingsConfig) {
+    if (data is _i15.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
     return super.getClassNameForObject(data);
@@ -799,23 +732,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'EmailReset') {
       return deserialize<_i10.EmailReset>(data['data']);
     }
-    if (data['className'] == 'FacebookLongLivedToken') {
-      return deserialize<_i11.FacebookLongLivedToken>(data['data']);
-    }
     if (data['className'] == 'GoogleRefreshToken') {
-      return deserialize<_i12.GoogleRefreshToken>(data['data']);
+      return deserialize<_i11.GoogleRefreshToken>(data['data']);
     }
     if (data['className'] == 'UserImage') {
-      return deserialize<_i13.UserImage>(data['data']);
+      return deserialize<_i12.UserImage>(data['data']);
     }
     if (data['className'] == 'UserInfo') {
-      return deserialize<_i14.UserInfo>(data['data']);
+      return deserialize<_i13.UserInfo>(data['data']);
     }
     if (data['className'] == 'UserInfoPublic') {
-      return deserialize<_i15.UserInfoPublic>(data['data']);
+      return deserialize<_i14.UserInfoPublic>(data['data']);
     }
     if (data['className'] == 'UserSettingsConfig') {
-      return deserialize<_i16.UserSettingsConfig>(data['data']);
+      return deserialize<_i15.UserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -837,14 +767,12 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i8.EmailFailedSignIn.t;
       case _i10.EmailReset:
         return _i10.EmailReset.t;
-      case _i11.FacebookLongLivedToken:
-        return _i11.FacebookLongLivedToken.t;
-      case _i12.GoogleRefreshToken:
-        return _i12.GoogleRefreshToken.t;
-      case _i13.UserImage:
-        return _i13.UserImage.t;
-      case _i14.UserInfo:
-        return _i14.UserInfo.t;
+      case _i11.GoogleRefreshToken:
+        return _i11.GoogleRefreshToken.t;
+      case _i12.UserImage:
+        return _i12.UserImage.t;
+      case _i13.UserInfo:
+        return _i13.UserInfo.t;
     }
     return null;
   }
