@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -15,7 +16,7 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   }
 
   var pubspecFiles = findPubspecsFiles(directory,
-      ignorePaths: ['/templates/pubspecs/', '/test_assets/']);
+      ignorePaths: [p.join('templates', 'pubspecs'), 'test_assets']);
 
   Map<String, List<_ServerpodDependency>> dependencies;
   try {
