@@ -42,7 +42,8 @@ dependencies:
   pub_semver: ^2.1.4
 
 dev_dependencies:
-  lints: ^2.0.1
+  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+    path: ../../packages/serverpod_lints
   test: ^1.24.2
 
 executables:
