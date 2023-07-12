@@ -653,6 +653,129 @@ indexes:
         'The "invalidKey" property is not allowed for example_index type. Valid keys are {fields, type, unique}.');
   });
 
+  group('Index relationships.', () {
+    test(
+        'Given two classes with the same index name defined, then collect an error notifying that the index name is already in use.',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol1 = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition1 =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol1);
+
+      var protocol2 = ProtocolSource(
+        '''
+class: ExampleCollision
+table: example_collision
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+''',
+        Uri(path: 'lib/src/protocol/example2.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition2 =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol2);
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol1.yaml,
+        protocol1.yamlSourceUri.path,
+        collector,
+        definition1,
+        [definition1!, definition2!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error to be reported.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The index name "example_index" is already used by the protocol class "ExampleCollision".',
+      );
+    });
+
+    test(
+        'Given two classes with the same index name defined but our current class was not serialized, then collect an error notifying that the index name is already in use.',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol1 = ProtocolSource(
+        '''
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      SerializableEntityAnalyzer.extractEntityDefinition(protocol1);
+
+      var protocol2 = ProtocolSource(
+        '''
+class: ExampleCollision
+table: example_collision
+fields:
+  name: String
+indexes:
+  example_index:
+    fields: name
+''',
+        Uri(path: 'lib/src/protocol/example2.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition2 =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol2);
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol1.yaml,
+        protocol1.yamlSourceUri.path,
+        collector,
+        null,
+        [definition2!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error to be reported.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The index name "example_index" is already used by the protocol class "ExampleCollision".',
+      );
+    });
+  });
+
   group('Index type tests.', () {
     test(
         'Given a class with an index without a type set, then default to type btree',
