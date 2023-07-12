@@ -52,7 +52,7 @@ Future<void> runLanguageServer() async {
     serverProject = null;
   });
 
-  connection.onExit(() => exit(0));
+  connection.onExit(() => connection.close());
 
   connection.onDidCloseTextDocument((params) async {
     var project = serverProject;
