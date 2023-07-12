@@ -19,6 +19,7 @@ import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/exit_exceptions.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
@@ -43,13 +44,21 @@ void main(List<String> args) async {
     () async {
       try {
         await _main(args);
+      } on GeneralErrorExit {
+        exit(GeneralErrorExit.exitCode);
+      } on CommandInvokedCannotExecuteExit {
+        exit(CommandInvokedCannotExecuteExit.exitCode);
+      } on CommandNotFoundExit {
+        exit(CommandNotFoundExit.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
         printInternalError(error, stackTrace);
+        exit(GeneralErrorExit.exitCode);
       }
     },
     (error, stackTrace) {
       printInternalError(error, stackTrace);
+      exit(GeneralErrorExit.exitCode);
     },
   );
 }
@@ -65,16 +74,16 @@ Future<void> _main(List<String> args) async {
   if (!await CommandLineTools.existsCommand('dart')) {
     print(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    return;
+    throw GeneralErrorExit();
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
     print(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    return;
+    throw GeneralErrorExit();
   }
 
   if (!loadEnvironmentVars()) {
-    return;
+    throw GeneralErrorExit();
   }
 
   // Make sure all necessary downloads are installed
@@ -83,12 +92,13 @@ Future<void> _main(List<String> args) async {
       await resourceManager.installTemplates();
     } catch (e) {
       print('Failed to download templates.');
+      throw GeneralErrorExit();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
       print(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      return;
+      throw GeneralErrorExit;
     }
   }
 
@@ -118,11 +128,9 @@ Future<void> _main(List<String> args) async {
   if (results.command == null) {
     _analytics.track(event: 'help');
     _printUsage(parser);
-    return;
   } else {
     await _runCommand(results, parser);
   }
-
   _analytics.cleanUp();
 }
 
@@ -134,7 +142,7 @@ ArgResults _parseCommand(ArgParser parser, List<String> args) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
     _analytics.cleanUp();
-    exit(1);
+    throw CommandNotFoundExit();
   }
 }
 
@@ -287,7 +295,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load();
     if (config == null) {
-      return;
+      _analytics.cleanUp();
+      throw CommandInvokedCannotExecuteExit();
     }
 
     // Validate cli version is compatible with serverpod packages
@@ -336,7 +345,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
           'Invalid tag name. Tag names can only contain lowercase letters, '
           'number, and dashes.',
         );
-        return;
+        _analytics.cleanUp();
+        throw CommandInvokedCannotExecuteExit();
       }
     }
 
@@ -344,7 +354,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
     var config = await GeneratorConfig.load();
     if (config == null) {
-      exit(1);
+      _analytics.cleanUp();
+      throw GeneralErrorExit();
     }
 
     int priority;
@@ -395,7 +406,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   if (results.command!.name == cmdGeneratePubspecs) {
     if (results.command!['version'] == 'X') {
       print('--version is not specified');
-      return;
+      _analytics.cleanUp();
+      throw CommandInvokedCannotExecuteExit();
     }
     performGeneratePubspecs(
         results.command!['version'], results.command!['mode']);
@@ -406,7 +418,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   if (results.command!.name == cmdAnalyzePubspecs) {
     bool checkLatestVersion = results.command!['check-latest-version'];
     if (!await pubspecDependenciesMatch(checkLatestVersion)) {
-      exit(1);
+      _analytics.cleanUp();
+      throw GeneralErrorExit();
     }
 
     return;
