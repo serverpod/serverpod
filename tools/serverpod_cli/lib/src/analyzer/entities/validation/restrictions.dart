@@ -199,10 +199,10 @@ class Restrictions {
   }
 
   List<SourceSpanException> validateFieldDataType(
-    dynamic content,
+    dynamic type,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    if (type is! String) {
       return [
         SourceSpanException(
           'The field must have a datatype defined (e.g. field: String).',
@@ -211,18 +211,10 @@ class Restrictions {
       ];
     }
 
-    var typeComponents = content
-        .replaceAll(' ', '')
-        .replaceAll('<', ',')
-        .replaceAll('>', ',')
-        .split(',')
-        .where((t) => t.isNotEmpty);
-
-    if (typeComponents
-        .any((type) => !StringValidators.isValidFieldType(type))) {
+    if (!_isValidFieldType(type)) {
       return [
         SourceSpanException(
-          'The field has an invalid datatype "$content".',
+          'The field has an invalid datatype "$type".',
           span,
         )
       ];
@@ -342,6 +334,25 @@ class Restrictions {
     }
 
     return valueCount;
+  }
+
+  bool _isValidFieldType(String type) {
+    var typeComponents = type
+        .replaceAll('?', '')
+        .replaceAll(' ', '')
+        .replaceAll('<', ',')
+        .replaceAll('>', ',')
+        .split(',')
+        .where((t) => t.isNotEmpty);
+
+    if (typeComponents.isEmpty) return false;
+
+    // Checks if the type has several ??? in a row.
+    if (RegExp(r'\?{2,}').hasMatch(type)) return false;
+
+    return typeComponents.any(
+      (type) => StringValidators.isValidFieldType(type),
+    );
   }
 
   bool _isKeyGloballyUnique(
