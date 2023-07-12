@@ -19,6 +19,7 @@ import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
@@ -43,13 +44,18 @@ void main(List<String> args) async {
     () async {
       try {
         await _main(args);
+      } on ExitException catch (e) {
+        _analytics.cleanUp();
+        exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
         printInternalError(error, stackTrace);
+        exit(ExitCodeType.general.exitCode);
       }
     },
     (error, stackTrace) {
       printInternalError(error, stackTrace);
+      exit(ExitCodeType.general.exitCode);
     },
   );
 }
@@ -65,16 +71,16 @@ Future<void> _main(List<String> args) async {
   if (!await CommandLineTools.existsCommand('dart')) {
     print(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    return;
+    throw ExitException();
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
     print(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    return;
+    throw ExitException();
   }
 
   if (!loadEnvironmentVars()) {
-    return;
+    throw ExitException();
   }
 
   // Make sure all necessary downloads are installed
@@ -83,15 +89,49 @@ Future<void> _main(List<String> args) async {
       await resourceManager.installTemplates();
     } catch (e) {
       print('Failed to download templates.');
+      throw ExitException();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
       print(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      return;
+      throw ExitException();
     }
   }
 
+  ArgParser parser = _buildCommandParser();
+
+  ArgResults results = _parseCommand(parser, args);
+
+  // TODO: This should silence all warnings with a suitable name.
+  // Make this once we have a centralized logging and printing.
+  var devPrint = results['development-print'];
+
+  if (!productionMode && devPrint) {
+    print(
+      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+    );
+    print('SERVERPOD_HOME is set to $serverpodHome');
+
+    if (!resourceManager.isTemplatesInstalled) {
+      print('WARNING! Could not find templates.');
+    }
+  }
+
+  if (devPrint) {
+    await promptToUpdateIfNeeded(Version.parse(templateVersion));
+  }
+
+  if (results.command == null) {
+    _analytics.track(event: 'help');
+    _printUsage(parser);
+  } else {
+    await _runCommand(results, parser);
+  }
+  _analytics.cleanUp();
+}
+
+ArgParser _buildCommandParser() {
   var parser = ArgParser();
   parser.addFlag(
     'development-print',
@@ -203,205 +243,178 @@ Future<void> _main(List<String> args) async {
     'check-latest-version',
   );
   parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
+  return parser;
+}
 
-  ArgResults results;
-  var devPrint = true;
+ArgResults _parseCommand(ArgParser parser, List<String> args) {
   try {
-    results = parser.parse(args);
-    // TODO: This should silence all warnings with a suitable name.
-    // Make this once we have a centralized logging and printing.
-    devPrint = results['development-print'];
-
-    if (!productionMode && devPrint) {
-      print(
-        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-      );
-      print('SERVERPOD_HOME is set to $serverpodHome');
-
-      if (!resourceManager.isTemplatesInstalled) {
-        print('WARNING! Could not find templates.');
-      }
-    }
+    ArgResults results = parser.parse(args);
+    return results;
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
-    _analytics.cleanUp();
+    throw ExitException(ExitCodeType.commandNotFound);
+  }
+}
+
+Future _runCommand(ArgResults results, ArgParser parser) async {
+  _analytics.track(event: '${results.command?.name}');
+
+  // Version command.
+  if (results.command!.name == cmdVersion) {
+    printVersion();
     return;
   }
 
-  if (devPrint) {
-    await promptToUpdateIfNeeded(Version.parse(templateVersion));
+  // Create command.
+  if (results.command!.name == cmdCreate) {
+    var name = results.arguments.last;
+    bool verbose = results.command!['verbose'];
+    String template = results.command!['template'];
+    bool force = results.command!['force'];
+
+    if (name == 'server' || name == 'module' || name == 'create') {
+      _printUsage(parser);
+      return;
+    }
+
+    await performCreate(name, verbose, template, force);
+    return;
   }
 
-  if (results.command != null) {
-    _analytics.track(event: '${results.command?.name}');
+  // Generate command.
+  if (results.command!.name == cmdGenerate) {
+    // Always do a full generate.
+    bool verbose = results.command!['verbose'];
+    bool watch = results.command!['watch'];
 
-    // Version command.
-    if (results.command!.name == cmdVersion) {
-      printVersion();
-      _analytics.cleanUp();
-      return;
+    // TODO: add a -d option to select the directory
+    var config = await GeneratorConfig.load();
+    if (config == null) {
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    // Create command.
-    if (results.command!.name == cmdCreate) {
-      var name = results.arguments.last;
-      bool verbose = results.command!['verbose'];
-      String template = results.command!['template'];
-      bool force = results.command!['force'];
-
-      if (name == 'server' || name == 'module' || name == 'create') {
-        _printUsage(parser);
-        _analytics.cleanUp();
-        return;
-      }
-
-      await performCreate(name, verbose, template, force);
-      _analytics.cleanUp();
-      return;
+    // Validate cli version is compatible with serverpod packages
+    var warnings = performServerpodPackagesAndCliVersionCheck(
+        Version.parse(templateVersion), Directory.current.parent);
+    if (warnings.isNotEmpty) {
+      printww('WARNING: The version of the CLI may be incompatible with the '
+          'Serverpod packages used in your project.');
+      warnings.forEach(print);
     }
 
-    // Generate command.
-    if (results.command!.name == cmdGenerate) {
-      // Always do a full generate.
-      bool verbose = results.command!['verbose'];
-      bool watch = results.command!['watch'];
+    // Copy migrations from modules.
+    await copyMigrations(config);
 
-      // TODO: add a -d option to select the directory
-      var config = await GeneratorConfig.load();
-      if (config == null) {
-        return;
-      }
+    var endpointsAnalyzer = EndpointsAnalyzer(config);
 
-      // Validate cli version is compatible with serverpod packages
-      var warnings = performServerpodPackagesAndCliVersionCheck(
-          Version.parse(templateVersion), Directory.current.parent);
-      if (warnings.isNotEmpty) {
-        printww('WARNING: The version of the CLI may be incompatible with the '
-            'Serverpod packages used in your project.');
-        warnings.forEach(print);
-      }
-
-      // Copy migrations from modules.
-      await copyMigrations(config);
-
-      var endpointsAnalyzer = EndpointsAnalyzer(config);
-
-      await performGenerate(
+    await performGenerate(
+      verbose: verbose,
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
+    );
+    if (watch) {
+      print('Initial code generation complete. Listening for changes.');
+      performGenerateContinuously(
         verbose: verbose,
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
       );
-      if (watch) {
-        print('Initial code generation complete. Listening for changes.');
-        performGenerateContinuously(
-          verbose: verbose,
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-        );
-      } else {
-        print('Done.');
-      }
-      _analytics.cleanUp();
-      return;
+    } else {
+      print('Done.');
     }
-
-    // Migrate command
-    if (results.command!.name == cmdMigrate) {
-      bool verbose = results.command!['verbose'];
-      bool force = results.command!['force'];
-      bool repair = results.command!['repair'];
-      String mode = results.command!['mode'];
-      String? tag = results.command!['tag'];
-
-      if (tag != null) {
-        if (!StringValidators.isValidTagName(tag)) {
-          printwwln(
-            'Invalid tag name. Tag names can only contain lowercase letters, '
-            'number, and dashes.',
-          );
-          _analytics.cleanUp();
-          return;
-        }
-      }
-
-      var projectName = await getProjectName();
-
-      var config = await GeneratorConfig.load();
-      if (config == null) {
-        exit(1);
-      }
-
-      int priority;
-      var packageType = config.type;
-      switch (packageType) {
-        case PackageType.internal:
-          priority = 0;
-          break;
-        case PackageType.module:
-          priority = 1;
-          break;
-        case PackageType.server:
-          priority = 2;
-          break;
-      }
-
-      var generator = MigrationGenerator(
-        directory: Directory.current,
-        projectName: projectName,
-      );
-
-      if (repair) {
-        await generator.repairMigration(
-          tag: tag,
-          force: force,
-          runMode: mode,
-          verbose: verbose,
-        );
-      } else {
-        await generator.createMigration(
-          tag: tag,
-          verbose: verbose,
-          force: force,
-          priority: priority,
-        );
-        print('Done.');
-      }
-
-      _analytics.cleanUp();
-      return;
-    }
-
-    if (results.command!.name == cmdLanguageServer) {
-      await runLanguageServer();
-      _analytics.cleanUp();
-      return;
-    }
-
-    // Generate pubspecs command.
-    if (results.command!.name == cmdGeneratePubspecs) {
-      if (results.command!['version'] == 'X') {
-        print('--version is not specified');
-        _analytics.cleanUp();
-        return;
-      }
-      performGeneratePubspecs(
-          results.command!['version'], results.command!['mode']);
-      _analytics.cleanUp();
-      return;
-    }
-
-    // Analyze pubspecs command.
-    if (results.command!.name == cmdAnalyzePubspecs) {
-      bool checkLatestVersion = results.command!['check-latest-version'];
-      await performAnalyzePubspecs(checkLatestVersion);
-      return;
-    }
+    return;
   }
 
-  _analytics.track(event: 'help');
-  _printUsage(parser);
-  _analytics.cleanUp();
+  // Migrate command
+  if (results.command!.name == cmdMigrate) {
+    bool verbose = results.command!['verbose'];
+    bool force = results.command!['force'];
+    bool repair = results.command!['repair'];
+    String mode = results.command!['mode'];
+    String? tag = results.command!['tag'];
+
+    if (tag != null) {
+      if (!StringValidators.isValidTagName(tag)) {
+        printwwln(
+          'Invalid tag name. Tag names can only contain lowercase letters, '
+          'number, and dashes.',
+        );
+        throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      }
+    }
+
+    var projectName = await getProjectName();
+
+    var config = await GeneratorConfig.load();
+    if (config == null) {
+      throw ExitException();
+    }
+
+    int priority;
+    var packageType = config.type;
+    switch (packageType) {
+      case PackageType.internal:
+        priority = 0;
+        break;
+      case PackageType.module:
+        priority = 1;
+        break;
+      case PackageType.server:
+        priority = 2;
+        break;
+    }
+
+    var generator = MigrationGenerator(
+      directory: Directory.current,
+      projectName: projectName,
+    );
+
+    if (repair) {
+      await generator.repairMigration(
+        tag: tag,
+        force: force,
+        runMode: mode,
+        verbose: verbose,
+      );
+    } else {
+      await generator.createMigration(
+        tag: tag,
+        verbose: verbose,
+        force: force,
+        priority: priority,
+      );
+      print('Done.');
+    }
+
+    return;
+  }
+
+  if (results.command!.name == cmdLanguageServer) {
+    await runLanguageServer();
+    return;
+  }
+
+  // Generate pubspecs command.
+  if (results.command!.name == cmdGeneratePubspecs) {
+    if (results.command!['version'] == 'X') {
+      print('--version is not specified');
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+    performGeneratePubspecs(
+        results.command!['version'], results.command!['mode']);
+    return;
+  }
+
+  // Analyze pubspecs command.
+  if (results.command!.name == cmdAnalyzePubspecs) {
+    bool checkLatestVersion = results.command!['check-latest-version'];
+    if (!await pubspecDependenciesMatch(checkLatestVersion)) {
+      throw ExitException();
+    }
+
+    return;
+  }
 }
 
 void _printUsage(ArgParser parser) {
