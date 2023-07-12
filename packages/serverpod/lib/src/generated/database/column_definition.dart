@@ -14,7 +14,6 @@ class ColumnDefinition extends _i1.SerializableEntity {
   ColumnDefinition({
     required this.name,
     required this.columnType,
-    this.enumValueNames,
     required this.isNullable,
     this.columnDefault,
     this.dartType,
@@ -28,8 +27,6 @@ class ColumnDefinition extends _i1.SerializableEntity {
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       columnType: serializationManager
           .deserialize<_i2.ColumnType>(jsonSerialization['columnType']),
-      enumValueNames: serializationManager
-          .deserialize<List<String>?>(jsonSerialization['enumValueNames']),
       isNullable: serializationManager
           .deserialize<bool>(jsonSerialization['isNullable']),
       columnDefault: serializationManager
@@ -44,9 +41,6 @@ class ColumnDefinition extends _i1.SerializableEntity {
 
   /// The actual column type
   _i2.ColumnType columnType;
-
-  /// A list of the enum value names, if this is an enum, otherwise null.
-  List<String>? enumValueNames;
 
   /// Whether this column is nullable.
   bool isNullable;
@@ -64,7 +58,6 @@ class ColumnDefinition extends _i1.SerializableEntity {
     return {
       'name': name,
       'columnType': columnType,
-      'enumValueNames': enumValueNames,
       'isNullable': isNullable,
       'columnDefault': columnDefault,
       'dartType': dartType,
@@ -76,7 +69,6 @@ class ColumnDefinition extends _i1.SerializableEntity {
     return {
       'name': name,
       'columnType': columnType,
-      'enumValueNames': enumValueNames,
       'isNullable': isNullable,
       'columnDefault': columnDefault,
       'dartType': dartType,
