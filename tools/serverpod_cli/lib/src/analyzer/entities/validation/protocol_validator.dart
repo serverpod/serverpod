@@ -141,7 +141,7 @@ void _collectMutuallyExclusiveKeyErrors(
       if (documentContents.containsKey(mutuallyExclusiveKey)) {
         collector.addError(SourceSpanException(
           'The "${node.key}" property is mutually exclusive with the "$mutuallyExclusiveKey" property.',
-          documentContents.nodes[node.key]?.span,
+          documentContents.key(node.key)?.span,
         ));
       }
     }
