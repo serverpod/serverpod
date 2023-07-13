@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
@@ -208,7 +209,7 @@ class EndpointsAnalyzer {
     required CodeAnalysisCollector collector,
   }) {
     if (!dartType.isDartAsyncFuture) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Return type must be a Future.',
         dartElement.span,
       ));
@@ -216,7 +217,7 @@ class EndpointsAnalyzer {
     }
 
     if (dartType is! InterfaceType) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'This type is not supported as return type.',
         dartElement.span,
       ));
@@ -225,7 +226,7 @@ class EndpointsAnalyzer {
 
     var typeArguments = dartType.typeArguments;
     if (typeArguments.length != 1) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
       ));
@@ -238,7 +239,7 @@ class EndpointsAnalyzer {
     }
 
     if (innerType is InvalidType) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Future has an invalid return type.',
         dartElement.span,
       ));
@@ -246,7 +247,7 @@ class EndpointsAnalyzer {
     }
 
     if (innerType is DynamicType) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
       ));

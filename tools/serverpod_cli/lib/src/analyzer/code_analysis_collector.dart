@@ -11,3 +11,27 @@ abstract class CodeAnalysisCollector {
 
   void clearErrors();
 }
+
+enum SourceSpanSeverity {
+  error,
+  warning,
+  info,
+  hint,
+}
+
+enum SourceSpanTag {
+  unnecessary,
+  deprecated,
+}
+
+class SourceSpanSeverityException extends SourceSpanException {
+  final SourceSpanSeverity severity;
+  final List<SourceSpanTag>? tags;
+
+  SourceSpanSeverityException(
+    String message,
+    SourceSpan? span, {
+    this.severity = SourceSpanSeverity.error,
+    this.tags,
+  }) : super(message, span);
+}
