@@ -483,6 +483,7 @@ extension ColumnMigrationPgSqlGenerator on ColumnMigration {
       if (newDefault == null) {
         out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
             ' DROP DEFAULT;\n';
+        return out;
       } else {
         out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
             ' SET DEFAULT $newDefault;\n';
