@@ -1,3 +1,4 @@
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
 /// Downloads the specified [url] to the download folder of the computer.

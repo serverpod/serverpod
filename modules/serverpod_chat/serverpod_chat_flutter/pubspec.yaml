@@ -30,7 +30,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
+  serverpod_lints: #1.1.0
+    path: ../../../packages/serverpod_lints
   mocktail: ^0.3.0
 
 flutter:

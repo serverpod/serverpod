@@ -170,12 +170,18 @@ class TypeDefinition {
     );
   }
 
-  /// Get the qgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO: add all suported types here
-    if (className == 'String' || isEnum) return 'text';
+    // TODO: add all supported types here
+    var serializeEnumValuesAsStrings =
+        GeneratorConfig.instance!.serializeEnumValuesAsStrings;
+    if (className == 'String' || (isEnum && serializeEnumValuesAsStrings)) {
+      return 'text';
+    }
     if (className == 'bool') return 'boolean';
-    if (className == 'int') return 'integer';
+    if (className == 'int' || (isEnum && !serializeEnumValuesAsStrings)) {
+      return 'integer';
+    }
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
@@ -193,7 +199,7 @@ class TypeDefinition {
 
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
-    // TODO: add all suported types here
+    // TODO: add all supported types here
     if (className == 'int') return 'ColumnInt';
     if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
@@ -207,7 +213,7 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most future of this type.
+  /// Strip the outermost future of this type.
   /// Throws, if this type is not a future.
   TypeDefinition stripFuture() {
     if (dartType?.isDartAsyncFuture ?? className == 'Future') {

@@ -33,7 +33,14 @@ class GeneratorConfig {
     required List<String> relativeDartClientPackagePathParts,
     required this.modules,
     required this.extraClasses,
+    required this.serializeEnumValuesAsStrings,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+
+  /// The current [GeneratorConfig] instance.
+  static GeneratorConfig? _instance;
+
+  /// Get the current [GeneratorConfig] instance.
+  static GeneratorConfig? get instance => _instance;
 
   /// The name of the serverpod project.
   ///
@@ -102,6 +109,9 @@ class GeneratorConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// Whether to serialize enums as Strings rather than ints
+  final bool serializeEnumValuesAsStrings;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -190,6 +200,11 @@ class GeneratorConfig {
       directory: Directory(dir),
       exludePackages: [serverPackage],
     );
+
+    if (automagicModules == null) {
+      return null;
+    }
+
     for (var autoModule in automagicModules) {
       bool hasOverride = false;
       for (var module in modules) {
@@ -203,6 +218,18 @@ class GeneratorConfig {
         modules.add(autoModule);
       }
     }
+
+    var serializeEnumValuesAsStringsConfig =
+        generatorConfig['serializeEnumValuesAsStrings'];
+    if (serializeEnumValuesAsStringsConfig != null &&
+        serializeEnumValuesAsStringsConfig is! bool) {
+      throw const FormatException(
+          'Option "serializeEnumValuesAsStringsConfig" must be of type bool '
+          'in config/generator.yaml');
+    }
+    var serializeEnumValuesAsStrings =
+        // TODO: switch the default from `false` to `true` in Serverpod 2.0.
+        (serializeEnumValuesAsStringsConfig as bool?) ?? false;
 
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
@@ -226,7 +253,7 @@ class GeneratorConfig {
       }
     }
 
-    return GeneratorConfig(
+    var config = GeneratorConfig(
         name: name,
         type: type,
         serverPackage: serverPackage,
@@ -235,7 +262,12 @@ class GeneratorConfig {
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
         relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
         modules: modules,
-        extraClasses: extraClasses);
+        extraClasses: extraClasses,
+        serializeEnumValuesAsStrings: serializeEnumValuesAsStrings);
+
+    _instance = config;
+
+    return config;
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 Pubspec parsePubspec(File pubspecFile) {
@@ -18,9 +18,9 @@ List<File> findPubspecsFiles(Directory dir,
     {List<String> ignorePaths = const []}) {
   var pubspecFiles = <File>[];
   for (var file in dir.listSync(recursive: true)) {
-    if (_shouldBeIgnored(file.path, ignorePaths)) continue;
+    if (shouldBeIgnored(file.path, ignorePaths)) continue;
 
-    if (file is File && basename(file.path) == 'pubspec.yaml') {
+    if (file is File && p.basename(file.path) == 'pubspec.yaml') {
       pubspecFiles.add(file);
     }
   }
@@ -28,9 +28,12 @@ List<File> findPubspecsFiles(Directory dir,
   return pubspecFiles;
 }
 
-bool _shouldBeIgnored(String path, List<String> ignorePaths) {
+bool shouldBeIgnored(String filePath, List<String> ignorePaths) {
   for (var ignorePath in ignorePaths) {
-    if (path.contains(ignorePath)) {
+    // Add separator for file system to exclude partial matches.
+    var ignorePathAsFolder = ignorePath + p.separator;
+
+    if (filePath.contains(ignorePathAsFolder)) {
       return true;
     }
   }

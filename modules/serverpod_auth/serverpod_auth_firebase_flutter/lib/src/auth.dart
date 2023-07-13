@@ -73,6 +73,8 @@ Future<UserInfo?> signInWithFirebase({
   );
 
   var result = await completer.future;
+  // TODO: Fixme?
+  // ignore: use_build_context_synchronously
   Navigator.of(context).pop();
   return result;
 }

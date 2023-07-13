@@ -1,8 +1,8 @@
 class: ColumnMigration
 fields:
   columnName: String
+
   addNullable: bool
   removeNullable: bool
   changeDefault: bool
   newDefault: String?
-  migrateEnumValues: List<String>?

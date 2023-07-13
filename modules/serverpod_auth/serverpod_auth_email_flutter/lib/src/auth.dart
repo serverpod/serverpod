@@ -2,10 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
+/// Controller for email authentication.
 class EmailAuthController {
+  /// A reference to the auth module as retrieved from the client object.
   final Caller caller;
+
+  /// Creates a new email authentication controller.
   EmailAuthController(this.caller);
 
+  /// Attempts to sign in with email and password. If successful, a [UserInfo]
+  /// is returned. If the attempt is not a success, null is returned.
   Future<UserInfo?> signIn(String email, String password) async {
     try {
       var serverResponse = await caller.email.authenticate(email, password);
@@ -41,6 +47,9 @@ class EmailAuthController {
     }
   }
 
+  /// Attempts to create a new account request with the given email and
+  /// password. If successful, true is returned. If the attempt is not a
+  /// success, false is returned.
   Future<bool> createAccountRequest(
     String userName,
     String email,
@@ -57,6 +66,9 @@ class EmailAuthController {
     }
   }
 
+  /// Attempts to validate the account with the given email and verification
+  /// code. If successful, a [UserInfo] is returned. If the attempt is not a
+  /// success, null is returned.
   Future<UserInfo?> validateAccount(
     String email,
     String verificationCode,
@@ -68,6 +80,8 @@ class EmailAuthController {
     }
   }
 
+  /// Attempts to initiate a password reset for the given email. If successful,
+  /// true is returned. If the attempt is not a success, false is returned.
   Future<bool> initiatePasswordReset(String email) async {
     try {
       return await caller.email.initiatePasswordReset(email);
@@ -76,6 +90,9 @@ class EmailAuthController {
     }
   }
 
+  /// Attempts to reset the password for the given email with the given
+  /// verification code and new password. If successful, true is returned. If
+  /// the attempt is not a success, false is returned.
   Future<bool> resetPassword(
     String email,
     String verificationCode,

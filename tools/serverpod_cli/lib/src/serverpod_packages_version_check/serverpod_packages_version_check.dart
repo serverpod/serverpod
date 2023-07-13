@@ -24,7 +24,10 @@ List<SourceSpanException> performServerpodPackagesAndCliVersionCheck(
 ) {
   List<SourceSpanException> accumulatedWarnings = [];
 
-  var pubspecFiles = findPubspecsFiles(directory);
+  var pubspecFiles = findPubspecsFiles(
+    directory,
+    ignorePaths: ['vendor', 'serverpod'],
+  );
   if (pubspecFiles.isEmpty) {
     return accumulatedWarnings;
   }
