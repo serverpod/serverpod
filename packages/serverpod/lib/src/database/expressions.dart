@@ -117,8 +117,10 @@ class ColumnEnum<E extends Enum> extends Column {
   Expression equals(E? value) {
     if (value == null) {
       return Expression('"$columnName" IS NULL');
-    } else {
+    } else if (Serverpod.instance!.serializeEnumValuesAsStrings) {
       return Expression('"$columnName" = \'${value.name}\'');
+    } else {
+      return Expression('"$columnName" = ${value.index}');
     }
   }
 
@@ -127,8 +129,10 @@ class ColumnEnum<E extends Enum> extends Column {
   Expression notEquals(E? value) {
     if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
-    } else {
+    } else if (Serverpod.instance!.serializeEnumValuesAsStrings) {
       return Expression('"$columnName" != \'${value.name}\'');
+    } else {
+      return Expression('"$columnName" != ${value.index}');
     }
   }
 }

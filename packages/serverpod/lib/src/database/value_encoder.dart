@@ -20,7 +20,8 @@ class ValueEncoder extends PostgresTextEncoder {
           escapeStrings: escapeStrings);
     } else if (input is UuidValue) {
       return "'${input.uuid}'";
-    } else if (input is Enum) {
+    } else if (input is Enum &&
+        Serverpod.instance!.serializeEnumValuesAsStrings) {
       // Encode enum values without quotes (which would otherwise be added
       // by JSON encoding)
       return "'${input.name}'";
