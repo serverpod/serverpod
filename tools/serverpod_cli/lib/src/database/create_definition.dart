@@ -21,11 +21,6 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
                       ColumnType.values.byName(column.type.databaseTypeEnum),
                   // The id column is not null, since it is auto incrementing.
                   isNullable: column.name != 'id' && column.type.nullable,
-                  enumValueNames: !column.type.isEnum
-                      ? null
-                      : column.type.dartType?.element?.children
-                          .map((t) => t.name ?? 'unknown')
-                          .toList(),
                   dartType: column.type.toString(),
                   columnDefault: column.name == 'id'
                       ? "nextval('${classDefinition.tableName!}_id_seq'::regclass)"

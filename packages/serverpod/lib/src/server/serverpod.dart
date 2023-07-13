@@ -12,6 +12,7 @@ import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:yaml/yaml.dart';
 
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
@@ -105,6 +106,9 @@ class Serverpod {
 
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
+
+  /// Whether to serialize enums as Strings rather than as ints
+  late bool serializeEnumValuesAsStrings;
 
   /// Updates the runtime settings and writes the new settings to the database.
   Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
@@ -249,6 +253,12 @@ class Serverpod {
         password: config.redis.password,
       );
     }
+
+    // Read serializeEnumValuesAsStrings from config/generator.yaml
+    var generatorYaml =
+        loadYaml(File('config/generator.yaml').readAsStringSync());
+    serializeEnumValuesAsStrings =
+        generatorYaml['serializeEnumValuesAsStrings'] ?? false;
 
     _caches = Caches(serializationManager, config, serverId, redisController);
 

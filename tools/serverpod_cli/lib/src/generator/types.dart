@@ -175,9 +175,15 @@ class TypeDefinition {
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all suported types here
-    if (className == 'String' || isEnum) return 'text';
+    var serializeEnumValuesAsStrings =
+        GeneratorConfig.instance?.serializeEnumValuesAsStrings ?? true;
+    if (className == 'String' || (isEnum && serializeEnumValuesAsStrings)) {
+      return 'text';
+    }
     if (className == 'bool') return 'boolean';
-    if (className == 'int') return 'integer';
+    if (className == 'int' || (isEnum && !serializeEnumValuesAsStrings)) {
+      return 'integer';
+    }
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';

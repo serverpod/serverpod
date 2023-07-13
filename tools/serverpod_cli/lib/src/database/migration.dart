@@ -133,10 +133,6 @@ TableMigration? generateTableMigration(
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
         var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
         var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
-        var migrateEnumValues = srcColumn.columnType == ColumnType.integer &&
-                dstColumn.columnType == ColumnType.text
-            ? dstColumn.enumValueNames
-            : null;
 
         modifyColumns.add(
           ColumnMigration(
@@ -145,7 +141,6 @@ TableMigration? generateTableMigration(
             removeNullable: removeNullable,
             changeDefault: changeDefault,
             newDefault: dstColumn.columnDefault,
-            migrateEnumValues: migrateEnumValues,
           ),
         );
 
