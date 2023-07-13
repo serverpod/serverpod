@@ -41,10 +41,10 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
     _extractSubSpan(content, contentNode.span, initRawValue),
   );
 
-  Map<dynamic, YamlNode> internalNodes =
-      fieldKeyValuePairs.fold(initNodes, (aggregate, pair) {
-    return {...aggregate, ...pair};
-  });
+  Map<dynamic, YamlNode> internalNodes = fieldKeyValuePairs.fold(
+    initNodes,
+    (aggregate, pair) => {...aggregate, ...pair},
+  );
 
   // deepEqualsMap is needed to be able to compare YamlScala as keys
   var nodes = deepEqualsMap<dynamic, YamlNode>();

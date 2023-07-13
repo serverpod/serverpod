@@ -42,8 +42,17 @@ class Restrictions {
       ];
     }
 
-    // TODO n-squared time complexity when validating all protocol files.
-    if (_countClassNames(content, entityRelations?.entities) > 1) {
+    var reservedClassNames = {'List', 'Map', 'String', 'DateTime'};
+    if (reservedClassNames.contains(content)) {
+      return [
+        SourceSpanException(
+          'The class name "$content" is reserved and cannot be used.',
+          span,
+        )
+      ];
+    }
+
+    if (entityRelations?.classNames.containsKey(content) == true) {
       return [
         SourceSpanException(
           'The $documentType name "$content" is already used by another protocol class.',
@@ -53,16 +62,6 @@ class Restrictions {
     }
 
     return [];
-  }
-
-  int _countClassNames(
-      String className, List<SerializableEntityDefinition>? protocolEntities) {
-    if (protocolEntities == null) return 0;
-
-    return protocolEntities.fold(
-      0,
-      (sum, entity) => sum += entity.className == className ? 1 : 0,
-    );
   }
 
   List<SourceSpanException> validateTableName(
