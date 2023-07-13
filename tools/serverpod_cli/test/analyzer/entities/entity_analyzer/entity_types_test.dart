@@ -15,7 +15,7 @@ fields:
   name: String
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+      ['lib', 'src', 'protocol'],
     );
 
     var definition =
@@ -46,7 +46,7 @@ fields:
   name: String
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+      ['lib', 'src', 'protocol'],
     );
 
     var definition =
@@ -68,7 +68,7 @@ fields:
   name: String
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+      ['lib', 'src', 'protocol'],
     );
 
     var definition =
@@ -90,7 +90,7 @@ fields:
   name: String
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+      ['lib', 'src', 'protocol'],
     );
 
     var definition =
@@ -117,7 +117,7 @@ fields:
   name: String
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+      ['lib', 'src', 'protocol'],
     );
 
     var definition =
@@ -145,7 +145,7 @@ values:
   - no
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+      ['lib', 'src', 'protocol'],
     );
 
     var definition =
@@ -173,7 +173,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+        ['lib', 'src', 'protocol'],
       );
 
       var definition =
@@ -205,7 +205,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+        ['lib', 'src', 'protocol'],
       );
 
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -232,7 +232,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+        ['lib', 'src', 'protocol'],
       );
 
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -264,7 +264,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+        ['lib', 'src', 'protocol'],
       );
 
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -294,7 +294,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+        ['lib', 'src', 'protocol'],
       );
 
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -322,7 +322,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+        ['lib', 'src', 'protocol'],
       );
 
       var definition = SerializableEntityAnalyzer.extractEntityDefinition(
