@@ -36,6 +36,7 @@ class CircularUserImage extends StatelessWidget {
     this.elevation = 0,
     this.borderColor = Colors.white,
     this.borderWidth = 0,
+    super.key,
   });
 
   @override

@@ -3,15 +3,21 @@ import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
+import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
+
+import 'entity_relations.dart';
+
 class Restrictions {
   String documentType;
   YamlMap documentContents;
-  List<SerializableEntityDefinition>? protocolEntities;
+  SerializableEntityDefinition? documentDefinition;
+  EntityRelations? entityRelations;
 
   Restrictions({
     required this.documentType,
     required this.documentContents,
-    this.protocolEntities,
+    this.documentDefinition,
+    this.entityRelations,
   });
 
   List<SourceSpanException> validateClassName(
@@ -37,7 +43,7 @@ class Restrictions {
     }
 
     // TODO n-squared time complexity when validating all protocol files.
-    if (_countClassNames(content, protocolEntities) > 1) {
+    if (_countClassNames(content, entityRelations?.entities) > 1) {
       return [
         SourceSpanException(
           'The $documentType name "$content" is already used by another protocol class.',
@@ -60,10 +66,10 @@ class Restrictions {
   }
 
   List<SourceSpanException> validateTableName(
-    dynamic content,
+    dynamic tableName,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    if (tableName is! String) {
       return [
         SourceSpanException(
           'The "table" property must be a snake_case_string.',
@@ -72,10 +78,23 @@ class Restrictions {
       ];
     }
 
-    if (!StringValidators.isValidTableName(content)) {
+    if (!StringValidators.isValidTableName(tableName)) {
       return [
         SourceSpanException(
           'The "table" property must be a snake_case_string.',
+          span,
+        )
+      ];
+    }
+
+    var relations = entityRelations;
+    if (relations != null &&
+        !_isKeyGloballyUnique(tableName, relations.tableNames)) {
+      var otherClass =
+          _findFirstClassOtherClass(tableName, relations.tableNames);
+      return [
+        SourceSpanException(
+          'The table name "$tableName" is already in use by the class "${otherClass?.className}".',
           span,
         )
       ];
@@ -99,14 +118,24 @@ class Restrictions {
   }
 
   List<SourceSpanException> validateTableIndexName(
-    dynamic content,
+    dynamic indexName,
     SourceSpan? span,
   ) {
-    if (content is! String ||
-        !StringValidators.isValidTableIndexName(content)) {
+    if (indexName is! String ||
+        !StringValidators.isValidTableIndexName(indexName)) {
       return [
         SourceSpanException(
-          'Invalid format for index "$content", must follow the format lower_snake_case.',
+          'Invalid format for index "$indexName", must follow the format lower_snake_case.',
+          span,
+        )
+      ];
+    }
+    var indexNames = entityRelations?.indexNames;
+    if (indexNames != null && !_isKeyGloballyUnique(indexName, indexNames)) {
+      var collision = _findFirstClassOtherClass(indexName, indexNames);
+      return [
+        SourceSpanException(
+          'The index name "$indexName" is already used by the protocol class "${collision?.className}".',
           span,
         )
       ];
@@ -128,17 +157,11 @@ class Restrictions {
       ];
     }
 
-    return [];
-  }
-
-  List<SourceSpanException> validateParentName(
-    dynamic content,
-    SourceSpan? span,
-  ) {
-    if (content != null && !StringValidators.isValidTableIndexName(content)) {
+    var def = documentDefinition;
+    if (content == 'id' && def is ClassDefinition && def.tableName != null) {
       return [
         SourceSpanException(
-          'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
+          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
           span,
         )
       ];
@@ -147,14 +170,36 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateFieldType(
+  List<SourceSpanException> validateParentName(
     dynamic content,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    if (content == null) return [];
+
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
       return [
         SourceSpanException(
-          'The field must have a datatype defined (e.g. field: String).',
+          'The "table" property must be defined in the class to set a parent on a field.',
+          span,
+        )
+      ];
+    }
+
+    if (!StringValidators.isValidTableIndexName(content)) {
+      return [
+        SourceSpanException(
+          'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
+          span,
+        )
+      ];
+    }
+
+    var relations = entityRelations;
+    if (relations != null && !relations.tableNames.containsKey(content)) {
+      return [
+        SourceSpanException(
+          'The parent table "$content" was not found in any protocol.',
           span,
         )
       ];
@@ -164,13 +209,22 @@ class Restrictions {
   }
 
   List<SourceSpanException> validateFieldDataType(
-    dynamic content,
+    dynamic type,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    if (type is! String) {
       return [
         SourceSpanException(
           'The field must have a datatype defined (e.g. field: String).',
+          span,
+        )
+      ];
+    }
+
+    if (!_isValidFieldType(type)) {
+      return [
+        SourceSpanException(
+          'The field has an invalid datatype "$type".',
           span,
         )
       ];
@@ -192,19 +246,45 @@ class Restrictions {
       ];
     }
 
-    return [];
+    if (documentDefinition is! ClassDefinition) return [];
+    var definition = documentDefinition as ClassDefinition;
 
-    // todo add 2 pass check that fields exists in the class
+    var fields = definition.fields;
+    var indexFields = convertIndexList(content);
+
+    var validDatabaseFieldNames = fields
+        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .fold(<String>{}, (output, field) => output..add(field.name));
+
+    var missingFieldErrors = indexFields
+        .where((field) => !validDatabaseFieldNames.contains(field))
+        .map((field) => SourceSpanException(
+              'The field name "$field" is not added to the class or has an api scope.',
+              span,
+            ));
+
+    var duplicatesCount = _duplicatesCount(indexFields);
+
+    var duplicateFieldErrors = duplicatesCount.entries
+        .where((entry) => entry.value > 1)
+        .map((entry) => SourceSpanException(
+              'Duplicated field name "name", can only reference a field once per index.',
+              span,
+            ));
+
+    return [...missingFieldErrors, ...duplicateFieldErrors];
   }
 
   List<SourceSpanException> validateIndexType(
     dynamic content,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    var validIndexTypes = {'btree', 'hash', 'gin', 'gist', 'spgist', 'brin'};
+
+    if (content is! String || !validIndexTypes.contains(content)) {
       return [
         SourceSpanException(
-          'The "type" property must be of type String.',
+          'The "type" property must be one of: ${validIndexTypes.join(', ')}.',
           span,
         )
       ];
@@ -226,35 +306,85 @@ class Restrictions {
       ];
     }
 
-    var nodeExceptions = [
-      ...content.nodes
-          .map((node) {
-            if (node is! YamlScalar || node.value is! String) {
-              return SourceSpanException(
-                'The "values" property must be a list of strings.',
-                node.span,
-              );
-            }
+    var enumCount = _duplicatesCount(content);
 
-            if (!StringValidators.isValidFieldName(node.value)) {
-              return SourceSpanException(
-                'Enum values must be lowerCamelCase.',
-                node.span,
-              );
-            }
+    var nodeExceptions = content.nodes.map((node) {
+      var enumValue = node.value;
+      if (node is! YamlScalar || enumValue is! String) {
+        return SourceSpanException(
+          'The "values" property must be a list of strings.',
+          node.span,
+        );
+      }
 
-            return null;
-          })
-          .where((node) => node != null)
-          .cast<SourceSpanException>(),
-      if (content.nodes.map((n) => n.value).toSet().length <
-          content.nodes.length)
-        SourceSpanException(
-          'Enum values are not distinct',
-          content.span,
-        )
-    ];
+      if (!StringValidators.isValidFieldName(node.value)) {
+        return SourceSpanException(
+          'Enum values must be lowerCamelCase.',
+          node.span,
+        );
+      }
 
-    return nodeExceptions;
+      if (enumCount[enumValue] != 1) {
+        return SourceSpanException(
+          'Enum values must be unique.',
+          node.span,
+        );
+      }
+
+      return null;
+    });
+
+    return nodeExceptions.whereType<SourceSpanException>().toList();
+  }
+
+  Map<dynamic, int> _duplicatesCount(List<dynamic> list) {
+    Map<dynamic, int> valueCount = {};
+    for (var listValue in list) {
+      valueCount.update(listValue, (value) => value + 1, ifAbsent: () => 1);
+    }
+
+    return valueCount;
+  }
+
+  bool _isValidFieldType(String type) {
+    var typeComponents = type
+        .replaceAll('?', '')
+        .replaceAll(' ', '')
+        .replaceAll('<', ',')
+        .replaceAll('>', ',')
+        .split(',')
+        .where((t) => t.isNotEmpty);
+
+    if (typeComponents.isEmpty) return false;
+
+    // Checks if the type has several ??? in a row.
+    if (RegExp(r'\?{2,}').hasMatch(type)) return false;
+
+    return typeComponents.any(
+      (type) => StringValidators.isValidFieldType(type),
+    );
+  }
+
+  bool _isKeyGloballyUnique(
+    String key,
+    Map<String, List<SerializableEntityDefinition>> map,
+  ) {
+    var classes = map[key];
+
+    if (documentDefinition == null && classes != null && classes.isNotEmpty) {
+      return false;
+    }
+
+    return classes == null || classes.length == 1;
+  }
+
+  SerializableEntityDefinition? _findFirstClassOtherClass(
+    String key,
+    Map<String, List<SerializableEntityDefinition>> map,
+  ) {
+    var classes = map[key];
+    if (classes == null || classes.isEmpty) return null;
+
+    return classes.firstWhere((c) => c != documentDefinition);
   }
 }

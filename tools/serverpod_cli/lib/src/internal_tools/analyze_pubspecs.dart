@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -7,15 +8,15 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
-Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
+Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
   var directory = Directory.current;
   if (!isServerpodRootDirectory(directory)) {
     print('Must be run from the serverpod repository root');
-    exit(1);
+    return false;
   }
 
   var pubspecFiles = findPubspecsFiles(directory,
-      ignorePaths: ['/templates/pubspecs/', '/test_assets/']);
+      ignorePaths: [p.join('templates', 'pubspecs'), 'test_assets']);
 
   Map<String, List<_ServerpodDependency>> dependencies;
   try {
@@ -23,14 +24,14 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   } catch (e) {
     print('Failed to get dependencies');
     print(e);
-    exit(1);
+    return false;
   }
 
-  var missmatchedDeps = _findMissmatchedDependencies(dependencies);
+  var mismatchedDeps = _findMismatchedDependencies(dependencies);
 
-  if (missmatchedDeps.isNotEmpty) {
-    _printMissmatchedDependencies(missmatchedDeps, dependencies);
-    exit(1);
+  if (mismatchedDeps.isNotEmpty) {
+    _printMismatchedDependencies(mismatchedDeps, dependencies);
+    return false;
   }
 
   print('Dependencies match.');
@@ -38,6 +39,8 @@ Future<void> performAnalyzePubspecs(bool checkLatestVersion) async {
   if (checkLatestVersion) {
     await _checkLatestVersion(dependencies);
   }
+
+  return true;
 }
 
 Future<void> _checkLatestVersion(
@@ -69,10 +72,10 @@ Future<void> _checkLatestVersion(
   }
 }
 
-void _printMissmatchedDependencies(Set<String> missmatchedDeps,
+void _printMismatchedDependencies(Set<String> mismatchedDeps,
     Map<String, List<_ServerpodDependency>> dependencies) {
-  print('Found missmatched dependencies:');
-  for (var depName in missmatchedDeps) {
+  print('Found mismatched dependencies:');
+  for (var depName in mismatchedDeps) {
     print(depName);
     var deps = dependencies[depName]!;
     for (var dep in deps) {
@@ -81,21 +84,21 @@ void _printMissmatchedDependencies(Set<String> missmatchedDeps,
   }
 }
 
-Set<String> _findMissmatchedDependencies(
+Set<String> _findMismatchedDependencies(
   Map<String, List<_ServerpodDependency>> dependencies,
 ) {
-  var missmatchedDeps = <String>{};
+  var mismatchedDeps = <String>{};
   for (var depName in dependencies.keys) {
     var deps = dependencies[depName]!;
     String? version;
     for (var dep in deps) {
       if (version != null && version != dep.version) {
-        missmatchedDeps.add(depName);
+        mismatchedDeps.add(depName);
       }
       version = dep.version;
     }
   }
-  return missmatchedDeps;
+  return mismatchedDeps;
 }
 
 Map<String, List<_ServerpodDependency>> _getDependencies(

@@ -73,7 +73,7 @@ class EndpointsAnalyzer {
       for (var context in collection.contexts) {
         for (var changedFile in changedFiles) {
           var file = File(changedFile);
-          context.changeFile(file.absolute.path);
+          context.changeFile(p.normalize(file.absolute.path));
         }
         await context.applyPendingFileChanges();
       }

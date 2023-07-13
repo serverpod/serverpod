@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,17 +10,18 @@ void main() {
         'Given a class without the fields key, then collect an error that the fields key is required',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -32,17 +34,18 @@ class: Example
         'Given an exception without the fields key, then collect an error that the fields key is required',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 exception: Example
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -55,18 +58,19 @@ exception: Example
         'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields:
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -80,18 +84,19 @@ fields:
         'Given an exception with the fields key defined but without any field, then collect an error that at least one field has to be added.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 exception: Example
 fields:
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -105,18 +110,19 @@ fields:
         'Given an class with the fields key defined as a primitive datatype instead of a Map, then collect an error that at least one field has to be added.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields: int
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -130,18 +136,19 @@ fields: int
         'Given an enum with the fields key defined, then collect an error that fields are not allowed.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 enum: Example
 fields:
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -157,19 +164,20 @@ fields:
         'Given a class with a field key that is not a string, then collect an error that field keys have to be of the type string.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields:
   1: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -182,19 +190,20 @@ fields:
         'Given a class with a field key that is not a valid dart variable name style, collect an error that the keys needs to follow the dart convention.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields:
   InvalidFieldName: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
 
       expect(collector.errors.length, greaterThan(0));
 
@@ -208,19 +217,22 @@ fields:
         'Given a class with a valid field key, then an entity with that field is generated.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields:
   name: String
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      var entities = definition as ClassDefinition;
 
       expect(entities.fields.first.name, 'name');
     });
@@ -231,592 +243,1246 @@ fields:
         'Given a class with a field without a datatype defined, then collect an error that defining a datatype is required.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields:
   name:
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
-
-      expect(collector.errors.length, greaterThan(0));
-
-      var error = collector.errors.first;
-
-      expect(error.message,
-          'The field must have a datatype defined (e.g. field: String).');
-    });
-
-    test(
-        'Given a exception with a field without a datatype defined, then collect an error that defining a datatype is required.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-exception: Example
-fields:
-  name:
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
       );
-
-      analyzer.analyze();
-
-      expect(collector.errors.length, greaterThan(0));
-
-      var error = collector.errors.first;
-
-      expect(error.message,
-          'The field must have a datatype defined (e.g. field: String).');
-    });
-
-    test(
-        'Given a exception with a field with the type String, then a class with that field type set to String is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-exception: Example
-fields:
-  name: String
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'String');
-    });
-
-    test(
-        'Given a class with a field with the parent keyword but without a value, then collect an error that the parent has to have a valid table name.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-table: example
-fields:
-  nameId: int, parent=
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      analyzer.analyze();
-
-      expect(collector.errors.length, greaterThan(0));
-
-      var error = collector.errors.first;
-
-      expect(error.message,
-          'The parent must reference a valid table name (e.g. parent=table_name). "" is not a valid parent name.');
-    });
-
-    test(
-        'Given a class with a field with the type String, then a class with that field type set to String is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: String
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'String');
-    });
-
-    test(
-        'Given a class with a field with the type int, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: int
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'int');
-    });
-
-    test(
-        'Given a class with a field with the type int, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: bool
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'bool');
-    });
-
-    test(
-        'Given a class with a field with the type double, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: double
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'double');
-    });
-
-    test(
-        'Given a class with a field with the type DateTime, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: DateTime
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'DateTime');
-    });
-
-    test(
-        'Given a class with a field with the type Uuid, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: Uuid
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'Uuid');
-    });
-
-    test(
-        'Given a class with a field with the type ByteData, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: ByteData
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'dart:typed_data:ByteData');
-    });
-
-    test(
-        'Given a class with a field with the type List, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: List<String>
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'List<String>');
-    });
-
-    test(
-        'Given a class with a field with the type Map, then a class with that field type is generated.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: Map<String,String>
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.first.type.toString(), 'Map<String,String>');
-    });
-  });
-
-  group('Parent table tests', () {
-    test(
-        'Given a class with a field with a parent, then the generated entity has a parentTable property set to the parent table name.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-table: example
-fields:
-  parentId: int, parent=parent_table
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      analyzer.analyze();
-
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
-
-      expect(entities.fields.last.parentTable, 'parent_table');
-    });
-    test(
-        'Given a class with a field with two parent keywords, then collect an error that only one parent is allowed.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-table: example
-fields:
-  name: String, parent=my_table, parent=second
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      analyzer.analyze();
-
-      expect(collector.errors.length, greaterThan(0));
-
-      var error = collector.errors.first;
-
-      expect(error.message,
-          'The field option "parent" is defined more than once.');
-    });
-  });
-
-  group('Field scope tests', () {
-    test(
-        'Given a class with a field with two database keywords, then collect an error that only one database is allowed.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: String, database, database
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      analyzer.analyze();
-
-      expect(collector.errors.length, greaterThan(0));
-
-      var error = collector.errors.first;
-
-      expect(error.message,
-          'The field option "database" is defined more than once.');
-    });
-
-    test(
-        'Given a class with a field with two api keywords, then collect an error that only one api is allowed.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: String, api, api
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
-
-      analyzer.analyze();
 
       expect(collector.errors.length, greaterThan(0));
 
       var error = collector.errors.first;
 
       expect(
-          error.message, 'The field option "api" is defined more than once.');
+        error.message,
+        'The field must have a datatype defined (e.g. field: String).',
+      );
     });
 
     test(
-        'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
+        'Given an exception with a field without a datatype defined, then collect an error that defining a datatype is required.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
+      var protocol = ProtocolSource(
+        '''
+exception: Example
 fields:
-  name: String, api, database
+  name:
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      analyzer.analyze();
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-      expect(collector.errors.length, greaterThan(1));
+      expect(collector.errors.length, greaterThan(0));
 
-      var error1 = collector.errors[0];
-      var error2 = collector.errors[1];
+      var error = collector.errors.first;
 
-      expect(error1.message,
-          'The "database" property is mutually exclusive with the "api" property.');
-      expect(error2.message,
-          'The "api" property is mutually exclusive with the "database" property.');
+      expect(
+        error.message,
+        'The field must have a datatype defined (e.g. field: String).',
+      );
     });
 
     test(
-        'Given a class with a field with a complex datatype, then generate an entity with that datatype.',
+        'Given an exception with a field with the type String, then a class with that field type set to String is generated.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
+exception: Example
+fields:
+  name: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'String');
+    });
+
+    test(
+        'Given a class with a field with the type String, then a class with that field type set to String is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'String');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type int, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: int
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+          (definition as ClassDefinition).fields.first.type.toString(), 'int');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type bool, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: bool
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+          (definition as ClassDefinition).fields.first.type.toString(), 'bool');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type double, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: double
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'double');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type DateTime, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: DateTime
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'DateTime');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type Uuid, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: Uuid
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+          (definition as ClassDefinition).fields.first.type.toString(), 'Uuid');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type ByteData, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: ByteData
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'dart:typed_data:ByteData');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the nullable type String, then a class with that field type set to String? is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: String?
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'String?');
+      expect(
+        definition.fields.first.type.nullable,
+        true,
+        reason: 'Expected the type to be nullable.',
+      );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the nullable type List<String>, then a class with that field type set to List<String>? is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: List<String>?
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<String>?');
+      expect(
+        definition.fields.first.type.nullable,
+        true,
+        reason: 'Expected the type to be nullable.',
+      );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with a nested nullable type, then a class with that field type set.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: List<String?>?
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<String?>?');
+      expect(
+        definition.fields.first.type.nullable,
+        true,
+        reason: 'Expected the type to be nullable.',
+      );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with a only ??? as the type, then collect an error that it is an invalid type.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: ???
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error, but none was found.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field has an invalid datatype "???".',
+      );
+    });
+
+    test(
+        'Given a class with a field with a type of String???, then collect an error that it is an invalid type.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: String???
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error, but none was found.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field has an invalid datatype "String???".',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type List, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: List<String>
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<String>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
+    });
+
+    test(
+        'Given a class with a field with the type Map, then a class with that field type is generated.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
 class: Example
 fields:
   name: Map<String, String>
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-      expect(entities.fields.first.type.className, 'Map');
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'Map<String,String>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
-        'Given a class with a field with no scope set, then the generated entity has the all scope.',
+        'Given a class with a complex nested field datatype, then a class with that field type is generated.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
-table: example
 fields:
-  name: String
+  name: List<List<Map<String, int>>>
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-      expect(entities.fields.last.scope, SerializableEntityFieldScope.all);
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'List<List<Map<String,int>>>');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
-        'Given a class with a field with the scope set to database, then the generated entity has the database scope.',
+        'Given a class with a complex nested field datatype, then a class with that field type is generated.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
 class: Example
-table: example
 fields:
-  name: String, database
+  name: module:auth:UserInfo
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-      expect(entities.fields.last.scope, SerializableEntityFieldScope.database);
+      expect((definition as ClassDefinition).fields.first.type.toString(),
+          'module:auth:UserInfo');
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but found some.',
+      );
     });
 
     test(
-        'Given a class with a field with the scope set to api, then the generated entity has the api scope.',
+        'Given a class with a field with an invalid dart syntax for the type, then collect an error that the type is invalid.',
         () {
       var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  name: invalid-type
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0),
+          reason: 'Expected an error, but none was found.');
+      expect(collector.errors.first.message,
+          'The field has an invalid datatype "invalid-type".');
+    });
+  });
+
+  group('Parent table tests', () {
+    test(
+        'Given a class with a field with the parent keyword but without a value, then collect an error that the parent has to have a valid table name.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
 class: Example
 table: example
 fields:
-  name: String, api
+  nameId: int, parent=
 ''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
       );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-      expect(entities.fields.last.scope, SerializableEntityFieldScope.api);
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The parent must reference a valid table name (e.g. parent=table_name). "" is not a valid parent name.',
+      );
     });
+
+    test(
+      'Given a class with a field with a parent, then the generated entity has a parentTable property set to the parent table name.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          parentId: int, parent=example
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(
+            (definition as ClassDefinition).fields.last.parentTable, 'example');
+      },
+    );
+
+    test(
+      'Given a class with a field with a parent that do not exist, then collect an error that the parent table is not found.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          name: String, parent=unknown_table
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(error.message,
+            'The parent table "unknown_table" was not found in any protocol.');
+      },
+    );
+
+    test(
+      'Given a class with a field with two parent keywords, then collect an error that only one parent is allowed.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          parentId: int, parent=example, parent=example
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(error.message,
+            'The field option "parent" is defined more than once.');
+      },
+    );
+
+    test(
+      'Given a class without a table definition but with a field with a parent, then collect an error that the table needs to be defined.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          parentId: int, parent=example
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(
+          error.message,
+          'The "table" property must be defined in the class to set a parent on a field.',
+        );
+      },
+    );
+  });
+
+  group('Field scope tests', () {
+    test(
+      'Given a class with a field with two database keywords, then collect an error that only one database is allowed.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, database, database
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(error.message,
+            'The field option "database" is defined more than once.');
+      },
+    );
+
+    test(
+      'Given a class with a field with two api keywords, then collect an error that only one api is allowed.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, api, api
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(
+            error.message, 'The field option "api" is defined more than once.');
+      },
+    );
+
+    test(
+      'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, api, database
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(1));
+
+        var error1 = collector.errors[0];
+        var error2 = collector.errors[1];
+
+        expect(error1.message,
+            'The "database" property is mutually exclusive with the "api" property.');
+        expect(error2.message,
+            'The "api" property is mutually exclusive with the "database" property.');
+      },
+    );
+
+    test(
+      'Given a class with a field with a complex datatype, then generate an entity with that datatype.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: Map<String, String>
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(
+            (definition as ClassDefinition).fields.first.type.className, 'Map');
+      },
+    );
+
+    test(
+      'Given a class with a field with no scope set, then the generated entity has the all scope.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect((definition as ClassDefinition).fields.last.scope,
+            SerializableEntityFieldScope.all);
+      },
+    );
+
+    test(
+      'Given a class with a field with the scope set to database, then the generated entity has the database scope.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          name: String, database
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect((definition as ClassDefinition).fields.last.scope,
+            SerializableEntityFieldScope.database);
+      },
+    );
+
+    test(
+      'Given a class with a field with the scope set to api, then the generated entity has the api scope.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+      class: Example
+      table: example
+      fields:
+        name: String, api
+      ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect((definition as ClassDefinition).fields.last.scope,
+            SerializableEntityFieldScope.api);
+      },
+    );
+
+    test(
+      'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+      class: Example
+      table: example
+      fields:
+        nextId: int, parent=example, api
+      ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(
+          collector.errors.length,
+          greaterThan(0),
+          reason: 'Expected an error, none was found.',
+        );
+        expect(
+          collector.errors.first.message,
+          'The "api" property is mutually exclusive with the "parent" property.',
+        );
+      },
+    );
   });
 
   group('Test id field.', () {
     test(
-        'Given a class with a table defined, then add an id field to the generated entity.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-table: example
-fields:
-  name: String
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
+      'Given a class with a table and a field called "id" defined, then collect an error that the id field is not allowed.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          id: int
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
 
-      expect(entities.fields.first.name, 'id');
-      expect(entities.fields.first.type.className, 'int');
-      expect(entities.fields.first.type.nullable, true);
-    });
+        expect(collector.errors.length, greaterThan(0),
+            reason: 'Expected an error, but got none.');
 
-    test('Given a class without a table defined, then no id field is added.',
-        () {
-      var collector = CodeGenerationCollector();
-      var analyzer = SerializableEntityAnalyzer(
-        yaml: '''
-class: Example
-fields:
-  name: String
-''',
-        sourceFileName: 'lib/src/protocol/example.yaml',
-        outFileName: 'example.yaml',
-        subDirectoryParts: ['lib', 'src', 'protocol'],
-        collector: collector,
-      );
+        expect(
+          collector.errors.first.message,
+          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
+        );
+      },
+    );
+    test(
+      'Given a class with a table defined, then add an id field to the generated entity.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
 
-      ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
 
-      expect(entities.fields.first.name, isNot('id'));
-      expect(entities.fields, hasLength(1));
-    });
+        expect((definition as ClassDefinition).fields.first.name, 'id');
+        expect(definition.fields.first.type.className, 'int');
+        expect(definition.fields.first.type.nullable, true);
+      },
+    );
+
+    test(
+      'Given a class without a table defined, then no id field is added.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect((definition as ClassDefinition).fields.first.name, isNot('id'));
+        expect(definition.fields, hasLength(1));
+      },
+    );
   });
 
   test(
-      'Given a class with a field of a Map type, then all the data types components are extracted.',
-      () {
-    var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
-class: Example
-fields:
-  customField: Map<String, CustomClass>
-''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
-    );
+    'Given a class with a field of a Map type, then all the data types components are extracted.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+      class: Example
+      fields:
+        customField: Map<String, CustomClass>
+      ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
 
-    ClassDefinition entities = analyzer.analyze() as ClassDefinition;
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-    expect(
-      entities.fields.first.type.className,
-      'Map',
-    );
+      expect(
+        (definition as ClassDefinition).fields.first.type.className,
+        'Map',
+      );
 
-    expect(
-      entities.fields.first.type.generics.first.className,
-      'String',
-    );
+      expect(
+        definition.fields.first.type.generics.first.className,
+        'String',
+      );
 
-    expect(
-      entities.fields.first.type.generics.last.className,
-      'CustomClass',
-    );
-  });
+      expect(
+        definition.fields.first.type.generics.last.className,
+        'CustomClass',
+      );
+    },
+  );
 }
