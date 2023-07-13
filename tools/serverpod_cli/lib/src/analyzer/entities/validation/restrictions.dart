@@ -73,9 +73,7 @@ class Restrictions {
     if (tableName is! String) {
       return [
         SourceSpanSeverityException(
-          'The "table" property must be a snake_case_string.',
-          span
-        )
+            'The "table" property must be a snake_case_string.', span)
       ];
     }
 

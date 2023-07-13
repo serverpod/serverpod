@@ -155,9 +155,8 @@ void _collectMissingRequiredKeyErrors(
 ) {
   if (_isMissingRequiredKey(node, documentContents)) {
     collector.addError(SourceSpanSeverityException(
-      'No "${node.key}" property is defined.',
-      documentContents.nodes[node.key]?.span
-    ));
+        'No "${node.key}" property is defined.',
+        documentContents.nodes[node.key]?.span));
   }
 }
 
