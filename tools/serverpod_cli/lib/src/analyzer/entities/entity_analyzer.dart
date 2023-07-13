@@ -661,22 +661,23 @@ class SerializableEntityAnalyzer {
     var valuesNode = documentContents.nodes[Keyword.values];
     if (valuesNode is! YamlList) return [];
 
-    return valuesNode.nodes
-        .map((node) {
-          var value = node.value;
-          if (value is! String) return null;
-          value = value.trim();
+    var values = valuesNode.nodes.map((node) {
+      var value = node.value;
+      if (value is! String) return null;
 
-          var start = node.span.start;
-          // 2 is the length of '- ' in '- enumValue'
-          var valueDocumentation = docsExtractor.getDocumentation(
-            SourceLocation(start.offset - 2,
-                column: start.column - 2,
-                line: start.line,
-                sourceUrl: start.sourceUrl),
-          );
-          return ProtocolEnumValueDefinition(value, valueDocumentation);
-        })
+      var start = node.span.start;
+      // 2 is the length of '- ' in '- enumValue'
+      var valueDocumentation = docsExtractor.getDocumentation(
+        SourceLocation(start.offset - 2,
+            column: start.column - 2,
+            line: start.line,
+            sourceUrl: start.sourceUrl),
+      );
+
+      return ProtocolEnumValueDefinition(value, valueDocumentation);
+    });
+
+    return values
         .where((value) => value != null)
         .cast<ProtocolEnumValueDefinition>()
         .toList();
