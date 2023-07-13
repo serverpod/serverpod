@@ -170,9 +170,9 @@ class TypeDefinition {
     );
   }
 
-  /// Get the qgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO: add all suported types here
+    // TODO: add all supported types here
     var serializeEnumValuesAsStrings =
         GeneratorConfig.instance!.serializeEnumValuesAsStrings;
     if (className == 'String' || (isEnum && serializeEnumValuesAsStrings)) {
