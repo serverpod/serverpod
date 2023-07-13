@@ -46,7 +46,7 @@ class Restrictions {
     var reservedClassNames = {'List', 'Map', 'String', 'DateTime'};
     if (reservedClassNames.contains(content)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The class name "$content" is reserved and cannot be used.',
           span,
         )
