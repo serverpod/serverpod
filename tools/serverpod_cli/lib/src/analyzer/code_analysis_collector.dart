@@ -24,7 +24,7 @@ class SourceSpanSeverityException extends SourceSpanException {
 
   SourceSpanSeverityException(
     String message,
-    SourceSpan? span, {
+    SourceSpan? span, [
     this.severity = SourceSpanSeverity.error,
-  }) : super(message, span);
+  ]) : super(message, span);
 }
