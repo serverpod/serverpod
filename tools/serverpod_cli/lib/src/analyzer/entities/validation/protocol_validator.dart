@@ -78,6 +78,12 @@ void validateYamlProtocol(
       collector,
     );
 
+    _collectDeprecatedKeyErrors(
+      node,
+      documentContents,
+      collector,
+    );
+
     _collectKeyRestrictionErrors(
       node,
       documentContents,
@@ -174,6 +180,26 @@ void _collectMissingRequiredChildrenErrors(
     collector.addError(SourceSpanSeverityException(
       'The "${node.key}" property must have at least one value.',
       span,
+    ));
+  }
+}
+
+void _collectDeprecatedKeyErrors(
+  ValidateNode node,
+  YamlMap documentContents,
+  CodeAnalysisCollector collector,
+) {
+  if (node.isDeprecated && documentContents.containsKey(node.key)) {
+    var severity = SourceSpanSeverity.warning;
+    if (node.isRemoved) {
+      severity = SourceSpanSeverity.error;
+    }
+
+    collector.addError(SourceSpanSeverityException(
+      'The "${node.key}" property is deprecated. ${node.alternativeUsageMessage}',
+      documentContents.key(node.key)?.span,
+      severity: severity,
+      tags: [SourceSpanTag.deprecated],
     ));
   }
 }

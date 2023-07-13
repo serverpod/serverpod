@@ -8,6 +8,16 @@ class ValidateNode {
   /// If true, the key must be present in the document.
   bool isRequired;
 
+  // If true, the key will be marked as deprecated with a warning.
+  bool isDeprecated;
+
+  // If true, the key will be marked as deprecated with an error.
+  bool isRemoved;
+
+  /// Set to communicate what the alternative implementation of a deprecated
+  /// value is.
+  String alternativeUsageMessage;
+
   /// If set, the key must match the restriction if an error is returned the key
   /// is considered invalid.
   /// Should only be used together with a [Keyword.any].
@@ -36,6 +46,9 @@ class ValidateNode {
   ValidateNode(
     this.key, {
     this.isRequired = false,
+    this.isDeprecated = false,
+    this.isRemoved = false,
+    this.alternativeUsageMessage = '',
     this.keyRestriction,
     this.valueRestriction,
     this.mutuallyExclusiveKeys = const {},
