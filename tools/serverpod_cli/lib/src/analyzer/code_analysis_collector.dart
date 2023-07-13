@@ -19,12 +19,19 @@ enum SourceSpanSeverity {
   hint,
 }
 
+enum SourceSpanTag {
+  unnecessary,
+  deprecated,
+}
+
 class SourceSpanSeverityException extends SourceSpanException {
   final SourceSpanSeverity severity;
+  final List<SourceSpanTag>? tags;
 
   SourceSpanSeverityException(
     String message,
-    SourceSpan? span, [
+    SourceSpan? span, {
     this.severity = SourceSpanSeverity.error,
-  ]) : super(message, span);
+    this.tags,
+  }) : super(message, span);
 }

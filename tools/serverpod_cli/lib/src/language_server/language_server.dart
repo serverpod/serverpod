@@ -188,8 +188,10 @@ List<Diagnostic> _convertErrorsToDiagnostic(
     if (span == null) throw Error();
 
     var severity = DiagnosticSeverity.Error;
+    List<DiagnosticTag>? tags;
     if (error is SourceSpanSeverityException) {
       severity = _convertToDiagnosticSeverity(error.severity);
+      tags = _convertToDiagnosticTags(error.tags);
     }
 
     return Diagnostic(
@@ -206,6 +208,7 @@ List<Diagnostic> _convertErrorsToDiagnostic(
           character: span.end.column,
         ),
       ),
+      tags: tags,
     );
   }).toList();
 }
@@ -223,6 +226,19 @@ DiagnosticSeverity _convertToDiagnosticSeverity(
     case SourceSpanSeverity.hint:
       return DiagnosticSeverity.Hint;
   }
+}
+
+List<DiagnosticTag>? _convertToDiagnosticTags(List<SourceSpanTag>? tags) {
+  if (tags == null) return null;
+
+  return tags.map((tag) {
+    switch (tag) {
+      case SourceSpanTag.unnecessary:
+        return DiagnosticTag.Unnecessary;
+      case SourceSpanTag.deprecated:
+        return DiagnosticTag.Deprecated;
+    }
+  }).toList();
 }
 
 bool _isProtocolInServerPath(Uri uri, Uri serverUri) {
