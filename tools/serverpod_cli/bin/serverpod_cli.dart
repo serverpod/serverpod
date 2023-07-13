@@ -308,14 +308,14 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
     var endpointsAnalyzer = EndpointsAnalyzer(config);
 
-    await performGenerate(
+    bool hasErrors = await performGenerate(
       verbose: verbose,
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
     );
     if (watch) {
       print('Initial code generation complete. Listening for changes.');
-      performGenerateContinuously(
+      hasErrors = await performGenerateContinuously(
         verbose: verbose,
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
@@ -323,6 +323,11 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     } else {
       print('Done.');
     }
+
+    if (hasErrors) {
+      throw ExitException(ExitCodeType.general);
+    }
+
     return;
   }
 

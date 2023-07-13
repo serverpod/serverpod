@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 import 'generator.dart';
 
 /// Continuously generate code when files change.
-void performGenerateContinuously({
+Future<bool> performGenerateContinuously({
   required bool verbose,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
@@ -17,11 +17,11 @@ void performGenerateContinuously({
       DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
   var watcherEndpoints =
       DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
-
+  var hasErrors = false;
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
     print('File changed: $event');
-    await performGenerate(
+    hasErrors = await performGenerate(
       verbose: verbose,
       changedFile: event.path,
       config: config,
@@ -30,4 +30,6 @@ void performGenerateContinuously({
     print('Incremental code generation complete.');
     print('');
   }
+
+  return hasErrors;
 }

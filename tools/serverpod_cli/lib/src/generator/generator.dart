@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/util/print.dart';
 
 /// Analyze the server package and generate the code.
-Future<void> performGenerate({
+Future<bool> performGenerate({
   required bool verbose,
   bool dartFormat = true,
   String? changedFile,
@@ -12,6 +12,7 @@ Future<void> performGenerate({
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
   var collector = CodeGenerationCollector();
+  bool hadErrors = false;
 
   if (verbose) {
     printww('Analyzing serializable entities in the protocol directory.');
@@ -22,6 +23,9 @@ Future<void> performGenerate({
     config: config,
   );
 
+  if (collector.hasSeverErrors) {
+    hadErrors = true;
+  }
   collector.printErrors();
   collector.clearErrors();
 
@@ -36,6 +40,9 @@ Future<void> performGenerate({
     collector: collector,
   );
 
+  if (collector.hasSeverErrors) {
+    hadErrors = true;
+  }
   collector.printErrors();
   collector.clearErrors();
 
@@ -49,6 +56,9 @@ Future<void> performGenerate({
     changedFiles: generatedEntityFiles.toSet(),
   );
 
+  if (collector.hasSeverErrors) {
+    hadErrors = true;
+  }
   collector.printErrors();
   collector.clearErrors();
 
@@ -68,6 +78,9 @@ Future<void> performGenerate({
     collector: collector,
   );
 
+  if (collector.hasSeverErrors) {
+    hadErrors = true;
+  }
   collector.printErrors();
   collector.clearErrors();
 
@@ -84,4 +97,6 @@ Future<void> performGenerate({
     config: config,
     verbose: verbose,
   );
+
+  return hadErrors;
 }
