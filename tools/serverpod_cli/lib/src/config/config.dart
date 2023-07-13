@@ -110,6 +110,9 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// Whether to serialize enums as Strings rather than ints
+  final bool serializeEnumValuesAsStrings;
+
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
