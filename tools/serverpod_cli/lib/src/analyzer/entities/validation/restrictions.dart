@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
@@ -20,13 +21,13 @@ class Restrictions {
     this.entityRelations,
   });
 
-  List<SourceSpanException> validateClassName(
+  List<SourceSpanSeverityException> validateClassName(
     dynamic content,
     SourceSpan? span,
   ) {
     if (content is! String) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "$documentType" type must be a String.',
           span,
         )
@@ -35,7 +36,7 @@ class Restrictions {
 
     if (!StringValidators.isValidClassName(content)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "$documentType" type must be a valid class name (e.g. PascalCaseString).',
           span,
         )
@@ -45,7 +46,7 @@ class Restrictions {
     // TODO n-squared time complexity when validating all protocol files.
     if (_countClassNames(content, entityRelations?.entities) > 1) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The $documentType name "$content" is already used by another protocol class.',
           span,
         )
@@ -65,22 +66,22 @@ class Restrictions {
     );
   }
 
-  List<SourceSpanException> validateTableName(
+  List<SourceSpanSeverityException> validateTableName(
     dynamic tableName,
     SourceSpan? span,
   ) {
     if (tableName is! String) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "table" property must be a snake_case_string.',
-          span,
+          span
         )
       ];
     }
 
     if (!StringValidators.isValidTableName(tableName)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "table" property must be a snake_case_string.',
           span,
         )
@@ -93,7 +94,7 @@ class Restrictions {
       var otherClass =
           _findFirstClassOtherClass(tableName, relations.tableNames);
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The table name "$tableName" is already in use by the class "${otherClass?.className}".',
           span,
         )
@@ -103,28 +104,28 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateBoolType(
+  List<SourceSpanSeverityException> validateBoolType(
     dynamic content,
     SourceSpan? span,
   ) {
     if (content is bool) return [];
 
     return [
-      SourceSpanException(
+      SourceSpanSeverityException(
         'The property value must be a bool.',
         span,
       )
     ];
   }
 
-  List<SourceSpanException> validateTableIndexName(
+  List<SourceSpanSeverityException> validateTableIndexName(
     dynamic indexName,
     SourceSpan? span,
   ) {
     if (indexName is! String ||
         !StringValidators.isValidTableIndexName(indexName)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'Invalid format for index "$indexName", must follow the format lower_snake_case.',
           span,
         )
@@ -134,7 +135,7 @@ class Restrictions {
     if (indexNames != null && !_isKeyGloballyUnique(indexName, indexNames)) {
       var collision = _findFirstClassOtherClass(indexName, indexNames);
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The index name "$indexName" is already used by the protocol class "${collision?.className}".',
           span,
         )
@@ -144,13 +145,13 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateFieldName(
+  List<SourceSpanSeverityException> validateFieldName(
     dynamic content,
     SourceSpan? span,
   ) {
     if (!StringValidators.isValidFieldName(content)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
           span,
         )
@@ -160,7 +161,7 @@ class Restrictions {
     var def = documentDefinition;
     if (content == 'id' && def is ClassDefinition && def.tableName != null) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
           span,
         )
@@ -170,7 +171,7 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateParentName(
+  List<SourceSpanSeverityException> validateParentName(
     dynamic content,
     SourceSpan? span,
   ) {
@@ -179,7 +180,7 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is ClassDefinition && definition.tableName == null) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "table" property must be defined in the class to set a parent on a field.',
           span,
         )
@@ -188,7 +189,7 @@ class Restrictions {
 
     if (!StringValidators.isValidTableIndexName(content)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
           span,
         )
@@ -198,7 +199,7 @@ class Restrictions {
     var relations = entityRelations;
     if (relations != null && !relations.tableNames.containsKey(content)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The parent table "$content" was not found in any protocol.',
           span,
         )
@@ -208,13 +209,13 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateFieldDataType(
+  List<SourceSpanSeverityException> validateFieldDataType(
     dynamic type,
     SourceSpan? span,
   ) {
     if (type is! String) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The field must have a datatype defined (e.g. field: String).',
           span,
         )
@@ -223,7 +224,7 @@ class Restrictions {
 
     if (!_isValidFieldType(type)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The field has an invalid datatype "$type".',
           span,
         )
@@ -233,13 +234,13 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateIndexFieldsValue(
+  List<SourceSpanSeverityException> validateIndexFieldsValue(
     dynamic content,
     SourceSpan? span,
   ) {
     if (content is! String) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "fields" property must have at least one field, (e.g. fields: fieldName).',
           span,
         )
@@ -258,7 +259,7 @@ class Restrictions {
 
     var missingFieldErrors = indexFields
         .where((field) => !validDatabaseFieldNames.contains(field))
-        .map((field) => SourceSpanException(
+        .map((field) => SourceSpanSeverityException(
               'The field name "$field" is not added to the class or has an api scope.',
               span,
             ));
@@ -267,7 +268,7 @@ class Restrictions {
 
     var duplicateFieldErrors = duplicatesCount.entries
         .where((entry) => entry.value > 1)
-        .map((entry) => SourceSpanException(
+        .map((entry) => SourceSpanSeverityException(
               'Duplicated field name "name", can only reference a field once per index.',
               span,
             ));
@@ -275,7 +276,7 @@ class Restrictions {
     return [...missingFieldErrors, ...duplicateFieldErrors];
   }
 
-  List<SourceSpanException> validateIndexType(
+  List<SourceSpanSeverityException> validateIndexType(
     dynamic content,
     SourceSpan? span,
   ) {
@@ -283,7 +284,7 @@ class Restrictions {
 
     if (content is! String || !validIndexTypes.contains(content)) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "type" property must be one of: ${validIndexTypes.join(', ')}.',
           span,
         )
@@ -293,13 +294,13 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanException> validateEnumValues(
+  List<SourceSpanSeverityException> validateEnumValues(
     dynamic content,
     SourceSpan? span,
   ) {
     if (content is! YamlList) {
       return [
-        SourceSpanException(
+        SourceSpanSeverityException(
           'The "values" property must be a list of strings.',
           span,
         )
@@ -311,21 +312,21 @@ class Restrictions {
     var nodeExceptions = content.nodes.map((node) {
       var enumValue = node.value;
       if (node is! YamlScalar || enumValue is! String) {
-        return SourceSpanException(
+        return SourceSpanSeverityException(
           'The "values" property must be a list of strings.',
           node.span,
         );
       }
 
       if (!StringValidators.isValidFieldName(node.value)) {
-        return SourceSpanException(
+        return SourceSpanSeverityException(
           'Enum values must be lowerCamelCase.',
           node.span,
         );
       }
 
       if (enumCount[enumValue] != 1) {
-        return SourceSpanException(
+        return SourceSpanSeverityException(
           'Enum values must be unique.',
           node.span,
         );
@@ -334,7 +335,7 @@ class Restrictions {
       return null;
     });
 
-    return nodeExceptions.whereType<SourceSpanException>().toList();
+    return nodeExceptions.whereType<SourceSpanSeverityException>().toList();
   }
 
   Map<dynamic, int> _duplicatesCount(List<dynamic> list) {

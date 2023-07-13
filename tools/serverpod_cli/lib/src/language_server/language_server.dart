@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:lsp_server/lsp_server.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -186,8 +187,13 @@ List<Diagnostic> _convertErrorsToDiagnostic(
     var span = error.span;
     if (span == null) throw Error();
 
+    var severity = DiagnosticSeverity.Error;
+    if (error is SourceSpanSeverityException) {
+      severity = _convertToDiagnosticSeverity(error.severity);
+    }
+
     return Diagnostic(
-      severity: DiagnosticSeverity.Error,
+      severity: severity,
       source: DiagnosticsSource.serverpod,
       message: error.message,
       range: Range(
@@ -202,6 +208,21 @@ List<Diagnostic> _convertErrorsToDiagnostic(
       ),
     );
   }).toList();
+}
+
+DiagnosticSeverity _convertToDiagnosticSeverity(
+  SourceSpanSeverity severity,
+) {
+  switch (severity) {
+    case SourceSpanSeverity.error:
+      return DiagnosticSeverity.Error;
+    case SourceSpanSeverity.warning:
+      return DiagnosticSeverity.Warning;
+    case SourceSpanSeverity.info:
+      return DiagnosticSeverity.Information;
+    case SourceSpanSeverity.hint:
+      return DiagnosticSeverity.Hint;
+  }
 }
 
 bool _isProtocolInServerPath(Uri uri, Uri serverUri) {

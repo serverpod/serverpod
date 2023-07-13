@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/class_yaml_
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/exception_yaml_definition.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
-import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
 import 'package:path/path.dart' as p;
@@ -164,7 +163,7 @@ class SerializableEntityAnalyzer {
 
     var documentContents = document;
     if (documentContents is! YamlMap) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'The top level object in the class yaml file must be a Map.',
         documentContents?.span,
       ));

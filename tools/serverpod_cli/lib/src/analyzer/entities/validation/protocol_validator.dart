@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:yaml/yaml.dart';
@@ -7,7 +7,7 @@ import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 
 /// Validates that only one top level entity type is defined.
-List<SourceSpanException> validateTopLevelEntityType(
+List<SourceSpanSeverityException> validateTopLevelEntityType(
   YamlNode documentContents,
   Set<String> classTypes,
 ) {
@@ -22,7 +22,7 @@ List<SourceSpanException> validateTopLevelEntityType(
 
   if (typeNodes.isEmpty) {
     return [
-      SourceSpanException(
+      SourceSpanSeverityException(
         'No $classTypes type is defined.',
         documentContents.span,
       )
@@ -33,7 +33,7 @@ List<SourceSpanException> validateTopLevelEntityType(
   var errors = typeNodes
       .skip(1)
       .map(
-        (e) => SourceSpanException(
+        (e) => SourceSpanSeverityException(
             'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
             documentContents.key(e.key.toString())?.span),
       )
@@ -108,7 +108,7 @@ void _collectInvalidKeyErrors(
   var validKeys = documentStructure.map((e) => e.key).toSet();
   for (var keyNode in documentContents.nodes.keys) {
     if (keyNode is! YamlScalar) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Key must be of type String.',
         keyNode.span,
       ));
@@ -116,14 +116,14 @@ void _collectInvalidKeyErrors(
 
     var key = keyNode.value;
     if (key is! String) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Key must be of type String.',
         keyNode.span,
       ));
     }
 
     if (!(validKeys.contains(Keyword.any) || validKeys.contains(key))) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'The "$key" property is not allowed for $documentType type. Valid keys are $validKeys.',
         keyNode.span,
       ));
@@ -139,7 +139,7 @@ void _collectMutuallyExclusiveKeyErrors(
   if (_shouldCheckMutuallyExclusiveKeys(node, documentContents)) {
     for (var mutuallyExclusiveKey in node.mutuallyExclusiveKeys) {
       if (documentContents.containsKey(mutuallyExclusiveKey)) {
-        collector.addError(SourceSpanException(
+        collector.addError(SourceSpanSeverityException(
           'The "${node.key}" property is mutually exclusive with the "$mutuallyExclusiveKey" property.',
           documentContents.key(node.key)?.span,
         ));
@@ -154,9 +154,9 @@ void _collectMissingRequiredKeyErrors(
   CodeAnalysisCollector collector,
 ) {
   if (_isMissingRequiredKey(node, documentContents)) {
-    collector.addError(SourceSpanException(
+    collector.addError(SourceSpanSeverityException(
       'No "${node.key}" property is defined.',
-      documentContents.nodes[node.key]?.span,
+      documentContents.nodes[node.key]?.span
     ));
   }
 }
@@ -172,7 +172,7 @@ void _collectMissingRequiredChildrenErrors(
   if (documentContents.containsKey(node.key) &&
       node.nested.isNotEmpty &&
       content is! YamlMap) {
-    collector.addError(SourceSpanException(
+    collector.addError(SourceSpanSeverityException(
       'The "${node.key}" property must have at least one value.',
       span,
     ));
@@ -238,7 +238,7 @@ void _collectNodesWithNestedNodesErrors(
         contentNode,
         node,
         onDuplicateKey: (key, span) {
-          collector.addError(SourceSpanException(
+          collector.addError(SourceSpanSeverityException(
             'The field option "$key" is defined more than once.',
             span,
           ));
@@ -251,7 +251,7 @@ void _collectNodesWithNestedNodesErrors(
           node.nested.where((e) => e.isRequired).map((e) => e.key);
 
       if (requiredKeys.isNotEmpty) {
-        collector.addError(SourceSpanException(
+        collector.addError(SourceSpanSeverityException(
           'The "${document.key}" property is missing required keys $requiredKeys.',
           documentContents.span,
         ));
