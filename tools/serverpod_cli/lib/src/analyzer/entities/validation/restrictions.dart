@@ -52,7 +52,8 @@ class Restrictions {
       ];
     }
 
-    if (entityRelations?.classNames.containsKey(content) == true) {
+    var classesByName = entityRelations?.classNames[content];
+    if (classesByName != null && classesByName.length > 1) {
       return [
         SourceSpanException(
           'The $documentType name "$content" is already used by another protocol class.',
