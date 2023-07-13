@@ -749,30 +749,46 @@ class SerializableEntityLibraryGenerator {
               })
           ]);
 
-          e.fields.add(Field(
-            (f) => f
-              ..name = 'nameToValue'
-              ..static = true
-              ..modifier = FieldModifier.final$
-              ..assignment = Code('<String, $enumName>'
-                  '{for (var value in values) value.name: value}'),
-          ));
+          var serializeEnumValuesAsStrings =
+              GeneratorConfig.instance!.serializeEnumValuesAsStrings;
+          if (serializeEnumValuesAsStrings) {
+            e.fields.add(Field(
+              (f) => f
+                ..name = 'nameToValue'
+                ..static = true
+                ..modifier = FieldModifier.final$
+                ..assignment = Code('<String, $enumName>'
+                    '{for (var value in values) value.name: value}'),
+            ));
+          }
 
           e.methods.add(Method((m) => m
             ..static = true
             ..returns = refer('$enumName?')
             ..name = 'fromJson'
             ..requiredParameters.add(Parameter((p) => p
-              ..name = 'name'
-              ..type = refer('String')))
-            ..body = const Code('return nameToValue[name];')));
+              ..name = serializeEnumValuesAsStrings ? 'name' : 'index'
+              ..type = refer(serializeEnumValuesAsStrings ? 'String' : 'int')))
+            ..body = serializeEnumValuesAsStrings
+                ? const Code('return nameToValue[name];')
+                : (BlockBuilder()
+                      ..statements.addAll([
+                        const Code('switch(index){'),
+                        for (int i = 0; i < enumDefinition.values.length; i++)
+                          Code(
+                              'case $i: return ${enumDefinition.values[i].name};'),
+                        const Code('default: return null;'),
+                        const Code('}'),
+                      ]))
+                    .build()));
 
           e.methods.add(Method((m) => m
             ..annotations.add(refer('override'))
-            ..returns = refer('String')
+            ..returns = refer(serializeEnumValuesAsStrings ? 'String' : 'int')
             ..name = 'toJson'
             ..lambda = true
-            ..body = refer('name').code));
+            ..body =
+                refer(serializeEnumValuesAsStrings ? 'name' : 'index').code));
         }),
       );
     });
