@@ -201,7 +201,7 @@ class TypeDefinition {
 
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
-    // TODO: add all suported types here
+    // TODO: add all supported types here
     if (className == 'int') return 'ColumnInt';
     if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
@@ -215,7 +215,7 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most future of this type.
+  /// Strip the outermost future of this type.
   /// Throws, if this type is not a future.
   TypeDefinition stripFuture() {
     if (dartType?.isDartAsyncFuture ?? className == 'Future') {
