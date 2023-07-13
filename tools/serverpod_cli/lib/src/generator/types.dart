@@ -176,7 +176,7 @@ class TypeDefinition {
   String get databaseType {
     // TODO: add all suported types here
     var serializeEnumValuesAsStrings =
-        GeneratorConfig.instance?.serializeEnumValuesAsStrings ?? true;
+        GeneratorConfig.instance!.serializeEnumValuesAsStrings;
     if (className == 'String' || (isEnum && serializeEnumValuesAsStrings)) {
       return 'text';
     }
