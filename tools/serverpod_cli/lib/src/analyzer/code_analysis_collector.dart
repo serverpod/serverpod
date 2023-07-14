@@ -3,6 +3,14 @@ import 'package:source_span/source_span.dart';
 abstract class CodeAnalysisCollector {
   List<SourceSpanException> get errors;
 
+  bool get hasSeverErrors => errors.where(
+        (error) {
+          return error is! SourceSpanSeverityException ||
+              error.severity == SourceSpanSeverity.error ||
+              error.severity == SourceSpanSeverity.warning;
+        },
+      ).isNotEmpty;
+
   void addError(SourceSpanException error);
 
   void addErrors(List<SourceSpanException> errors);
