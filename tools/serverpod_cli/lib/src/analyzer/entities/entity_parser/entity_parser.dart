@@ -8,7 +8,6 @@ import 'package:yaml/yaml.dart';
 import '../converter/converter.dart';
 import '../definitions.dart';
 import '../validation/keywords.dart';
-import '../validation/validate_node.dart';
 
 class EntityParser {
   static SerializableEntityDefinition? serializeClassFile(
@@ -17,7 +16,6 @@ class EntityParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    ValidateNode fieldStructure,
   ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -41,7 +39,6 @@ class EntityParser {
       documentContents,
       docsExtractor,
       tableName != null,
-      fieldStructure,
     );
     var indexes = _parseIndexes(documentContents, fields);
 
@@ -106,7 +103,6 @@ class EntityParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
-    ValidateNode fieldStructure,
   ) {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is! YamlMap) return [];
@@ -114,7 +110,6 @@ class EntityParser {
     var parsedFields = fieldsNode.nodes.entries.map((fieldNode) {
       return _parseEntityFieldDefinition(
         fieldNode,
-        fieldStructure,
         docsExtractor,
       );
     });
@@ -145,7 +140,6 @@ class EntityParser {
 
   static SerializableEntityFieldDefinition? _parseEntityFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
-    ValidateNode fieldStructure,
     YamlDocumentationExtractor docsExtractor,
   ) {
     var key = fieldNode.key;
