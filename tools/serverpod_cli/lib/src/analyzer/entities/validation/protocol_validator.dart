@@ -60,6 +60,18 @@ void validateYamlProtocol(
   );
 
   for (var node in documentStructure) {
+    _collectKeyRestrictionErrors(
+      node,
+      documentContents,
+      collector,
+    );
+
+    _collectValueRestrictionErrors(
+      node,
+      documentContents,
+      collector,
+    );
+
     _collectMutuallyExclusiveKeyErrors(
       node,
       documentContents,
@@ -79,18 +91,6 @@ void validateYamlProtocol(
     );
 
     _collectDeprecatedKeyErrors(
-      node,
-      documentContents,
-      collector,
-    );
-
-    _collectKeyRestrictionErrors(
-      node,
-      documentContents,
-      collector,
-    );
-
-    _collectValueRestrictionErrors(
       node,
       documentContents,
       collector,
@@ -190,7 +190,7 @@ void _collectDeprecatedKeyErrors(
   CodeAnalysisCollector collector,
 ) {
   if (node.isDeprecated && documentContents.containsKey(node.key)) {
-    var severity = SourceSpanSeverity.warning;
+    var severity = SourceSpanSeverity.info;
     if (node.isRemoved) {
       severity = SourceSpanSeverity.error;
     }
