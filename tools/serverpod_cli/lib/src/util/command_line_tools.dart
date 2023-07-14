@@ -20,6 +20,10 @@ class CommandLineTools {
     );
 
     log.debug(result.stdout, style: const RawPrint());
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const RawPrint());
+    }
   }
 
   static void flutterCreate(Directory dir) {
@@ -32,6 +36,10 @@ class CommandLineTools {
     );
 
     log.debug(result.stdout, style: const RawPrint());
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const RawPrint());
+    }
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -73,6 +81,10 @@ class CommandLineTools {
           newParagraph: true,
         ),
       );
+
+      if (result.exitCode != 0) {
+        log.error(result.stderr, style: const RawPrint());
+      }
     }
 
     var process = await Process.start(
@@ -105,6 +117,10 @@ class CommandLineTools {
       ),
     );
 
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const RawPrint());
+    }
+
     result = await Process.run(
       'rm',
       ['setup-tables.cmd'],
@@ -116,6 +132,10 @@ class CommandLineTools {
         newParagraph: true,
       ),
     );
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const RawPrint());
+    }
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {
