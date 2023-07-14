@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:colorize/colorize.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:super_string/super_string.dart';
 
@@ -51,6 +52,16 @@ class StdOutLogger extends Logger {
     if (stackTrace != null) {
       _log(stackTrace.toString(), LogLevel.error, style);
     }
+  }
+
+  @override
+  void sourceSpanSeverityException(
+    SourceSpanSeverityException sourceSpan,
+    LogLevel logLevel,
+  ) {
+    if (!shouldLog(logLevel)) return;
+
+    _write(sourceSpan.toString(), logLevel);
   }
 
   @override
