@@ -986,6 +986,42 @@ fields:
     );
 
     test(
+      'Given a class with a field with a parent, then a deprecated info is generated.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          parentId: int, parent=example
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first;
+
+        expect(
+          error.message,
+          'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table)',
+        );
+      },
+    );
+
+    test(
       'Given a class with a field with a parent that do not exist, then collect an error that the parent table is not found.',
       () {
         var collector = CodeGenerationCollector();
@@ -1342,7 +1378,7 @@ fields:
           reason: 'Expected an error, none was found.',
         );
         expect(
-          collector.errors.first.message,
+          collector.errors.last.message,
           'The "api" property is mutually exclusive with the "parent" property.',
         );
       },

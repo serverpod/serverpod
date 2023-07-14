@@ -195,6 +195,19 @@ class EntityParser {
 
   static String? _parseParentTable(YamlMap documentContents) {
     var parent = documentContents.nodes[Keyword.parent]?.value;
+    if (parent is String) return parent;
+
+
+    var relationMap = documentContents.nodes[Keyword.relation];
+
+    if (relationMap != null) {
+      print(relationMap);
+    }
+    //print(relationMap);
+
+    if (relationMap is! YamlMap) return null;
+    parent = relationMap.nodes[Keyword.parent]?.value;
+
     if (parent is! String) return null;
 
     return parent;

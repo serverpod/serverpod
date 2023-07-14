@@ -46,7 +46,19 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.parent,
+                isDeprecated: true,
+                alternativeUsageMessage:
+                    'Use the relation keyword instead. E.g. relation(parent=parent_table)',
                 valueRestriction: restrictions.validateParentName,
+              ),
+              ValidateNode(
+                Keyword.relation,
+                nested: {
+                  ValidateNode(
+                    Keyword.parent,
+                    valueRestriction: restrictions.validateParentName,
+                  ),
+                },
               ),
               ValidateNode(
                 Keyword.database,
