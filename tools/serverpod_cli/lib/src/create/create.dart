@@ -1,14 +1,14 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 import '../util/command_line_tools.dart';
-import '../util/print.dart';
 import 'copier.dart';
 import 'port_checker.dart';
 
@@ -28,8 +28,10 @@ Future<void> performCreate(
 ) async {
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
-    printwwln(
-        'Invalid project name. Project names can only contain letters, numbers, and underscores.');
+    log.error(
+      'Invalid project name. Project names can only contain letters, numbers, '
+      'and underscores.',
+    );
     return;
   }
   // Check we are set to create a new project
@@ -65,21 +67,21 @@ Future<void> performCreate(
         'also install and configure Postgres and Redis manually and run this '
         'command with the -f flag added.';
 
-    printww(strIssue);
+    log.error(strIssue);
 
     if (!portsAvailable) {
-      printww('');
-      printww(strIssuePorts);
-      printww('');
-      printww('Ports in use:');
+      log.error(strIssuePorts, style: const PrettyPrint(newParagraph: true));
+      log.error('Ports in use:', style: const PrettyPrint(newParagraph: true));
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
-        print(' • $port: $serverDescription');
+        log.error(
+          '$port: $serverDescription',
+          style: const PrettyPrint(type: PrettyPrintType.list),
+        );
       }
     }
     if (!dockerConfigured) {
-      printww('');
-      printww(strIssueDocker);
+      log.error(strIssueDocker, style: const PrettyPrint(newParagraph: true));
     }
     if (!force) {
       return;
@@ -91,33 +93,71 @@ Future<void> performCreate(
   var dbStagingPassword = generateRandomString();
 
   var awsName = name.replaceAll('_', '-');
-  var randomAwsId = Random.secure().nextInt(10000000).toString();
+  var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
   var projectDir = Directory(p.join(Directory.current.path, name));
   if (projectDir.existsSync()) {
-    print('Project $name already exists.');
+    log.error('Project $name already exists.');
     return;
   }
 
-  print('Creating project $name.');
+  log.info(
+    'Creating project $name.',
+    style: const PrettyPrint(newParagraph: true),
+  );
 
-  if (verbose) print('Creating directory: ${projectDir.path}');
+  if (verbose) {
+    log.debug(
+      'Creating directory: ${projectDir.path}',
+      style: const PrettyPrint(
+        type: PrettyPrintType.list,
+      ),
+    );
+  }
   projectDir.createSync();
 
   var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
-  if (verbose) print('Creating directory: ${serverDir.path}');
+  if (verbose) {
+    log.debug(
+      'Creating directory: ${serverDir.path}',
+      style: const PrettyPrint(
+        type: PrettyPrintType.list,
+      ),
+    );
+  }
   serverDir.createSync();
 
   var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
-  if (verbose) print('Creating directory: ${clientDir.path}');
+  if (verbose) {
+    log.debug(
+      'Creating directory: ${clientDir.path}',
+      style: const PrettyPrint(
+        type: PrettyPrintType.list,
+      ),
+    );
+  }
 
   if (template == 'server') {
     var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
-    if (verbose) print('Creating directory: ${flutterDir.path}');
+    if (verbose) {
+      log.debug(
+        'Creating directory: ${flutterDir.path}',
+        style: const PrettyPrint(
+          type: PrettyPrintType.list,
+        ),
+      );
+    }
     flutterDir.createSync();
 
     var githubDir = Directory(p.join(projectDir.path, '.github'));
-    if (verbose) print('Creating directory: ${githubDir.path}');
+    if (verbose) {
+      log.debug(
+        'Creating directory: ${githubDir.path}',
+        style: const PrettyPrint(
+          type: PrettyPrintType.list,
+        ),
+      );
+    }
     githubDir.createSync();
 
     // Copy server files
@@ -297,8 +337,6 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
-    print('');
-
     CommandLineTools.dartPubGet(serverDir);
     CommandLineTools.dartPubGet(clientDir);
     CommandLineTools.flutterCreate(flutterDir);
@@ -373,35 +411,62 @@ Future<void> performCreate(
     );
     copier.copyFiles();
   } else {
-    print(
+    log.warning(
         'Unknown template: $template (valid options are "server" or "module")');
   }
 
   if (dockerConfigured && template != 'module') {
     if (Platform.isWindows) {
       await CommandLineTools.cleanupForWindows(projectDir, name);
-      printwwln('');
-      printww('====================');
-      printww('SERVERPOD CREATED :D');
-      printwwln('====================');
-      printwwln('All setup. You are ready to rock!');
-      printwwln('Start your Serverpod by running:');
-      stdout.writeln('  \$ cd .\\${p.join(name, '${name}_server')}\\');
-      stdout.writeln('  \$ .\\setup-tables.cmd');
-      stdout.writeln('  \$ docker compose up --build --detach');
-      stdout.writeln('  \$ dart .\\bin\\main.dart');
-      printww('');
+      _logSuccessMessage();
+      log.info(
+        'cd .\\${p.join(name, '${name}_server')}\\',
+        style: const PrettyPrint(
+            type: PrettyPrintType.command, newParagraph: true),
+      );
+      log.info(
+        '.\\setup-tables.cmd',
+        style: const PrettyPrint(type: PrettyPrintType.command),
+      );
+      log.info(
+        'docker compose up --build --detach',
+        style: const PrettyPrint(type: PrettyPrintType.command),
+      );
+      log.info(
+        'dart .\\bin\\main.dart',
+        style: const PrettyPrint(type: PrettyPrintType.command),
+      );
     } else {
       // Create tables
       await CommandLineTools.createTables(projectDir, name);
-      printwwln('');
-      printwwln('SERVERPOD CREATED 🥳');
-      printwwln('All setup. You are ready to rock!');
-      printwwln('Start your Serverpod by running:');
-      stdout.writeln('  \$ cd ${p.join(name, '${name}_server')}');
-      stdout.writeln('  \$ docker compose up --build --detach');
-      stdout.writeln('  \$ dart bin/main.dart');
-      printww('');
+      _logSuccessMessage();
+      log.info(
+        'cd ${p.join(name, '${name}_server')}',
+        style: const PrettyPrint(
+            type: PrettyPrintType.command, newParagraph: true),
+      );
+      log.info(
+        'docker compose up --build --detach',
+        style: const PrettyPrint(type: PrettyPrintType.command),
+      );
+      log.info(
+        'dart dart bin/main.dart',
+        style: const PrettyPrint(type: PrettyPrintType.command),
+      );
     }
   }
+}
+
+void _logSuccessMessage() {
+  log.info('SERVERPOD CREATED 🥳',
+      style:
+          const PrettyPrint(newParagraph: true, type: PrettyPrintType.success));
+  log.info(
+    'All setup. You are ready to rock!',
+    style: const PrettyPrint(newParagraph: true, type: PrettyPrintType.success),
+  );
+  log.info(
+    'Start your Serverpod by running:',
+    style: const PrettyPrint(newParagraph: true),
+  );
 }
