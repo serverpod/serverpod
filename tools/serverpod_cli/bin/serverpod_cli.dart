@@ -23,11 +23,9 @@ import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
-import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
-import 'package:serverpod_cli/src/util/version.dart';
 
 const cmdAnalyzePubspecs = 'analyze-pubspecs';
 const cmdCreate = 'create';
@@ -73,19 +71,19 @@ void main(List<String> args) async {
 
 Future<void> _main(List<String> args) async {
   if (Platform.isWindows) {
-    print(
-        'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
-    print('');
+    log.warning(
+        'Windows is not officially supported yet. Things may or may not work '
+        'as expected.');
   }
 
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart')) {
-    print(
+    log.error(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
     throw ExitException();
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
-    print(
+    log.error(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
     throw ExitException();
   }
@@ -99,12 +97,12 @@ Future<void> _main(List<String> args) async {
     try {
       await resourceManager.installTemplates();
     } catch (e) {
-      print('Failed to download templates.');
+      log.error('Failed to download templates.');
       throw ExitException();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
-      print(
+      log.error(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
       throw ExitException();
     }
@@ -119,13 +117,13 @@ Future<void> _main(List<String> args) async {
   var devPrint = results['development-print'];
 
   if (!productionMode && devPrint) {
-    print(
+    log.debug(
       'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
     );
-    print('SERVERPOD_HOME is set to $serverpodHome');
+    log.debug('SERVERPOD_HOME is set to $serverpodHome');
 
     if (!resourceManager.isTemplatesInstalled) {
-      print('WARNING! Could not find templates.');
+      log.warning('Could not find templates.');
     }
   }
 
@@ -273,7 +271,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
   // Version command.
   if (results.command!.name == cmdVersion) {
-    printVersion();
+    log.info('Serverpod version: $templateVersion');
     return;
   }
 
@@ -309,9 +307,13 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     var warnings = performServerpodPackagesAndCliVersionCheck(
         Version.parse(templateVersion), Directory.current.parent);
     if (warnings.isNotEmpty) {
-      printww('WARNING: The version of the CLI may be incompatible with the '
-          'Serverpod packages used in your project.');
-      warnings.forEach(print);
+      log.warning(
+        'The version of the CLI may be incompatible with the Serverpod '
+        'packages used in your project.',
+      );
+      for (var warning in warnings) {
+        log.warning(warning.toString());
+      }
     }
 
     // Copy migrations from modules.
@@ -325,14 +327,15 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
       endpointsAnalyzer: endpointsAnalyzer,
     );
     if (watch) {
-      print('Initial code generation complete. Listening for changes.');
+      log.info('Initial code generation complete. Listening for changes.');
       hasErrors = await performGenerateContinuously(
         verbose: verbose,
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
       );
     } else {
-      print('Done.');
+      log.info('Done.',
+          style: const PrettyPrint(type: PrettyPrintType.success));
     }
 
     if (hasErrors) {
@@ -352,7 +355,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
     if (tag != null) {
       if (!StringValidators.isValidTagName(tag)) {
-        printwwln(
+        log.error(
           'Invalid tag name. Tag names can only contain lowercase letters, '
           'number, and dashes.',
         );
@@ -400,7 +403,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
         force: force,
         priority: priority,
       );
-      print('Done.');
+      log.info('Done.',
+          style: const PrettyPrint(type: PrettyPrintType.success));
     }
 
     return;
@@ -414,7 +418,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   // Generate pubspecs command.
   if (results.command!.name == cmdGeneratePubspecs) {
     if (results.command!['version'] == 'X') {
-      print('--version is not specified');
+      log.error('--version is not specified');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
     performGeneratePubspecs(
@@ -434,10 +438,18 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 }
 
 void _printUsage(ArgParser parser) {
-  print('${Colorize('Usage:')..bold()} serverpod <command> [arguments]\n');
-  print('');
-  print('${Colorize('COMMANDS')..bold()}');
-  print('');
+  log.info(
+    '${Colorize('Usage:')..bold()} serverpod <command> [arguments]',
+    style: const PrettyPrint(
+      newParagraph: true,
+    ),
+  );
+  log.info(
+    '${Colorize('COMMANDS')..bold()}',
+    style: const PrettyPrint(
+      newParagraph: true,
+    ),
+  );
   _printCommandUsage(
     cmdVersion,
     'Prints the active version of the Serverpod CLI.',
@@ -464,16 +476,21 @@ void _printUsage(ArgParser parser) {
   );
 }
 
-void _printCommandUsage(String name, String descr,
-    [ArgParser? parser, bool last = false]) {
-  print('${Colorize('$name:')..bold()} $descr');
+void _printCommandUsage(String name, String description, [ArgParser? parser]) {
+  log.info(
+    '${Colorize('$name:')..bold()} $description',
+    style: const PrettyPrint(
+      newParagraph: true,
+      wordWrap: false,
+    ),
+  );
   if (parser != null) {
-    print('');
-    print(parser.usage);
-    print('');
-  }
-
-  if (!last) {
-    print('');
+    log.info(
+      parser.usage,
+      style: const PrettyPrint(
+        newParagraph: true,
+        wordWrap: false,
+      ),
+    );
   }
 }
