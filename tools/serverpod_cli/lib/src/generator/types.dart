@@ -203,7 +203,11 @@ class TypeDefinition {
   String get columnType {
     // TODO: add all supported types here
     if (className == 'int') return 'ColumnInt';
-    if (isEnum) return 'ColumnEnum';
+    if (isEnum) {
+      return GeneratorConfig.instance!.serializeEnumValuesAsStrings
+          ? 'ColumnEnumSerializedAsString'
+          : 'ColumnEnumSerializedAsInteger';
+    }
     if (className == 'double') return 'ColumnDouble';
     if (className == 'bool') return 'ColumnBool';
     if (className == 'String') return 'ColumnString';
@@ -374,7 +378,7 @@ class TypeDefinition {
 
 /// Analyze the type at the start of [input].
 /// [input] must not contain spaces.
-/// Returns a [_TypeResult] containing the type,
+/// Returns a [TypeParseResult] containing the type,
 /// as well as the position of the last parsed character.
 /// So when calling with "List<List<String?>?>,database",
 /// the position will point at the ','.
