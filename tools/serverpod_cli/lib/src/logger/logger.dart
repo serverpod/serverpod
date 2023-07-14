@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
 
 /// Serverpods internal logger interface.
@@ -5,15 +7,16 @@ import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
 /// The purpose is to simplify implementing and switching out concrete logger
 /// implementations.
 abstract class Logger {
-  /// Sets the log level for the logger
-  void setLogLevel(LogLevel level);
+  final LogLevel logLevel;
+
+  Logger(this.logLevel);
 
   /// Display debug [message] to the user.
   /// Commands should use this for information that is important for
   /// debugging purposes.
   void debug(
     String message, {
-    RawPrint style,
+    ConsoleTextStyle style,
   });
 
   /// Display a normal [message] to the user.
@@ -21,7 +24,7 @@ abstract class Logger {
   /// success, progress or information messages.
   void info(
     String message, {
-    RawPrint style,
+    ConsoleTextStyle style,
   });
 
   /// Display a warning [message] to the user.
@@ -29,7 +32,7 @@ abstract class Logger {
   /// information for the user.
   void warning(
     String message, {
-    RawPrint style,
+    ConsoleTextStyle style,
   });
 
   /// Display an error [message] to the user.
@@ -38,7 +41,7 @@ abstract class Logger {
   void error(
     String message, {
     StackTrace? stackTrace,
-    RawPrint style,
+    ConsoleTextStyle style,
   });
 
   /// Returns a [Future] that completes once all logging is complete.
@@ -53,36 +56,41 @@ enum LogLevel {
   nothing,
 }
 
-enum PrettyPrintType {
+enum AbstractStyleType {
   normal,
   hint,
   success,
-  list,
+  bullet,
   command,
 }
 
-class RawPrint {
+/// Minimum formatting for style.
+class ConsoleTextStyle {
   final bool newParagraph;
 
-  const RawPrint({
+  const ConsoleTextStyle({
     this.newParagraph = false,
   });
 }
 
-class BoxPrint extends RawPrint {
+/// Box style console formatting.
+/// If [title] is set the box will have a title row.
+class ConsoleBoxTextStyle extends ConsoleTextStyle {
   final String? title;
-  const BoxPrint({
+  const ConsoleBoxTextStyle({
     this.title,
     bool newParagraph = true,
   }) : super(newParagraph: newParagraph);
 }
 
-class PrettyPrint extends RawPrint {
+/// Abstract style console formatting.
+/// Enables more precise settings for log message.
+class AbstractConsoleTextStyle extends ConsoleTextStyle {
   final bool wordWrap;
-  final PrettyPrintType type;
+  final AbstractStyleType type;
 
-  const PrettyPrint({
-    this.type = PrettyPrintType.normal,
+  const AbstractConsoleTextStyle({
+    this.type = AbstractStyleType.normal,
     this.wordWrap = true,
     bool newParagraph = false,
   }) : super(newParagraph: newParagraph);
@@ -92,8 +100,23 @@ class PrettyPrint extends RawPrint {
 Logger? _logger;
 
 /// Initializer for logger singleton.
+/// Runs checks to pick the best suitable logger for the environment.
 /// This should only be called once from runtime entry points.
-void initializeLogger(Logger logger) {
+void initializeLogger(LogLevel logLevel) {
+  assert(
+    _logger == null,
+    'Only one logger initialization is allowed.',
+  );
+
+  _logger = Platform.isWindows
+      ? WindowsStdOutLogger(logLevel)
+      : StdOutLogger(logLevel);
+}
+
+/// Initializer for logger singleton.
+/// Uses passed in [logger] to initialize the singleton.
+/// This should only be called once from runtime entry points.
+void initializeLoggerWith(Logger logger) {
   assert(
     _logger == null,
     'Only one logger initialization is allowed.',

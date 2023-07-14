@@ -17,7 +17,6 @@ import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
@@ -40,14 +39,9 @@ final runModes = <String>['development', 'staging', 'production'];
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
-  if (Platform.isWindows) {
-    initializeLogger(WindowsStdOutLogger());
-  } else {
-    initializeLogger(StdOutLogger());
-  }
   // TODO: Add flaggs for setting log level.
   // For now, use old behavior and log everything.
-  log.setLogLevel(LogLevel.debug);
+  initializeLogger(LogLevel.debug);
 
   await runZonedGuarded(
     () async {
@@ -335,7 +329,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
       );
     } else {
       log.info('Done.',
-          style: const PrettyPrint(type: PrettyPrintType.success));
+          style:
+              const AbstractConsoleTextStyle(type: AbstractStyleType.success));
     }
 
     if (hasErrors) {
@@ -404,7 +399,8 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
         priority: priority,
       );
       log.info('Done.',
-          style: const PrettyPrint(type: PrettyPrintType.success));
+          style:
+              const AbstractConsoleTextStyle(type: AbstractStyleType.success));
     }
 
     return;
@@ -439,14 +435,14 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 
 void _printUsage(ArgParser parser) {
   log.info(
-    '${Colorize('Usage:')..bold()} serverpod <command> [arguments]',
-    style: const PrettyPrint(
+    'Usage: serverpod <command> [arguments]',
+    style: const AbstractConsoleTextStyle(
       newParagraph: true,
     ),
   );
   log.info(
-    '${Colorize('COMMANDS')..bold()}',
-    style: const PrettyPrint(
+    'COMMANDS',
+    style: const AbstractConsoleTextStyle(
       newParagraph: true,
     ),
   );
@@ -478,8 +474,8 @@ void _printUsage(ArgParser parser) {
 
 void _printCommandUsage(String name, String description, [ArgParser? parser]) {
   log.info(
-    '${Colorize('$name:')..bold()} $description',
-    style: const PrettyPrint(
+    '$name $description',
+    style: const AbstractConsoleTextStyle(
       newParagraph: true,
       wordWrap: false,
     ),
@@ -487,7 +483,7 @@ void _printCommandUsage(String name, String description, [ArgParser? parser]) {
   if (parser != null) {
     log.info(
       parser.usage,
-      style: const PrettyPrint(
+      style: const AbstractConsoleTextStyle(
         newParagraph: true,
         wordWrap: false,
       ),

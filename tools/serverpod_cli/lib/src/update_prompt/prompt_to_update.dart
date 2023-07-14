@@ -20,6 +20,6 @@ Also, do not forget to update packages in your server, client, and flutter proje
 
   log.info(
     message,
-    style: const BoxPrint(newParagraph: true),
+    style: const ConsoleBoxTextStyle(newParagraph: true),
   );
 }

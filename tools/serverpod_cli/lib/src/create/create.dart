@@ -70,18 +70,21 @@ Future<void> performCreate(
     log.error(strIssue);
 
     if (!portsAvailable) {
-      log.error(strIssuePorts, style: const PrettyPrint(newParagraph: true));
-      log.error('Ports in use:', style: const PrettyPrint(newParagraph: true));
+      log.error(strIssuePorts,
+          style: const AbstractConsoleTextStyle(newParagraph: true));
+      log.error('Ports in use:',
+          style: const AbstractConsoleTextStyle(newParagraph: true));
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
         log.error(
           '$port: $serverDescription',
-          style: const PrettyPrint(type: PrettyPrintType.list),
+          style: const AbstractConsoleTextStyle(type: AbstractStyleType.bullet),
         );
       }
     }
     if (!dockerConfigured) {
-      log.error(strIssueDocker, style: const PrettyPrint(newParagraph: true));
+      log.error(strIssueDocker,
+          style: const AbstractConsoleTextStyle(newParagraph: true));
     }
     if (!force) {
       return;
@@ -103,14 +106,14 @@ Future<void> performCreate(
 
   log.info(
     'Creating project $name.',
-    style: const PrettyPrint(newParagraph: true),
+    style: const AbstractConsoleTextStyle(newParagraph: true),
   );
 
   if (verbose) {
     log.debug(
       'Creating directory: ${projectDir.path}',
-      style: const PrettyPrint(
-        type: PrettyPrintType.list,
+      style: const AbstractConsoleTextStyle(
+        type: AbstractStyleType.bullet,
       ),
     );
   }
@@ -120,8 +123,8 @@ Future<void> performCreate(
   if (verbose) {
     log.debug(
       'Creating directory: ${serverDir.path}',
-      style: const PrettyPrint(
-        type: PrettyPrintType.list,
+      style: const AbstractConsoleTextStyle(
+        type: AbstractStyleType.bullet,
       ),
     );
   }
@@ -131,8 +134,8 @@ Future<void> performCreate(
   if (verbose) {
     log.debug(
       'Creating directory: ${clientDir.path}',
-      style: const PrettyPrint(
-        type: PrettyPrintType.list,
+      style: const AbstractConsoleTextStyle(
+        type: AbstractStyleType.bullet,
       ),
     );
   }
@@ -142,8 +145,8 @@ Future<void> performCreate(
     if (verbose) {
       log.debug(
         'Creating directory: ${flutterDir.path}',
-        style: const PrettyPrint(
-          type: PrettyPrintType.list,
+        style: const AbstractConsoleTextStyle(
+          type: AbstractStyleType.bullet,
         ),
       );
     }
@@ -153,8 +156,8 @@ Future<void> performCreate(
     if (verbose) {
       log.debug(
         'Creating directory: ${githubDir.path}',
-        style: const PrettyPrint(
-          type: PrettyPrintType.list,
+        style: const AbstractConsoleTextStyle(
+          type: AbstractStyleType.bullet,
         ),
       );
     }
@@ -421,20 +424,20 @@ Future<void> performCreate(
       _logSuccessMessage();
       log.info(
         'cd .\\${p.join(name, '${name}_server')}\\',
-        style: const PrettyPrint(
-            type: PrettyPrintType.command, newParagraph: true),
+        style: const AbstractConsoleTextStyle(
+            type: AbstractStyleType.command, newParagraph: true),
       );
       log.info(
         '.\\setup-tables.cmd',
-        style: const PrettyPrint(type: PrettyPrintType.command),
+        style: const AbstractConsoleTextStyle(type: AbstractStyleType.command),
       );
       log.info(
         'docker compose up --build --detach',
-        style: const PrettyPrint(type: PrettyPrintType.command),
+        style: const AbstractConsoleTextStyle(type: AbstractStyleType.command),
       );
       log.info(
         'dart .\\bin\\main.dart',
-        style: const PrettyPrint(type: PrettyPrintType.command),
+        style: const AbstractConsoleTextStyle(type: AbstractStyleType.command),
       );
     } else {
       // Create tables
@@ -442,16 +445,16 @@ Future<void> performCreate(
       _logSuccessMessage();
       log.info(
         'cd ${p.join(name, '${name}_server')}',
-        style: const PrettyPrint(
-            type: PrettyPrintType.command, newParagraph: true),
+        style: const AbstractConsoleTextStyle(
+            type: AbstractStyleType.command, newParagraph: true),
       );
       log.info(
         'docker compose up --build --detach',
-        style: const PrettyPrint(type: PrettyPrintType.command),
+        style: const AbstractConsoleTextStyle(type: AbstractStyleType.command),
       );
       log.info(
         'dart dart bin/main.dart',
-        style: const PrettyPrint(type: PrettyPrintType.command),
+        style: const AbstractConsoleTextStyle(type: AbstractStyleType.command),
       );
     }
   }
@@ -459,14 +462,15 @@ Future<void> performCreate(
 
 void _logSuccessMessage() {
   log.info('SERVERPOD CREATED 🥳',
-      style:
-          const PrettyPrint(newParagraph: true, type: PrettyPrintType.success));
+      style: const AbstractConsoleTextStyle(
+          newParagraph: true, type: AbstractStyleType.success));
   log.info(
     'All setup. You are ready to rock!',
-    style: const PrettyPrint(newParagraph: true, type: PrettyPrintType.success),
+    style: const AbstractConsoleTextStyle(
+        newParagraph: true, type: AbstractStyleType.success),
   );
   log.info(
     'Start your Serverpod by running:',
-    style: const PrettyPrint(newParagraph: true),
+    style: const AbstractConsoleTextStyle(newParagraph: true),
   );
 }

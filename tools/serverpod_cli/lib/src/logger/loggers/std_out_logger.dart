@@ -9,17 +9,12 @@ import 'package:super_string/super_string.dart';
 /// Errors and Warnings are printed on [stderr] and other messages are logged
 /// on [stdout].
 class StdOutLogger extends Logger {
-  LogLevel _logLevel = LogLevel.info;
-
-  @override
-  void setLogLevel(LogLevel level) {
-    _logLevel = level;
-  }
+  StdOutLogger(LogLevel logLevel) : super(logLevel);
 
   @override
   void debug(
     String message, {
-    RawPrint style = const PrettyPrint(),
+    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
   }) {
     _log(
       message,
@@ -32,7 +27,7 @@ class StdOutLogger extends Logger {
   @override
   void info(
     String message, {
-    RawPrint style = const PrettyPrint(),
+    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
   }) {
     _log(message, LogLevel.info, style);
   }
@@ -40,7 +35,7 @@ class StdOutLogger extends Logger {
   @override
   void warning(
     String message, {
-    RawPrint style = const PrettyPrint(),
+    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
   }) {
     _log(message, LogLevel.warning, style, prefix: 'WARNING: ');
   }
@@ -49,7 +44,7 @@ class StdOutLogger extends Logger {
   void error(
     String message, {
     StackTrace? stackTrace,
-    RawPrint style = const PrettyPrint(),
+    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
   }) {
     _log(message, LogLevel.error, style, prefix: 'ERROR: ');
 
@@ -64,43 +59,43 @@ class StdOutLogger extends Logger {
     await stdout.flush();
   }
 
-  bool shouldLog(LogLevel logEvent) {
-    return logEvent.index >= _logLevel.index;
+  bool shouldLog(LogLevel logLevel) {
+    return logLevel.index >= this.logLevel.index;
   }
 
   void _log(
     String message,
     LogLevel logLevel,
-    RawPrint style, {
+    ConsoleTextStyle style, {
     String prefix = '',
   }) {
     if (message == '') return;
     if (!shouldLog(logLevel)) return;
 
-    if (style is BoxPrint) {
+    if (style is ConsoleBoxTextStyle) {
       message = _formatAsBox(
         message: message,
         title: style.title,
       );
-    } else if (style is PrettyPrint) {
+    } else if (style is AbstractConsoleTextStyle) {
       if (style.wordWrap) {
         var wrapColumn = stdout.hasTerminal ? stdout.terminalColumns : 100;
         message = _wrapText(message, wrapColumn);
       }
 
       switch (style.type) {
-        case PrettyPrintType.command:
+        case AbstractStyleType.command:
           message = '  \$ $message';
           break;
-        case PrettyPrintType.list:
+        case AbstractStyleType.bullet:
           message = ' • $message';
           break;
-        case PrettyPrintType.normal:
+        case AbstractStyleType.normal:
           message = '$prefix$message';
           break;
-        case PrettyPrintType.success:
+        case AbstractStyleType.success:
           break;
-        case PrettyPrintType.hint:
+        case AbstractStyleType.hint:
           message = '${Colorize(message)..italic()}';
           break;
       }
@@ -126,6 +121,8 @@ class StdOutLogger extends Logger {
 /// The operates in the same way but filters out emojis not compatible with
 /// Windows.
 class WindowsStdOutLogger extends StdOutLogger {
+  WindowsStdOutLogger(LogLevel logLevel) : super(logLevel);
+
   @override
   void _write(
     String message,

@@ -24,7 +24,7 @@ Future<bool> performGenerateContinuously({
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
     log.info('File changed: $event',
-        style: const PrettyPrint(newParagraph: true));
+        style: const AbstractConsoleTextStyle(newParagraph: true));
     hasErrors = await performGenerate(
       verbose: verbose,
       changedFile: event.path,
