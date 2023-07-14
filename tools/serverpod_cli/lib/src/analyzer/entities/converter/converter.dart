@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -33,11 +31,14 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
     stringifiedNodes.skip(startNodeIndex),
     content,
     span,
-    handleDeepNestedNodes: (a, b) => convertStringifiedNestedNodesToYamlMap(
-      a,
-      b,
-      onDuplicateKey: onDuplicateKey,
-    ), // recursion
+    handleDeepNestedNodes: (nestedContent, nestedSpan) {
+      // recursion
+      return convertStringifiedNestedNodesToYamlMap(
+        nestedContent,
+        nestedSpan,
+        onDuplicateKey: onDuplicateKey,
+      );
+    },
   );
 
   var duplicates = _findDuplicateKeys(fieldKeyValuePairs);
@@ -112,8 +113,8 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 
     List<String> keyValuePair = stringifiedKeyValuePair.split('=');
 
-    var key = keyValuePair.first;
-    dynamic value = keyValuePair.length == 2 ? keyValuePair.last : null;
+    String key = keyValuePair.first;
+    String? value = keyValuePair.length == 2 ? keyValuePair.last : null;
 
     return _createdYamlScalarNode(
       key,
@@ -166,21 +167,16 @@ Set<String> _findDuplicateKeys(Iterable<Map<YamlScalar, dynamic>> list) {
 
 Map<YamlScalar, YamlScalar> _createdYamlScalarNode(
   String rawKey,
-  dynamic rawValue,
+  String? rawValue,
   SourceSpan span,
 ) {
-  var fullSpanLength = span.length;
+  var trimmedKey = rawKey.trim();
+  var keySpan = _extractSubSpan(span.text, span, trimmedKey);
+  var key = YamlScalar.internalWithSpan(trimmedKey, keySpan);
 
-  var keySpanEnd = min(rawKey.length, fullSpanLength);
-
-  var keySpan = span.subspan(0, keySpanEnd);
-  var key = YamlScalar.internalWithSpan(rawKey, keySpan);
-
-  var valueLength = rawValue?.toString().length ?? 0;
-  var valueSpanStart = fullSpanLength - valueLength;
-
-  var valueSpan = span.subspan(valueSpanStart);
-  var value = YamlScalar.internalWithSpan(rawValue, valueSpan);
+  var trimmedValue = rawValue?.trim();
+  var valueSpan = _extractSubSpan(span.text, span, trimmedValue);
+  var value = YamlScalar.internalWithSpan(trimmedValue, valueSpan);
 
   return {key: value};
 }
@@ -190,12 +186,9 @@ Map<YamlScalar, YamlMap> _createYamlMapNode(
   YamlMap value,
   SourceSpan span,
 ) {
-  var fullSpanLength = span.length;
-
-  var keySpanEnd = min(rawKey.length, fullSpanLength);
-
-  var keySpan = span.subspan(0, keySpanEnd);
-  var key = YamlScalar.internalWithSpan(rawKey, keySpan);
+  var trimmedKey = rawKey.trim();
+  var keySpan = _extractSubSpan(span.text, span, trimmedKey);
+  var key = YamlScalar.internalWithSpan(trimmedKey, keySpan);
 
   return {key: value};
 }
