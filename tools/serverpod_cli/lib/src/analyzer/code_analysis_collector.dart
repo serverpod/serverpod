@@ -42,4 +42,31 @@ class SourceSpanSeverityException extends SourceSpanException {
     this.severity = SourceSpanSeverity.error,
     this.tags,
   }) : super(message, span);
+
+  @override
+  String toString({Object? color}) {
+    if (span == null) return message;
+    var severity = _capitalize(this.severity.name.toString());
+    var highlightColor = color ?? _highlightColor(this.severity);
+
+    return '$severity on ${span!.message(message, color: highlightColor)}';
+  }
+
+  Object? _highlightColor(SourceSpanSeverity severity) {
+    switch (severity) {
+      case SourceSpanSeverity.error:
+        return '\x1B[31m'; // Red
+      case SourceSpanSeverity.warning:
+        return '\x1B[33m'; // Yellow
+      case SourceSpanSeverity.info:
+        return '\x1B[34m'; // Blue
+      case SourceSpanSeverity.hint:
+        return '\x1B[36m'; // Cyan
+    }
+  }
+
+  String _capitalize(String string) {
+    if (string.isEmpty) return string;
+    return '${string[0].toUpperCase()}${string.substring(1)}';
+  }
 }
