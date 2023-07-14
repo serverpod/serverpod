@@ -16,6 +16,8 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
@@ -40,6 +42,15 @@ final runModes = <String>['development', 'staging', 'production'];
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
+  if (Platform.isWindows) {
+    initializeLogger(WindowsStdOutLogger());
+  } else {
+    initializeLogger(StdOutLogger());
+  }
+  // TODO: Add flaggs for setting log level.
+  // For now, use old behavior and log everything.
+  log.setLogLevel(LogLevel.debug);
+
   await runZonedGuarded(
     () async {
       try {
