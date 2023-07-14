@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -13,33 +12,33 @@ List<String> convertIndexList(String stringifiedFields) {
 
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
-  YamlNode contentNode,
-  ValidateNode node, {
+  SourceSpan span, {
+  String? firstKey,
   void Function(String key, SourceSpan? span)? onDuplicateKey,
 }) {
-  var options = _extractOptions(content);
+  var stringifiedNodes = _extractStringifiedNodes(content);
 
-  var initRawValue = options.isNotEmpty ? options.first : null;
-
-  var fieldKeyValuePairs = _extractKeyValuePairs(
-    options.skip(1),
+  Map<dynamic, YamlNode> initNodes = _extractInitialNode(
+    firstKey,
+    stringifiedNodes,
     content,
-    contentNode.span,
+    span,
+  );
+
+  var startNodeIndex = initNodes.length;
+  var fieldKeyValuePairs = _extractKeyValuePairs(
+    stringifiedNodes.skip(startNodeIndex),
+    content,
+    span,
   );
 
   var duplicates = _findDuplicateKeys(fieldKeyValuePairs);
   for (var duplicate in duplicates) {
     onDuplicateKey?.call(
       duplicate,
-      _extractSubSpan(content, contentNode.span, duplicate),
+      _extractSubSpan(content, span, duplicate),
     );
   }
-
-  Map<dynamic, YamlNode> initNodes = _createdYamlNode(
-    node.nested.first.key,
-    initRawValue,
-    _extractSubSpan(content, contentNode.span, initRawValue),
-  );
 
   Map<dynamic, YamlNode> internalNodes = fieldKeyValuePairs.fold(
     initNodes,
@@ -50,10 +49,26 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
   var nodes = deepEqualsMap<dynamic, YamlNode>();
   nodes.addAll(internalNodes);
 
-  return YamlMap.internal(nodes, contentNode.span, CollectionStyle.ANY);
+  return YamlMap.internal(nodes, span, CollectionStyle.ANY);
 }
 
-List<String> _extractOptions(String? input) {
+Map<dynamic, YamlNode> _extractInitialNode(
+  String? firstKey,
+  List<String> options,
+  String? content,
+  SourceSpan span,
+) {
+  if (firstKey == null) return {};
+
+  var initRawValue = options.isNotEmpty ? options.first : null;
+  return _createdYamlNode(
+    firstKey,
+    initRawValue,
+    _extractSubSpan(content, span, initRawValue),
+  );
+}
+
+List<String> _extractStringifiedNodes(String? input) {
   if (input == null) return [];
 
   // Split on comma, but not if the comma is inside < >

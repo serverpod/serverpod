@@ -258,10 +258,16 @@ void _collectNodesWithNestedNodesErrors(
     var content = contentNode?.value;
 
     if (contentNode != null && _isStringifiedNode(contentNode, node, content)) {
+      String? firstKey;
+
+      if (node.allowStringifiedNestedValue.hasImplicitFirstKey) {
+        firstKey = node.nested.first.key;
+      }
+
       content = convertStringifiedNestedNodesToYamlMap(
         content,
-        contentNode,
-        node,
+        contentNode.span,
+        firstKey: firstKey,
         onDuplicateKey: (key, span) {
           collector.addError(SourceSpanSeverityException(
             'The field option "$key" is defined more than once.',
@@ -335,7 +341,7 @@ Iterable<MapEntry<dynamic, YamlNode?>> _extractDocumentNodesToCheck(
 }
 
 bool _isStringifiedNode(YamlNode? contentNode, ValidateNode node, content) {
-  if (!node.allowStringifiedNestedValue) return false;
+  if (!node.allowStringifiedNestedValue.isAllowed) return false;
 
   return (content is String || content == null);
 }

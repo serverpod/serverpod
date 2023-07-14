@@ -110,31 +110,22 @@ class SerializableEntityAnalyzer {
 
     if (definitionType == null) return null;
 
-    var restrictions = Restrictions(
-      documentType: definitionType,
-      documentContents: documentContents,
-    );
-
     switch (definitionType) {
       case Keyword.classType:
-        var yamlStructure = ClassYamlDefinition(restrictions);
         return EntityParser.serializeClassFile(
           Keyword.classType,
           protocolSource,
           outFileName,
           documentContents,
           docsExtractor,
-          yamlStructure.fieldStructure,
         );
       case Keyword.exceptionType:
-        var yamlStructure = ExceptionYamlDefinition(restrictions);
         return EntityParser.serializeClassFile(
           Keyword.exceptionType,
           protocolSource,
           outFileName,
           documentContents,
           docsExtractor,
-          yamlStructure.fieldStructure,
         );
       case Keyword.enumType:
         return EntityParser.serializeEnumFile(
