@@ -15,7 +15,7 @@ class StdOutLogger extends Logger {
   @override
   void debug(
     String message, {
-    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
+    LogStyle style = const TextLogStyle(),
   }) {
     _log(
       message,
@@ -28,7 +28,7 @@ class StdOutLogger extends Logger {
   @override
   void info(
     String message, {
-    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
+    LogStyle style = const TextLogStyle(),
   }) {
     _log(message, LogLevel.info, style);
   }
@@ -36,7 +36,7 @@ class StdOutLogger extends Logger {
   @override
   void warning(
     String message, {
-    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
+    LogStyle style = const TextLogStyle(),
   }) {
     _log(message, LogLevel.warning, style, prefix: 'WARNING: ');
   }
@@ -45,7 +45,7 @@ class StdOutLogger extends Logger {
   void error(
     String message, {
     StackTrace? stackTrace,
-    ConsoleTextStyle style = const AbstractConsoleTextStyle(),
+    LogStyle style = const TextLogStyle(),
   }) {
     _log(message, LogLevel.error, style, prefix: 'ERROR: ');
 
@@ -77,18 +77,18 @@ class StdOutLogger extends Logger {
   void _log(
     String message,
     LogLevel logLevel,
-    ConsoleTextStyle style, {
+    LogStyle style, {
     String prefix = '',
   }) {
     if (message == '') return;
     if (!shouldLog(logLevel)) return;
 
-    if (style is ConsoleBoxTextStyle) {
+    if (style is BoxLogStyle) {
       message = _formatAsBox(
         message: message,
         title: style.title,
       );
-    } else if (style is AbstractConsoleTextStyle) {
+    } else if (style is TextLogStyle) {
       if (style.wordWrap) {
         var wrapColumn = stdout.hasTerminal ? stdout.terminalColumns : 100;
         message = _wrapText(message, wrapColumn);

@@ -10,7 +10,7 @@ class CommandLineTools {
   static void dartPubGet(Directory dir) {
     log.info(
       'Running `dart pub get` in ${dir.path}',
-      style: const AbstractConsoleTextStyle(newParagraph: true),
+      style: const TextLogStyle(newParagraph: true),
     );
     var cf = _CommandFormatter('dart', ['pub', 'get']);
     var result = Process.runSync(
@@ -19,10 +19,10 @@ class CommandLineTools {
       workingDirectory: dir.path,
     );
 
-    log.debug(result.stdout, style: const ConsoleTextStyle());
+    log.debug(result.stdout, style: const LogStyle());
 
     if (result.exitCode != 0) {
-      log.error(result.stderr, style: const ConsoleTextStyle());
+      log.error(result.stderr, style: const LogStyle());
     }
   }
 
@@ -35,10 +35,10 @@ class CommandLineTools {
       workingDirectory: dir.path,
     );
 
-    log.debug(result.stdout, style: const ConsoleTextStyle());
+    log.debug(result.stdout, style: const LogStyle());
 
     if (result.exitCode != 0) {
-      log.error(result.stderr, style: const ConsoleTextStyle());
+      log.error(result.stderr, style: const LogStyle());
     }
   }
 
@@ -66,7 +66,7 @@ class CommandLineTools {
       'Postgres. If you get stuck at this step, make sure that you '
       'have the latest version of Docker Desktop and that it is '
       'currently running.',
-      style: const AbstractConsoleTextStyle(type: AbstractStyleType.hint),
+      style: const TextLogStyle(type: AbstractStyleType.hint),
     );
     late ProcessResult result;
     if (!Platform.isWindows) {
@@ -77,13 +77,13 @@ class CommandLineTools {
       );
       log.debug(
         result.stdout,
-        style: const ConsoleTextStyle(
+        style: const LogStyle(
           newParagraph: true,
         ),
       );
 
       if (result.exitCode != 0) {
-        log.error(result.stderr, style: const ConsoleTextStyle());
+        log.error(result.stderr, style: const LogStyle());
       }
     }
 
@@ -112,13 +112,13 @@ class CommandLineTools {
     );
     log.debug(
       result.stdout,
-      style: const ConsoleTextStyle(
+      style: const LogStyle(
         newParagraph: true,
       ),
     );
 
     if (result.exitCode != 0) {
-      log.error(result.stderr, style: const ConsoleTextStyle());
+      log.error(result.stderr, style: const LogStyle());
     }
 
     result = await Process.run(
@@ -128,13 +128,13 @@ class CommandLineTools {
     );
     log.debug(
       result.stdout,
-      style: const ConsoleTextStyle(
+      style: const LogStyle(
         newParagraph: true,
       ),
     );
 
     if (result.exitCode != 0) {
-      log.error(result.stderr, style: const ConsoleTextStyle());
+      log.error(result.stderr, style: const LogStyle());
     }
   }
 
@@ -148,7 +148,7 @@ class CommandLineTools {
       log.error('Failed cleanup: $e');
       log.error(
         'file: $file',
-        style: const ConsoleTextStyle(),
+        style: const LogStyle(),
       );
     }
   }

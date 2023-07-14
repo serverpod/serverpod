@@ -64,7 +64,7 @@ Future<void> _checkLatestVersion(
         for (var dep in deps) {
           log.info(
             dep.serverpodPackage,
-            style: const AbstractConsoleTextStyle(
+            style: const TextLogStyle(
               type: AbstractStyleType.bullet,
             ),
           );
@@ -84,13 +84,13 @@ void _printMismatchedDependencies(Set<String> mismatchedDeps,
   for (var depName in mismatchedDeps) {
     log.error(
       depName,
-      style: const ConsoleTextStyle(),
+      style: const LogStyle(),
     );
     var deps = dependencies[depName]!;
     for (var dep in deps) {
       log.error(
         '${dep.version} ${dep.serverpodPackage}',
-        style: const AbstractConsoleTextStyle(
+        style: const TextLogStyle(
           type: AbstractStyleType.bullet,
         ),
       );

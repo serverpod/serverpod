@@ -329,8 +329,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
       );
     } else {
       log.info('Done.',
-          style:
-              const AbstractConsoleTextStyle(type: AbstractStyleType.success));
+          style: const TextLogStyle(type: AbstractStyleType.success));
     }
 
     if (hasErrors) {
@@ -399,8 +398,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
         priority: priority,
       );
       log.info('Done.',
-          style:
-              const AbstractConsoleTextStyle(type: AbstractStyleType.success));
+          style: const TextLogStyle(type: AbstractStyleType.success));
     }
 
     return;
@@ -436,13 +434,13 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
 void _printUsage(ArgParser parser) {
   log.info(
     'Usage: serverpod <command> [arguments]',
-    style: const AbstractConsoleTextStyle(
+    style: const TextLogStyle(
       newParagraph: true,
     ),
   );
   log.info(
     'COMMANDS',
-    style: const AbstractConsoleTextStyle(
+    style: const TextLogStyle(
       newParagraph: true,
     ),
   );
@@ -475,7 +473,7 @@ void _printUsage(ArgParser parser) {
 void _printCommandUsage(String name, String description, [ArgParser? parser]) {
   log.info(
     '$name $description',
-    style: const AbstractConsoleTextStyle(
+    style: const TextLogStyle(
       newParagraph: true,
       wordWrap: false,
     ),
@@ -483,7 +481,7 @@ void _printCommandUsage(String name, String description, [ArgParser? parser]) {
   if (parser != null) {
     log.info(
       parser.usage,
-      style: const AbstractConsoleTextStyle(
+      style: const TextLogStyle(
         newParagraph: true,
         wordWrap: false,
       ),
