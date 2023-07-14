@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
@@ -113,8 +114,10 @@ class GeneratorConfig {
       var yamlStr = file.readAsStringSync();
       pubspec = loadYaml(yamlStr);
     } catch (_) {
-      print(
-          'Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
+      log.error(
+        'Failed to load pubspec.yaml. Are you running serverpod from your '
+        'projects root directory?',
+      );
       return null;
     }
 
@@ -130,8 +133,8 @@ class GeneratorConfig {
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {
-      print(
-          'Failed to load config/generator.yaml. Is this a Serverpod project?');
+      log.error('Failed to load config/generator.yaml. Is this a Serverpod '
+          'project?');
       return null;
     }
 
@@ -167,8 +170,10 @@ class GeneratorConfig {
       dartClientDependsOnServiceClient =
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
-      print(
-          'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
+      log.error(
+        'Failed to load client pubspec.yaml. Is your client_package_path set '
+        'correctly?',
+      );
       return null;
     }
 
