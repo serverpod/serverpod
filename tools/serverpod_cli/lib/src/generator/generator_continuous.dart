@@ -1,5 +1,6 @@
 import 'package:async/async.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:watcher/watcher.dart';
 import 'package:path/path.dart' as p;
 
@@ -11,7 +12,9 @@ Future<bool> performGenerateContinuously({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
-  if (verbose) print('Starting up continuous generator');
+  if (verbose) {
+    log.debug('Starting up continuous generator');
+  }
 
   var watcherClasses =
       DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
@@ -20,15 +23,15 @@ Future<bool> performGenerateContinuously({
   var hasErrors = false;
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
-    print('File changed: $event');
+    log.info('File changed: $event',
+        style: const TextLogStyle(newParagraph: true));
     hasErrors = await performGenerate(
       verbose: verbose,
       changedFile: event.path,
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
     );
-    print('Incremental code generation complete.');
-    print('');
+    log.info('Incremental code generation complete.');
   }
 
   return hasErrors;

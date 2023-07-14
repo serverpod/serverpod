@@ -2,31 +2,44 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/logger/logger.dart';
 
-import 'print.dart';
 import 'windows.dart';
 
 class CommandLineTools {
   static void dartPubGet(Directory dir) {
-    print('Running `dart pub get` in ${dir.path}');
+    log.info(
+      'Running `dart pub get` in ${dir.path}',
+      style: const TextLogStyle(newParagraph: true),
+    );
     var cf = _CommandFormatter('dart', ['pub', 'get']);
     var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+
+    log.debug(result.stdout, style: const LogStyle());
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const LogStyle());
+    }
   }
 
   static void flutterCreate(Directory dir) {
-    print('Running `flutter create .` in ${dir.path}');
+    log.info('Running `flutter create .` in ${dir.path}');
     var cf = _CommandFormatter('flutter', ['create', '.']);
     var result = Process.runSync(
       cf.command,
       cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+
+    log.debug(result.stdout, style: const LogStyle());
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const LogStyle());
+    }
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -46,9 +59,15 @@ class CommandLineTools {
 
   static Future<void> createTables(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
-    printww('Setting up Docker and default database tables in $serverPath');
-    printww(
-        'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
+    log.info('Setting up Docker and default database tables in $serverPath');
+    log.info(
+      'If you run serverpod create for the first time, this can take '
+      'a few minutes as Docker is downloading the images for '
+      'Postgres. If you get stuck at this step, make sure that you '
+      'have the latest version of Docker Desktop and that it is '
+      'currently running.',
+      style: const TextLogStyle(type: AbstractStyleType.hint),
+    );
     late ProcessResult result;
     if (!Platform.isWindows) {
       result = await Process.run(
@@ -56,7 +75,16 @@ class CommandLineTools {
         ['u+x', 'setup-tables'],
         workingDirectory: serverPath,
       );
-      print(result.stdout);
+      log.debug(
+        result.stdout,
+        style: const LogStyle(
+          newParagraph: true,
+        ),
+      );
+
+      if (result.exitCode != 0) {
+        log.error(result.stderr, style: const LogStyle());
+      }
     }
 
     var process = await Process.start(
@@ -74,33 +102,54 @@ class CommandLineTools {
     unawaited(stderr.addStream(process.stderr));
 
     var exitCode = await process.exitCode;
-    print('Completed table setup exit code: $exitCode');
+    log.info('Completed table setup exit code: $exitCode');
 
-    print('Cleaning up');
+    log.info('Cleaning up');
     result = await Process.run(
       'rm',
       ['setup-tables'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+    log.debug(
+      result.stdout,
+      style: const LogStyle(
+        newParagraph: true,
+      ),
+    );
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const LogStyle());
+    }
 
     result = await Process.run(
       'rm',
       ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+    log.debug(
+      result.stdout,
+      style: const LogStyle(
+        newParagraph: true,
+      ),
+    );
+
+    if (result.exitCode != 0) {
+      log.error(result.stderr, style: const LogStyle());
+    }
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
-    print('Cleaning up');
+    log.info('Cleaning up');
     var file = File(p.join(serverPath, 'setup-tables'));
     try {
       await file.delete();
     } catch (e) {
-      print('Failed cleanup: $e');
-      print('file: $file');
+      log.error('Failed cleanup: $e');
+      log.error(
+        'file: $file',
+        style: const LogStyle(),
+      );
     }
   }
 }
