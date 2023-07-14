@@ -325,7 +325,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     }
 
     if (hasErrors) {
-      throw ExitException(ExitCodeType.general);
+      throw ExitException();
     }
 
     return;
