@@ -986,6 +986,36 @@ fields:
     );
 
     test(
+      'Given a class with a field with a parent with whitespace in the syntax, then the generated entity has a parentTable property set to the parent table name.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        table: example
+        fields:
+          parentId: int, parent = example
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          ['lib', 'src', 'protocol'],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(
+            (definition as ClassDefinition).fields.last.parentTable, 'example');
+      },
+    );
+
+    test(
       'Given a class with a field with a parent, then a deprecated info is generated.',
       () {
         var collector = CodeGenerationCollector();
