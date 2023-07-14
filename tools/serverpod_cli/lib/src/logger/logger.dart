@@ -138,6 +138,6 @@ void initializeLoggerWith(Logger logger) {
 /// Default initializes a [StdOutLogger] if initialization is not run before
 /// this call.
 Logger get log {
-  _logger ??= StdOutLogger();
+  _logger ??= StdOutLogger(LogLevel.debug);
   return _logger!;
 }
