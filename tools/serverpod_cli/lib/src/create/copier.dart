@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/logger/logger.dart';
 
 class Copier {
   Directory srcDir;
@@ -51,7 +52,10 @@ class Copier {
 
     var dstFileName =
         _replace(p.join(relativePath, fileName), fileNameReplacements);
-    print('  ${p.join(dstDir.path, relativePath, fileName)}');
+    log.debug(
+      p.join(dstDir.path, relativePath, fileName),
+      style: const PrettyPrint(type: PrettyPrintType.list),
+    );
 
     var dstFile = File(p.join(dstDir.path, dstFileName));
     var contents = srcFile.readAsStringSync();
