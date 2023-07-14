@@ -79,6 +79,46 @@ fields:
   });
 
   test(
+      'Given a class with a field with a relation and parent keyword, then an error is collected that they are mutually exclusive key.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parentId: int, relation(parent=example), parent=example
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'The "parent" property is mutually exclusive with the "relation" property.',
+    );
+  });
+
+  test(
       'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that locates the second parent key.',
       () {
     var collector = CodeGenerationCollector();
