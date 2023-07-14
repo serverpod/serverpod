@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 
@@ -11,7 +12,7 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
   var directory = Directory.current;
   if (!isServerpodRootDirectory(directory)) {
-    print('Must be run from the serverpod repository root');
+    log.error('Must be run from the serverpod repository root');
     return false;
   }
 
@@ -22,8 +23,8 @@ Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
   try {
     dependencies = _getDependencies(pubspecFiles);
   } catch (e) {
-    print('Failed to get dependencies');
-    print(e);
+    log.error('Failed to get dependencies');
+    log.error(e.toString());
     return false;
   }
 
@@ -34,7 +35,7 @@ Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
     return false;
   }
 
-  print('Dependencies match.');
+  log.info('Dependencies match.');
 
   if (checkLatestVersion) {
     await _checkLatestVersion(dependencies);
@@ -45,7 +46,7 @@ Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
 
 Future<void> _checkLatestVersion(
     Map<String, List<_ServerpodDependency>> dependencies) async {
-  print('Checking latest pub versions.');
+  log.info('Checking latest pub versions.');
   try {
     var pub = PubClient();
     for (var depName in dependencies.keys) {
@@ -56,30 +57,43 @@ Future<void> _checkLatestVersion(
       );
 
       if (depVersion != '^$latestPubVersion') {
-        print(depName);
-        print('  local: $depVersion');
-        print('  pub:   ^$latestPubVersion');
-        print('  found in:');
+        log.info(depName);
+        log.info('local: $depVersion');
+        log.info('pub:   ^$latestPubVersion');
+        log.info('found in:');
         for (var dep in deps) {
-          print('   - ${dep.serverpodPackage}');
+          log.info(
+            dep.serverpodPackage,
+            style: const PrettyPrint(
+              type: PrettyPrintType.list,
+            ),
+          );
         }
       }
     }
     pub.close();
   } catch (e) {
-    print('Version check failed.');
-    print(e);
+    log.error('Version check failed.');
+    log.error(e.toString());
   }
 }
 
 void _printMismatchedDependencies(Set<String> mismatchedDeps,
     Map<String, List<_ServerpodDependency>> dependencies) {
-  print('Found mismatched dependencies:');
+  log.error('Found mismatched dependencies:');
   for (var depName in mismatchedDeps) {
-    print(depName);
+    log.error(
+      depName,
+      style: const RawPrint(),
+    );
     var deps = dependencies[depName]!;
     for (var dep in deps) {
-      print('  ${dep.version} ${dep.serverpodPackage}');
+      log.error(
+        '${dep.version} ${dep.serverpodPackage}',
+        style: const PrettyPrint(
+          type: PrettyPrintType.list,
+        ),
+      );
     }
   }
 }
