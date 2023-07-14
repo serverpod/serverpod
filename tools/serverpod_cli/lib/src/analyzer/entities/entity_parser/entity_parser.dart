@@ -156,8 +156,8 @@ class EntityParser {
     if (value is String) {
       value = convertStringifiedNestedNodesToYamlMap(
         value,
-        nodeValue,
-        fieldStructure,
+        nodeValue.span,
+        firstKey: Keyword.type,
       );
     }
     if (value is! YamlMap) return null;

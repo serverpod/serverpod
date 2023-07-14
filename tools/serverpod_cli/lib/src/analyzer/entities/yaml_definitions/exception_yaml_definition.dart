@@ -30,7 +30,10 @@ class ExceptionYamlDefinition {
           ValidateNode(
             Keyword.any,
             keyRestriction: restrictions.validateFieldName,
-            allowStringifiedNestedValue: true,
+            allowStringifiedNestedValue: const StringifiedNestedValues(
+              isAllowed: true,
+              hasImplicitFirstKey: true,
+            ),
             nested: {
               ValidateNode(
                 Keyword.type,
