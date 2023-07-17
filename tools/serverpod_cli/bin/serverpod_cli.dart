@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 
@@ -104,194 +105,165 @@ Future<void> _main(List<String> args) async {
     }
   }
 
-  ArgParser parser = _buildCommandParser();
-
-  ArgResults results = _parseCommand(parser, args);
-
-  // TODO: This should silence all warnings with a suitable name.
-  // Make this once we have a centralized logging and printing.
-  var devPrint = results[CMD.developmentPrint];
-
-  if (!productionMode && devPrint) {
-    log.debug(
-      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-    );
-    log.debug('SERVERPOD_HOME is set to $serverpodHome');
-
-    if (!resourceManager.isTemplatesInstalled) {
-      log.warning('Could not find templates.');
-    }
-  }
-
-  if (devPrint) {
-    await promptToUpdateIfNeeded(Version.parse(templateVersion));
-  }
-
-  if (results.command == null) {
-    _analytics.track(event: 'help');
-    _printUsage(parser);
-  } else {
-    await _runCommand(results, parser);
-  }
+  var runner = buildCommandRunner();
+  await runner.run(args);
   _analytics.cleanUp();
 }
 
-ArgParser _buildCommandParser() {
-  var parser = ArgParser();
-  parser.addFlag(
+ServerpodRunner buildCommandRunner() {
+  var runner =
+      ServerpodRunner('serverpod', 'Manage your serverpod app development');
+
+  runner.argParser.addFlag(
     CMD.developmentPrint,
     defaultsTo: true,
     negatable: true,
     help: 'Prints additional information useful for development.',
   );
 
-  // "version" command
-  var versionParser = ArgParser();
-  parser.addCommand(CMD.version, versionParser);
+  runner.addCommand(VersionCommand());
+  runner.addCommand(CreateCommand());
+  runner.addCommand(GenerateCommand());
+  runner.addCommand(MigrateCommand());
+  runner.addCommand(LanguageServerCommand());
+  runner.addCommand(GeneratePubspecsCommand());
+  runner.addCommand(AnalyzePubspecsCommand());
 
-  // "create" command
-  var createParser = ArgParser();
-  createParser.addFlag('verbose',
-      abbr: 'v', negatable: false, help: 'Output more detailed information.');
-  createParser.addFlag(
-    'force',
-    abbr: 'f',
-    negatable: false,
-    help:
-        'Create the project even if there are issues that prevents if from running out of the box.',
-  );
-  createParser.addOption(
-    'template',
-    abbr: 't',
-    defaultsTo: 'server',
-    allowed: <String>['server', 'module'],
-    help:
-        'Template to use when creating a new project, valid options are "server" or "module".',
-  );
-  parser.addCommand(CMD.create, createParser);
-
-  // "generate" command
-  var generateParser = ArgParser();
-  generateParser.addFlag(
-    'verbose',
-    abbr: 'v',
-    negatable: false,
-    help: 'Output more detailed information.',
-  );
-  generateParser.addFlag(
-    'watch',
-    abbr: 'w',
-    negatable: false,
-    help: 'Watch for changes and continuously generate code.',
-  );
-  parser.addCommand(CMD.generate, generateParser);
-
-  // "migrate" commanbd
-  var migrateParser = ArgParser();
-  migrateParser.addFlag(
-    'verbose',
-    abbr: 'v',
-    negatable: false,
-    help: 'Output more detailed information.',
-  );
-  migrateParser.addFlag(
-    'force',
-    abbr: 'f',
-    negatable: false,
-    help:
-        'Creates the migration even if there are warnings or information that '
-        'may be destroyed.',
-  );
-  migrateParser.addFlag(
-    'repair',
-    abbr: 'r',
-    negatable: false,
-    help:
-        'Repairs the database by comparing the target state to what is in the '
-        'live database instead of comparing to the latest migration.',
-  );
-  migrateParser.addOption(
-    'mode',
-    abbr: 'm',
-    defaultsTo: 'development',
-    allowed: runModes,
-    help: 'Use together with --repair to specify which database to repair.',
-  );
-  migrateParser.addOption(
-    'tag',
-    abbr: 't',
-    help: 'Add a tag to the revision to easier identify it.',
-  );
-  parser.addCommand(CMD.migrate, migrateParser);
-
-  // "language-server" command
-  var languageServerParser = ArgParser();
-  languageServerParser.addFlag(
-    'stdio',
-    defaultsTo: true,
-    help: 'Use stdin/stdout channels for communication.',
-  );
-  parser.addCommand(CMD.languageServer, languageServerParser);
-
-  // "generate-pubspecs"
-  var generatePubspecs = ArgParser();
-  generatePubspecs.addOption('version', defaultsTo: 'X');
-  generatePubspecs.addOption(
-    'mode',
-    defaultsTo: 'development',
-    allowed: ['development', 'production'],
-  );
-  parser.addCommand(CMD.generatePubspecs, generatePubspecs);
-
-  var analyzePubspecs = ArgParser();
-  analyzePubspecs.addFlag(
-    'check-latest-version',
-  );
-  parser.addCommand(CMD.analyzePubspecs, analyzePubspecs);
-  return parser;
+  return runner;
 }
 
-ArgResults _parseCommand(ArgParser parser, List<String> args) {
-  try {
-    ArgResults results = parser.parse(args);
-    return results;
-  } catch (e) {
-    _analytics.track(event: 'invalid');
-    _printUsage(parser);
-    throw ExitException(ExitCodeType.commandNotFound);
+class ServerpodRunner extends CommandRunner {
+  ServerpodRunner(super.executableName, super.description);
+
+  @override
+  ArgResults parse(Iterable<String> args) {
+    try {
+      return super.parse(args);
+    } catch (error) {
+      _analytics.track(event: 'invalid');
+      printUsage();
+      throw ExitException(ExitCodeType.commandNotFound);
+    }
+  }
+
+  @override
+  Future runCommand(ArgResults topLevelResults) async {
+    // TODO: This should silence all warnings with a suitable name.
+    // Make this once we have a centralized logging and printing.
+    var devPrint = topLevelResults[CMD.developmentPrint];
+    if (!productionMode && devPrint) {
+      log.debug(
+        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+      );
+      log.debug('SERVERPOD_HOME is set to $serverpodHome');
+
+      if (!resourceManager.isTemplatesInstalled) {
+        log.warning('Could not find templates.');
+      }
+    }
+
+    if (devPrint) {
+      await promptToUpdateIfNeeded(Version.parse(templateVersion));
+    }
+
+    if (topLevelResults.name == null) {
+      _analytics.track(event: 'help');
+    } else {
+      _analytics.track(event: topLevelResults.name!);
+    }
+    return super.runCommand(topLevelResults);
+  }
+
+  @override
+  void printUsage() {
+    log.info(usage, style: const LogStyle());
   }
 }
 
-Future _runCommand(ArgResults results, ArgParser parser) async {
-  _analytics.track(event: '${results.command?.name}');
+class VersionCommand extends Command {
+  @override
+  final name = CMD.version;
+  @override
+  final description = 'Prints the active version of the Serverpod CLI.';
 
-  // Version command.
-  if (results.command!.name == CMD.version) {
+  @override
+  void run() {
     log.info('Serverpod version: $templateVersion');
-    return;
+  }
+}
+
+class CreateCommand extends Command {
+  @override
+  final name = CMD.create;
+  @override
+  final description =
+      'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).';
+
+  CreateCommand() {
+    argParser.addFlag('verbose',
+        abbr: 'v', negatable: false, help: 'Output more detailed information.');
+    argParser.addFlag(
+      'force',
+      abbr: 'f',
+      negatable: false,
+      help:
+          'Create the project even if there are issues that prevents if from running out of the box.',
+    );
+    argParser.addOption(
+      'template',
+      abbr: 't',
+      defaultsTo: 'server',
+      allowed: <String>['server', 'module'],
+      help:
+          'Template to use when creating a new project, valid options are "server" or "module".',
+    );
   }
 
-  // Create command.
-  if (results.command!.name == CMD.create) {
-    var name = results.arguments.last;
-    bool verbose = results.command!['verbose'];
-    String template = results.command!['template'];
-    bool force = results.command!['force'];
+  @override
+  Future run() async {
+    var name = argResults!.arguments.last;
+    bool verbose = argResults!['verbose'];
+    String template = argResults!['template'];
+    bool force = argResults!['force'];
 
     if (name == 'server' || name == 'module' || name == 'create') {
-      _printUsage(parser);
+      // TODO: Use built in usage printer
+      // _printUsage(parser);
       return;
     }
 
     await performCreate(name, verbose, template, force);
-    return;
+  }
+}
+
+class GenerateCommand extends Command {
+  @override
+  final name = CMD.generate;
+  @override
+  final description = 'Generate code from yaml files for server and clients.';
+
+  GenerateCommand() {
+    argParser.addFlag(
+      'verbose',
+      abbr: 'v',
+      defaultsTo: false,
+      negatable: false,
+      help: 'Output more detailed information.',
+    );
+    argParser.addFlag(
+      'watch',
+      abbr: 'w',
+      defaultsTo: false,
+      negatable: false,
+      help: 'Watch for changes and continuously generate code.',
+    );
   }
 
-  // Generate command.
-  if (results.command!.name == CMD.generate) {
+  @override
+  Future run() async {
     // Always do a full generate.
-    bool verbose = results.command!['verbose'];
-    bool watch = results.command!['watch'];
+    bool verbose = argResults!['verbose'];
+    bool watch = argResults!['watch'];
 
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load();
@@ -337,17 +309,64 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     if (hasErrors) {
       throw ExitException();
     }
+  }
+}
 
-    return;
+class MigrateCommand extends Command {
+  @override
+  final name = CMD.migrate;
+
+  @override
+  final description =
+      'Creates a migration from the last migration to the current state of the database.';
+
+  MigrateCommand() {
+    argParser.addFlag(
+      'verbose',
+      abbr: 'v',
+      negatable: false,
+      defaultsTo: false,
+      help: 'Output more detailed information.',
+    );
+    argParser.addFlag(
+      'force',
+      abbr: 'f',
+      negatable: false,
+      defaultsTo: false,
+      help:
+          'Creates the migration even if there are warnings or information that '
+          'may be destroyed.',
+    );
+    argParser.addFlag(
+      'repair',
+      abbr: 'r',
+      negatable: false,
+      defaultsTo: false,
+      help:
+          'Repairs the database by comparing the target state to what is in the '
+          'live database instead of comparing to the latest migration.',
+    );
+    argParser.addOption(
+      'mode',
+      abbr: 'm',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Use together with --repair to specify which database to repair.',
+    );
+    argParser.addOption(
+      'tag',
+      abbr: 't',
+      help: 'Add a tag to the revision to easier identify it.',
+    );
   }
 
-  // Migrate command
-  if (results.command!.name == CMD.migrate) {
-    bool verbose = results.command!['verbose'];
-    bool force = results.command!['force'];
-    bool repair = results.command!['repair'];
-    String mode = results.command!['mode'];
-    String? tag = results.command!['tag'];
+  @override
+  void run() async {
+    bool verbose = argResults!['verbose'];
+    bool force = argResults!['force'];
+    bool repair = argResults!['repair'];
+    String mode = argResults!['mode'];
+    String? tag = argResults!['tag'];
 
     if (tag != null) {
       if (!StringValidators.isValidTagName(tag)) {
@@ -402,91 +421,76 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
       log.info('Done.',
           style: const TextLogStyle(type: AbstractStyleType.success));
     }
+  }
+}
 
-    return;
+class LanguageServerCommand extends Command {
+  @override
+  final name = CMD.languageServer;
+
+  @override
+  final description =
+      'Launches a serverpod language server communicating with JSON-RPC-2 intended to be used with a client integrated in an IDE.';
+
+  LanguageServerCommand() {
+    argParser.addFlag(
+      'stdio',
+      defaultsTo: true,
+      help: 'Use stdin/stdout channels for communication.',
+    );
   }
 
-  if (results.command!.name == CMD.languageServer) {
+  @override
+  Future run() async {
     await runLanguageServer();
-    return;
+  }
+}
+
+class GeneratePubspecsCommand extends Command {
+  @override
+  final name = CMD.generatePubspecs;
+
+  @override
+  final description = '';
+
+  GeneratePubspecsCommand() {
+    argParser.addOption('version', defaultsTo: 'X');
+    argParser.addOption(
+      'mode',
+      defaultsTo: 'development',
+      allowed: ['development', 'production'],
+    );
   }
 
-  // Generate pubspecs command.
-  if (results.command!.name == CMD.generatePubspecs) {
-    if (results.command!['version'] == 'X') {
+  @override
+  void run() {
+    if (argResults!['version'] == 'X') {
       log.error('--version is not specified');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
-    performGeneratePubspecs(
-        results.command!['version'], results.command!['mode']);
-    return;
+    performGeneratePubspecs(argResults!['version'], argResults!['mode']);
+  }
+}
+
+class AnalyzePubspecsCommand extends Command {
+  @override
+  final name = CMD.analyzePubspecs;
+
+  @override
+  final description = '';
+
+  AnalyzePubspecsCommand() {
+    argParser.addFlag(
+      'check-latest-version',
+      defaultsTo: false,
+    );
   }
 
-  // Analyze pubspecs command.
-  if (results.command!.name == CMD.analyzePubspecs) {
-    bool checkLatestVersion = results.command!['check-latest-version'];
+  @override
+  Future run() async {
+    bool checkLatestVersion = argResults!['check-latest-version'];
     if (!await pubspecDependenciesMatch(checkLatestVersion)) {
       throw ExitException();
     }
-
-    return;
-  }
-}
-
-void _printUsage(ArgParser parser) {
-  log.info(
-    'Usage: serverpod <command> [arguments]',
-    style: const TextLogStyle(
-      newParagraph: true,
-    ),
-  );
-  log.info(
-    'COMMANDS',
-    style: const TextLogStyle(
-      newParagraph: true,
-    ),
-  );
-  _printCommandUsage(
-    CMD.version,
-    'Prints the active version of the Serverpod CLI.',
-  );
-  _printCommandUsage(
-    CMD.create,
-    'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).',
-    parser.commands[CMD.create]!,
-  );
-  _printCommandUsage(
-    CMD.generate,
-    'Generate code from yaml files for server and clients.',
-    parser.commands[CMD.generate]!,
-  );
-  _printCommandUsage(
-    CMD.migrate,
-    'Creates a migration from the last migration to the current state of the database.',
-    parser.commands[CMD.migrate]!,
-  );
-  _printCommandUsage(
-    CMD.languageServer,
-    'Launches a serverpod language server communicating with JSON-RPC-2 intended to be used with a client integrated in an IDE.',
-    parser.commands[CMD.languageServer]!,
-  );
-}
-
-void _printCommandUsage(String name, String description, [ArgParser? parser]) {
-  log.info(
-    '$name $description',
-    style: const TextLogStyle(
-      newParagraph: true,
-      wordWrap: false,
-    ),
-  );
-  if (parser != null) {
-    log.info(
-      parser.usage,
-      style: const TextLogStyle(
-        newParagraph: true,
-        wordWrap: false,
-      ),
-    );
   }
 }
