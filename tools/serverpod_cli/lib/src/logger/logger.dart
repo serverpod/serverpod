@@ -47,11 +47,11 @@ abstract class Logger {
 
   /// Display a [SourceSpanSeverityException] to the user.
   /// Commands should use this to log [SourceSpanSeverityException] with
-  /// enhanced highlighting where possible.
+  /// enhanced highlighting if possible.
   void sourceSpanSeverityException(
-    SourceSpanSeverityException sourceSpan,
-    LogLevel logLevel,
-  );
+    SourceSpanSeverityException sourceSpan, {
+    bool newParagraph,
+  });
 
   /// Returns a [Future] that completes once all logging is complete.
   Future<void> flush();

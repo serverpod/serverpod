@@ -56,12 +56,25 @@ class StdOutLogger extends Logger {
 
   @override
   void sourceSpanSeverityException(
-    SourceSpanSeverityException sourceSpan,
-    LogLevel logLevel,
-  ) {
+    SourceSpanSeverityException sourceSpan, {
+    bool newParagraph = false,
+  }) {
+    var severity = sourceSpan.severity;
+    var logLevel = _SeveritySpanHelpers.severityToLogLevel(severity);
     if (!shouldLog(logLevel)) return;
 
-    _write(sourceSpan.toString(), logLevel);
+    var message = sourceSpan.message;
+
+    if (sourceSpan.span != null) {
+      var highlightColor = _SeveritySpanHelpers.highlightColor(severity);
+      message = sourceSpan.toString(color: highlightColor);
+    }
+
+    if (newParagraph) {
+      message = '\n$message';
+    }
+
+    _write(message, logLevel);
   }
 
   @override
@@ -211,4 +224,31 @@ String _formatAsBox({
   buffer.write('┘');
 
   return buffer.toString();
+}
+
+abstract class _SeveritySpanHelpers {
+  static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
+    switch (severity) {
+      case SourceSpanSeverity.error:
+        return LogLevel.error;
+      case SourceSpanSeverity.warning:
+        return LogLevel.warning;
+      case SourceSpanSeverity.info:
+      case SourceSpanSeverity.hint:
+        return LogLevel.info;
+    }
+  }
+
+  static Object? highlightColor(SourceSpanSeverity severity) {
+    switch (severity) {
+      case SourceSpanSeverity.error:
+        return '\x1B[31m'; // Red
+      case SourceSpanSeverity.warning:
+        return '\x1B[33m'; // Yellow
+      case SourceSpanSeverity.info:
+        return '\x1B[34m'; // Blue
+      case SourceSpanSeverity.hint:
+        return '\x1B[36m'; // Cyan
+    }
+  }
 }
