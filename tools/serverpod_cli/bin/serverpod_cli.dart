@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
@@ -17,19 +16,18 @@ import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
-import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
 abstract class CMD {
   static const analyzePubspecs = 'analyze-pubspecs';
   static const create = 'create';
-  static const developmentPrint = 'development-print';
   static const generate = 'generate';
   static const generatePubspecs = 'generate-pubspecs';
   static const languageServer = 'language-server';
@@ -110,16 +108,9 @@ Future<void> _main(List<String> args) async {
   _analytics.cleanUp();
 }
 
-ServerpodRunner buildCommandRunner() {
+ServerpodCommandRunner buildCommandRunner() {
   var runner =
-      ServerpodRunner('serverpod', 'Manage your serverpod app development');
-
-  runner.argParser.addFlag(
-    CMD.developmentPrint,
-    defaultsTo: true,
-    negatable: true,
-    help: 'Prints additional information useful for development.',
-  );
+      ServerpodCommandRunner.createCommandRunner(_analytics, productionMode);
 
   runner.addCommand(VersionCommand());
   runner.addCommand(CreateCommand());
@@ -130,54 +121,6 @@ ServerpodRunner buildCommandRunner() {
   runner.addCommand(AnalyzePubspecsCommand());
 
   return runner;
-}
-
-class ServerpodRunner extends CommandRunner {
-  ServerpodRunner(super.executableName, super.description);
-
-  @override
-  ArgResults parse(Iterable<String> args) {
-    try {
-      return super.parse(args);
-    } catch (error) {
-      _analytics.track(event: 'invalid');
-      printUsage();
-      throw ExitException(ExitCodeType.commandNotFound);
-    }
-  }
-
-  @override
-  Future runCommand(ArgResults topLevelResults) async {
-    // TODO: This should silence all warnings with a suitable name.
-    // Make this once we have a centralized logging and printing.
-    var devPrint = topLevelResults[CMD.developmentPrint];
-    if (!productionMode && devPrint) {
-      log.debug(
-        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-      );
-      log.debug('SERVERPOD_HOME is set to $serverpodHome');
-
-      if (!resourceManager.isTemplatesInstalled) {
-        log.warning('Could not find templates.');
-      }
-    }
-
-    if (devPrint) {
-      await promptToUpdateIfNeeded(Version.parse(templateVersion));
-    }
-
-    if (topLevelResults.name == null) {
-      _analytics.track(event: 'help');
-    } else {
-      _analytics.track(event: topLevelResults.name!);
-    }
-    return super.runCommand(topLevelResults);
-  }
-
-  @override
-  void printUsage() {
-    log.info(usage, style: const LogStyle());
-  }
 }
 
 class VersionCommand extends Command {
