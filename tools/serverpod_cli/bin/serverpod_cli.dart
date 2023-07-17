@@ -25,13 +25,16 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
-const cmdAnalyzePubspecs = 'analyze-pubspecs';
-const cmdCreate = 'create';
-const cmdGenerate = 'generate';
-const cmdGeneratePubspecs = 'generate-pubspecs';
-const cmdLanguageServer = 'language-server';
-const cmdMigrate = 'migrate';
-const cmdVersion = 'version';
+abstract class CMD {
+  static const analyzePubspecs = 'analyze-pubspecs';
+  static const create = 'create';
+  static const developmentPrint = 'development-print';
+  static const generate = 'generate';
+  static const generatePubspecs = 'generate-pubspecs';
+  static const languageServer = 'language-server';
+  static const migrate = 'migrate';
+  static const version = 'version';
+}
 
 final runModes = <String>['development', 'staging', 'production'];
 
@@ -107,7 +110,7 @@ Future<void> _main(List<String> args) async {
 
   // TODO: This should silence all warnings with a suitable name.
   // Make this once we have a centralized logging and printing.
-  var devPrint = results['development-print'];
+  var devPrint = results[CMD.developmentPrint];
 
   if (!productionMode && devPrint) {
     log.debug(
@@ -136,7 +139,7 @@ Future<void> _main(List<String> args) async {
 ArgParser _buildCommandParser() {
   var parser = ArgParser();
   parser.addFlag(
-    'development-print',
+    CMD.developmentPrint,
     defaultsTo: true,
     negatable: true,
     help: 'Prints additional information useful for development.',
@@ -144,7 +147,7 @@ ArgParser _buildCommandParser() {
 
   // "version" command
   var versionParser = ArgParser();
-  parser.addCommand(cmdVersion, versionParser);
+  parser.addCommand(CMD.version, versionParser);
 
   // "create" command
   var createParser = ArgParser();
@@ -165,7 +168,7 @@ ArgParser _buildCommandParser() {
     help:
         'Template to use when creating a new project, valid options are "server" or "module".',
   );
-  parser.addCommand(cmdCreate, createParser);
+  parser.addCommand(CMD.create, createParser);
 
   // "generate" command
   var generateParser = ArgParser();
@@ -181,7 +184,7 @@ ArgParser _buildCommandParser() {
     negatable: false,
     help: 'Watch for changes and continuously generate code.',
   );
-  parser.addCommand(cmdGenerate, generateParser);
+  parser.addCommand(CMD.generate, generateParser);
 
   // "migrate" commanbd
   var migrateParser = ArgParser();
@@ -219,7 +222,7 @@ ArgParser _buildCommandParser() {
     abbr: 't',
     help: 'Add a tag to the revision to easier identify it.',
   );
-  parser.addCommand(cmdMigrate, migrateParser);
+  parser.addCommand(CMD.migrate, migrateParser);
 
   // "language-server" command
   var languageServerParser = ArgParser();
@@ -228,7 +231,7 @@ ArgParser _buildCommandParser() {
     defaultsTo: true,
     help: 'Use stdin/stdout channels for communication.',
   );
-  parser.addCommand(cmdLanguageServer, languageServerParser);
+  parser.addCommand(CMD.languageServer, languageServerParser);
 
   // "generate-pubspecs"
   var generatePubspecs = ArgParser();
@@ -238,13 +241,13 @@ ArgParser _buildCommandParser() {
     defaultsTo: 'development',
     allowed: ['development', 'production'],
   );
-  parser.addCommand(cmdGeneratePubspecs, generatePubspecs);
+  parser.addCommand(CMD.generatePubspecs, generatePubspecs);
 
   var analyzePubspecs = ArgParser();
   analyzePubspecs.addFlag(
     'check-latest-version',
   );
-  parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
+  parser.addCommand(CMD.analyzePubspecs, analyzePubspecs);
   return parser;
 }
 
@@ -263,13 +266,13 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   _analytics.track(event: '${results.command?.name}');
 
   // Version command.
-  if (results.command!.name == cmdVersion) {
+  if (results.command!.name == CMD.version) {
     log.info('Serverpod version: $templateVersion');
     return;
   }
 
   // Create command.
-  if (results.command!.name == cmdCreate) {
+  if (results.command!.name == CMD.create) {
     var name = results.arguments.last;
     bool verbose = results.command!['verbose'];
     String template = results.command!['template'];
@@ -285,7 +288,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   }
 
   // Generate command.
-  if (results.command!.name == cmdGenerate) {
+  if (results.command!.name == CMD.generate) {
     // Always do a full generate.
     bool verbose = results.command!['verbose'];
     bool watch = results.command!['watch'];
@@ -339,7 +342,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   }
 
   // Migrate command
-  if (results.command!.name == cmdMigrate) {
+  if (results.command!.name == CMD.migrate) {
     bool verbose = results.command!['verbose'];
     bool force = results.command!['force'];
     bool repair = results.command!['repair'];
@@ -403,13 +406,13 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
     return;
   }
 
-  if (results.command!.name == cmdLanguageServer) {
+  if (results.command!.name == CMD.languageServer) {
     await runLanguageServer();
     return;
   }
 
   // Generate pubspecs command.
-  if (results.command!.name == cmdGeneratePubspecs) {
+  if (results.command!.name == CMD.generatePubspecs) {
     if (results.command!['version'] == 'X') {
       log.error('--version is not specified');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
@@ -420,7 +423,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
   }
 
   // Analyze pubspecs command.
-  if (results.command!.name == cmdAnalyzePubspecs) {
+  if (results.command!.name == CMD.analyzePubspecs) {
     bool checkLatestVersion = results.command!['check-latest-version'];
     if (!await pubspecDependenciesMatch(checkLatestVersion)) {
       throw ExitException();
@@ -444,28 +447,28 @@ void _printUsage(ArgParser parser) {
     ),
   );
   _printCommandUsage(
-    cmdVersion,
+    CMD.version,
     'Prints the active version of the Serverpod CLI.',
   );
   _printCommandUsage(
-    cmdCreate,
+    CMD.create,
     'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).',
-    parser.commands[cmdCreate]!,
+    parser.commands[CMD.create]!,
   );
   _printCommandUsage(
-    cmdGenerate,
+    CMD.generate,
     'Generate code from yaml files for server and clients.',
-    parser.commands[cmdGenerate]!,
+    parser.commands[CMD.generate]!,
   );
   _printCommandUsage(
-    cmdMigrate,
+    CMD.migrate,
     'Creates a migration from the last migration to the current state of the database.',
-    parser.commands[cmdMigrate]!,
+    parser.commands[CMD.migrate]!,
   );
   _printCommandUsage(
-    cmdLanguageServer,
+    CMD.languageServer,
     'Launches a serverpod language server communicating with JSON-RPC-2 intended to be used with a client integrated in an IDE.',
-    parser.commands[cmdLanguageServer]!,
+    parser.commands[CMD.languageServer]!,
   );
 }
 
