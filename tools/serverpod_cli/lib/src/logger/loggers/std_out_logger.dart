@@ -71,8 +71,9 @@ class StdOutLogger extends Logger {
 
     if (!shouldLog(logLevel)) return;
 
-    var highlightColor = _SeveritySpanHelpers.highlightColor(logLevel, isHint);
-    var message = sourceSpan.toString(color: highlightColor);
+    var highlightAnsiCode =
+        _SeveritySpanHelpers.highlightAnsiCode(logLevel, isHint);
+    var message = sourceSpan.toString(color: highlightAnsiCode);
 
     if (newParagraph) {
       message = '\n$message';
@@ -236,8 +237,8 @@ enum TextColor {
   blue('\x1B[34m'),
   cyan('\x1B[36m');
 
-  const TextColor(this.textColor);
-  final String textColor;
+  const TextColor(this.ansiCode);
+  final String ansiCode;
 }
 
 abstract class _SeveritySpanHelpers {
@@ -253,20 +254,20 @@ abstract class _SeveritySpanHelpers {
     }
   }
 
-  static String highlightColor(LogLevel severity, bool isHint) {
+  static String highlightAnsiCode(LogLevel severity, bool isHint) {
     if (severity == LogLevel.info && isHint) {
-      return TextColor.cyan.textColor;
+      return TextColor.cyan.ansiCode;
     }
 
     switch (severity) {
       case LogLevel.error:
-        return TextColor.red.textColor;
+        return TextColor.red.ansiCode;
       case LogLevel.warning:
-        return TextColor.yellow.textColor;
+        return TextColor.yellow.ansiCode;
       case LogLevel.info:
-        return TextColor.blue.textColor;
+        return TextColor.blue.ansiCode;
       case LogLevel.debug:
-        return TextColor.cyan.textColor;
+        return TextColor.cyan.ansiCode;
     }
   }
 }
