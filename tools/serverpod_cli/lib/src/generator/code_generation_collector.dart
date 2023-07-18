@@ -49,14 +49,7 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
     );
 
     for (var error in errors) {
-      if (error is SourceSpanSeverityException) {
-        log.sourceSpanSeverityException(error, newParagraph: true);
-      } else {
-        log.error(
-          error.toString(),
-          style: const TextLogStyle(newParagraph: true),
-        );
-      }
+      log.sourceSpanException(error, newParagraph: true);
     }
   }
 

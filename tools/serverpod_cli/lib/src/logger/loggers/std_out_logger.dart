@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:colorize/colorize.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:source_span/source_span.dart';
 import 'package:super_string/super_string.dart';
 
 /// Logger that logs using the [Stdout] library.
@@ -55,20 +56,23 @@ class StdOutLogger extends Logger {
   }
 
   @override
-  void sourceSpanSeverityException(
-    SourceSpanSeverityException sourceSpan, {
+  void sourceSpanException(
+    SourceSpanException sourceSpan, {
     bool newParagraph = false,
   }) {
+    var logLevel = LogLevel.error;
+    bool isHint = false;
+
+    if (sourceSpan is SourceSpanSeverityException) {
     var severity = sourceSpan.severity;
-    var logLevel = _SeveritySpanHelpers.severityToLogLevel(severity);
+      isHint = severity == SourceSpanSeverity.hint;
+      logLevel = _SeveritySpanHelpers.severityToLogLevel(severity);
+    }
+
     if (!shouldLog(logLevel)) return;
 
-    var message = sourceSpan.message;
-
-    if (sourceSpan.span != null) {
-      var highlightColor = _SeveritySpanHelpers.highlightColor(severity);
-      message = sourceSpan.toString(color: highlightColor);
-    }
+    var highlightColor = _SeveritySpanHelpers.highlightColor(logLevel, isHint);
+    var message = sourceSpan.toString(color: highlightColor);
 
     if (newParagraph) {
       message = '\n$message';
@@ -226,6 +230,16 @@ String _formatAsBox({
   return buffer.toString();
 }
 
+enum TextColor {
+  red('\x1B[31m'),
+  yellow('\x1B[33m'),
+  blue('\x1B[34m'),
+  cyan('\x1B[36m');
+
+  const TextColor(this.textColor);
+  final String textColor;
+}
+
 abstract class _SeveritySpanHelpers {
   static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
     switch (severity) {
@@ -239,16 +253,20 @@ abstract class _SeveritySpanHelpers {
     }
   }
 
-  static Object? highlightColor(SourceSpanSeverity severity) {
+  static String highlightColor(LogLevel severity, bool isHint) {
+    if (severity == LogLevel.info && isHint) {
+      return TextColor.cyan.textColor;
+    }
+
     switch (severity) {
-      case SourceSpanSeverity.error:
-        return '\x1B[31m'; // Red
-      case SourceSpanSeverity.warning:
-        return '\x1B[33m'; // Yellow
-      case SourceSpanSeverity.info:
-        return '\x1B[34m'; // Blue
-      case SourceSpanSeverity.hint:
-        return '\x1B[36m'; // Cyan
+      case LogLevel.error:
+        return TextColor.red.textColor;
+      case LogLevel.warning:
+        return TextColor.yellow.textColor;
+      case LogLevel.info:
+        return TextColor.blue.textColor;
+      case LogLevel.debug:
+        return TextColor.cyan.textColor;
     }
   }
 }
