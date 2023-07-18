@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:args/command_runner.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
-class MigrateCommand extends Command {
+class MigrateCommand extends ServerpodCommand {
   static const _runModes = <String>['development', 'staging', 'production'];
 
   @override

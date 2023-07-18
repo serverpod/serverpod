@@ -1,9 +1,9 @@
-import 'package:args/command_runner.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 
-class GeneratePubspecsCommand extends Command {
+class GeneratePubspecsCommand extends ServerpodCommand {
   @override
   final name = 'generate-pubspecs';
 

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/copy_migrations.dart';
@@ -8,10 +7,11 @@ import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 
-class GenerateCommand extends Command {
+class GenerateCommand extends ServerpodCommand {
   @override
   final name = 'generate';
   @override

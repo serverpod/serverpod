@@ -1,7 +1,7 @@
-import 'package:args/command_runner.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
-class LanguageServerCommand extends Command {
+class LanguageServerCommand extends ServerpodCommand {
   @override
   final name = 'language-server';
 

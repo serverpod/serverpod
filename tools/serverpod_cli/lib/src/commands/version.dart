@@ -1,8 +1,8 @@
-import 'package:args/command_runner.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
-class VersionCommand extends Command {
+class VersionCommand extends ServerpodCommand {
   @override
   final name = 'version';
 

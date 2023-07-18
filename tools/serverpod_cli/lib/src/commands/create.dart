@@ -1,7 +1,7 @@
-import 'package:args/command_runner.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
-class CreateCommand extends Command {
+class CreateCommand extends ServerpodCommand {
   @override
   final name = 'create';
 
@@ -37,8 +37,7 @@ class CreateCommand extends Command {
     bool force = argResults!['force'];
 
     if (name == 'server' || name == 'module' || name == 'create') {
-      // TODO: Use built in usage printer
-      // _printUsage(parser);
+      printUsage();
       return;
     }
 
