@@ -23,7 +23,7 @@ class UserInfo extends _i1.SerializableEntity {
     required this.created,
     this.imageUrl,
     required this.scopeNames,
-    required this.blocked,
+    required this.banned,
   });
 
   factory UserInfo.fromJson(
@@ -46,8 +46,8 @@ class UserInfo extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['imageUrl']),
       scopeNames: serializationManager
           .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      blocked:
-          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
+      banned:
+          serializationManager.deserialize<bool>(jsonSerialization['banned']),
     );
   }
 
@@ -78,8 +78,8 @@ class UserInfo extends _i1.SerializableEntity {
   /// List of scopes that this user can access.
   List<String> scopeNames;
 
-  /// True if the user is blocked from signing in.
-  bool blocked;
+  /// True if the user is banned from signing in.
+  bool banned;
 
   @override
   Map<String, dynamic> toJson() {
@@ -92,7 +92,7 @@ class UserInfo extends _i1.SerializableEntity {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'blocked': blocked,
+      'banned': banned,
     };
   }
 }

@@ -40,7 +40,7 @@ class Emails {
         userName: userName,
         created: DateTime.now(),
         scopeNames: [],
-        blocked: false,
+        banned: false,
       );
 
       session.log('creating user', level: LogLevel.debug);

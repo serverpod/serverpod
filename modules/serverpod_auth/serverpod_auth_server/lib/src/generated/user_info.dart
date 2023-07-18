@@ -23,7 +23,7 @@ class UserInfo extends _i1.TableRow {
     required this.created,
     this.imageUrl,
     required this.scopeNames,
-    required this.blocked,
+    required this.banned,
   }) : super(id);
 
   factory UserInfo.fromJson(
@@ -46,8 +46,8 @@ class UserInfo extends _i1.TableRow {
           .deserialize<String?>(jsonSerialization['imageUrl']),
       scopeNames: serializationManager
           .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      blocked:
-          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
+      banned:
+          serializationManager.deserialize<bool>(jsonSerialization['banned']),
     );
   }
 
@@ -75,8 +75,8 @@ class UserInfo extends _i1.TableRow {
   /// List of scopes that this user can access.
   List<String> scopeNames;
 
-  /// True if the user is blocked from signing in.
-  bool blocked;
+  /// True if the user is banned from signing in.
+  bool banned;
 
   @override
   String get tableName => 'serverpod_user_info';
@@ -91,7 +91,7 @@ class UserInfo extends _i1.TableRow {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'blocked': blocked,
+      'banned': banned,
     };
   }
 
@@ -106,7 +106,7 @@ class UserInfo extends _i1.TableRow {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'blocked': blocked,
+      'banned': banned,
     };
   }
 
@@ -121,7 +121,7 @@ class UserInfo extends _i1.TableRow {
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
-      'blocked': blocked,
+      'banned': banned,
     };
   }
 
@@ -155,8 +155,8 @@ class UserInfo extends _i1.TableRow {
       case 'scopeNames':
         scopeNames = value;
         return;
-      case 'blocked':
-        blocked = value;
+      case 'banned':
+        banned = value;
         return;
       default:
         throw UnimplementedError();
@@ -304,8 +304,8 @@ class UserInfoTable extends _i1.Table {
   /// List of scopes that this user can access.
   final scopeNames = _i1.ColumnSerializable('scopeNames');
 
-  /// True if the user is blocked from signing in.
-  final blocked = _i1.ColumnBool('blocked');
+  /// True if the user is banned from signing in.
+  final banned = _i1.ColumnBool('banned');
 
   @override
   List<_i1.Column> get columns => [
@@ -317,7 +317,7 @@ class UserInfoTable extends _i1.Table {
         created,
         imageUrl,
         scopeNames,
-        blocked,
+        banned,
       ];
 }
 

@@ -21,7 +21,7 @@ class AuthenticationEndpoint extends Endpoint {
       userName: email.split('@')[0],
       created: DateTime.now(),
       scopeNames: [],
-      blocked: false,
+      banned: false,
     );
     await Users.createUser(session, userInfo);
   }
@@ -40,7 +40,7 @@ class AuthenticationEndpoint extends Endpoint {
           userName: 'Test',
           created: DateTime.now(),
           scopeNames: [],
-          blocked: false,
+          banned: false,
         );
         userInfo = await Users.createUser(session, userInfo);
       }

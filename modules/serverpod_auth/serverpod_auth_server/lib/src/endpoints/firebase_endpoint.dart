@@ -64,7 +64,7 @@ class FirebaseEndpoint extends Endpoint {
           email: email,
           created: DateTime.now().toUtc(),
           scopeNames: [],
-          blocked: false,
+          banned: false,
         );
         userInfo = await Users.createUser(session, userInfo, _authMethod);
       }
@@ -74,10 +74,10 @@ class FirebaseEndpoint extends Endpoint {
           success: false,
           failReason: AuthenticationFailReason.userCreationDenied,
         );
-      } else if (userInfo.blocked) {
+      } else if (userInfo.banned) {
         return AuthenticationResponse(
           success: false,
-          failReason: AuthenticationFailReason.blocked,
+          failReason: AuthenticationFailReason.banned,
         );
       }
 

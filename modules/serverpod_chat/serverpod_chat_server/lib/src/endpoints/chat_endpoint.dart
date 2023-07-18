@@ -59,7 +59,7 @@ class ChatEndpoint extends Endpoint {
           userName: message.userName!,
           created: DateTime.now().toUtc(),
           scopeNames: [],
-          blocked: false,
+          banned: false,
         );
         _tempUserId -= 1;
       }

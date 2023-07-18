@@ -89,7 +89,7 @@ class AppleEndpoint extends Endpoint {
         userName: name,
         fullName: fullName,
         email: email,
-        blocked: false,
+        banned: false,
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
@@ -101,10 +101,10 @@ class AppleEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
-    } else if (userInfo.blocked) {
+    } else if (userInfo.banned) {
       return AuthenticationResponse(
         success: false,
-        failReason: AuthenticationFailReason.blocked,
+        failReason: AuthenticationFailReason.banned,
       );
     }
 

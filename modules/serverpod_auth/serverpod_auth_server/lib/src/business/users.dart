@@ -1,4 +1,3 @@
-import 'package:googleapis/oauth2/v2.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 
@@ -122,17 +121,17 @@ class Users {
     return userInfo;
   }
 
-  /// Marks a user as blocked so that they can't log in, and invalidates the
+  /// Marks a user as banned so that they can't log in, and invalidates the
   /// cache for the user, and signs the user out.
-  static Future<void> blockUser(Session session, int userId) async {
+  static Future<void> banUser(Session session, int userId) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
-    } else if (userInfo.blocked) {
-      throw 'userId $userId already blocked';
+    } else if (userInfo.banned) {
+      throw 'userId $userId already banned';
     }
-    // Mark user as blocked in database
-    userInfo.blocked = true;
+    // Mark user as banned in database
+    userInfo.banned = true;
     await session.db.update(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
@@ -140,14 +139,14 @@ class Users {
   }
 
   /// Unblocks a user so that they can log in again.
-  static Future<void> unblockUser(Session session, int userId) async {
+  static Future<void> unbanUser(Session session, int userId) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
-    } else if (!userInfo.blocked) {
-      throw 'userId $userId already unblocked';
+    } else if (!userInfo.banned) {
+      throw 'userId $userId already unbanned';
     }
-    userInfo.blocked = false;
+    userInfo.banned = false;
     await session.db.update(userInfo);
   }
 
