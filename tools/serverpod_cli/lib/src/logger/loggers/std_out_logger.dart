@@ -14,6 +14,9 @@ class StdOutLogger extends Logger {
   StdOutLogger(LogLevel logLevel) : super(logLevel);
 
   @override
+  int? get wrapTextColumn => stdout.hasTerminal ? stdout.terminalColumns : null;
+
+  @override
   void debug(
     String message, {
     LogStyle style = const TextLogStyle(),
@@ -107,9 +110,8 @@ class StdOutLogger extends Logger {
         title: style.title,
       );
     } else if (style is TextLogStyle) {
-      if (style.wordWrap) {
-        var wrapColumn = stdout.hasTerminal ? stdout.terminalColumns : 100;
-        message = _wrapText(message, wrapColumn);
+      if (wrapTextColumn != null && style.wordWrap) {
+        message = _wrapText(message, wrapTextColumn!);
       }
 
       switch (style.type) {

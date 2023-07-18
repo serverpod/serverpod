@@ -8,6 +8,9 @@ class VoidLogger extends Logger {
   VoidLogger() : super(LogLevel.debug);
 
   @override
+  int? get wrapTextColumn => null;
+
+  @override
   void debug(String message, {LogStyle style = const LogStyle()}) {}
 
   @override

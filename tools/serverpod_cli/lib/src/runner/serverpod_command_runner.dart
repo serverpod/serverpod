@@ -31,7 +31,9 @@ class ServerpodCommandRunner extends CommandRunner {
   }
 
   static ServerpodCommandRunner createCommandRunner(
-      Analytics analytics, bool productionMode) {
+    Analytics analytics,
+    bool productionMode,
+  ) {
     return ServerpodCommandRunner(
       analytics,
       productionMode,
@@ -46,7 +48,7 @@ class ServerpodCommandRunner extends CommandRunner {
       return super.parse(args);
     } on UsageException catch (e) {
       _analytics.track(event: 'invalid');
-      log.error(e.toString());
+      log.error(e.toString(), style: const LogStyle());
       throw ExitException(ExitCodeType.commandNotFound);
     }
   }
@@ -65,7 +67,7 @@ class ServerpodCommandRunner extends CommandRunner {
         _analytics.track(event: topLevelResults.command!.name!);
       }
     } on UsageException catch (e) {
-      log.error(e.toString());
+      log.error(e.toString(), style: const LogStyle());
       _analytics.track(event: 'invalid');
       throw ExitException(ExitCodeType.commandNotFound);
     }
@@ -75,6 +77,10 @@ class ServerpodCommandRunner extends CommandRunner {
   void printUsage() {
     log.info(usage, style: const LogStyle());
   }
+
+  @override
+  ArgParser get argParser => _argParser;
+  final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
 
   Future _preCommandPrints(bool devPrint) async {
     if (!_productionMode && devPrint) {
