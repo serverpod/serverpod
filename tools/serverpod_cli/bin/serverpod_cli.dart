@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:colorize/colorize.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 
@@ -16,64 +15,74 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
-import 'package:serverpod_cli/src/util/print.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
-import 'package:serverpod_cli/src/util/version.dart';
 
+const cmdAnalyzePubspecs = 'analyze-pubspecs';
 const cmdCreate = 'create';
 const cmdGenerate = 'generate';
 const cmdGeneratePubspecs = 'generate-pubspecs';
-const cmdAnalyzePubspecs = 'analyze-pubspecs';
-const cmdVersion = 'version';
-const cmdMigrate = 'migrate';
 const cmdLanguageServer = 'language-server';
+const cmdMigrate = 'migrate';
+const cmdVersion = 'version';
 
 final runModes = <String>['development', 'staging', 'production'];
 
 final Analytics _analytics = Analytics();
 
 void main(List<String> args) async {
+  // TODO: Add flaggs for setting log level.
+  // For now, use old behavior and log everything.
+  initializeLogger(LogLevel.debug);
+
   await runZonedGuarded(
     () async {
       try {
         await _main(args);
+      } on ExitException catch (e) {
+        _analytics.cleanUp();
+        exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
         printInternalError(error, stackTrace);
+        exit(ExitCodeType.general.exitCode);
       }
     },
     (error, stackTrace) {
       printInternalError(error, stackTrace);
+      exit(ExitCodeType.general.exitCode);
     },
   );
 }
 
 Future<void> _main(List<String> args) async {
   if (Platform.isWindows) {
-    print(
-        'WARNING! Windows is not officially supported yet. Things may or may not work as expected.');
-    print('');
+    log.warning(
+        'Windows is not officially supported yet. Things may or may not work '
+        'as expected.');
   }
 
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart')) {
-    print(
+    log.error(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    return;
+    throw ExitException();
   }
   if (!await CommandLineTools.existsCommand('flutter')) {
-    print(
+    log.error(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    return;
+    throw ExitException();
   }
 
   if (!loadEnvironmentVars()) {
-    return;
+    throw ExitException();
   }
 
   // Make sure all necessary downloads are installed
@@ -81,16 +90,50 @@ Future<void> _main(List<String> args) async {
     try {
       await resourceManager.installTemplates();
     } catch (e) {
-      print('Failed to download templates.');
+      log.error('Failed to download templates.');
+      throw ExitException();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
-      print(
+      log.error(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      return;
+      throw ExitException();
     }
   }
 
+  ArgParser parser = _buildCommandParser();
+
+  ArgResults results = _parseCommand(parser, args);
+
+  // TODO: This should silence all warnings with a suitable name.
+  // Make this once we have a centralized logging and printing.
+  var devPrint = results['development-print'];
+
+  if (!productionMode && devPrint) {
+    log.debug(
+      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+    );
+    log.debug('SERVERPOD_HOME is set to $serverpodHome');
+
+    if (!resourceManager.isTemplatesInstalled) {
+      log.warning('Could not find templates.');
+    }
+  }
+
+  if (devPrint) {
+    await promptToUpdateIfNeeded(Version.parse(templateVersion));
+  }
+
+  if (results.command == null) {
+    _analytics.track(event: 'help');
+    _printUsage(parser);
+  } else {
+    await _runCommand(results, parser);
+  }
+  _analytics.cleanUp();
+}
+
+ArgParser _buildCommandParser() {
   var parser = ArgParser();
   parser.addFlag(
     'development-print',
@@ -202,205 +245,204 @@ Future<void> _main(List<String> args) async {
     'check-latest-version',
   );
   parser.addCommand(cmdAnalyzePubspecs, analyzePubspecs);
+  return parser;
+}
 
-  ArgResults results;
+ArgResults _parseCommand(ArgParser parser, List<String> args) {
   try {
-    results = parser.parse(args);
-    bool devPrint = results['development-print'];
-
-    if (!productionMode && devPrint) {
-      print(
-        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-      );
-      print('SERVERPOD_HOME is set to $serverpodHome');
-
-      if (!resourceManager.isTemplatesInstalled) {
-        print('WARNING! Could not find templates.');
-      }
-    }
+    ArgResults results = parser.parse(args);
+    return results;
   } catch (e) {
     _analytics.track(event: 'invalid');
     _printUsage(parser);
-    _analytics.cleanUp();
+    throw ExitException(ExitCodeType.commandNotFound);
+  }
+}
+
+Future _runCommand(ArgResults results, ArgParser parser) async {
+  _analytics.track(event: '${results.command?.name}');
+
+  // Version command.
+  if (results.command!.name == cmdVersion) {
+    log.info('Serverpod version: $templateVersion');
     return;
   }
 
-  if (results.command != null) {
-    _analytics.track(event: '${results.command?.name}');
+  // Create command.
+  if (results.command!.name == cmdCreate) {
+    var name = results.arguments.last;
+    bool verbose = results.command!['verbose'];
+    String template = results.command!['template'];
+    bool force = results.command!['force'];
 
-    // Version command.
-    if (results.command!.name == cmdVersion) {
-      printVersion();
-      _analytics.cleanUp();
+    if (name == 'server' || name == 'module' || name == 'create') {
+      _printUsage(parser);
       return;
     }
 
-    // Create command.
-    if (results.command!.name == cmdCreate) {
-      var name = results.arguments.last;
-      bool verbose = results.command!['verbose'];
-      String template = results.command!['template'];
-      bool force = results.command!['force'];
+    await performCreate(name, verbose, template, force);
+    return;
+  }
 
-      if (name == 'server' || name == 'module' || name == 'create') {
-        _printUsage(parser);
-        _analytics.cleanUp();
-        return;
-      }
+  // Generate command.
+  if (results.command!.name == cmdGenerate) {
+    // Always do a full generate.
+    bool verbose = results.command!['verbose'];
+    bool watch = results.command!['watch'];
 
-      await performCreate(name, verbose, template, force);
-      _analytics.cleanUp();
-      return;
+    // TODO: add a -d option to select the directory
+    var config = await GeneratorConfig.load();
+    if (config == null) {
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    // Generate command.
-    if (results.command!.name == cmdGenerate) {
-      // Always do a full generate.
-      bool verbose = results.command!['verbose'];
-      bool watch = results.command!['watch'];
-
-      // TODO: add a -d option to select the directory
-      var config = await GeneratorConfig.load();
-      if (config == null) {
-        return;
+    // Validate cli version is compatible with serverpod packages
+    var warnings = performServerpodPackagesAndCliVersionCheck(
+        Version.parse(templateVersion), Directory.current.parent);
+    if (warnings.isNotEmpty) {
+      log.warning(
+        'The version of the CLI may be incompatible with the Serverpod '
+        'packages used in your project.',
+      );
+      for (var warning in warnings) {
+        log.warning(warning.toString());
       }
+    }
 
-      // Validate cli version is compatible with serverpod packages
-      var warnings = performServerpodPackagesAndCliVersionCheck(
-          Version.parse(templateVersion), Directory.current.parent);
-      if (warnings.isNotEmpty) {
-        printww('WARNING: The version of the CLI may be incompatible with the '
-            'Serverpod packages used in your project.');
-        warnings.forEach(print);
-      }
+    // Copy migrations from modules.
+    await copyMigrations(config);
 
-      // Copy migrations from modules.
-      await copyMigrations(config);
+    var endpointsAnalyzer = EndpointsAnalyzer(config);
 
-      var endpointsAnalyzer = EndpointsAnalyzer(config);
-
-      await performGenerate(
+    bool hasErrors = await performGenerate(
+      verbose: verbose,
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
+    );
+    if (watch) {
+      log.info('Initial code generation complete. Listening for changes.');
+      hasErrors = await performGenerateContinuously(
         verbose: verbose,
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
       );
-      if (watch) {
-        print('Initial code generation complete. Listening for changes.');
-        performGenerateContinuously(
-          verbose: verbose,
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-        );
-      } else {
-        print('Done.');
-      }
-      _analytics.cleanUp();
-      return;
+    } else {
+      log.info('Done.',
+          style: const TextLogStyle(type: AbstractStyleType.success));
     }
 
-    // Migrate command
-    if (results.command!.name == cmdMigrate) {
-      bool verbose = results.command!['verbose'];
-      bool force = results.command!['force'];
-      bool repair = results.command!['repair'];
-      String mode = results.command!['mode'];
-      String? tag = results.command!['tag'];
-
-      if (tag != null) {
-        if (!StringValidators.isValidTagName(tag)) {
-          printwwln(
-            'Invalid tag name. Tag names can only contain lowercase letters, '
-            'number, and dashes.',
-          );
-          _analytics.cleanUp();
-          return;
-        }
-      }
-
-      var projectName = await getProjectName();
-
-      var config = await GeneratorConfig.load();
-      if (config == null) {
-        exit(1);
-      }
-
-      int priority;
-      var packageType = config.type;
-      switch (packageType) {
-        case PackageType.internal:
-          priority = 0;
-          break;
-        case PackageType.module:
-          priority = 1;
-          break;
-        case PackageType.server:
-          priority = 2;
-          break;
-      }
-
-      var generator = MigrationGenerator(
-        directory: Directory.current,
-        projectName: projectName,
-      );
-
-      if (repair) {
-        await generator.repairMigration(
-          tag: tag,
-          force: force,
-          runMode: mode,
-          verbose: verbose,
-        );
-      } else {
-        await generator.createMigration(
-          tag: tag,
-          verbose: verbose,
-          force: force,
-          priority: priority,
-        );
-        print('Done.');
-      }
-
-      _analytics.cleanUp();
-      return;
+    if (hasErrors) {
+      throw ExitException();
     }
 
-    if (results.command!.name == cmdLanguageServer) {
-      await runLanguageServer();
-      _analytics.cleanUp();
-      return;
-    }
-
-    // Generate pubspecs command.
-    if (results.command!.name == cmdGeneratePubspecs) {
-      if (results.command!['version'] == 'X') {
-        print('--version is not specified');
-        _analytics.cleanUp();
-        return;
-      }
-      performGeneratePubspecs(
-          results.command!['version'], results.command!['mode']);
-      _analytics.cleanUp();
-      return;
-    }
-
-    // Analyze pubspecs command.
-    if (results.command!.name == cmdAnalyzePubspecs) {
-      bool checkLatestVersion = results.command!['check-latest-version'];
-      await performAnalyzePubspecs(checkLatestVersion);
-      return;
-    }
+    return;
   }
 
-  _analytics.track(event: 'help');
-  _printUsage(parser);
-  _analytics.cleanUp();
+  // Migrate command
+  if (results.command!.name == cmdMigrate) {
+    bool verbose = results.command!['verbose'];
+    bool force = results.command!['force'];
+    bool repair = results.command!['repair'];
+    String mode = results.command!['mode'];
+    String? tag = results.command!['tag'];
+
+    if (tag != null) {
+      if (!StringValidators.isValidTagName(tag)) {
+        log.error(
+          'Invalid tag name. Tag names can only contain lowercase letters, '
+          'number, and dashes.',
+        );
+        throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      }
+    }
+
+    var projectName = await getProjectName();
+
+    var config = await GeneratorConfig.load();
+    if (config == null) {
+      throw ExitException();
+    }
+
+    int priority;
+    var packageType = config.type;
+    switch (packageType) {
+      case PackageType.internal:
+        priority = 0;
+        break;
+      case PackageType.module:
+        priority = 1;
+        break;
+      case PackageType.server:
+        priority = 2;
+        break;
+    }
+
+    var generator = MigrationGenerator(
+      directory: Directory.current,
+      projectName: projectName,
+    );
+
+    if (repair) {
+      await generator.repairMigration(
+        tag: tag,
+        force: force,
+        runMode: mode,
+        verbose: verbose,
+      );
+    } else {
+      await generator.createMigration(
+        tag: tag,
+        verbose: verbose,
+        force: force,
+        priority: priority,
+      );
+      log.info('Done.',
+          style: const TextLogStyle(type: AbstractStyleType.success));
+    }
+
+    return;
+  }
+
+  if (results.command!.name == cmdLanguageServer) {
+    await runLanguageServer();
+    return;
+  }
+
+  // Generate pubspecs command.
+  if (results.command!.name == cmdGeneratePubspecs) {
+    if (results.command!['version'] == 'X') {
+      log.error('--version is not specified');
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+    performGeneratePubspecs(
+        results.command!['version'], results.command!['mode']);
+    return;
+  }
+
+  // Analyze pubspecs command.
+  if (results.command!.name == cmdAnalyzePubspecs) {
+    bool checkLatestVersion = results.command!['check-latest-version'];
+    if (!await pubspecDependenciesMatch(checkLatestVersion)) {
+      throw ExitException();
+    }
+
+    return;
+  }
 }
 
 void _printUsage(ArgParser parser) {
-  print('${Colorize('Usage:')..bold()} serverpod <command> [arguments]\n');
-  print('');
-  print('${Colorize('COMMANDS')..bold()}');
-  print('');
+  log.info(
+    'Usage: serverpod <command> [arguments]',
+    style: const TextLogStyle(
+      newParagraph: true,
+    ),
+  );
+  log.info(
+    'COMMANDS',
+    style: const TextLogStyle(
+      newParagraph: true,
+    ),
+  );
   _printCommandUsage(
     cmdVersion,
     'Prints the active version of the Serverpod CLI.',
@@ -427,16 +469,21 @@ void _printUsage(ArgParser parser) {
   );
 }
 
-void _printCommandUsage(String name, String descr,
-    [ArgParser? parser, bool last = false]) {
-  print('${Colorize('$name:')..bold()} $descr');
+void _printCommandUsage(String name, String description, [ArgParser? parser]) {
+  log.info(
+    '$name $description',
+    style: const TextLogStyle(
+      newParagraph: true,
+      wordWrap: false,
+    ),
+  );
   if (parser != null) {
-    print('');
-    print(parser.usage);
-    print('');
-  }
-
-  if (!last) {
-    print('');
+    log.info(
+      parser.usage,
+      style: const TextLogStyle(
+        newParagraph: true,
+        wordWrap: false,
+      ),
+    );
   }
 }

@@ -32,7 +32,8 @@ dependencies:
 
 
 dev_dependencies:
-  lints: ^2.0.1
+  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+    path: ../../../packages/serverpod_lints
   flutter_test:
     sdk: flutter
 

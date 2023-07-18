@@ -32,7 +32,7 @@ Future<UserInfo?> signInWithFirebase({
                   try {
                     var idToken = await user.getIdToken();
                     var serverResponse =
-                        await caller.firebase.authenticate(idToken);
+                        await caller.firebase.authenticate(idToken!);
 
                     if (!serverResponse.success &&
                         serverResponse.userInfo != null) {
@@ -73,6 +73,8 @@ Future<UserInfo?> signInWithFirebase({
   );
 
   var result = await completer.future;
+  // TODO: Fixme?
+  // ignore: use_build_context_synchronously
   Navigator.of(context).pop();
   return result;
 }

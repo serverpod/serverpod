@@ -24,4 +24,53 @@ void main() {
       expect(files.length, equals(0));
     });
   });
+
+  group('shouldBeIgnored', () {
+    test('should return true when path is within an ignorePath', () {
+      var ignorePaths = [p.join('path', 'subdirectory')];
+      var path = p.join('ignore', 'path', 'subdirectory', 'file.txt');
+
+      var result = shouldBeIgnored(path, ignorePaths);
+
+      expect(result, isTrue);
+    });
+
+    test('should return true when folder is within an ignorePath but not root',
+        () {
+      var ignorePaths = ['path'];
+      var path = p.join('ignore', 'path', 'subdirectory', 'file.txt');
+
+      var result = shouldBeIgnored(path, ignorePaths);
+
+      expect(result, isTrue);
+    });
+
+    test('should return false when path is not within any ignorePath', () {
+      var ignorePaths = [p.join('ignore', 'path')];
+      var path = p.join('another', 'path', 'subdirectory', 'file.txt');
+
+      var result = shouldBeIgnored(path, ignorePaths);
+
+      expect(result, isFalse);
+    });
+
+    test('should return false when ignorePaths is empty', () {
+      List<String> ignorePaths = [];
+      var path = p.join('any', 'path', 'subdirectory', 'file.txt');
+
+      var result = shouldBeIgnored(path, ignorePaths);
+
+      expect(result, isFalse);
+    });
+
+    test('should return false when ignorePaths is part of folder name in path',
+        () {
+      List<String> ignorePaths = ['part'];
+      var path = p.join('any', 'path', 'part_of', 'subdirectory', 'file.txt');
+
+      var result = shouldBeIgnored(path, ignorePaths);
+
+      expect(result, isFalse);
+    });
+  });
 }

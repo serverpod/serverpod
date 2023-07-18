@@ -18,4 +18,5 @@ dependencies:
     path: ../serverpod_client
 
 dev_dependencies:
-  lints: ^2.0.1
+  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+    path: ../serverpod_lints

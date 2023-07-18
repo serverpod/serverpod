@@ -14,13 +14,13 @@ void main() {
       var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
       setUp(() {
         if (!emptyFolder.existsSync()) {
-          emptyFolder.create();
+          emptyFolder.createSync();
         }
       });
 
       tearDown(() {
         if (emptyFolder.existsSync()) {
-          emptyFolder.delete();
+          emptyFolder.deleteSync();
         }
       });
 
@@ -215,6 +215,21 @@ void main() {
         var packageWarnings = performServerpodPackagesAndCliVersionCheck(
           cliVersion,
           corruptedPubspecPath,
+        );
+
+        expect(packageWarnings.isEmpty, isTrue);
+      });
+    });
+
+    group('With approximate serverpod package version in vendor folder', () {
+      var vendorPubspecPath = Directory(p.join(testAssetsPath, 'vendor'));
+
+      test('performServerpodPackagesAndCliVersionCheck() with same version',
+          () {
+        var cliVersion = Version(1, 1, 0);
+        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+          cliVersion,
+          vendorPubspecPath,
         );
 
         expect(packageWarnings.isEmpty, isTrue);
