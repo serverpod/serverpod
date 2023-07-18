@@ -40,7 +40,10 @@ class GeneratorConfig {
   static GeneratorConfig? _instance;
 
   /// Get the current [GeneratorConfig] instance.
-  static GeneratorConfig? get instance => _instance;
+  static GeneratorConfig get instance {
+    assert(_instance != null, 'GeneratorConfig is not loaded.');
+    return _instance!;
+  }
 
   /// The name of the serverpod project.
   ///
@@ -265,6 +268,7 @@ class GeneratorConfig {
         extraClasses: extraClasses,
         serializeEnumValuesAsStrings: serializeEnumValuesAsStrings);
 
+    assert(_instance == null, 'GeneratorConfig should only be loaded once.');
     _instance = config;
 
     return config;
