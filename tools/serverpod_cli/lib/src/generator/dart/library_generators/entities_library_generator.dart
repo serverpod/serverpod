@@ -750,7 +750,7 @@ class SerializableEntityLibraryGenerator {
           ]);
 
           var serializeEnumValuesAsStrings =
-              GeneratorConfig.instance!.serializeEnumValuesAsStrings;
+              GeneratorConfig.instance.serializeEnumValuesAsStrings;
           if (serializeEnumValuesAsStrings) {
             e.fields.add(Field(
               (f) => f
