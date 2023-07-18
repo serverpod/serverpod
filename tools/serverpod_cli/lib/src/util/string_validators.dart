@@ -12,6 +12,9 @@ class StringValidators {
   static bool isValidFieldName(String name) =>
       _camelCaseTester.hasMatch(name) || _snakeCaseTester.hasMatch(name);
 
+  static bool isValidFieldType(String type) =>
+      RegExp(r'^([a-zA-Z_:][a-zA-Z0-9_:]*\??)$').hasMatch(type);
+
   static bool isValidClassName(String name) =>
       _pascalCaseWithUppercaseTester.hasMatch(name);
 

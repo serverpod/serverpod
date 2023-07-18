@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/logger/logger.dart';
+
 import '../create/copier.dart';
 
 /// The internal tool for generating the pubspec.yaml files in the Serverpod
@@ -13,11 +15,11 @@ void performGeneratePubspecs(String version, String mode) {
   if (!dirPackages.existsSync() ||
       !dirTemplates.existsSync() ||
       !dirRoot.existsSync()) {
-    print('Must be run from the serverpod repository root');
+    log.error('Must be run from the serverpod repository root');
     return;
   }
 
-  print('Doing some fancy generation');
+  log.info('Doing some fancy generation');
 
   if (mode == 'development') {
     // Development mode

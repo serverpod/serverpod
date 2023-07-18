@@ -5,8 +5,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
 import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
-import 'package:serverpod_cli/src/util/print.dart';
 
 /// A code generator is responsible for generating the code for the target
 /// language.
@@ -86,7 +86,7 @@ abstract class CodeGenerator {
     for (var file in allFiles.entries) {
       try {
         if (verbose) {
-          printww('Generating ${file.key}.');
+          log.debug('Generating ${file.key}.');
         }
         var out = File(file.key);
         await out.create(recursive: true);
@@ -94,7 +94,7 @@ abstract class CodeGenerator {
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
-        printww('Failed to generate ${file.key}!');
+        log.error('Failed to generate ${file.key}!');
         printInternalError(e, stackTrace);
       }
     }
@@ -124,7 +124,7 @@ abstract class CodeGenerator {
     for (var file in allFiles.entries) {
       try {
         if (verbose) {
-          printww('Generating ${file.key}.');
+          log.debug('Generating ${file.key}.');
         }
         var out = File(file.key);
         await out.create(recursive: true);
@@ -132,7 +132,7 @@ abstract class CodeGenerator {
 
         collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
-        printww('Failed to generate ${file.key}');
+        log.error('Failed to generate ${file.key}');
         printInternalError(e, stackTrace);
       }
     }
@@ -150,7 +150,7 @@ abstract class CodeGenerator {
     required bool verbose,
   }) async {
     if (verbose) {
-      printww('Cleaning up old files.');
+      log.debug('Cleaning up old files.');
     }
     for (var generator in generators) {
       var dirs = await generator.getDirectoriesRequiringCleaning(
@@ -178,7 +178,7 @@ Future<void> _removeOldFilesInPath(
 ) async {
   var directory = Directory(directoryPath);
   if (verbose) {
-    print('Remove old files from $directory');
+    log.debug('Remove old files from $directory');
   }
   var fileList = await directory.list(recursive: true).toList();
 
@@ -191,7 +191,7 @@ Future<void> _removeOldFilesInPath(
 
     if (!keepPaths.contains(entity.path)) {
       if (verbose) {
-        print('Remove: $entity');
+        log.debug('Remove: $entity');
       }
       await entity.delete();
     }

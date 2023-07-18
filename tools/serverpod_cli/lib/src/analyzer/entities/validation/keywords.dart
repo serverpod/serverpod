@@ -12,6 +12,7 @@ class Keyword {
   static const String type = 'type';
   static const String unique = 'unique';
   static const String parent = 'parent';
+  static const String relation = 'relation';
   static const String api = 'api';
   static const String database = 'database';
 

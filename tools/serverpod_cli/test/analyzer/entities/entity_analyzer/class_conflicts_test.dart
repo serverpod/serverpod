@@ -1,6 +1,6 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -8,36 +8,49 @@ void main() {
       'Given two protocols with the same class name, then an error is collected that there is a collision in the class names.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+
+    var protocol1 = ProtocolSource(
+      '''
 class: Example
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    var entity1 = analyzer.analyze();
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
 
-    var analyzer2 = SerializableEntityAnalyzer(
-      yaml: '''
+    var protocol2 = ProtocolSource(
+      '''
 class: Example
 fields:
   differentName: String
 ''',
-      sourceFileName: 'lib/src/protocol/example2.yaml',
-      outFileName: 'example2.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example2.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    var entity2 = analyzer2.analyze();
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
 
-    analyzer.analyze(
-      protocolEntities: [entity1, entity2].cast<SerializableEntityDefinition>(),
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      [definition1!, definition2!],
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      [definition1, definition2],
     );
 
     expect(collector.errors.length, greaterThan(0));
@@ -50,22 +63,27 @@ fields:
       'Given a single valid protocol, then there is no error collected for the class name.',
       () {
     var collector = CodeGenerationCollector();
-    var analyzer = SerializableEntityAnalyzer(
-      yaml: '''
+
+    var protocol = ProtocolSource(
+      '''
 class: Example
 fields:
   name: String
 ''',
-      sourceFileName: 'lib/src/protocol/example.yaml',
-      outFileName: 'example.yaml',
-      subDirectoryParts: ['lib', 'src', 'protocol'],
-      collector: collector,
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
     );
 
-    var entity = analyzer.analyze();
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
 
-    analyzer.analyze(
-      protocolEntities: [entity].cast<SerializableEntityDefinition>(),
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
     );
 
     expect(collector.errors, isEmpty);

@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generator/dart/entities_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generator.dart';
-import 'package:serverpod_cli/src/util/print.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// A [CodeGenerator], that generates dart code.
 class DartCodeGenerator extends CodeGenerator {
@@ -128,7 +128,7 @@ extension on Library {
 $code
 ''');
       } on FormatterException catch (e) {
-        printww(e.toString());
+        log.error(e.toString());
       }
     }
     return code;

@@ -1,15 +1,39 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:lsp_server/lsp_server.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 
 import '../../analyzer.dart';
 import '../generator/code_generation_collector.dart';
 
+class ServerProject {
+  Uri serverRootUri;
+  GeneratorConfig config;
+  StatefulAnalyzer analyzer;
+
+  ServerProject({
+    required this.serverRootUri,
+    required this.config,
+    required this.analyzer,
+  });
+}
+
 Future<void> runLanguageServer() async {
   var connection = Connection(stdin, stdout);
 
+  ServerProject? serverProject;
+
   connection.onInitialize((params) async {
+    var rootUri = params.rootUri;
+    if (rootUri != null) {
+      serverProject = await _loadServerProject(rootUri, connection);
+    }
+
     return InitializeResult(
       capabilities: ServerCapabilities(
         textDocumentSync: const Either2.t1(TextDocumentSyncKind.Full),
@@ -17,21 +41,62 @@ Future<void> runLanguageServer() async {
     );
   });
 
-  connection.onDidOpenTextDocument((params) async {
-    var diagnostics = _validateYamlProtocol(
-      params.textDocument.text,
-      params.textDocument.uri.toString(),
-    );
+  connection.onInitialized((_) async {
+    if (serverProject == null) {
+      _sendServerDisabledNotification(connection);
+    } else {
+      serverProject?.analyzer.validateAll();
+    }
+  });
 
-    connection.sendDiagnostics(
-      PublishDiagnosticsParams(
-        diagnostics: diagnostics,
-        uri: params.textDocument.uri,
+  connection.onShutdown(() async {
+    serverProject = null;
+  });
+
+  connection.onExit(() => connection.close());
+
+  connection.onDidCloseTextDocument((params) async {
+    var project = serverProject;
+    if (project == null) return;
+    if (!project.analyzer.isProtocolRegistered(params.textDocument.uri)) {
+      return;
+    }
+    if (_isFileOnDisk(params.textDocument.uri)) return;
+
+    project.analyzer.removeYamlProtocol(params.textDocument.uri);
+    project.analyzer.validateAll();
+  });
+
+  connection.onDidOpenTextDocument((params) async {
+    var project = serverProject;
+    if (project == null) return;
+    if (project.analyzer.isProtocolRegistered(params.textDocument.uri)) {
+      return;
+    }
+    if (!_isProtocolInServerPath(
+        params.textDocument.uri, project.serverRootUri)) {
+      return;
+    }
+
+    project.analyzer.addYamlProtocol(
+      ProtocolSource(
+        params.textDocument.text,
+        params.textDocument.uri,
+        ProtocolHelper.extractPathFromProtocolRoot(
+          project.config,
+          params.textDocument.uri,
+        ),
       ),
     );
+
+    // We need to validate all protocols as the new protocol might reference or
+    // be referenced by other protocols.
+    project.analyzer.validateAll();
   });
 
   connection.onDidChangeTextDocument((params) async {
+    if (serverProject == null) return;
+
     var contentChanges = params.contentChanges.map((content) {
       return content.map(
         (document) => TextDocumentContentChangeEvent2(text: document.text),
@@ -39,41 +104,98 @@ Future<void> runLanguageServer() async {
       );
     });
 
-    var diagnostics = _validateYamlProtocol(
-      contentChanges.last.text,
-      params.textDocument.uri.toString(),
-    );
-
-    connection.sendDiagnostics(
-      PublishDiagnosticsParams(
-        diagnostics: diagnostics,
-        uri: params.textDocument.uri,
-      ),
+    serverProject?.analyzer.validateProtocol(
+      contentChanges.first.text,
+      params.textDocument.uri,
     );
   });
 
   await connection.listen();
 }
 
-List<Diagnostic> _validateYamlProtocol(String yaml, String sourcePath) {
-  var collector = CodeGenerationCollector();
+void _sendServerDisabledNotification(Connection connection) {
+  connection.sendNotification(
+    'window/showMessage',
+    ShowMessageParams(
+      message:
+          'Serverpod protocol validation disabled, not a Serverpod project.',
+      type: MessageType.Info,
+    ).toJson(),
+  );
+}
 
-  var analyzer = SerializableEntityAnalyzer(
-    yaml: yaml,
-    sourceFileName: sourcePath,
-    outFileName: '', // Only needed for real codegen
-    subDirectoryParts: [], // Only needed for real codegen
-    collector: collector,
+Future<ServerProject?> _loadServerProject(
+  Uri rootUri,
+  Connection connection,
+) async {
+  var rootDir = Directory.fromUri(rootUri);
+
+  var serverRootDir = _findServerDirectory(rootDir);
+  if (serverRootDir == null) return null;
+
+  var config = await GeneratorConfig.load(serverRootDir.path);
+  if (config == null) return null;
+
+  var yamlSources = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
+    config,
   );
 
-  analyzer.analyze();
+  var analyzer = StatefulAnalyzer(
+    yamlSources,
+    (filePath, errors) => _reportDiagnosticErrors(connection, filePath, errors),
+  );
 
-  var diagnostics = collector.errors.where((e) => e.span != null).map((error) {
+  return ServerProject(
+    serverRootUri: serverRootDir.uri,
+    config: config,
+    analyzer: analyzer,
+  );
+}
+
+Directory? _findServerDirectory(Directory root) {
+  if (isServerDirectory(root)) return root;
+
+  var childDirs = root.listSync().where(
+        (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
+      );
+
+  if (childDirs.isNotEmpty) {
+    return Directory.fromUri(childDirs.first.uri);
+  }
+
+  return null;
+}
+
+void _reportDiagnosticErrors(
+  Connection connection,
+  Uri filePath,
+  CodeGenerationCollector errors,
+) {
+  var diagnostics = _convertErrorsToDiagnostic(errors);
+  connection.sendDiagnostics(
+    PublishDiagnosticsParams(
+      diagnostics: diagnostics,
+      uri: filePath,
+    ),
+  );
+}
+
+List<Diagnostic> _convertErrorsToDiagnostic(
+  CodeGenerationCollector errors,
+) {
+  return errors.errors.where((e) => e.span != null).map((error) {
     var span = error.span;
     if (span == null) throw Error();
 
+    var severity = DiagnosticSeverity.Error;
+    List<DiagnosticTag>? tags;
+    if (error is SourceSpanSeverityException) {
+      severity = _convertToDiagnosticSeverity(error.severity);
+      tags = _convertToDiagnosticTags(error.tags);
+    }
+
     return Diagnostic(
-      severity: DiagnosticSeverity.Error,
+      severity: severity,
       source: DiagnosticsSource.serverpod,
       message: error.message,
       range: Range(
@@ -86,8 +208,48 @@ List<Diagnostic> _validateYamlProtocol(String yaml, String sourcePath) {
           character: span.end.column,
         ),
       ),
+      tags: tags,
     );
   }).toList();
+}
 
-  return diagnostics;
+DiagnosticSeverity _convertToDiagnosticSeverity(
+  SourceSpanSeverity severity,
+) {
+  switch (severity) {
+    case SourceSpanSeverity.error:
+      return DiagnosticSeverity.Error;
+    case SourceSpanSeverity.warning:
+      return DiagnosticSeverity.Warning;
+    case SourceSpanSeverity.info:
+      return DiagnosticSeverity.Information;
+    case SourceSpanSeverity.hint:
+      return DiagnosticSeverity.Hint;
+  }
+}
+
+List<DiagnosticTag>? _convertToDiagnosticTags(List<SourceSpanTag>? tags) {
+  if (tags == null) return null;
+
+  return tags.map((tag) {
+    switch (tag) {
+      case SourceSpanTag.unnecessary:
+        return DiagnosticTag.Unnecessary;
+      case SourceSpanTag.deprecated:
+        return DiagnosticTag.Deprecated;
+    }
+  }).toList();
+}
+
+bool _isProtocolInServerPath(Uri uri, Uri serverUri) {
+  var path = uri.path;
+  if (path.contains(serverUri.path)) {
+    return true;
+  }
+  return false;
+}
+
+bool _isFileOnDisk(Uri uri) {
+  var file = File.fromUri(uri);
+  return file.existsSync();
 }

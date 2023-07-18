@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:package_config/package_config.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_cli/src/util/print.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:yaml/yaml.dart';
 
 const _serverSuffix = '_server';
 
-Future<List<ModuleConfig>> locateModules({
+Future<List<ModuleConfig>?> locateModules({
   required Directory directory,
   List<String> exludePackages = const [],
 }) async {
@@ -58,11 +58,11 @@ Future<List<ModuleConfig>> locateModules({
 
     return modules;
   } else {
-    printww(
+    log.error(
       'Failed to read your server\'s package configuration. Have you run '
       '`dart pub get` in your server directory?',
     );
-    exit(1);
+    return null;
   }
 }
 
@@ -121,7 +121,7 @@ Future<List<Uri>> locateAllModulePaths({
       );
       paths.add(packageRoot);
     } catch (e) {
-      print(e);
+      log.debug(e.toString());
       continue;
     }
   }
