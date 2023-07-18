@@ -64,7 +64,7 @@ class StdOutLogger extends Logger {
     bool isHint = false;
 
     if (sourceSpan is SourceSpanSeverityException) {
-    var severity = sourceSpan.severity;
+      var severity = sourceSpan.severity;
       isHint = severity == SourceSpanSeverity.hint;
       logLevel = _SeveritySpanHelpers.severityToLogLevel(severity);
     }
