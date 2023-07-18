@@ -260,7 +260,7 @@ fields:
 
       expect(collector.errors.length, greaterThan(0));
 
-      var error = collector.errors.last;
+      var error = collector.errors.first;
 
       expect(
         error.span,

@@ -49,7 +49,6 @@ void main() {
         'test.yaml',
       ));
 
-      print(serverRootDir.path);
       var config = createGeneratorConfig(split(serverRootDir.path));
 
       var pathParts = ProtocolHelper.extractPathFromProtocolRoot(
@@ -78,7 +77,6 @@ void main() {
         'test.yaml',
       ));
 
-      print(serverRootDir.path);
       var config = createGeneratorConfig(split(serverRootDir.path));
 
       var pathParts = ProtocolHelper.extractPathFromProtocolRoot(

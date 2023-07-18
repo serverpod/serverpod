@@ -5,6 +5,7 @@ import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
@@ -122,7 +123,7 @@ class ResourceManager {
   }
 
   Future<void> installTemplates() async {
-    print('Downloading templates for version $templateVersion');
+    log.info('Downloading templates for version $templateVersion');
     if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
     var response = await http.get(Uri.parse(packageDownloadUrl));
@@ -144,7 +145,7 @@ class ResourceManager {
         await Directory(outFileName).create(recursive: true);
       }
     }
-    print('Download complete.\n');
+    log.info('Download complete.');
   }
 }
 
