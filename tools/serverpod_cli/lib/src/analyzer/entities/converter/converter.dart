@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -11,71 +8,115 @@ List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
+typedef DeepNestedNodeHandler = YamlMap Function(
+    String? content, SourceSpan span);
+
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
-  YamlNode contentNode,
-  ValidateNode node, {
+  SourceSpan span, {
+  String? firstKey,
   void Function(String key, SourceSpan? span)? onDuplicateKey,
 }) {
-  var options = _extractOptions(content);
+  var stringifiedNodes = _extractStringifiedNodes(content);
 
-  var initRawValue = options.isNotEmpty ? options.first : null;
-
-  var fieldKeyValuePairs = _extractKeyValuePairs(
-    options.skip(1),
+  Map<dynamic, YamlNode> initNodes = _extractInitialNode(
+    firstKey,
+    stringifiedNodes,
     content,
-    contentNode.span,
+    span,
+  );
+
+  var startNodeIndex = initNodes.length;
+  var fieldKeyValuePairs = _extractKeyValuePairs(
+    stringifiedNodes.skip(startNodeIndex),
+    content,
+    span,
+    handleDeepNestedNodes: (nestedContent, nestedSpan) {
+      // recursion
+      return convertStringifiedNestedNodesToYamlMap(
+        nestedContent,
+        nestedSpan,
+        onDuplicateKey: onDuplicateKey,
+      );
+    },
   );
 
   var duplicates = _findDuplicateKeys(fieldKeyValuePairs);
   for (var duplicate in duplicates) {
     onDuplicateKey?.call(
       duplicate,
-      _extractSubSpan(content, contentNode.span, duplicate),
+      _extractSubSpan(content, span, duplicate),
     );
   }
 
-  Map<dynamic, YamlNode> initNodes = _createdYamlNode(
-    node.nested.first.key,
-    initRawValue,
-    _extractSubSpan(content, contentNode.span, initRawValue),
+  Map<dynamic, YamlNode> internalNodes = fieldKeyValuePairs.fold(
+    initNodes,
+    (aggregate, pair) => {...aggregate, ...pair},
   );
-
-  Map<dynamic, YamlNode> internalNodes =
-      fieldKeyValuePairs.fold(initNodes, (aggregate, pair) {
-    return {...aggregate, ...pair};
-  });
 
   // deepEqualsMap is needed to be able to compare YamlScala as keys
   var nodes = deepEqualsMap<dynamic, YamlNode>();
   nodes.addAll(internalNodes);
 
-  return YamlMap.internal(nodes, contentNode.span, CollectionStyle.ANY);
+  return YamlMap.internal(nodes, span, CollectionStyle.ANY);
 }
 
-List<String> _extractOptions(String? input) {
+Map<dynamic, YamlNode> _extractInitialNode(
+  String? firstKey,
+  List<String> options,
+  String? content,
+  SourceSpan span,
+) {
+  if (firstKey == null) return {};
+
+  var initRawValue = options.isNotEmpty ? options.first : null;
+  return _createdYamlScalarNode(
+    firstKey,
+    initRawValue,
+    _extractSubSpan(content, span, initRawValue),
+  );
+}
+
+List<String> _extractStringifiedNodes(String? input) {
   if (input == null) return [];
 
-  // Split on comma, but not if the comma is inside < >
-  return input.split(RegExp(r',(?![^<]*>)')).map((e) => e.trim()).toList();
+  // Split on comma, but not if the comma is inside < > or ( )
+  return input
+      .split(RegExp(r',(?![^(]*\))(?![^<]*>)'))
+      .map((e) => e.trim())
+      .toList();
 }
 
 Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
   Iterable<String> fieldOptions,
   String? content,
-  SourceSpan span,
-) {
+  SourceSpan span, {
+  required DeepNestedNodeHandler handleDeepNestedNodes,
+}) {
   if (content == null) return [];
 
   var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
-    var keyValuePair = stringifiedKeyValuePair.split('=');
-
-    var key = keyValuePair.first;
-    var value = keyValuePair.length == 2 ? keyValuePair.last : null;
-
     var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
-    return _createdYamlNode(
+    if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
+      var nestedComponents =
+          stringifiedKeyValuePair.replaceAll(')', '').split('(');
+
+      var key = nestedComponents.first;
+      var stringifiedContent = nestedComponents.last;
+
+      var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
+      var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
+
+      return _createYamlMapNode(key, nodeMap, keyValueSpan);
+    }
+
+    List<String> keyValuePair = stringifiedKeyValuePair.split('=');
+
+    String key = keyValuePair.first;
+    String? value = keyValuePair.length == 2 ? keyValuePair.last : null;
+
+    return _createdYamlScalarNode(
       key,
       value,
       keyValueSpan,
@@ -84,6 +125,9 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 
   return fieldPairs;
 }
+
+bool _hasNestedStringifiedValues(String stringifiedKeyValuePair) =>
+    stringifiedKeyValuePair.contains('(');
 
 SourceSpan _extractSubSpan(
   String? content,
@@ -121,23 +165,30 @@ Set<String> _findDuplicateKeys(Iterable<Map<YamlScalar, dynamic>> list) {
   return duplicates;
 }
 
-Map<YamlScalar, YamlNode> _createdYamlNode(
+Map<YamlScalar, YamlScalar> _createdYamlScalarNode(
   String rawKey,
-  dynamic rawValue,
+  String? rawValue,
   SourceSpan span,
 ) {
-  var fullSpanLength = span.length;
+  var trimmedKey = rawKey.trim();
+  var keySpan = _extractSubSpan(span.text, span, trimmedKey);
+  var key = YamlScalar.internalWithSpan(trimmedKey, keySpan);
 
-  var keySpanEnd = min(rawKey.length, fullSpanLength);
+  var trimmedValue = rawValue?.trim();
+  var valueSpan = _extractSubSpan(span.text, span, trimmedValue);
+  var value = YamlScalar.internalWithSpan(trimmedValue, valueSpan);
 
-  var keySpan = span.subspan(0, keySpanEnd);
-  var key = YamlScalar.internalWithSpan(rawKey, keySpan);
+  return {key: value};
+}
 
-  var valueLength = rawValue?.toString().length ?? 0;
-  var valueSpanStart = fullSpanLength - valueLength;
-
-  var valueSpan = span.subspan(valueSpanStart);
-  var value = YamlScalar.internalWithSpan(rawValue, valueSpan);
+Map<YamlScalar, YamlMap> _createYamlMapNode(
+  String rawKey,
+  YamlMap value,
+  SourceSpan span,
+) {
+  var trimmedKey = rawKey.trim();
+  var keySpan = _extractSubSpan(span.text, span, trimmedKey);
+  var key = YamlScalar.internalWithSpan(trimmedKey, keySpan);
 
   return {key: value};
 }

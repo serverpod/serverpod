@@ -161,6 +161,122 @@ values:
         'The "enum" type must be a valid class name (e.g. PascalCaseString).');
   });
 
+  test(
+      'Given a class name with reserved value List, then give an error that the class name is reserved.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+class: List
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The class name "List" is reserved and cannot be used.',
+    );
+  });
+
+  test(
+      'Given a class name with reserved value Map, then give an error that the class name is reserved.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+class: Map
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The class name "Map" is reserved and cannot be used.',
+    );
+  });
+
+  test(
+      'Given a class name with reserved value String, then give an error that the class name is reserved.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+class: String
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The class name "String" is reserved and cannot be used.',
+    );
+  });
+
+  test(
+      'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+class: DateTime
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+    SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml, protocol.yamlSourceUri.path, collector, definition, []);
+
+    expect(collector.errors.length, greaterThan(0));
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The class name "DateTime" is reserved and cannot be used.',
+    );
+  });
+
   group('Given a protocol without any defined entity type', () {
     test(
         'Then return a human readable error message informing the user that the entity type is missing.',
