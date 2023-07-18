@@ -305,7 +305,7 @@ Future _runCommand(ArgResults results, ArgParser parser) async {
         'packages used in your project.',
       );
       for (var warning in warnings) {
-        log.warning(warning.toString());
+        log.sourceSpanException(warning, newParagraph: true);
       }
     }
 

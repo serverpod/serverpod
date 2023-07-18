@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
+import 'package:source_span/source_span.dart';
 
 /// Serverpods internal logger interface.
 /// All logging output should go through this interface.
@@ -45,13 +45,13 @@ abstract class Logger {
     LogStyle style,
   });
 
-  /// Display a [SourceSpanSeverityException] to the user.
-  /// Commands should use this to log [SourceSpanSeverityException] with
-  /// enhanced highlighting where possible.
-  void sourceSpanSeverityException(
-    SourceSpanSeverityException sourceSpan,
-    LogLevel logLevel,
-  );
+  /// Display a [SourceSpanException] to the user.
+  /// Commands should use this to log [SourceSpanException] with
+  /// enhanced highlighting if possible.
+  void sourceSpanException(
+    SourceSpanException sourceSpan, {
+    bool newParagraph,
+  });
 
   /// Returns a [Future] that completes once all logging is complete.
   Future<void> flush();
@@ -62,7 +62,6 @@ enum LogLevel {
   info,
   warning,
   error,
-  nothing,
 }
 
 enum AbstractStyleType {

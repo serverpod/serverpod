@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:source_span/source_span.dart';
 
 /// A [CodeAnalysisCollector] that also keeps track of generated files.
@@ -41,7 +42,15 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
     if (errors.isEmpty) {
       return;
     }
-    stdout.write(toString());
+
+    log.error(
+      'Found ${errors.length} error${errors.length == 1 ? '' : 's'}.',
+      style: const TextLogStyle(newParagraph: true),
+    );
+
+    for (var error in errors) {
+      log.sourceSpanException(error, newParagraph: true);
+    }
   }
 
   @override
