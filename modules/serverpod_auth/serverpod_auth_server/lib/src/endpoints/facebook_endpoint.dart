@@ -163,10 +163,10 @@ class FacebookEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
-    } else if (userInfo.blocked) {
+    } else if (userInfo.banned) {
       return AuthenticationResponse(
         success: false,
-        failReason: AuthenticationFailReason.blocked,
+        failReason: AuthenticationFailReason.banned,
       );
     }
 
