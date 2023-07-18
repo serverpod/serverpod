@@ -20,7 +20,7 @@ class AnalyzePubspecsCommand extends ServerpodCommand {
   }
 
   @override
-  Future run() async {
+  Future<void> run() async {
     bool checkLatestVersion = argResults!['check-latest-version'];
     if (!await pubspecDependenciesMatch(checkLatestVersion)) {
       throw ExitException();

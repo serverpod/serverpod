@@ -30,7 +30,7 @@ class CreateCommand extends ServerpodCommand {
   }
 
   @override
-  Future run() async {
+  Future<void> run() async {
     var name = argResults!.arguments.last;
     bool verbose = argResults!['verbose'];
     String template = argResults!['template'];

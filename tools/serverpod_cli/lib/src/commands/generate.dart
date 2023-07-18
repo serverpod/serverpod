@@ -35,7 +35,7 @@ class GenerateCommand extends ServerpodCommand {
   }
 
   @override
-  Future run() async {
+  Future<void> run() async {
     // Always do a full generate.
     bool verbose = argResults!['verbose'];
     bool watch = argResults!['watch'];

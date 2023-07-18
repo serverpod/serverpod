@@ -54,7 +54,7 @@ class ServerpodCommandRunner extends CommandRunner {
   }
 
   @override
-  Future runCommand(ArgResults topLevelResults) async {
+  Future<void> runCommand(ArgResults topLevelResults) async {
     // TODO: [GlobalFlags.developmentPrint] should silence all logging with a
     // suitable name. Make this once we have a centralized logging and printing.
     if (topLevelResults[GlobalFlags.developmentPrint] && _productionMode) {
@@ -84,7 +84,7 @@ class ServerpodCommandRunner extends CommandRunner {
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
 
-  Future _preCommandPrints() async {
+  Future<void> _preCommandPrints() async {
     if (!_productionMode) {
       log.debug(
         'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',

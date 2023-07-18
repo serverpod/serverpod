@@ -18,7 +18,7 @@ class LanguageServerCommand extends ServerpodCommand {
   }
 
   @override
-  Future run() async {
+  Future<void> run() async {
     await runLanguageServer();
   }
 }
