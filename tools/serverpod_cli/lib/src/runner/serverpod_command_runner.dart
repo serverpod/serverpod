@@ -59,6 +59,8 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
+    await _preCommandChecks();
+
     // TODO: [GlobalFlags.developmentPrint] should silence all logging with a
     // suitable name. Make this once we have a centralized logging and printing.
     if (topLevelResults[GlobalFlags.developmentPrint]) {
@@ -87,6 +89,46 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
+
+  Future<void> _preCommandChecks() async {
+    if (Platform.isWindows) {
+      log.warning(
+          'Windows is not officially supported yet. Things may or may not work '
+          'as expected.');
+    }
+
+    // Check that required tools are installed
+    if (!await CommandLineTools.existsCommand('dart')) {
+      log.error(
+          'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+      throw ExitException();
+    }
+    if (!await CommandLineTools.existsCommand('flutter')) {
+      log.error(
+          'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+      throw ExitException();
+    }
+
+    if (!loadEnvironmentVars()) {
+      throw ExitException();
+    }
+
+    // Make sure all necessary downloads are installed
+    if (!resourceManager.isTemplatesInstalled) {
+      try {
+        await resourceManager.installTemplates();
+      } catch (e) {
+        log.error('Failed to download templates.');
+        throw ExitException();
+      }
+
+      if (!resourceManager.isTemplatesInstalled) {
+        log.error(
+            'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
+        throw ExitException();
+      }
+    }
+  }
 
   Future<void> _preCommandPrints() async {
     if (_productionMode) {
