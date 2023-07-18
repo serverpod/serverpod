@@ -61,11 +61,23 @@ abstract class Logger {
 }
 
 enum LogLevel {
-  debug,
-  info,
-  warning,
-  error,
-  nothing,
+  debug('debug'),
+  info('info'),
+  warning('warning'),
+  error('error'),
+  nothing('nothing');
+
+  const LogLevel(this.asString);
+  final String asString;
+
+  static LogLevel? fromString(String logLevelString) {
+    for (var logLevel in LogLevel.values) {
+      if (logLevel.asString == logLevelString) {
+        return logLevel;
+      }
+    }
+    return null;
+  }
 }
 
 enum AbstractStyleType {
