@@ -44,7 +44,7 @@ void run(List<String> args) async {
   // see https://support.google.com/accounts/answer/185833?hl=en for how to do that.
   // Then add the email and password to the config/passwords.yaml file.
   // This is a test example, do not use this type of integration in production
-  // as that may lead to you getting blocked for spam and other issues.
+  // as that may lead to you getting banned for spam and other issues.
   // Instead use a real email service provider, such as SendGrid, Mailjet or others.
   auth.AuthConfig.set(auth.AuthConfig(
     sendValidationEmail: (session, email, validationCode) async {

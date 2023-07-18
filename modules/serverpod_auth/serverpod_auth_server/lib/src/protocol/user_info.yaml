@@ -28,8 +28,8 @@ fields:
   ### List of scopes that this user can access.
   scopeNames: List<String>
 
-  ### True if the user is blocked from signing in.
-  blocked: bool
+  ### True if the user is banned from signing in.
+  banned: bool
 indexes:
   serverpod_user_info_user_identifier:
     fields: userIdentifier

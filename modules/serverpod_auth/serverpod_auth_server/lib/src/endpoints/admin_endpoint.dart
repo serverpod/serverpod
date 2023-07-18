@@ -13,7 +13,7 @@ class AdminEndpoint extends Endpoint {
   Future<UserInfo?> getUserInfo(Session session, int userId) async =>
       Users.findUserByUserId(session, userId);
 
-  /// Marks a user as blocked so that they can't log in, and invalidates their
+  /// Marks a user as banned so that they can't log in, and invalidates their
   /// auth key so that they can't keep calling endpoints through their current
   /// session.
   Future<void> blockUser(Session session, int userId) async =>

@@ -14,7 +14,7 @@ enum AuthenticationFailReason with _i1.SerializableEntity {
   userCreationDenied,
   internalError,
   tooManyFailedAttempts,
-  blocked;
+  banned;
 
   static AuthenticationFailReason? fromJson(int index) {
     switch (index) {
@@ -27,7 +27,7 @@ enum AuthenticationFailReason with _i1.SerializableEntity {
       case 3:
         return tooManyFailedAttempts;
       case 4:
-        return blocked;
+        return banned;
       default:
         return null;
     }
