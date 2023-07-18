@@ -97,7 +97,7 @@ CREATE TABLE "serverpod_user_info" (
     "created" timestamp without time zone NOT NULL,
     "imageUrl" text,
     "scopeNames" json NOT NULL,
-    "blocked" boolean NOT NULL
+    "banned" boolean NOT NULL
 );
 
 -- Indexes

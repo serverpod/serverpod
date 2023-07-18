@@ -500,7 +500,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
-          name: 'blocked',
+          name: 'banned',
           columnType: _i2.ColumnType.boolean,
           isNullable: false,
           dartType: 'bool',
