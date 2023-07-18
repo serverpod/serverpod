@@ -94,8 +94,8 @@ class Endpoints extends _i1.EndpointDispatch {
             params['userId'],
           ),
         ),
-        'blockUser': _i1.MethodConnector(
-          name: 'blockUser',
+        'banUser': _i1.MethodConnector(
+          name: 'banUser',
           params: {
             'userId': _i1.ParameterDescription(
               name: 'userId',
@@ -107,13 +107,13 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['admin'] as _i2.AdminEndpoint).blockUser(
+              (endpoints['admin'] as _i2.AdminEndpoint).banUser(
             session,
             params['userId'],
           ),
         ),
-        'unblockUser': _i1.MethodConnector(
-          name: 'unblockUser',
+        'unbanUser': _i1.MethodConnector(
+          name: 'unbanUser',
           params: {
             'userId': _i1.ParameterDescription(
               name: 'userId',
@@ -125,7 +125,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['admin'] as _i2.AdminEndpoint).unblockUser(
+              (endpoints['admin'] as _i2.AdminEndpoint).unbanUser(
             session,
             params['userId'],
           ),
