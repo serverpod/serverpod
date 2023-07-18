@@ -57,7 +57,7 @@ class ServerpodCommandRunner extends CommandRunner {
   Future<void> runCommand(ArgResults topLevelResults) async {
     // TODO: [GlobalFlags.developmentPrint] should silence all logging with a
     // suitable name. Make this once we have a centralized logging and printing.
-    if (topLevelResults[GlobalFlags.developmentPrint] && _productionMode) {
+    if (topLevelResults[GlobalFlags.developmentPrint]) {
       await _preCommandPrints();
     }
 
@@ -85,7 +85,9 @@ class ServerpodCommandRunner extends CommandRunner {
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
 
   Future<void> _preCommandPrints() async {
-    if (!_productionMode) {
+    if (productionMode) {
+      await promptToUpdateIfNeeded(Version.parse(templateVersion));
+    } else {
       log.debug(
         'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
       );
@@ -94,8 +96,6 @@ class ServerpodCommandRunner extends CommandRunner {
       if (!resourceManager.isTemplatesInstalled) {
         log.warning('Could not find templates.');
       }
-    } else {
-      await promptToUpdateIfNeeded(Version.parse(templateVersion));
     }
   }
 }
