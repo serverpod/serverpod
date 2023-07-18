@@ -59,6 +59,10 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
+    // TODO: Add flaggs for setting log level.
+    // For now, use old behavior and log everything.
+    initializeLogger(LogLevel.debug);
+
     await _preCommandChecks();
 
     // TODO: [GlobalFlags.developmentPrint] should silence all logging with a
