@@ -14,41 +14,41 @@ dart pub get
 
 echo "serverpod"
 cd $BASE/packages/serverpod
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 echo "examples/chat/chat_server"
 cd $BASE/examples/chat/chat_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 # Templates
 
 echo "\nmodulename_server"
 cd $BASE/templates/serverpod_templates/modulename_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 echo "\nprojectname_server"
 cd $BASE/templates/serverpod_templates/projectname_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 # Auth module
 
 echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 # Chat module
 
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 
 # Tests
 
 echo "\ntests/serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
 
 echo "\ntests/serverpod_test_module/serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-serverpod generate
+dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
