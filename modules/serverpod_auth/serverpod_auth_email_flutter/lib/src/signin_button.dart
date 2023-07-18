@@ -13,7 +13,13 @@ class SignInWithEmailButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
-  /// Minimum allowed password length.
+  /// The text of the button.
+  final Text? label;
+
+  /// The icon of the button.
+  final Icon? icon;
+
+  /// Maximum allowed password length.
   /// Defaults to 128.
   /// If this value is modified, the server must be updated to match.
   final int? maxPasswordLength;
@@ -28,6 +34,8 @@ class SignInWithEmailButton extends StatefulWidget {
     required this.caller,
     this.onSignedIn,
     this.style,
+    this.label,
+    this.icon,
     this.maxPasswordLength,
     this.minPasswordLength,
     Key? key,
@@ -62,8 +70,8 @@ class SignInWithEmailButtonState extends State<SignInWithEmailButton> {
           },
         );
       },
-      label: const Text('Sign in with Email'),
-      icon: const Icon(Icons.email),
+      label: widget.label ?? const Text('Sign in with Email'),
+      icon: widget.icon ?? const Icon(Icons.email),
     );
   }
 }
