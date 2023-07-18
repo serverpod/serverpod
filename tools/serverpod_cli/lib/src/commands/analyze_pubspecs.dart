@@ -9,6 +9,9 @@ class AnalyzePubspecsCommand extends ServerpodCommand {
   @override
   final description = '';
 
+  @override
+  bool get hidden => true;
+
   AnalyzePubspecsCommand() {
     argParser.addFlag(
       'check-latest-version',

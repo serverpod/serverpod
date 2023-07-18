@@ -10,6 +10,9 @@ class GeneratePubspecsCommand extends ServerpodCommand {
   @override
   final description = '';
 
+  @override
+  bool get hidden => true;
+
   GeneratePubspecsCommand() {
     argParser.addOption('version', defaultsTo: 'X');
     argParser.addOption(
