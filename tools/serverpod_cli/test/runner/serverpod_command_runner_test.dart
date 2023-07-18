@@ -1,4 +1,5 @@
 import 'package:args/command_runner.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
@@ -58,7 +59,8 @@ class TestFixture {
 
 TestFixture createTestRunner() {
   var analytics = MockAnalytics();
-  var runner = ServerpodCommandRunner.createCommandRunner(analytics, false);
+  var runner = ServerpodCommandRunner.createCommandRunner(
+      analytics, false, Version(1, 1, 0));
   var command = MockCommand();
   runner.addCommand(command);
   return TestFixture(analytics, command, runner);

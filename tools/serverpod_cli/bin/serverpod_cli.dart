@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
@@ -90,8 +91,8 @@ Future<void> _main(List<String> args) async {
 }
 
 ServerpodCommandRunner buildCommandRunner() {
-  var runner =
-      ServerpodCommandRunner.createCommandRunner(_analytics, productionMode);
+  var runner = ServerpodCommandRunner.createCommandRunner(
+      _analytics, productionMode, Version.parse(templateVersion));
 
   runner.addCommand(AnalyzePubspecsCommand());
   runner.addCommand(CreateCommand());

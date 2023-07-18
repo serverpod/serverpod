@@ -3,7 +3,6 @@ import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
@@ -16,9 +15,12 @@ abstract class GlobalFlags {
 class ServerpodCommandRunner extends CommandRunner {
   final Analytics _analytics;
   final bool _productionMode;
+  final Version _cliVersion;
+
   ServerpodCommandRunner(
     this._analytics,
     this._productionMode,
+    this._cliVersion,
     super.executableName,
     super.description,
   ) {
@@ -33,10 +35,12 @@ class ServerpodCommandRunner extends CommandRunner {
   static ServerpodCommandRunner createCommandRunner(
     Analytics analytics,
     bool productionMode,
+    Version cliVersion,
   ) {
     return ServerpodCommandRunner(
       analytics,
       productionMode,
+      cliVersion,
       'serverpod',
       'Manage your serverpod app development',
     );
@@ -85,8 +89,8 @@ class ServerpodCommandRunner extends CommandRunner {
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
 
   Future<void> _preCommandPrints() async {
-    if (productionMode) {
-      await promptToUpdateIfNeeded(Version.parse(templateVersion));
+    if (_productionMode) {
+      await promptToUpdateIfNeeded(_cliVersion);
     } else {
       log.debug(
         'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
