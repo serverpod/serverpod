@@ -62,7 +62,6 @@ enum LogLevel {
   info,
   warning,
   error,
-  nothing,
 }
 
 enum AbstractStyleType {
