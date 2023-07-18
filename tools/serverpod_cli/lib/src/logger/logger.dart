@@ -10,7 +10,7 @@ import 'package:source_span/source_span.dart';
 abstract class Logger {
   final LogLevel logLevel;
 
-  // If defined, defines what column width text should be wrapped.
+  /// If defined, defines what column width text should be wrapped.
   int? get wrapTextColumn;
 
   Logger(this.logLevel);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -6,41 +8,58 @@ import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
+import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 
 abstract class GlobalFlags {
-  static const developmentPrint = 'development-print';
+  static const quiet = 'quiet';
+  static const verbose = 'verbose';
 }
+
+typedef InitializeLoggerCallback = void Function(LogLevel);
 
 class ServerpodCommandRunner extends CommandRunner {
   final Analytics _analytics;
   final bool _productionMode;
   final Version _cliVersion;
+  final InitializeLoggerCallback _loggerInitializationCallback;
 
   ServerpodCommandRunner(
     this._analytics,
     this._productionMode,
     this._cliVersion,
+    this._loggerInitializationCallback,
     super.executableName,
     super.description,
   ) {
     argParser.addFlag(
-      GlobalFlags.developmentPrint,
-      defaultsTo: true,
-      negatable: true,
-      help: 'Prints additional information useful for development.',
+      GlobalFlags.quiet,
+      abbr: 'q',
+      defaultsTo: false,
+      negatable: false,
+      help: 'Suppress all serverpod cli output. Is overridden by '
+          ' -v, --verbose.',
     );
+
+    argParser.addFlag(GlobalFlags.verbose,
+        abbr: 'v',
+        defaultsTo: false,
+        negatable: false,
+        help: 'Prints additional information useful for development. '
+            'Overrides --q, --quiet.');
   }
 
   static ServerpodCommandRunner createCommandRunner(
     Analytics analytics,
     bool productionMode,
-    Version cliVersion,
-  ) {
+    Version cliVersion, {
+    InitializeLoggerCallback loggerInitializationCallback = initializeLogger,
+  }) {
     return ServerpodCommandRunner(
       analytics,
       productionMode,
       cliVersion,
+      loggerInitializationCallback,
       'serverpod',
       'Manage your serverpod app development',
     );
@@ -59,17 +78,10 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
-    // TODO: Add flaggs for setting log level.
-    // For now, use old behavior and log everything.
-    initializeLogger(LogLevel.debug);
+    _initializeLogger(topLevelResults);
 
     await _preCommandChecks();
-
-    // TODO: [GlobalFlags.developmentPrint] should silence all logging with a
-    // suitable name. Make this once we have a centralized logging and printing.
-    if (topLevelResults[GlobalFlags.developmentPrint]) {
-      await _preCommandPrints();
-    }
+    await _preCommandPrints();
 
     try {
       await super.runCommand(topLevelResults);
@@ -93,6 +105,18 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
+
+  void _initializeLogger(ArgResults topLevelResults) {
+    var logLevel = LogLevel.info;
+
+    if (topLevelResults[GlobalFlags.verbose]) {
+      logLevel = LogLevel.debug;
+    } else if (topLevelResults[GlobalFlags.quiet]) {
+      logLevel = LogLevel.nothing;
+    }
+
+    _loggerInitializationCallback(logLevel);
+  }
 
   Future<void> _preCommandChecks() async {
     if (Platform.isWindows) {

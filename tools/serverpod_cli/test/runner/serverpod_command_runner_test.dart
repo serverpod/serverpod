@@ -49,30 +49,50 @@ class MockCommand extends Command {
   }
 }
 
+class MockLoggerInitializer {
+  LogLevel? logLevel;
+
+  MockLoggerInitializer();
+}
+
 class TestFixture {
   final MockAnalytics analytics;
   final MockCommand command;
   final ServerpodCommandRunner runner;
+  final MockLoggerInitializer loggerInitializer;
 
-  TestFixture(this.analytics, this.command, this.runner);
+  TestFixture(
+    this.analytics,
+    this.command,
+    this.runner,
+    this.loggerInitializer,
+  );
 }
 
-TestFixture createTestRunner() {
+TestFixture createTestFixture() {
+  var loggerInitializer = MockLoggerInitializer();
   var analytics = MockAnalytics();
   var runner = ServerpodCommandRunner.createCommandRunner(
-      analytics, false, Version(1, 1, 0));
+    analytics,
+    false,
+    Version(1, 1, 0),
+    loggerInitializationCallback: (logLevel) => {
+      loggerInitializer.logLevel = logLevel,
+    },
+  );
   var command = MockCommand();
   runner.addCommand(command);
-  return TestFixture(analytics, command, runner);
+  return TestFixture(analytics, command, runner, loggerInitializer);
 }
 
 void main() {
   initializeLoggerWith(VoidLogger());
+
+  late TestFixture fixture;
+  setUp(() {
+    fixture = createTestFixture();
+  });
   group('Analytics Reporting - ', () {
-    late TestFixture fixture;
-    setUp(() {
-      fixture = createTestRunner();
-    });
     test('when no arguments are provided', () async {
       List<String> args = [];
 
@@ -95,7 +115,7 @@ void main() {
     });
 
     test('when only valid flag is provided', () async {
-      List<String> args = ['--${GlobalFlags.developmentPrint}'];
+      List<String> args = ['--${GlobalFlags.verbose}'];
 
       await fixture.runner.run(args);
 
@@ -142,7 +162,7 @@ void main() {
 
     test('when valid command and global flag is provided', () async {
       List<String> args = [
-        '--${GlobalFlags.developmentPrint}',
+        '--${GlobalFlags.verbose}',
         MockCommand.commandName,
         '--name',
         'alex'
@@ -156,6 +176,47 @@ void main() {
         equals(MockCommand.commandName),
       );
       expect(fixture.command.numberOfRuns, equals(1));
+    });
+  });
+  group('Logger Initialization - ', () {
+    test('when no log level flag is provided', () async {
+      List<String> args = [];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.info));
+    });
+
+    test('when only --${GlobalFlags.verbose} flag is provided', () async {
+      List<String> args = [
+        '--${GlobalFlags.verbose}',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.debug));
+    });
+    test('when only --${GlobalFlags.quiet} flag is provided', () async {
+      List<String> args = [
+        '--${GlobalFlags.quiet}',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.nothing));
+    });
+
+    test(
+        'when --${GlobalFlags.verbose} and --${GlobalFlags.quiet} flags are provided',
+        () async {
+      List<String> args = [
+        '--${GlobalFlags.verbose}',
+        '--${GlobalFlags.quiet}',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.debug));
     });
   });
 }
