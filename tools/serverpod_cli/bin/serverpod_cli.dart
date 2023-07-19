@@ -45,16 +45,16 @@ Future<void> _main(List<String> args) async {
 }
 
 ServerpodCommandRunner buildCommandRunner() {
-  var runner = ServerpodCommandRunner.createCommandRunner(
-      _analytics, productionMode, Version.parse(templateVersion));
-
-  runner.addCommand(AnalyzePubspecsCommand());
-  runner.addCommand(CreateCommand());
-  runner.addCommand(GenerateCommand());
-  runner.addCommand(GeneratePubspecsCommand());
-  runner.addCommand(LanguageServerCommand());
-  runner.addCommand(MigrateCommand());
-  runner.addCommand(VersionCommand());
-
-  return runner;
+  return ServerpodCommandRunner.createCommandRunner(
+    _analytics,
+    productionMode,
+    Version.parse(templateVersion),
+  )
+    ..addCommand(AnalyzePubspecsCommand())
+    ..addCommand(CreateCommand())
+    ..addCommand(GenerateCommand())
+    ..addCommand(GeneratePubspecsCommand())
+    ..addCommand(LanguageServerCommand())
+    ..addCommand(MigrateCommand())
+    ..addCommand(VersionCommand());
 }
