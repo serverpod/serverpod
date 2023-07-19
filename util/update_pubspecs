@@ -10,8 +10,7 @@ VERSION=`cat VERSION`
 VERSION=$VERSION | xargs
 
 BASE=`pwd`
-CLI_DIR=$BASE/tools/serverpod_cli
-CLI=$CLI_DIR/bin/serverpod_cli.dart
+CLI=$BASE/tools/serverpod_cli/bin/serverpod_cli.dart
 
 echo "Update all pubspecs. Version is $VERSION."
 
