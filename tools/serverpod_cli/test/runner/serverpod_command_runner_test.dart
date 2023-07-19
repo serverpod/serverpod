@@ -79,6 +79,7 @@ TestFixture createTestFixture() {
     loggerInitializationCallback: (logLevel) => {
       loggerInitializer.logLevel = logLevel,
     },
+    preCommandEnvironmentChecksCallback: () => Future(() => {}),
   );
   var command = MockCommand();
   runner.addCommand(command);

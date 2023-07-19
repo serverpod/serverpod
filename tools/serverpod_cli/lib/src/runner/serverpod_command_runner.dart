@@ -17,18 +17,62 @@ abstract class GlobalFlags {
 }
 
 typedef InitializeLoggerCallback = void Function(LogLevel);
+typedef PreCommandEnvironmentChecksCallback = Future<void> Function();
+
+Future<void> _preCommandEnvironmentChecks() async {
+  if (Platform.isWindows) {
+    log.warning(
+        'Windows is not officially supported yet. Things may or may not work '
+        'as expected.');
+  }
+
+  // Check that required tools are installed
+  if (!await CommandLineTools.existsCommand('dart')) {
+    log.error(
+        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+    throw ExitException();
+  }
+  if (!await CommandLineTools.existsCommand('flutter')) {
+    log.error(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+    throw ExitException();
+  }
+
+  if (!loadEnvironmentVars()) {
+    throw ExitException();
+  }
+
+  // Make sure all necessary downloads are installed
+  if (!resourceManager.isTemplatesInstalled) {
+    try {
+      await resourceManager.installTemplates();
+    } catch (e) {
+      log.error('Failed to download templates.');
+      throw ExitException();
+    }
+
+    if (!resourceManager.isTemplatesInstalled) {
+      log.error(
+          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
+      throw ExitException();
+    }
+  }
+}
 
 class ServerpodCommandRunner extends CommandRunner {
   final Analytics _analytics;
   final bool _productionMode;
   final Version _cliVersion;
   final InitializeLoggerCallback _loggerInitializationCallback;
+  final PreCommandEnvironmentChecksCallback
+      _preCommandEnvironmentChecksCallback;
 
   ServerpodCommandRunner(
     this._analytics,
     this._productionMode,
     this._cliVersion,
     this._loggerInitializationCallback,
+    this._preCommandEnvironmentChecksCallback,
     super.executableName,
     super.description,
   ) {
@@ -54,12 +98,15 @@ class ServerpodCommandRunner extends CommandRunner {
     bool productionMode,
     Version cliVersion, {
     InitializeLoggerCallback loggerInitializationCallback = initializeLogger,
+    PreCommandEnvironmentChecksCallback preCommandEnvironmentChecksCallback =
+        _preCommandEnvironmentChecks,
   }) {
     return ServerpodCommandRunner(
       analytics,
       productionMode,
       cliVersion,
       loggerInitializationCallback,
+      preCommandEnvironmentChecksCallback,
       'serverpod',
       'Manage your serverpod app development',
     );
@@ -80,7 +127,7 @@ class ServerpodCommandRunner extends CommandRunner {
   Future<void> runCommand(ArgResults topLevelResults) async {
     _initializeLogger(topLevelResults);
 
-    await _preCommandChecks();
+    await _preCommandEnvironmentChecksCallback();
     await _preCommandPrints();
 
     try {
@@ -116,46 +163,6 @@ class ServerpodCommandRunner extends CommandRunner {
     }
 
     _loggerInitializationCallback(logLevel);
-  }
-
-  Future<void> _preCommandChecks() async {
-    if (Platform.isWindows) {
-      log.warning(
-          'Windows is not officially supported yet. Things may or may not work '
-          'as expected.');
-    }
-
-    // Check that required tools are installed
-    if (!await CommandLineTools.existsCommand('dart')) {
-      log.error(
-          'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-      throw ExitException();
-    }
-    if (!await CommandLineTools.existsCommand('flutter')) {
-      log.error(
-          'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-      throw ExitException();
-    }
-
-    if (!loadEnvironmentVars()) {
-      throw ExitException();
-    }
-
-    // Make sure all necessary downloads are installed
-    if (!resourceManager.isTemplatesInstalled) {
-      try {
-        await resourceManager.installTemplates();
-      } catch (e) {
-        log.error('Failed to download templates.');
-        throw ExitException();
-      }
-
-      if (!resourceManager.isTemplatesInstalled) {
-        log.error(
-            'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-        throw ExitException();
-      }
-    }
   }
 
   Future<void> _preCommandPrints() async {
