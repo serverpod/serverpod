@@ -180,7 +180,7 @@ class TypeDefinition {
     }
     if (className == 'bool') return 'boolean';
     if (className == 'int' || (isEnum && !serializeEnumValuesAsStrings)) {
-      return 'integer';
+      return 'bigint';
     }
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';

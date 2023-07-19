@@ -102,7 +102,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
     // Table definition
     out += 'CREATE TABLE "${classInfo.tableName}" (\n';
     // Id is a special case that is nullable in code but not in the database
-    out += '  "id" serial';
+    out += '  "id" bigserial';
     for (var field in classInfo.fields) {
       // Skip id field as it is already added
       if (field.name == 'id') continue;
