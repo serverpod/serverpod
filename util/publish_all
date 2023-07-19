@@ -7,6 +7,9 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
 fi
 
 BASE=`pwd`
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
+
 PCOUNT_START_DEFAULT=0
 PCOUNT_START="${1:-$PCOUNT_START_DEFAULT}"
 
@@ -35,7 +38,7 @@ echo "Publish Serverpod version $VERSION"
 
 echo "Updating pubspecs"
 cd $BASE
-serverpod generate-pubspecs --version $VERSION --mode production
+dart $CLI generate-pubspecs --version $VERSION --mode production
 
 echo "Publish packages"
 
