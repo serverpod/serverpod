@@ -8,13 +8,10 @@ import 'generator.dart';
 
 /// Continuously generate code when files change.
 Future<bool> performGenerateContinuously({
-  required bool verbose,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
-  if (verbose) {
-    log.debug('Starting up continuous generator');
-  }
+  log.debug('Starting up continuous generator');
 
   var watcherClasses =
       DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
@@ -26,7 +23,6 @@ Future<bool> performGenerateContinuously({
     log.info('File changed: $event',
         style: const TextLogStyle(newParagraph: true));
     hasErrors = await performGenerate(
-      verbose: verbose,
       changedFile: event.path,
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,

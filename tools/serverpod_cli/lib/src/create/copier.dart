@@ -14,14 +14,11 @@ class Copier {
 
   List<String> ignoreFileNames;
 
-  bool verbose;
-
   Copier({
     required this.srcDir,
     required this.dstDir,
     required this.replacements,
     required this.fileNameReplacements,
-    this.verbose = false,
     this.removePrefixes = const <String>[],
     this.ignoreFileNames = const <String>[],
   });

@@ -785,7 +785,6 @@ class SerializableEntityLibraryGenerator {
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
   Library generateTemporaryProtocol({
-    bool verbose = false,
     required List<SerializableEntityDefinition> entities,
   }) {
     var library = LibraryBuilder();

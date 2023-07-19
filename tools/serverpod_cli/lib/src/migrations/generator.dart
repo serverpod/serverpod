@@ -107,7 +107,6 @@ class MigrationGenerator {
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
-    bool verbose = false,
     required int priority,
   }) async {
     var versionName = createVersionName(tag);
@@ -159,7 +158,6 @@ class MigrationGenerator {
   Future<String?> repairMigration({
     String? tag,
     required bool force,
-    bool verbose = false,
     required String runMode,
   }) async {
     var client = ConfigInfo(runMode).createServiceClient();

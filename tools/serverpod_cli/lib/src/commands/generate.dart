@@ -19,13 +19,6 @@ class GenerateCommand extends ServerpodCommand {
 
   GenerateCommand() {
     argParser.addFlag(
-      'verbose',
-      abbr: 'v',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Output more detailed information.',
-    );
-    argParser.addFlag(
       'watch',
       abbr: 'w',
       defaultsTo: false,
@@ -37,7 +30,6 @@ class GenerateCommand extends ServerpodCommand {
   @override
   Future<void> run() async {
     // Always do a full generate.
-    bool verbose = argResults!['verbose'];
     bool watch = argResults!['watch'];
 
     // TODO: add a -d option to select the directory
@@ -65,14 +57,12 @@ class GenerateCommand extends ServerpodCommand {
     var endpointsAnalyzer = EndpointsAnalyzer(config);
 
     bool hasErrors = await performGenerate(
-      verbose: verbose,
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
     );
     if (watch) {
       log.info('Initial code generation complete. Listening for changes.');
       hasErrors = await performGenerateContinuously(
-        verbose: verbose,
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
       );
