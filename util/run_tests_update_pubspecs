@@ -22,6 +22,7 @@ echo "### Templates at: $TEMPLATE_DIR"
 test -d $TEMPLATE_DIR
 
 cd tools/serverpod_cli
+dart pub get
 dart pub global activate -s path .
 cd ../..
 

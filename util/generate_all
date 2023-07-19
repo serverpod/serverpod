@@ -7,48 +7,50 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
 fi
 
 BASE=`pwd`
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
 
 echo "pub get cli"
-cd $BASE/tools/serverpod_cli
+cd $CLI_DIR
 dart pub get
 
 echo "serverpod"
 cd $BASE/packages/serverpod
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 echo "examples/chat/chat_server"
 cd $BASE/examples/chat/chat_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 # Templates
 
 echo "\nmodulename_server"
 cd $BASE/templates/serverpod_templates/modulename_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 echo "\nprojectname_server"
 cd $BASE/templates/serverpod_templates/projectname_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 # Auth module
 
 echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 # Chat module
 
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 
 # Tests
 
 echo "\ntests/serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
 
 echo "\ntests/serverpod_test_module/serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart generate
+dart $CLI generate
