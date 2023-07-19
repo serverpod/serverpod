@@ -135,13 +135,11 @@ class DatabaseConnection {
   }) async {
     assert(orderByList == null || orderBy == null);
     var table = session.serverpod.serializationManager.getTableForType(T);
-    if (table == null) {
-      throw 'Serialization manager does not know about type $T';
-    }
     assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.find<MyTableClass>(where: ...);
 Current type was $T''');
+    table = table!;
 
     var startTime = DateTime.now();
     where ??= Expression('TRUE');
