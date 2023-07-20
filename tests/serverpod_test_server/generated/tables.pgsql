@@ -3,7 +3,7 @@
 --
 
 CREATE TABLE "object_field_scopes" (
-  "id" serial,
+  "id" bigserial,
   "normal" text NOT NULL,
   "database" text
 );
@@ -17,7 +17,7 @@ ALTER TABLE ONLY "object_field_scopes"
 --
 
 CREATE TABLE "object_with_bytedata" (
-  "id" serial,
+  "id" bigserial,
   "byteData" bytea NOT NULL
 );
 
@@ -30,7 +30,7 @@ ALTER TABLE ONLY "object_with_bytedata"
 --
 
 CREATE TABLE "object_with_duration" (
-  "id" serial,
+  "id" bigserial,
   "duration" bigint NOT NULL
 );
 
@@ -43,9 +43,9 @@ ALTER TABLE ONLY "object_with_duration"
 --
 
 CREATE TABLE "object_with_enum" (
-  "id" serial,
-  "testEnum" integer NOT NULL,
-  "nullableEnum" integer,
+  "id" bigserial,
+  "testEnum" bigint NOT NULL,
+  "nullableEnum" bigint,
   "enumList" json NOT NULL,
   "nullableEnumList" json NOT NULL,
   "enumListList" json NOT NULL
@@ -60,9 +60,9 @@ ALTER TABLE ONLY "object_with_enum"
 --
 
 CREATE TABLE "object_with_index" (
-  "id" serial,
-  "indexed" integer NOT NULL,
-  "indexed2" integer NOT NULL
+  "id" bigserial,
+  "indexed" bigint NOT NULL,
+  "indexed2" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "object_with_index"
@@ -76,7 +76,7 @@ CREATE INDEX object_with_index_test_index ON "object_with_index" USING brin ("in
 --
 
 CREATE TABLE "object_with_object" (
-  "id" serial,
+  "id" bigserial,
   "data" json NOT NULL,
   "nullableData" json,
   "dataList" json NOT NULL,
@@ -94,8 +94,8 @@ ALTER TABLE ONLY "object_with_object"
 --
 
 CREATE TABLE "object_with_parent" (
-  "id" serial,
-  "other" integer NOT NULL
+  "id" bigserial,
+  "other" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "object_with_parent"
@@ -112,8 +112,8 @@ ALTER TABLE ONLY "object_with_parent"
 --
 
 CREATE TABLE "object_with_self_parent" (
-  "id" serial,
-  "other" integer
+  "id" bigserial,
+  "other" bigint
 );
 
 ALTER TABLE ONLY "object_with_self_parent"
@@ -130,7 +130,7 @@ ALTER TABLE ONLY "object_with_self_parent"
 --
 
 CREATE TABLE "object_with_uuid" (
-  "id" serial,
+  "id" bigserial,
   "uuid" uuid NOT NULL,
   "uuidNullable" uuid
 );
@@ -144,8 +144,8 @@ ALTER TABLE ONLY "object_with_uuid"
 --
 
 CREATE TABLE "simple_data" (
-  "id" serial,
-  "num" integer NOT NULL
+  "id" bigserial,
+  "num" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "simple_data"
@@ -157,8 +157,8 @@ ALTER TABLE ONLY "simple_data"
 --
 
 CREATE TABLE "types" (
-  "id" serial,
-  "anInt" integer,
+  "id" bigserial,
+  "anInt" bigint,
   "aBool" boolean,
   "aDouble" double precision,
   "aDateTime" timestamp without time zone,

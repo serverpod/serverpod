@@ -3,11 +3,11 @@
 --
 
 CREATE TABLE "serverpod_chat_message" (
-  "id" serial,
+  "id" bigserial,
   "channel" text NOT NULL,
   "message" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
-  "sender" integer NOT NULL,
+  "sender" bigint NOT NULL,
   "removed" boolean NOT NULL,
   "attachments" json
 );
@@ -23,10 +23,10 @@ CREATE INDEX serverpod_chat_message_channel_idx ON "serverpod_chat_message" USIN
 --
 
 CREATE TABLE "serverpod_chat_read_message" (
-  "id" serial,
+  "id" bigserial,
   "channel" text NOT NULL,
-  "userId" integer NOT NULL,
-  "lastReadMessageId" integer NOT NULL
+  "userId" bigint NOT NULL,
+  "lastReadMessageId" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_chat_read_message"
