@@ -20,7 +20,7 @@ class StdOutLogger extends Logger {
   void debug(
     String message, {
     bool newParagraph = false,
-    LogStyle style = const TextLogStyle(),
+    RawLog style = const TextLog(),
   }) {
     _log(
       message,
@@ -35,7 +35,7 @@ class StdOutLogger extends Logger {
   void info(
     String message, {
     bool newParagraph = false,
-    LogStyle style = const TextLogStyle(),
+    RawLog style = const TextLog(),
   }) {
     _log(message, LogLevel.info, newParagraph, style);
   }
@@ -44,7 +44,7 @@ class StdOutLogger extends Logger {
   void warning(
     String message, {
     bool newParagraph = false,
-    LogStyle style = const TextLogStyle(),
+    RawLog style = const TextLog(),
   }) {
     _log(message, LogLevel.warning, newParagraph, style, prefix: 'WARNING: ');
   }
@@ -54,7 +54,7 @@ class StdOutLogger extends Logger {
     String message, {
     bool newParagraph = false,
     StackTrace? stackTrace,
-    LogStyle style = const TextLogStyle(),
+    RawLog style = const TextLog(),
   }) {
     _log(message, LogLevel.error, newParagraph, style, prefix: 'ERROR: ');
 
@@ -104,35 +104,35 @@ class StdOutLogger extends Logger {
     String message,
     LogLevel logLevel,
     bool newParagraph,
-    LogStyle style, {
+    RawLog style, {
     String prefix = '',
   }) {
     if (message == '') return;
     if (!shouldLog(logLevel)) return;
 
-    if (style is BoxLogStyle) {
+    if (style is BoxLog) {
       message = _formatAsBox(
         message: message,
         title: style.title,
       );
-    } else if (style is TextLogStyle) {
+    } else if (style is TextLog) {
       if (wrapTextColumn != null && style.wordWrap) {
         message = _wrapText(message, wrapTextColumn!);
       }
 
       switch (style.type) {
-        case AbstractStyleType.command:
+        case TextLogType.command:
           message = '  \$ $message';
           break;
-        case AbstractStyleType.bullet:
+        case TextLogType.bullet:
           message = ' • $message';
           break;
-        case AbstractStyleType.normal:
+        case TextLogType.normal:
           message = '$prefix$message';
           break;
-        case AbstractStyleType.success:
+        case TextLogType.success:
           break;
-        case AbstractStyleType.hint:
+        case TextLogType.hint:
           message = '${Colorize(message)..italic()}';
           break;
       }

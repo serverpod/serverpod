@@ -105,8 +105,7 @@ class MigrateCommand extends ServerpodCommand {
         force: force,
         priority: priority,
       );
-      log.info('Done.',
-          style: const TextLogStyle(type: AbstractStyleType.success));
+      log.info('Done.', style: const TextLog(type: TextLogType.success));
     }
   }
 }

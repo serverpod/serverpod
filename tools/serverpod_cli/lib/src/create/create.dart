@@ -72,18 +72,18 @@ Future<void> performCreate(
       log.error(
         strIssuePorts,
         newParagraph: true,
-        style: const TextLogStyle(),
+        style: const TextLog(),
       );
       log.error(
         'Ports in use:',
         newParagraph: true,
-        style: const TextLogStyle(),
+        style: const TextLog(),
       );
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
         log.error(
           '$port: $serverDescription',
-          style: const TextLogStyle(type: AbstractStyleType.bullet),
+          style: const TextLog(type: TextLogType.bullet),
         );
       }
     }
@@ -91,7 +91,7 @@ Future<void> performCreate(
       log.error(
         strIssueDocker,
         newParagraph: true,
-        style: const TextLogStyle(),
+        style: const TextLog(),
       );
     }
     if (!force) {
@@ -115,13 +115,13 @@ Future<void> performCreate(
   log.info(
     'Creating project $name.',
     newParagraph: true,
-    style: const TextLogStyle(),
+    style: const TextLog(),
   );
 
   log.debug(
     'Creating directory: ${projectDir.path}',
-    style: const TextLogStyle(
-      type: AbstractStyleType.bullet,
+    style: const TextLog(
+      type: TextLogType.bullet,
     ),
   );
   projectDir.createSync();
@@ -129,8 +129,8 @@ Future<void> performCreate(
   var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
   log.debug(
     'Creating directory: ${serverDir.path}',
-    style: const TextLogStyle(
-      type: AbstractStyleType.bullet,
+    style: const TextLog(
+      type: TextLogType.bullet,
     ),
   );
   serverDir.createSync();
@@ -138,8 +138,8 @@ Future<void> performCreate(
   var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
   log.debug(
     'Creating directory: ${clientDir.path}',
-    style: const TextLogStyle(
-      type: AbstractStyleType.bullet,
+    style: const TextLog(
+      type: TextLogType.bullet,
     ),
   );
 
@@ -147,8 +147,8 @@ Future<void> performCreate(
     var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
     log.debug(
       'Creating directory: ${flutterDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
+      style: const TextLog(
+        type: TextLogType.bullet,
       ),
     );
     flutterDir.createSync();
@@ -156,8 +156,8 @@ Future<void> performCreate(
     var githubDir = Directory(p.join(projectDir.path, '.github'));
     log.debug(
       'Creating directory: ${githubDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
+      style: const TextLog(
+        type: TextLogType.bullet,
       ),
     );
     githubDir.createSync();
@@ -417,21 +417,21 @@ Future<void> performCreate(
       _logSuccessMessage();
       log.info(
         'cd .\\${p.join(name, '${name}_server')}\\',
-        style: const TextLogStyle(
-          type: AbstractStyleType.command,
+        style: const TextLog(
+          type: TextLogType.command,
         ),
       );
       log.info(
         '.\\setup-tables.cmd',
-        style: const TextLogStyle(type: AbstractStyleType.command),
+        style: const TextLog(type: TextLogType.command),
       );
       log.info(
         'docker compose up --build --detach',
-        style: const TextLogStyle(type: AbstractStyleType.command),
+        style: const TextLog(type: TextLogType.command),
       );
       log.info(
         'dart .\\bin\\main.dart',
-        style: const TextLogStyle(type: AbstractStyleType.command),
+        style: const TextLog(type: TextLogType.command),
       );
     } else {
       // Create tables
@@ -440,15 +440,15 @@ Future<void> performCreate(
       log.info(
         'cd ${p.join(name, '${name}_server')}',
         newParagraph: true,
-        style: const TextLogStyle(type: AbstractStyleType.command),
+        style: const TextLog(type: TextLogType.command),
       );
       log.info(
         'docker compose up --build --detach',
-        style: const TextLogStyle(type: AbstractStyleType.command),
+        style: const TextLog(type: TextLogType.command),
       );
       log.info(
         'dart dart bin/main.dart',
-        style: const TextLogStyle(type: AbstractStyleType.command),
+        style: const TextLog(type: TextLogType.command),
       );
     }
   }
@@ -456,16 +456,15 @@ Future<void> performCreate(
 
 void _logSuccessMessage() {
   log.info('SERVERPOD CREATED 🥳',
-      newParagraph: true,
-      style: const TextLogStyle(type: AbstractStyleType.success));
+      newParagraph: true, style: const TextLog(type: TextLogType.success));
   log.info(
     'All setup. You are ready to rock!',
     newParagraph: true,
-    style: const TextLogStyle(type: AbstractStyleType.success),
+    style: const TextLog(type: TextLogType.success),
   );
   log.info(
     'Start your Serverpod by running:',
     newParagraph: true,
-    style: const TextLogStyle(),
+    style: const TextLog(),
   );
 }

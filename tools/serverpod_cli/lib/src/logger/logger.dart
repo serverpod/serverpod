@@ -21,7 +21,7 @@ abstract class Logger {
   void debug(
     String message, {
     bool newParagraph,
-    LogStyle style,
+    RawLog style,
   });
 
   /// Display a normal [message] to the user.
@@ -30,7 +30,7 @@ abstract class Logger {
   void info(
     String message, {
     bool newParagraph,
-    LogStyle style,
+    RawLog style,
   });
 
   /// Display a warning [message] to the user.
@@ -39,7 +39,7 @@ abstract class Logger {
   void warning(
     String message, {
     bool newParagraph,
-    LogStyle style,
+    RawLog style,
   });
 
   /// Display an error [message] to the user.
@@ -49,7 +49,7 @@ abstract class Logger {
     String message, {
     bool newParagraph,
     StackTrace? stackTrace,
-    LogStyle style,
+    RawLog style,
   });
 
   /// Display a [SourceSpanException] to the user.
@@ -75,7 +75,7 @@ enum LogLevel {
   final String name;
 }
 
-enum AbstractStyleType {
+enum TextLogType {
   normal,
   hint,
   success,
@@ -84,15 +84,15 @@ enum AbstractStyleType {
 }
 
 /// Minimum formatting for style.
-class LogStyle {
-  const LogStyle();
+class RawLog {
+  const RawLog();
 }
 
 /// Box style console formatting.
 /// If [title] is set the box will have a title row.
-class BoxLogStyle extends LogStyle {
+class BoxLog extends RawLog {
   final String? title;
-  const BoxLogStyle({
+  const BoxLog({
     this.title,
     bool newParagraph = true,
   });
@@ -100,12 +100,12 @@ class BoxLogStyle extends LogStyle {
 
 /// Abstract style console formatting.
 /// Enables more precise settings for log message.
-class TextLogStyle extends LogStyle {
+class TextLog extends RawLog {
   final bool wordWrap;
-  final AbstractStyleType type;
+  final TextLogType type;
 
-  const TextLogStyle({
-    this.type = AbstractStyleType.normal,
+  const TextLog({
+    this.type = TextLogType.normal,
     this.wordWrap = true,
   });
 }
