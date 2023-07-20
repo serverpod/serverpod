@@ -86,3 +86,5 @@ cp README_subpackage.md integrations/serverpod_cloud_storage_gcp/README.md
 
 echo "Copy tables"
 cp packages/serverpod/generated/tables.pgsql templates/serverpod_templates/projectname_server/generated/tables-serverpod.pgsql
+cp packages/serverpod/generated/tables.pgsql examples/chat/chat_server/generated/tables-serverpod.pgsql
+cp packages/serverpod/generated/tables.pgsql examples/auth_example/auth_example_server/generated/tables-serverpod.pgsql
