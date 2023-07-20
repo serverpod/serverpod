@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/migrate.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
@@ -22,17 +23,20 @@ void main(List<String> args) async {
     () async {
       try {
         await _main(args);
+        await onExit();
       } on ExitException catch (e) {
-        _analytics.cleanUp();
+        await onExit();
         exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
         printInternalError(error, stackTrace);
+        await onExit();
         exit(ExitCodeType.general.exitCode);
       }
     },
-    (error, stackTrace) {
+    (error, stackTrace) async {
       printInternalError(error, stackTrace);
+      await onExit();
       exit(ExitCodeType.general.exitCode);
     },
   );
@@ -41,7 +45,6 @@ void main(List<String> args) async {
 Future<void> _main(List<String> args) async {
   var runner = buildCommandRunner();
   await runner.run(args);
-  _analytics.cleanUp();
 }
 
 ServerpodCommandRunner buildCommandRunner() {
@@ -57,4 +60,9 @@ ServerpodCommandRunner buildCommandRunner() {
     ..addCommand(LanguageServerCommand())
     ..addCommand(MigrateCommand())
     ..addCommand(VersionCommand());
+}
+
+Future<void> onExit() async {
+  _analytics.cleanUp();
+  await log.flush();
 }
