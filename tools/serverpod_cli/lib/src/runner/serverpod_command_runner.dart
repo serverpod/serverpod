@@ -16,8 +16,8 @@ abstract class GlobalFlags {
   static const verbose = 'verbose';
 }
 
-typedef InitializeLoggerCallback = void Function(LogLevel);
-typedef PreCommandEnvironmentChecksCallback = Future<void> Function();
+typedef LoggerInit = void Function(LogLevel);
+typedef PreCommandEnvironmentCheck = Future<void> Function();
 
 Future<void> _preCommandEnvironmentChecks() async {
   if (Platform.isWindows) {
@@ -63,19 +63,23 @@ class ServerpodCommandRunner extends CommandRunner {
   final Analytics _analytics;
   final bool _productionMode;
   final Version _cliVersion;
-  final InitializeLoggerCallback _loggerInitializationCallback;
-  final PreCommandEnvironmentChecksCallback
-      _preCommandEnvironmentChecksCallback;
+  final LoggerInit _onLoggerInit;
+  final PreCommandEnvironmentCheck _onPreCommandEnvironmentCheck;
 
-  ServerpodCommandRunner(
-    this._analytics,
-    this._productionMode,
-    this._cliVersion,
-    this._loggerInitializationCallback,
-    this._preCommandEnvironmentChecksCallback,
-    super.executableName,
-    super.description,
-  ) {
+  ServerpodCommandRunner({
+    required Analytics analytics,
+    required bool productionMode,
+    required Version cliVersion,
+    required LoggerInit onLoggerInit,
+    required PreCommandEnvironmentCheck onPreCommandEnvironmentCheck,
+    required String executableName,
+    required String description,
+  })  : _analytics = analytics,
+        _productionMode = productionMode,
+        _cliVersion = cliVersion,
+        _onLoggerInit = onLoggerInit,
+        _onPreCommandEnvironmentCheck = onPreCommandEnvironmentCheck,
+        super(executableName, description) {
     argParser.addFlag(
       GlobalFlags.quiet,
       abbr: 'q',
@@ -97,18 +101,18 @@ class ServerpodCommandRunner extends CommandRunner {
     Analytics analytics,
     bool productionMode,
     Version cliVersion, {
-    InitializeLoggerCallback loggerInitializationCallback = initializeLogger,
-    PreCommandEnvironmentChecksCallback preCommandEnvironmentChecksCallback =
+    LoggerInit onLoggerInit = initializeLogger,
+    PreCommandEnvironmentCheck onPreCommandEnvironmentCheck =
         _preCommandEnvironmentChecks,
   }) {
     return ServerpodCommandRunner(
-      analytics,
-      productionMode,
-      cliVersion,
-      loggerInitializationCallback,
-      preCommandEnvironmentChecksCallback,
-      'serverpod',
-      'Manage your serverpod app development',
+      analytics: analytics,
+      productionMode: productionMode,
+      cliVersion: cliVersion,
+      onLoggerInit: onLoggerInit,
+      onPreCommandEnvironmentCheck: onPreCommandEnvironmentCheck,
+      executableName: 'serverpod',
+      description: 'Manage your serverpod app development',
     );
   }
 
@@ -127,7 +131,7 @@ class ServerpodCommandRunner extends CommandRunner {
   Future<void> runCommand(ArgResults topLevelResults) async {
     _initializeLogger(topLevelResults);
 
-    await _preCommandEnvironmentChecksCallback();
+    await _onPreCommandEnvironmentCheck();
     await _preCommandPrints();
 
     try {
@@ -162,7 +166,7 @@ class ServerpodCommandRunner extends CommandRunner {
       logLevel = LogLevel.nothing;
     }
 
-    _loggerInitializationCallback(logLevel);
+    _onLoggerInit(logLevel);
   }
 
   Future<void> _preCommandPrints() async {

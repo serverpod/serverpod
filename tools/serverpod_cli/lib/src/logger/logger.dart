@@ -67,12 +67,12 @@ enum LogLevel {
   error('error'),
   nothing('nothing');
 
-  const LogLevel(this.asString);
-  final String asString;
+  const LogLevel(this.name);
+  final String name;
 
   static LogLevel? fromString(String logLevelString) {
     for (var logLevel in LogLevel.values) {
-      if (logLevel.asString == logLevelString) {
+      if (logLevel.name == logLevelString) {
         return logLevel;
       }
     }
