@@ -112,6 +112,7 @@ class StdOutLogger extends Logger {
 
     if (style is BoxLog) {
       message = _formatAsBox(
+        wrapColumn: wrapTextColumn ?? 100,
         message: message,
         title: style.title,
       );
@@ -193,11 +194,11 @@ String _wrapText(String text, int columnWidth) {
 String _formatAsBox({
   required String message,
   String? title,
+  required int wrapColumn,
 }) {
   const int kPaddingLeftRight = 1;
   const int kEdges = 2;
 
-  var wrapColumn = stdout.hasTerminal ? stdout.terminalColumns : 100;
   var maxTextWidthPerLine = wrapColumn - kEdges - kPaddingLeftRight * 2;
   var lines = _wrapText(message, maxTextWidthPerLine).split('\n');
   var lineWidth = lines.map((String line) => line.length).toList();
