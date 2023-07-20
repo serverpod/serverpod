@@ -143,14 +143,19 @@ class StdOutLogger extends Logger {
       message = '\n$message';
     }
 
+    if (style is! RawLog) {
+      // If it is not a raw log we append a new line after the message.
+      message = '$message\n';
+    }
+
     _write(message, logLevel);
   }
 
   void _write(String message, LogLevel logLevel) {
     if (logLevel.index >= LogLevel.warning.index) {
-      stderr.writeln(message);
+      stderr.write(message);
     } else {
-      stdout.writeln(message);
+      stdout.write(message);
     }
   }
 }
