@@ -220,7 +220,7 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Exports raw data serialized in JSON from the database.
-  Future<String> fetchDatabaseBulkData(
+  Future<BulkData> fetchDatabaseBulkData(
     Session session, {
     required String table,
     required int startingId,
@@ -229,8 +229,19 @@ class InsightsEndpoint extends Endpoint {
     return DatabaseBulkData.exportTableData(
       database: session.db,
       table: table,
-      startingId: startingId,
+      lastId: startingId,
       limit: limit,
+    );
+  }
+
+  /// Returns the approximate number of rows in the provided [table].
+  Future<int> getDatabaseRowCount(
+    Session session, {
+    required String table,
+  }) async {
+    return DatabaseBulkData.approximateRowCount(
+      database: session.db,
+      table: table,
     );
   }
 

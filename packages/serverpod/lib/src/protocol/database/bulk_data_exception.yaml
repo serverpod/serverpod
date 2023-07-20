@@ -1,0 +1,3 @@
+exception: BulkDataException
+fields:
+  message: String
