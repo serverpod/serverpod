@@ -20,9 +20,26 @@ const _defaultPorts = <String, int>{
   'Redis server': 8091,
 };
 
+enum ServerpodTemplateType {
+  server('server'),
+  module('module');
+
+  final String name;
+  const ServerpodTemplateType(this.name);
+
+  static ServerpodTemplateType? tryParse(String text) {
+    for (var templateType in ServerpodTemplateType.values) {
+      if (templateType.name == text) {
+        return templateType;
+      }
+    }
+    return null;
+  }
+}
+
 Future<void> performCreate(
   String name,
-  String template,
+  ServerpodTemplateType template,
   bool force,
 ) async {
   // check if project name is valid
@@ -49,7 +66,8 @@ Future<void> performCreate(
   var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
       await CommandLineTools.isDockerRunning();
 
-  if ((!portsAvailable || !dockerConfigured) && template == 'server') {
+  if ((!portsAvailable || !dockerConfigured) &&
+      template == ServerpodTemplateType.server) {
     var strIssue =
         'There are some issues with your setup that will prevent your Serverpod'
         ' project from running out of the box and without further '
@@ -143,7 +161,7 @@ Future<void> performCreate(
     ),
   );
 
-  if (template == 'server') {
+  if (template == ServerpodTemplateType.server) {
     var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
     log.debug(
       'Creating directory: ${flutterDir.path}',
@@ -338,7 +356,7 @@ Future<void> performCreate(
     CommandLineTools.dartPubGet(serverDir);
     CommandLineTools.dartPubGet(clientDir);
     CommandLineTools.flutterCreate(flutterDir);
-  } else if (template == 'module') {
+  } else if (template == ServerpodTemplateType.module) {
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
@@ -406,12 +424,9 @@ Future<void> performCreate(
       ignoreFileNames: ['pubspec.lock'],
     );
     copier.copyFiles();
-  } else {
-    log.warning(
-        'Unknown template: $template (valid options are "server" or "module")');
   }
 
-  if (dockerConfigured && template != 'module') {
+  if (dockerConfigured && template != ServerpodTemplateType.module) {
     if (Platform.isWindows) {
       await CommandLineTools.cleanupForWindows(projectDir, name);
       _logSuccessMessage();
