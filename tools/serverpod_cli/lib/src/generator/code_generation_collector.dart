@@ -45,7 +45,8 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
 
     log.error(
       'Found ${errors.length} error${errors.length == 1 ? '' : 's'}.',
-      style: const TextLogStyle(newParagraph: true),
+      newParagraph: true,
+      style: const TextLogStyle(),
     );
 
     for (var error in errors) {

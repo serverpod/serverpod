@@ -19,11 +19,13 @@ class StdOutLogger extends Logger {
   @override
   void debug(
     String message, {
+    bool newParagraph = false,
     LogStyle style = const TextLogStyle(),
   }) {
     _log(
       message,
       LogLevel.debug,
+      newParagraph,
       style,
       prefix: 'DEBUG: ',
     );
@@ -32,29 +34,32 @@ class StdOutLogger extends Logger {
   @override
   void info(
     String message, {
+    bool newParagraph = false,
     LogStyle style = const TextLogStyle(),
   }) {
-    _log(message, LogLevel.info, style);
+    _log(message, LogLevel.info, newParagraph, style);
   }
 
   @override
   void warning(
     String message, {
+    bool newParagraph = false,
     LogStyle style = const TextLogStyle(),
   }) {
-    _log(message, LogLevel.warning, style, prefix: 'WARNING: ');
+    _log(message, LogLevel.warning, newParagraph, style, prefix: 'WARNING: ');
   }
 
   @override
   void error(
     String message, {
+    bool newParagraph = false,
     StackTrace? stackTrace,
     LogStyle style = const TextLogStyle(),
   }) {
-    _log(message, LogLevel.error, style, prefix: 'ERROR: ');
+    _log(message, LogLevel.error, newParagraph, style, prefix: 'ERROR: ');
 
     if (stackTrace != null) {
-      _log(stackTrace.toString(), LogLevel.error, style);
+      _log(stackTrace.toString(), LogLevel.error, newParagraph, style);
     }
   }
 
@@ -98,6 +103,7 @@ class StdOutLogger extends Logger {
   void _log(
     String message,
     LogLevel logLevel,
+    bool newParagraph,
     LogStyle style, {
     String prefix = '',
   }) {
@@ -132,7 +138,7 @@ class StdOutLogger extends Logger {
       }
     }
 
-    if (style.newParagraph) {
+    if (newParagraph) {
       message = '\n$message';
     }
 

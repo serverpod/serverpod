@@ -69,8 +69,16 @@ Future<void> performCreate(
     log.error(strIssue);
 
     if (!portsAvailable) {
-      log.error(strIssuePorts, style: const TextLogStyle(newParagraph: true));
-      log.error('Ports in use:', style: const TextLogStyle(newParagraph: true));
+      log.error(
+        strIssuePorts,
+        newParagraph: true,
+        style: const TextLogStyle(),
+      );
+      log.error(
+        'Ports in use:',
+        newParagraph: true,
+        style: const TextLogStyle(),
+      );
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
         log.error(
@@ -80,7 +88,11 @@ Future<void> performCreate(
       }
     }
     if (!dockerConfigured) {
-      log.error(strIssueDocker, style: const TextLogStyle(newParagraph: true));
+      log.error(
+        strIssueDocker,
+        newParagraph: true,
+        style: const TextLogStyle(),
+      );
     }
     if (!force) {
       return;
@@ -102,7 +114,8 @@ Future<void> performCreate(
 
   log.info(
     'Creating project $name.',
-    style: const TextLogStyle(newParagraph: true),
+    newParagraph: true,
+    style: const TextLogStyle(),
   );
 
   log.debug(
@@ -405,7 +418,8 @@ Future<void> performCreate(
       log.info(
         'cd .\\${p.join(name, '${name}_server')}\\',
         style: const TextLogStyle(
-            type: AbstractStyleType.command, newParagraph: true),
+          type: AbstractStyleType.command,
+        ),
       );
       log.info(
         '.\\setup-tables.cmd',
@@ -425,8 +439,8 @@ Future<void> performCreate(
       _logSuccessMessage();
       log.info(
         'cd ${p.join(name, '${name}_server')}',
-        style: const TextLogStyle(
-            type: AbstractStyleType.command, newParagraph: true),
+        newParagraph: true,
+        style: const TextLogStyle(type: AbstractStyleType.command),
       );
       log.info(
         'docker compose up --build --detach',
@@ -442,15 +456,16 @@ Future<void> performCreate(
 
 void _logSuccessMessage() {
   log.info('SERVERPOD CREATED 🥳',
-      style: const TextLogStyle(
-          newParagraph: true, type: AbstractStyleType.success));
+      newParagraph: true,
+      style: const TextLogStyle(type: AbstractStyleType.success));
   log.info(
     'All setup. You are ready to rock!',
-    style:
-        const TextLogStyle(newParagraph: true, type: AbstractStyleType.success),
+    newParagraph: true,
+    style: const TextLogStyle(type: AbstractStyleType.success),
   );
   log.info(
     'Start your Serverpod by running:',
-    style: const TextLogStyle(newParagraph: true),
+    newParagraph: true,
+    style: const TextLogStyle(),
   );
 }

@@ -10,7 +10,8 @@ class CommandLineTools {
   static void dartPubGet(Directory dir) {
     log.info(
       'Running `dart pub get` in ${dir.path}',
-      style: const TextLogStyle(newParagraph: true),
+      newParagraph: true,
+      style: const TextLogStyle(),
     );
     var cf = _CommandFormatter('dart', ['pub', 'get']);
     var result = Process.runSync(
@@ -77,9 +78,8 @@ class CommandLineTools {
       );
       log.debug(
         result.stdout,
-        style: const LogStyle(
-          newParagraph: true,
-        ),
+        newParagraph: true,
+        style: const LogStyle(),
       );
 
       if (result.exitCode != 0) {
@@ -112,9 +112,8 @@ class CommandLineTools {
     );
     log.debug(
       result.stdout,
-      style: const LogStyle(
-        newParagraph: true,
-      ),
+      newParagraph: true,
+      style: const LogStyle(),
     );
 
     if (result.exitCode != 0) {
@@ -128,9 +127,8 @@ class CommandLineTools {
     );
     log.debug(
       result.stdout,
-      style: const LogStyle(
-        newParagraph: true,
-      ),
+      newParagraph: true,
+      style: const LogStyle(),
     );
 
     if (result.exitCode != 0) {

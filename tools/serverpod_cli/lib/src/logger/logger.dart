@@ -20,6 +20,7 @@ abstract class Logger {
   /// debugging purposes.
   void debug(
     String message, {
+    bool newParagraph,
     LogStyle style,
   });
 
@@ -28,6 +29,7 @@ abstract class Logger {
   /// success, progress or information messages.
   void info(
     String message, {
+    bool newParagraph,
     LogStyle style,
   });
 
@@ -36,6 +38,7 @@ abstract class Logger {
   /// information for the user.
   void warning(
     String message, {
+    bool newParagraph,
     LogStyle style,
   });
 
@@ -44,6 +47,7 @@ abstract class Logger {
   /// has occurred.
   void error(
     String message, {
+    bool newParagraph,
     StackTrace? stackTrace,
     LogStyle style,
   });
@@ -81,11 +85,7 @@ enum AbstractStyleType {
 
 /// Minimum formatting for style.
 class LogStyle {
-  final bool newParagraph;
-
-  const LogStyle({
-    this.newParagraph = false,
-  });
+  const LogStyle();
 }
 
 /// Box style console formatting.
@@ -95,7 +95,7 @@ class BoxLogStyle extends LogStyle {
   const BoxLogStyle({
     this.title,
     bool newParagraph = true,
-  }) : super(newParagraph: newParagraph);
+  });
 }
 
 /// Abstract style console formatting.
@@ -107,8 +107,7 @@ class TextLogStyle extends LogStyle {
   const TextLogStyle({
     this.type = AbstractStyleType.normal,
     this.wordWrap = true,
-    bool newParagraph = false,
-  }) : super(newParagraph: newParagraph);
+  });
 }
 
 /// Singleton instance of logger.

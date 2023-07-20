@@ -11,17 +11,33 @@ class VoidLogger extends Logger {
   int? get wrapTextColumn => null;
 
   @override
-  void debug(String message, {LogStyle style = const LogStyle()}) {}
+  void debug(
+    String message, {
+    bool newParagraph = false,
+    LogStyle style = const LogStyle(),
+  }) {}
 
   @override
-  void info(String message, {LogStyle style = const LogStyle()}) {}
+  void info(
+    String message, {
+    bool newParagraph = false,
+    LogStyle style = const LogStyle(),
+  }) {}
 
   @override
-  void warning(String message, {LogStyle style = const LogStyle()}) {}
+  void warning(
+    String message, {
+    bool newParagraph = false,
+    LogStyle style = const LogStyle(),
+  }) {}
 
   @override
-  void error(String message,
-      {StackTrace? stackTrace, LogStyle style = const LogStyle()}) {}
+  void error(
+    String message, {
+    bool newParagraph = false,
+    StackTrace? stackTrace,
+    LogStyle style = const LogStyle(),
+  }) {}
 
   @override
   void sourceSpanException(SourceSpanException sourceSpan,
