@@ -20,7 +20,7 @@ class StdOutLogger extends Logger {
   void debug(
     String message, {
     bool newParagraph = false,
-    RawLog style = const TextLog(),
+    LogStyle style = const TextLog(),
   }) {
     _log(
       message,
@@ -35,7 +35,7 @@ class StdOutLogger extends Logger {
   void info(
     String message, {
     bool newParagraph = false,
-    RawLog style = const TextLog(),
+    LogStyle style = const TextLog(),
   }) {
     _log(message, LogLevel.info, newParagraph, style);
   }
@@ -44,7 +44,7 @@ class StdOutLogger extends Logger {
   void warning(
     String message, {
     bool newParagraph = false,
-    RawLog style = const TextLog(),
+    LogStyle style = const TextLog(),
   }) {
     _log(message, LogLevel.warning, newParagraph, style, prefix: 'WARNING: ');
   }
@@ -54,7 +54,7 @@ class StdOutLogger extends Logger {
     String message, {
     bool newParagraph = false,
     StackTrace? stackTrace,
-    RawLog style = const TextLog(),
+    LogStyle style = const TextLog(),
   }) {
     _log(message, LogLevel.error, newParagraph, style, prefix: 'ERROR: ');
 
@@ -104,7 +104,7 @@ class StdOutLogger extends Logger {
     String message,
     LogLevel logLevel,
     bool newParagraph,
-    RawLog style, {
+    LogStyle style, {
     String prefix = '',
   }) {
     if (message == '') return;
