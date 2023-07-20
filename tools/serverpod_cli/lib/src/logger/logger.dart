@@ -69,15 +69,6 @@ enum LogLevel {
 
   const LogLevel(this.name);
   final String name;
-
-  static LogLevel? fromString(String logLevelString) {
-    for (var logLevel in LogLevel.values) {
-      if (logLevel.name == logLevelString) {
-        return logLevel;
-      }
-    }
-    return null;
-  }
 }
 
 enum AbstractStyleType {

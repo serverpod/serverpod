@@ -23,20 +23,20 @@ void main(List<String> args) async {
     () async {
       try {
         await _main(args);
-        await onExit();
+        await _preExit();
       } on ExitException catch (e) {
-        await onExit();
+        await _preExit();
         exit(e.exitCode);
       } catch (error, stackTrace) {
         // Last resort error handling.
         printInternalError(error, stackTrace);
-        await onExit();
+        await _preExit();
         exit(ExitCodeType.general.exitCode);
       }
     },
     (error, stackTrace) async {
       printInternalError(error, stackTrace);
-      await onExit();
+      await _preExit();
       exit(ExitCodeType.general.exitCode);
     },
   );
@@ -62,7 +62,7 @@ ServerpodCommandRunner buildCommandRunner() {
     ..addCommand(VersionCommand());
 }
 
-Future<void> onExit() async {
+Future<void> _preExit() async {
   _analytics.cleanUp();
   await log.flush();
 }
