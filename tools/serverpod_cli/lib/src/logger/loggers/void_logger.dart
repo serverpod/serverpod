@@ -47,4 +47,13 @@ class VoidLogger extends Logger {
   Future<void> flush() {
     return Future(() => {});
   }
+
+  @override
+  Future<bool> progress(
+    String message,
+    Future<bool> Function() run, {
+    bool newParagraph = true,
+  }) async {
+    return await run();
+  }
 }

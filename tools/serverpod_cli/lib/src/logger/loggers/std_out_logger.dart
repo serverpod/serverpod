@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/ansi_style.dart';
+import 'package:serverpod_cli/src/logger/helpers/progress.dart';
 import 'package:source_span/source_span.dart';
 import 'package:super_string/super_string.dart';
 
@@ -11,6 +12,8 @@ import 'package:super_string/super_string.dart';
 /// Errors and Warnings are printed on [stderr] and other messages are logged
 /// on [stdout].
 class StdOutLogger extends Logger {
+  Progress? trackedAnimationInProgress;
+
   StdOutLogger(LogLevel logLevel) : super(logLevel);
 
   @override
@@ -61,6 +64,27 @@ class StdOutLogger extends Logger {
     if (stackTrace != null) {
       _log(stackTrace.toString(), LogLevel.error, newParagraph, style);
     }
+  }
+
+  @override
+  Future<bool> progress(
+    String message,
+    Future<bool> Function() run, {
+    bool newParagraph = false,
+  }) async {
+    if (logLevel.index > LogLevel.info.index) {
+      return await run();
+    }
+
+    if (newParagraph) _write('\n', LogLevel.info);
+
+    var progress = Progress(message, stdout);
+    _stopAnimationInProgress();
+    trackedAnimationInProgress = progress;
+    bool success = await run();
+    trackedAnimationInProgress = null;
+    success ? progress.complete() : progress.fail();
+    return success;
   }
 
   @override
@@ -160,11 +184,17 @@ class StdOutLogger extends Logger {
   }
 
   void _write(String message, LogLevel logLevel) {
+    _stopAnimationInProgress();
     if (logLevel.index >= LogLevel.warning.index) {
       stderr.write(message);
     } else {
       stdout.write(message);
     }
+  }
+
+  void _stopAnimationInProgress() {
+    trackedAnimationInProgress?.stopAnimation();
+    trackedAnimationInProgress = null;
   }
 }
 
