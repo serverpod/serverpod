@@ -139,47 +139,9 @@ Future<void> performCreate(
     style: const TextLog(),
   );
 
-  log.debug(
-    'Creating directory: ${serverpodDirs.projectDir.path}',
-    style: const TextLog(
-      type: TextLogType.bullet,
-    ),
-  );
-  serverpodDirs.projectDir.createSync();
-
-  log.debug(
-    'Creating directory: ${serverpodDirs.serverDir.path}',
-    style: const TextLog(
-      type: TextLogType.bullet,
-    ),
-  );
-  serverpodDirs.serverDir.createSync();
-
-  log.debug(
-    'Creating directory: ${serverpodDirs.clientDir.path}',
-    style: const TextLog(
-      type: TextLogType.bullet,
-    ),
-  );
-  serverpodDirectories.clientDir.createSync();
+  _createProjectDirectories(template, serverpodDirs);
 
   if (template == ServerpodTemplateType.server) {
-    log.debug(
-      'Creating directory: ${serverpodDirs.flutterDir.path}',
-      style: const TextLog(
-        type: TextLogType.bullet,
-      ),
-    );
-    serverpodDirs.flutterDir.createSync();
-
-    log.debug(
-      'Creating directory: ${serverpodDirs.githubDir.path}',
-      style: const TextLog(
-        type: TextLogType.bullet,
-      ),
-    );
-    serverpodDirs.githubDir.createSync();
-
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
@@ -353,9 +315,9 @@ Future<void> performCreate(
     );
     copier.copyFiles();
 
-    CommandLineTools.dartPubGet(serverDir);
-    CommandLineTools.dartPubGet(clientDir);
-    CommandLineTools.flutterCreate(flutterDir);
+    CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+    CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+    CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
   } else if (template == ServerpodTemplateType.module) {
     // Copy server files
     var copier = Copier(
@@ -499,4 +461,28 @@ class ServerpodDirectories {
         clientDir = Directory(p.join(projectDir.path, '${name}_client')),
         flutterDir = Directory(p.join(projectDir.path, '${name}_flutter')),
         githubDir = Directory(p.join(projectDir.path, '.github'));
+}
+
+void _createProjectDirectories(
+  ServerpodTemplateType template,
+  ServerpodDirectories serverpodDirs,
+) {
+  _createDirectory(serverpodDirs.projectDir);
+  _createDirectory(serverpodDirs.serverDir);
+  _createDirectory(serverpodDirs.clientDir);
+
+  if (template == ServerpodTemplateType.server) {
+    _createDirectory(serverpodDirs.flutterDir);
+    _createDirectory(serverpodDirs.githubDir);
+  }
+}
+
+void _createDirectory(Directory dir) {
+  log.debug(
+    'Creating directory: ${dir.path}',
+    style: const TextLog(
+      type: TextLogType.bullet,
+    ),
+  );
+  dir.createSync();
 }
