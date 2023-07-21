@@ -152,9 +152,9 @@ Future<void> performCreate(
       dbStagingPassword: dbStagingPassword,
     );
 
-    CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-    CommandLineTools.dartPubGet(serverpodDirs.clientDir);
-    CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+    await CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+    await CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+    await CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
   } else if (template == ServerpodTemplateType.module) {
     _copyModuleTemplates(serverpodDirs, name: name);
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -7,39 +8,37 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'windows.dart';
 
 class CommandLineTools {
-  static void dartPubGet(Directory dir) {
+  static Future<void> dartPubGet(Directory dir) async {
     log.info(
       'Running `dart pub get` in ${dir.path}',
       newParagraph: true,
       style: const TextLog(),
     );
+
     var cf = _CommandFormatter('dart', ['pub', 'get']);
-    var result = Process.runSync(
-      cf.command,
-      cf.args,
+    var exitCode = await _runProcessWithLoggerAttached(
+      executable: cf.command,
+      arguments: cf.args,
       workingDirectory: dir.path,
     );
 
-    log.debug(result.stdout, style: const RawLog());
-
-    if (result.exitCode != 0) {
-      log.error(result.stderr, style: const RawLog());
+    if (exitCode != 0) {
+      log.error('Failed to run `dart pub get` in ${dir.path}');
     }
   }
 
-  static void flutterCreate(Directory dir) {
+  static Future<void> flutterCreate(Directory dir) async {
     log.info('Running `flutter create .` in ${dir.path}');
+
     var cf = _CommandFormatter('flutter', ['create', '.']);
-    var result = Process.runSync(
-      cf.command,
-      cf.args,
+    var exitCode = await _runProcessWithLoggerAttached(
+      executable: cf.command,
+      arguments: cf.args,
       workingDirectory: dir.path,
     );
 
-    log.debug(result.stdout, style: const RawLog());
-
-    if (result.exitCode != 0) {
-      log.error(result.stderr, style: const RawLog());
+    if (exitCode != 0) {
+      log.error('Failed to run `flutter create .` in ${dir.path}');
     }
   }
 
@@ -48,14 +47,20 @@ class CommandLineTools {
       var commandPath = WindowsUtil.commandPath(command);
       return commandPath != null;
     } else {
-      var result = await Process.run('which', [command]);
-      return result.exitCode == 0;
+      var exitCode = await _runProcessWithLoggerAttached(
+        executable: 'which',
+        arguments: [command],
+      );
+      return exitCode == 0;
     }
   }
 
   static Future<bool> isDockerRunning() async {
-    var result = await Process.run('docker', ['info']);
-    return result.exitCode == 0;
+    var exitCode = await _runProcessWithLoggerAttached(
+      executable: 'docker',
+      arguments: ['info'],
+    );
+    return exitCode == 0;
   }
 
   static Future<void> createTables(Directory dir, String name) async {
@@ -71,69 +76,38 @@ class CommandLineTools {
     );
     late ProcessResult result;
     if (!Platform.isWindows) {
-      result = await Process.run(
-        'chmod',
-        ['u+x', 'setup-tables'],
+      await _runProcessWithLoggerAttached(
+        executable: 'chmod',
+        arguments: ['u+x', 'setup-tables'],
         workingDirectory: serverPath,
       );
-      log.debug(
-        result.stdout,
-        newParagraph: true,
-        style: const RawLog(),
-      );
-
-      if (result.exitCode != 0) {
-        log.error(result.stderr, style: const RawLog());
-      }
     }
 
-    var process = await Process.start(
-      /// Windows has an issue with running batch file directly without the
-      /// complete path.
-      /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
-      Platform.isWindows
+    var exitCode = await _runProcessWithLoggerAttached(
+      executable: Platform.isWindows
           ? p.join(serverPath, 'setup-tables.cmd')
           : './setup-tables',
-      [],
       workingDirectory: serverPath,
     );
 
-    unawaited(stdout.addStream(process.stdout));
-    unawaited(stderr.addStream(process.stderr));
-
-    var exitCode = await process.exitCode;
-    log.info('Completed table setup exit code: $exitCode');
+    if (exitCode != 0) {
+      log.error('Failed to set up tables');
+    } else {
+      log.info('Completed table setup');
+    }
 
     log.info('Cleaning up');
-    result = await Process.run(
-      'rm',
-      ['setup-tables'],
+    await _runProcessWithLoggerAttached(
+      executable: 'rm',
+      arguments: ['setup-tables'],
       workingDirectory: serverPath,
     );
-    log.debug(
-      result.stdout,
-      newParagraph: true,
-      style: const RawLog(),
-    );
 
-    if (result.exitCode != 0) {
-      log.error(result.stderr, style: const RawLog());
-    }
-
-    result = await Process.run(
-      'rm',
-      ['setup-tables.cmd'],
+    await _runProcessWithLoggerAttached(
+      executable: 'rm',
+      arguments: ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    log.debug(
-      result.stdout,
-      newParagraph: true,
-      style: const RawLog(),
-    );
-
-    if (result.exitCode != 0) {
-      log.error(result.stderr, style: const RawLog());
-    }
   }
 
   static Future<void> cleanupForWindows(Directory dir, String name) async {
@@ -164,4 +138,25 @@ class _CommandFormatter {
   String toString() {
     return 'CMD: $command ${args.join(' ')}';
   }
+}
+
+Future<int> _runProcessWithLoggerAttached({
+  required String executable,
+  String? workingDirectory,
+  List<String>? arguments,
+}) async {
+  var process = await Process.start(
+    executable,
+    arguments ?? [],
+    workingDirectory: workingDirectory,
+  );
+
+  process.stderr
+      .transform(utf8.decoder)
+      .listen((data) => log.debug(data, style: const RawLog()));
+  process.stdout
+      .transform(utf8.decoder)
+      .listen((data) => log.debug(data, style: const RawLog()));
+
+  return await process.exitCode;
 }
