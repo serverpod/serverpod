@@ -14,7 +14,6 @@ dependencies:
   args: ^2.4.0
   ci: ^0.1.0
   code_builder: ^4.4.0
-  colorize: ^3.0.0
   dart_style: ^2.3.0
   http: ^0.13.5
   intl: ^0.17.0

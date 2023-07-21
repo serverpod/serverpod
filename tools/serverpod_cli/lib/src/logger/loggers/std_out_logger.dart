@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:colorize/colorize.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/ansi_style.dart';
 import 'package:source_span/source_span.dart';
 import 'package:super_string/super_string.dart';
 
@@ -134,7 +134,7 @@ class StdOutLogger extends Logger {
         case TextLogType.success:
           break;
         case TextLogType.hint:
-          message = '${Colorize(message)..italic()}';
+          message = AnsiStyle.italic.wrap(message);
           break;
       }
     }
@@ -245,17 +245,6 @@ String _formatAsBox({
   return buffer.toString();
 }
 
-enum TextColor {
-  terminalDefault('\x1B[39m'),
-  red('\x1B[31m'),
-  yellow('\x1B[33m'),
-  blue('\x1B[34m'),
-  cyan('\x1B[36m');
-
-  const TextColor(this.ansiCode);
-  final String ansiCode;
-}
-
 abstract class _SeveritySpanHelpers {
   static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
     switch (severity) {
@@ -271,22 +260,22 @@ abstract class _SeveritySpanHelpers {
 
   static String highlightAnsiCode(LogLevel severity, bool isHint) {
     if (severity == LogLevel.info && isHint) {
-      return TextColor.cyan.ansiCode;
+      return AnsiStyle.cyan.ansiCode;
     }
 
     switch (severity) {
       case LogLevel.nothing:
         assert(
             false, 'Log level nothing should never be used for a log message');
-        return TextColor.terminalDefault.ansiCode;
+        return AnsiStyle.terminalDefault.ansiCode;
       case LogLevel.error:
-        return TextColor.red.ansiCode;
+        return AnsiStyle.red.ansiCode;
       case LogLevel.warning:
-        return TextColor.yellow.ansiCode;
+        return AnsiStyle.yellow.ansiCode;
       case LogLevel.info:
-        return TextColor.blue.ansiCode;
+        return AnsiStyle.blue.ansiCode;
       case LogLevel.debug:
-        return TextColor.cyan.ansiCode;
+        return AnsiStyle.cyan.ansiCode;
     }
   }
 }
