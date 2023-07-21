@@ -234,6 +234,7 @@ String _formatAsBox({
 }
 
 enum TextColor {
+  terminalDefault('\x1B[39m'),
   red('\x1B[31m'),
   yellow('\x1B[33m'),
   blue('\x1B[34m'),
@@ -262,6 +263,10 @@ abstract class _SeveritySpanHelpers {
     }
 
     switch (severity) {
+      case LogLevel.nothing:
+        assert(
+            false, 'Log level nothing should never be used for a log message');
+        return TextColor.terminalDefault.ansiCode;
       case LogLevel.error:
         return TextColor.red.ansiCode;
       case LogLevel.warning:

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -6,43 +8,115 @@ import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
+import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 
 abstract class GlobalFlags {
-  static const developmentPrint = 'development-print';
+  static const quiet = 'quiet';
+  static const quietAbbr = 'q';
+  static const verbose = 'verbose';
+  static const verboseAbbr = 'v';
+}
+
+typedef LoggerInit = void Function(LogLevel);
+typedef PreCommandEnvironmentCheck = Future<void> Function();
+
+Future<void> _preCommandEnvironmentChecks() async {
+  if (Platform.isWindows) {
+    log.warning(
+        'Windows is not officially supported yet. Things may or may not work '
+        'as expected.');
+  }
+
+  // Check that required tools are installed
+  if (!await CommandLineTools.existsCommand('dart')) {
+    log.error(
+        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+    throw ExitException();
+  }
+  if (!await CommandLineTools.existsCommand('flutter')) {
+    log.error(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+    throw ExitException();
+  }
+
+  if (!loadEnvironmentVars()) {
+    throw ExitException();
+  }
+
+  // Make sure all necessary downloads are installed
+  if (!resourceManager.isTemplatesInstalled) {
+    try {
+      await resourceManager.installTemplates();
+    } catch (e) {
+      log.error('Failed to download templates.');
+      throw ExitException();
+    }
+
+    if (!resourceManager.isTemplatesInstalled) {
+      log.error(
+          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
+      throw ExitException();
+    }
+  }
 }
 
 class ServerpodCommandRunner extends CommandRunner {
   final Analytics _analytics;
   final bool _productionMode;
   final Version _cliVersion;
+  final LoggerInit _onLoggerInit;
+  final PreCommandEnvironmentCheck _onPreCommandEnvironmentCheck;
 
-  ServerpodCommandRunner(
-    this._analytics,
-    this._productionMode,
-    this._cliVersion,
-    super.executableName,
-    super.description,
-  ) {
+  ServerpodCommandRunner({
+    required Analytics analytics,
+    required bool productionMode,
+    required Version cliVersion,
+    required LoggerInit onLoggerInit,
+    required PreCommandEnvironmentCheck onPreCommandEnvironmentCheck,
+    required String executableName,
+    required String description,
+  })  : _analytics = analytics,
+        _productionMode = productionMode,
+        _cliVersion = cliVersion,
+        _onLoggerInit = onLoggerInit,
+        _onPreCommandEnvironmentCheck = onPreCommandEnvironmentCheck,
+        super(executableName, description) {
     argParser.addFlag(
-      GlobalFlags.developmentPrint,
-      defaultsTo: true,
-      negatable: true,
-      help: 'Prints additional information useful for development.',
+      GlobalFlags.quiet,
+      abbr: GlobalFlags.quietAbbr,
+      defaultsTo: false,
+      negatable: false,
+      help: 'Suppress all serverpod cli output. Is overridden by '
+          ' -v, --verbose.',
+    );
+
+    argParser.addFlag(
+      GlobalFlags.verbose,
+      abbr: GlobalFlags.verboseAbbr,
+      defaultsTo: false,
+      negatable: false,
+      help: 'Prints additional information useful for development. '
+          'Overrides --q, --quiet.',
     );
   }
 
   static ServerpodCommandRunner createCommandRunner(
     Analytics analytics,
     bool productionMode,
-    Version cliVersion,
-  ) {
+    Version cliVersion, {
+    LoggerInit onLoggerInit = initializeLogger,
+    PreCommandEnvironmentCheck onPreCommandEnvironmentCheck =
+        _preCommandEnvironmentChecks,
+  }) {
     return ServerpodCommandRunner(
-      analytics,
-      productionMode,
-      cliVersion,
-      'serverpod',
-      'Manage your serverpod app development',
+      analytics: analytics,
+      productionMode: productionMode,
+      cliVersion: cliVersion,
+      onLoggerInit: onLoggerInit,
+      onPreCommandEnvironmentCheck: onPreCommandEnvironmentCheck,
+      executableName: 'serverpod',
+      description: 'Manage your serverpod app development',
     );
   }
 
@@ -59,11 +133,10 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
-    // TODO: [GlobalFlags.developmentPrint] should silence all logging with a
-    // suitable name. Make this once we have a centralized logging and printing.
-    if (topLevelResults[GlobalFlags.developmentPrint]) {
-      await _preCommandPrints();
-    }
+    _initializeLogger(topLevelResults);
+
+    await _onPreCommandEnvironmentCheck();
+    await _preCommandPrints();
 
     try {
       await super.runCommand(topLevelResults);
@@ -87,6 +160,18 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
+
+  void _initializeLogger(ArgResults topLevelResults) {
+    var logLevel = LogLevel.info;
+
+    if (topLevelResults[GlobalFlags.verbose]) {
+      logLevel = LogLevel.debug;
+    } else if (topLevelResults[GlobalFlags.quiet]) {
+      logLevel = LogLevel.nothing;
+    }
+
+    _onLoggerInit(logLevel);
+  }
 
   Future<void> _preCommandPrints() async {
     if (_productionMode) {

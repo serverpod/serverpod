@@ -22,7 +22,6 @@ const _defaultPorts = <String, int>{
 
 Future<void> performCreate(
   String name,
-  bool verbose,
   String template,
   bool force,
 ) async {
@@ -106,58 +105,48 @@ Future<void> performCreate(
     style: const TextLogStyle(newParagraph: true),
   );
 
-  if (verbose) {
-    log.debug(
-      'Creating directory: ${projectDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
-      ),
-    );
-  }
+  log.debug(
+    'Creating directory: ${projectDir.path}',
+    style: const TextLogStyle(
+      type: AbstractStyleType.bullet,
+    ),
+  );
   projectDir.createSync();
 
   var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
-  if (verbose) {
-    log.debug(
-      'Creating directory: ${serverDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
-      ),
-    );
-  }
+  log.debug(
+    'Creating directory: ${serverDir.path}',
+    style: const TextLogStyle(
+      type: AbstractStyleType.bullet,
+    ),
+  );
   serverDir.createSync();
 
   var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
-  if (verbose) {
+  log.debug(
+    'Creating directory: ${clientDir.path}',
+    style: const TextLogStyle(
+      type: AbstractStyleType.bullet,
+    ),
+  );
+
+  if (template == 'server') {
+    var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
     log.debug(
-      'Creating directory: ${clientDir.path}',
+      'Creating directory: ${flutterDir.path}',
       style: const TextLogStyle(
         type: AbstractStyleType.bullet,
       ),
     );
-  }
-
-  if (template == 'server') {
-    var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
-    if (verbose) {
-      log.debug(
-        'Creating directory: ${flutterDir.path}',
-        style: const TextLogStyle(
-          type: AbstractStyleType.bullet,
-        ),
-      );
-    }
     flutterDir.createSync();
 
     var githubDir = Directory(p.join(projectDir.path, '.github'));
-    if (verbose) {
-      log.debug(
-        'Creating directory: ${githubDir.path}',
-        style: const TextLogStyle(
-          type: AbstractStyleType.bullet,
-        ),
-      );
-    }
+    log.debug(
+      'Creating directory: ${githubDir.path}',
+      style: const TextLogStyle(
+        type: AbstractStyleType.bullet,
+      ),
+    );
     githubDir.createSync();
 
     // Copy server files
@@ -231,7 +220,6 @@ Future<void> performCreate(
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
     );
     copier.copyFiles();
 
@@ -266,7 +254,6 @@ Future<void> performCreate(
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
     );
     copier.copyFiles();
 
@@ -310,7 +297,6 @@ Future<void> performCreate(
         'macos',
         'build',
       ],
-      verbose: verbose,
     );
     copier.copyFiles();
 
@@ -333,7 +319,6 @@ Future<void> performCreate(
         ),
       ],
       fileNameReplacements: [],
-      verbose: verbose,
     );
     copier.copyFiles();
 
@@ -372,7 +357,6 @@ Future<void> performCreate(
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
     );
     copier.copyFiles();
 
@@ -407,7 +391,6 @@ Future<void> performCreate(
       ],
       removePrefixes: ['path'],
       ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
     );
     copier.copyFiles();
   } else {

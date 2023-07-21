@@ -37,7 +37,6 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
 
     var collector = CodeGenerationCollector();
     var moduleDefinitions = await SerializableEntityAnalyzer.analyzeAllFiles(
-      verbose: false,
       collector: collector,
       config: config,
     );
@@ -67,7 +66,6 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinion({
 
   var collector = CodeGenerationCollector();
   var entityDefinitions = await SerializableEntityAnalyzer.analyzeAllFiles(
-    verbose: false,
     collector: collector,
     config: config,
   );

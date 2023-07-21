@@ -10,8 +10,6 @@ class CreateCommand extends ServerpodCommand {
       'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).';
 
   CreateCommand() {
-    argParser.addFlag('verbose',
-        abbr: 'v', negatable: false, help: 'Output more detailed information.');
     argParser.addFlag(
       'force',
       abbr: 'f',
@@ -32,7 +30,6 @@ class CreateCommand extends ServerpodCommand {
   @override
   Future<void> run() async {
     var name = argResults!.arguments.last;
-    bool verbose = argResults!['verbose'];
     String template = argResults!['template'];
     bool force = argResults!['force'];
 
@@ -41,6 +38,6 @@ class CreateCommand extends ServerpodCommand {
       return;
     }
 
-    await performCreate(name, verbose, template, force);
+    await performCreate(name, template, force);
   }
 }
