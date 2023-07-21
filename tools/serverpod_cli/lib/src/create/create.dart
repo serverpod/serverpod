@@ -124,8 +124,11 @@ Future<void> performCreate(
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
-  var projectDir = Directory(p.join(Directory.current.path, name));
-  if (projectDir.existsSync()) {
+  var serverpodDirs = ServerpodDirectories(
+    projectDir: Directory(p.join(Directory.current.path, name)),
+    name: name,
+  );
+  if (serverpodDirs.projectDir.existsSync()) {
     log.error('Project $name already exists.');
     return;
   }
@@ -137,54 +140,50 @@ Future<void> performCreate(
   );
 
   log.debug(
-    'Creating directory: ${projectDir.path}',
+    'Creating directory: ${serverpodDirs.projectDir.path}',
     style: const TextLog(
       type: TextLogType.bullet,
     ),
   );
-  projectDir.createSync();
+  serverpodDirs.projectDir.createSync();
 
-  var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
   log.debug(
-    'Creating directory: ${serverDir.path}',
+    'Creating directory: ${serverpodDirs.serverDir.path}',
     style: const TextLog(
       type: TextLogType.bullet,
     ),
   );
-  serverDir.createSync();
+  serverpodDirs.serverDir.createSync();
 
-  var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
   log.debug(
-    'Creating directory: ${clientDir.path}',
+    'Creating directory: ${serverpodDirs.clientDir.path}',
     style: const TextLog(
       type: TextLogType.bullet,
     ),
   );
 
   if (template == ServerpodTemplateType.server) {
-    var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
     log.debug(
-      'Creating directory: ${flutterDir.path}',
+      'Creating directory: ${serverpodDirs.flutterDir.path}',
       style: const TextLog(
         type: TextLogType.bullet,
       ),
     );
-    flutterDir.createSync();
+    serverpodDirs.flutterDir.createSync();
 
-    var githubDir = Directory(p.join(projectDir.path, '.github'));
     log.debug(
-      'Creating directory: ${githubDir.path}',
+      'Creating directory: ${serverpodDirs.githubDir.path}',
       style: const TextLog(
         type: TextLogType.bullet,
       ),
     );
-    githubDir.createSync();
+    serverpodDirs.githubDir.createSync();
 
     // Copy server files
     var copier = Copier(
       srcDir: Directory(
           p.join(resourceManager.templateDirectory.path, 'projectname_server')),
-      dstDir: serverDir,
+      dstDir: serverpodDirs.serverDir,
       replacements: [
         Replacement(
           slotName: 'projectname',
@@ -258,7 +257,7 @@ Future<void> performCreate(
     copier = Copier(
       srcDir: Directory(
           p.join(resourceManager.templateDirectory.path, 'projectname_client')),
-      dstDir: clientDir,
+      dstDir: serverpodDirs.clientDir,
       replacements: [
         Replacement(
           slotName: 'projectname',
@@ -292,7 +291,7 @@ Future<void> performCreate(
     copier = Copier(
       srcDir: Directory(p.join(
           resourceManager.templateDirectory.path, 'projectname_flutter')),
-      dstDir: flutterDir,
+      dstDir: serverpodDirs.flutterDir,
       replacements: [
         Replacement(
           slotName: 'projectname',
@@ -334,7 +333,7 @@ Future<void> performCreate(
     copier = Copier(
       srcDir:
           Directory(p.join(resourceManager.templateDirectory.path, 'github')),
-      dstDir: githubDir,
+      dstDir: serverpodDirs.githubDir,
       replacements: [
         Replacement(
           slotName: 'projectname',
@@ -361,7 +360,7 @@ Future<void> performCreate(
     var copier = Copier(
       srcDir: Directory(
           p.join(resourceManager.templateDirectory.path, 'modulename_server')),
-      dstDir: serverDir,
+      dstDir: serverpodDirs.serverDir,
       replacements: [
         Replacement(
           slotName: 'modulename',
@@ -395,7 +394,7 @@ Future<void> performCreate(
     copier = Copier(
       srcDir: Directory(
           p.join(resourceManager.templateDirectory.path, 'modulename_client')),
-      dstDir: clientDir,
+      dstDir: serverpodDirs.clientDir,
       replacements: [
         Replacement(
           slotName: 'modulename',
@@ -428,7 +427,10 @@ Future<void> performCreate(
 
   if (dockerConfigured && template != ServerpodTemplateType.module) {
     if (Platform.isWindows) {
-      await CommandLineTools.cleanupForWindows(projectDir, name);
+      await CommandLineTools.cleanupForWindows(
+        serverpodDirs.projectDir,
+        name,
+      );
       _logSuccessMessage();
       log.info(
         'cd .\\${p.join(name, '${name}_server')}\\',
@@ -450,7 +452,7 @@ Future<void> performCreate(
       );
     } else {
       // Create tables
-      await CommandLineTools.createTables(projectDir, name);
+      await CommandLineTools.createTables(serverpodDirs.projectDir, name);
       _logSuccessMessage();
       log.info(
         'cd ${p.join(name, '${name}_server')}',
@@ -482,4 +484,18 @@ void _logSuccessMessage() {
     newParagraph: true,
     style: const TextLog(),
   );
+}
+
+class ServerpodDirectories {
+  final Directory projectDir;
+  final Directory serverDir;
+  final Directory clientDir;
+  final Directory flutterDir;
+  final Directory githubDir;
+
+  ServerpodDirectories({required this.projectDir, required String name})
+      : serverDir = Directory(p.join(projectDir.path, '${name}_server')),
+        clientDir = Directory(p.join(projectDir.path, '${name}_client')),
+        flutterDir = Directory(p.join(projectDir.path, '${name}_flutter')),
+        githubDir = Directory(p.join(projectDir.path, '.github'));
 }
