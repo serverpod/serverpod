@@ -13,7 +13,9 @@ import 'package:serverpod_cli/src/util/exit_exception.dart';
 
 abstract class GlobalFlags {
   static const quiet = 'quiet';
+  static const quietAbbr = 'q';
   static const verbose = 'verbose';
+  static const verboseAbbr = 'v';
 }
 
 typedef LoggerInit = void Function(LogLevel);
@@ -82,19 +84,21 @@ class ServerpodCommandRunner extends CommandRunner {
         super(executableName, description) {
     argParser.addFlag(
       GlobalFlags.quiet,
-      abbr: 'q',
+      abbr: GlobalFlags.quietAbbr,
       defaultsTo: false,
       negatable: false,
       help: 'Suppress all serverpod cli output. Is overridden by '
           ' -v, --verbose.',
     );
 
-    argParser.addFlag(GlobalFlags.verbose,
-        abbr: 'v',
-        defaultsTo: false,
-        negatable: false,
-        help: 'Prints additional information useful for development. '
-            'Overrides --q, --quiet.');
+    argParser.addFlag(
+      GlobalFlags.verbose,
+      abbr: GlobalFlags.verboseAbbr,
+      defaultsTo: false,
+      negatable: false,
+      help: 'Prints additional information useful for development. '
+          'Overrides --q, --quiet.',
+    );
   }
 
   static ServerpodCommandRunner createCommandRunner(
