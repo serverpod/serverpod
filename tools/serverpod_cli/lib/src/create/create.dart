@@ -142,250 +142,21 @@ Future<void> performCreate(
   _createProjectDirectories(template, serverpodDirs);
 
   if (template == ServerpodTemplateType.server) {
-    // Copy server files
-    var copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'projectname_server')),
-      dstDir: serverpodDirs.serverDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'awsname',
-          replacement: awsName,
-        ),
-        Replacement(
-          slotName: 'randomawsid',
-          replacement: randomAwsId,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-        Replacement(
-          slotName: 'SERVICE_SECRET_DEVELOPMENT',
-          replacement: generateRandomString(),
-        ),
-        Replacement(
-          slotName: 'SERVICE_SECRET_STAGING',
-          replacement: generateRandomString(),
-        ),
-        Replacement(
-          slotName: 'SERVICE_SECRET_PRODUCTION',
-          replacement: generateRandomString(),
-        ),
-        Replacement(
-          slotName: 'DB_PASSWORD',
-          replacement: dbPassword,
-        ),
-        Replacement(
-          slotName: 'DB_PRODUCTION_PASSWORD',
-          replacement: dbProductionPassword,
-        ),
-        Replacement(
-          slotName: 'DB_STAGING_PASSWORD',
-          replacement: dbStagingPassword,
-        ),
-        Replacement(
-          slotName: 'REDIS_PASSWORD',
-          replacement: generateRandomString(),
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-        Replacement(
-          slotName: 'gcloudignore',
-          replacement: '.gcloudignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
+    _copyServerTemplates(
+      serverpodDirs,
+      name: name,
+      awsName: awsName,
+      randomAwsId: randomAwsId,
+      dbPassword: dbPassword,
+      dbProductionPassword: dbProductionPassword,
+      dbStagingPassword: dbStagingPassword,
     );
-    copier.copyFiles();
-
-    // Copy client files
-    copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'projectname_client')),
-      dstDir: serverpodDirs.clientDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-    );
-    copier.copyFiles();
-
-    // Copy Flutter files
-    copier = Copier(
-      srcDir: Directory(p.join(
-          resourceManager.templateDirectory.path, 'projectname_flutter')),
-      dstDir: serverpodDirs.flutterDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: [
-        'path: ../../../packages/serverpod_flutter',
-      ],
-      ignoreFileNames: [
-        'pubspec.lock',
-        'ios',
-        'android',
-        'web',
-        'macos',
-        'build',
-      ],
-    );
-    copier.copyFiles();
-
-    copier = Copier(
-      srcDir:
-          Directory(p.join(resourceManager.templateDirectory.path, 'github')),
-      dstDir: serverpodDirs.githubDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'awsname',
-          replacement: awsName,
-        ),
-        Replacement(
-          slotName: 'randomawsid',
-          replacement: randomAwsId,
-        ),
-      ],
-      fileNameReplacements: [],
-    );
-    copier.copyFiles();
 
     CommandLineTools.dartPubGet(serverpodDirs.serverDir);
     CommandLineTools.dartPubGet(serverpodDirs.clientDir);
     CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
   } else if (template == ServerpodTemplateType.module) {
-    // Copy server files
-    var copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'modulename_server')),
-      dstDir: serverpodDirs.serverDir,
-      replacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-    );
-    copier.copyFiles();
-
-    // Copy client files
-    copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'modulename_client')),
-      dstDir: serverpodDirs.clientDir,
-      replacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-    );
-    copier.copyFiles();
+    _copyModuleTemplates(serverpodDirs, name: name);
   }
 
   if (dockerConfigured && template != ServerpodTemplateType.module) {
@@ -414,7 +185,6 @@ Future<void> performCreate(
         style: const TextLog(type: TextLogType.command),
       );
     } else {
-      // Create tables
       await CommandLineTools.createTables(serverpodDirs.projectDir, name);
       _logSuccessMessage();
       log.info(
@@ -485,4 +255,259 @@ void _createDirectory(Directory dir) {
     ),
   );
   dir.createSync();
+}
+
+void _copyServerTemplates(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  required String awsName,
+  required String randomAwsId,
+  required String dbPassword,
+  required String dbProductionPassword,
+  required String dbStagingPassword,
+}) {
+  // Copy server files
+  var copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_server')),
+    dstDir: serverpodDirs.serverDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'awsname',
+        replacement: awsName,
+      ),
+      Replacement(
+        slotName: 'randomawsid',
+        replacement: randomAwsId,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+      Replacement(
+        slotName: 'SERVICE_SECRET_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVICE_SECRET_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVICE_SECRET_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'DB_PASSWORD',
+        replacement: dbPassword,
+      ),
+      Replacement(
+        slotName: 'DB_PRODUCTION_PASSWORD',
+        replacement: dbProductionPassword,
+      ),
+      Replacement(
+        slotName: 'DB_STAGING_PASSWORD',
+        replacement: dbStagingPassword,
+      ),
+      Replacement(
+        slotName: 'REDIS_PASSWORD',
+        replacement: generateRandomString(),
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+      Replacement(
+        slotName: 'gcloudignore',
+        replacement: '.gcloudignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  // Copy client files
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_client')),
+    dstDir: serverpodDirs.clientDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  // Copy Flutter files
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_flutter')),
+    dstDir: serverpodDirs.flutterDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: [
+      'path: ../../../packages/serverpod_flutter',
+    ],
+    ignoreFileNames: [
+      'pubspec.lock',
+      'ios',
+      'android',
+      'web',
+      'macos',
+      'build',
+    ],
+  );
+  copier.copyFiles();
+
+  copier = Copier(
+    srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'github')),
+    dstDir: serverpodDirs.githubDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'awsname',
+        replacement: awsName,
+      ),
+      Replacement(
+        slotName: 'randomawsid',
+        replacement: randomAwsId,
+      ),
+    ],
+    fileNameReplacements: [],
+  );
+  copier.copyFiles();
+}
+
+void _copyModuleTemplates(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+}) {
+  // Copy server files
+  var copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'modulename_server')),
+    dstDir: serverpodDirs.serverDir,
+    replacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  // Copy client files
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'modulename_client')),
+    dstDir: serverpodDirs.clientDir,
+    replacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
 }
