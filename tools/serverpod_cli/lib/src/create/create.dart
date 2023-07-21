@@ -161,6 +161,7 @@ Future<void> performCreate(
       type: TextLogType.bullet,
     ),
   );
+  serverpodDirectories.clientDir.createSync();
 
   if (template == ServerpodTemplateType.server) {
     log.debug(
