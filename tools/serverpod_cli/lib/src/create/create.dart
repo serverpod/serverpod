@@ -133,31 +133,55 @@ Future<bool> performCreate(
     return false;
   }
 
-  log.info(
-    'Creating project $name.',
-    newParagraph: true,
-    style: const TextLog(),
-  );
-
-  _createProjectDirectories(template, serverpodDirs);
-
-  bool success = true;
   if (template == ServerpodTemplateType.server) {
-    _copyServerTemplates(
-      serverpodDirs,
-      name: name,
-      awsName: awsName,
-      randomAwsId: randomAwsId,
-      dbPassword: dbPassword,
-      dbProductionPassword: dbProductionPassword,
-      dbStagingPassword: dbStagingPassword,
+    log.info(
+      '🚀 Creating Serverpod project "$name"',
+      style: const TextLog(type: TextLogType.init),
     );
-
-    success &= await CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-    success &= await CommandLineTools.dartPubGet(serverpodDirs.clientDir);
-    success &= await CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
   } else if (template == ServerpodTemplateType.module) {
-    _copyModuleTemplates(serverpodDirs, name: name);
+    log.info(
+      '📦 Creating Serverpod module "$name"',
+      style: const TextLog(type: TextLogType.init),
+    );
+  }
+
+  bool success = await log.progress(
+      'Setting up project structure',
+      () => Future(() {
+            _createProjectDirectories(template, serverpodDirs);
+            return true;
+          }),
+      newParagraph: true);
+
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress(
+        'Bootstrapping project files',
+        () => Future(() {
+              _copyServerTemplates(
+                serverpodDirs,
+                name: name,
+                awsName: awsName,
+                randomAwsId: randomAwsId,
+                dbPassword: dbPassword,
+                dbProductionPassword: dbProductionPassword,
+                dbStagingPassword: dbStagingPassword,
+              );
+              return true;
+            }));
+
+    success &= await log.progress('Preparing your server',
+        () => CommandLineTools.dartPubGet(serverpodDirs.serverDir));
+    success &= await log.progress('Preparing your client',
+        () => CommandLineTools.dartPubGet(serverpodDirs.clientDir));
+    success &= await log.progress('Preparing your Flutter app',
+        () => CommandLineTools.flutterCreate(serverpodDirs.flutterDir));
+  } else if (template == ServerpodTemplateType.module) {
+    success &= await log.progress(
+        'Bootstrapping module files',
+        () => Future(() {
+              _copyModuleTemplates(serverpodDirs, name: name);
+              return true;
+            }));
   }
 
   if (dockerConfigured && template != ServerpodTemplateType.module) {
@@ -167,8 +191,8 @@ Future<bool> performCreate(
         name,
       );
     } else {
-      success &=
-          await CommandLineTools.createTables(serverpodDirs.projectDir, name);
+      success &= await log.progress('Preparing your database in Docker',
+          () => CommandLineTools.createTables(serverpodDirs.projectDir, name));
     }
 
     if (success) {
@@ -274,7 +298,7 @@ void _copyServerTemplates(
   required String dbProductionPassword,
   required String dbStagingPassword,
 }) {
-  // Copy server files
+  log.debug('Copying server files');
   var copier = Copier(
     srcDir: Directory(
         p.join(resourceManager.templateDirectory.path, 'projectname_server')),
@@ -348,7 +372,7 @@ void _copyServerTemplates(
   );
   copier.copyFiles();
 
-  // Copy client files
+  log.debug('Copying client files', newParagraph: true);
   copier = Copier(
     srcDir: Directory(
         p.join(resourceManager.templateDirectory.path, 'projectname_client')),
@@ -382,7 +406,7 @@ void _copyServerTemplates(
   );
   copier.copyFiles();
 
-  // Copy Flutter files
+  log.debug('Copying Flutter files', newParagraph: true);
   copier = Copier(
     srcDir: Directory(
         p.join(resourceManager.templateDirectory.path, 'projectname_flutter')),
@@ -425,6 +449,7 @@ void _copyServerTemplates(
   );
   copier.copyFiles();
 
+  log.debug('Copying .github files', newParagraph: true);
   copier = Copier(
     srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'github')),
     dstDir: serverpodDirs.githubDir,
@@ -451,7 +476,7 @@ void _copyModuleTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
 }) {
-  // Copy server files
+  log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
         p.join(resourceManager.templateDirectory.path, 'modulename_server')),
@@ -485,7 +510,7 @@ void _copyModuleTemplates(
   );
   copier.copyFiles();
 
-  // Copy client files
+  log.debug('Copying client files', newParagraph: true);
   copier = Copier(
     srcDir: Directory(
         p.join(resourceManager.templateDirectory.path, 'modulename_client')),

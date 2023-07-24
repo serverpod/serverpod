@@ -9,11 +9,7 @@ import 'windows.dart';
 
 class CommandLineTools {
   static Future<bool> dartPubGet(Directory dir) async {
-    log.info(
-      'Running `dart pub get` in ${dir.path}',
-      newParagraph: true,
-      style: const TextLog(),
-    );
+    log.debug('Running `dart pub get` in ${dir.path}', newParagraph: true);
 
     var cf = _CommandFormatter('dart', ['pub', 'get']);
     var exitCode = await _runProcessWithLoggerAttached(
@@ -31,7 +27,7 @@ class CommandLineTools {
   }
 
   static Future<bool> flutterCreate(Directory dir) async {
-    log.info('Running `flutter create .` in ${dir.path}');
+    log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
     var cf = _CommandFormatter('flutter', ['create', '.']);
     var exitCode = await _runProcessWithLoggerAttached(
@@ -70,17 +66,15 @@ class CommandLineTools {
   }
 
   static Future<bool> createTables(Directory dir, String name) async {
-    var serverPath = p.join(dir.path, '${name}_server');
-    log.info('Setting up Docker and default database tables in $serverPath');
-    log.info(
+    log.debug(
       'If you run serverpod create for the first time, this can take '
       'a few minutes as Docker is downloading the images for '
       'Postgres. If you get stuck at this step, make sure that you '
       'have the latest version of Docker Desktop and that it is '
       'currently running.',
-      style: const TextLog(type: TextLogType.hint),
     );
-    late ProcessResult result;
+    var serverPath = p.join(dir.path, '${name}_server');
+
     if (!Platform.isWindows) {
       await _runProcessWithLoggerAttached(
         executable: 'chmod',
@@ -99,10 +93,10 @@ class CommandLineTools {
     if (exitCode != 0) {
       log.error('Failed to set up tables');
     } else {
-      log.info('Completed table setup');
+      log.debug('Completed table setup');
     }
 
-    log.info('Cleaning up');
+    log.debug('Cleaning up');
     await _runProcessWithLoggerAttached(
       executable: 'rm',
       arguments: ['setup-tables'],
@@ -120,7 +114,7 @@ class CommandLineTools {
 
   static Future<bool> cleanupForWindows(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
-    log.info('Cleaning up');
+    log.debug('Cleaning up');
     var file = File(p.join(serverPath, 'setup-tables'));
     try {
       await file.delete();
