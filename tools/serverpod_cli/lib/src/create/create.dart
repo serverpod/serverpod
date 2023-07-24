@@ -37,7 +37,7 @@ enum ServerpodTemplateType {
   }
 }
 
-Future<void> performCreate(
+Future<bool> performCreate(
   String name,
   ServerpodTemplateType template,
   bool force,
@@ -48,7 +48,7 @@ Future<void> performCreate(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return;
+    return false;
   }
   // Check we are set to create a new project
   var usedPorts = <String, int>{};
@@ -113,7 +113,7 @@ Future<void> performCreate(
       );
     }
     if (!force) {
-      return;
+      return false;
     }
   }
 
@@ -130,7 +130,7 @@ Future<void> performCreate(
   );
   if (serverpodDirs.projectDir.existsSync()) {
     log.error('Project $name already exists.');
-    return;
+    return false;
   }
 
   log.info(
@@ -141,6 +141,7 @@ Future<void> performCreate(
 
   _createProjectDirectories(template, serverpodDirs);
 
+  bool success = true;
   if (template == ServerpodTemplateType.server) {
     _copyServerTemplates(
       serverpodDirs,
@@ -152,71 +153,78 @@ Future<void> performCreate(
       dbStagingPassword: dbStagingPassword,
     );
 
-    await CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-    await CommandLineTools.dartPubGet(serverpodDirs.clientDir);
-    await CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+    success &= await CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+    success &= await CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+    success &= await CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
   } else if (template == ServerpodTemplateType.module) {
     _copyModuleTemplates(serverpodDirs, name: name);
   }
 
   if (dockerConfigured && template != ServerpodTemplateType.module) {
     if (Platform.isWindows) {
-      await CommandLineTools.cleanupForWindows(
+      success &= await CommandLineTools.cleanupForWindows(
         serverpodDirs.projectDir,
         name,
       );
-      _logSuccessMessage();
-      log.info(
-        'cd .\\${p.join(name, '${name}_server')}\\',
-        style: const TextLog(
-          type: TextLogType.command,
-        ),
-      );
-      log.info(
-        '.\\setup-tables.cmd',
-        style: const TextLog(type: TextLogType.command),
-      );
-      log.info(
-        'docker compose up --build --detach',
-        style: const TextLog(type: TextLogType.command),
-      );
-      log.info(
-        'dart .\\bin\\main.dart',
-        style: const TextLog(type: TextLogType.command),
-      );
     } else {
-      await CommandLineTools.createTables(serverpodDirs.projectDir, name);
-      _logSuccessMessage();
-      log.info(
-        'cd ${p.join(name, '${name}_server')}',
-        newParagraph: true,
-        style: const TextLog(type: TextLogType.command),
-      );
-      log.info(
-        'docker compose up --build --detach',
-        style: const TextLog(type: TextLogType.command),
-      );
-      log.info(
-        'dart dart bin/main.dart',
-        style: const TextLog(type: TextLogType.command),
-      );
+      success &=
+          await CommandLineTools.createTables(serverpodDirs.projectDir, name);
+    }
+
+    if (success) {
+      _logSuccessMessage(name);
     }
   }
+
+  return success;
 }
 
-void _logSuccessMessage() {
-  log.info('SERVERPOD CREATED 🥳',
-      newParagraph: true, style: const TextLog(type: TextLogType.success));
+void _logSuccessMessage(name) {
+  log.info('Serverpod created!',
+      newParagraph: true,
+      style: const TextLog(
+        type: TextLogType.success,
+      ));
   log.info(
     'All setup. You are ready to rock!',
-    newParagraph: true,
-    style: const TextLog(type: TextLogType.success),
+    style: const TextLog(type: TextLogType.header),
   );
   log.info(
     'Start your Serverpod by running:',
-    newParagraph: true,
-    style: const TextLog(),
+    style: const TextLog(type: TextLogType.header),
   );
+
+  if (Platform.isWindows) {
+    log.info(
+      'cd .\\${p.join(name, '${name}_server')}\\',
+      style: const TextLog(type: TextLogType.command),
+    );
+    log.info(
+      '.\\setup-tables.cmd',
+      style: const TextLog(type: TextLogType.command),
+    );
+    log.info(
+      'docker compose up --build --detach',
+      style: const TextLog(type: TextLogType.command),
+    );
+    log.info(
+      'dart .\\bin\\main.dart',
+      style: const TextLog(type: TextLogType.command),
+    );
+  } else {
+    log.info(
+      'cd ${p.join(name, '${name}_server')}',
+      style: const TextLog(type: TextLogType.command),
+    );
+    log.info(
+      'docker compose up --build --detach',
+      style: const TextLog(type: TextLogType.command),
+    );
+    log.info(
+      'dart dart bin/main.dart',
+      style: const TextLog(type: TextLogType.command),
+    );
+  }
 }
 
 class ServerpodDirectories {

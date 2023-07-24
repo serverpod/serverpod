@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/util/exit_exception.dart';
 
 class CreateCommand extends ServerpodCommand {
   final templateTypes =
@@ -41,6 +42,8 @@ class CreateCommand extends ServerpodCommand {
       return;
     }
 
-    await performCreate(name, template, force);
+    if (!await performCreate(name, template, force)) {
+      throw ExitException();
+    }
   }
 }

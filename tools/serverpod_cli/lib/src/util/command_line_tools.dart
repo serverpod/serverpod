@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'windows.dart';
 
 class CommandLineTools {
-  static Future<void> dartPubGet(Directory dir) async {
+  static Future<bool> dartPubGet(Directory dir) async {
     log.info(
       'Running `dart pub get` in ${dir.path}',
       newParagraph: true,
@@ -24,10 +24,13 @@ class CommandLineTools {
 
     if (exitCode != 0) {
       log.error('Failed to run `dart pub get` in ${dir.path}');
+      return false;
     }
+
+    return true;
   }
 
-  static Future<void> flutterCreate(Directory dir) async {
+  static Future<bool> flutterCreate(Directory dir) async {
     log.info('Running `flutter create .` in ${dir.path}');
 
     var cf = _CommandFormatter('flutter', ['create', '.']);
@@ -39,7 +42,10 @@ class CommandLineTools {
 
     if (exitCode != 0) {
       log.error('Failed to run `flutter create .` in ${dir.path}');
+      return false;
     }
+
+    return true;
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -63,7 +69,7 @@ class CommandLineTools {
     return exitCode == 0;
   }
 
-  static Future<void> createTables(Directory dir, String name) async {
+  static Future<bool> createTables(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
     log.info('Setting up Docker and default database tables in $serverPath');
     log.info(
@@ -108,9 +114,11 @@ class CommandLineTools {
       arguments: ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
+
+    return exitCode == 0;
   }
 
-  static Future<void> cleanupForWindows(Directory dir, String name) async {
+  static Future<bool> cleanupForWindows(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
     log.info('Cleaning up');
     var file = File(p.join(serverPath, 'setup-tables'));
@@ -122,7 +130,10 @@ class CommandLineTools {
         'file: $file',
         style: const RawLog(),
       );
+      return false;
     }
+
+    return true;
   }
 }
 
