@@ -47,34 +47,35 @@ class SerializableEntityAnalyzer {
     var protocols =
         await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var classDefinitions = _convertProtocolToEntityDefinitions(
+    var entityProtocolDef = _convertProtocolToEntityDefinitions(
       protocols,
     );
 
-    var definitions = classDefinitions.map((e) => e.entityDefinition).toList();
+    var classDefinitions =
+        entityProtocolDef.map((e) => e.entityDefinition).toList();
 
-    for (var classDefinition in classDefinitions) {
+    for (var classDefinition in entityProtocolDef) {
       SerializableEntityAnalyzer.validateYamlDefinition(
         classDefinition.protocolSource.yaml,
         classDefinition.entityDefinition.sourceFileName,
         collector,
         classDefinition.entityDefinition,
-        definitions,
+        classDefinitions,
       );
     }
 
     // Detect protocol references
-    for (var classDefinition in definitions) {
+    for (var classDefinition in classDefinitions) {
       if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           fieldDefinition.type =
-              fieldDefinition.type.applyProtocolReferences(definitions);
+              fieldDefinition.type.applyProtocolReferences(classDefinitions);
         }
       }
     }
 
     // Detect enum fields
-    for (var classDefinition in definitions) {
+    for (var classDefinition in classDefinitions) {
       if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           if (fieldDefinition.type.url == 'protocol' &&
@@ -87,7 +88,7 @@ class SerializableEntityAnalyzer {
       }
     }
 
-    return definitions;
+    return classDefinitions;
   }
 
   static List<_ProtocolEntityDefinitionSource>
