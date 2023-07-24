@@ -123,7 +123,7 @@ class StdOutLogger extends Logger {
 
       switch (style.type) {
         case TextLogType.command:
-          message = '  \$ $message';
+          message = '   ${AnsiStyle.yellow.wrap('\$ $message')}';
           break;
         case TextLogType.bullet:
           message = ' • $message';
@@ -131,7 +131,15 @@ class StdOutLogger extends Logger {
         case TextLogType.normal:
           message = '$prefix$message';
           break;
+        case TextLogType.init:
+          message = AnsiStyle.cyan.wrap(AnsiStyle.bold.wrap(message));
+          break;
+        case TextLogType.header:
+          message = AnsiStyle.bold.wrap(message);
+          break;
         case TextLogType.success:
+          message =
+              '✅ ${AnsiStyle.lightGreen.wrap(AnsiStyle.bold.wrap(message))}\n';
           break;
         case TextLogType.hint:
           message = AnsiStyle.italic.wrap(message);
@@ -171,7 +179,7 @@ class WindowsStdOutLogger extends StdOutLogger {
     String message,
     LogLevel logLevel,
   ) {
-    message.replaceAll('🥳', '=D');
+    message.replaceAll('🥳', '=D').replaceAll('✅', '√');
     super._write(message, logLevel);
   }
 }

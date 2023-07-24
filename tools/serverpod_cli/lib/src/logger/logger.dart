@@ -76,11 +76,13 @@ enum LogLevel {
 }
 
 enum TextLogType {
+  init,
   normal,
   hint,
-  success,
+  header,
   bullet,
   command,
+  success,
 }
 
 abstract class LogStyle {
