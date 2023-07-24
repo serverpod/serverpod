@@ -21,6 +21,16 @@ String _transformFileNameWithoutPathOrExtension(String path) {
   return p.basenameWithoutExtension(path);
 }
 
+class _ProtocolEntityDefinitionSource {
+  final ProtocolSource protocolSource;
+  final SerializableEntityDefinition entityDefinition;
+
+  _ProtocolEntityDefinitionSource({
+    required this.protocolSource,
+    required this.entityDefinition,
+  });
+}
+
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
   static const Set<String> _protocolClassTypes = {
@@ -41,28 +51,30 @@ class SerializableEntityAnalyzer {
       protocols,
     );
 
+    var definitions = classDefinitions.map((e) => e.entityDefinition).toList();
+
     for (var classDefinition in classDefinitions) {
       SerializableEntityAnalyzer.validateYamlDefinition(
-        classDefinition.yamlProtocol,
-        classDefinition.sourceFileName,
+        classDefinition.protocolSource.yaml,
+        classDefinition.entityDefinition.sourceFileName,
         collector,
-        classDefinition,
-        classDefinitions,
+        classDefinition.entityDefinition,
+        definitions,
       );
     }
 
     // Detect protocol references
-    for (var classDefinition in classDefinitions) {
+    for (var classDefinition in definitions) {
       if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           fieldDefinition.type =
-              fieldDefinition.type.applyProtocolReferences(classDefinitions);
+              fieldDefinition.type.applyProtocolReferences(definitions);
         }
       }
     }
 
     // Detect enum fields
-    for (var classDefinition in classDefinitions) {
+    for (var classDefinition in definitions) {
       if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           if (fieldDefinition.type.url == 'protocol' &&
@@ -75,16 +87,25 @@ class SerializableEntityAnalyzer {
       }
     }
 
-    return classDefinitions;
+    return definitions;
   }
 
-  static List<SerializableEntityDefinition> _convertProtocolToEntityDefinitions(
-      List<ProtocolSource> protocols) {
+  static List<_ProtocolEntityDefinitionSource>
+      _convertProtocolToEntityDefinitions(List<ProtocolSource> protocols) {
     return protocols
         .map((protocol) {
-          return SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+          var entity = SerializableEntityAnalyzer.extractEntityDefinition(
+            protocol,
+          );
+
+          if (entity == null) return null;
+
+          return _ProtocolEntityDefinitionSource(
+            protocolSource: protocol,
+            entityDefinition: entity,
+          );
         })
-        .whereType<SerializableEntityDefinition>()
+        .whereType<_ProtocolEntityDefinitionSource>()
         .toList();
   }
 
