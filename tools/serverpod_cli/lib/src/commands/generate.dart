@@ -67,7 +67,7 @@ class GenerateCommand extends ServerpodCommand {
         endpointsAnalyzer: endpointsAnalyzer,
       );
     } else if (!hasErrors) {
-      log.info('Project generated!',
+      log.info('Done.',
           style: const TextLog(
             type: TextLogType.success,
           ));

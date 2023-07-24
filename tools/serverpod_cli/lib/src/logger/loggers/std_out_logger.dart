@@ -147,7 +147,7 @@ class StdOutLogger extends Logger {
 
       switch (style.type) {
         case TextLogType.command:
-          message = '   ${AnsiStyle.yellow.wrap('\$ $message')}';
+          message = '   ${AnsiStyle.cyan.wrap('\$')} $message';
           break;
         case TextLogType.bullet:
           message = ' • $message';
@@ -166,7 +166,7 @@ class StdOutLogger extends Logger {
               '✅ ${AnsiStyle.lightGreen.wrap(AnsiStyle.bold.wrap(message))}\n';
           break;
         case TextLogType.hint:
-          message = AnsiStyle.italic.wrap(message);
+          message = AnsiStyle.darkGray.wrap(AnsiStyle.italic.wrap(message));
           break;
       }
     }
@@ -307,8 +307,8 @@ abstract class _SeveritySpanHelpers {
 
     switch (severity) {
       case LogLevel.nothing:
-        assert(
-            false, 'Log level nothing should never be used for a log message');
+        assert(severity != LogLevel.nothing,
+            'Log level nothing should never be used for a log message');
         return AnsiStyle.terminalDefault.ansiCode;
       case LogLevel.error:
         return AnsiStyle.red.ansiCode;

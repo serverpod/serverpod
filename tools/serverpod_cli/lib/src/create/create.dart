@@ -135,18 +135,18 @@ Future<bool> performCreate(
 
   if (template == ServerpodTemplateType.server) {
     log.info(
-      '🚀 Creating Serverpod project "$name"',
+      '🚀 Creating Serverpod project "$name".',
       style: const TextLog(type: TextLogType.init),
     );
   } else if (template == ServerpodTemplateType.module) {
     log.info(
-      '📦 Creating Serverpod module "$name"',
+      '📦 Creating Serverpod module "$name".',
       style: const TextLog(type: TextLogType.init),
     );
   }
 
   bool success = await log.progress(
-      'Setting up project structure',
+      'Creating project directories.',
       () => Future(() {
             _createProjectDirectories(template, serverpodDirs);
             return true;
@@ -155,7 +155,7 @@ Future<bool> performCreate(
 
   if (template == ServerpodTemplateType.server) {
     success &= await log.progress(
-        'Bootstrapping project files',
+        'Writing project files.',
         () => Future(() {
               _copyServerTemplates(
                 serverpodDirs,
@@ -169,15 +169,15 @@ Future<bool> performCreate(
               return true;
             }));
 
-    success &= await log.progress('Preparing your server',
+    success &= await log.progress('Getting server package dependencies.',
         () => CommandLineTools.dartPubGet(serverpodDirs.serverDir));
-    success &= await log.progress('Preparing your client',
+    success &= await log.progress('Getting client package dependencies.',
         () => CommandLineTools.dartPubGet(serverpodDirs.clientDir));
-    success &= await log.progress('Preparing your Flutter app',
+    success &= await log.progress('Getting Flutter app package dependencies.',
         () => CommandLineTools.flutterCreate(serverpodDirs.flutterDir));
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
-        'Bootstrapping module files',
+        'Writing project files.',
         () => Future(() {
               _copyModuleTemplates(serverpodDirs, name: name);
               return true;
@@ -191,7 +191,7 @@ Future<bool> performCreate(
         name,
       );
     } else {
-      success &= await log.progress('Preparing your database in Docker',
+      success &= await log.progress('Downloading and configuring Docker image.',
           () => CommandLineTools.createTables(serverpodDirs.projectDir, name));
     }
 
@@ -249,6 +249,8 @@ void _logSuccessMessage(name) {
       style: const TextLog(type: TextLogType.command),
     );
   }
+  // Empty line
+  log.info(' ');
 }
 
 class ServerpodDirectories {

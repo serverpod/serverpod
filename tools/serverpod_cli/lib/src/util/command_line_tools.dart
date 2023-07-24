@@ -12,7 +12,7 @@ class CommandLineTools {
     log.debug('Running `dart pub get` in ${dir.path}', newParagraph: true);
 
     var cf = _CommandFormatter('dart', ['pub', 'get']);
-    var exitCode = await _runProcessWithLoggerAttached(
+    var exitCode = await _runProcessWithDefaultLogger(
       executable: cf.command,
       arguments: cf.args,
       workingDirectory: dir.path,
@@ -30,7 +30,7 @@ class CommandLineTools {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
     var cf = _CommandFormatter('flutter', ['create', '.']);
-    var exitCode = await _runProcessWithLoggerAttached(
+    var exitCode = await _runProcessWithDefaultLogger(
       executable: cf.command,
       arguments: cf.args,
       workingDirectory: dir.path,
@@ -49,7 +49,7 @@ class CommandLineTools {
       var commandPath = WindowsUtil.commandPath(command);
       return commandPath != null;
     } else {
-      var exitCode = await _runProcessWithLoggerAttached(
+      var exitCode = await _runProcessWithDefaultLogger(
         executable: 'which',
         arguments: [command],
       );
@@ -58,7 +58,7 @@ class CommandLineTools {
   }
 
   static Future<bool> isDockerRunning() async {
-    var exitCode = await _runProcessWithLoggerAttached(
+    var exitCode = await _runProcessWithDefaultLogger(
       executable: 'docker',
       arguments: ['info'],
     );
@@ -76,14 +76,14 @@ class CommandLineTools {
     var serverPath = p.join(dir.path, '${name}_server');
 
     if (!Platform.isWindows) {
-      await _runProcessWithLoggerAttached(
+      await _runProcessWithDefaultLogger(
         executable: 'chmod',
         arguments: ['u+x', 'setup-tables'],
         workingDirectory: serverPath,
       );
     }
 
-    var exitCode = await _runProcessWithLoggerAttached(
+    var exitCode = await _runProcessWithDefaultLogger(
       executable: Platform.isWindows
           ? p.join(serverPath, 'setup-tables.cmd')
           : './setup-tables',
@@ -97,13 +97,13 @@ class CommandLineTools {
     }
 
     log.debug('Cleaning up');
-    await _runProcessWithLoggerAttached(
+    await _runProcessWithDefaultLogger(
       executable: 'rm',
       arguments: ['setup-tables'],
       workingDirectory: serverPath,
     );
 
-    await _runProcessWithLoggerAttached(
+    await _runProcessWithDefaultLogger(
       executable: 'rm',
       arguments: ['setup-tables.cmd'],
       workingDirectory: serverPath,
@@ -145,7 +145,7 @@ class _CommandFormatter {
   }
 }
 
-Future<int> _runProcessWithLoggerAttached({
+Future<int> _runProcessWithDefaultLogger({
   required String executable,
   String? workingDirectory,
   List<String>? arguments,
