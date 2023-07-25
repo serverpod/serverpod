@@ -4,7 +4,8 @@ import 'package:serverpod_cli/src/generator/types.dart';
 class TypeDefinitionBuilder {
   TypeDefinition _definition;
 
-  TypeDefinitionBuilder() : _definition = TypeDefinition(
+  TypeDefinitionBuilder()
+      : _definition = TypeDefinition(
           className: 'DefaultClassName',
           generics: [],
           nullable: false,
