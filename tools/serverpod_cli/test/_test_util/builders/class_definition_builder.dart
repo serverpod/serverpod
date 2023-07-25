@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
@@ -47,21 +48,46 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withTableName(String? tableName) {
     _classDefinition = _classDefinition.copyWith(tableName: tableName);
+    _withIdField();
+    return this;
+  }
+
+  ClassDefinitionBuilder _withIdField() {
+    _classDefinition = _classDefinition.copyWith(
+      fields: [
+        FieldDefinitionBuilder()
+            .withName('id')
+            .withType(TypeDefinition.int.asNullable)
+            .withScope(SerializableEntityFieldScope.all)
+            .build(),
+        ..._classDefinition.fields,
+      ],
+    );
     return this;
   }
 
   ClassDefinitionBuilder withSimpleField(
     String fieldName,
-    String typeDefinition, {
+    String type, {
     bool nullable = false,
   }) {
     _classDefinition = _classDefinition.copyWith(
       fields: [
         ..._classDefinition.fields,
-        SerializableEntityFieldDefinitionBuilder()
-            .withFieldName(fieldName)
-            .withTypeDefinition(typeDefinition, nullable)
+        FieldDefinitionBuilder()
+            .withName(fieldName)
+            .withTypeDefinition(type, nullable)
             .build()
+      ],
+    );
+    return this;
+  }
+
+  ClassDefinitionBuilder withField(SerializableEntityFieldDefinition field) {
+    _classDefinition = _classDefinition.copyWith(
+      fields: [
+        ..._classDefinition.fields,
+        field,
       ],
     );
     return this;

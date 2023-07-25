@@ -1,27 +1,27 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
-class SerializableEntityFieldDefinitionBuilder {
+class FieldDefinitionBuilder {
   SerializableEntityFieldDefinition _fieldDefinition;
 
-  SerializableEntityFieldDefinitionBuilder()
+  FieldDefinitionBuilder()
       : _fieldDefinition = SerializableEntityFieldDefinition(
           name: 'name',
           type: TypeDefinition(
             className: 'String',
-            nullable: false,
+            nullable: true,
           ),
           scope: SerializableEntityFieldScope.all,
         );
 
   SerializableEntityFieldDefinition build() => _fieldDefinition;
 
-  SerializableEntityFieldDefinitionBuilder withFieldName(String name) {
+  FieldDefinitionBuilder withName(String name) {
     _fieldDefinition = _fieldDefinition.copyWith(name: name);
     return this;
   }
 
-  SerializableEntityFieldDefinitionBuilder withTypeDefinition(
+  FieldDefinitionBuilder withTypeDefinition(
     String className, [
     bool nullable = false,
   ]) {
@@ -34,26 +34,26 @@ class SerializableEntityFieldDefinitionBuilder {
     return this;
   }
 
-  SerializableEntityFieldDefinitionBuilder withType(TypeDefinition type) {
+  FieldDefinitionBuilder withType(TypeDefinition type) {
     _fieldDefinition = _fieldDefinition.copyWith(type: type);
     return this;
   }
 
-  SerializableEntityFieldDefinitionBuilder withScope(
+  FieldDefinitionBuilder withScope(
     SerializableEntityFieldScope scope,
   ) {
     _fieldDefinition = _fieldDefinition.copyWith(scope: scope);
     return this;
   }
 
-  SerializableEntityFieldDefinitionBuilder withParentTable(
+  FieldDefinitionBuilder withParentTable(
     String? parentTable,
   ) {
     _fieldDefinition = _fieldDefinition.copyWith(parentTable: parentTable);
     return this;
   }
 
-  SerializableEntityFieldDefinitionBuilder withDocumentation(
+  FieldDefinitionBuilder withDocumentation(
     List<String>? documentation,
   ) {
     _fieldDefinition = _fieldDefinition.copyWith(documentation: documentation);
