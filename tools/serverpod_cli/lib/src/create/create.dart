@@ -132,46 +132,52 @@ Future<bool> performCreate(
 
   if (template == ServerpodTemplateType.server) {
     log.info(
-      '🚀 Creating Serverpod project "$name".',
+      'Creating Serverpod project "$name".',
       type: TextLogType.init,
     );
   } else if (template == ServerpodTemplateType.module) {
     log.info(
-      '📦 Creating Serverpod module "$name".',
+      'Creating Serverpod module "$name".',
       type: TextLogType.init,
     );
   }
 
   bool success = await log.progress(
-      'Creating project directories.',
-      () => Future(() {
-            _createProjectDirectories(template, serverpodDirs);
-            return true;
-          }),
-      newParagraph: true);
+    'Creating project directories.',
+    () async {
+      _createProjectDirectories(template, serverpodDirs);
+      return true;
+    },
+    newParagraph: true,
+  );
 
   if (template == ServerpodTemplateType.server) {
     success &= await log.progress(
-        'Writing project files.',
-        () => Future(() {
-              _copyServerTemplates(
-                serverpodDirs,
-                name: name,
-                awsName: awsName,
-                randomAwsId: randomAwsId,
-                dbPassword: dbPassword,
-                dbProductionPassword: dbProductionPassword,
-                dbStagingPassword: dbStagingPassword,
-              );
-              return true;
-            }));
+      'Writing project files.',
+      () async {
+        _copyServerTemplates(
+          serverpodDirs,
+          name: name,
+          awsName: awsName,
+          randomAwsId: randomAwsId,
+          dbPassword: dbPassword,
+          dbProductionPassword: dbProductionPassword,
+          dbStagingPassword: dbStagingPassword,
+        );
+        return true;
+      },
+    );
 
-    success &= await log.progress('Getting server package dependencies.',
-        () => CommandLineTools.dartPubGet(serverpodDirs.serverDir));
-    success &= await log.progress('Getting client package dependencies.',
-        () => CommandLineTools.dartPubGet(serverpodDirs.clientDir));
-    success &= await log.progress('Getting Flutter app package dependencies.',
-        () => CommandLineTools.flutterCreate(serverpodDirs.flutterDir));
+    success &= await log.progress('Getting server package dependencies.', () {
+      return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+    });
+    success &= await log.progress('Getting client package dependencies.', () {
+      return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+    });
+    success &=
+        await log.progress('Getting Flutter app package dependencies.', () {
+      return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+    });
 
     if (dockerConfigured) {
       if (Platform.isWindows) {
@@ -197,7 +203,7 @@ Future<bool> performCreate(
 
   if (success || force) {
     log.info(
-      'Serverpod created!',
+      'Serverpod created.',
       newParagraph: true,
       type: TextLogType.success,
     );
@@ -212,7 +218,7 @@ Future<bool> performCreate(
 
 void _logStartInstructions(name) {
   log.info(
-    'All setup. You are ready to rock!',
+    'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
   );
   log.info(
@@ -224,6 +230,7 @@ void _logStartInstructions(name) {
     log.info(
       'cd .\\${p.join(name, '${name}_server')}\\',
       type: TextLogType.command,
+      newParagraph: true,
     );
     log.info(
       '.\\setup-tables.cmd',
@@ -241,6 +248,7 @@ void _logStartInstructions(name) {
     log.info(
       'cd ${p.join(name, '${name}_server')}',
       type: TextLogType.command,
+      newParagraph: true,
     );
     log.info(
       'docker compose up --build --detach',
@@ -251,6 +259,8 @@ void _logStartInstructions(name) {
       type: TextLogType.command,
     );
   }
+
+  log.info(' ');
 }
 
 class ServerpodDirectories {

@@ -60,12 +60,14 @@ abstract class Logger {
     bool newParagraph,
   });
 
-  // Display a progress message on [LogLevel.info] while running [run] function.
-  // Uses return value from [run] to print set progress success status.
-  // Returns return value from [run].
+  /// Display a progress message on [LogLevel.info] while running [runner]
+  /// function.
+  ///
+  /// Uses return value from [runner] to print set progress success status.
+  /// Returns return value from [runner].
   Future<bool> progress(
     String message,
-    Future<bool> Function() run, {
+    Future<bool> Function() runner, {
     bool newParagraph,
   });
 

@@ -12,7 +12,7 @@ import 'package:super_string/super_string.dart';
 /// Errors and Warnings are printed on [stderr] and other messages are logged
 /// on [stdout].
 class StdOutLogger extends Logger {
-  static const int _defaultColumnWrap = 100;
+  static const int _defaultColumnWrap = 80;
 
   Progress? trackedAnimationInProgress;
 
@@ -71,11 +71,11 @@ class StdOutLogger extends Logger {
   @override
   Future<bool> progress(
     String message,
-    Future<bool> Function() run, {
+    Future<bool> Function() runner, {
     bool newParagraph = false,
   }) async {
     if (logLevel.index > LogLevel.info.index) {
-      return await run();
+      return await runner();
     }
 
     if (newParagraph) _write('\n', LogLevel.info);
@@ -83,7 +83,7 @@ class StdOutLogger extends Logger {
     var progress = Progress(message, stdout);
     _stopAnimationInProgress();
     trackedAnimationInProgress = progress;
-    bool success = await run();
+    bool success = await runner();
     trackedAnimationInProgress = null;
     success ? progress.complete() : progress.fail();
     return success;

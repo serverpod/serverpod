@@ -51,9 +51,9 @@ class VoidLogger extends Logger {
   @override
   Future<bool> progress(
     String message,
-    Future<bool> Function() run, {
+    Future<bool> Function() runner, {
     bool newParagraph = true,
   }) async {
-    return await run();
+    return await runner();
   }
 }

@@ -106,7 +106,7 @@ class MigrateCommand extends ServerpodCommand {
         priority: priority,
       );
       log.info(
-        'Migration created!',
+        'Done.',
         type: TextLogType.success,
       );
     }
