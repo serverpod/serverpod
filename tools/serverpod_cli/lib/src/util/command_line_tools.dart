@@ -72,6 +72,7 @@ class CommandLineTools {
       'Postgres. If you get stuck at this step, make sure that you '
       'have the latest version of Docker Desktop and that it is '
       'currently running.',
+      style: const TextLog(type: TextLogType.hint),
     );
     var serverPath = p.join(dir.path, '${name}_server');
 
