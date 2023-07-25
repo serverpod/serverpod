@@ -21,6 +21,16 @@ String _transformFileNameWithoutPathOrExtension(String path) {
   return p.basenameWithoutExtension(path);
 }
 
+class _ProtocolClassDefinitionSource {
+  final ProtocolSource protocolSource;
+  final SerializableEntityDefinition entityDefinition;
+
+  _ProtocolClassDefinitionSource({
+    required this.protocolSource,
+    required this.entityDefinition,
+  });
+}
+
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
   static const Set<String> _protocolClassTypes = {
@@ -37,36 +47,40 @@ class SerializableEntityAnalyzer {
     var protocols =
         await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var classDefinitions = _convertProtocolToEntityDefinitions(
+    var entityProtocolDefinitions = _createEntityProtocolDefinitions(
       protocols,
     );
 
-    for (var classDefinition in classDefinitions) {
+    var entityDefinitions = entityProtocolDefinitions
+        .map((definition) => definition.entityDefinition)
+        .toList();
+
+    for (var definition in entityProtocolDefinitions) {
       SerializableEntityAnalyzer.validateYamlDefinition(
-        classDefinition.yamlProtocol,
-        classDefinition.sourceFileName,
+        definition.protocolSource.yaml,
+        definition.entityDefinition.sourceFileName,
         collector,
-        classDefinition,
-        classDefinitions,
+        definition.entityDefinition,
+        entityDefinitions,
       );
     }
 
     // Detect protocol references
-    for (var classDefinition in classDefinitions) {
+    for (var classDefinition in entityDefinitions) {
       if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           fieldDefinition.type =
-              fieldDefinition.type.applyProtocolReferences(classDefinitions);
+              fieldDefinition.type.applyProtocolReferences(entityDefinitions);
         }
       }
     }
 
     // Detect enum fields
-    for (var classDefinition in classDefinitions) {
+    for (var classDefinition in entityDefinitions) {
       if (classDefinition is ClassDefinition) {
         for (var fieldDefinition in classDefinition.fields) {
           if (fieldDefinition.type.url == 'protocol' &&
-              classDefinitions
+              entityDefinitions
                   .whereType<EnumDefinition>()
                   .any((e) => e.className == fieldDefinition.type.className)) {
             fieldDefinition.type.isEnum = true;
@@ -75,16 +89,25 @@ class SerializableEntityAnalyzer {
       }
     }
 
-    return classDefinitions;
+    return entityDefinitions;
   }
 
-  static List<SerializableEntityDefinition> _convertProtocolToEntityDefinitions(
+  static List<_ProtocolClassDefinitionSource> _createEntityProtocolDefinitions(
       List<ProtocolSource> protocols) {
     return protocols
         .map((protocol) {
-          return SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+          var entity = SerializableEntityAnalyzer.extractEntityDefinition(
+            protocol,
+          );
+
+          if (entity == null) return null;
+
+          return _ProtocolClassDefinitionSource(
+            protocolSource: protocol,
+            entityDefinition: entity,
+          );
         })
-        .whereType<SerializableEntityDefinition>()
+        .whereType<_ProtocolClassDefinitionSource>()
         .toList();
   }
 
