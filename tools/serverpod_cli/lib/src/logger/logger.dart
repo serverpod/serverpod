@@ -117,11 +117,17 @@ class BoxLogType extends LogType {
 /// Abstract style console formatting.
 /// Enables more precise settings for log message.
 class TextLogType extends LogType {
+  static const init = TextLogType(style: TextLogStyle.init);
+  static const normal = TextLogType(style: TextLogStyle.normal);
+  static const hint = TextLogType(style: TextLogStyle.hint);
+  static const header = TextLogType(style: TextLogStyle.header);
+  static const bullet = TextLogType(style: TextLogStyle.bullet);
+  static const command = TextLogType(style: TextLogStyle.command);
+  static const success = TextLogType(style: TextLogStyle.success);
+
   final TextLogStyle style;
 
-  const TextLogType({
-    this.style = TextLogStyle.normal,
-  });
+  const TextLogType({required this.style});
 }
 
 /// Singleton instance of logger.

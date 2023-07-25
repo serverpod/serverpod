@@ -51,7 +51,7 @@ class Copier {
         _replace(p.join(relativePath, fileName), fileNameReplacements);
     log.debug(
       p.join(dstDir.path, relativePath, fileName),
-      type: const TextLogType(style: TextLogStyle.bullet),
+      type: TextLogType.bullet,
     );
 
     var dstFile = File(p.join(dstDir.path, dstFileName));

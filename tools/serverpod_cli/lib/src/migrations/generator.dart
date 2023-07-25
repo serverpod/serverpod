@@ -225,7 +225,7 @@ class MigrationGenerator {
       for (var warning in warnings) {
         log.warning(
           warning.message,
-          type: const TextLogType(style: TextLogStyle.bullet),
+          type: TextLogType.bullet,
         );
       }
     }

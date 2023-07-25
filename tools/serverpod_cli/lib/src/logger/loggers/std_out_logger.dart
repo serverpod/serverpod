@@ -25,7 +25,7 @@ class StdOutLogger extends Logger {
   void debug(
     String message, {
     bool newParagraph = false,
-    LogType type = const TextLogType(),
+    LogType type = TextLogType.normal,
   }) {
     _log(
       message,
@@ -40,7 +40,7 @@ class StdOutLogger extends Logger {
   void info(
     String message, {
     bool newParagraph = false,
-    LogType type = const TextLogType(),
+    LogType type = TextLogType.normal,
   }) {
     _log(message, LogLevel.info, newParagraph, type);
   }
@@ -49,7 +49,7 @@ class StdOutLogger extends Logger {
   void warning(
     String message, {
     bool newParagraph = false,
-    LogType type = const TextLogType(),
+    LogType type = TextLogType.normal,
   }) {
     _log(message, LogLevel.warning, newParagraph, type, prefix: 'WARNING: ');
   }
@@ -59,7 +59,7 @@ class StdOutLogger extends Logger {
     String message, {
     bool newParagraph = false,
     StackTrace? stackTrace,
-    LogType type = const TextLogType(),
+    LogType type = TextLogType.normal,
   }) {
     _log(message, LogLevel.error, newParagraph, type, prefix: 'ERROR: ');
 
