@@ -193,7 +193,13 @@ class StdOutLogger extends Logger {
   }
 
   void _stopAnimationInProgress() {
-    trackedAnimationInProgress?.stopAnimation();
+    if (trackedAnimationInProgress != null) {
+      trackedAnimationInProgress?.stopAnimation();
+      // Since animation modifies the current line we add a new line so that
+      // the next print doesn't end up on the same line.
+      stdout.write('\n');
+    }
+
     trackedAnimationInProgress = null;
   }
 }
