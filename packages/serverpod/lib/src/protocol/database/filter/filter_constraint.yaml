@@ -1,0 +1,6 @@
+class: FilterConstraint
+fields:
+  type: FilterConstraintType
+  column: String
+  value: String
+  value2: String?
