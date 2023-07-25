@@ -1,3 +1,10 @@
+import 'dart:io';
+
+bool? _ansiSupportedRef;
+bool get _ansiSupported {
+  return _ansiSupportedRef ??= stdout.hasTerminal && stdout.supportsAnsiEscapes;
+}
+
 /// Standard ANSI escape code for customizing terminal text output.
 ///
 /// [Source](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)
@@ -16,5 +23,13 @@ enum AnsiStyle {
   const AnsiStyle(this.ansiCode);
   final String ansiCode;
 
-  String wrap(String value) => '$ansiCode$value${AnsiStyle._reset.ansiCode}';
+  /// Wraps text with ansi escape code for style if stdout has terminal and
+  /// supports ansi escapes.
+  String wrap(String text) {
+    if (!_ansiSupported) {
+      return text;
+    }
+
+    return '$ansiCode$text${AnsiStyle._reset.ansiCode}';
+  }
 }
