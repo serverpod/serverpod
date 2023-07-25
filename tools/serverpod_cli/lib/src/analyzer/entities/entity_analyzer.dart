@@ -21,13 +21,13 @@ String _transformFileNameWithoutPathOrExtension(String path) {
   return p.basenameWithoutExtension(path);
 }
 
-class _ProtocolEntityDefinitionSource {
+class _ProtocolClassDefinitionSource {
   final ProtocolSource protocolSource;
-  final SerializableEntityDefinition entityDefinition;
+  final SerializableEntityDefinition classDefinition;
 
-  _ProtocolEntityDefinitionSource({
+  _ProtocolClassDefinitionSource({
     required this.protocolSource,
-    required this.entityDefinition,
+    required this.classDefinition,
   });
 }
 
@@ -47,19 +47,19 @@ class SerializableEntityAnalyzer {
     var protocols =
         await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var entityProtocolDef = _convertProtocolToEntityDefinitions(
+    var classProtocolDefinitions = _createClassProtocolDefinitions(
       protocols,
     );
 
     var classDefinitions =
-        entityProtocolDef.map((e) => e.entityDefinition).toList();
+        classProtocolDefinitions.map((e) => e.classDefinition).toList();
 
-    for (var classDefinition in entityProtocolDef) {
+    for (var definition in classProtocolDefinitions) {
       SerializableEntityAnalyzer.validateYamlDefinition(
-        classDefinition.protocolSource.yaml,
-        classDefinition.entityDefinition.sourceFileName,
+        definition.protocolSource.yaml,
+        definition.classDefinition.sourceFileName,
         collector,
-        classDefinition.entityDefinition,
+        definition.classDefinition,
         classDefinitions,
       );
     }
@@ -91,8 +91,8 @@ class SerializableEntityAnalyzer {
     return classDefinitions;
   }
 
-  static List<_ProtocolEntityDefinitionSource>
-      _convertProtocolToEntityDefinitions(List<ProtocolSource> protocols) {
+  static List<_ProtocolClassDefinitionSource> _createClassProtocolDefinitions(
+      List<ProtocolSource> protocols) {
     return protocols
         .map((protocol) {
           var entity = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -101,12 +101,12 @@ class SerializableEntityAnalyzer {
 
           if (entity == null) return null;
 
-          return _ProtocolEntityDefinitionSource(
+          return _ProtocolClassDefinitionSource(
             protocolSource: protocol,
-            entityDefinition: entity,
+            classDefinition: entity,
           );
         })
-        .whereType<_ProtocolEntityDefinitionSource>()
+        .whereType<_ProtocolClassDefinitionSource>()
         .toList();
   }
 
