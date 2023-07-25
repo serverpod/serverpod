@@ -215,12 +215,13 @@ class WindowsStdOutLogger extends StdOutLogger {
     String message,
     LogLevel logLevel,
   ) {
-    message
-        .replaceAll('🥳', '=D')
-        .replaceAll('✅', '√')
-        .replaceAll('🚀', '')
-        .replaceAll('📦', '');
-    super._write(message, logLevel);
+    super._write(
+        message
+            .replaceAll('🥳', '=D')
+            .replaceAll('✅', '√')
+            .replaceAll('🚀', '')
+            .replaceAll('📦', ''),
+        logLevel);
   }
 }
 

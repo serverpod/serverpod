@@ -172,6 +172,20 @@ Future<bool> performCreate(
         () => CommandLineTools.dartPubGet(serverpodDirs.clientDir));
     success &= await log.progress('Getting Flutter app package dependencies.',
         () => CommandLineTools.flutterCreate(serverpodDirs.flutterDir));
+
+    if (dockerConfigured) {
+      if (Platform.isWindows) {
+        success &= await CommandLineTools.cleanupForWindows(
+          serverpodDirs.projectDir,
+          name,
+        );
+      } else {
+        success &= await log.progress(
+            'Downloading and configuring Docker image.',
+            () =>
+                CommandLineTools.createTables(serverpodDirs.projectDir, name));
+      }
+    }
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
         'Writing project files.',
@@ -181,27 +195,22 @@ Future<bool> performCreate(
             }));
   }
 
-  if (dockerConfigured && template != ServerpodTemplateType.module) {
-    if (Platform.isWindows) {
-      success &= await CommandLineTools.cleanupForWindows(
-        serverpodDirs.projectDir,
-        name,
-      );
-    } else {
-      success &= await log.progress('Downloading and configuring Docker image.',
-          () => CommandLineTools.createTables(serverpodDirs.projectDir, name));
-    }
+  if (success || force) {
+    log.info(
+      'Serverpod created!',
+      newParagraph: true,
+      type: TextLogType.success,
+    );
 
-    if (success) {
-      _logSuccessMessage(name);
+    if (dockerConfigured && template == ServerpodTemplateType.server) {
+      _logStartInstructions(name);
     }
   }
 
   return success;
 }
 
-void _logSuccessMessage(name) {
-  log.info('Serverpod created!', newParagraph: true, type: TextLogType.success);
+void _logStartInstructions(name) {
   log.info(
     'All setup. You are ready to rock!',
     type: TextLogType.header,
@@ -242,8 +251,6 @@ void _logSuccessMessage(name) {
       type: TextLogType.command,
     );
   }
-  // Empty line
-  log.info(' ');
 }
 
 class ServerpodDirectories {
