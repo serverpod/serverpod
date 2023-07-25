@@ -117,12 +117,10 @@ class BoxLogType extends LogType {
 /// Abstract style console formatting.
 /// Enables more precise settings for log message.
 class TextLogType extends LogType {
-  final bool wordWrap;
   final TextLogStyle style;
 
   const TextLogType({
     this.style = TextLogStyle.normal,
-    this.wordWrap = true,
   });
 }
 

@@ -12,6 +12,8 @@ import 'package:super_string/super_string.dart';
 /// Errors and Warnings are printed on [stderr] and other messages are logged
 /// on [stdout].
 class StdOutLogger extends Logger {
+  static const int _defaultColumnWrap = 100;
+
   Progress? trackedAnimationInProgress;
 
   StdOutLogger(LogLevel logLevel) : super(logLevel);
@@ -136,14 +138,12 @@ class StdOutLogger extends Logger {
 
     if (type is BoxLogType) {
       message = _formatAsBox(
-        wrapColumn: wrapTextColumn ?? 100,
+        wrapColumn: wrapTextColumn ?? _defaultColumnWrap,
         message: message,
         title: type.title,
       );
     } else if (type is TextLogType) {
-      if (wrapTextColumn != null && type.wordWrap) {
-        message = _wrapText(message, wrapTextColumn!);
-      }
+      message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
 
       switch (type.style) {
         case TextLogStyle.command:
