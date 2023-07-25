@@ -23,13 +23,13 @@ class StdOutLogger extends Logger {
   void debug(
     String message, {
     bool newParagraph = false,
-    LogStyle style = const TextLog(),
+    LogType type = const TextLog(),
   }) {
     _log(
       message,
       LogLevel.debug,
       newParagraph,
-      style,
+      type,
       prefix: 'DEBUG: ',
     );
   }
@@ -38,18 +38,18 @@ class StdOutLogger extends Logger {
   void info(
     String message, {
     bool newParagraph = false,
-    LogStyle style = const TextLog(),
+    LogType type = const TextLog(),
   }) {
-    _log(message, LogLevel.info, newParagraph, style);
+    _log(message, LogLevel.info, newParagraph, type);
   }
 
   @override
   void warning(
     String message, {
     bool newParagraph = false,
-    LogStyle style = const TextLog(),
+    LogType type = const TextLog(),
   }) {
-    _log(message, LogLevel.warning, newParagraph, style, prefix: 'WARNING: ');
+    _log(message, LogLevel.warning, newParagraph, type, prefix: 'WARNING: ');
   }
 
   @override
@@ -57,12 +57,12 @@ class StdOutLogger extends Logger {
     String message, {
     bool newParagraph = false,
     StackTrace? stackTrace,
-    LogStyle style = const TextLog(),
+    LogType type = const TextLog(),
   }) {
-    _log(message, LogLevel.error, newParagraph, style, prefix: 'ERROR: ');
+    _log(message, LogLevel.error, newParagraph, type, prefix: 'ERROR: ');
 
     if (stackTrace != null) {
-      _log(stackTrace.toString(), LogLevel.error, newParagraph, style);
+      _log(stackTrace.toString(), LogLevel.error, newParagraph, type);
     }
   }
 
@@ -128,44 +128,44 @@ class StdOutLogger extends Logger {
     String message,
     LogLevel logLevel,
     bool newParagraph,
-    LogStyle style, {
+    LogType type, {
     String prefix = '',
   }) {
     if (message == '') return;
     if (!shouldLog(logLevel)) return;
 
-    if (style is BoxLog) {
+    if (type is BoxLog) {
       message = _formatAsBox(
         wrapColumn: wrapTextColumn ?? 100,
         message: message,
-        title: style.title,
+        title: type.title,
       );
-    } else if (style is TextLog) {
-      if (wrapTextColumn != null && style.wordWrap) {
+    } else if (type is TextLog) {
+      if (wrapTextColumn != null && type.wordWrap) {
         message = _wrapText(message, wrapTextColumn!);
       }
 
-      switch (style.type) {
-        case TextLogType.command:
+      switch (type.style) {
+        case TextLogStyle.command:
           message = '   ${AnsiStyle.cyan.wrap('\$')} $message';
           break;
-        case TextLogType.bullet:
+        case TextLogStyle.bullet:
           message = ' • $message';
           break;
-        case TextLogType.normal:
+        case TextLogStyle.normal:
           message = '$prefix$message';
           break;
-        case TextLogType.init:
+        case TextLogStyle.init:
           message = AnsiStyle.cyan.wrap(AnsiStyle.bold.wrap(message));
           break;
-        case TextLogType.header:
+        case TextLogStyle.header:
           message = AnsiStyle.bold.wrap(message);
           break;
-        case TextLogType.success:
+        case TextLogStyle.success:
           message =
               '✅ ${AnsiStyle.lightGreen.wrap(AnsiStyle.bold.wrap(message))}\n';
           break;
-        case TextLogType.hint:
+        case TextLogStyle.hint:
           message = AnsiStyle.darkGray.wrap(AnsiStyle.italic.wrap(message));
           break;
       }
@@ -175,7 +175,7 @@ class StdOutLogger extends Logger {
       message = '\n$message';
     }
 
-    if (style is! RawLog) {
+    if (type is! RawLog) {
       // If it is not a raw log we append a new line after the message.
       message = '$message\n';
     }

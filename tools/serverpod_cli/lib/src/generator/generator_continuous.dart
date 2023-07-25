@@ -23,7 +23,7 @@ Future<bool> performGenerateContinuously({
     log.info(
       'File changed: $event',
       newParagraph: true,
-      style: const TextLog(),
+      type: const TextLog(),
     );
     hasErrors = await performGenerate(
       changedFile: event.path,

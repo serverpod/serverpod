@@ -90,18 +90,18 @@ Future<bool> performCreate(
       log.error(
         strIssuePorts,
         newParagraph: true,
-        style: const TextLog(),
+        type: const TextLog(),
       );
       log.error(
         'Ports in use:',
         newParagraph: true,
-        style: const TextLog(),
+        type: const TextLog(),
       );
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
         log.error(
           '$port: $serverDescription',
-          style: const TextLog(type: TextLogType.bullet),
+          type: const TextLog(style: TextLogStyle.bullet),
         );
       }
     }
@@ -109,7 +109,7 @@ Future<bool> performCreate(
       log.error(
         strIssueDocker,
         newParagraph: true,
-        style: const TextLog(),
+        type: const TextLog(),
       );
     }
     if (!force) {
@@ -136,12 +136,12 @@ Future<bool> performCreate(
   if (template == ServerpodTemplateType.server) {
     log.info(
       '🚀 Creating Serverpod project "$name".',
-      style: const TextLog(type: TextLogType.init),
+      type: const TextLog(style: TextLogStyle.init),
     );
   } else if (template == ServerpodTemplateType.module) {
     log.info(
       '📦 Creating Serverpod module "$name".',
-      style: const TextLog(type: TextLogType.init),
+      type: const TextLog(style: TextLogStyle.init),
     );
   }
 
@@ -206,47 +206,47 @@ Future<bool> performCreate(
 void _logSuccessMessage(name) {
   log.info('Serverpod created!',
       newParagraph: true,
-      style: const TextLog(
-        type: TextLogType.success,
+      type: const TextLog(
+        style: TextLogStyle.success,
       ));
   log.info(
     'All setup. You are ready to rock!',
-    style: const TextLog(type: TextLogType.header),
+    type: const TextLog(style: TextLogStyle.header),
   );
   log.info(
     'Start your Serverpod by running:',
-    style: const TextLog(type: TextLogType.header),
+    type: const TextLog(style: TextLogStyle.header),
   );
 
   if (Platform.isWindows) {
     log.info(
       'cd .\\${p.join(name, '${name}_server')}\\',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
     log.info(
       '.\\setup-tables.cmd',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
     log.info(
       'docker compose up --build --detach',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
     log.info(
       'dart .\\bin\\main.dart',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
   } else {
     log.info(
       'cd ${p.join(name, '${name}_server')}',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
     log.info(
       'docker compose up --build --detach',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
     log.info(
       'dart dart bin/main.dart',
-      style: const TextLog(type: TextLogType.command),
+      type: const TextLog(style: TextLogStyle.command),
     );
   }
   // Empty line
@@ -284,8 +284,8 @@ void _createProjectDirectories(
 void _createDirectory(Directory dir) {
   log.debug(
     'Creating directory: ${dir.path}',
-    style: const TextLog(
-      type: TextLogType.bullet,
+    type: const TextLog(
+      style: TextLogStyle.bullet,
     ),
   );
   dir.createSync();

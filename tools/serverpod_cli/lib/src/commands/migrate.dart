@@ -107,7 +107,7 @@ class MigrateCommand extends ServerpodCommand {
       );
       log.info(
         'Migration created!',
-        style: const TextLog(type: TextLogType.success),
+        type: const TextLog(style: TextLogStyle.success),
       );
     }
   }

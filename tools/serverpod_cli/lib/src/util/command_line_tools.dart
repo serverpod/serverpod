@@ -72,7 +72,7 @@ class CommandLineTools {
       'Postgres. If you get stuck at this step, make sure that you '
       'have the latest version of Docker Desktop and that it is '
       'currently running.',
-      style: const TextLog(type: TextLogType.hint),
+      type: const TextLog(style: TextLogStyle.hint),
     );
     var serverPath = p.join(dir.path, '${name}_server');
 
@@ -123,7 +123,7 @@ class CommandLineTools {
       log.error('Failed cleanup: $e');
       log.error(
         'file: $file',
-        style: const RawLog(),
+        type: const RawLog(),
       );
       return false;
     }
@@ -159,10 +159,10 @@ Future<int> _runProcessWithDefaultLogger({
 
   process.stderr
       .transform(utf8.decoder)
-      .listen((data) => log.debug(data, style: const RawLog()));
+      .listen((data) => log.debug(data, type: const RawLog()));
   process.stdout
       .transform(utf8.decoder)
-      .listen((data) => log.debug(data, style: const RawLog()));
+      .listen((data) => log.debug(data, type: const RawLog()));
 
   return await process.exitCode;
 }
