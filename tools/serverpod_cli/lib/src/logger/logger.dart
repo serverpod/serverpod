@@ -100,15 +100,15 @@ abstract class LogType {
 
 /// Does not apply any formatting to the log before logging.
 /// Assumes log is formatted with end line symbol.
-class RawLog extends LogType {
-  const RawLog();
+class RawLogType extends LogType {
+  const RawLogType();
 }
 
 /// Box style console formatting.
 /// If [title] is set the box will have a title row.
-class BoxLog extends LogType {
+class BoxLogType extends LogType {
   final String? title;
-  const BoxLog({
+  const BoxLogType({
     this.title,
     bool newParagraph = true,
   });
@@ -116,11 +116,11 @@ class BoxLog extends LogType {
 
 /// Abstract style console formatting.
 /// Enables more precise settings for log message.
-class TextLog extends LogType {
+class TextLogType extends LogType {
   final bool wordWrap;
   final TextLogStyle style;
 
-  const TextLog({
+  const TextLogType({
     this.style = TextLogStyle.normal,
     this.wordWrap = true,
   });

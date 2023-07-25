@@ -23,7 +23,7 @@ class StdOutLogger extends Logger {
   void debug(
     String message, {
     bool newParagraph = false,
-    LogType type = const TextLog(),
+    LogType type = const TextLogType(),
   }) {
     _log(
       message,
@@ -38,7 +38,7 @@ class StdOutLogger extends Logger {
   void info(
     String message, {
     bool newParagraph = false,
-    LogType type = const TextLog(),
+    LogType type = const TextLogType(),
   }) {
     _log(message, LogLevel.info, newParagraph, type);
   }
@@ -47,7 +47,7 @@ class StdOutLogger extends Logger {
   void warning(
     String message, {
     bool newParagraph = false,
-    LogType type = const TextLog(),
+    LogType type = const TextLogType(),
   }) {
     _log(message, LogLevel.warning, newParagraph, type, prefix: 'WARNING: ');
   }
@@ -57,7 +57,7 @@ class StdOutLogger extends Logger {
     String message, {
     bool newParagraph = false,
     StackTrace? stackTrace,
-    LogType type = const TextLog(),
+    LogType type = const TextLogType(),
   }) {
     _log(message, LogLevel.error, newParagraph, type, prefix: 'ERROR: ');
 
@@ -134,13 +134,13 @@ class StdOutLogger extends Logger {
     if (message == '') return;
     if (!shouldLog(logLevel)) return;
 
-    if (type is BoxLog) {
+    if (type is BoxLogType) {
       message = _formatAsBox(
         wrapColumn: wrapTextColumn ?? 100,
         message: message,
         title: type.title,
       );
-    } else if (type is TextLog) {
+    } else if (type is TextLogType) {
       if (wrapTextColumn != null && type.wordWrap) {
         message = _wrapText(message, wrapTextColumn!);
       }
@@ -175,7 +175,7 @@ class StdOutLogger extends Logger {
       message = '\n$message';
     }
 
-    if (type is! RawLog) {
+    if (type is! RawLogType) {
       // If it is not a raw log we append a new line after the message.
       message = '$message\n';
     }

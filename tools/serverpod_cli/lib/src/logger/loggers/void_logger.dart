@@ -14,21 +14,21 @@ class VoidLogger extends Logger {
   void debug(
     String message, {
     bool newParagraph = false,
-    LogType type = const RawLog(),
+    LogType type = const RawLogType(),
   }) {}
 
   @override
   void info(
     String message, {
     bool newParagraph = false,
-    LogType type = const RawLog(),
+    LogType type = const RawLogType(),
   }) {}
 
   @override
   void warning(
     String message, {
     bool newParagraph = false,
-    LogType type = const RawLog(),
+    LogType type = const RawLogType(),
   }) {}
 
   @override
@@ -36,7 +36,7 @@ class VoidLogger extends Logger {
     String message, {
     bool newParagraph = false,
     StackTrace? stackTrace,
-    LogType type = const RawLog(),
+    LogType type = const RawLogType(),
   }) {}
 
   @override

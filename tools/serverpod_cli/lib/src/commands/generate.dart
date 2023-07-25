@@ -68,7 +68,7 @@ class GenerateCommand extends ServerpodCommand {
       );
     } else if (!hasErrors) {
       log.info('Done.',
-          type: const TextLog(
+          type: const TextLogType(
             style: TextLogStyle.success,
           ));
     }
