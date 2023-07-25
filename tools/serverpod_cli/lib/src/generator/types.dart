@@ -41,6 +41,26 @@ class TypeDefinition {
     this.isEnum = false,
   });
 
+  TypeDefinition copyWith({
+    String? className,
+    List<TypeDefinition>? generics,
+    String? url,
+    bool? nullable,
+    DartType? dartType,
+    bool? customClass,
+    bool? isEnum,
+  }) {
+    return TypeDefinition(
+      className: className ?? this.className,
+      generics: generics ?? this.generics,
+      nullable: nullable ?? this.nullable,
+      url: url ?? this.url,
+      dartType: dartType ?? this.dartType,
+      customClass: customClass ?? this.customClass,
+      isEnum: isEnum ?? this.isEnum,
+    );
+  }
+
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
   factory TypeDefinition.mixedUrlAndClassName({

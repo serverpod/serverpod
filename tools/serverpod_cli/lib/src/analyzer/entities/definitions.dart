@@ -65,6 +65,33 @@ class ClassDefinition extends SerializableEntityDefinition {
     super.subDirParts,
     this.documentation,
   });
+
+  ClassDefinition copyWith({
+    String? yamlProtocol,
+    String? fileName,
+    String? sourceFileName,
+    String? className,
+    List<String>? subDirParts,
+    bool? serverOnly,
+    String? tableName,
+    List<SerializableEntityFieldDefinition>? fields,
+    List<SerializableEntityIndexDefinition>? indexes,
+    List<String>? documentation,
+    bool? isException,
+  }) {
+    return ClassDefinition(
+      fileName: fileName ?? this.fileName,
+      sourceFileName: sourceFileName ?? this.sourceFileName,
+      className: className ?? this.className,
+      serverOnly: serverOnly ?? this.serverOnly,
+      subDirParts: subDirParts ?? this.subDirParts,
+      tableName: tableName ?? this.tableName,
+      fields: fields ?? this.fields,
+      indexes: indexes ?? this.indexes,
+      documentation: documentation ?? this.documentation,
+      isException: isException ?? this.isException,
+    );
+  }
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -100,6 +127,22 @@ class SerializableEntityFieldDefinition {
     this.parentTable,
     this.documentation,
   });
+
+  SerializableEntityFieldDefinition copyWith({
+    String? name,
+    TypeDefinition? type,
+    SerializableEntityFieldScope? scope,
+    String? parentTable,
+    List<String>? documentation,
+  }) {
+    return SerializableEntityFieldDefinition(
+      name: name ?? this.name,
+      type: type ?? this.type,
+      scope: scope ?? this.scope,
+      parentTable: parentTable ?? this.parentTable,
+      documentation: documentation ?? this.documentation,
+    );
+  }
 
   /// Returns true, if classes should include this field.
   /// [serverCode] specifies if it's a code on the server or client side.
@@ -183,6 +226,20 @@ class SerializableEntityIndexDefinition {
     required this.unique,
     required this.fields,
   });
+
+  SerializableEntityIndexDefinition copyWith({
+    String? name,
+    List<String>? fields,
+    String? type,
+    bool? unique,
+  }) {
+    return SerializableEntityIndexDefinition(
+      name: name ?? this.name,
+      fields: fields ?? this.fields,
+      type: type ?? this.type,
+      unique: unique ?? this.unique,
+    );
+  }
 }
 
 /// A representation of a yaml file in the protocol directory defining an enum.
@@ -204,6 +261,27 @@ class EnumDefinition extends SerializableEntityDefinition {
     super.subDirParts,
     this.documentation,
   });
+
+  EnumDefinition copyWith({
+    String? yamlProtocol,
+    String? fileName,
+    String? sourceFileName,
+    String? className,
+    List<String>? subDirParts,
+    bool? serverOnly,
+    List<ProtocolEnumValueDefinition>? values,
+    List<String>? documentation,
+  }) {
+    return EnumDefinition(
+      fileName: fileName ?? this.fileName,
+      sourceFileName: sourceFileName ?? this.sourceFileName,
+      className: className ?? this.className,
+      serverOnly: serverOnly ?? this.serverOnly,
+      subDirParts: subDirParts ?? this.subDirParts,
+      values: values ?? this.values,
+      documentation: documentation ?? this.documentation,
+    );
+  }
 }
 
 /// A representation of a single value of a [EnumDefinition].
@@ -216,4 +294,14 @@ class ProtocolEnumValueDefinition {
 
   /// Create a new [ProtocolEnumValueDefinition].
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
+
+  ProtocolEnumValueDefinition copyWith({
+    String? name,
+    List<String>? documentation,
+  }) {
+    return ProtocolEnumValueDefinition(
+      name ?? this.name,
+      documentation ?? this.documentation,
+    );
+  }
 }

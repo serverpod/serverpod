@@ -264,6 +264,33 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
     }
     return str;
   }
+
+  GeneratorConfig copyWith({
+    String? name,
+    PackageType? type,
+    String? serverPackage,
+    String? dartClientPackage,
+    bool? dartClientDependsOnServiceClient,
+    List<String>? serverPackageDirectoryPathParts,
+    List<String>? relativeDartClientPackagePathParts,
+    List<ModuleConfig>? modules,
+    List<TypeDefinition>? extraClasses,
+  }) {
+    return GeneratorConfig(
+      name: name ?? this.name,
+      type: type ?? this.type,
+      serverPackage: serverPackage ?? this.serverPackage,
+      dartClientPackage: dartClientPackage ?? this.dartClientPackage,
+      dartClientDependsOnServiceClient: dartClientDependsOnServiceClient ??
+          this.dartClientDependsOnServiceClient,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts ??
+          this.serverPackageDirectoryPathParts,
+      relativeDartClientPackagePathParts: relativeDartClientPackagePathParts ??
+          _relativeDartClientPackagePathParts,
+      modules: modules ?? this.modules,
+      extraClasses: extraClasses ?? this.extraClasses,
+    );
+  }
 }
 
 /// Describes the configuration of a Serverpod module a package depends on.
@@ -303,6 +330,16 @@ nickname: $nickname
 clientPackage: $dartClientPackage
 serverPackage: $serverPackage;
 ''';
+  }
+
+  ModuleConfig copyWith({
+    String? nickname,
+    String? name,
+  }) {
+    return ModuleConfig(
+      nickname: nickname ?? this.nickname,
+      name: name ?? this.name,
+    );
   }
 }
 
