@@ -218,7 +218,10 @@ class WindowsStdOutLogger extends StdOutLogger {
     super._write(
         message
             .replaceAll('🥳', '=D')
-            .replaceAll('✅', '√')
+            .replaceAll(
+              '✅',
+              AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
+            )
             .replaceAll('🚀', '')
             .replaceAll('📦', ''),
         logLevel);
