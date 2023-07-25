@@ -126,7 +126,7 @@ class ServerpodCommandRunner extends CommandRunner {
       return super.parse(args);
     } on UsageException catch (e) {
       _analytics.track(event: 'invalid');
-      log.error(e.toString(), style: const LogStyle());
+      log.error(e.toString(), type: const RawLogType());
       throw ExitException(ExitCodeType.commandNotFound);
     }
   }
@@ -146,7 +146,7 @@ class ServerpodCommandRunner extends CommandRunner {
         _analytics.track(event: topLevelResults.command!.name!);
       }
     } on UsageException catch (e) {
-      log.error(e.toString(), style: const LogStyle());
+      log.error(e.toString(), type: const RawLogType());
       _analytics.track(event: 'invalid');
       throw ExitException(ExitCodeType.commandNotFound);
     }
@@ -154,7 +154,7 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   void printUsage() {
-    log.info(usage, style: const LogStyle());
+    log.info(usage, type: const RawLogType());
   }
 
   @override

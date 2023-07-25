@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:colorize/colorize.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/ansi_style.dart';
+import 'package:serverpod_cli/src/logger/helpers/progress.dart';
 import 'package:source_span/source_span.dart';
 import 'package:super_string/super_string.dart';
 
@@ -11,6 +12,10 @@ import 'package:super_string/super_string.dart';
 /// Errors and Warnings are printed on [stderr] and other messages are logged
 /// on [stdout].
 class StdOutLogger extends Logger {
+  static const int _defaultColumnWrap = 80;
+
+  Progress? trackedAnimationInProgress;
+
   StdOutLogger(LogLevel logLevel) : super(logLevel);
 
   @override
@@ -19,12 +24,14 @@ class StdOutLogger extends Logger {
   @override
   void debug(
     String message, {
-    LogStyle style = const TextLogStyle(),
+    bool newParagraph = false,
+    LogType type = TextLogType.normal,
   }) {
     _log(
       message,
       LogLevel.debug,
-      style,
+      newParagraph,
+      type,
       prefix: 'DEBUG: ',
     );
   }
@@ -32,30 +39,54 @@ class StdOutLogger extends Logger {
   @override
   void info(
     String message, {
-    LogStyle style = const TextLogStyle(),
+    bool newParagraph = false,
+    LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.info, style);
+    _log(message, LogLevel.info, newParagraph, type);
   }
 
   @override
   void warning(
     String message, {
-    LogStyle style = const TextLogStyle(),
+    bool newParagraph = false,
+    LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.warning, style, prefix: 'WARNING: ');
+    _log(message, LogLevel.warning, newParagraph, type, prefix: 'WARNING: ');
   }
 
   @override
   void error(
     String message, {
+    bool newParagraph = false,
     StackTrace? stackTrace,
-    LogStyle style = const TextLogStyle(),
+    LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.error, style, prefix: 'ERROR: ');
+    _log(message, LogLevel.error, newParagraph, type, prefix: 'ERROR: ');
 
     if (stackTrace != null) {
-      _log(stackTrace.toString(), LogLevel.error, style);
+      _log(stackTrace.toString(), LogLevel.error, newParagraph, type);
     }
+  }
+
+  @override
+  Future<bool> progress(
+    String message,
+    Future<bool> Function() runner, {
+    bool newParagraph = false,
+  }) async {
+    if (logLevel.index > LogLevel.info.index) {
+      return await runner();
+    }
+
+    if (newParagraph) _write('\n', LogLevel.info);
+
+    var progress = Progress(message, stdout);
+    _stopAnimationInProgress();
+    trackedAnimationInProgress = progress;
+    bool success = await runner();
+    trackedAnimationInProgress = null;
+    success ? progress.complete() : progress.fail();
+    return success;
   }
 
   @override
@@ -98,53 +129,78 @@ class StdOutLogger extends Logger {
   void _log(
     String message,
     LogLevel logLevel,
-    LogStyle style, {
+    bool newParagraph,
+    LogType type, {
     String prefix = '',
   }) {
     if (message == '') return;
     if (!shouldLog(logLevel)) return;
 
-    if (style is BoxLogStyle) {
+    if (type is BoxLogType) {
       message = _formatAsBox(
+        wrapColumn: wrapTextColumn ?? _defaultColumnWrap,
         message: message,
-        title: style.title,
+        title: type.title,
       );
-    } else if (style is TextLogStyle) {
-      if (wrapTextColumn != null && style.wordWrap) {
-        message = _wrapText(message, wrapTextColumn!);
-      }
+    } else if (type is TextLogType) {
+      message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
 
-      switch (style.type) {
-        case AbstractStyleType.command:
-          message = '  \$ $message';
+      switch (type.style) {
+        case TextLogStyle.command:
+          message = '   ${AnsiStyle.cyan.wrap('\$')} $message';
           break;
-        case AbstractStyleType.bullet:
+        case TextLogStyle.bullet:
           message = ' • $message';
           break;
-        case AbstractStyleType.normal:
+        case TextLogStyle.normal:
           message = '$prefix$message';
           break;
-        case AbstractStyleType.success:
+        case TextLogStyle.init:
+          message = AnsiStyle.cyan.wrap(AnsiStyle.bold.wrap(message));
           break;
-        case AbstractStyleType.hint:
-          message = '${Colorize(message)..italic()}';
+        case TextLogStyle.header:
+          message = AnsiStyle.bold.wrap(message);
+          break;
+        case TextLogStyle.success:
+          message =
+              '✅ ${AnsiStyle.lightGreen.wrap(AnsiStyle.bold.wrap(message))}\n';
+          break;
+        case TextLogStyle.hint:
+          message = AnsiStyle.darkGray.wrap(AnsiStyle.italic.wrap(message));
           break;
       }
     }
 
-    if (style.newParagraph) {
+    if (newParagraph) {
       message = '\n$message';
+    }
+
+    if (type is! RawLogType) {
+      // If it is not a raw log we append a new line after the message.
+      message = '$message\n';
     }
 
     _write(message, logLevel);
   }
 
   void _write(String message, LogLevel logLevel) {
+    _stopAnimationInProgress();
     if (logLevel.index >= LogLevel.warning.index) {
-      stderr.writeln(message);
+      stderr.write(message);
     } else {
-      stdout.writeln(message);
+      stdout.write(message);
     }
+  }
+
+  void _stopAnimationInProgress() {
+    if (trackedAnimationInProgress != null) {
+      trackedAnimationInProgress?.stopAnimation();
+      // Since animation modifies the current line we add a new line so that
+      // the next print doesn't end up on the same line.
+      stdout.write('\n');
+    }
+
+    trackedAnimationInProgress = null;
   }
 }
 
@@ -159,8 +215,16 @@ class WindowsStdOutLogger extends StdOutLogger {
     String message,
     LogLevel logLevel,
   ) {
-    message.replaceAll('🥳', '=D');
-    super._write(message, logLevel);
+    super._write(
+        message
+            .replaceAll('🥳', '=D')
+            .replaceAll(
+              '✅',
+              AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
+            )
+            .replaceAll('🚀', '')
+            .replaceAll('📦', ''),
+        logLevel);
   }
 }
 
@@ -187,11 +251,11 @@ String _wrapText(String text, int columnWidth) {
 String _formatAsBox({
   required String message,
   String? title,
+  required int wrapColumn,
 }) {
   const int kPaddingLeftRight = 1;
   const int kEdges = 2;
 
-  var wrapColumn = stdout.hasTerminal ? stdout.terminalColumns : 100;
   var maxTextWidthPerLine = wrapColumn - kEdges - kPaddingLeftRight * 2;
   var lines = _wrapText(message, maxTextWidthPerLine).split('\n');
   var lineWidth = lines.map((String line) => line.length).toList();
@@ -233,17 +297,6 @@ String _formatAsBox({
   return buffer.toString();
 }
 
-enum TextColor {
-  terminalDefault('\x1B[39m'),
-  red('\x1B[31m'),
-  yellow('\x1B[33m'),
-  blue('\x1B[34m'),
-  cyan('\x1B[36m');
-
-  const TextColor(this.ansiCode);
-  final String ansiCode;
-}
-
 abstract class _SeveritySpanHelpers {
   static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
     switch (severity) {
@@ -259,22 +312,22 @@ abstract class _SeveritySpanHelpers {
 
   static String highlightAnsiCode(LogLevel severity, bool isHint) {
     if (severity == LogLevel.info && isHint) {
-      return TextColor.cyan.ansiCode;
+      return AnsiStyle.cyan.ansiCode;
     }
 
     switch (severity) {
       case LogLevel.nothing:
-        assert(
-            false, 'Log level nothing should never be used for a log message');
-        return TextColor.terminalDefault.ansiCode;
+        assert(severity != LogLevel.nothing,
+            'Log level nothing should never be used for a log message');
+        return AnsiStyle.terminalDefault.ansiCode;
       case LogLevel.error:
-        return TextColor.red.ansiCode;
+        return AnsiStyle.red.ansiCode;
       case LogLevel.warning:
-        return TextColor.yellow.ansiCode;
+        return AnsiStyle.yellow.ansiCode;
       case LogLevel.info:
-        return TextColor.blue.ansiCode;
+        return AnsiStyle.blue.ansiCode;
       case LogLevel.debug:
-        return TextColor.cyan.ansiCode;
+        return AnsiStyle.cyan.ansiCode;
     }
   }
 }

@@ -1,7 +1,11 @@
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/util/exit_exception.dart';
 
 class CreateCommand extends ServerpodCommand {
+  final templateTypes =
+      ServerpodTemplateType.values.map((t) => t.name).toList();
+
   @override
   final name = 'create';
 
@@ -20,8 +24,8 @@ class CreateCommand extends ServerpodCommand {
     argParser.addOption(
       'template',
       abbr: 't',
-      defaultsTo: 'server',
-      allowed: <String>['server', 'module'],
+      defaultsTo: ServerpodTemplateType.server.name,
+      allowed: templateTypes,
       help:
           'Template to use when creating a new project, valid options are "server" or "module".',
     );
@@ -30,14 +34,16 @@ class CreateCommand extends ServerpodCommand {
   @override
   Future<void> run() async {
     var name = argResults!.arguments.last;
-    String template = argResults!['template'];
+    var template = ServerpodTemplateType.tryParse(argResults!['template']);
     bool force = argResults!['force'];
 
-    if (name == 'server' || name == 'module' || name == 'create') {
+    if (template == null || templateTypes.contains(name) || name == 'create') {
       printUsage();
       return;
     }
 
-    await performCreate(name, template, force);
+    if (!await performCreate(name, template, force)) {
+      throw ExitException();
+    }
   }
 }
