@@ -17,6 +17,7 @@ class DatabaseBulkData {
     required String table,
     int lastId = 0,
     int limit = 100,
+    Filter? filter,
   }) async {
     var liveTableDefinition = await _getLiveTableDefinition(database, table);
     if (liveTableDefinition == null) {
@@ -49,8 +50,14 @@ class DatabaseBulkData {
       columnSelects.add('"${column.name}"');
     }
 
+    var filterQuery = '';
+    if (filter != null) {
+      filterQuery = filter.toQuery(targetTableDefinition);
+      filterQuery = ' AND $filterQuery';
+    }
+
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
-        'WHERE id > $lastId ORDER BY "id" LIMIT $limit';
+        'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
     var data = await database.query(query);
 
     return BulkData(

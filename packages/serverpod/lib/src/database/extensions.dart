@@ -1,3 +1,4 @@
+import 'package:serverpod/database.dart';
 import 'package:serverpod/protocol.dart';
 
 /// Comparison methods for [DatabaseDefinition].
@@ -244,5 +245,79 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
         // other.onUpdate == onUpdate &&
         other.referenceTable == referenceTable &&
         other.referenceTableSchema == referenceTableSchema;
+  }
+}
+
+/// SQL code generation methods for [Filter].
+extension FilterGenerator on Filter {
+  /// Generates a SQL WHERE clause from the filter.
+  String toQuery(TableDefinition tableDefinition) {
+    var expressions = <String>[];
+    for (var constraint in constraints) {
+      var columnDefinition = tableDefinition.findColumnNamed(constraint.column);
+      if (columnDefinition == null) {
+        throw Exception(
+          'Column "${constraint.column}" not found in table '
+          '"${tableDefinition.name}".',
+        );
+      }
+
+      var expression = constraint.toQuery(columnDefinition);
+      expressions.add('($expression)');
+    }
+
+    return expressions.join(' AND ');
+  }
+}
+
+/// SQL code generation methods for [FilterConstraint].
+extension FilterConstraintGenerator on FilterConstraint {
+  /// Generates a SQL WHERE clause from the filter constraint.
+  String toQuery(ColumnDefinition columnDefinition) {
+    assert(columnDefinition.name == column);
+
+    var columnType = columnDefinition.columnType;
+    String formattedValue;
+    if (columnType == ColumnType.integer ||
+        columnType == ColumnType.bigint ||
+        columnType == ColumnType.doublePrecision ||
+        columnType == ColumnType.boolean) {
+      formattedValue = value;
+    } else if (columnType == ColumnType.text) {
+      formattedValue = DatabasePoolManager.encoder.convert(value);
+    } else if (columnType == ColumnType.timestampWithoutTimeZone) {
+      var dateTime = DateTime.tryParse(value);
+      if (dateTime != null) {
+        formattedValue = DatabasePoolManager.encoder.convert(dateTime);
+      } else {
+        formattedValue = 'NULL';
+      }
+    } else {
+      throw Exception(
+        'Unsupported column type ${columnDefinition.columnType} for column '
+        '"${columnDefinition.name}".',
+      );
+    }
+
+    if (type == FilterConstraintType.equals) {
+      return '"$column" = $formattedValue';
+    } else if (type == FilterConstraintType.notEquals) {
+      return '"$column" != $formattedValue';
+    } else if (type == FilterConstraintType.greaterThan) {
+      return '"$column" > $formattedValue';
+    } else if (type == FilterConstraintType.greaterThanOrEquals) {
+      return '"$column" >= $formattedValue';
+    } else if (type == FilterConstraintType.lessThan) {
+      return '"$column" < $formattedValue';
+    } else if (type == FilterConstraintType.lessThanOrEquals) {
+      return '"$column" <= $formattedValue';
+    } else if (type == FilterConstraintType.between) {
+      return '"$column" BETWEEN $formattedValue AND $value2';
+    } else if (type == FilterConstraintType.isNull) {
+      return '"$column" IS NULL';
+    } else if (type == FilterConstraintType.isNotNull) {
+      return '"$column" IS NOT NULL';
+    }
+    throw Exception('Unsupported constraint type $type for column "$column."');
   }
 }

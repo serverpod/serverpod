@@ -232,6 +232,7 @@ class InsightsEndpoint extends Endpoint {
       table: table,
       lastId: startingId,
       limit: limit,
+      filter: filter,
     );
   }
 
