@@ -225,6 +225,7 @@ class InsightsEndpoint extends Endpoint {
     required String table,
     required int startingId,
     required int limit,
+    Filter? filter,
   }) async {
     return DatabaseBulkData.exportTableData(
       database: session.db,

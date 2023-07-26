@@ -21,8 +21,10 @@ import 'package:serverpod_service_client/src/protocol/database/database_definiti
     as _i8;
 import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
     as _i9;
-import 'dart:io' as _i10;
-import 'protocol.dart' as _i11;
+import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
+    as _i10;
+import 'dart:io' as _i11;
+import 'protocol.dart' as _i12;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -163,6 +165,7 @@ class EndpointInsights extends _i1.EndpointRef {
     required String table,
     required int startingId,
     required int limit,
+    _i10.Filter? filter,
   }) =>
       caller.callServerEndpoint<_i9.BulkData>(
         'insights',
@@ -171,6 +174,7 @@ class EndpointInsights extends _i1.EndpointRef {
           'table': table,
           'startingId': startingId,
           'limit': limit,
+          'filter': filter,
         },
       );
 
@@ -193,11 +197,11 @@ class EndpointInsights extends _i1.EndpointRef {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i10.SecurityContext? context,
+    _i11.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i11.Protocol(),
+          _i12.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
