@@ -4,65 +4,79 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'serializable_entity_field_definition_builder.dart';
 
 class ClassDefinitionBuilder {
-  ClassDefinition _classDefinition;
+  String _fileName;
+  String _sourceFileName;
+  String _className;
+  List<String> _subDirParts;
+  bool _serverOnly;
+  bool _isException;
+  String? _tableName;
+  List<SerializableEntityFieldDefinition> _fields;
+  List<SerializableEntityIndexDefinition>? _indexes;
+  List<String>? _documentation;
 
   ClassDefinitionBuilder()
-      : _classDefinition = ClassDefinition(
-          fileName: 'example',
-          sourceFileName: 'example.yaml',
-          className: 'Example',
-          fields: [],
-          subDirParts: [],
-          serverOnly: false,
-          isException: false,
-        );
+      : _fileName = 'example',
+        _sourceFileName = 'example.yaml',
+        _className = 'Example',
+        _fields = [],
+        _subDirParts = [],
+        _serverOnly = false,
+        _isException = false;
 
-  ClassDefinition build() => _classDefinition;
-
-  ClassDefinitionBuilder withFileName(String fileName) {
-    _classDefinition = _classDefinition.copyWith(fileName: fileName);
-    return this;
-  }
-
-  ClassDefinitionBuilder withSourceFileName(String sourceFileName) {
-    _classDefinition = _classDefinition.copyWith(
-      sourceFileName: sourceFileName,
-    );
-    return this;
-  }
-
-  ClassDefinitionBuilder withClassName(String className) {
-    _classDefinition = _classDefinition.copyWith(className: className);
-    return this;
-  }
-
-  ClassDefinitionBuilder withSubDirParts(List<String> subDirParts) {
-    _classDefinition = _classDefinition.copyWith(subDirParts: subDirParts);
-    return this;
-  }
-
-  ClassDefinitionBuilder withServerOnly(bool serverOnly) {
-    _classDefinition = _classDefinition.copyWith(serverOnly: serverOnly);
-    return this;
-  }
-
-  ClassDefinitionBuilder withTableName(String? tableName) {
-    _classDefinition = _classDefinition.copyWith(tableName: tableName);
-    _withIdField();
-    return this;
-  }
-
-  ClassDefinitionBuilder _withIdField() {
-    _classDefinition = _classDefinition.copyWith(
-      fields: [
+  ClassDefinition build() {
+    if (_tableName != null) {
+      _fields.insert(
+        0,
         FieldDefinitionBuilder()
             .withName('id')
             .withType(TypeDefinition.int.asNullable)
             .withScope(SerializableEntityFieldScope.all)
             .build(),
-        ..._classDefinition.fields,
-      ],
+      );
+    }
+
+    return ClassDefinition(
+      fileName: _fileName,
+      sourceFileName: _sourceFileName,
+      className: _className,
+      fields: _fields,
+      subDirParts: _subDirParts,
+      serverOnly: _serverOnly,
+      isException: _isException,
+      tableName: _tableName,
+      indexes: _indexes,
+      documentation: _documentation,
     );
+  }
+
+  ClassDefinitionBuilder withFileName(String fileName) {
+    _fileName = fileName;
+    return this;
+  }
+
+  ClassDefinitionBuilder withSourceFileName(String sourceFileName) {
+    _sourceFileName = sourceFileName;
+    return this;
+  }
+
+  ClassDefinitionBuilder withClassName(String className) {
+    _className = className;
+    return this;
+  }
+
+  ClassDefinitionBuilder withSubDirParts(List<String> subDirParts) {
+    _subDirParts = subDirParts;
+    return this;
+  }
+
+  ClassDefinitionBuilder withServerOnly(bool serverOnly) {
+    _serverOnly = serverOnly;
+    return this;
+  }
+
+  ClassDefinitionBuilder withTableName(String? tableName) {
+    _tableName = tableName;
     return this;
   }
 
@@ -71,49 +85,41 @@ class ClassDefinitionBuilder {
     String type, {
     bool nullable = false,
   }) {
-    _classDefinition = _classDefinition.copyWith(
-      fields: [
-        ..._classDefinition.fields,
-        FieldDefinitionBuilder()
-            .withName(fieldName)
-            .withTypeDefinition(type, nullable)
-            .build()
-      ],
+    _fields.add(
+      FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withTypeDefinition(type, nullable)
+          .build(),
     );
     return this;
   }
 
   ClassDefinitionBuilder withField(SerializableEntityFieldDefinition field) {
-    _classDefinition = _classDefinition.copyWith(
-      fields: [
-        ..._classDefinition.fields,
-        field,
-      ],
-    );
+    _fields.add(field);
     return this;
   }
 
   ClassDefinitionBuilder withFields(
     List<SerializableEntityFieldDefinition> fields,
   ) {
-    _classDefinition = _classDefinition.copyWith(fields: fields);
+    _fields = fields;
     return this;
   }
 
   ClassDefinitionBuilder withIndexes(
     List<SerializableEntityIndexDefinition>? indexes,
   ) {
-    _classDefinition = _classDefinition.copyWith(indexes: indexes);
+    _indexes = indexes;
     return this;
   }
 
   ClassDefinitionBuilder withDocumentation(List<String>? documentation) {
-    _classDefinition = _classDefinition.copyWith(documentation: documentation);
+    _documentation = documentation;
     return this;
   }
 
   ClassDefinitionBuilder withIsException(bool isException) {
-    _classDefinition = _classDefinition.copyWith(isException: isException);
+    _isException = isException;
     return this;
   }
 }

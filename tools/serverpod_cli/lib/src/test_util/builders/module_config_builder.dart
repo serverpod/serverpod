@@ -1,23 +1,24 @@
 import 'package:serverpod_cli/src/config/config.dart';
 
 class ModuleConfigBuilder {
-  late ModuleConfig _config;
+  String _name;
+  String _nickname;
 
-  ModuleConfigBuilder(String name, [String? nickname]) {
-    _config = ModuleConfig(name: name, nickname: nickname ?? name);
-  }
+  ModuleConfigBuilder(String name, [String? nickname])
+      : _name = name,
+        _nickname = nickname ?? name;
 
   ModuleConfigBuilder withNickname(String nickname) {
-    _config = _config.copyWith(nickname: nickname);
+    _nickname = nickname;
     return this;
   }
 
   ModuleConfigBuilder withName(String name) {
-    _config = _config.copyWith(name: name);
+    _name = name;
     return this;
   }
 
   ModuleConfig build() {
-    return _config;
+    return ModuleConfig(name: _name, nickname: _nickname);
   }
 }

@@ -2,22 +2,22 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 class FieldDefinitionBuilder {
-  SerializableEntityFieldDefinition _fieldDefinition;
+  String _name;
+  TypeDefinition _type;
+  SerializableEntityFieldScope _scope;
+  String? _parentTable;
+  List<String>? _documentation;
 
   FieldDefinitionBuilder()
-      : _fieldDefinition = SerializableEntityFieldDefinition(
-          name: 'name',
-          type: TypeDefinition(
-            className: 'String',
-            nullable: true,
-          ),
-          scope: SerializableEntityFieldScope.all,
-        );
-
-  SerializableEntityFieldDefinition build() => _fieldDefinition;
+      : _name = 'name',
+        _type = TypeDefinition(
+          className: 'String',
+          nullable: true,
+        ),
+        _scope = SerializableEntityFieldScope.all;
 
   FieldDefinitionBuilder withName(String name) {
-    _fieldDefinition = _fieldDefinition.copyWith(name: name);
+    _name = name;
     return this;
   }
 
@@ -25,38 +25,43 @@ class FieldDefinitionBuilder {
     String className, [
     bool nullable = false,
   ]) {
-    var type = _fieldDefinition.type.copyWith(
-      className: className,
-      nullable: nullable,
-    );
-
-    _fieldDefinition = _fieldDefinition.copyWith(type: type);
+    _type = TypeDefinition(className: className, nullable: nullable);
     return this;
   }
 
   FieldDefinitionBuilder withType(TypeDefinition type) {
-    _fieldDefinition = _fieldDefinition.copyWith(type: type);
+    _type = type;
     return this;
   }
 
   FieldDefinitionBuilder withScope(
     SerializableEntityFieldScope scope,
   ) {
-    _fieldDefinition = _fieldDefinition.copyWith(scope: scope);
+    _scope = scope;
     return this;
   }
 
   FieldDefinitionBuilder withParentTable(
     String? parentTable,
   ) {
-    _fieldDefinition = _fieldDefinition.copyWith(parentTable: parentTable);
+    _parentTable = parentTable;
     return this;
   }
 
   FieldDefinitionBuilder withDocumentation(
     List<String>? documentation,
   ) {
-    _fieldDefinition = _fieldDefinition.copyWith(documentation: documentation);
+    _documentation = documentation;
     return this;
+  }
+
+  SerializableEntityFieldDefinition build() {
+    return SerializableEntityFieldDefinition(
+      name: _name,
+      type: _type,
+      scope: _scope,
+      parentTable: _parentTable,
+      documentation: _documentation,
+    );
   }
 }

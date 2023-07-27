@@ -2,53 +2,67 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 class TypeDefinitionBuilder {
-  TypeDefinition _definition;
+  String _className;
+  List<TypeDefinition> _generics;
+  bool _nullable;
+  String? _url;
+  DartType? _dartType;
+  bool _customClass;
+  bool _isEnum;
 
   TypeDefinitionBuilder()
-      : _definition = TypeDefinition(
-          className: 'DefaultClassName',
-          generics: [],
-          nullable: false,
-          customClass: false,
-          isEnum: false,
-        );
+      : _className = 'DefaultClassName',
+        _generics = [],
+        _nullable = false,
+        _url = null,
+        _dartType = null,
+        _customClass = false,
+        _isEnum = false;
 
   TypeDefinitionBuilder withClassName(String className) {
-    _definition = _definition.copyWith(className: className);
+    _className = className;
     return this;
   }
 
   TypeDefinitionBuilder withGenerics(List<TypeDefinition> generics) {
-    _definition = _definition.copyWith(generics: generics);
+    _generics = generics;
     return this;
   }
 
   TypeDefinitionBuilder withNullable(bool nullable) {
-    _definition = _definition.copyWith(nullable: nullable);
+    _nullable = nullable;
     return this;
   }
 
   TypeDefinitionBuilder withUrl(String? url) {
-    _definition = _definition.copyWith(url: url);
+    _url = url;
     return this;
   }
 
   TypeDefinitionBuilder withDartType(DartType? dartType) {
-    _definition = _definition.copyWith(dartType: dartType);
+    _dartType = dartType;
     return this;
   }
 
   TypeDefinitionBuilder withCustomClass(bool customClass) {
-    _definition = _definition.copyWith(customClass: customClass);
+    _customClass = customClass;
     return this;
   }
 
   TypeDefinitionBuilder withIsEnum(bool isEnum) {
-    _definition = _definition.copyWith(isEnum: isEnum);
+    _isEnum = isEnum;
     return this;
   }
 
   TypeDefinition build() {
-    return _definition;
+    return TypeDefinition(
+      className: _className,
+      generics: _generics,
+      nullable: _nullable,
+      url: _url,
+      dartType: _dartType,
+      customClass: _customClass,
+      isEnum: _isEnum,
+    );
   }
 }
