@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -24,14 +25,21 @@ void main() {
     );
 
     test('then a server-side class is generated with that class variable.', () {
-      var expectedFileName = 'lib/src/generated/example.dart';
+      var expectedFileName =
+          path.join('lib', 'src', 'generated', 'example.dart');
 
       expect(codeMap[expectedFileName], contains('String title;'));
     });
 
     test('then a client-side class is generated with that class variable.', () {
-      var expectedFileName =
-          '../example_project_client/lib/src/protocol/example.dart';
+      var expectedFileName = path.join(
+        '..',
+        'example_project_client',
+        'lib',
+        'src',
+        'protocol',
+        'example.dart',
+      );
 
       expect(codeMap[expectedFileName], contains('String title;'));
     });
@@ -52,14 +60,21 @@ void main() {
     );
 
     test('then a server-side class is generated with that class variable.', () {
-      var expectedFileName = 'lib/src/generated/example.dart';
+      var expectedFileName =
+          path.join('lib', 'src', 'generated', 'example.dart');
 
       expect(codeMap[expectedFileName], contains('String? title;'));
     });
 
     test('then a client-side class is generated with that class variable.', () {
-      var expectedFileName =
-          '../example_project_client/lib/src/protocol/example.dart';
+      var expectedFileName = path.join(
+        '..',
+        'example_project_client',
+        'lib',
+        'src',
+        'protocol',
+        'example.dart',
+      );
 
       expect(codeMap[expectedFileName], contains('String? title;'));
     });

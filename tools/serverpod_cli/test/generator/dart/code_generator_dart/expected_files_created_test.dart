@@ -26,7 +26,7 @@ void main() {
     test('then the protocol file is created', () {
       expect(
         codeMap.keys,
-        contains('lib/src/generated/protocol.dart'),
+        contains(path.join('lib', 'src', 'generated', 'protocol.dart')),
         reason: 'Expected protocol file to be present, found none.',
       );
     });
@@ -34,7 +34,7 @@ void main() {
     test('then the server-side file is created', () {
       expect(
         codeMap.keys,
-        contains('lib/src/generated/example.dart'),
+        contains(path.join('lib', 'src', 'generated', 'example.dart')),
         reason: 'Expected server-side file to be present, found none.',
       );
     });
@@ -42,7 +42,14 @@ void main() {
     test('then the client-side file is created', () {
       expect(
         codeMap.keys,
-        contains('../example_project_client/lib/src/protocol/example.dart'),
+        contains(path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          'example.dart',
+        )),
         reason: 'Expected client-side file to be present, found none.',
       );
     });
