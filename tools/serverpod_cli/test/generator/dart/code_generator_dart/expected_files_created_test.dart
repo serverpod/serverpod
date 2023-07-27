@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -67,7 +68,7 @@ void main() {
     test('then the protocol file is created', () {
       expect(
         codeMap.keys,
-        contains('lib/src/generated/protocol.dart'),
+        contains(path.join('lib', 'src', 'generated', 'protocol.dart')),
         reason: 'Expected protocol file to be present, found none.',
       );
     });
@@ -75,13 +76,13 @@ void main() {
     test('then the server-side files are created', () {
       expect(
         codeMap.keys,
-        contains('lib/src/generated/example.dart'),
+        contains(path.join('lib', 'src', 'generated', 'example.dart')),
         reason: 'Expected server-side file to be present, found none.',
       );
 
       expect(
         codeMap.keys,
-        contains('lib/src/generated/user.dart'),
+        contains(path.join('lib', 'src', 'generated', 'user.dart')),
         reason: 'Expected server-side file to be present, found none.',
       );
     });
@@ -89,13 +90,27 @@ void main() {
     test('then the client-side files are created', () {
       expect(
         codeMap.keys,
-        contains('../example_project_client/lib/src/protocol/example.dart'),
+        contains(path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          'example.dart',
+        )),
         reason: 'Expected client-side file to be present, found none.',
       );
 
       expect(
         codeMap.keys,
-        contains('../example_project_client/lib/src/protocol/user.dart'),
+        contains(path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          'user.dart',
+        )),
         reason: 'Expected client-side file to be present, found none.',
       );
     });
@@ -120,7 +135,14 @@ void main() {
     expect(
       codeMap.keys,
       isNot(
-        contains('../example_project_client/lib/src/protocol/example.dart'),
+        contains(path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          'example.dart',
+        )),
       ),
       reason: 'Expected client-side file to NOT be present, found one.',
     );
