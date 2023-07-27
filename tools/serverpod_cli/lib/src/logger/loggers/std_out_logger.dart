@@ -32,7 +32,7 @@ class StdOutLogger extends Logger {
       LogLevel.debug,
       newParagraph,
       type,
-      prefix: 'DEBUG: ',
+      prefix: AnsiStyle.darkGray.wrap('DEBUG: '),
     );
   }
 
@@ -51,7 +51,13 @@ class StdOutLogger extends Logger {
     bool newParagraph = false,
     LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.warning, newParagraph, type, prefix: 'WARNING: ');
+    _log(
+      message,
+      LogLevel.warning,
+      newParagraph,
+      type,
+      prefix: AnsiStyle.yellow.wrap('WARNING: '),
+    );
   }
 
   @override
@@ -61,7 +67,13 @@ class StdOutLogger extends Logger {
     StackTrace? stackTrace,
     LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.error, newParagraph, type, prefix: 'ERROR: ');
+    _log(
+      message,
+      LogLevel.error,
+      newParagraph,
+      type,
+      prefix: AnsiStyle.red.wrap('ERROR: '),
+    );
 
     if (stackTrace != null) {
       _log(stackTrace.toString(), LogLevel.error, newParagraph, type);
