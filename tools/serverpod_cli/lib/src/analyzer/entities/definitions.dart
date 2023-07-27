@@ -5,7 +5,6 @@ import 'package:serverpod_cli/src/generator/types.dart';
 /// An abstract representation of a yaml file in the
 /// protocol directory.
 abstract class SerializableEntityDefinition {
-  final String yamlProtocol;
   final String fileName;
   final String sourceFileName;
   final String className;
@@ -13,7 +12,6 @@ abstract class SerializableEntityDefinition {
   final bool serverOnly;
 
   SerializableEntityDefinition({
-    required this.yamlProtocol,
     required this.fileName,
     required this.sourceFileName,
     required this.className,
@@ -56,7 +54,6 @@ class ClassDefinition extends SerializableEntityDefinition {
 
   /// Create a new [ClassDefinition].
   ClassDefinition({
-    required super.yamlProtocol,
     required super.fileName,
     required super.sourceFileName,
     required super.className,
@@ -199,7 +196,6 @@ class EnumDefinition extends SerializableEntityDefinition {
 
   /// Create a new [EnumDefinition].
   EnumDefinition({
-    required super.yamlProtocol,
     required super.fileName,
     required super.sourceFileName,
     required super.className,

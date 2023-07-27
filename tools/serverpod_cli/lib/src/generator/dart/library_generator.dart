@@ -23,9 +23,7 @@ class LibraryGenerator {
   });
 
   /// Generate the protocol library.
-  Library generateProtocol({
-    bool verbose = false,
-  }) {
+  Library generateProtocol() {
     var library = LibraryBuilder();
 
     library.name = 'protocol';

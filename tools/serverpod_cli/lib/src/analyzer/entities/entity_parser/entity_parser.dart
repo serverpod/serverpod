@@ -43,7 +43,6 @@ class EntityParser {
     var indexes = _parseIndexes(documentContents, fields);
 
     return ClassDefinition(
-      yamlProtocol: protocolSource.yaml,
       className: className,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
@@ -74,7 +73,6 @@ class EntityParser {
     var values = _parseEnumValues(documentContents, docsExtractor);
 
     return EnumDefinition(
-      yamlProtocol: protocolSource.yaml,
       fileName: outFileName,
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,

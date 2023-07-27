@@ -24,7 +24,6 @@ abstract class CodeGenerator {
   /// Called and generated before [generateProtocolCode].
   @protected
   Map<String, String> generateSerializableEntitiesCode({
-    required bool verbose,
     required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
   });
@@ -41,7 +40,6 @@ abstract class CodeGenerator {
   /// already be called and generated.
   @protected
   Map<String, String> generateProtocolCode({
-    required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   });
@@ -52,7 +50,6 @@ abstract class CodeGenerator {
   /// Relative paths start at the server package directory.
   @protected
   Future<List<String>> getDirectoriesRequiringCleaning({
-    required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   });
@@ -69,7 +66,6 @@ abstract class CodeGenerator {
   ///
   /// Returns a list of generated files.
   static Future<List<String>> generateSerializableEntities({
-    required bool verbose,
     required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
@@ -78,16 +74,13 @@ abstract class CodeGenerator {
     var allFiles = {
       for (var generator in generators)
         ...generator.generateSerializableEntitiesCode(
-          verbose: verbose,
           entities: entities,
           config: config,
         )
     };
     for (var file in allFiles.entries) {
       try {
-        if (verbose) {
-          log.debug('Generating ${file.key}.');
-        }
+        log.debug('Generating ${file.key}.');
         var out = File(file.key);
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
@@ -107,7 +100,6 @@ abstract class CodeGenerator {
   ///
   /// Returns a list of generated files.
   static Future<List<String>> generateProtocolDefinition({
-    required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
@@ -116,16 +108,13 @@ abstract class CodeGenerator {
     var allFiles = {
       for (var generator in generators)
         ...generator.generateProtocolCode(
-          verbose: verbose,
           protocolDefinition: protocolDefinition,
           config: config,
         )
     };
     for (var file in allFiles.entries) {
       try {
-        if (verbose) {
-          log.debug('Generating ${file.key}.');
-        }
+        log.debug('Generating ${file.key}.');
         var out = File(file.key);
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
@@ -147,22 +136,16 @@ abstract class CodeGenerator {
     required Set<String> generatedFiles,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
-    required bool verbose,
   }) async {
-    if (verbose) {
-      log.debug('Cleaning up old files.');
-    }
+    log.debug('Cleaning up old files.');
     for (var generator in generators) {
       var dirs = await generator.getDirectoriesRequiringCleaning(
-          verbose: verbose,
-          protocolDefinition: protocolDefinition,
-          config: config);
+          protocolDefinition: protocolDefinition, config: config);
 
       for (var dir in dirs) {
         await _removeOldFilesInPath(
           dir,
           generatedFiles,
-          verbose,
           generator.outputFileExtensions,
         );
       }
@@ -173,13 +156,10 @@ abstract class CodeGenerator {
 Future<void> _removeOldFilesInPath(
   String directoryPath,
   Set<String> keepPaths,
-  bool verbose,
   List<String> fileExtensions,
 ) async {
   var directory = Directory(directoryPath);
-  if (verbose) {
-    log.debug('Remove old files from $directory');
-  }
+  log.debug('Remove old files from $directory');
   var fileList = await directory.list(recursive: true).toList();
 
   for (var entity in fileList) {
@@ -190,9 +170,7 @@ Future<void> _removeOldFilesInPath(
     }
 
     if (!keepPaths.contains(entity.path)) {
-      if (verbose) {
-        log.debug('Remove: $entity');
-      }
+      log.debug('Remove: $entity');
       await entity.delete();
     }
   }

@@ -19,13 +19,6 @@ class MigrateCommand extends ServerpodCommand {
 
   MigrateCommand() {
     argParser.addFlag(
-      'verbose',
-      abbr: 'v',
-      negatable: false,
-      defaultsTo: false,
-      help: 'Output more detailed information.',
-    );
-    argParser.addFlag(
       'force',
       abbr: 'f',
       negatable: false,
@@ -59,7 +52,6 @@ class MigrateCommand extends ServerpodCommand {
 
   @override
   void run() async {
-    bool verbose = argResults!['verbose'];
     bool force = argResults!['force'];
     bool repair = argResults!['repair'];
     String mode = argResults!['mode'];
@@ -106,17 +98,17 @@ class MigrateCommand extends ServerpodCommand {
         tag: tag,
         force: force,
         runMode: mode,
-        verbose: verbose,
       );
     } else {
       await generator.createMigration(
         tag: tag,
-        verbose: verbose,
         force: force,
         priority: priority,
       );
-      log.info('Done.',
-          style: const TextLogStyle(type: AbstractStyleType.success));
+      log.info(
+        'Done.',
+        type: TextLogType.success,
+      );
     }
   }
 }

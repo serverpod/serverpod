@@ -11,8 +11,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode(
-      {required bool verbose,
-      required List<SerializableEntityDefinition> entities,
+      {required List<SerializableEntityDefinition> entities,
       required GeneratorConfig config}) {
     return {
       p.joinAll([
@@ -154,8 +153,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
 
   @override
   Future<List<String>> getDirectoriesRequiringCleaning(
-      {required bool verbose,
-      required ProtocolDefinition protocolDefinition,
+      {required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) async {
     return [];
   }
@@ -165,8 +163,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateProtocolCode(
-      {required bool verbose,
-      required ProtocolDefinition protocolDefinition,
+      {required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) {
     return {};
   }

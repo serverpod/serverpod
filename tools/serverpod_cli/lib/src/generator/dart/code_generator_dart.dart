@@ -14,7 +14,6 @@ class DartCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required bool verbose,
     required List<SerializableEntityDefinition> entities,
     required GeneratorConfig config,
   }) {
@@ -59,7 +58,6 @@ class DartCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateProtocolCode({
-    required bool verbose,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   }) {
@@ -76,9 +74,7 @@ class DartCodeGenerator extends CodeGenerator {
     return {
       // Server
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
-          serverClassGenerator
-              .generateProtocol(verbose: verbose)
-              .generateCode(true),
+          serverClassGenerator.generateProtocol().generateCode(true),
       p.joinAll([...config.generatedServerProtocolPathParts, 'endpoints.dart']):
           serverClassGenerator
               .generateServerEndpointDispatch()
@@ -88,9 +84,7 @@ class DartCodeGenerator extends CodeGenerator {
       p.joinAll([
         ...config.generatedDartClientProtocolPathParts,
         'protocol.dart'
-      ]): clientClassGenerator
-          .generateProtocol(verbose: verbose)
-          .generateCode(true),
+      ]): clientClassGenerator.generateProtocol().generateCode(true),
       p.joinAll(
               [...config.generatedDartClientProtocolPathParts, 'client.dart']):
           clientClassGenerator.generateClientEndpointCalls().generateCode(true),
@@ -99,8 +93,7 @@ class DartCodeGenerator extends CodeGenerator {
 
   @override
   Future<List<String>> getDirectoriesRequiringCleaning(
-      {required bool verbose,
-      required ProtocolDefinition protocolDefinition,
+      {required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) async {
     return [
       p.joinAll(config.generatedServerProtocolPathParts),
