@@ -49,41 +49,29 @@ class MockCommand extends Command {
   }
 }
 
-class MockLoggerInitializer {
-  LogLevel? logLevel;
-
-  MockLoggerInitializer();
-}
-
 class TestFixture {
   final MockAnalytics analytics;
   final MockCommand command;
   final ServerpodCommandRunner runner;
-  final MockLoggerInitializer loggerInitializer;
 
   TestFixture(
     this.analytics,
     this.command,
     this.runner,
-    this.loggerInitializer,
   );
 }
 
 TestFixture createTestFixture() {
-  var loggerInitializer = MockLoggerInitializer();
   var analytics = MockAnalytics();
   var runner = ServerpodCommandRunner.createCommandRunner(
     analytics,
     false,
     Version(1, 1, 0),
-    onLoggerInit: (logLevel) => {
-      loggerInitializer.logLevel = logLevel,
-    },
     onPreCommandEnvironmentCheck: () => Future(() => {}),
   );
   var command = MockCommand();
   runner.addCommand(command);
-  return TestFixture(analytics, command, runner, loggerInitializer);
+  return TestFixture(analytics, command, runner);
 }
 
 void main() {
@@ -185,7 +173,7 @@ void main() {
 
       await fixture.runner.run(args);
 
-      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.info));
+      expect(log.logLevel, equals(LogLevel.info));
     });
 
     test('when only --${GlobalFlags.verbose} flag is provided', () async {
@@ -195,7 +183,7 @@ void main() {
 
       await fixture.runner.run(args);
 
-      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.debug));
+      expect(log.logLevel, equals(LogLevel.debug));
     });
     test('when only --${GlobalFlags.quiet} flag is provided', () async {
       List<String> args = [
@@ -204,7 +192,7 @@ void main() {
 
       await fixture.runner.run(args);
 
-      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.nothing));
+      expect(log.logLevel, equals(LogLevel.nothing));
     });
 
     test(
@@ -217,7 +205,7 @@ void main() {
 
       await fixture.runner.run(args);
 
-      expect(fixture.loggerInitializer.logLevel, equals(LogLevel.debug));
+      expect(log.logLevel, equals(LogLevel.debug));
     });
   });
 }
