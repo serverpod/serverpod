@@ -37,13 +37,13 @@ class CreateCommand extends ServerpodCommand {
     var rest = argResults?.rest;
 
     if (rest == null || rest.isEmpty) {
-      log.info('Project name missing.');
+      log.error('Project name missing.');
       printUsage();
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
     if (rest.length > 1) {
-      log.info('Multiple project names specified, please specify only.');
+      log.error('Multiple project names specified, please specify only.');
       printUsage();
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
