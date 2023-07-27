@@ -303,28 +303,36 @@ extension FilterConstraintGenerator on FilterConstraint {
       );
     }
 
-    if (type == FilterConstraintType.equals) {
-      return '"$column" = $formattedValue';
-    } else if (type == FilterConstraintType.notEquals) {
-      return '"$column" != $formattedValue';
-    } else if (type == FilterConstraintType.greaterThan) {
-      return '"$column" > $formattedValue';
-    } else if (type == FilterConstraintType.greaterThanOrEquals) {
-      return '"$column" >= $formattedValue';
-    } else if (type == FilterConstraintType.lessThan) {
-      return '"$column" < $formattedValue';
-    } else if (type == FilterConstraintType.lessThanOrEquals) {
-      return '"$column" <= $formattedValue';
-    } else if (type == FilterConstraintType.between) {
-      return '"$column" BETWEEN $formattedValue AND $value2';
-    } else if (type == FilterConstraintType.inThePast) {
-      return '"$column" > (NOW() - $formattedValue)';
-    } else if (type == FilterConstraintType.isNull) {
-      return '"$column" IS NULL';
-    } else if (type == FilterConstraintType.isNotNull) {
-      return '"$column" IS NOT NULL';
+    switch (type) {
+      case FilterConstraintType.equals:
+        return '"$column" = $formattedValue';
+      case FilterConstraintType.notEquals:
+        return '"$column" != $formattedValue';
+      case FilterConstraintType.greaterThan:
+        return '"$column" > $formattedValue';
+      case FilterConstraintType.greaterThanOrEquals:
+        return '"$column" >= $formattedValue';
+      case FilterConstraintType.lessThan:
+        return '"$column" < $formattedValue';
+      case FilterConstraintType.lessThanOrEquals:
+        return '"$column" <= $formattedValue';
+      case FilterConstraintType.like:
+        return '"$column" LIKE $formattedValue';
+      case FilterConstraintType.notLike:
+        return '"$column" NOT LIKE $formattedValue';
+      case FilterConstraintType.iLike:
+        return '"$column" ILIKE $formattedValue';
+      case FilterConstraintType.notILike:
+        return '"$column" NOT ILIKE $formattedValue';
+      case FilterConstraintType.between:
+        return '"$column" BETWEEN $formattedValue AND $value2';
+      case FilterConstraintType.inThePast:
+        return '"$column" > (NOW() - $formattedValue)';
+      case FilterConstraintType.isNull:
+        return '"$column" IS NULL';
+      case FilterConstraintType.isNotNull:
+        return '"$column" IS NOT NULL';
     }
-    throw Exception('Unsupported constraint type $type for column "$column."');
   }
 }
 

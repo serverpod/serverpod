@@ -3,15 +3,14 @@ values:
   - equals
   - notEquals
   - like
+  - iLike
+  - notLike
+  - notILike
   - lessThan
   - lessThanOrEquals
   - greaterThan
   - greaterThanOrEquals
   - between
   - inThePast
-  - contains
-  - notContains
-  - startsWith
-  - endsWith
   - isNull
   - isNotNull

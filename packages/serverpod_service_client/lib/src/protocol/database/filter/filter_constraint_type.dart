@@ -12,16 +12,15 @@ enum FilterConstraintType with _i1.SerializableEntity {
   equals,
   notEquals,
   like,
+  iLike,
+  notLike,
+  notILike,
   lessThan,
   lessThanOrEquals,
   greaterThan,
   greaterThanOrEquals,
   between,
   inThePast,
-  contains,
-  notContains,
-  startsWith,
-  endsWith,
   isNull,
   isNotNull;
 
@@ -34,28 +33,26 @@ enum FilterConstraintType with _i1.SerializableEntity {
       case 2:
         return like;
       case 3:
-        return lessThan;
+        return iLike;
       case 4:
-        return lessThanOrEquals;
+        return notLike;
       case 5:
-        return greaterThan;
+        return notILike;
       case 6:
-        return greaterThanOrEquals;
+        return lessThan;
       case 7:
-        return between;
+        return lessThanOrEquals;
       case 8:
-        return inThePast;
+        return greaterThan;
       case 9:
-        return contains;
+        return greaterThanOrEquals;
       case 10:
-        return notContains;
+        return between;
       case 11:
-        return startsWith;
+        return inThePast;
       case 12:
-        return endsWith;
-      case 13:
         return isNull;
-      case 14:
+      case 13:
         return isNotNull;
       default:
         return null;
