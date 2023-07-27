@@ -8,7 +8,7 @@ import 'package:source_span/source_span.dart';
 /// The purpose is to simplify implementing and switching out concrete logger
 /// implementations.
 abstract class Logger {
-  final LogLevel logLevel;
+  LogLevel logLevel;
 
   /// If defined, defines what column width text should be wrapped.
   int? get wrapTextColumn;
@@ -138,15 +138,15 @@ Logger? _logger;
 /// Initializer for logger singleton.
 /// Runs checks to pick the best suitable logger for the environment.
 /// This should only be called once from runtime entry points.
-void initializeLogger(LogLevel logLevel) {
+void initializeLogger() {
   assert(
     _logger == null,
     'Only one logger initialization is allowed.',
   );
 
   _logger = Platform.isWindows
-      ? WindowsStdOutLogger(logLevel)
-      : StdOutLogger(logLevel);
+      ? WindowsStdOutLogger(LogLevel.info)
+      : StdOutLogger(LogLevel.info);
 }
 
 /// Initializer for logger singleton.
@@ -165,6 +165,9 @@ void initializeLoggerWith(Logger logger) {
 /// Default initializes a [StdOutLogger] if initialization is not run before
 /// this call.
 Logger get log {
-  _logger ??= StdOutLogger(LogLevel.debug);
+  if (_logger == null) {
+    initializeLogger();
+  }
+
   return _logger!;
 }
