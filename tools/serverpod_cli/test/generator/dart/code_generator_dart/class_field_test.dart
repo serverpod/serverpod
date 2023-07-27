@@ -33,8 +33,6 @@ void main() {
       var expectedFileName =
           '../example_project_client/lib/src/protocol/example.dart';
 
-      print(codeMap.keys);
-
       expect(codeMap[expectedFileName], contains('String title;'));
     });
   });
