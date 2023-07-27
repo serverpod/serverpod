@@ -12,6 +12,10 @@ class PubApiClient {
       : _pubClient = PubClient(client: httpClient),
         _requestTimeout = requestTimeout;
 
+  /// Tries to fetch the latest stable version, version does not include '-' or '+',
+  /// for the package named [packageName].
+  ///
+  /// If it fails [Null] is returned.
   Future<Version?> tryFetchLatestStableVersion(String packageName) async {
     String? latestStableVersion;
     try {
@@ -47,7 +51,8 @@ class PubApiClient {
     return null;
   }
 
-  /// Required because https://github.com/leoafarias/pub_api_client/issues/35
+  /// Required because of an issue with the pub_api_client package.
+  /// Issue: https://github.com/leoafarias/pub_api_client/issues/35
   void _logPubClientException(Object exception) {
     try {
       log.error(exception.toString());
