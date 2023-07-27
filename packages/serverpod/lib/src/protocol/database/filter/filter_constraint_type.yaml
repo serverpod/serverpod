@@ -8,6 +8,7 @@ values:
   - greaterThan
   - greaterThanOrEquals
   - between
+  - inThePast
   - contains
   - notContains
   - startsWith

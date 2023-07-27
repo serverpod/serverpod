@@ -1,3 +1,4 @@
 exception: BulkDataException
 fields:
   message: String
+  query: String?

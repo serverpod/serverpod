@@ -10,21 +10,32 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 class BulkDataException extends _i1.SerializableEntity
     implements _i1.SerializableException {
-  BulkDataException({required this.message});
+  BulkDataException({
+    required this.message,
+    this.query,
+  });
 
   factory BulkDataException.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
     return BulkDataException(
-        message: serializationManager
-            .deserialize<String>(jsonSerialization['message']));
+      message: serializationManager
+          .deserialize<String>(jsonSerialization['message']),
+      query:
+          serializationManager.deserialize<String?>(jsonSerialization['query']),
+    );
   }
 
   String message;
 
+  String? query;
+
   @override
   Map<String, dynamic> toJson() {
-    return {'message': message};
+    return {
+      'message': message,
+      'query': query,
+    };
   }
 }

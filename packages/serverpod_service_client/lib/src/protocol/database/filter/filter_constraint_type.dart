@@ -17,6 +17,7 @@ enum FilterConstraintType with _i1.SerializableEntity {
   greaterThan,
   greaterThanOrEquals,
   between,
+  inThePast,
   contains,
   notContains,
   startsWith,
@@ -43,16 +44,18 @@ enum FilterConstraintType with _i1.SerializableEntity {
       case 7:
         return between;
       case 8:
-        return contains;
+        return inThePast;
       case 9:
-        return notContains;
+        return contains;
       case 10:
-        return startsWith;
+        return notContains;
       case 11:
-        return endsWith;
+        return startsWith;
       case 12:
-        return isNull;
+        return endsWith;
       case 13:
+        return isNull;
+      case 14:
         return isNotNull;
       default:
         return null;

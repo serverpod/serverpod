@@ -227,13 +227,19 @@ class InsightsEndpoint extends Endpoint {
     required int limit,
     Filter? filter,
   }) async {
-    return DatabaseBulkData.exportTableData(
-      database: session.db,
-      table: table,
-      lastId: startingId,
-      limit: limit,
-      filter: filter,
-    );
+    try {
+      return DatabaseBulkData.exportTableData(
+        database: session.db,
+        table: table,
+        lastId: startingId,
+        limit: limit,
+        filter: filter,
+      );
+    } catch (e) {
+      throw BulkDataException(
+        message: 'Failed to fetch bulk data. ($e)',
+      );
+    }
   }
 
   /// Returns the approximate number of rows in the provided [table].

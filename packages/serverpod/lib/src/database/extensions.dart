@@ -286,11 +286,15 @@ extension FilterConstraintGenerator on FilterConstraint {
     } else if (columnType == ColumnType.text) {
       formattedValue = DatabasePoolManager.encoder.convert(value);
     } else if (columnType == ColumnType.timestampWithoutTimeZone) {
-      var dateTime = DateTime.tryParse(value);
-      if (dateTime != null) {
-        formattedValue = DatabasePoolManager.encoder.convert(dateTime);
+      if (type == FilterConstraintType.inThePast) {
+        formattedValue = _microsecondsToInterval(int.parse(value));
       } else {
-        formattedValue = 'NULL';
+        var dateTime = DateTime.tryParse(value);
+        if (dateTime != null) {
+          formattedValue = DatabasePoolManager.encoder.convert(dateTime);
+        } else {
+          formattedValue = 'NULL';
+        }
       }
     } else {
       throw Exception(
@@ -313,6 +317,8 @@ extension FilterConstraintGenerator on FilterConstraint {
       return '"$column" <= $formattedValue';
     } else if (type == FilterConstraintType.between) {
       return '"$column" BETWEEN $formattedValue AND $value2';
+    } else if (type == FilterConstraintType.inThePast) {
+      return '"$column" > (NOW() - $formattedValue)';
     } else if (type == FilterConstraintType.isNull) {
       return '"$column" IS NULL';
     } else if (type == FilterConstraintType.isNotNull) {
@@ -320,4 +326,15 @@ extension FilterConstraintGenerator on FilterConstraint {
     }
     throw Exception('Unsupported constraint type $type for column "$column."');
   }
+}
+
+String _microsecondsToInterval(int microseconds) {
+  var duration = Duration(microseconds: microseconds);
+  String interval = '${duration.inDays} days '
+      '${duration.inHours.remainder(24)} hours '
+      '${duration.inMinutes.remainder(60)} minutes '
+      '${duration.inSeconds.remainder(60)} seconds '
+      '${duration.inMilliseconds.remainder(1000)} milliseconds '
+      '${duration.inMicroseconds.remainder(1000)} microseconds';
+  return 'INTERVAL \'$interval\'';
 }

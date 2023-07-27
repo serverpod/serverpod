@@ -52,14 +52,28 @@ class DatabaseBulkData {
     }
 
     var filterQuery = '';
-    if (filter != null) {
-      filterQuery = filter.toQuery(targetTableDefinition);
-      filterQuery = ' AND $filterQuery';
+    try {
+      if (filter != null) {
+        filterQuery = filter.toQuery(targetTableDefinition);
+        filterQuery = ' AND $filterQuery';
+      }
+    } catch (e) {
+      throw BulkDataException(
+        message: 'Failed to create filter query ($e).',
+      );
     }
 
+    List<List<dynamic>> data;
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
         'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
-    var data = await database.query(query);
+    try {
+      data = await database.query(query);
+    } catch (e) {
+      throw BulkDataException(
+        message: 'Failed to query database ($e).',
+        query: query,
+      );
+    }
 
     return BulkData(
       tableDefinition: targetTableDefinition,
