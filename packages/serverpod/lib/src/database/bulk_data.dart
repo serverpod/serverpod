@@ -46,8 +46,9 @@ class DatabaseBulkData {
     for (var column in columns) {
       if (column.columnType.name == 'bytea') {
         columnSelects.add('octet_length("${column.name}")');
+      } else {
+        columnSelects.add('"${column.name}"');
       }
-      columnSelects.add('"${column.name}"');
     }
 
     var filterQuery = '';
