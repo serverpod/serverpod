@@ -40,6 +40,10 @@ class ValidateNode {
   /// Full example: nodeKey: firstValue, key=value, key2=value2.
   StringifiedNestedValues allowStringifiedNestedValue;
 
+  /// If true, the value can be an empty YamlMap.
+  /// I.E. no nested values are required to be specified.
+  bool allowEmptyNestedValue;
+
   /// Any nested nodes for this key, setting any node here means the expected
   /// value is a YamlMap, unless allowStringifiedNestedValue is true.
   Set<ValidateNode> nested;
@@ -54,6 +58,7 @@ class ValidateNode {
     this.valueRestriction,
     this.mutuallyExclusiveKeys = const {},
     this.allowStringifiedNestedValue = const StringifiedNestedValues(),
+    this.allowEmptyNestedValue = false,
     this.nested = const {},
   }) {
     if (allowStringifiedNestedValue.isAllowed && nested.isEmpty) {
