@@ -193,9 +193,7 @@ fields:
     expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
   });
 
-  test(
-      'Given a class with a field with a self relation, then the parent table is set to the specified table name.',
-      () {
+  group('Given a class with a field with a self relation', () {
     var collector = CodeGenerationCollector();
 
     var protocol = ProtocolSource(
@@ -222,9 +220,21 @@ fields:
       [definition],
     );
 
-    expect(collector.errors, isEmpty);
+    var classDefinition = definition as ClassDefinition;
 
-    expect((definition as ClassDefinition).fields.last.parentTable, 'example');
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+    test('then the parent table is set to the specified table name.', () {
+      expect(
+        classDefinition.fields.last.parentTable,
+        'example',
+      );
+    });
+
+    test('then no scalar field is added', () {
+      expect(classDefinition.findField('parentIdId'), isNull);
+    });
   });
 
   test(
