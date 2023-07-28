@@ -211,9 +211,22 @@ void _collectKeyRestrictionErrors(
 ) {
   if (node.keyRestriction == null) return;
 
-  for (var document in documentContents.nodes.entries) {
-    var errors =
-        node.keyRestriction?.call(document.key.toString(), document.key.span);
+  if (node.key == Keyword.any) {
+    for (var document in documentContents.nodes.entries) {
+      var errors = node.keyRestriction?.call(
+        document.key.toString(),
+        document.key.span,
+      );
+
+      if (errors != null) {
+        collector.addErrors(errors);
+      }
+    }
+  } else if (documentContents.containsKey(node.key)) {
+    var errors = node.keyRestriction?.call(
+      node.key,
+      documentContents.key(node.key)?.span,
+    );
 
     if (errors != null) {
       collector.addErrors(errors);
