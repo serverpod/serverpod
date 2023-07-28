@@ -5,6 +5,160 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Given a class with a self relation on a field with the class datatype',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    var classDefinition = definition as ClassDefinition;
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+    test('then the table is not set on relation field.', () {
+      var parent = classDefinition.findField('parent');
+      expect(parent?.parentTable, null);
+    });
+
+    test('then the scope is set to api on the relation field.', () {
+      var parent = classDefinition.findField('parent');
+      expect(parent?.scope, SerializableEntityFieldScope.api);
+    });
+
+    test(
+        'then a scalar field with the same name appended with Id is set on the relation field.',
+        () {
+      var parent = classDefinition.findField('parent');
+      expect(parent?.scalarFieldName, 'parentId');
+    });
+
+    test('then the class has a scalar field for the id.', () {
+      var parentIdField = classDefinition.findField('parentId');
+
+      expect(
+        parentIdField,
+        isNotNull,
+        reason: 'Expected to find a field named parentId.',
+      );
+    });
+
+    test('then the scalar field has the global scope.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.scope, SerializableEntityFieldScope.all);
+    });
+
+    test('then the scalar field type defaults to none nullable.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(
+        parent?.type.nullable,
+        isFalse,
+        reason: 'Expected to be non-nullable.',
+      );
+    });
+
+    test(
+        'then the scalar field has the parent table set from the object reference.',
+        () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.parentTable, 'example');
+    });
+  });
+
+  group(
+      'Given a class with a self relation on a field with the class datatype where the relation is optional',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example?, relation(optional)
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    var classDefinition = definition as ClassDefinition;
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+    test('then scalar field is nullable.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.type.nullable, isTrue, reason: 'Expected to be nullable.');
+    });
+  });
+
+  test(
+      'Given a class with a field without a relation, then no scalar field reference is set.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(collector.errors, isEmpty);
+
+    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+  });
+
   test(
       'Given a class with a field with a self relation, then the parent table is set to the specified table name.',
       () {
@@ -18,7 +172,7 @@ fields:
   parentId: int, relation(parent=example)
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
+      [],
     );
 
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -51,7 +205,7 @@ fields:
   parentId: int, relation(parent=example, parent=example)
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
+      [],
     );
 
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -91,7 +245,7 @@ fields:
   parentId: int, relation(parent=example), parent=example
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
+      [],
     );
 
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -131,7 +285,7 @@ fields:
   parentId: int, relation(parent=example, parent=example)
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
+      [],
     );
 
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
@@ -166,7 +320,7 @@ fields:
     expect(endSpan.column, 48);
   });
 
-  test('Given a class .', () {
+  test('Given a class with a self relation but without a table defined, then collect an error that the relation keyword cannot be used unless the class has a table.', () {
     var collector = CodeGenerationCollector();
 
     var protocol = ProtocolSource(
@@ -200,6 +354,168 @@ fields:
     expect(
       collector.errors.first.message,
       'The "table" property must be defined in the class to set a relation on a field.',
+    );
+  });
+
+  test(
+      'Given a class with a field with a relation on a complex datatype that is not nullable, then an error is collected that the datatype must be nullable.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'Fields with a protocol relations must be nullable (e.g. parent: Example?).',
+    );
+  });
+
+  test(
+      'Given a class with a field with a relation on a complex datatype and the parent table is defined, then an error is collected that the parent table is redundant.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example?, relation(parent=example)
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The "parent" property should be omitted for protocol relations.',
+    );
+  });
+
+  test(
+      'Given a class with a field with a relation on a an id field and the relation is defined as optional, then collect a warning that the optional keyword should not be used.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: int, relation(optional, parent=example)
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'The "optional" property should be omitted for id fields.',
+    );
+  });
+
+  test(
+      'Given a class with a field with a relation on a an id field but is missing a parent table definition, then collect an error that the parent table is required.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: int, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition!],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'The "parent" property must be defined for id fields.',
     );
   });
 }
