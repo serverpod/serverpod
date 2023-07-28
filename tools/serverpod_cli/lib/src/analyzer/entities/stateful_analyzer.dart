@@ -87,16 +87,18 @@ class StatefulAnalyzer {
 
   void _updateAllEntities() {
     for (var state in _protocolStates.values) {
-      var doc = SerializableEntityAnalyzer.extractEntityDefinition(
+      var entity = SerializableEntityAnalyzer.extractEntityDefinition(
         state.source,
       );
-      state.entity = doc;
+      state.entity = entity;
     }
 
     _entities = _protocolStates.values
         .map((state) => state.entity)
         .whereType<SerializableEntityDefinition>()
         .toList();
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(_entities);
   }
 
   void _validateAllProtocols() {
@@ -129,5 +131,8 @@ class StatefulAnalyzer {
     } else {
       _entities[index] = entity;
     }
+
+    // Can be optimized to only resolve the entity we know has changed.
+    SerializableEntityAnalyzer.resolveEntityDependencies(_entities);
   }
 }
