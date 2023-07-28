@@ -186,6 +186,10 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     var type = field?.type.className;
 
+    if (type == 'List') {
+      return [];
+    }
+
     if (!AnalyzeChecker.isIdType(type) &&
         AnalyzeChecker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(

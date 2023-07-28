@@ -99,6 +99,13 @@ class SerializableEntityFieldDefinition {
   /// then [scalarFieldName] contains the name of the field with the foreign key.
   final String? scalarFieldName;
 
+  /// If set references the column in the [parentTable] that this field should be joined on.
+  final String? referenceFieldName;
+
+  /// If set to true, this field is a relation to another table.
+  /// Defaults to false.
+  final bool isVirtualRelation;
+
   /// The documentation of this field, line by line.
   final List<String>? documentation;
 
@@ -109,6 +116,8 @@ class SerializableEntityFieldDefinition {
     required this.scope,
     this.parentTable,
     this.scalarFieldName,
+    this.referenceFieldName,
+    this.isVirtualRelation = false,
     this.documentation,
   });
 

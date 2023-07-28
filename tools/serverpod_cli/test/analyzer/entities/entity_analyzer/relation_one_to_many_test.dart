@@ -1,6 +1,4 @@
-void main() {}
-
-/*import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
@@ -83,4 +81,3 @@ fields:
     });
   });
 }
-*/

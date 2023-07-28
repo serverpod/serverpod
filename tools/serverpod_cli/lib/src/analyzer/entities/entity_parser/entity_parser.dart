@@ -168,8 +168,10 @@ class EntityParser {
     var scalarField = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
+    var isVirtualRelation = _isVirtualRelation(value);
+
     return [
-      if (_isVirtualRelation(value))
+      if (isVirtualRelation)
         SerializableEntityFieldDefinition(
           name: _createScalarFieldName(fieldName),
           scope: SerializableEntityFieldScope.all,
@@ -178,11 +180,10 @@ class EntityParser {
       SerializableEntityFieldDefinition(
         name: fieldName,
         scalarFieldName: scalarField,
-        scope: _isVirtualRelation(value)
-            ? SerializableEntityFieldScope.api
-            : scope,
+        scope: isVirtualRelation ? SerializableEntityFieldScope.api : scope,
         type: typeResult.type..isEnum = isEnum,
         parentTable: parentTable,
+        isVirtualRelation: isVirtualRelation,
         documentation: fieldDocumentation,
       )
     ];
