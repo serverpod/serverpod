@@ -296,7 +296,6 @@ class Restrictions {
     String relation,
     SourceSpan? span,
   ) {
-    
     var definition = documentDefinition;
     if (definition is ClassDefinition && definition.tableName == null) {
       return [
