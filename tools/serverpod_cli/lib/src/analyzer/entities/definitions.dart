@@ -65,6 +65,12 @@ class ClassDefinition extends SerializableEntityDefinition {
     super.subDirParts,
     this.documentation,
   });
+
+  SerializableEntityFieldDefinition? findField(String name) {
+    return fields
+        .cast()
+        .firstWhere((element) => element.name == name, orElse: () => null);
+  }
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -87,7 +93,11 @@ class SerializableEntityFieldDefinition {
   /// then [parentTable] contains the referenced table.
   /// For now, the foreign key only references the id column of the
   /// [parentTable].
-  final String? parentTable;
+  String? parentTable;
+
+  /// If this field is a complex datatype with a parent relation in the database,
+  /// then [scalarFieldName] contains the name of the field with the foreign key.
+  final String? scalarFieldName;
 
   /// The documentation of this field, line by line.
   final List<String>? documentation;
@@ -98,6 +108,7 @@ class SerializableEntityFieldDefinition {
     required this.type,
     required this.scope,
     this.parentTable,
+    this.scalarFieldName,
     this.documentation,
   });
 

@@ -25,7 +25,8 @@ class ValidateNode {
 
   /// If set, the value must match the restriction if an error is returned the
   /// value is considered invalid.
-  List<SourceSpanException>? Function(dynamic, SourceSpan?)? valueRestriction;
+  List<SourceSpanException>? Function(String, dynamic, SourceSpan?)?
+      valueRestriction;
 
   // A set of keys that are mutually exclusive with this key.
   late Set<String> mutuallyExclusiveKeys;
