@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:yaml/yaml.dart';
 
-class Checker {
+class AnalyzeChecker {
   static bool isIdType(dynamic type) {
     if (type is! String) return false;
 
