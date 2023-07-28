@@ -95,7 +95,8 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 }) {
   if (content == null) return [];
 
-  var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
+  Iterable<Map<YamlScalar, YamlNode>> fieldPairs =
+      fieldOptions.map((stringifiedKeyValuePair) {
     var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
     if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
@@ -105,10 +106,18 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       var key = nestedComponents.first;
       var stringifiedContent = nestedComponents.last;
 
-      var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
-      var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
+      if (stringifiedContent == '') {
+        return _createdYamlScalarNode(
+          key,
+          null,
+          keyValueSpan,
+        );
+      } else {
+        var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
+        var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
 
-      return _createYamlMapNode(key, nodeMap, keyValueSpan);
+        return _createYamlMapNode(key, nodeMap, keyValueSpan);
+      }
     }
 
     List<String> keyValuePair = stringifiedKeyValuePair.split('=');

@@ -128,6 +128,38 @@ fields:
   });
 
   test(
+      'Given a class with a self relation without any nested rules, then no errors are collected.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example?, relation()
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(collector.errors, isEmpty);
+  });
+
+  test(
       'Given a class with a field without a relation, then no scalar field reference is set.',
       () {
     var collector = CodeGenerationCollector();
@@ -579,7 +611,9 @@ fields:
         classDefinition.findField('parentId')?.parentTable, 'example_parent');
   });
 
-  test('Given a class ', () {
+  test(
+      'Given a class with a relation referencing a none existent class then collect an error that the class was not found',
+      () {
     var collector = CodeGenerationCollector();
 
     var protocol1 = ProtocolSource(
@@ -619,8 +653,9 @@ fields:
     );
   });
 
-
-  test('Given a class ', () {
+  test(
+      'Given a class with a relation to a protocol class without a table defined, then collect an error that the class does not have a table.',
+      () {
     var collector = CodeGenerationCollector();
 
     var protocol1 = ProtocolSource(
