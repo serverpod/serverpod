@@ -15,6 +15,7 @@ class Keyword {
   static const String relation = 'relation';
   static const String api = 'api';
   static const String database = 'database';
+  static const String optional = 'optional';
 
   /// Special keyword to allow keys to be any string.
   static const String any = 'any';
