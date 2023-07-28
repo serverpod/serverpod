@@ -155,8 +155,6 @@ class StdOutLogger extends Logger {
         title: type.title,
       );
     } else if (type is TextLogType) {
-      message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
-
       switch (type.style) {
         case TextLogStyle.command:
           message = '   ${AnsiStyle.cyan.wrap('\$')} $message';
@@ -181,6 +179,8 @@ class StdOutLogger extends Logger {
           message = AnsiStyle.darkGray.wrap(AnsiStyle.italic.wrap(message));
           break;
       }
+
+      message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
     }
 
     if (newParagraph) {
@@ -245,10 +245,32 @@ String _wrapText(String text, int columnWidth) {
   var textLines = text.split('\n');
   List<String> outLines = [];
   for (var line in textLines) {
-    outLines.add(line.wordWrap(width: columnWidth));
+    var replaceFirstChar = _hasLeadingTrimCharacter(line);
+    // wordWrap(...) uses trim as part of its implementation which removes all
+    // leading trimmable characters.
+    // In order to preserve them we temporarily replace the first char with a
+    // non trimmable character.
+    if (replaceFirstChar) {
+      line = '@${line.substring(1)}';
+    }
+
+    var wrappedLine = line.wordWrap(width: columnWidth);
+
+    if (replaceFirstChar) {
+      wrappedLine = ' ${wrappedLine.substring(1)}';
+    }
+    outLines.add(wrappedLine);
   }
 
   return outLines.join('\n');
+}
+
+bool _hasLeadingTrimCharacter(String text) {
+  if (text.isNotEmpty && text.first.trim().isEmpty) {
+    return true;
+  }
+
+  return false;
 }
 
 /// Wraps the message in a box.
