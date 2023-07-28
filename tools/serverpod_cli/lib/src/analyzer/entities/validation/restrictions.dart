@@ -359,7 +359,7 @@ class Restrictions {
     // Checks if the type has several ??? in a row.
     if (RegExp(r'\?{2,}').hasMatch(type)) return false;
 
-    return typeComponents.any(
+    return typeComponents.every(
       (type) => StringValidators.isValidFieldType(type),
     );
   }
