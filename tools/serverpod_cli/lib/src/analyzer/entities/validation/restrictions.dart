@@ -186,21 +186,21 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     var type = field?.type.className;
 
-    if (!Checker.isIdType(type) && Checker.isParentDefined(content)) {
+    if (!AnalyzeChecker.isIdType(type) && AnalyzeChecker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property should be omitted on protocol relations.',
         span,
       ));
     }
 
-    if (Checker.isIdType(type) && Checker.isOptionalDefined(content)) {
+    if (AnalyzeChecker.isIdType(type) && AnalyzeChecker.isOptionalDefined(content)) {
       errors.add(SourceSpanSeverityException(
         'The "optional" property should be omitted on id fields.',
         span,
       ));
     }
 
-    if (Checker.isIdType(type) && !Checker.isParentDefined(content)) {
+    if (AnalyzeChecker.isIdType(type) && !AnalyzeChecker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property must be defined on id fields.',
         span,
@@ -209,7 +209,7 @@ class Restrictions {
 
     var classes = entityRelations?.classNames[type];
 
-    if (!Checker.isIdType(type) && (classes == null || classes.isEmpty)) {
+    if (!AnalyzeChecker.isIdType(type) && (classes == null || classes.isEmpty)) {
       errors.add(SourceSpanSeverityException(
         'The class "$type" was not found in any protocol.',
         span,
@@ -217,7 +217,7 @@ class Restrictions {
       return errors;
     }
 
-    if (!Checker.isIdType(type) && !_hasTableDefined(classes)) {
+    if (!AnalyzeChecker.isIdType(type) && !_hasTableDefined(classes)) {
       errors.add(SourceSpanSeverityException(
         'The class "$type" must have a "table" property defined to be used in a relation.',
         span,

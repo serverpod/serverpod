@@ -196,7 +196,7 @@ class EntityParser {
 
   static String? _parseScalarField(YamlMap value, String fieldName) {
     if (!_isRelation(value)) return null;
-    if (Checker.isIdType(value.nodes[Keyword.type]?.value)) return null;
+    if (AnalyzeChecker.isIdType(value.nodes[Keyword.type]?.value)) return null;
 
     return _createScalarFieldName(fieldName);
   }
@@ -245,7 +245,7 @@ class EntityParser {
     if (parent is String) return parent;
 
     var type = documentContents.nodes[Keyword.type]?.value;
-    if (Checker.isIdType(type)) return null;
+    if (AnalyzeChecker.isIdType(type)) return null;
 
     return parent;
   }
