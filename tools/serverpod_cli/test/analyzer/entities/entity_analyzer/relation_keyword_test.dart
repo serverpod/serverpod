@@ -106,13 +106,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     var classDefinition = definition as ClassDefinition;
@@ -145,13 +146,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(collector.errors, isEmpty);
@@ -178,13 +180,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(collector.errors, isEmpty);
@@ -211,13 +214,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -251,13 +255,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -291,13 +296,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -376,13 +382,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -416,13 +423,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -435,7 +443,7 @@ fields:
 
     expect(
       error.message,
-      'The "parent" property should be omitted for protocol relations.',
+      'The "parent" property should be omitted on protocol relations.',
     );
   });
 
@@ -458,13 +466,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -475,7 +484,7 @@ fields:
 
     expect(
       collector.errors.first.message,
-      'The "optional" property should be omitted for id fields.',
+      'The "optional" property should be omitted on id fields.',
     );
   });
 
@@ -498,13 +507,14 @@ fields:
     var definition = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
 
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
       collector,
       definition,
-      [definition!],
+      [definition],
     );
 
     expect(
@@ -515,7 +525,153 @@ fields:
 
     expect(
       collector.errors.first.message,
-      'The "parent" property must be defined for id fields.',
+      'The "parent" property must be defined on id fields.',
+    );
+  });
+
+  test('Given a class ', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: ExampleParent?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: ExampleParent
+table: example_parent
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    var classDefinition = definition1 as ClassDefinition;
+
+    expect(
+        classDefinition.findField('parentId')?.parentTable, 'example_parent');
+  });
+
+  test('Given a class ', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: InvalidClass?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+    var entities = [definition1!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'The class "InvalidClass" was not found in any protocol.',
+    );
+  });
+
+
+  test('Given a class ', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: ExampleParent?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: ExampleParent
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'The class "ExampleParent" must have a "table" property defined to be used in a relation.',
     );
   });
 }

@@ -198,26 +198,52 @@ class Restrictions {
 
     if (!Checker.isIdType(type) && Checker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(
-        'The "parent" property should be omitted for protocol relations.',
+        'The "parent" property should be omitted on protocol relations.',
         span,
       ));
     }
 
     if (Checker.isIdType(type) && Checker.isOptionalDefined(content)) {
       errors.add(SourceSpanSeverityException(
-        'The "optional" property should be omitted for id fields.',
+        'The "optional" property should be omitted on id fields.',
         span,
       ));
     }
 
     if (Checker.isIdType(type) && !Checker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(
-        'The "parent" property must be defined for id fields.',
+        'The "parent" property must be defined on id fields.',
+        span,
+      ));
+    }
+
+    var classes = entityRelations?.classNames[type];
+
+    if (!Checker.isIdType(type) && (classes == null || classes.isEmpty)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$type" was not found in any protocol.',
+        span,
+      ));
+      return errors;
+    }
+
+    if (!Checker.isIdType(type) && !_hasTableDefined(classes)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$type" must have a "table" property defined to be used in a relation.',
         span,
       ));
     }
 
     return errors;
+  }
+
+  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
+    var hasTable = classes
+        ?.whereType<ClassDefinition>()
+        .any((definition) => definition.tableName != null);
+    if (hasTable == null) return false;
+
+    return hasTable;
   }
 
   List<SourceSpanSeverityException> validateParentName(
