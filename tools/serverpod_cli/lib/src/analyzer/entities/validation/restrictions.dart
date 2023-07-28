@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/entities/checker/checker.dart';
+import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
@@ -186,21 +186,24 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     var type = field?.type.className;
 
-    if (!AnalyzeChecker.isIdType(type) && AnalyzeChecker.isParentDefined(content)) {
+    if (!AnalyzeChecker.isIdType(type) &&
+        AnalyzeChecker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property should be omitted on protocol relations.',
         span,
       ));
     }
 
-    if (AnalyzeChecker.isIdType(type) && AnalyzeChecker.isOptionalDefined(content)) {
+    if (AnalyzeChecker.isIdType(type) &&
+        AnalyzeChecker.isOptionalDefined(content)) {
       errors.add(SourceSpanSeverityException(
         'The "optional" property should be omitted on id fields.',
         span,
       ));
     }
 
-    if (AnalyzeChecker.isIdType(type) && !AnalyzeChecker.isParentDefined(content)) {
+    if (AnalyzeChecker.isIdType(type) &&
+        !AnalyzeChecker.isParentDefined(content)) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property must be defined on id fields.',
         span,
@@ -209,7 +212,8 @@ class Restrictions {
 
     var classes = entityRelations?.classNames[type];
 
-    if (!AnalyzeChecker.isIdType(type) && (classes == null || classes.isEmpty)) {
+    if (!AnalyzeChecker.isIdType(type) &&
+        (classes == null || classes.isEmpty)) {
       errors.add(SourceSpanSeverityException(
         'The class "$type" was not found in any protocol.',
         span,
