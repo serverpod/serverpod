@@ -917,6 +917,45 @@ fields:
       expect(collector.errors.first.message,
           'The field has an invalid datatype "invalid-type".');
     });
+
+    test(
+        'Given a class with a field with a nested invalid dart syntax for the type, then collect an error that the type is invalid.',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  parent: Map<int, invalid-type>
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error',
+      );
+
+      expect(
+        collector.errors.first.message,
+        'The field has an invalid datatype "Map<int, invalid-type>".',
+      );
+    });
   });
 
   group('Parent table tests', () {
