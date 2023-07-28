@@ -95,8 +95,7 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 }) {
   if (content == null) return [];
 
-  Iterable<Map<YamlScalar, YamlNode>> fieldPairs =
-      fieldOptions.map((stringifiedKeyValuePair) {
+  var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
     var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
     if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
