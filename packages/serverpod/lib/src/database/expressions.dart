@@ -153,6 +153,9 @@ class ColumnEnum<E extends Enum> extends Column<E> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnEnum(String name) : super(name);
 
+  /// Encode enum as int.
+  /// TODO conflicts with #1080, need to add a separate version for serializing
+  /// enums to String.
   @override
   String encodeValueForQuery(E value) => value.index.toString();
 }
