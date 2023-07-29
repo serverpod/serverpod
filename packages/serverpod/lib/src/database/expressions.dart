@@ -104,7 +104,7 @@ abstract class Column<T> extends Expression {
   Expression inSet(Set<T> values) {
     assert(values.isNotEmpty);
     return Expression('"$columnName" IN '
-        '(${values.map(encodeValueForQuery)}})');
+        '(${values.map(encodeValueForQuery).join(',')}})');
   }
 
   /// Creates an [Expression] checking if the value in the column is not equal
@@ -113,7 +113,7 @@ abstract class Column<T> extends Expression {
   Expression notInSet(Set<T> values) {
     assert(values.isNotEmpty);
     return Expression('"$columnName" NOT IN '
-        '(${values.map(encodeValueForQuery)}})');
+        '(${values.map(encodeValueForQuery).join(',')}})');
   }
 
   /// Creates a new [Column], this is typically done in generated code only.
