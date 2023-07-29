@@ -146,7 +146,8 @@ class ColumnEnumSerializedAsString<E extends Enum> extends Column {
     if (value == null) {
       return Expression('"$columnName" IS NULL');
     } else {
-      return Expression('"$columnName" = \'${value.name}\'');
+      return Expression('"$columnName" = '
+          '${DatabasePoolManager.encoder.convert(value.name)}');
     }
   }
 
@@ -156,7 +157,8 @@ class ColumnEnumSerializedAsString<E extends Enum> extends Column {
     if (value == null) {
       return Expression('"$columnName" IS NOT NULL');
     } else {
-      return Expression('"$columnName" != \'${value.name}\'');
+      return Expression('"$columnName" != '
+          '${DatabasePoolManager.encoder.convert(value.name)}');
     }
   }
 }
