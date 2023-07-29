@@ -104,7 +104,11 @@ abstract class Column<T> extends Expression {
   Expression inSet(Set<T> values) {
     assert(values.isNotEmpty);
     return Expression('"$columnName" IN '
+<<<<<<< HEAD
         '(${values.map(encodeValueForQuery).join(',')})');
+=======
+        '(${values.map(encodeValueForQuery)}})');
+>>>>>>> 08322ce2 (Support 'IN' and 'NOT IN' queries; refactoring)
   }
 
   /// Creates an [Expression] checking if the value in the column is not equal
@@ -113,7 +117,11 @@ abstract class Column<T> extends Expression {
   Expression notInSet(Set<T> values) {
     assert(values.isNotEmpty);
     return Expression('"$columnName" NOT IN '
+<<<<<<< HEAD
         '(${values.map(encodeValueForQuery).join(',')})');
+=======
+        '(${values.map(encodeValueForQuery)}})');
+>>>>>>> 08322ce2 (Support 'IN' and 'NOT IN' queries; refactoring)
   }
 
   /// Creates a new [Column], this is typically done in generated code only.
@@ -227,6 +235,7 @@ class ColumnBool extends _ColumnUnescaped<bool> {
 class ColumnDateTime extends _ColumnEscaped<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDateTime(String name) : super(name);
+<<<<<<< HEAD
 
   /// Creates an [Expression] checking if the value in the column is between
   /// a minimum and a maximum [DateTime] (inclusive of the endpoints of the
@@ -271,6 +280,8 @@ class ColumnDateTime extends _ColumnEscaped<DateTime> {
   Expression equalsOrAfter(DateTime dateTime) {
     return Expression('"$columnName" >= ${encodeValueForQuery(dateTime)}');
   }
+=======
+>>>>>>> 08322ce2 (Support 'IN' and 'NOT IN' queries; refactoring)
 }
 
 /// A [Column] holding [ByteData].
