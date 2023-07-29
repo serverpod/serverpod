@@ -64,7 +64,7 @@ class Expression {
 
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
-abstract class Column extends Expression {
+abstract class Column<T> extends Expression {
   /// Corresponding dart [Type].
   final Type type;
 
@@ -76,265 +76,156 @@ abstract class Column extends Expression {
   /// Name of the [Column].
   String get columnName => _columnName;
 
+  /// Encode a value for inclusion in a database query.
+  String encodeValueForQuery(T value);
+
+  /// Creates an [Expression] checking if the value in the column equals the
+  /// specified value.
+  Expression equals(T? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NULL');
+    } else {
+      return Expression('"$columnName" = ${encodeValueForQuery(value)}');
+    }
+  }
+
+  /// Creates an [Expression] checking if the value in the column does not equal
+  /// the specified value.
+  Expression notEquals(T? value) {
+    if (value == null) {
+      return Expression('"$columnName" IS NOT NULL');
+    } else {
+      return Expression('"$columnName" != ${encodeValueForQuery(value)}');
+    }
+  }
+
+  /// Creates an [Expression] checking if the value in the column equals one of
+  /// the values in the provided set. The provided set must not be empty.
+  Expression inSet(Set<T> values) {
+    assert(values.isNotEmpty);
+    return Expression('"$columnName" IN '
+        '(${values.map(encodeValueForQuery)}})');
+  }
+
+  /// Creates an [Expression] checking if the value in the column is not equal
+  /// to any of the values in the provided set. The provided set must not be
+  /// empty.
+  Expression notInSet(Set<T> values) {
+    assert(values.isNotEmpty);
+    return Expression('"$columnName" NOT IN '
+        '(${values.map(encodeValueForQuery)}})');
+  }
+
   /// Creates a new [Column], this is typically done in generated code only.
-  Column(this._columnName, this.type, {this.varcharLength})
-      : super('"$_columnName"');
+  Column(this._columnName, {this.varcharLength})
+      : type = T,
+        super('"$_columnName"');
+}
+
+abstract class _ColumnEscaped<T> extends Column<T> {
+  /// Creates a new [_ColumnEscaped], this is called internally only.
+  _ColumnEscaped(super.columnName, {super.varcharLength});
+
+  /// Escape the provided value for inclusion in an SQL query.
+  @override
+  String encodeValueForQuery(T value) =>
+      DatabasePoolManager.encoder.convert(value);
+}
+
+abstract class _ColumnUnescaped<T> extends Column<T> {
+  /// Creates a new [_ColumnEscaped], this is called internally only.
+  _ColumnUnescaped(super.columnName, {super.varcharLength});
+
+  /// Convert the provided value (such as an int or double) directly into
+  /// a String, without escaping it first for use in a SQL statement.
+  @override
+  String encodeValueForQuery(T value) => value.toString();
 }
 
 /// A [Column] holding an [int].
-class ColumnInt extends Column {
+class ColumnInt extends _ColumnUnescaped<int> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnInt(String name) : super(name, int);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(int? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression('"$columnName" = $value');
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(int? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression('"$columnName" != $value');
-    }
-  }
+  ColumnInt(String name) : super(name);
 }
 
 /// A [Column] holding an enum.
-class ColumnEnum<E extends Enum> extends Column {
+class ColumnEnum<E extends Enum> extends Column<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(String name) : super(name, E);
+  ColumnEnum(String name) : super(name);
 
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(E? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression('"$columnName" = ${value.index}');
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(E? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression('"$columnName" != ${value.index}');
-    }
-  }
+  @override
+  String encodeValueForQuery(E value) => value.index.toString();
 }
 
 /// A [Column] holding an [double].
-class ColumnDouble extends Column {
+class ColumnDouble extends _ColumnUnescaped<double> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(String name) : super(name, double);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(double? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression('"$columnName" = $value');
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(double? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression('"$columnName" != $value');
-    }
-  }
+  ColumnDouble(String name) : super(name);
 }
 
 /// A [Column] holding an [String].
-class ColumnString extends Column {
+class ColumnString extends _ColumnEscaped<String> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnString(String name, {int? varcharLength})
-      : super(name, String, varcharLength: varcharLength);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(String? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression(
-          '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}');
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(String? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression(
-          '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}');
-    }
-  }
+      : super(name, varcharLength: varcharLength);
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value. See Postgresql docs for more info on the LIKE operator.
   Expression like(String value) {
-    return Expression(
-        '"$columnName" LIKE ${DatabasePoolManager.encoder.convert(value)}');
+    return Expression('"$columnName" LIKE ${encodeValueForQuery(value)}');
   }
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value but ignoring case. See Postgresql docs for more info on
   /// the ILIKE operator.
   Expression ilike(String value) {
-    return Expression(
-        '"$columnName" ILIKE ${DatabasePoolManager.encoder.convert(value)}');
+    return Expression('"$columnName" ILIKE ${encodeValueForQuery(value)}');
   }
 }
 
 /// A [Column] holding an [bool].
-class ColumnBool extends Column {
+class ColumnBool extends _ColumnUnescaped<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnBool(String name) : super(name, bool);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(bool? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression('"$columnName" = $value');
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(bool? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression('"$columnName" != $value');
-    }
-  }
+  ColumnBool(String name) : super(name);
 
   /// Creates an [Expression] checking if the value in the column is distinct
   /// from the specified value.
   Expression isDistinctFrom(bool value) {
-    return Expression('"$columnName" IS DISTINCT FROM $value');
+    return Expression(
+        '"$columnName" IS DISTINCT FROM ${encodeValueForQuery(value)}}');
   }
 }
 
 /// A [Column] holding an [DateTime]. In the database it is stored as a
 /// timestamp without time zone.
-class ColumnDateTime extends Column {
+class ColumnDateTime extends _ColumnEscaped<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDateTime(String name) : super(name, DateTime);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(DateTime? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression(
-          '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}');
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(DateTime? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression(
-          '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}');
-    }
-  }
+  ColumnDateTime(String name) : super(name);
 }
 
 /// A [Column] holding [ByteData].
-class ColumnByteData extends Column {
+class ColumnByteData extends _ColumnEscaped<ByteData> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnByteData(String name) : super(name, ByteData);
+  ColumnByteData(String name) : super(name);
 }
 
 /// A [Column] holding [Duration].
-class ColumnDuration extends Column {
+class ColumnDuration extends _ColumnEscaped<Duration> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDuration(String name) : super(name, Duration);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(Duration? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression(
-        '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}',
-      );
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(Duration? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression(
-        '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}',
-      );
-    }
-  }
+  ColumnDuration(String name) : super(name);
 }
 
 /// A [Column] holding [UuidValue].
-class ColumnUuid extends Column {
+class ColumnUuid extends _ColumnEscaped<UuidValue> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnUuid(String name) : super(name, UuidValue);
-
-  /// Creates an [Expression] checking if the value in the column equals the
-  /// specified value.
-  Expression equals(UuidValue? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NULL');
-    } else {
-      return Expression(
-        '"$columnName" = ${DatabasePoolManager.encoder.convert(value)}',
-      );
-    }
-  }
-
-  /// Creates an [Expression] checking if the value in the column does not equal
-  /// the specified value.
-  Expression notEquals(UuidValue? value) {
-    if (value == null) {
-      return Expression('"$columnName" IS NOT NULL');
-    } else {
-      return Expression(
-        '"$columnName" != ${DatabasePoolManager.encoder.convert(value)}',
-      );
-    }
-  }
+  ColumnUuid(String name) : super(name);
 }
 
 /// A [Column] holding an [SerializableEntity]. The entity will be stored in the
 /// database as a json column.
-class ColumnSerializable extends Column {
+class ColumnSerializable extends _ColumnEscaped<String> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnSerializable(String name) : super(name, String);
+  ColumnSerializable(String name) : super(name);
 
 // TODO: Add comparisons and possibly other operations
 }
