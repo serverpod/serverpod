@@ -41,22 +41,6 @@
     {
       "name": "constant.language.null.yaml",
       "match": "\\bnull\\b"
-    },
-    {
-      "name": "entity.name.tag.yaml",
-      "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*=)"
-    },
-    {
-      "name": "string.unquoted.yaml",
-      "match": "\\b(?<=\\s*=\\s*)([a-zA-Z0-9_-]+)\\b"
-    },
-    {
-      "name": "entity.name.tag.yaml",
-      "match": "\\b([a-zA-Z0-9_-]+)(?=\\()"
-    },
-    {
-      "name": "string.unquoted.yaml",
-      "match": "\\b(?<=\\()([^)]+)(?=\\))\\b"
     }
   ],
   "repository": {
@@ -70,6 +54,34 @@
       "end": "(?=^\\S)",
       "patterns": [
         {
+          "name": "constant.numeric.yaml",
+          "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.language.boolean.yaml",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.yaml",
+          "match": "\\bnull\\b"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*=)"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=\\s*=\\s*)([a-zA-Z0-9_-]+)\\b"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\()"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=\\()([^)]+)(?=\\))\\b"
+        },
+        {
           "name": "entity.name.tag.yaml",
           "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
         },
@@ -79,7 +91,7 @@
         },
         {
           "name": "entity.name.type.yaml",
-          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
+          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
         },
         {
           "name": "entity.name.type.yaml",
@@ -87,7 +99,7 @@
         },
         {
           "name": "entity.name.type.yaml",
-          "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
+          "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
         }
       ]
     }
