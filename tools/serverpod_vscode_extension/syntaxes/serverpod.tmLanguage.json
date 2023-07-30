@@ -64,7 +64,7 @@
           "match": "\\b(?<=\\s*=\\s*)([a-zA-Z0-9_-]+)\\b"
         },
         {
-          "name": "entity.name.tag.yaml",
+          "name": "entity.name.function.yaml",
           "match": "\\b([a-zA-Z0-9_-]+)(?=\\()"
         },
         {
