@@ -2,6 +2,9 @@
   "scopeName": "source.serverpod",
   "patterns": [
     {
+      "include": "#fields"
+    },
+    {
       "name": "entity.name.tag.yaml",
       "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
     },
@@ -54,28 +57,40 @@
     {
       "name": "string.unquoted.yaml",
       "match": "\\b(?<=\\()([^)]+)(?=\\))\\b"
-    },
-    {
-      "name": "entity.name.type.yaml",
-      "match": "\\b(?<=:\\s*)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
-    },
-    {
-      "name": "entity.name.type.yaml",
-      "match": "\\b(?<=:\\s*)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
-    },
-    {
-      "name": "entity.name.type.yaml",
-      "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
-    },
-    {
-      "name": "entity.name.type.yaml",
-      "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
-    },
-    {
-      "name": "entity.name.optional.yaml",
-      "match": "\\?"
     }
   ],
-  "repository": {},
-  "uuid": "b9c5f4cc-b7cf-4679-848c-c8c1b5c0f5d0"
+  "repository": {
+    "fields": {
+      "begin": "(fields:)(\\s*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.tag.yaml"
+        }
+      },
+      "end": "(?=^\\S)",
+      "patterns": [
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+        },
+        {
+          "name": "entity.name.type.yaml",
+          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+        },
+        {
+          "name": "entity.name.type.yaml",
+          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
+        },
+        {
+          "name": "entity.name.type.yaml",
+          "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+        },
+        {
+          "name": "entity.name.type.yaml",
+          "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
+        }
+      ]
+    }
+  },
+  "uuid": "123e4567-e89b-12d3-a456-426655440000"
 }
