@@ -9,16 +9,7 @@
       "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
     },
     {
-      "name": "constant.numeric.yaml",
-      "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
-    },
-    {
-      "name": "constant.language.boolean.yaml",
-      "match": "\\b(true|false)\\b"
-    },
-    {
-      "name": "constant.language.null.yaml",
-      "match": "\\bnull\\b"
+      "include": "#basic_value_types"
     },
     {
       "name": "entity.name.type.yaml",
@@ -34,6 +25,22 @@
     }
   ],
   "repository": {
+    "basic_value_types": {
+      "patterns": [
+        {
+          "name": "constant.numeric.yaml",
+          "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.language.boolean.yaml",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.yaml",
+          "match": "\\bnull\\b"
+        }
+      ]
+    },
     "fields": {
       "begin": "(fields:)(\\s*$)",
       "beginCaptures": {
@@ -48,16 +55,7 @@
           "match": "\\b([a-zA-Z0-9_]+)(?=:\\s)"
         },
         {
-          "name": "constant.numeric.yaml",
-          "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
-        },
-        {
-          "name": "constant.language.boolean.yaml",
-          "match": "\\b(true|false)\\b"
-        },
-        {
-          "name": "constant.language.null.yaml",
-          "match": "\\bnull\\b"
+          "include": "#basic_value_types"
         },
         {
           "name": "entity.name.tag.yaml",
