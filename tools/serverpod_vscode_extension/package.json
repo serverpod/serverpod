@@ -17,7 +17,7 @@
         "id": "serverpod",
         "aliases": [
           "Serverpod Protocol",
-          "serverpod"
+          "SP"
         ],
         "extensions": [
           ".sp.yaml"

@@ -46,6 +46,14 @@
     {
       "name": "string.unquoted.yaml",
       "match": "\\b(?<=\\s*=\\s*)([a-zA-Z0-9_-]+)\\b"
+    },
+    {
+      "name": "entity.name.tag.yaml",
+      "match": "\\b([a-zA-Z0-9_-]+)(?=\\()"
+    },
+    {
+      "name": "string.unquoted.yaml",
+      "match": "\\b(?<=\\()([^)]+)(?=\\))\\b"
     }
   ],
   "repository": {},
