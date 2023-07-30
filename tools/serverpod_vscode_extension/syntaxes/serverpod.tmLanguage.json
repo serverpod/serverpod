@@ -54,6 +54,26 @@
     {
       "name": "string.unquoted.yaml",
       "match": "\\b(?<=\\()([^)]+)(?=\\))\\b"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=:\\s*)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=:\\s*)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??,|\\s|$)"
+    },
+    {
+      "name": "entity.name.optional.yaml",
+      "match": "\\?"
     }
   ],
   "repository": {},
