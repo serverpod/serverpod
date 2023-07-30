@@ -1,0 +1,53 @@
+{
+  "scopeName": "source.serverpod",
+  "patterns": [
+    {
+      "name": "entity.name.tag.yaml",
+      "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+    },
+    {
+      "name": "string.quoted.double.yaml",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.yaml",
+          "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8}|.)"
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.single.yaml",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "constant.character.escape.yaml",
+          "match": "''"
+        }
+      ]
+    },
+    {
+      "name": "constant.numeric.yaml",
+      "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
+    },
+    {
+      "name": "constant.language.boolean.yaml",
+      "match": "\\b(true|false)\\b"
+    },
+    {
+      "name": "constant.language.null.yaml",
+      "match": "\\bnull\\b"
+    },
+    {
+      "name": "entity.name.tag.yaml",
+      "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*=)"
+    },
+    {
+      "name": "string.unquoted.yaml",
+      "match": "\\b(?<=\\s*=\\s*)([a-zA-Z0-9_-]+)\\b"
+    }
+  ],
+  "repository": {},
+  "uuid": "b9c5f4cc-b7cf-4679-848c-c8c1b5c0f5d0"
+}

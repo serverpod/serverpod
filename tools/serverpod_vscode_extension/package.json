@@ -12,6 +12,26 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "serverpod",
+        "aliases": [
+          "Serverpod Protocol",
+          "serverpod"
+        ],
+        "extensions": [
+          ".sp.yaml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "serverpod",
+        "scopeName": "source.serverpod",
+        "path": "./syntaxes/serverpod.tmLanguage.json"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Example configuration",
