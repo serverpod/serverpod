@@ -5,6 +5,9 @@
       "include": "#fields"
     },
     {
+      "include": "#indexes"
+    },
+    {
       "name": "entity.name.tag.yaml",
       "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
     },
@@ -13,11 +16,11 @@
     },
     {
       "name": "entity.name.type.yaml",
-      "match": "\\b(?<=class:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+      "match": "\\b(?<=(class|exception|enum):\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
     },
     {
       "name": "entity.name.type.yaml",
-      "match": "\\b(?<=class:\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
+      "match": "\\b(?<=(class|exception|enum):\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
     },
     {
       "name": "string.unquoted.yaml",
@@ -51,8 +54,15 @@
       "end": "(?=^\\S)",
       "patterns": [
         {
-          "name": "entity.name.variable.yaml",
-          "match": "\\b([a-zA-Z0-9_]+)(?=:\\s)"
+          "name": "keyword.operator.assignment.yaml",
+          "match": "="
+        },
+        {
+          "name": "punctuation.separator.comma.yaml",
+          "match": ","
+        },
+        {
+          "include": "#params"
         },
         {
           "include": "#basic_value_types"
@@ -78,21 +88,17 @@
           "match": "\\b([a-zA-Z0-9_-]+)(?=\\()"
         },
         {
-          "name": "string.unquoted.yaml",
-          "match": "\\b(?<=\\()([^)]+)(?=\\))\\b"
-        },
-        {
           "name": "entity.name.tag.yaml",
           "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
         },
         {
           "name": "entity.name.type.yaml",
-          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+          "match": "(?<=^\\s{2}\\S*|\\t\\S*)(:\\s*)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
         },
         {
           "name": "entity.name.type.yaml",
-          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
-        },
+          "match": "(?<=^\\s{2}\\S*|\\t\\S*)(:\\s*)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
+        },        
         {
           "name": "entity.name.type.yaml",
           "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
@@ -100,6 +106,43 @@
         {
           "name": "entity.name.type.yaml",
           "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        }
+      ]
+    },
+    "indexes": {
+      "begin": "(indexes:)(\\s*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.tag.yaml"
+        }
+      },
+      "end": "(?=^\\S)",
+      "patterns": [
+        {
+          "include": "#params"
+        },
+        {
+          "include": "#basic_value_types"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        }
+      ]
+    },
+    "params": {
+      "patterns": [
+        {
+          "name": "entity.name.variable.yaml",
+          "match": "(?<=^\\s{2}|\\t)\\b([a-zA-Z0-9_]+)(?=:\\s)"
         }
       ]
     }
