@@ -19,6 +19,18 @@
     {
       "name": "constant.language.null.yaml",
       "match": "\\bnull\\b"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=class:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=class:\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
+    },
+    {
+      "name": "string.unquoted.yaml",
+      "match": "\\b(?<=:\\s*)([a-zA-Z0-9_-]+)\\b"
     }
   ],
   "repository": {
