@@ -9,28 +9,6 @@
       "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
     },
     {
-      "name": "string.quoted.double.yaml",
-      "begin": "\"",
-      "end": "\"",
-      "patterns": [
-        {
-          "name": "constant.character.escape.yaml",
-          "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8}|.)"
-        }
-      ]
-    },
-    {
-      "name": "string.quoted.single.yaml",
-      "begin": "'",
-      "end": "'",
-      "patterns": [
-        {
-          "name": "constant.character.escape.yaml",
-          "match": "''"
-        }
-      ]
-    },
-    {
       "name": "constant.numeric.yaml",
       "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
     },
@@ -68,6 +46,14 @@
         {
           "name": "entity.name.tag.yaml",
           "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*=)"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b(?<=\\()([a-zA-Z0-9_-]+)\\b"
+        },
+        {
+          "name": "string.quoted.double.yaml",
+          "match": "\\b(?<==)([a-zA-Z0-9_-]+)(?=,|\\))"
         },
         {
           "name": "string.unquoted.yaml",
