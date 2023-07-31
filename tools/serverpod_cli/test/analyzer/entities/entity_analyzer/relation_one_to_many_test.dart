@@ -1,6 +1,4 @@
-void main() {
-
-}
+void main() {}
 
 /*import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
