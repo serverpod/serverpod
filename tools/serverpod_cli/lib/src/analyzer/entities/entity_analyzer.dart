@@ -334,6 +334,8 @@ class SerializableEntityAnalyzer {
       return field.parentTable == classDefinition.tableName;
     });
 
+    if(referenceFields.isEmpty) return;
+
     // Todo: Handle multiple references.
     fieldDefinition.referenceFieldName = referenceFields.first.name;
   }
