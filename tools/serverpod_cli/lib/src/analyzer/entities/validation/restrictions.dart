@@ -361,6 +361,13 @@ class Restrictions {
       ));
     }
 
+    if (referenceFields.length > 1) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" has several reference fields, unable to resolve ambiguous relation.',
+        span,
+      ));
+    }
+
     return errors;
   }
 

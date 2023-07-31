@@ -147,4 +147,74 @@ fields:
       'The class "Employee" does not have a relation to this protocol.',
     );
   });
+
+  test(
+      'Given a class with a one to many relation where the relation ship is ambiguous then an error is collected that the reference cannot be resolved.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Employee
+table: employee
+fields:
+  company: Company?, relation
+  myCompany: Company?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Company
+table: company
+fields:
+  employees: List<Employee>?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error but none was found.',
+    );
+
+    var error = collector.errors.first;
+
+    // Todo improve error message when we support named relations.
+    expect(
+      error.message,
+      'The class "Employee" has several reference fields, unable to resolve ambiguous relation.',
+    );
+  });
 }
