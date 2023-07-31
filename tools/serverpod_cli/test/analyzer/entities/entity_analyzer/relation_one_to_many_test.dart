@@ -5,8 +5,7 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a class with a one to many relation',
-      () {
+  group('Given a class with a one to many relation', () {
     var collector = CodeGenerationCollector();
 
     var protocol1 = ProtocolSource(
@@ -64,8 +63,7 @@ fields:
       expect(collector.errors, isEmpty);
     });
 
-    test('then no id field was created for the many side.',
-        () {
+    test('then no id field was created for the many side.', () {
       expect(
         classDefinition.findField('employeesId'),
         isNull,
@@ -73,13 +71,77 @@ fields:
       );
     });
 
-    test('then the reference field is set on the list relation.',
-        () {
+    test('then the reference field is set on the list relation.', () {
       expect(
         classDefinition.findField('employees')?.referenceFieldName,
         'companyId',
         reason: "Expected employees's referenceFieldName to be companyId, but "
             "it was ${classDefinition.findField('employees')?.referenceFieldName}.",
+      );
+    });
+  });
+
+  group(
+      'Given a class with a one to many relation but the one side has no relation defined',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Employee
+table: employee
+fields:
+  companyId: int
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Company
+table: company
+fields:
+  employees: List<Employee>?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    test(
+        'then an error is collected that the reference class could not be found.',
+        () {
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class "Employee" does not have a relation to this protocol.',
       );
     });
   });

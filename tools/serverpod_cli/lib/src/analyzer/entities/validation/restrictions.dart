@@ -343,6 +343,24 @@ class Restrictions {
       ));
     }
 
+    var referenceClass = classes?.first;
+    if (referenceClass is! ClassDefinition) return errors;
+
+    if (!(field.type.isList && field.isVirtualRelation)) {
+      return errors;
+    }
+
+    var referenceFields = referenceClass.fields.where((field) {
+      return field.parentTable == def.tableName;
+    });
+
+    if (referenceFields.isEmpty) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" does not have a relation to this protocol.',
+        span,
+      ));
+    }
+
     return errors;
   }
 
@@ -522,11 +540,12 @@ class Restrictions {
   }
 
   String? _extractReferenceClassName(SerializableEntityFieldDefinition? field) {
-    var parsedType = field?.type.className;
-    if (parsedType == 'List') {
-      parsedType = field?.type.generics.first.className;
+    if (field == null) return null;
+    if (field.type.isList) {
+      return field.type.generics.first.className;
     }
-    return parsedType;
+
+    return field.type.className;
   }
 
   bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
