@@ -60,11 +60,6 @@ class ValidateNode {
       throw ArgumentError(
           'allowStringifiedNestedValue can only be true if nested is not empty.');
     }
-
-    if (key != Keyword.any && keyRestriction != null) {
-      throw ArgumentError(
-          'keyRestriction can only be set if key is ${Keyword.any}.');
-    }
   }
 }
 

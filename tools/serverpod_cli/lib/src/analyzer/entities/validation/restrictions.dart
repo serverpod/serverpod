@@ -292,6 +292,23 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateRelationKey(
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "table" property must be defined in the class to set a relation on a field.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateEnumValues(
     dynamic content,
     SourceSpan? span,
