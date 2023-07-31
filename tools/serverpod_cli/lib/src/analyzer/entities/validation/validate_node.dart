@@ -1,4 +1,3 @@
-import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:source_span/source_span.dart';
 
 class ValidateNode {
@@ -20,7 +19,6 @@ class ValidateNode {
 
   /// If set, the key must match the restriction if an error is returned the key
   /// is considered invalid.
-  /// Should only be used together with a [Keyword.any].
   List<SourceSpanException>? Function(String, String, SourceSpan?)?
       keyRestriction;
 
