@@ -120,6 +120,56 @@ class Restrictions {
     ];
   }
 
+  List<SourceSpanSeverityException> validateParentKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var definition = documentDefinition;
+
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    var type = field.type.className;
+
+    if (!AnalyzeChecker.isIdType(type) && field.isVirtualRelation) {
+      errors.add(SourceSpanSeverityException(
+        'The "parent" property should be omitted on protocol relations.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateOptionalKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var definition = documentDefinition;
+
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    var type = field.type.className;
+
+    if (AnalyzeChecker.isIdType(type)) {
+      errors.add(SourceSpanSeverityException(
+        'The "optional" property should be omitted on id fields.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validateTableIndexName(
     String parentNodeName,
     String indexName,
@@ -185,23 +235,8 @@ class Restrictions {
     if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    var type = field?.type.className;
-
-    if (!AnalyzeChecker.isIdType(type) &&
-        AnalyzeChecker.isParentDefined(content)) {
-      errors.add(SourceSpanSeverityException(
-        'The "parent" property should be omitted on protocol relations.',
-        span,
-      ));
-    }
-
-    if (AnalyzeChecker.isIdType(type) &&
-        AnalyzeChecker.isOptionalDefined(content)) {
-      errors.add(SourceSpanSeverityException(
-        'The "optional" property should be omitted on id fields.',
-        span,
-      ));
-    }
+    if (field == null) return [];
+    var type = field.type.className;
 
     if (AnalyzeChecker.isIdType(type) &&
         !AnalyzeChecker.isParentDefined(content)) {
