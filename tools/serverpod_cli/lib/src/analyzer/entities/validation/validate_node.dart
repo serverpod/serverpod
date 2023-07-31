@@ -49,6 +49,10 @@ class ValidateNode {
   /// value is a YamlMap, unless allowStringifiedNestedValue is true.
   Set<ValidateNode> nested;
 
+  /// If true, the node is a contextual parent node. This means that the node
+  /// will be used as a parent node for all nested nodes, in the context object.
+  bool isContextualParentNode;
+
   ValidateNode(
     this.key, {
     this.isRequired = false,
@@ -61,12 +65,20 @@ class ValidateNode {
     this.allowStringifiedNestedValue = const StringifiedNestedValues(),
     this.allowEmptyNestedValue = false,
     this.nested = const {},
+    this.isContextualParentNode = false,
   }) {
     if (allowStringifiedNestedValue.isAllowed && nested.isEmpty) {
       throw ArgumentError(
           'allowStringifiedNestedValue can only be true if nested is not empty.');
     }
   }
+}
+
+class NodeContext {
+  final String parentNodeName;
+  final bool shouldPropagateContext;
+
+  NodeContext(this.parentNodeName, this.shouldPropagateContext);
 }
 
 class StringifiedNestedValues {

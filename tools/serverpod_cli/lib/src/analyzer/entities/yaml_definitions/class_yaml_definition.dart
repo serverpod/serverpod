@@ -38,6 +38,7 @@ class ClassYamlDefinition {
               isAllowed: true,
               hasImplicitFirstKey: true,
             ),
+            isContextualParentNode: true,
             nested: {
               ValidateNode(
                 Keyword.type,
