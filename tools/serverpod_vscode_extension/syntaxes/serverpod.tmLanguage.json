@@ -45,10 +45,13 @@
       ]
     },
     "fields": {
-      "begin": "(fields:)(\\s*$)",
+      "begin": "(fields)(:)(\\s*$)",
       "beginCaptures": {
         "1": {
           "name": "entity.name.tag.yaml"
+        },
+        "2": {
+          "name": "punctuation.separator.mapping.key-value.yaml"
         }
       },
       "end": "(?=^\\S)",
@@ -135,10 +138,13 @@
       ]
     },
     "indexes": {
-      "begin": "(indexes:)(\\s*$)",
+      "begin": "(indexes)(:)(\\s*$)",
       "beginCaptures": {
         "1": {
           "name": "entity.name.tag.yaml"
+        },
+        "2": {
+          "name": "punctuation.separator.mapping.key-value.yaml"
         }
       },
       "end": "(?=^\\S)",
