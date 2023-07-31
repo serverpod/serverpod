@@ -92,20 +92,41 @@
           "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
         },
         {
-          "name": "entity.name.type.yaml",
-          "match": "(?<=^\\s{2}\\S*|\\t\\S*)(:\\s*)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+          "begin": "(:\\s*)([^\\s<]*)(<)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.separator.mapping.key-value.yaml"
+            },
+            "2": {
+              "name": "entity.name.type.yaml"
+            },
+            "3": {
+              "name": "punctuation.definition.type.begin.yaml"
+            }
+          },
+          "end": "(>)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.type.end.yaml"
+            }
+          },
+          "patterns": [
+            {
+              "match": "[^,>\\s?]+",
+              "name": "entity.name.type.yaml"
+            }
+          ]
         },
         {
-          "name": "entity.name.type.yaml",
-          "match": "(?<=^\\s{2}\\S*|\\t\\S*)(:\\s*)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
-        },        
-        {
-          "name": "entity.name.type.yaml",
-          "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
-        },
-        {
-          "name": "entity.name.type.yaml",
-          "match": "\\b(?<=type:\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
+          "match": "(:\\s*)([^<\\s?]+)",
+          "captures": {
+            "1": {
+              "name": "punctuation.separator.mapping.key-value.yaml"
+            },
+            "2": {
+              "name": "entity.name.type.yaml"
+            }
+          }
         },
         {
           "name": "string.unquoted.yaml",
