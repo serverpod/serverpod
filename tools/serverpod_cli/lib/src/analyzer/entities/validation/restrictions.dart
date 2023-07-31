@@ -214,34 +214,7 @@ class Restrictions {
       ));
     }
 
-    var classes = entityRelations?.classNames[type];
-
-    if (!AnalyzeChecker.isIdType(type) &&
-        (classes == null || classes.isEmpty)) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$type" was not found in any protocol.',
-        span,
-      ));
-      return errors;
-    }
-
-    if (!AnalyzeChecker.isIdType(type) && !_hasTableDefined(classes)) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$type" must have a "table" property defined to be used in a relation.',
-        span,
-      ));
-    }
-
     return errors;
-  }
-
-  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
-    var hasTable = classes
-        ?.whereType<ClassDefinition>()
-        .any((definition) => definition.tableName != null);
-    if (hasTable == null) return false;
-
-    return hasTable;
   }
 
   List<SourceSpanSeverityException> validateParentName(
@@ -307,15 +280,35 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ClassDefinition) {
-      var field = def.findField(parentNodeName);
+    if (def is! ClassDefinition) return errors;
 
-      if (field?.scalarFieldName != null && !type.endsWith('?')) {
-        errors.add(SourceSpanSeverityException(
-          'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
-          span,
-        ));
-      }
+    var field = def.findField(parentNodeName);
+    if (field == null) return errors;
+
+    if (field.scalarFieldName != null && !type.endsWith('?')) {
+      errors.add(SourceSpanSeverityException(
+        'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
+        span,
+      ));
+    }
+
+    String? parsedType = _extractReferenceClassName(field);
+
+    var classes = entityRelations?.classNames[parsedType];
+
+    if (field.isVirtualRelation && (classes == null || classes.isEmpty)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" was not found in any protocol.',
+        span,
+      ));
+      return errors;
+    }
+
+    if (field.isVirtualRelation && !_hasTableDefined(classes)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" must have a "table" property defined to be used in a relation.',
+        span,
+      ));
     }
 
     return errors;
@@ -494,5 +487,22 @@ class Restrictions {
     if (classes == null || classes.isEmpty) return null;
 
     return classes.firstWhere((c) => c != documentDefinition);
+  }
+
+  String? _extractReferenceClassName(SerializableEntityFieldDefinition? field) {
+    var parsedType = field?.type.className;
+    if (parsedType == 'List') {
+      parsedType = field?.type.generics.first.className;
+    }
+    return parsedType;
+  }
+
+  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
+    var hasTable = classes
+        ?.whereType<ClassDefinition>()
+        .any((definition) => definition.tableName != null);
+    if (hasTable == null) return false;
+
+    return hasTable;
   }
 }
