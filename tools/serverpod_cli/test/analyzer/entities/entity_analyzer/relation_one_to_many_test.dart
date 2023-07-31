@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a class with a self relation on a field with the class datatype',
+  group('Given a class with a one to many relation',
       () {
     var collector = CodeGenerationCollector();
 
@@ -64,19 +64,22 @@ fields:
       expect(collector.errors, isEmpty);
     });
 
-    test('Given a class with a List relation, then no id field was created',
+    test('then no id field was created for the many side.',
         () {
       expect(
         classDefinition.findField('employeesId'),
         isNull,
+        reason: 'Expected employeesId to not exist as a field, but it did.',
       );
     });
 
-    test('Given a class with a List relation, then the join on field is set',
+    test('then the reference field is set on the list relation.',
         () {
       expect(
         classDefinition.findField('employees')?.referenceFieldName,
         'companyId',
+        reason: "Expected employees's referenceFieldName to be companyId, but "
+            "it was ${classDefinition.findField('employees')?.referenceFieldName}.",
       );
     });
   });

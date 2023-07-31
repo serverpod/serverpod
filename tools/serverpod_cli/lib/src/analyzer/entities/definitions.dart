@@ -100,7 +100,7 @@ class SerializableEntityFieldDefinition {
   final String? scalarFieldName;
 
   /// If set references the column in the [parentTable] that this field should be joined on.
-  final String? referenceFieldName;
+  String? referenceFieldName;
 
   /// If set to true, this field is a relation to another table.
   /// Defaults to false.
