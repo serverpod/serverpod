@@ -23,8 +23,10 @@ import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
     as _i9;
 import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
     as _i10;
-import 'dart:io' as _i11;
-import 'protocol.dart' as _i12;
+import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
+    as _i11;
+import 'dart:io' as _i12;
+import 'protocol.dart' as _i13;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -178,6 +180,15 @@ class EndpointInsights extends _i1.EndpointRef {
         },
       );
 
+  /// Executes a list of queries on the database and returns the last result.
+  /// The queries are executed in a single transaction.
+  _i2.Future<_i11.BulkQueryResult> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<_i11.BulkQueryResult>(
+        'insights',
+        'runQueries',
+        {'queries': queries},
+      );
+
   /// Returns the approximate number of rows in the provided [table].
   _i2.Future<int> getDatabaseRowCount({required String table}) =>
       caller.callServerEndpoint<int>(
@@ -197,11 +208,11 @@ class EndpointInsights extends _i1.EndpointRef {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i11.SecurityContext? context,
+    _i12.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i12.Protocol(),
+          _i13.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {

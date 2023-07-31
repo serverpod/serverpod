@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:postgres/postgres.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
@@ -239,6 +240,31 @@ class InsightsEndpoint extends Endpoint {
       throw BulkDataException(
         message: 'Failed to fetch bulk data. ($e)',
       );
+    }
+  }
+
+  /// Executes a list of queries on the database and returns the last result.
+  /// The queries are executed in a single transaction.
+  Future<BulkQueryResult> runQueries(
+    Session session,
+    List<String> queries,
+  ) async {
+    try {
+      var result = await DatabaseBulkData.executeQueries(
+        database: session.db,
+        queries: queries,
+      );
+      return result;
+    } catch (e) {
+      if (e is PostgreSQLException) {
+        throw BulkDataException(
+          message: 'Failed to execute query: ${e.message}',
+        );
+      } else {
+        throw BulkDataException(
+          message: 'Failed to execute query: $e',
+        );
+      }
     }
   }
 

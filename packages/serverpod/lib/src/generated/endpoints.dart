@@ -242,6 +242,24 @@ class Endpoints extends _i1.EndpointDispatch {
             filter: params['filter'],
           ),
         ),
+        'runQueries': _i1.MethodConnector(
+          name: 'runQueries',
+          params: {
+            'queries': _i1.ParameterDescription(
+              name: 'queries',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).runQueries(
+            session,
+            params['queries'],
+          ),
+        ),
         'getDatabaseRowCount': _i1.MethodConnector(
           name: 'getDatabaseRowCount',
           params: {
