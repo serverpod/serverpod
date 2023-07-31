@@ -368,7 +368,9 @@ fields:
     expect(endSpan.column, 48);
   });
 
-  test('Given a class with a self relation but without a table defined, then collect an error that the relation keyword cannot be used unless the class has a table.', () {
+  test(
+      'Given a class with a self relation but without a table defined, then collect an error that the relation keyword cannot be used unless the class has a table.',
+      () {
     var collector = CodeGenerationCollector();
 
     var protocol = ProtocolSource(
