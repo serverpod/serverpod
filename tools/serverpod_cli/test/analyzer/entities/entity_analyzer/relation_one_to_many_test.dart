@@ -81,8 +81,8 @@ fields:
     });
   });
 
-  group(
-      'Given a class with a one to many relation but the one side has no relation defined',
+  test(
+      'Given a class with a one to many relation but the one side has no relation defined then an error is collected that the reference class could not be found.',
       () {
     var collector = CodeGenerationCollector();
 
@@ -135,14 +135,16 @@ fields:
       entities,
     );
 
-    test(
-        'then an error is collected that the reference class could not be found.',
-        () {
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The class "Employee" does not have a relation to this protocol.',
-      );
-    });
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error but none was found.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The class "Employee" does not have a relation to this protocol.',
+    );
   });
 }
